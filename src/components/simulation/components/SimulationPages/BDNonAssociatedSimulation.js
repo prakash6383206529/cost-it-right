@@ -184,7 +184,7 @@ function BDNonAssociatedSimulation(props) {
     const newBasicRateFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
         } else {
             returnValue = row.NewBasicRate
@@ -197,14 +197,15 @@ function BDNonAssociatedSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         let cellValue = cell
         if (cell && cell > 100) {
-            Toaster.warning("Percentage should be less than 100")
+            Toaster.warning("Percentage should be less than or equal to 100")
             cellValue = 0
         }
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cellValue)
         return (
             <>
                 {
-                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
                 }
 
             </>
@@ -269,8 +270,8 @@ function BDNonAssociatedSimulation(props) {
                 return false
             }
             return true
-        } else if (cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
-            Toaster.warning('Please enter a valid positive numbers.')
+        } else if (cellValue && !/^[+-]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+            Toaster.warning('Please enter a valid numbers.')
             return false
         }
         return true
@@ -279,7 +280,7 @@ function BDNonAssociatedSimulation(props) {
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             returnValue = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
         } else {
             returnValue = (row.NewBasicRate) / checkForNull(row.NumberOfPieces)
@@ -384,7 +385,7 @@ function BDNonAssociatedSimulation(props) {
     const ageValueGetter = (params) => {
         let row = params.data
         let valueReturn = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             valueReturn = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
         } else {
             valueReturn = row?.NewBasicRate
@@ -395,7 +396,7 @@ function BDNonAssociatedSimulation(props) {
     const ageValueGetterLanded = (params) => {
         let row = params.data
         let valueReturn = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) < 100) {
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
             valueReturn = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
         } else {
             valueReturn = (row?.NewBasicRate) / checkForNull(row.NumberOfPieces)

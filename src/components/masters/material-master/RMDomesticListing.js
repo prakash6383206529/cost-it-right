@@ -330,6 +330,7 @@ function RMDomesticListing(props) {
 
 
     const resetState = () => {
+        setNoData(false)
         setinRangeDate([])
         setIsFilterButtonClicked(false)
         gridOptions?.columnApi?.resetColumnState(null);
@@ -929,6 +930,7 @@ function RMDomesticListing(props) {
                                         onRowSelected={onRowSelect}
                                         onFilterModified={onFloatingFilterChanged}
                                         suppressRowClickSelection={true}
+                                        enableBrowserTooltips={true}
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
@@ -952,7 +954,7 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                        {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                        {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                         <AgGridColumn field="VendorId" hide={true}></AgGridColumn>
                                         <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                                         {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}

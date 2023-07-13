@@ -389,7 +389,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>

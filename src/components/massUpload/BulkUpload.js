@@ -423,6 +423,8 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'DestinationPlantCode'
                                 } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'PlantName') {
                                     fileHeads[i] = 'DestinationPlantName'
+                                } else if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'MinimumOrderQuantity') {
+                                    fileHeads[i] = 'NumberOfPieces'
                                 }
 
                                 if (fileHeads[i] === 'InsertPartNumber') {
@@ -433,6 +435,9 @@ class BulkUpload extends Component {
                                 }
                                 if (fileHeads[i] === 'InsertCategory') {
                                     fileHeads[i] = 'CategoryName'
+                                }
+                                if (fileHeads[i] === 'MinimumOrderQuantity') {
+                                    fileHeads[i] = 'NumberOfPieces'
                                 }
 
                                 obj[fileHeads[i]] = el;

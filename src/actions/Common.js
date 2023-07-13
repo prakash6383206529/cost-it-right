@@ -1347,6 +1347,14 @@ export function getPlantSelectListByType(TYPE, callback) {
   };
 }
 
+export function getVendorWithVendorCodeSelectList(vendorName, callback) {
+  return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config()).catch(error => {
+    apiErrors(error);
+    callback(error);
+    return Promise.reject(error)
+  });
+}
+
 export function getReporterList(callback) {
   return (dispatch) => {
     const request = axios.get(API.getReporterList, config());

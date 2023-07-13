@@ -635,6 +635,7 @@ function BudgetListing(props) {
                                     onFilterModified={onFloatingFilterChanged}
                                     onRowSelected={onRowSelect}
                                     suppressRowClickSelection={true}
+                                    enableBrowserTooltips={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                                     <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
@@ -645,7 +646,7 @@ function BudgetListing(props) {
                                     {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
                                     <AgGridColumn field="vendorNameWithCode" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
                                     {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>

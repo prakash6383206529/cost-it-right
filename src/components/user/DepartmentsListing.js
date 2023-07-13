@@ -273,7 +273,7 @@ class DepartmentsListing extends Component {
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
                     <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Department Code'}></AgGridColumn>
-                    <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="DepartmentId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                 </div>

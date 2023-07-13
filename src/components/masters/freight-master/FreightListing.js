@@ -378,7 +378,7 @@ class FreightListing extends Component {
                   {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn width='200px' field="FreightId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
+                  <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>

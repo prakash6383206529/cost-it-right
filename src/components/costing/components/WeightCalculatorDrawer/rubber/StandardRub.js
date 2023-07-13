@@ -829,7 +829,7 @@ function StandardRub(props) {
                                                 <AgGridColumn minWidth="150" field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="ScrapWeight" headerName="Scrap Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn minWidth="150" field="NetRmCost" headerName="Net RM Cost/Component" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn minWidth="120" field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                                <AgGridColumn minWidth="120" field="ProcessId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact>
 
                                         </div>

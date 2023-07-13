@@ -167,28 +167,35 @@ function RfqListing(props) {
     * @description edit material type
     */
     const approvemDetails = (Id, rowData = {}) => {
-        if (index === '') {
-            Toaster.warning("You can send only one costing for approval")
+        if (selectedCostingList?.length === 0) {
+            Toaster.warning("Select at least one costing to send for approval")
             return false
         }
-        let list = [...viewCostingData]
-        let data = list?.filter(element => element?.costingId !== "-")
-        let val = data[2]?.poPrice
-        let costingId
+        const arrayOfObjects = [...viewCostingData]
+        const matchingItems = selectedCostingList.filter(item =>
+            arrayOfObjects.some(obj => obj.costingId === item)
+        );
+        let arr = []
+        matchingItems.map(item => rowData.filter(el => {
+            if (el.CostingId === item) {
+                arr.push(el)
+            }
+            return null
+        }))
+
+
+        let data = arrayOfObjects?.filter(element => element?.costingId !== "-")
+        let val = data[0]?.poPrice
+        let costingId = data[0]?.costingId
         data && data?.map((item, index) => {
             if (val > item?.poPrice) {
                 val = item?.poPrice
                 costingId = item?.costingId
             }
         })
-
-        let arr = []
-        rowData.filter(el => {
-            if (el.CostingId === selectedCostingList[0]) {
-                arr.push(el)
-            }
-        })
-        if (selectedCostingList[0] !== costingId) {
+        console.log('costingId: ', costingId);
+        console.log('selectedCostingList: ', selectedCostingList);
+        if (selectedCostingList?.includes(costingId)) {
             setMandatoryRemark(true)
         } else {
             setMandatoryRemark(false)
@@ -741,7 +748,8 @@ function RfqListing(props) {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
         dateFormatter: dateFormatter,
-        partNumberFormatter: partNumberFormatter
+        partNumberFormatter: partNumberFormatter,
+        customNoRowsOverlay: NoContentFound
     }
 
     const closeSendForApproval = (e = '', type) => {
@@ -864,7 +872,7 @@ function RfqListing(props) {
                                             <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
-                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
@@ -940,7 +948,8 @@ function RfqListing(props) {
                     <div id='rfq-compare-drawer'>
                         {addComparisonToggle && (
 
-                            <CostingSummaryTable viewMode={true}
+                            <CostingSummaryTable
+                                viewMode={true}
                                 isRfqCosting={true}
                                 // costingID={approvalDetails.CostingId}
                                 approvalMode={true}

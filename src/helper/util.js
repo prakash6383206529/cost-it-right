@@ -788,6 +788,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.ScrapWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].ScrapWeight)
   obj.nPoPriceCurrency = obj?.nPOPriceWithCurrency !== null ? (obj?.currency?.currencyTitle) !== "-" ? (obj?.nPOPriceWithCurrency) : obj?.nPOPrice : '-'
   obj.currencyRate = obj?.CostingHeading !== VARIANCE ? obj?.currency.currencyValue === '-' ? '-' : obj?.currency.currencyValue : ''
+  obj.meltingLoss = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].MeltingLoss + " (" + obj?.netRMCostView[0].LossPercentage + "%)")
+  obj.castingWeight = obj?.netRMCostView && (obj?.netRMCostView.length > 1 || obj?.IsAssemblyCosting === true) ? 'Multiple RM' : (obj?.netRMCostView && obj?.netRMCostView[0] && obj?.netRMCostView[0].CastingWeight)
   obj.costingTypeId = dataFromAPI?.CostingTypeId ? dataFromAPI?.CostingTypeId : ''
   obj.customerId = dataFromAPI?.CustomerId ? dataFromAPI?.CustomerId : EMPTY_GUID
   obj.customerName = dataFromAPI?.CustomerName ? dataFromAPI?.CustomerName : ''
@@ -795,7 +797,8 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
   obj.plantExcel = dataFromAPI?.CostingTypeId === ZBCTypeId ? `${dataFromAPI?.PlantName}` : `${dataFromAPI?.DestinationPlantName}`
   obj.vendorExcel = dataFromAPI?.VendorName ? `${dataFromAPI?.VendorName} (${dataFromAPI?.VendorCode})` : ''
-
+  obj.castingWeightExcel = checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.CastingWeight, getConfigurationKey().NoOfDecimalForPrice)
+  obj.meltingLossExcel = `${checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.MeltingLoss, getConfigurationKey().NoOfDecimalForPrice)} (${dataFromAPI?.CostingPartDetails?.LossPercentage}%)`
   // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
   obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
   obj.netOperationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
@@ -804,6 +807,10 @@ export function formViewData(costingSummary, header = '', isBestCost = false) {
   obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''
   obj.isRmCutOffApplicable = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable
   obj.isRFQFinalApprovedCosting = dataFromAPI?.IsRFQFinalApprovedCosting
+  obj.isIncludeToolCostWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit
+  obj.isIncludeSurfaceTreatmentWithRejection = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection
+  obj.isIncludeSurfaceTreatmentWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit
+  obj.rawMaterialCostWithCutOff = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff ? dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff : ''
   obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
   temp.push(obj)
   return temp

@@ -774,7 +774,7 @@ function CostReportForm(props) {
                             {(!customerPoamSummary && showVendor) && <AgGridColumn field="Vendor" headerName="Vendor (Code)"></AgGridColumn>}
                             {<AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>}
                             {(!showVendor || customerPoamSummary) && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
-                            {<AgGridColumn field="action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>}
+                            {<AgGridColumn field="action" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatter'}></AgGridColumn>}
                         </AgGridReact>
                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                     </div>

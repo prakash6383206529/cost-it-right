@@ -9,8 +9,8 @@ import {
   GET_APPROVAL_LIST,
   GET_APPROVAL_SUMMARY,
   GET_SELECTED_COSTING_STATUS,
-  SET_SAP_DATA,
-  GET_APPROVAL_LIST_DRAFT
+  GET_APPROVAL_LIST_DRAFT,
+  SET_SAP_DATA
 } from '../../../config/constants'
 import { tokenStatus, tokenStatusName } from '../../../config/masterData'
 import { userDetails, checkForDecimalAndNull, getConfigurationKey } from '../../../helper'

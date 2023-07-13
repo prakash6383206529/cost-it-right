@@ -426,8 +426,8 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
-                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="Status" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
+                                                {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
                                         </div>

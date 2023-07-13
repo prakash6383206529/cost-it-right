@@ -7,7 +7,7 @@ import { Controller, useForm } from 'react-hook-form';
 import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, APPROVED_STATUS_MASTER } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, NON_ASSOCIATED, ASSOCIATED, associationDropdownList } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
@@ -74,6 +74,7 @@ function Simulation(props) {
     const [vendorName, setVendorName] = useState({})
     const [association, setAssociation] = useState('')
     const partType = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
+    const [bopLoader, setBopLoader] = useState(false)
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -175,12 +176,11 @@ function Simulation(props) {
             setShowMasterList(true)
             setShowEditTable(false)
         } else {
-
             setShowMasterList(false)
             setShowEditTable(false)
+            setTechnology({ label: '', value: '' })
+            setValue('Technology', '')
         }
-
-
         dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
         setTimeout(() => {
             setAssociation(value)
@@ -354,6 +354,10 @@ function Simulation(props) {
         dispatch(setMasterForSimulation({ label: '', value: '' }))
     }
 
+    const callBackLoader = data => {
+        setBopLoader(data)
+    }
+
     const renderModule = (value) => {
         let tempValue = [{ SimulationId: tokenForSimulation?.value }]
 
@@ -376,9 +380,9 @@ function Simulation(props) {
                 case MACHINERATE:
                     return (<MachineRateListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' approvalStatus={APPROVED_STATUS} />)
                 case BOPDOMESTIC:
-                    return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} approvalStatus={APPROVED_STATUS} />)
+                    return (<BOPDomesticListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} approvalStatus={APPROVED_STATUS} callBackLoader={callBackLoader} />)
                 case BOPIMPORT:
-                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} approvalStatus={APPROVED_STATUS} />)
+                    return (<BOPImportListing isSimulation={true} isMasterSummaryDrawer={masterSummaryDrawerState ? props.isMasterSummaryDrawer : false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor={association?.value === ASSOCIATED ? 'simulation' : 'master'} isBOPAssociated={association?.value === ASSOCIATED ? true : false} approvalStatus={APPROVED_STATUS} callBackLoader={callBackLoader} />)
                 case EXCHNAGERATE:
                     return (<ExchangeRateListing isSimulation={true} technology={technology.value} apply={editTable} tokenArray={tokenForSimulation} objectForMultipleSimulation={obj} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} approvalStatus={APPROVED_STATUS} />)
                 case OPERATIONS:
@@ -1111,7 +1115,7 @@ function Simulation(props) {
                                                 handleChange={handleAssociationChange}
                                                 errors={errors.Masters}
                                             />
-                                            <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />
+                                            {!bopLoader && <TooltipCustom id="association-tooltip" width="310px" tooltipText='To run a simulation on BOPs associated with costing, please select "Associate with Costing". Otherwise, select "Not Associate with Costing"' />}
                                         </div>
                                     </div>
                                 }
