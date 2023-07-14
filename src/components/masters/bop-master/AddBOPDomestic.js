@@ -1390,7 +1390,7 @@ class AddBOPDomestic extends Component {
                             {"Cancel"}
                           </button>
 
-                          {(!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
+                          {(!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
                               disabled={isViewMode || setDisable || noApprovalCycle}

@@ -627,7 +627,7 @@ class AddIndivisualPart extends Component {
                                 this.handleTechnologyChange
                               }
                               valueDescription={this.state.TechnologySelected}
-                              disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired) || (isEditFlag && this.state.isBomEditable)))}
+                              disabled={(isViewMode) || (!isEditFlag && this.state.disablePartName) || (isEditFlag && !((isEditFlag && this.state.IsTechnologyUpdateRequired && this.state.isBomEditable)))}
                             />
                           </Col>
                           {initialConfiguration?.IsSAPCodeRequired && <Col md="3">
