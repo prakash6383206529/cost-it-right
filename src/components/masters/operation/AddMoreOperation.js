@@ -21,7 +21,7 @@ import { getClientSelectList } from "../actions/Client";
 import { AcceptableOperationUOM } from "../../../config/masterData";
 import { getUOMSelectList, getVendorNameByVendorSelectList } from "../../../actions/Common";
 import DayTime from "../../common/DayTimeWrapper";
-import { createOperationsAPI, fileDeleteOperation, fileUploadOperation, getOperationPartSelectList, updateOperationAPI } from "../actions/OtherOperation";
+import { createOperationsAPI, fileUploadOperation, getOperationPartSelectList, updateOperationAPI } from "../actions/OtherOperation";
 import LoaderCustom from "../../common/LoaderCustom";
 import Dropzone from "react-dropzone-uploader";
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -713,24 +713,13 @@ function AddMoreOperation(props) {
 
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
-            let deleteData = {
-                Id: FileId,
-                DeletedBy: loggedInUserId(),
-            }
-
-            dispatch(fileDeleteOperation(deleteData, (res) => {
-                Toaster.success('File deleted successfully.')
-                let tempArr = files.filter(item => item.FileId !== FileId)
-                setFiles(tempArr)
-                setIsOpen(!IsOpen)
-            }))
+            let tempArr = files.filter((item) => item.FileId !== FileId)
+            setFiles(tempArr);
         }
         if (FileId == null) {
-            let tempArr = files.filter(item => item.FileName !== OriginalFileName)
-            setFiles(tempArr)
-            setIsOpen(!IsOpen)
+            let tempArr = files.filter((item) => item.FileName !== OriginalFileName);
+            setFiles(tempArr);
         }
-
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
         if (dropzone?.current !== null) {
             dropzone.current.files.pop()

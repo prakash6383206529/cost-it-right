@@ -301,22 +301,6 @@ export function fileUploadBOPDomestic(data, callback) {
     };
 }
 
-/**
- * @method fileDeleteBOPDomestic
- * @description delete FILE DELETE API
- */
-export function fileDeleteBOPDomestic(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteBOPDomestic}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
 
 /**
  * @method bulkUploadBOP

@@ -11,8 +11,7 @@ import {
 } from '../../../actions/Common';
 import {
   createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial, getVendorListByVendorType, fileUploadRMDomestic, getVendorWithVendorCodeSelectList, checkAndGetRawMaterialCode,
-  fileDeleteRMDomestic
+  getRMGradeSelectListByRawMaterial, fileUploadRMDomestic, checkAndGetRawMaterialCode,
 } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -1041,7 +1040,7 @@ class AddRMImport extends Component {
     }
 
 
-    if ((Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap)) || (Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
+    if (((Technology.value !== SHEETMETAL && Technology.value !== FORGING) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate))) || (Technology.value === SHEETMETAL && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost))) || (Technology.value === SHEETMETAL && Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Technology.value === FORGING && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap))) || (Technology.value === FORGING && Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
@@ -2197,7 +2196,6 @@ export default connect(mapStateToProps, {
   getPlantSelectListByType,
   getExchangeRateByCurrency,
   checkAndGetRawMaterialCode,
-  fileDeleteRMDomestic,
   checkFinalUser,
   getCityByCountry,
   getAllCity,
