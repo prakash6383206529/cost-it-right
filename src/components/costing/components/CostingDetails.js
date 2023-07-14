@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -930,103 +930,124 @@ function CostingDetails(props) {
 
     dispatch(getBriefCostingById('', (res) => { }))
 
-    if (checkSOBTotal()) {
-
-      let tempData;
-      if (type === VBCTypeId) {
-        tempData = vbcVendorGrid[index]
-      } else if (type === NCCTypeId) {
-        tempData = nccGrid[index]
-      } else if (type === ZBCTypeId) {
-        tempData = zbcPlantGrid[index]
-      } else if (type === CBCTypeId) {
-        tempData = cbcGrid[index]
-      } else if (type === WACTypeId) {
-        tempData = wacPlantGrid[index]
-      }
-      const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
-      const data = {
-        PartId: part.value,
-        PartTypeId: partInfo.PartTypeId,
-        PartType: partInfo.PartType,
-        TechnologyId: technology.value,
-        VendorId: tempData.VendorId,
-        VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',
-        VendorPlantName: tempData.VendorPlantName,
-        VendorPlantCode: tempData.VendorPlantCode,
-        VendorName: tempData.VendorName,
-        VendorCode: tempData.VendorCode,
-        PlantId: (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantId : EMPTY_GUID,
-        PlantName: (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantName : '',
-        DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantId : userDetailsCosting.Plants[0].PlantId,
-        DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantName : userDetailsCosting.Plants[0].PlantName,
-        DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantCode : userDetailsCosting.Plants[0].PlantCode,
-        UserId: loggedInUserId(),
-        LoggedInUserId: loggedInUserId(),
-        ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
-        IsAssemblyPart: partInfo.IsAssemblyPart,
-        PartNumber: partInfo.PartNumber,
-        PartName: partInfo.PartName,
-        Description: partInfo.Description,
-        ECNNumber: partInfo.ECNNumber,
-        RevisionNumber: partInfo.RevisionNumber,
-        DrawingNumber: partInfo.DrawingNumber,
-        Price: partInfo.Price,
-        EffectiveDate: effectiveDate,
-        CostingTypeId: type,
-        CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
-        CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
-      }
-      if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
-        data.Technology = technology.label
-        data.CostingHead = "string"
-        data.IsVendor = true
-        data.GroupCode = "string"
-        data.WeightedSOB = 0
-
-      } else {
-        data.ZBCId = userDetail.ZBCSupplierInfo.VendorId
-        data.PlantCode = (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantCode : ''
-        data.CustomerCode = type === CBCTypeId ? tempData.CustomerCode : ''
-      }
-
-      if (type === WACTypeId) {
-        data.PlantCode = tempData.PlantCode
-      }
-
-      if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
-        dispatch(createMultiTechnologyCosting(data, (res) => {
-          if (res.data.Result) {
-            dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
-              setIsCostingViewMode(false)
-              setIsCostingEditMode(false)
-              setIsCopyCostingMode(false)
-              setStepTwo(true)
-              setStepOne(false)
-            }))
-            setPartInfo(res.data.Data)
-            setCostingData({ costingId: res.data.Data.CostingId, type })
-          }
-        }))
-      } else {
-        dispatch(createCosting(data, (res) => {
-          if (res.data.Result) {
-            dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
-              setIsCostingViewMode(false)
-              setIsCostingEditMode(false)
-              setIsCopyCostingMode(false)
-              setStepTwo(true)
-              setStepOne(false)
-            }))
-            setPartInfo(res.data.Data)
-            setCostingData({ costingId: res.data.Data.CostingId, type })
-          }
-        }))
-      }
+    let tempData;
+    if (type === VBCTypeId) {
+      tempData = vbcVendorGrid[index]
+    } else if (type === NCCTypeId) {
+      tempData = nccGrid[index]
+    } else if (type === ZBCTypeId) {
+      tempData = zbcPlantGrid[index]
+    } else if (type === CBCTypeId) {
+      tempData = cbcGrid[index]
+    } else if (type === WACTypeId) {
+      tempData = wacPlantGrid[index]
     }
-    else {
-      Toaster.warning('SOB should not be greater than 100.')
-    }
+
+    let obj = {}
+    obj.partNumber = partInfo.PartNumber ? partInfo.PartNumber : ''
+    obj.plantId = (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantId : EMPTY_GUID
+    obj.vendorId = tempData.VendorId ? tempData.VendorId : ''
+    obj.customerId = type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID
+
+    dispatch(checkPartNoExistInBop(obj, (res) => {
+      if (res && res?.data?.Result) {
+        const userDetail = userDetails()
+        setCostingOptionsSelectedObject({})
+        setCostingType(type)
+
+        if (CheckIsSOBChangedSaved()) {
+          warningMessageHandle('SOB_SAVED_WARNING')
+          return false;
+        }
+
+        dispatch(getBriefCostingById('', (res) => { }))
+        if (checkSOBTotal()) {
+
+          const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
+          const data = {
+            PartId: part.value,
+            PartTypeId: partInfo.PartTypeId,
+            PartType: partInfo.PartType,
+            TechnologyId: technology.value,
+            VendorId: tempData.VendorId,
+            VendorPlantId: checkVendorPlantConfigurable() ? tempData.VendorPlantId : '',
+            VendorPlantName: tempData.VendorPlantName,
+            VendorPlantCode: tempData.VendorPlantCode,
+            VendorName: tempData.VendorName,
+            VendorCode: tempData.VendorCode,
+            PlantId: (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantId : EMPTY_GUID,
+            PlantName: (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantName : '',
+            DestinationPlantId: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantId : userDetailsCosting.Plants[0].PlantId,
+            DestinationPlantName: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantName : userDetailsCosting.Plants[0].PlantName,
+            DestinationPlantCode: (initialConfiguration?.IsDestinationPlantConfigure && (type === VBCTypeId || type === NCCTypeId)) || type === CBCTypeId ? tempData?.DestinationPlantCode : userDetailsCosting.Plants[0].PlantCode,
+            UserId: loggedInUserId(),
+            LoggedInUserId: loggedInUserId(),
+            ShareOfBusinessPercent: tempData.ShareOfBusinessPercent,
+            IsAssemblyPart: partInfo.IsAssemblyPart,
+            PartNumber: partInfo.PartNumber,
+            PartName: partInfo.PartName,
+            Description: partInfo.Description,
+            ECNNumber: partInfo.ECNNumber,
+            RevisionNumber: partInfo.RevisionNumber,
+            DrawingNumber: partInfo.DrawingNumber,
+            Price: partInfo.Price,
+            EffectiveDate: effectiveDate,
+            CostingTypeId: type,
+            CustomerId: type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID,
+            CustomerName: type === CBCTypeId ? tempData.CustomerName : '',
+          }
+          if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
+            data.Technology = technology.label
+            data.CostingHead = "string"
+            data.IsVendor = true
+            data.GroupCode = "string"
+            data.WeightedSOB = 0
+
+          } else {
+            data.ZBCId = userDetail.ZBCSupplierInfo.VendorId
+            data.PlantCode = (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantCode : ''
+            data.CustomerCode = type === CBCTypeId ? tempData.CustomerCode : ''
+          }
+
+          if (type === WACTypeId) {
+            data.PlantCode = tempData.PlantCode
+          }
+
+          if (IdForMultiTechnology.includes(technology?.value) || (type === WACTypeId)) {
+            dispatch(createMultiTechnologyCosting(data, (res) => {
+              if (res.data.Result) {
+                dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
+                  setIsCostingViewMode(false)
+                  setIsCostingEditMode(false)
+                  setIsCopyCostingMode(false)
+                  setStepTwo(true)
+                  setStepOne(false)
+                }))
+                setPartInfo(res.data.Data)
+                setCostingData({ costingId: res.data.Data.CostingId, type })
+              }
+            }))
+          } else {
+            dispatch(createCosting(data, (res) => {
+              if (res.data.Result) {
+                dispatch(getBriefCostingById(res.data.Data.CostingId, () => {
+                  setIsCostingViewMode(false)
+                  setIsCostingEditMode(false)
+                  setIsCopyCostingMode(false)
+                  setStepTwo(true)
+                  setStepOne(false)
+                }))
+                setPartInfo(res.data.Data)
+                setCostingData({ costingId: res.data.Data.CostingId, type })
+              }
+            }))
+          }
+        }
+        else {
+          Toaster.warning('SOB should not be greater than 100.')
+        }
+      }
+    }))
   }, 500)
 
   /**
