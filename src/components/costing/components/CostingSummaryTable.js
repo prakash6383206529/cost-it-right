@@ -172,7 +172,6 @@ const CostingSummaryTable = (props) => {
 
     }
     setViewPieChart(null)
-    console.log(viewPieChart, "view");
   }, [viewCostingData])
 
   useEffect(() => {
