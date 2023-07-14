@@ -654,7 +654,7 @@ class UsersListing extends Component {
 								domLayout='autoHeight'
 								floatingFilter={true}
 								// columnDefs={c}
-								rowData={this.props.userDataList}
+								rowData={this.props.RFQUser ? this.props.rfqUserList : this.props.userDataList}
 								pagination={true}
 								paginationPageSize={defaultPageSize}
 								onGridReady={this.onGridReady}
@@ -722,9 +722,9 @@ class UsersListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData } = auth;
+	const { userDataList, rfqUserList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData } = auth;
 
-	return { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData };
+	return { userDataList, rfqUserList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData };
 }
 
 
