@@ -9,7 +9,7 @@ import {
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
-  createBOPImport, updateBOP, getBOPCategorySelectList, getBOPImportById,
+  createBOP, createBOPImport, updateBOP, getBOPCategorySelectList, getBOPImportById,
   fileUploadBOPDomestic, fileDeleteBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
 } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
@@ -725,18 +725,13 @@ class AddBOPImport extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      this.props.fileDeleteBOPDomestic(deleteData, (res) => {
-        Toaster.success('File deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
       this.setState({ files: tempArr })
     }
 
@@ -1684,7 +1679,6 @@ export default connect(mapStateToProps, {
   getBOPCategorySelectList,
   getBOPImportById,
   fileUploadBOPDomestic,
-  fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
   checkFinalUser,

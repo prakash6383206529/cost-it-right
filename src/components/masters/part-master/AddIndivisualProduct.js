@@ -5,7 +5,7 @@ import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
-import { createProduct, updateProduct, getProductData, fileUploadProduct, fileDeletePart, } from '../actions/Part';
+import { createProduct, updateProduct, getProductData, fileUploadProduct, } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -209,18 +209,13 @@ class AddIndivisualProduct extends Component {
 
     deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
-            let deleteData = {
-                Id: FileId,
-                DeletedBy: loggedInUserId(),
-            }
-            this.props.fileDeletePart(deleteData, (res) => {
-                Toaster.success('File deleted successfully.')
-                let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-                this.setState({ files: tempArr })
-            })
+            let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+            this.setState({ files: tempArr })
         }
         if (FileId == null) {
-            let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+            let tempArr = this.state.files.filter(
+                (item) => item.FileName !== OriginalFileName,
+            )
             this.setState({ files: tempArr })
         }
 
@@ -724,7 +719,6 @@ export default connect(mapStateToProps, {
     updateProduct,
     getProductData,
     fileUploadProduct,
-    fileDeletePart,
 })(reduxForm({
     form: 'AddIndivisualPart',
     enableReinitialize: true,

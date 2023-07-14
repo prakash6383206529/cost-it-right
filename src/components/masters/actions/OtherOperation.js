@@ -412,22 +412,6 @@ export function checkAndGetOperationCode(code, name, callback) {
     };
 }
 
-/**
- * @method fileDeleteOperation
- * @description delete Operation file API
- */
-export function fileDeleteOperation(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteOperation}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
 
 /**
  * @method getCostSummaryOtherOperation

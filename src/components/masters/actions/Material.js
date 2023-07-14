@@ -1045,23 +1045,6 @@ export function fileUpdateRMDomestic(data, callback) {
 }
 
 /**
- * @method fileDeleteRMDomestic
- * @description delete Raw Material API
- */
-export function fileDeleteRMDomestic(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteRMDomestic} /${data.Id}/${data.DeletedBy} `, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
-
-/**
  * @method bulkUploadRM
  * @description upload bulk RM Domestic ZBC
  */
