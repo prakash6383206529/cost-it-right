@@ -354,6 +354,16 @@ function CostingHeaderTabs(props) {
     dispatch(setCostingEffectiveDate(DayTime(date).format('YYYY-MM-DD')))
   }
 
+  /**
+   * @method dateFunction
+   * @description date Function
+   */
+  const dateFunction = () => {
+    let arr = [costData.LastApproveEffectiveDate, costData.PartEffectiveDate]
+    const largestDate = new Date(Math.max(...arr.filter(Boolean).map(date => Date.parse(date))));
+    return new Date(largestDate)
+  }
+
   useEffect(() => {
     if (effectiveDate) {
       let obj = {
@@ -408,7 +418,7 @@ function CostingHeaderTabs(props) {
                   dateFormat="dd/MM/yyyy"
                   //maxDate={new Date()}
                   // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
-                  minDate={costData.LastApproveEffectiveDate !== null ? (costData.PartEffectiveDate < costData.LastApproveEffectiveDate ? new Date(costData.LastApproveEffectiveDate) : new Date(costData.PartEffectiveDate)) : new Date(costData.PartEffectiveDate)}
+                  minDate={dateFunction()}
                   placeholderText="Select date"
                   className="withBorder"
                   autoComplete={"off"}
