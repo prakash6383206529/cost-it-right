@@ -20,7 +20,7 @@ import Toaster from '../../common/Toaster';
 export function getQuotationList(DepartmentCode, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}&LoggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
