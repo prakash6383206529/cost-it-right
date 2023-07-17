@@ -300,7 +300,7 @@ function AddMoreOperation(props) {
                 setValue('crmHeadInterestDepriciationWelding', detailObject && detailObject.InterestAndDepriciationCRMHead && { label: detailObject.InterestAndDepriciationCRMHead, value: 1 })
                 setValue('interestDepriciationCost', detailObject && detailObject.InterestAndDepriciationCost ? checkForDecimalAndNull(detailObject.InterestAndDepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadAdditionalOtherCostWelding', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
-                setValue('otherCostDescriptionWelding', detailObject && detailObject.OtherCostDescription ? checkForDecimalAndNull(detailObject.OtherCostDescription, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCostDescriptionWelding', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
                 setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
 
             } else {
@@ -344,7 +344,7 @@ function AddMoreOperation(props) {
                 setValue('profitCost', detailObject && detailObject.ProfitCRMCost ? checkForDecimalAndNull(detailObject.ProfitCRMCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadOtherCost', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
                 setValue('otherCost', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
-                setValue('otherCostDescription', detailObject && detailObject.OtherCostDescription ? checkForDecimalAndNull(detailObject.OtherCostDescription, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCostDescription', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
             }
 
             setTimeout(() => {
