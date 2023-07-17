@@ -158,16 +158,18 @@ function Rejection(props) {
             switch (Text) {
                 case 'RM':
                 case 'Part Cost':
-                    setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((RM * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-                    setRejectionObj({
-                        ...rejectionObj,
-                        RejectionApplicabilityId: applicability.value,
-                        RejectionApplicability: applicability.label,
-                        RejectionPercentage: RejectionPercentage,
-                        RejectionCost: checkForNull(RM),
-                        RejectionTotalCost: checkForNull(RM) * calculatePercentage(checkForNull(RejectionPercentage))
-                    })
+                    if ((partType && Text === 'Part Cost') || (!partType && Text === 'RM')) {
+                        setValue('RejectionCost', checkForDecimalAndNull(RM, initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setRejectionObj({
+                            ...rejectionObj,
+                            RejectionApplicabilityId: applicability.value,
+                            RejectionApplicability: applicability.label,
+                            RejectionPercentage: RejectionPercentage,
+                            RejectionCost: checkForNull(RM),
+                            RejectionTotalCost: checkForNull(RM) * calculatePercentage(checkForNull(RejectionPercentage))
+                        })
+                    }
                     break;
 
                 case 'BOP':
@@ -199,44 +201,50 @@ function Rejection(props) {
 
                 case 'RM + CC + BOP':
                 case 'Part Cost + CC + BOP':
-                    setValue('RejectionCost', checkForDecimalAndNull(RM_CC_BOP, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-                    setRejectionObj({
-                        ...rejectionObj,
-                        RejectionApplicabilityId: applicability.value,
-                        RejectionApplicability: applicability.label,
-                        RejectionPercentage: RejectionPercentage,
-                        RejectionCost: RM_CC_BOP,
-                        RejectionTotalCost: checkForNull(RM_CC_BOP) * calculatePercentage(checkForNull(RejectionPercentage))
-                    })
+                    if ((partType && Text === 'Part Cost + CC + BOP') || (!partType && Text === 'RM + CC + BOP')) {
+                        setValue('RejectionCost', checkForDecimalAndNull(RM_CC_BOP, initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setRejectionObj({
+                            ...rejectionObj,
+                            RejectionApplicabilityId: applicability.value,
+                            RejectionApplicability: applicability.label,
+                            RejectionPercentage: RejectionPercentage,
+                            RejectionCost: RM_CC_BOP,
+                            RejectionTotalCost: checkForNull(RM_CC_BOP) * calculatePercentage(checkForNull(RejectionPercentage))
+                        })
+                    }
                     break;
 
                 case 'RM + BOP':
                 case 'Part Cost + BOP':
-                    setValue('RejectionCost', checkForDecimalAndNull(RM_BOP, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((RM_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-                    setRejectionObj({
-                        ...rejectionObj,
-                        RejectionApplicabilityId: applicability.value,
-                        RejectionApplicability: applicability.label,
-                        RejectionPercentage: RejectionPercentage,
-                        RejectionCost: RM_BOP,
-                        RejectionTotalCost: checkForNull(RM_BOP) * calculatePercentage(checkForNull(RejectionPercentage))
-                    })
+                    if ((partType && Text === 'Part Cost + BOP') || (!partType && Text === 'RM + BOP')) {
+                        setValue('RejectionCost', checkForDecimalAndNull(RM_BOP, initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_BOP * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setRejectionObj({
+                            ...rejectionObj,
+                            RejectionApplicabilityId: applicability.value,
+                            RejectionApplicability: applicability.label,
+                            RejectionPercentage: RejectionPercentage,
+                            RejectionCost: RM_BOP,
+                            RejectionTotalCost: checkForNull(RM_BOP) * calculatePercentage(checkForNull(RejectionPercentage))
+                        })
+                    }
                     break;
 
                 case 'RM + CC':
                 case 'Part Cost + CC':
-                    setValue('RejectionCost', checkForDecimalAndNull(RM_CC, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
-                    setRejectionObj({
-                        ...rejectionObj,
-                        RejectionApplicabilityId: applicability.value,
-                        RejectionApplicability: applicability.label,
-                        RejectionPercentage: RejectionPercentage,
-                        RejectionCost: RM_CC,
-                        RejectionTotalCost: checkForNull(RM_CC) * calculatePercentage(checkForNull(RejectionPercentage))
-                    })
+                    if ((partType && Text === 'Part Cost + CC') || (!partType && Text === 'RM + CC')) {
+                        setValue('RejectionCost', checkForDecimalAndNull(RM_CC, initialConfiguration.NoOfDecimalForPrice))
+                        setValue('RejectionTotalCost', checkForDecimalAndNull((RM_CC * calculatePercentage(RejectionPercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setRejectionObj({
+                            ...rejectionObj,
+                            RejectionApplicabilityId: applicability.value,
+                            RejectionApplicability: applicability.label,
+                            RejectionPercentage: RejectionPercentage,
+                            RejectionCost: RM_CC,
+                            RejectionTotalCost: checkForNull(RM_CC) * calculatePercentage(checkForNull(RejectionPercentage))
+                        })
+                    }
                     break;
 
                 case 'BOP + CC':

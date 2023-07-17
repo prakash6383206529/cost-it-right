@@ -14,7 +14,7 @@ import WarningMessage from '../../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber } from "../../../../../helper/validation";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import Popup from 'reactjs-popup';
-import { REMARKMAXLENGTH } from '../../../../../config/masterData';
+import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
@@ -43,6 +43,9 @@ function Icc(props) {
     const [IsShowRmcAndNetWeightToggleForIcc, setIsShowRmcAndNetWeightToggleForIcc] = useState(reactLocalStorage.getObject('InitialConfiguration')?.IsShowRmcAndNetWeightToggleForIcc)
     const [totalOverHeadAndProfit, setTotalOverHeadAndProfit] = useState((OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) ? (OverheadProfitTabData[0]?.CostingPartDetails?.TotalOverheadAndProfitPerAssembly) : 0)
     const { CostingEffectiveDate } = useSelector(state => state.costing)
+
+    // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
     const dispatch = useDispatch()
 
@@ -171,13 +174,15 @@ function Icc(props) {
             switch (Text) {
                 case 'RM':
                 case 'Part Cost':
-                    setValue('CostApplicability', checkForDecimalAndNull(NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-                    setTempInventoryObj({
-                        ...tempInventoryObj,
-                        CostApplicability: checkForNull(NetRawMaterialsCost),
-                        NetICCTotal: checkForNull(headerCosts?.NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
-                    })
+                    if ((partType && Text === 'Part Cost') || (!partType && Text === 'RM')) {
+                        setValue('CostApplicability', checkForDecimalAndNull(NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
+                        setValue('NetICCTotal', checkForDecimalAndNull((NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setTempInventoryObj({
+                            ...tempInventoryObj,
+                            CostApplicability: checkForNull(NetRawMaterialsCost),
+                            NetICCTotal: checkForNull(NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
+                        })
+                    }
                     break;
 
                 case 'BOP':
@@ -202,24 +207,29 @@ function Icc(props) {
 
                 case 'RM + CC':
                 case 'Part Cost + CC':
-                    setValue('CostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-                    setTempInventoryObj({
-                        ...tempInventoryObj,
-                        CostApplicability: checkForNull(RMCC),
-                        NetICCTotal: checkForNull(RMCC) * calculatePercentage(InterestRatePercentage)
-                    })
+                    if ((partType && Text === 'Part Cost + CC') || (!partType && Text === 'RM + CC')) {
+                        setValue('CostApplicability', checkForDecimalAndNull(RMCC, initialConfiguration.NoOfDecimalForPrice))
+                        setValue('NetICCTotal', checkForDecimalAndNull((RMCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setTempInventoryObj({
+                            ...tempInventoryObj,
+                            CostApplicability: checkForNull(RMCC),
+                            NetICCTotal: checkForNull(RMCC) * calculatePercentage(InterestRatePercentage)
+                        })
+                    }
                     break;
 
                 case 'RM + BOP':
                 case 'Part Cost + BOP':
-                    setValue('CostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-                    setTempInventoryObj({
-                        ...tempInventoryObj,
-                        CostApplicability: checkForNull(RMBOP),
-                        NetICCTotal: checkForNull(RMBOP) * calculatePercentage(InterestRatePercentage)
-                    })
+
+                    if ((partType && Text === 'Part Cost + BOP') || (!partType && Text === 'RM + BOP')) {
+                        setValue('CostApplicability', checkForDecimalAndNull(RMBOP, initialConfiguration.NoOfDecimalForPrice))
+                        setValue('NetICCTotal', checkForDecimalAndNull((RMBOP * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setTempInventoryObj({
+                            ...tempInventoryObj,
+                            CostApplicability: checkForNull(RMBOP),
+                            NetICCTotal: checkForNull(RMBOP) * calculatePercentage(InterestRatePercentage)
+                        })
+                    }
                     break;
 
                 case 'BOP + CC':
@@ -234,13 +244,15 @@ function Icc(props) {
 
                 case 'RM + CC + BOP':
                 case 'Part Cost + CC + BOP':
-                    setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
-                    setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
-                    setTempInventoryObj({
-                        ...tempInventoryObj,
-                        CostApplicability: checkForNull(RMBOPCC),
-                        NetICCTotal: checkForNull(RMBOPCC) * calculatePercentage(InterestRatePercentage)
-                    })
+                    if ((partType && Text === 'Part Cost + CC + BOP') || (!partType && Text === 'RM + CC + BOP')) {
+                        setValue('CostApplicability', checkForDecimalAndNull(RMBOPCC, initialConfiguration.NoOfDecimalForPrice)) //NEED TO ASK HERE ALSO
+                        setValue('NetICCTotal', checkForDecimalAndNull((RMBOPCC * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setTempInventoryObj({
+                            ...tempInventoryObj,
+                            CostApplicability: checkForNull(RMBOPCC),
+                            NetICCTotal: checkForNull(RMBOPCC) * calculatePercentage(InterestRatePercentage)
+                        })
+                    }
                     break;
 
                 case 'Fixed':
