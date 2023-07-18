@@ -22,7 +22,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
-import { AcceptableBOPUOM } from '../../../config/masterData'
+import { ASSEMBLY, AcceptableBOPUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -37,6 +37,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -94,7 +95,9 @@ class AddBOPDomestic extends Component {
       vendorFilterList: [],
       isClientVendorBOP: false,
       uomIsNo: false,
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      isTechnologyVisible: false,
+      Technology: {}
     }
   }
 
@@ -123,6 +126,7 @@ class AddBOPDomestic extends Component {
     }
     setTimeout(() => {
       this.getDetails()
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
       }
@@ -277,6 +281,8 @@ class AddBOPDomestic extends Component {
               isLoader: false,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
               isClientVendorBOP: Data.IsClientVendorBOP,
+              isTechnologyVisible: Data.IsBreakupBoughtOutPart,
+              Technology: { label: Data.TechnologyName, value: Data.TechnologyId },
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -318,7 +324,7 @@ class AddBOPDomestic extends Component {
   */
   renderListing = (label) => {
     const { vendorWithVendorCodeSelectList, bopCategorySelectList, plantSelectList, cityList,
-      UOMSelectList, partSelectList, clientSelectList } = this.props;
+      UOMSelectList, partSelectList, clientSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -370,6 +376,16 @@ class AddBOPDomestic extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'technology') {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
+          if (item.Value === '0') return false
+          if (item.Value === String(ASSEMBLY)) return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
     }
   }
 
@@ -677,7 +693,7 @@ class AddBOPDomestic extends Component {
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId,
 
-      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged, isClientVendorBOP } = this.state;
+      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged, isClientVendorBOP, isTechnologyVisible, Technology } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -721,7 +737,10 @@ class AddBOPDomestic extends Component {
       CustomerId: client.value,
       EntryType: Number(ENTRY_TYPE_DOMESTIC),
       CategoryName: BOPCategory.label,
-      IsClientVendorBOP: isClientVendorBOP
+      IsClientVendorBOP: isClientVendorBOP,
+      TechnologyName: Technology?.label,
+      TechnologyId: Technology?.value,
+      IsBreakupBoughtOutPart: isTechnologyVisible,
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
@@ -850,13 +869,33 @@ class AddBOPDomestic extends Component {
   onIsClientVendorBOP = () => {
     this.setState({ isClientVendorBOP: !this.state.isClientVendorBOP })
   }
+
+  breakUpHandleChange = () => {
+    this.setState({ isTechnologyVisible: !this.state.isTechnologyVisible })
+  }
+
+  /**
+   * @method handleTechnologyChange
+   * @description Use to handle technology change
+  */
+  handleTechnologyChange = (newValue) => {
+    if (newValue.value === String(FORGING)) {
+      this.setState({ Technology: newValue })
+    } else if (newValue.value === String(SHEETMETAL)) {
+      this.setState({ Technology: newValue })
+    } else {
+      this.setState({ Technology: newValue })
+    }
+    // this.setState({ isDropDownChanged: true })
+  }
+
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle, isClientVendorBOP, CostingTypePermission } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle, isClientVendorBOP, CostingTypePermission, isTechnologyVisible } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1211,6 +1250,50 @@ class AddBOPDomestic extends Component {
                           }
                         </Row >
 
+                        <Row>
+                          <Col md="12">
+                            <div className="left-border">{"BREAKUP:"}</div>
+                          </Col>
+                          <Col md="3" className='mb-4'>
+                            {initialConfiguration?.IsBoughtOutPartCostingConfigured &&
+                              <label
+                                className={`custom-checkbox`}
+                                onChange={this.breakUpHandleChange}
+                              >
+                                Breakup
+                                <input
+                                  type="checkbox"
+                                  checked={isTechnologyVisible}
+                                  disabled={isViewMode ? true : false}
+                                />
+                                <span
+                                  className=" before-box"
+                                  checked={isTechnologyVisible}
+                                  onChange={this.breakUpHandleChange}
+                                />
+                              </label>
+                            }
+                          </Col>
+                          {isTechnologyVisible && <Col md="3" className='mb-4'>
+                            <Field
+                              label="Technology"
+                              type="text"
+                              name="Technology"
+                              component={searchableSelect}
+                              placeholder={"Technology"}
+                              options={this.renderListing("technology")}
+                              validate={
+                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                              required={true}
+                              handleChangeDescription={
+                                this.handleTechnologyChange
+                              }
+                              valueDescription={this.state.Technology}
+                              disabled={isViewMode ? true : false}
+                            />
+                          </Col>}
+                        </Row>
+
                         <Row className='UOM-label-container'>
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
@@ -1511,8 +1594,8 @@ class AddBOPDomestic extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, supplier, boughtOutparts, part, auth, client } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'NumberOfPieces');
+  const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
+  const fieldsObj = selector(state, 'BasicRate', 'NoOfPieces');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;
@@ -1520,6 +1603,7 @@ function mapStateToProps(state) {
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
+  const { costingSpecifiTechnology } = costing
 
   let initialValues = {};
   if (bopData && bopData !== undefined) {
@@ -1537,7 +1621,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI
+    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI, costingSpecifiTechnology
   }
 
 }
@@ -1563,7 +1647,8 @@ export default connect(mapStateToProps, {
   getAllCity,
   getClientSelectList,
   getUsersMasterLevelAPI,
-  getVendorNameByVendorSelectList
+  getVendorNameByVendorSelectList,
+  getCostingSpecificTechnology,
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
