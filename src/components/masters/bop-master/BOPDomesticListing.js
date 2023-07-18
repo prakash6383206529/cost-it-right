@@ -384,6 +384,15 @@ class BOPDomesticListing extends Component {
     }
 
     /**
+    * @method bopCostingFormatter
+    * @description bopCostingFormatter
+    */
+    bopCostingFormatter = (props) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return rowData?.IsBreakupBoughtOutPart != null ? (rowData?.IsBreakupBoughtOutPart ? 'True' : 'False') : '-';
+    }
+
+    /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
@@ -592,7 +601,8 @@ class BOPDomesticListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
-            commonCostFormatter: this.commonCostFormatter
+            commonCostFormatter: this.commonCostFormatter,
+            bopCostingFormatter: this.bopCostingFormatter
         };
 
         const closeAnalyticsDrawer = () => {
@@ -768,6 +778,8 @@ class BOPDomesticListing extends Component {
                                     {/* {this.props?.isMasterSummaryDrawer && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>} */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
+                                    <AgGridColumn field="IsBreakupBoughtOutPart " headerName="BOP Costing Configured" cellRenderer={'bopCostingFormatter'} ></AgGridColumn>
+                                    <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                 </AgGridReact>
