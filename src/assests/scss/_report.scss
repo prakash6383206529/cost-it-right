@@ -110,11 +110,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
 
-    // .doughnut-graph {
-    //     width: 450px;
-    //     height: 450px;
-    // }
+    @media screen and (min-width: $middleDesktop) {
+        height: calc(100vh - 190px);
+    }
+
 }
 
 .report-btn-back {
@@ -147,7 +148,7 @@
             }
 
             @media screen and (max-width: $middleDesktop) {
-                margin-top: -25px;
+                margin-top: -5px;
             }
         }
 
