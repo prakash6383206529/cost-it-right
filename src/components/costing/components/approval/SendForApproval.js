@@ -925,10 +925,10 @@ const SendForApproval = (props) => {
                         {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
                           <Col md="4">
                             <div className="form-group">
-                              <TooltipCustom id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                              <TooltipCustom disabledIcon={true} id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
                               <label>Consumed Quantity</label>
                               <div className="d-flex align-items-center">
-                                <label className="form-control bg-grey input-form-control">
+                                <label id={"consumed-quantity"} className="form-control bg-grey input-form-control">
                                   {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
                                 </label>
                                 {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}

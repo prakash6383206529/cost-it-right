@@ -298,7 +298,7 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
-                                        {percentageType && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
+                                        {type !== 'Fixed' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
                                         <NumberFieldHookForm
                                             label={`Cost`}
                                             name={'Cost'}
