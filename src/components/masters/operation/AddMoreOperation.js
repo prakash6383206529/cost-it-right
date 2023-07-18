@@ -55,6 +55,7 @@ function AddMoreOperation(props) {
     const [dataToSend, setDataToSend] = useState({})
     const [disable, setDisable] = useState(true);
     const [IsOpen, setIsOpen] = useState(false);
+    const [dataObj, setDataObj] = useState(detailObject ? detailObject : '');
     const dropzone = useRef(null);
     const dispatch = useDispatch();
     const operationSelectList = useSelector(state => state.otherOperation.operationSelectList)
@@ -83,6 +84,7 @@ function AddMoreOperation(props) {
         crmHeadConsumableMachineCost: detailObject && detailObject.ConsumableMachineCRMHead && { label: detailObject.ConsumableMachineCRMHead, value: 1 },
 
     }
+
 
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
         mode: 'onChange',
@@ -348,7 +350,7 @@ function AddMoreOperation(props) {
             }
 
             setTimeout(() => {
-                setValue('netCost', detailObject && detailObject.Rate ? detailObject.Rate : '',)
+                setValue('netCost', detailObject && detailObject.Rate ? checkForDecimalAndNull(detailObject.Rate, initialConfiguration.NoOfDecimalForPrice) : '',)
             }, 600);
 
         } else {
@@ -468,12 +470,37 @@ function AddMoreOperation(props) {
         }
 
         if (isEditFlag) {
-            dispatch(updateOperationAPI(formData, (res) => {
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                    props?.cancel('submit')
+            let temp = Object.keys(formData).filter((item) => item.includes('CRMHead'))
+            let isFinancialDataChange = false
+
+            temp.map((item) => {
+                if (dataObj[item] && String(dataObj[item]) !== String(formData[item])) {
+                    isFinancialDataChange = true
                 }
-            }))
+                return null
+            })
+
+            if (isFinancialDataChange) {
+                formData.IsFinancialDataChanged = true
+                if (DayTime(dataObj.EffectiveDate).format('DD/MM/YYYY') === DayTime(values.effectiveDate).format('DD/MM/YYYY')) {
+                    Toaster.warning('Please update the effective date')
+                    return false
+                } else {
+                    dispatch(updateOperationAPI(formData, (res) => {
+                        if (res?.data?.Result) {
+                            Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                            props?.cancel('submit')
+                        }
+                    }))
+                }
+            } else {
+                dispatch(updateOperationAPI(formData, (res) => {
+                    if (res?.data?.Result) {
+                        Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                        props?.cancel('submit')
+                    }
+                }))
+            }
 
         } else {
             dispatch(createOperationsAPI(formData, (res) => {
