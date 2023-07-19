@@ -353,40 +353,6 @@ export function fileUploadProfit(data, callback) {
 }
 
 /**
- * @method fileDeleteOverhead
- * @description delete Overhead file API
- */
-export function fileDeleteOverhead(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteOverhead}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
-
-/**
- * @method fileDeleteProfit
- * @description delete Profit file API
- */
-export function fileDeleteProfit(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteProfit}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
-
-/**
  * @method overheadBulkUpload
  * @description create Overhead by Bulk Upload
  */
