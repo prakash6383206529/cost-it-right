@@ -305,7 +305,7 @@ function AddMoreOperation(props) {
 
             } else {
                 setDataToSend(prevState => ({ ...prevState, netCost: detailObject && detailObject.Rate ? detailObject.Rate : '', rejectionReworkCostState: detailObject && detailObject.RejectionAndReworkCost ? detailObject.RejectionAndReworkCost : '', profitCostState: detailObject && detailObject.ProfitCRMCost ? detailObject.ProfitCRMCost : '' }))
-                setIncludeInterestInRejection(detailObject?.IsIncludeInterestRateAndDepriciationInRjectionAndProfit)
+                setIncludeInterestInRejection(detailObject?.IsIncludeInterestRateAndDepriciationInRejectionAndProfit)
                 setValue('crmHeadMaterialCost', detailObject && detailObject.MaterialGasCRMHead && { label: detailObject.MaterialGasCRMHead, value: 1 })
                 setValue('gasCost', detailObject && detailObject.MaterialGasCost ? checkForDecimalAndNull(detailObject.MaterialGasCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadPower', detailObject && detailObject.PowerCRMHead && { label: detailObject.PowerCRMHead, value: 1 })
@@ -461,7 +461,7 @@ function AddMoreOperation(props) {
             OtherCostDescription: isWelding ? values?.otherCostDescriptionWelding : values?.otherCostDescription,
             OtherCost: isWelding ? values?.otherCostWelding : values?.otherCost,
             IsDetailedEntry: true,
-            IsIncludeInterestRateAndDepriciationInRjectionAndProfit: includeInterestInRejection,
+            IsIncludeInterestRateAndDepriciationInRejectionAndProfit: includeInterestInRejection,
             InterestAndDepriciationCRMHead: values?.crmHeadInterestDepriciationWelding?.label,
             InterestAndDepriciationCost: values?.interestDepriciationCost
 
@@ -2486,29 +2486,6 @@ function AddMoreOperation(props) {
                                                     />
 
                                                 </Col>
-                                                    <Col md="3">
-                                                        <NumberFieldHookForm
-                                                            label={`Other Cost`}
-                                                            name={'otherCost'}
-                                                            Controller={Controller}
-                                                            control={control}
-                                                            register={register}
-                                                            mandatory={false}
-                                                            rules={{
-                                                                required: false,
-                                                                pattern: {
-                                                                    value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                                    message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                                },
-                                                            }}
-                                                            handleChange={() => { }}
-                                                            defaultValue={''}
-                                                            className=""
-                                                            customClassName={'withBorder'}
-                                                            errors={errors.otherCost}
-                                                            disabled={isViewMode ? true : false}
-                                                        />
-                                                    </Col>
 
                                                     <Col md="3">
                                                         <TextFieldHookForm
@@ -2533,7 +2510,33 @@ function AddMoreOperation(props) {
                                                             customClassName={'withBorder'}
                                                             disabled={isViewMode}
                                                         />
-                                                    </Col> </>}
+                                                    </Col>
+
+                                                    <Col md="3">
+                                                        <NumberFieldHookForm
+                                                            label={`Other Cost`}
+                                                            name={'otherCost'}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            mandatory={false}
+                                                            rules={{
+                                                                required: false,
+                                                                pattern: {
+                                                                    value: /^\d{0,4}(\.\d{0,7})?$/i,
+                                                                    message: 'Maximum length for integer is 4 and for decimal is 7',
+                                                                },
+                                                            }}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder'}
+                                                            errors={errors.otherCost}
+                                                            disabled={isViewMode ? true : false}
+                                                        />
+                                                    </Col>
+
+                                                </>}
                                             </>}
 
                                         {(isWelding || false) && <>

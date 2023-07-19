@@ -6942,8 +6942,7 @@ body {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
-        min-width: 230px;
-        max-width: 255px;
+        max-width: 200px;
         width: auto;
       }
     }
@@ -9026,4 +9025,32 @@ div[col-id="ApprovalNumber"] {
 
 .dashboard-loader {
   min-height: 400px;
+}
+
+.bottom-disabled-date:disabled {
+  height: 32px !important;
+  max-width: 130px;
+  border-color: #b9b9b980 !important;
+  margin-right: 10px;
+}
+
+#association-tooltip {
+  top: 7px;
+  left: 20px;
+}
+
+.ag-grid-action-container {
+  .ag-cell-wrapper {
+    justify-content: flex-end;
+
+    .ag-react-container {
+      padding-right: 0 !important;
+
+      button {
+        &:last-child {
+          margin-right: 0 !important;
+        }
+      }
+    }
+  }
 }

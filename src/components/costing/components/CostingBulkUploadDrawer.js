@@ -6,9 +6,9 @@ import { Container, Row, Col, Label, } from 'reactstrap';
 import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
-import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting } from '../actions/CostWorking'
+import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting } from '../actions/CostWorking'
 import { TechnologyDropdownBulkUpload } from '../../../config/masterData'
-import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL } from '../../../config/constants';
+import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -245,6 +245,22 @@ class CostingBulkUploadDrawer extends Component {
                 this.cancel()
                 break;
 
+            case WIRINGHARNESS:
+                this.props.wiringHarnessBulkUploadCosting(data, (res) => {
+                    if (res.status === 400) {
+                        let Data = res.data.Data
+                        const withOutTild = Data?.FileURL?.replace("~", "");
+                        const fileURL = `${FILE_URL}${withOutTild}`;
+                        window.open(fileURL, '_blank');
+                    } else {
+                        let Data = res.data[0]
+                        const { files } = this.state
+                        files.push(Data)
+                    }
+                })
+                this.cancel()
+                break;
+
             default:
                 break;
         }
@@ -446,7 +462,8 @@ export default connect(mapStateToProps,
         plasticBulkUploadCosting,
         machiningBulkUploadCosting,
         corrugatedBoxBulkUploadCosting,
-        assemblyBulkUploadCosting
+        assemblyBulkUploadCosting,
+        wiringHarnessBulkUploadCosting,
     })(reduxForm({
         form: 'CostingBulkUploadDrawer',
         enableReinitialize: true,

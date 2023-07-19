@@ -37,12 +37,12 @@ function PaymentTerms(props) {
 
     const PaymentTermsFieldValues = useWatch({
         control,
-        name: ['RepaymentPeriodCost'],
+        name: ['RepaymentPeriodCost',],
     });
 
     const PaymentTermsFixedFieldValues = useWatch({
         control,
-        name: ['RepaymentPeriodPercentage'],
+        name: ['RepaymentPeriodPercentage', 'RepaymentPeriodFixed'],
     });
 
     useEffect(() => {
@@ -59,7 +59,7 @@ function PaymentTerms(props) {
                 "PaymentTermDetailId": IsPaymentTermsApplicable ? PaymentTermDetail.IccDetailId : '',
                 "PaymentTermApplicability": Object.keys(paymentTermsApplicability).length > 0 ? paymentTermsApplicability.label : '',
                 "RepaymentPeriod": IsPaymentTermsApplicable ? getValues('RepaymentPeriodDays') : '',
-                "InterestRate": IsPaymentTermsApplicable ? getValues('RepaymentPeriodPercentage') : '',
+                "InterestRate": IsPaymentTermsApplicable ? paymentTermsApplicability.label !== 'Fixed' ? getValues('RepaymentPeriodPercentage') : (getValues('RepaymentPeriodFixed')) : '',
                 "NetCost": IsPaymentTermsApplicable ? tempPaymentTermObj.NetCost : '',
                 "EffectiveDate": "",
                 "PaymentTermCRMHead": tempPaymentTermObj.PaymentTermCRMHead ? tempPaymentTermObj.PaymentTermCRMHead : '',
@@ -111,6 +111,7 @@ function PaymentTerms(props) {
                     let Data = res.data.Data;
                     setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
                     setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
+                    setValue('RepaymentPeriodFixed', Data.InterestRate !== null ? Data.InterestRate : 0)
                     setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
                     checkPaymentTermApplicability(Data.PaymentTermApplicability)
                     setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
@@ -118,6 +119,7 @@ function PaymentTerms(props) {
                     setValue('RepaymentPeriodDays', '')
                     setValue('RepaymentPeriodPercentage', '')
                     setValue('RepaymentPeriodCost', '')
+                    setValue('RepaymentPeriodFixed', '')
                     checkPaymentTermApplicability('')
                     setPaymentTermsApplicability([])
                 }
@@ -174,11 +176,9 @@ function PaymentTerms(props) {
 
     // //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
     useEffect(() => {
-        if (paymentTermsApplicability && paymentTermsApplicability.label === 'Fixed') {
-            setValue('RepaymentPeriodCost', getValues('RepaymentPeriodPercentage'))
-        } else {
-            checkPaymentTermApplicability(paymentTermsApplicability.label)
-        }
+
+        checkPaymentTermApplicability(paymentTermsApplicability.label)
+
     }, [PaymentTermsFixedFieldValues])
 
     /**
@@ -214,8 +214,7 @@ function PaymentTerms(props) {
                     break;
 
                 case 'CC':
-                    setValue('CostApplicability', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((ConversionCostForCalculation * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
                         NetCost: checkForNull(ConversionCostForCalculation * RepaymentCost),
@@ -262,11 +261,11 @@ function PaymentTerms(props) {
                     break;
 
                 case 'Fixed':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(RepaymentPeriodPercentage, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(getValues("RepaymentPeriodFixed"), initialConfiguration.NoOfDecimalForPrice))
 
                     setTempPaymentTermObj({
                         ...tempPaymentTermObj,
-                        NetCost: checkForNull(RepaymentPeriodPercentage)
+                        NetCost: checkForNull(getValues("RepaymentPeriodFixed"))
                     })
                     break;
 
@@ -435,7 +434,7 @@ function PaymentTerms(props) {
                                     {paymentTermsApplicability.label !== 'Fixed' && <Col md="3">
                                         <TextFieldHookForm
                                             label={false}
-                                            name={'RepaymentPeriodDays'}
+                                            name={'RepaymentPeriodFixed'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}

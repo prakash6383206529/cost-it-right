@@ -252,13 +252,13 @@ function RubberWeightCalculator(props) {
                 obj.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
                 obj.RawMaterialCost = obj.NetRawMaterialCost
-                props.toggleDrawer('', obj)
+                props.toggleDrawer('rubber', obj)
             }
         }))
     }), 500);
 
     const onCancel = () => {
-        props.toggleDrawer('')
+        props.toggleDrawer('cancel')
     }
 
     const handleKeyDown = function (e) {
@@ -620,7 +620,7 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: false,
                                                 validate: { checkWhiteSpaces },
@@ -642,7 +642,7 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             options={dropDown}
                                             handleChange={handleType}
                                             defaultValue={''}
@@ -661,7 +661,7 @@ function RubberWeightCalculator(props) {
                                             Controller={Controller}
                                             control={control}
                                             register={register}
-                                            mandatory={false}
+                                            mandatory={true}
                                             rules={{
                                                 required: false,
                                                 pattern: {

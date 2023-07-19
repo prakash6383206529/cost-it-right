@@ -10,23 +10,23 @@ import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormI
 import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId, ZBC_COSTING, VBC_COSTING, NCC_COSTING, CBC_COSTING, COSTING } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
 import { getConfigurationKey } from '../../../helper/auth'
-import { checkForNull } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull } from '../../../helper'
 import DayTime from '../../common/DayTimeWrapper'
 
 function AddToComparisonDrawer(props) {
   const { editObject, isEditFlag, viewMode } = props
 
   const { plantId, plantName, costingId, CostingNumber, index, VendorId, vendorName,
-    vendorPlantName, vendorPlantId, destinationPlantName, customerName, customerId, destinationPlantId, costingTypeId } = editObject
+    vendorPlantName, vendorPlantId, destinationPlantName, customerName, customerId, destinationPlantId, costingTypeId, vendorCode, customerCode } = editObject
 
   const defaultValue = {
     comparisonValue: isEditFlag ? costingTypeId === ZBCTypeId ? 'ZBC' : costingTypeId === VBCTypeId ? 'VBC' : 'CBC' : 'ZBC',
     plant: plantName !== '-' ? { label: plantName, value: plantId } : '',
     costings: isEditFlag ? { label: CostingNumber, value: costingId } : '',
-    vendor: VendorId !== '-' ? { label: vendorName, value: VendorId } : '',
+    vendor: VendorId && VendorId !== '-' ? { label: `${vendorName} (${vendorCode})`, value: VendorId } : '',
     vendorPlant: vendorPlantId !== '-' ? { label: vendorPlantName, value: vendorPlantId } : '',
     destinationPlant: destinationPlantId !== '-' ? { label: destinationPlantName, value: destinationPlantId } : '',
-    clientName: customerId !== '-' ? { label: customerName, value: customerId } : '',
+    clientName: customerId !== '-' ? { label: `${customerName} (${customerCode})`, value: customerId } : '',
   }
 
   const { register, handleSubmit, control, setValue, formState: { errors }, reset } = useForm({
@@ -302,6 +302,8 @@ function AddToComparisonDrawer(props) {
           obj.CostingPartDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails
           obj.npvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingNpvResponse?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
           obj.conditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingConditionResponse?.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0)
+          obj.netConditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.NetConditionCost
+          obj.netNpvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.NetNpvCost
 
           obj.aValue = { applicability: 'Applicability', percentage: 'Percentage (%)', value: 'Value' }
           obj.overheadOn = {
@@ -497,6 +499,8 @@ function AddToComparisonDrawer(props) {
           obj.customer = dataFromAPI?.Customer ? dataFromAPI?.Customer : ''
           obj.plantExcel = dataFromAPI.CostingTypeId === ZBCTypeId ? `${dataFromAPI.PlantName}` : `${dataFromAPI.DestinationPlantName}`
           obj.vendorExcel = dataFromAPI.VendorName ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : ''
+          obj.castingWeightExcel = checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.CastingWeight, getConfigurationKey().NoOfDecimalForPrice)
+          obj.meltingLossExcel = `${checkForDecimalAndNull(dataFromAPI?.CostingPartDetails?.MeltingLoss, getConfigurationKey().NoOfDecimalForPrice)} (${dataFromAPI?.CostingPartDetails?.LossPercentage}%)`
           // FOR MULTIPLE TECHNOLOGY COSTING SUMMARY DATA
           obj.netChildPartsCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetChildPartsCost ? dataFromAPI?.CostingPartDetails?.NetChildPartsCost : 0
           obj.netOperationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOperationCost ? dataFromAPI?.CostingPartDetails?.NetOperationCost : 0
@@ -504,6 +508,10 @@ function AddToComparisonDrawer(props) {
           obj.netBoughtOutPartCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
           obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''
           obj.isRmCutOffApplicable = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable
+          obj.isIncludeToolCostWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit
+          obj.isIncludeSurfaceTreatmentWithRejection = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection
+          obj.isIncludeSurfaceTreatmentWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit
+          obj.rawMaterialCostWithCutOff = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff ? dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff : ''
           obj.MachiningScrapRate = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapRate : '-'
           obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
           // temp.push(VIEW_COSTING_DATA)

@@ -9,7 +9,7 @@ import RMDomesticListing from './RMDomesticListing';
 import RMImportListing from './RMImportListing';
 import { checkPermission } from '../../../helper/util';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
+import { APPROVED_STATUS_MASTER, MASTERS, RAW_MATERIAL, RAW_MATERIAL_NAME_AND_GRADE, RM_MASTER_ID } from '../../../config/constants';
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ScrollToTop from '../../common/ScrollToTop';
@@ -259,6 +259,7 @@ function RowMaterialMaster(props) {
                                         DownloadAccessibility={DownloadAccessibility}
                                         stopApiCallOnCancel={stopApiCallOnCancel}
                                         selectionForListingMasterAPI='Master'
+                                        approvalStatus={APPROVED_STATUS_MASTER}
                                     />
                                 </TabPane>}
 
@@ -276,6 +277,7 @@ function RowMaterialMaster(props) {
                                         DownloadAccessibility={DownloadAccessibility}
                                         stopApiCallOnCancel={stopApiCallOnCancel}
                                         selectionForListingMasterAPI='Master'
+                                        approvalStatus={APPROVED_STATUS_MASTER}
                                     />
                                 </TabPane>}
 

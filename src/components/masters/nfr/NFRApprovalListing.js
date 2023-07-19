@@ -9,7 +9,7 @@ import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import { useDispatch } from 'react-redux';
 import { getNFRApprovals } from './actions/nfr';
 import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing';
-import { formViewData } from '../../../helper';
+import { formViewData, loggedInUserId } from '../../../helper';
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer';
 import ApprovalSummary from '../../costing/components/approval/ApprovalSummary';
 import { Redirect } from 'react-router';
@@ -43,7 +43,7 @@ function NFRApprovalListing(props) {
     }
 
     useEffect(() => {
-        dispatch(getNFRApprovals(res => {
+        dispatch(getNFRApprovals(loggedInUserId(), res => {
             if (res?.data?.Result === true) {
                 setRowData(res?.data?.DataList)
             }
@@ -91,7 +91,7 @@ function NFRApprovalListing(props) {
     const closeDrawer = (e = '', type) => {
         if (type === 'submit') {
             setIsOpen(false)
-            dispatch(getNFRApprovals(res => {
+            dispatch(getNFRApprovals(loggedInUserId(), res => {
                 if (res?.data?.Result === true) {
                     setRowData(res?.data?.DataList)
                 }
@@ -135,9 +135,8 @@ function NFRApprovalListing(props) {
     }
 
     const statusFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return <div className={cell}>{row.DisplayStatus}</div>
+        return <div className={row?.Status}>{row.DisplayStatus}</div>
     }
 
     const frameworkComponents = {
@@ -231,9 +230,9 @@ function NFRApprovalListing(props) {
                                             frameworkComponents={frameworkComponents}
                                         >
                                             <AgGridColumn cellClass="has-checkbox" field="ApprovalToken" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
-                                            <AgGridColumn field="NfrNumber" headerName="Nfr Number" cellRenderer='hyphenFormatter' ></AgGridColumn>
+                                            <AgGridColumn field="NfrNumber" headerName="NFR Number" cellRenderer='hyphenFormatter' ></AgGridColumn>
                                             <AgGridColumn field="GroupName" headerName="Group Name"  ></AgGridColumn>
-                                            <AgGridColumn field="PartNumber" headerName='Part No (Revision No)'></AgGridColumn>
+                                            <AgGridColumn field="PartNumber" headerName='Part No. (Revision No.)'></AgGridColumn>
                                             <AgGridColumn field="ProductCode" headerName="Product Code" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="InitiatedByName" headerName="Initiated By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="CreatedByName" headerName=" Created By" cellRenderer='hyphenFormatter'></AgGridColumn>

@@ -33,7 +33,7 @@ export const API = {
 
   getMasterFilterUOMAPI: `${BASE_URL}/masters-unit-of-measurement/get`,
   getMaterialType: `${BASE_URL}/configuration/select-list-get-material-type`,
-  // getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
+  getPlant: `${BASE_URL}/configuration/select-list-get-plant`,
   getTechnology: `${BASE_URL}/configuration/select-list-get-technology`,
   getSupplierCode: `${BASE_URL}/configuration/select-list-get-vendor-code`,
   getCategoryType: `${BASE_URL}/configuration/select-list-get-category-type`,
@@ -615,6 +615,7 @@ export const API = {
   sendStatusForApproval: `${BASE_URL}/bulk-costing/update-bulk-costing`,
   uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
   uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
+  uploadWiringHarnessCosting: `${BASE_URL}/bulk-costing/save-costing-wiring-harness`,
 
 
   //COST SUMMARY
@@ -1479,11 +1480,14 @@ export const SET_SURFACE_COST_FOR_REJECTION_DATA = 'SET_SURFACE_COST_FOR_REJECTI
 export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
+export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
+export const SET_REJECTED_COSTING_VIEW_DATA = 'SET_REJECTED_COSTING_VIEW_DATA';
 
 // YOY
 export const SET_YOY_COST_GRID = 'SET_YOY_COST_GRID'
 export const SET_TOOL_COST_FOR_OVERHEAD_PROFIT = 'SET_TOOL_COST_FOR_OVERHEAD_PROFIT'
 export const SET_NPV_DATA = 'SET_NPV_DATA'
+export const SET_OTHER_COST = 'SET_OTHER_COST'
 export const SET_OVERHEAD_PROFIT_ICC = 'SET_OVERHEAD_PROFIT_ICC'
 export const SET_YOY_COST_GRID_FOR_SAVE = 'SET_YOY_COST_GRID_FOR_SAVE'
 export const SET_QUOTATION_ID_FOR_RFQ = 'SET_QUOTATION_ID_FOR_RFQ'
@@ -1685,9 +1689,11 @@ export const GET_QUOTATION_LIST = 'GET_QUOTATION_LIST'
 export const CHECK_RFQ_BULK_UPLOAD = 'CHECK_RFQ_BULK_UPLOAD'
 export const SELECTED_ROW_ARRAY = 'SELECTED_ROW_ARRAY'
 export const GET_NFR_SELECT_LIST = 'GET_NFR_SELECT_LIST'
+export const SET_SAP_DATA = 'SET_SAP_DATA'
 
 // NFR
 export const NFR_DETAILS_FOR_DISCOUNT = 'NFR_DETAILS_FOR_DISCOUNT'
+export const SET_OPEN_ALL_TABS = 'SET_OPEN_ALL_TABS'
 
 //COSTING STATUS
 export const GET_COSTING_STATUS = 'GET_COSTING_STATUS'
@@ -1714,11 +1720,13 @@ export const SENT = 'Sent'
 export const EXTERNAL_REJECT = 'ExternalReject'
 export const DRAFTID = 1
 export const REJECTEDID = 4
+export const ERRORID = 12
 export const PENDING_FOR_APPROVAL_ID = 2
 export const AWAITING_APPROVAL_ID = 6
 
 // MASTER APPROVAL STATUS ID
-export const APPROVED_STATUS = '3,5'
+export const APPROVED_STATUS = '3'
+export const APPROVED_STATUS_MASTER = '3,5'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1851,6 +1859,9 @@ export const NCC = 'NCC'
 export const WAC = 'WAC'
 export const CBC = 'CBC'
 export const NFR = 'NFR'
+export const PFS1 = 'PFS1'
+export const PFS2 = 'PFS2'
+export const PFS3 = 'PFS3'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -1892,9 +1903,13 @@ export const VIEW_COSTING_DATA = {
   status: 'Status',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
+  castingWeight: 'Casting Weight',
+  meltingLoss: 'Melting Loss',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
+  castingWeightExcel: 'Casting Weight',
+  meltingLossExcel: 'Melting Loss',
   BurningLossWeight: 'Burning Loss Weight',
   ScrapWeight: 'Scrap Weight',
   netRM: 'Net RM Cost',
@@ -1950,8 +1965,8 @@ export const VIEW_COSTING_DATA = {
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
   BasicRate: 'Basic Rate',
-  npvCost: 'NPV Cost',
-  conditionCost: 'Costing Condition',
+  npvCost: 'Net NPV Cost',
+  conditionCost: 'Net Costing Condition',
   nPOPrice: 'Net PO Price (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
@@ -2264,6 +2279,8 @@ export const MICROSECONDS = 'Microseconds'
 export const DISPLAY_G = "g"
 export const DISPLAY_KG = "kg"
 export const DISPLAY_MG = "mg"
+export const DISPLAY_HOURS = "hrs"
+export const DISPLAY_MINUTES = "min"
 
 // export const INR = "INR"
 
@@ -2309,6 +2326,7 @@ export const PLASTIC_GROUP_BULKUPLOAD = 2
 export const MACHINING_GROUP_BULKUPLOAD = 3
 export const CORRUGATED_BOX = 4
 export const ASSEMBLY = 5
+export const WIRINGHARNESS = 6
 
 
 export const REASON_ID = 2
@@ -2511,6 +2529,9 @@ export const ZBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const VBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[VBC])
 export const CBCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[CBC])
 export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsListFullForm')[NCC])
+export const PFS1TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS1])
+export const PFS2TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS2])
+export const PFS3TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS3])
 export const ZBCADDMORE = 15
 export const VBCADDMORE = 16
 export const CBCADDMORE = 17
@@ -2570,4 +2591,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.190";
+export const VERSION = "V2.1.205";

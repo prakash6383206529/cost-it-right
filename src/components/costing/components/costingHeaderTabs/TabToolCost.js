@@ -254,7 +254,7 @@ function TabToolCost(props) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData[0]
+      const discountAndOtherTabData = DiscountCostData
       const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
       const toolTabData = ToolTabData && ToolTabData[0]
 
@@ -268,6 +268,7 @@ function TabToolCost(props) {
         "ToolCost": ToolTabData.TotalToolCost,
         "CostingPartDetails": ToolTabData && ToolTabData[0]?.CostingPartDetails,
         "TotalCost": netPOPrice,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       if (costData.IsAssemblyPart === true && !partType) {
 
@@ -542,7 +543,7 @@ function TabToolCost(props) {
                               <AgGridColumn field="Life" headerName="Life"></AgGridColumn>
                               {/* NET TOOL COST */}
                               <AgGridColumn field="NetToolCost" headerName="Net Tool Cost" cellRenderer={'decimalFormatter'}></AgGridColumn>
-                              <AgGridColumn width={160} field="Life" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                              <AgGridColumn width={160} field="Life" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                           </div>

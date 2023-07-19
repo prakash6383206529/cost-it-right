@@ -145,7 +145,8 @@ class AddMoreDetails extends Component {
       IsSendForApproval: false,
       LabourCRMHead: '',
       crmHeads: {},
-      updateCrmHeadObj: {}
+      updateCrmHeadObj: {},
+      CostingTypePermission: false
     }
     this.dropzone = React.createRef();
   }
@@ -212,13 +213,13 @@ class AddMoreDetails extends Component {
       this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
           this.setState({ finalApprovalLoader: false })
         }
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
     }
   }
 
@@ -2527,7 +2528,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, noApprovalCycle } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, noApprovalCycle, CostingTypePermission } = this.state;
     return (
       <>
         {(isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -3719,7 +3720,7 @@ class AddMoreDetails extends Component {
                                   name={this.props.fieldsObj.TotalFuelCostPerYear === 0 ? '-' : "TotalFuelCostPerYear"}
                                   type="text"
                                   placeholder={'-'}
-                                  validate={[number, postiveNumber]}
+                                  validate={[number]}
                                   component={renderText}
                                   //required={true}
                                   disabled={true}
@@ -3992,7 +3993,7 @@ class AddMoreDetails extends Component {
                                     this.state.labourGrid.map((item, index) => {
                                       return (
                                         <tr key={index}>
-                                          {getConfigurationKey().IsShowCRMHead &&<td>{item.LabourCRMHead}</td>}
+                                          {getConfigurationKey().IsShowCRMHead && <td>{item.LabourCRMHead}</td>}
                                           <td>{item.labourTypeName}</td>
                                           <td>{item.LabourCostPerAnnum}</td>
                                           <td>{item.NumberOfLabour}</td>
@@ -4328,7 +4329,7 @@ class AddMoreDetails extends Component {
 
 
 
-                        {!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
+                        {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
                           <button type="submit"
                             class="user-btn approval-btn save-btn mr5"
 
