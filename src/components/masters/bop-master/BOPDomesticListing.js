@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS, RMDOMESTIC, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../config/constants';
 import {
     getBOPDataList, deleteBOP, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
@@ -28,7 +28,7 @@ import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { hideColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -508,8 +508,17 @@ class BOPDomesticListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
+        let tempData = [...data]
+        if (!getConfigurationKey().IsShowMinimumOrderQuantity) {
+            tempData = hideColumnFromExcel(tempData, 'Quantity')
+        }
+        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+            tempData = hideColumnFromExcel(tempData, 'CustomerName')
+        }
+        else {
+            tempData = data
+        }
         temp = TempData && TempData.map((item) => {
             if (item.Plants === '-') {
                 item.Plants = ' '
@@ -526,7 +535,7 @@ class BOPDomesticListing extends Component {
 
         return (
             <ExcelSheet data={temp} name={BopDomestic}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -808,6 +817,7 @@ class BOPDomesticListing extends Component {
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     {this.props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}
                                     {/* {this.props?.isMasterSummaryDrawer && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>} */}
+                                    {getConfigurationKey().IsShowMinimumOrderQuantity && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>

@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number
+  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
@@ -604,8 +604,9 @@ class AddBOPImport extends Component {
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props;
     const { currency, effectiveDate } = this.state;
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const basicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const netLandedCost = checkForNull((basicRate) * this.state.currencyValue);
+    const netLandedCost = checkForNull((basicRate / NoOfPieces) * this.state.currencyValue);
 
     if (
       this.state.isEditFlag &&
@@ -812,7 +813,7 @@ class AddBOPImport extends Component {
       SourceLocation: sourceLocation.value,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       BasicRate: values.BasicRate,
-      NumberOfPieces: 1,
+      NumberOfPieces: getConfigurationKey().IsShowMinimumOrderQuantity ? values.NumberOfPieces : 1,
       NetLandedCost: this.state.netLandedcost,
       Remark: values.Remark,
       IsActive: true,
@@ -1362,6 +1363,20 @@ class AddBOPImport extends Component {
                               />
                             </div>
                           </Col>
+                          {getConfigurationKey().IsShowMinimumOrderQuantity && < Col md="3">
+                            <Field
+                              label={`Minimum Order Quantity`}
+                              name={"NumberOfPieces"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                            />
+                          </Col>}
                           <Col md="3">
                             <Field
                               label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
@@ -1651,6 +1666,7 @@ function mapStateToProps(state) {
       Specification: bopData.Specification,
       Source: bopData.Source,
       BasicRate: bopData.BasicRate,
+      NumberOfPieces: bopData?.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
     }

@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString
+  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
@@ -507,7 +507,8 @@ class AddBOPDomestic extends Component {
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull(BasicRate)
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
+    const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
 
@@ -696,7 +697,7 @@ class AddBOPDomestic extends Component {
       SourceLocation: sourceLocation.value,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       BasicRate: values.BasicRate,
-      NumberOfPieces: 1,
+      NumberOfPieces: getConfigurationKey().IsShowMinimumOrderQuantity ? values.NumberOfPieces : 1,
       NetLandedCost: this.state.NetLandedCost,
       Remark: values.Remark,
       IsActive: true,
@@ -1218,7 +1219,20 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-
+                          {getConfigurationKey().IsShowMinimumOrderQuantity && < Col md="3">
+                            <Field
+                              label={`Minimum Order Quantity`}
+                              name={"NumberOfPieces"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                            />
+                          </Col>}
                           <Col md="3">
                             <Field
                               label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
@@ -1417,36 +1431,42 @@ class AddBOPDomestic extends Component {
                 </div>
               </div>
             </div>
-          </div>
+          </div >
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {isCategoryDrawerOpen && (
-            <AddBOPCategory
-              isOpen={isCategoryDrawerOpen}
-              closeDrawer={this.closeCategoryDrawer}
-              isEditFlag={false}
-              anchor={"right"}
-            />
-          )}
-          {isOpenVendor && (
-            <AddVendorDrawer
-              isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenUOM && (
-            <AddUOM
-              isOpen={isOpenUOM}
-              closeDrawer={this.closeUOMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          {
+            isCategoryDrawerOpen && (
+              <AddBOPCategory
+                isOpen={isCategoryDrawerOpen}
+                closeDrawer={this.closeCategoryDrawer}
+                isEditFlag={false}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
 
           {
             this.state.approveDrawer && (
@@ -1479,7 +1499,7 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, client } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'NoOfPieces');
+  const fieldsObj = selector(state, 'BasicRate', 'NumberOfPieces');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;
@@ -1498,6 +1518,7 @@ function mapStateToProps(state) {
       BasicRate: bopData.BasicRate,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
+      NumberOfPieces: bopData?.NumberOfPieces,
     }
   }
 
