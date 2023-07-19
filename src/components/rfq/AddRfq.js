@@ -219,34 +219,26 @@ function AddRfq(props) {
     }, [])
 
 
+
     const deleteFile = (FileId, OriginalFileName) => {
         if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
             return false
         }
         if (FileId != null) {
-            let deleteData = {
-                Id: FileId,
-                DeletedBy: loggedInUserId(),
-            }
-            dispatch(fileDeleteQuotation(deleteData, (res) => {
-                Toaster.success('File has been deleted successfully.')
-                let tempArr = files && files.filter(item => item.FileId !== FileId)
-                setFiles(tempArr)
-                setIsOpen(!IsOpen)
-            }))
+            let tempArr = files.filter((item) => item.FileId !== FileId)
+            setFiles(tempArr);
+            setIsOpen(!IsOpen)
         }
         if (FileId == null) {
             let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
             setFiles(tempArr)
             setIsOpen(!IsOpen)
         }
-
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
         if (dropzone?.current !== null) {
             dropzone.current.files.pop()
         }
     }
-
 
     const Preview = ({ meta }) => {
         return (
