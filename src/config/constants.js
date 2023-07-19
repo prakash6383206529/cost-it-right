@@ -111,7 +111,6 @@ export const API = {
   getPart: `${BASE_URL}/configuration/select-list-get-part`,
   getPartSelectList: `${BASE_URL}/configuration/select-list-get-part`,
   fileUploadPart: `${BASE_URL}/masters-part/part-file-upload`,
-  fileDeletePart: `${BASE_URL}/masters-part/delete-part-attachment-file`,
   partComponentBulkUpload: `${BASE_URL}/masters-part/bulk-upload-for-component-part-json`,
   activeInactivePartStatus: `${BASE_URL}/masters-part/active-component-part`,
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
@@ -189,7 +188,6 @@ export const API = {
   getVendorListByVendorType: `${BASE_URL}/masters-raw-material/select-list-for-raw-material-vendor-by-type`,
   fileUploadRMDomestic: `${BASE_URL}/masters-raw-material/raw-material-file-upload`,
   fileUpdateRMDomestic: `${BASE_URL}/masters-raw-material/update-raw-material-file`,
-  fileDeleteRMDomestic: `${BASE_URL}/masters-raw-material/delete-raw-material-file`,
   bulkUploadRM: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material`,
   bulkfileUploadRM: `${BASE_URL}/masters-raw-material/bulk-file-upload-raw-material`,
   getUnassociatedRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-name-child`,
@@ -281,7 +279,6 @@ export const API = {
   updateBOP: `${BASE_URL}/masters-bought-out-part/update-bought-out-part`,
   deleteBOP: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part`,
   fileUploadBOPDomestic: `${BASE_URL}/masters-bought-out-part/bought-out-part-file-upload`,
-  fileDeleteBOPDomestic: `${BASE_URL}/masters-bought-out-part/delete-bought-out-part-file`,
   bulkUploadBOP: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-json`,
   getPlantSelectListByVendor: `${BASE_URL}/masters-bought-out-part/get-select-list-plant-by-vendor`,
 
@@ -372,7 +369,6 @@ export const API = {
   getOperationDataAPI: `${BASE_URL}/masters-operation/get-operation`,
   deleteOperationAPI: `${BASE_URL}/masters-operation/delete-operation`,
   fileUploadOperation: `${BASE_URL}/masters-operation/operation-file-upload`,
-  fileDeleteOperation: `${BASE_URL}/masters-operation/delete-operation-file`,
   checkAndGetOperationCode: `${BASE_URL}/masters-operation/check-operation-code-is-unique`,
   operationBulkUpload: `${BASE_URL}/masters-operation/bulk-upload-operation`,
 
@@ -795,7 +791,6 @@ export const API = {
   updateMachine: `${BASE_URL}/masters-machine/update-machine`,
   getMachineSelectList: `${BASE_URL}/configuration/select-list-get-machine`,
   fileUploadMachine: `${BASE_URL}/masters-machine/machines-file-upload`,
-  fileDeleteMachine: `${BASE_URL}/masters-machine/delete-machine-attachment-file`,
   checkAndGetMachineNumber: `${BASE_URL}/masters-machine/check-machine-number-is-unique`,
   getFuelUnitCost: `${BASE_URL}/masters-machine/get-fuel-unit-cost`,
   getLabourCost: `${BASE_URL}/masters-machine/get-labour-cost`,
@@ -2591,4 +2586,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.205";
+export const VERSION = "V2.1.208";
