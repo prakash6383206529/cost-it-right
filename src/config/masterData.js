@@ -1883,6 +1883,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1897,6 +1898,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1908,6 +1910,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1919,6 +1922,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "shot/stroke/Number",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1940,6 +1944,7 @@ export const BOP_VBC_DOMESTIC = [
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1959,7 +1964,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1976,7 +1981,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1993,7 +1998,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2012,7 +2017,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
-    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'IncoTerm', value: 'IncoTerm', },
     // { label: 'PaymentTerm', value: 'PaymentTerm', }, // FOR MINDA ONLY
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -2031,9 +2036,9 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2047,9 +2052,9 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2063,9 +2068,9 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2079,6 +2084,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2093,7 +2099,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2105,7 +2111,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2117,7 +2123,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2141,9 +2147,9 @@ export const BOP_VBC_IMPORT = [
     { label: 'SourceVendorName', value: 'SourceVendorName', },
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
     // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
-    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2162,6 +2168,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2179,6 +2186,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2196,6 +2204,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2212,6 +2221,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'Currency', value: 'Currency', }, //*
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
     // { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -2229,6 +2239,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2243,6 +2254,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2257,6 +2269,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
