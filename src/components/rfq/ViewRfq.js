@@ -193,8 +193,6 @@ function RfqListing(props) {
                 costingId = item?.costingId
             }
         })
-        console.log('costingId: ', costingId);
-        console.log('selectedCostingList: ', selectedCostingList);
         if (selectedCostingList?.includes(costingId)) {
             setMandatoryRemark(true)
         } else {
@@ -347,7 +345,7 @@ function RfqListing(props) {
                     obj.customerId = quotationGrid[index]?.customerId
                     obj.customerCode = quotationGrid[index]?.customerCode
                     obj.customer = quotationGrid[index]?.customer
-
+                    obj.basicRate = quotationGrid[index]?.BasicRate
 
 
                     // if (quotationGrid[index]?.EffectiveDate) {

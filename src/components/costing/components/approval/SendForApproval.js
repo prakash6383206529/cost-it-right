@@ -892,7 +892,7 @@ const SendForApproval = (props) => {
                           <div className="form-group">
                             <label>Basic Price</label>
                             <label className="form-control bg-grey input-form-control">
-                              {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.basicRate && data.basicRate !== '-' ? checkForDecimalAndNull(data.basicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
                           </div>
                         </Col>}
