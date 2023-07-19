@@ -64,7 +64,7 @@ class BOPDomesticListing extends Component {
             analyticsDrawer: false,
             selectedRowData: [],
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -260,7 +260,9 @@ class BOPDomesticListing extends Component {
 
             }
         }
-        this.props.callBackLoader(this.state.isLoader)
+        if (this.props.isSimulation) {
+            this.props.callBackLoader(this.state.isLoader)
+        }
     }
 
     /**

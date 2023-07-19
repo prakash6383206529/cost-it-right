@@ -469,7 +469,7 @@ function SupplierContributionReport(props) {
             {graphListing &&
                 <div className="doughnut-graph-container">
                     <div className="doughnut-graph">
-                        <Doughnut type="outlabeledDoughnut" data={data3} options={options3} plugins={plugins} height="650" width={600} />
+                        <Doughnut type="outlabeledDoughnut" data={data3} options={options3} plugins={plugins} height="600" width={550} />
                     </div>
                 </div>
 

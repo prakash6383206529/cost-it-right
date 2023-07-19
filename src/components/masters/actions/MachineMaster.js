@@ -402,23 +402,6 @@ export function fileUploadMachine(data, callback) {
     };
 }
 
-/**
- * @method fileDeleteMachine
- * @description delete Machine file
- */
-export function fileDeleteMachine(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteMachine}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                dispatch({ type: CREATE_SUCCESS, });
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
 
 /**
  * @method checkAndGetMachineNumber

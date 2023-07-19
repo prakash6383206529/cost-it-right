@@ -219,34 +219,26 @@ function AddRfq(props) {
     }, [])
 
 
+
     const deleteFile = (FileId, OriginalFileName) => {
         if (dataProps?.isAddFlag ? false : dataProps?.isViewFlag || !isEditAll) {
             return false
         }
         if (FileId != null) {
-            let deleteData = {
-                Id: FileId,
-                DeletedBy: loggedInUserId(),
-            }
-            dispatch(fileDeleteQuotation(deleteData, (res) => {
-                Toaster.success('File has been deleted successfully.')
-                let tempArr = files && files.filter(item => item.FileId !== FileId)
-                setFiles(tempArr)
-                setIsOpen(!IsOpen)
-            }))
+            let tempArr = files.filter((item) => item.FileId !== FileId)
+            setFiles(tempArr);
+            setIsOpen(!IsOpen)
         }
         if (FileId == null) {
             let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
             setFiles(tempArr)
             setIsOpen(!IsOpen)
         }
-
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
         if (dropzone?.current !== null) {
             dropzone.current.files.pop()
         }
     }
-
 
     const Preview = ({ meta }) => {
         return (
@@ -1378,7 +1370,7 @@ function AddRfq(props) {
                                                                 >
                                                                     <AgGridColumn width={"230px"} field="PartNumber" headerName="Part No" tooltipField="PartNumber" cellClass={"colorWhite"} cellRenderer={'partNumberFormatter'}></AgGridColumn>
                                                                     <AgGridColumn width={"230px"} field="VendorListExisting" headerName="Existing Vendor" cellClass={"colorWhite"} cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                                    {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
+                                                                    {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMName" tooltipField="RMName" headerName="RM Name" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMGrade" headerName="RM Grade" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     {checkForNull(technology?.value) !== LOGISTICS && <AgGridColumn width={"230px"} field="RMSpecification" headerName="RM Specification" cellClass={"colorWhite"}></AgGridColumn>}
                                                                     <AgGridColumn width={"230px"} field="YearName" headerName="Production Year" cellRenderer={'sopFormatter'}></AgGridColumn>

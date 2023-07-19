@@ -70,7 +70,7 @@ function RMImportListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation ? userDepartmetList() : "", CustomerName: "" })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "" })
   const [noData, setNoData] = useState(false)
   const [dataCount, setDataCount] = useState(0)
   const [inRangeDate, setinRangeDate] = useState([])
@@ -938,12 +938,12 @@ function RMImportListing(props) {
                     {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                     <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
-                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                     <AgGridColumn field="BasicRatePerUOM" headerName='BasicRate' cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                     {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
                     <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                     <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer='costFormatter'></AgGridColumn>
 
