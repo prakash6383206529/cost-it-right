@@ -9,7 +9,7 @@ import {
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
-  createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine, fileDeleteMachine,
+  createMachine, updateMachine, updateMachineDetails, getMachineTypeSelectList, getProcessesSelectList, fileUploadMachine,
   checkAndGetMachineNumber, getMachineData, getProcessGroupByMachineId, setGroupProcessList, setProcessList
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
@@ -1025,18 +1025,13 @@ class AddMachineRate extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      this.props.fileDeleteMachine(deleteData, (res) => {
-        Toaster.success('File deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
       this.setState({ files: tempArr })
     }
 
@@ -1945,7 +1940,7 @@ class AddMachineRate extends Component {
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
 
-                              {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
+                              {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
                                 <button type="submit"
                                   class="user-btn approval-btn save-btn mr5"
                                   disabled={isViewMode || setDisable || noApprovalCycle || (isEditFlag && IsDetailedEntry)}
@@ -2082,7 +2077,6 @@ export default connect(mapStateToProps, {
   getMachineTypeSelectList,
   getProcessesSelectList,
   fileUploadMachine,
-  fileDeleteMachine,
   checkAndGetMachineNumber,
   createMachine,
   updateMachine,
