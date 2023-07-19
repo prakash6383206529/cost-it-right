@@ -157,8 +157,8 @@ function Ferrous(props) {
         const finishedWeight = checkForNull(getValues('finishedWeight'))
         const NetRMRate = checkForNull(dataToSend.NetRMRate)
         const NetScrapRate = checkForNull(dataToSend.NetScrapRate)
-        if (finishedWeight > grossWeight) {
-            Toaster.warning('Finish Weight should not be greater than gross weight')
+        if (finishedWeight > castingWeight) {
+            Toaster.warning('Finish Weight should not be greater than casting weight')
             setValue('finishedWeight', 0)
             return false
         }
