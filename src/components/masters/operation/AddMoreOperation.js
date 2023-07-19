@@ -55,6 +55,7 @@ function AddMoreOperation(props) {
     const [dataToSend, setDataToSend] = useState({})
     const [disable, setDisable] = useState(true);
     const [IsOpen, setIsOpen] = useState(false);
+    const [dataObj, setDataObj] = useState(detailObject ? detailObject : '');
     const dropzone = useRef(null);
     const dispatch = useDispatch();
     const operationSelectList = useSelector(state => state.otherOperation.operationSelectList)
@@ -83,6 +84,7 @@ function AddMoreOperation(props) {
         crmHeadConsumableMachineCost: detailObject && detailObject.ConsumableMachineCRMHead && { label: detailObject.ConsumableMachineCRMHead, value: 1 },
 
     }
+
 
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
         mode: 'onChange',
@@ -300,7 +302,7 @@ function AddMoreOperation(props) {
                 setValue('crmHeadInterestDepriciationWelding', detailObject && detailObject.InterestAndDepriciationCRMHead && { label: detailObject.InterestAndDepriciationCRMHead, value: 1 })
                 setValue('interestDepriciationCost', detailObject && detailObject.InterestAndDepriciationCost ? checkForDecimalAndNull(detailObject.InterestAndDepriciationCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadAdditionalOtherCostWelding', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
-                setValue('otherCostDescriptionWelding', detailObject && detailObject.OtherCostDescription ? checkForDecimalAndNull(detailObject.OtherCostDescription, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCostDescriptionWelding', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
                 setValue('otherCostWelding', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
 
             } else {
@@ -344,11 +346,11 @@ function AddMoreOperation(props) {
                 setValue('profitCost', detailObject && detailObject.ProfitCRMCost ? checkForDecimalAndNull(detailObject.ProfitCRMCost, initialConfiguration.NoOfDecimalForPrice) : '',)
                 setValue('crmHeadOtherCost', detailObject && detailObject.OtherCostCRMHead && { label: detailObject.OtherCostCRMHead, value: 1 })
                 setValue('otherCost', detailObject && detailObject.OtherCost ? checkForDecimalAndNull(detailObject.OtherCost, initialConfiguration.NoOfDecimalForPrice) : '',)
-                setValue('otherCostDescription', detailObject && detailObject.OtherCostDescription ? checkForDecimalAndNull(detailObject.OtherCostDescription, initialConfiguration.NoOfDecimalForPrice) : '',)
+                setValue('otherCostDescription', detailObject && detailObject.OtherCostDescription ? detailObject.OtherCostDescription : '',)
             }
 
             setTimeout(() => {
-                setValue('netCost', detailObject && detailObject.Rate ? detailObject.Rate : '',)
+                setValue('netCost', detailObject && detailObject.Rate ? checkForDecimalAndNull(detailObject.Rate, initialConfiguration.NoOfDecimalForPrice) : '',)
             }, 600);
 
         } else {
@@ -468,12 +470,37 @@ function AddMoreOperation(props) {
         }
 
         if (isEditFlag) {
-            dispatch(updateOperationAPI(formData, (res) => {
-                if (res?.data?.Result) {
-                    Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
-                    props?.cancel('submit')
+            let temp = Object.keys(formData).filter((item) => item.includes('CRMHead'))
+            let isFinancialDataChange = false
+
+            temp.map((item) => {
+                if (dataObj[item] && String(dataObj[item]) !== String(formData[item])) {
+                    isFinancialDataChange = true
                 }
-            }))
+                return null
+            })
+
+            if (isFinancialDataChange) {
+                formData.IsFinancialDataChanged = true
+                if (DayTime(dataObj.EffectiveDate).format('DD/MM/YYYY') === DayTime(values.effectiveDate).format('DD/MM/YYYY')) {
+                    Toaster.warning('Please update the effective date')
+                    return false
+                } else {
+                    dispatch(updateOperationAPI(formData, (res) => {
+                        if (res?.data?.Result) {
+                            Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                            props?.cancel('submit')
+                        }
+                    }))
+                }
+            } else {
+                dispatch(updateOperationAPI(formData, (res) => {
+                    if (res?.data?.Result) {
+                        Toaster.success(MESSAGES.OPERATION_UPDATE_SUCCESS);
+                        props?.cancel('submit')
+                    }
+                }))
+            }
 
         } else {
             dispatch(createOperationsAPI(formData, (res) => {
