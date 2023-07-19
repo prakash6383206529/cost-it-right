@@ -175,22 +175,6 @@ export function fileUploadPart(data, callback) {
     };
 }
 
-/**
- * @method fileDeletePart
- * @description delete PART file API
- */
-export function fileDeletePart(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeletePart}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
 
 /**
  * @method partComponentBulkUpload
