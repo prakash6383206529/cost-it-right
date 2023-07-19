@@ -2440,6 +2440,9 @@ export const CUSTOMER_BASED = "Customer Based"
 //default value for page size
 export const defaultPageSize = 10;
 
+//SHOWING POSITIVE AND NEGATIVE SIGN BASIS OF CLIENT REQUIREMENT 
+export const SWAP_POSITIVE_NEGATIVE = true;
+
 //AllConastant File Moved here
 
 export const NAME = 'Name';
