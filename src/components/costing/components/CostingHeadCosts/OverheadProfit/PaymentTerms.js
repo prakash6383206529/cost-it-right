@@ -14,7 +14,7 @@ import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import { number, checkWhiteSpaces, percentageLimitValidation, isNumber, NoSignNoDecimalMessage } from "../../../../../helper/validation";
 import Popup from 'reactjs-popup';
-import { REMARKMAXLENGTH } from '../../../../../config/masterData';
+import { IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
@@ -34,6 +34,9 @@ function PaymentTerms(props) {
     const [tempPaymentTermObj, setTempPaymentTermObj] = useState(PaymentTermDetail)
     const [InterestRateFixedLimit, setInterestRateFixedLimit] = useState(false)
     const [errorMessage, setErrorMessage] = useState('')
+
+    // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
+    const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
     const PaymentTermsFieldValues = useWatch({
         control,
@@ -198,11 +201,13 @@ function PaymentTerms(props) {
             switch (Text) {
                 case 'RM':
                 case 'Part Cost':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-                    setTempPaymentTermObj({
-                        ...tempPaymentTermObj,
-                        NetCost: checkForNull(headerCosts?.NetRawMaterialsCost * RepaymentCost)
-                    })
+                    if ((partType && Text === 'Part Cost') || (!partType && Text === 'RM')) {
+                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((headerCosts.NetRawMaterialsCost * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                        setTempPaymentTermObj({
+                            ...tempPaymentTermObj,
+                            NetCost: checkForNull(headerCosts?.NetRawMaterialsCost * RepaymentCost)
+                        })
+                    }
                     break;
 
                 case 'BOP':
@@ -223,22 +228,24 @@ function PaymentTerms(props) {
 
                 case 'RM + CC':
                 case 'Part Cost + CC':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-
-                    setTempPaymentTermObj({
-                        ...tempPaymentTermObj,
-                        NetCost: checkForNull(RMCC * RepaymentCost)
-                    })
+                    if ((partType && Text === 'Part Cost + CC') || (!partType && Text === 'RM + CC')) {
+                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMCC * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                        setTempPaymentTermObj({
+                            ...tempPaymentTermObj,
+                            NetCost: checkForNull(RMCC * RepaymentCost)
+                        })
+                    }
                     break;
 
                 case 'RM + BOP':
                 case 'Part Cost + BOP':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOP * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
-
-                    setTempPaymentTermObj({
-                        ...tempPaymentTermObj,
-                        NetCost: checkForNull(RMBOP * RepaymentCost)
-                    })
+                    if ((partType && Text === 'Part Cost + BOP') || (!partType && Text === 'RM + BOP')) {
+                        setValue('RepaymentPeriodCost', checkForDecimalAndNull((RMBOP * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                        setTempPaymentTermObj({
+                            ...tempPaymentTermObj,
+                            NetCost: checkForNull(RMBOP * RepaymentCost)
+                        })
+                    }
                     break;
 
                 case 'BOP + CC':
@@ -252,12 +259,14 @@ function PaymentTerms(props) {
 
                 case 'RM + CC + BOP':
                 case 'Part Cost + CC + BOP':
-                    setValue('RepaymentPeriodCost', checkForDecimalAndNull(((RMBOPCC) * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
+                    if ((partType && Text === 'Part Cost + CC + BOP') || (!partType && Text === 'RM + CC + BOP')) {
+                        setValue('RepaymentPeriodCost', checkForDecimalAndNull(((RMBOPCC) * RepaymentCost), initialConfiguration.NoOfDecimalForPrice))
 
-                    setTempPaymentTermObj({
-                        ...tempPaymentTermObj,
-                        NetCost: checkForNull(RMBOPCC * RepaymentCost)
-                    })
+                        setTempPaymentTermObj({
+                            ...tempPaymentTermObj,
+                            NetCost: checkForNull(RMBOPCC * RepaymentCost)
+                        })
+                    }
                     break;
 
                 case 'Fixed':
