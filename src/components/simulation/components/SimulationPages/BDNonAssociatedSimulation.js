@@ -182,18 +182,6 @@ function BDNonAssociatedSimulation(props) {
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
 
-    const newBasicRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
-        } else {
-            returnValue = row.NewBasicRate
-        }
-        return returnValue
-
-    }
-
     const percentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         let cellValue = cell
@@ -282,9 +270,9 @@ function BDNonAssociatedSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+            returnValue = checkForDecimalAndNull((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)), getConfigurationKey().NoOfDecimalForPrice);
         } else {
-            returnValue = row.NewBasicRate
+            returnValue = checkForDecimalAndNull(Number(row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice);
         }
 
         return returnValue
@@ -428,7 +416,6 @@ function BDNonAssociatedSimulation(props) {
         OldcostFormatter: OldcostFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
         vendorFormatter: vendorFormatter,
@@ -570,7 +557,7 @@ function BDNonAssociatedSimulation(props) {
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='NewcostFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
                                             {<AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
 
