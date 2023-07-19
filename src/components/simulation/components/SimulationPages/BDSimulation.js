@@ -391,7 +391,7 @@ function BDSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
+                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
