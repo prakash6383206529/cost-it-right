@@ -49,7 +49,7 @@ function ViewRM(props) {
           dispatch(getSimulationRmFerrousCastingCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
 
             if (Number(res.status) === Number(204)) {
-              Toaster.warning('Data is not avaliabe for calculator')
+              Toaster.warning('Data is not available for calculator')
             } else {
               setCalculatorData(res, index)
             }
@@ -60,7 +60,7 @@ function ViewRM(props) {
           dispatch(getSimulationRmRubberCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
 
             if (Number(res.status) === Number(204)) {
-              Toaster.warning('Data is not avaliabe for calculator')
+              Toaster.warning('Data is not available for calculator')
             } else {
               setCalculatorData(res, index)
             }
@@ -73,7 +73,7 @@ function ViewRM(props) {
     }
     else {
       if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
-        Toaster.warning('Data is not avaliabe for calculator')
+        Toaster.warning('Data is not available for calculator')
         return false
       }
 
