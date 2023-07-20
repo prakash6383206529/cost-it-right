@@ -6,7 +6,7 @@ import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWh
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
-  createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit,
+  createProfit, updateProfit, getProfitData, fileUploadProfit,
 } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
@@ -690,20 +690,16 @@ class AddProfit extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      this.props.fileDeleteProfit(deleteData, (res) => {
-        Toaster.success('File deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
-    }
-    if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
       this.setState({ files: tempArr })
     }
+    if (FileId == null) {
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
+      this.setState({ files: tempArr })
+    }
+
     // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
     if (this.dropzone?.current !== null) {
       this.dropzone.current.files.pop()
@@ -799,7 +795,7 @@ class AddProfit extends Component {
       }
 
       if (
-        DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
+        (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
@@ -1472,7 +1468,6 @@ export default connect(mapStateToProps, {
   updateProfit,
   getProfitData,
   fileUploadProfit,
-  fileDeleteProfit,
   getVendorNameByVendorSelectList,
   getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial

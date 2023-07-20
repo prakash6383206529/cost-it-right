@@ -111,8 +111,8 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = val
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
-                tempObj.NewNetLandedCost = checkForNull(val)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1
+                tempObj.NewNetLandedCost = checkForNull(val) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1
                 tempObj.PercentageChange = checkForNull(item.Percentage)
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
@@ -123,8 +123,8 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
                 }
@@ -180,18 +180,6 @@ function BDNonAssociatedSimulation(props) {
     const customerFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
-    }
-
-    const newBasicRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
-        } else {
-            returnValue = row.NewBasicRate
-        }
-        return returnValue
-
     }
 
     const percentageFormatter = (props) => {
@@ -282,9 +270,9 @@ function BDNonAssociatedSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let returnValue = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+            returnValue = checkForDecimalAndNull((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(row?.NumberOfPieces) : 1, getConfigurationKey().NoOfDecimalForPrice);
         } else {
-            returnValue = row.NewBasicRate
+            returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(row?.NumberOfPieces) : 1, getConfigurationKey().NoOfDecimalForPrice)
         }
 
         return returnValue
@@ -293,7 +281,7 @@ function BDNonAssociatedSimulation(props) {
     const OldcostFormatter = (props) => {
         const row = props?.data;
         if (!row.BasicRate || row.BasicRate === '') return ''
-        return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate), getConfigurationKey().NoOfDecimalForPrice) : ''
+        return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(row?.NumberOfPieces) : 1, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const revisedBasicRateHeader = (props) => {
@@ -414,9 +402,9 @@ function BDNonAssociatedSimulation(props) {
         let row = params.data
         let valueReturn = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            valueReturn = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
+            valueReturn = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(row?.NumberOfPieces) : 1
         } else {
-            valueReturn = row?.NewBasicRate
+            valueReturn = (row?.NewBasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(row?.NumberOfPieces) : 1
         }
         return valueReturn;
     };
@@ -428,7 +416,6 @@ function BDNonAssociatedSimulation(props) {
         OldcostFormatter: OldcostFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
         vendorFormatter: vendorFormatter,
@@ -469,7 +456,7 @@ function BDNonAssociatedSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
+                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
@@ -566,11 +553,11 @@ function BDNonAssociatedSimulation(props) {
                                             {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {<AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
-                                            {<AgGridColumn field="NumberOfPieces" editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
+                                            {getConfigurationKey().IsShowMinimumOrderQuantity && <AgGridColumn field="NumberOfPieces" editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='NewcostFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
                                             {<AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
 

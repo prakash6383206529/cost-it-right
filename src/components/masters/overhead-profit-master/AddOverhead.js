@@ -7,7 +7,6 @@ import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSel
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
   createOverhead, updateOverhead, getOverheadData, fileUploadOverHead,
-  fileDeleteOverhead,
 } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
@@ -627,26 +626,6 @@ class AddOverhead extends Component {
         file.id,
         file.name
       )
-
-      let tempArr = files.filter(item => item.OriginalFileName === file.name)
-      let FileId = tempArr.FileId
-      let OriginalFileName = tempArr.OriginalFileName
-      if (FileId != null) {
-        let deleteData = {
-          Id: FileId,
-          DeletedBy: loggedInUserId(),
-        }
-        this.props.fileDeleteOverhead(deleteData, (res) => {
-          Toaster.success('File deleted successfully.')
-          let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-          this.setState({ files: tempArr })
-        })
-      }
-      if (FileId == null) {
-        let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
-        this.setState({ files: tempArr })
-      }
-      this.setState({ files: tempArr })
     }
     if (status === 'done') {
       let data = new FormData()
@@ -694,21 +673,14 @@ class AddOverhead extends Component {
   }
 
   deleteFile = (FileId, OriginalFileName) => {
-    let tempArr
-
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      this.props.fileDeleteOverhead(deleteData, (res) => {
-        Toaster.success('File deleted successfully.')
-        tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
-      tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
       this.setState({ files: tempArr })
     }
 
@@ -816,7 +788,7 @@ class AddOverhead extends Component {
       }
 
       if (
-        DropdownNotChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
+        (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.OverheadPercentage) === Number(values.OverheadPercentage) && Number(DataToChange.OverheadRMPercentage) === Number(values.OverheadRMPercentage)
         && Number(DataToChange.OverheadMachiningCCPercentage) === Number(values.OverheadMachiningCCPercentage) && Number(DataToChange.OverheadBOPPercentage) === Number(values.OverheadBOPPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
         this.cancel('cancel')
@@ -1476,7 +1448,6 @@ export default connect(mapStateToProps, {
   updateOverhead,
   getOverheadData,
   fileUploadOverHead,
-  fileDeleteOverhead,
   getVendorNameByVendorSelectList,
   getRawMaterialNameChild,
   getRMGradeSelectListByRawMaterial
