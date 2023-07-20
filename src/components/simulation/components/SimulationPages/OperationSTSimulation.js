@@ -522,6 +522,7 @@ function OperationSTSimulation(props) {
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown
                                                 showYearDropdown
+                                                dropdownMode='select'
                                                 dateFormat="dd/MM/yyyy"
                                                 minDate={new Date(maxDate)}
                                                 placeholderText="Select effective date"
