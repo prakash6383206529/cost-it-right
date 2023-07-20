@@ -78,6 +78,7 @@ function AddToComparisonDrawer(props) {
   useEffect(() => {
     /******FIRST TIME RENDER ADD TO COMPARISION******/
     if (!isEditFlag) {
+      dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
       const temp = []
       // THIS CONDITION IS TEMPORARY COMMENTED FOR MINDA
       // setIsZbcSelected(true)
