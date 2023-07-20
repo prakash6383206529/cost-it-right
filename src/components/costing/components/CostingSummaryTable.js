@@ -1263,12 +1263,15 @@ const CostingSummaryTable = (props) => {
     }))
   }
 
-  const firstIndex = SWAP_POSITIVE_NEGATIVE ? 1 : 0
-  const secondIndex = SWAP_POSITIVE_NEGATIVE ? 0 : 1
+  const firstIndex = SWAP_POSITIVE_NEGATIVE ? 1 : 0; // Determine the first index based on SWAP_POSITIVE_NEGATIVE flag
+  const secondIndex = SWAP_POSITIVE_NEGATIVE ? 0 : 1; // Determine the second index based on SWAP_POSITIVE_NEGATIVE flag
   const displayValueWithSign = (data, key) => {
     let value = data[key]; // Get the value from the data object using the provided key
     let finalKey = key
+
+    // Special case for 'nPOPriceWithCurrency'
     if (key === 'nPOPriceWithCurrency') {
+      // If the currency is '-' (dash), use 'nPOPrice', otherwise use 'nPOPriceWithCurrency'
       finalKey = data?.currency?.currencyTitle === "-" ? "nPOPrice" : "nPOPriceWithCurrency"
       value = data[finalKey]
     }
@@ -1277,9 +1280,11 @@ const CostingSummaryTable = (props) => {
 
     switch (key) {
       case 'nPOPrice':
+        // Display the value with currency symbol and formatted decimal places
         varianceValues = <span title={Math.abs(value)}><span className='currency-symbol'>{getCurrencySymbol(getConfigurationKey().BaseCurrency)}</span>{checkForDecimalAndNull(Math.abs(value), initialConfiguration.NoOfDecimalForPrice)}</span>
         break;
       case 'nPOPriceWithCurrency':
+        // Display the value with currency symbol and formatted decimal places
         varianceValues = <span title={(data?.currency?.currencyTitle) !== "-" ? (data?.nPOPriceWithCurrency) : data?.nPOPrice}><span className='currency-symbol'>
           {getCurrencySymbol(data?.currency.currencyTitle !== '-' ?
             data?.currency.currencyTitle : getConfigurationKey().BaseCurrency)}
@@ -1293,6 +1298,7 @@ const CostingSummaryTable = (props) => {
     let valueWithSign = (
       <>
         {data?.CostingHeading === VARIANCE && isApproval && Number(value) !== 0 ? (
+          // Conditionally display the sign based on specific conditions
           viewCostingData?.length > 0 && viewCostingData[firstIndex]?.[finalKey] > viewCostingData[secondIndex]?.[finalKey] ? (
             <span className='positive-sign'>+</span>
           ) : (
@@ -1304,36 +1310,41 @@ const CostingSummaryTable = (props) => {
         {varianceValues}
       </>
     );
-    return valueWithSign;
+    return valueWithSign; // Return the value with sign component
   };
 
 
 
   const highlighter = (key, columnName = '') => {
-    let highlighClass = ''
-    const activeClass = isApproval && !props.isRfqCosting;
-    const activeText = isApproval && viewCostingData?.length > 1 && !props.isRfqCosting
-    const mainRow = 'background-light-blue';
-    const textClass = 'd-block small-grey-text';
+    let highlighClass = ''; // The variable to hold the highlight class
+    const activeClass = isApproval && !props.isRfqCosting; // Check if main row highlight class is applicable
+    const activeText = isApproval && viewCostingData?.length > 1 && !props.isRfqCosting; // Check if sub data highlight is applicable
+    const mainRow = 'background-light-blue'; // Common class for main row
+    const textClass = 'd-block small-grey-text'; // Common class for individual text
     switch (columnName) {
       case 'main-row':
+        // Highlight class for main row, conditionally set to green or red based on values
         highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && viewCostingData[0]?.[key] > viewCostingData[1]?.[key] ? 'green-row' : viewCostingData[0]?.[key] < viewCostingData[1]?.[key] ? 'red-row' : '' : '-'}`
         break;
       case 'multiple-key':
+        // Highlight class case, if hierarchical key comes from function,  here is getting value like viewCostingData[0]?.[key[0]]?.[key[1]] as viewCostingData[0]?.childObject.childValue
         highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(viewCostingData[0]?.[key[0]]?.[key[1]], viewCostingData[1]?.[key[0]]?.[key[1]]) : ''}`
         break;
       case 'rm-reducer':
+        // Highlight class case, if key comes from reducer
         highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView)) : ''}`
         break;
       case 'finish-reducer':
+        // Highlight class case, if key comes from finishReducer
         highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView)) : ''}`
         break;
       default:
+        // Highlight class for all others key
         highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(viewCostingData[0]?.[key], viewCostingData[1]?.[key]) : ''}`
         break;
     }
 
-    return highlighClass;
+    return highlighClass; // Return the class basis on the condition
   }
 
 
