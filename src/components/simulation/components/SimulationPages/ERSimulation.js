@@ -338,6 +338,7 @@ function ERSimulation(props) {
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
                                             showYearDropdown
+                                            dropdownMode='select'
                                             dateFormat="dd/MM/yyyy"
                                             placeholderText="Select effective date"
                                             className="withBorder"

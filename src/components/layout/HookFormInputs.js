@@ -475,6 +475,7 @@ export const DatePickerHookForm = (field) => {
                 //minDate={new Date()}
                 showMonthDropdown
                 showYearDropdown
+                dropdownMode="select"
                 readonly="readonly"
                 onBlur={() => null}
                 selected={value}
@@ -703,6 +704,7 @@ export const DateTimePickerHookForm = (field) => {
               //minDate={new Date()}
               showMonthDropdown
               showYearDropdown
+              dropdownMode="select"
               readonly="readonly"
               onBlur={() => null}
               selected={selected}

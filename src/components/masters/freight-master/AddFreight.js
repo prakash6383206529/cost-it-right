@@ -998,6 +998,7 @@ class AddFreight extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   showMonthDropdown
                                   showYearDropdown
+                                  dropdownMode="select"
                                   dateFormat="dd/MM/yyyy"
                                   placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"

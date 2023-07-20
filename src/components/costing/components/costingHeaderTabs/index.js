@@ -384,6 +384,7 @@ function CostingHeaderTabs(props) {
                   onChange={handleEffectiveDateChange}
                   showMonthDropdown
                   showYearDropdown
+                  dropdownMode="select"
                   dateFormat="dd/MM/yyyy"
                   //maxDate={new Date()}
                   // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
