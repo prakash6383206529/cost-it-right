@@ -2702,6 +2702,7 @@ class AddMoreDetails extends Component {
                                 showMonthDropdown
                                 showYearDropdown
                                 showYearPicker
+                                dropdownMode='select'
                                 dateFormat="yyyy"
                                 //maxDate={new Date()}
                                 placeholderText="Enter"
@@ -3236,6 +3237,7 @@ class AddMoreDetails extends Component {
                                     onChange={this.handleDateOfPurchase}
                                     showMonthDropdown
                                     showYearDropdown
+                                    dropdownMode="select"
                                     dateFormat="dd/MM/yyyy"
                                     //maxDate={new Date()}
                                     placeholderText={disableAllForm ? '-' : "Select Date"}
