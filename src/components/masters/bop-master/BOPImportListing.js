@@ -28,7 +28,7 @@ import _ from 'lodash';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { hideColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -505,8 +505,17 @@ class BOPImportListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        let excelData = hideCustomerFromExcel(data, "CustomerName")
         let temp = []
+        let tempData = [...data]
+        if (!getConfigurationKey().IsShowMinimumOrderQuantity) {
+            tempData = hideColumnFromExcel(tempData, 'Quantity')
+        }
+        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+            tempData = hideColumnFromExcel(tempData, 'CustomerName')
+        }
+        else {
+            tempData = data
+        }
         temp = TempData && TempData.map((item) => {
             if (item.Plants === '-') {
                 item.Plants = ' '
@@ -522,7 +531,7 @@ class BOPImportListing extends Component {
         return (
 
             <ExcelSheet data={temp} name={BopImport}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -784,6 +793,7 @@ class BOPImportListing extends Component {
                                     {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms" ></AgGridColumn>
                                     {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
+                                    {getConfigurationKey().IsShowMinimumOrderQuantity && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Currency"></AgGridColumn>
