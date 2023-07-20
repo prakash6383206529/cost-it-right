@@ -981,13 +981,13 @@ function TabDiscountOther(props) {
       totalNpvCost: sum
     })
 
-    if (data) {
-      let obj = {}
-      obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
-      obj.LoggedInUserId = loggedInUserId()
-      obj.NpvDetails = data
-      dispatch(saveCostingDetailNpv(obj, () => { }))
-    }
+    // if (data) {
+    //   let obj = {}
+    //   obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
+    //   obj.LoggedInUserId = loggedInUserId()
+    //   obj.NpvDetails = data
+    //   dispatch(saveCostingDetailNpv(obj, () => { }))
+    // }
   }
 
   const openAndCloseAddNpvDrawer = (type, data = npvTableData) => {
@@ -1336,7 +1336,7 @@ function TabDiscountOther(props) {
                     <Col md="8"><div className="left-border mt-1">Other Cost:</div></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setOtherCotAcc(!otherCostAcc) }}>
-                        {conditionAcc ? (
+                        {otherCostAcc ? (
                           <i className="fa fa-minus" ></i>
                         ) : (
                           <i className="fa fa-plus"></i>

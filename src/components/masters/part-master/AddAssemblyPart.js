@@ -6,7 +6,7 @@ import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialC
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import {
-  createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart, fileDeletePart,
+  createAssemblyPart, updateAssemblyPart, getAssemblyPartDetail, fileUploadPart,
   getBOMViewerTreeDataByPartIdAndLevel, getProductGroupSelectList, getPartDescription, getPartData, convertPartToAssembly,
 } from '../actions/Part';
 import Toaster from '../../common/Toaster';
@@ -562,18 +562,13 @@ class AddAssemblyPart extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      this.props.fileDeletePart(deleteData, (res) => {
-        Toaster.success('File deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
       this.setState({ files: tempArr })
     }
 
@@ -1377,7 +1372,6 @@ function mapStateToProps(state) {
 */
 export default connect(mapStateToProps, {
   fileUploadPart,
-  fileDeletePart,
   getPartSelectList,
   createAssemblyPart,
   updateAssemblyPart,

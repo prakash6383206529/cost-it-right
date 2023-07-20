@@ -196,7 +196,7 @@ function BDNonAssociatedSimulation(props) {
     const percentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         let cellValue = cell
-        if (cell && cell > 100) {
+        if (cell && cell >= 100) {
             Toaster.warning("Percentage should be less than or equal to 100")
             cellValue = 0
         }
@@ -205,7 +205,7 @@ function BDNonAssociatedSimulation(props) {
         return (
             <>
                 {
-                    <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                    <span className={`${!isbulkUpload ? 'form-control' : ''} ${Number(row.OldNetLandedCost) !== Number(row.NewBasicRate) ? 'disabled' : ''}`} >{cell && value ? Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
                 }
 
             </>
@@ -392,6 +392,22 @@ function BDNonAssociatedSimulation(props) {
         }
         return valueReturn;
     };
+    const ageValueGetterPer = (params) => {
+        let row = params.data
+        if (!row.Percentage) {
+            if (Number(row.NewBasicRate) === Number(row.OldNetLandedCost)) {
+                return ""
+            }
+            return row?.NewBasicRate * 0;
+        }
+        else if (Number(row.Percentage) === 0) {
+            if (Number(row.NewBasicRate) === Number(row.OldNetLandedCost)) {
+                return ""
+            }
+        } else {
+            return row?.Percentage
+        }
+    };
 
     const ageValueGetterLanded = (params) => {
         let row = params.data
@@ -419,7 +435,8 @@ function BDNonAssociatedSimulation(props) {
         customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
         percentageFormatter: percentageFormatter,
-        ageValueGetter: ageValueGetter
+        ageValueGetter: ageValueGetter,
+        ageValueGetterPer: ageValueGetterPer
     };
 
     const basicRatetooltipToggle = () => {
@@ -451,7 +468,7 @@ function BDNonAssociatedSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
+                        {showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
@@ -554,7 +571,7 @@ function BDNonAssociatedSimulation(props) {
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={EditableCallbackForBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" valueGetter={ageValueGetter} headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
-                                            {<AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' cellRenderer='percentageFormatter'></AgGridColumn>}
+                                            {<AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter'></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
                                                 {/* <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}

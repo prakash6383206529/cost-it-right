@@ -828,7 +828,7 @@ function VerifySimulation(props) {
                         </Col >
                     </Row >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
-                        <div className="col-sm-12 text-right bluefooter-butn">
+                        <div className="col-sm-12 text-right bluefooter-butn run-simulation">
                             {/* {!isAssemblyCosting && */}
                             {/* <button onClick={runSimulation} type="submit" disabled={hideRunButton || runSimulationPermission} className="user-btn mr5 save-btn"                    > */}
                             {!isMasterAssociatedWithCosting && <DatePicker
@@ -848,14 +848,6 @@ function VerifySimulation(props) {
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button>
-                            {/* } */}
-                            {/* {isAssemblyCosting &&    // REJECTED ASSEMBLY
-                                <button onClick={assemblySimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
-                                    <div className={"Run-icon"}>
-                                    </div>{" "}
-                                    {"assembly SIMULATION"}
-                                </button>
-                            } */}
                         </div>
                     </Row>
                 </>

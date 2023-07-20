@@ -622,7 +622,6 @@ function PipdReportListing(props) {
 
 
     useEffect(() => {
-        console.log(isPlant, "plant", isCompany, "com")
         if (isPlant) {
             setGridData(PIPDDataTechnology)
         } else if (isCompany) {

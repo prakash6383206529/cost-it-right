@@ -193,8 +193,6 @@ function RfqListing(props) {
                 costingId = item?.costingId
             }
         })
-        console.log('costingId: ', costingId);
-        console.log('selectedCostingList: ', selectedCostingList);
         if (selectedCostingList?.includes(costingId)) {
             setMandatoryRemark(true)
         } else {
@@ -351,7 +349,7 @@ function RfqListing(props) {
                     obj.customerId = quotationGrid[index]?.customerId
                     obj.customerCode = quotationGrid[index]?.customerCode
                     obj.customer = quotationGrid[index]?.customer
-
+                    obj.basicRate = quotationGrid[index]?.BasicRate
 
 
                     // if (quotationGrid[index]?.EffectiveDate) {
@@ -512,7 +510,7 @@ function RfqListing(props) {
                 {/* {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => singleApprovalDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
                 {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />} */}
                 {showRemarkHistory && <button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
-                {showReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
+                {showReminderIcon && !rowData?.IsLastSubmissionDateCrossed && rowData?.IsShowReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
                 {rowData?.CostingId && < button title='View' className="View mr-1" type={'button'} onClick={() => viewCostingDetail(rowData)} />}
 
             </>

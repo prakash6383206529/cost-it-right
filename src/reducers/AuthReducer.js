@@ -39,9 +39,25 @@ import {
     COSTINGS_APPROVAL_DASHBOARD,
     AMENDMENTS_APPROVAL_DASHBOARD,
     GET_USERS_MASTER_LEVEL_API,
+    GET_RFQ_USER_DATA_SUCCESS,
 } from '../../src/config/constants'
 
 // /** Always define initialState in reducer so that we don't get undefined values */
+
+const commonUserFunction = (data) => {
+    let arr = []
+    arr = data && data.filter((el, i) => {
+        el.status = el.IsActive
+        if (el.status === true) {
+            el.status = 'Active'
+        } else if (el.status === false) {
+            el.status = 'In Active'
+        }
+        return true
+    })
+    return arr;
+}
+
 const initialState = {
     error: false,
     isIntroShowed: false,
@@ -176,21 +192,18 @@ export default function authReducer(state = initialState, action) {
                 userList: action.payload
             };
         case GET_USER_DATA_SUCCESS:
-            let arr = []
-            arr = action.payload && action.payload.filter((el, i) => {
-                el.status = el.IsActive
-                if (el.status === true) {
-                    el.status = 'Active'
-                } else if (el.status === false) {
-                    el.status = 'In Active'
-                }
-                return true
-            })
             return {
                 ...state,
                 loading: false,
                 error: true,
-                userDataList: arr
+                userDataList: commonUserFunction(action.payload)
+            };
+        case GET_RFQ_USER_DATA_SUCCESS:
+            return {
+                ...state,
+                loading: false,
+                error: true,
+                rfqUserList: commonUserFunction(action.payload)
             };
         case GET_USER_UNIT_DATA_SUCCESS:
             return {
