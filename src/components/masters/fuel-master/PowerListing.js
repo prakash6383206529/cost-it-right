@@ -22,7 +22,7 @@ import { POWERLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { searchNocontentFilter } from '../../../helper';
+import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 
@@ -138,8 +138,9 @@ class PowerListing extends Component {
   * @description confirm delete Raw Material details
   */
   confirmDelete = (ID) => {
+    const loggedInUser = loggedInUserId()
     if (this.state.IsVendor) {
-      this.props.deleteVendorPowerDetail(ID?.PowerDetailId, (res) => {
+      this.props.deleteVendorPowerDetail(ID?.PowerDetailId, loggedInUser, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()

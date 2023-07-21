@@ -9,6 +9,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { MESSAGES } from '../../../../../config/message';
 import Toaster from '../../common/Toaster';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { loggedInUserId } from '../../../helper';
 
 class RMCategoryDetail extends Component {
     constructor(props) {
@@ -16,8 +17,8 @@ class RMCategoryDetail extends Component {
         this.state = {
             isOpen: false,
             isEditFlag: false,
-            showPopup:false,
-            deletedId:''
+            showPopup: false,
+            deletedId: ''
         }
     }
 
@@ -42,7 +43,7 @@ class RMCategoryDetail extends Component {
     * @description confirm delete Material type
     */
     deleteItem = (Id) => {
-        this.setState({showPopup:true, deletedId:Id })
+        this.setState({ showPopup: true, deletedId: Id })
     }
 
     /**
@@ -50,20 +51,21 @@ class RMCategoryDetail extends Component {
     * @description confirm delete Material type
     */
     confirmDelete = (CategoryId) => {
-        this.props.deleteCategoryAPI(CategoryId, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteCategoryAPI(CategoryId, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_CATEGORY_SUCCESS);
                 this.props.getRowMaterialDataAPI(res => { });
             }
         });
-        this.setState({showPopup:false})
+        this.setState({ showPopup: false })
     }
-    onPopupConfirm =() => {
+    onPopupConfirm = () => {
         this.confirmDelete(this.state.deletedId);
     }
-    closePopUp= () =>{
-        this.setState({showPopup:false})
-      }
+    closePopUp = () => {
+        this.setState({ showPopup: false })
+    }
     /**
     * @method render
     * @description Renders the component
@@ -105,8 +107,8 @@ class RMCategoryDetail extends Component {
                     </Col>
                 </Row>
                 {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CATEGORY_DELETE_ALERT}`}  />
-         }
+                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CATEGORY_DELETE_ALERT}`} />
+                }
             </div>
         );
     }

@@ -287,7 +287,8 @@ class VendorListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteSupplierAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteSupplierAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
                 this.filterList()

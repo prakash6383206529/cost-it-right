@@ -112,31 +112,8 @@ class VolumeBulkUploadDrawer extends Component {
                     Toaster.warning('Please select file of same Master')
                     return false
                 }
-                let fileData = [];
-                resp.rows.map((val, index) => {
-                    if (index > 0 && val?.length > 0) {
-                        // BELOW CODE FOR HANDLE EMPTY CELL VALUE
-                        const i = val.findIndex(e => e === undefined);
-                        if (i !== -1) {
-                            val[i] = '';
-                        }
+                this.setState({ fileData: fileObj, uploadfileName: uploadfileName })
 
-                        let obj = {}
-                        val.map((el, i) => {
-                            obj[fileHeads[i]] = el;
-                            return null;
-                        })
-                        fileData.push(obj)
-                        obj = {}
-                    }
-                    return null;
-                })
-                this.setState({
-                    cols: resp.cols,
-                    rows: resp.rows,
-                    uploadfileName: uploadfileName,
-                    fileData: fileData
-                });
             });
         }
     }
@@ -159,16 +136,12 @@ class VolumeBulkUploadDrawer extends Component {
 
     onSubmit = () => {
         const { fileData } = this.state;
-
         if (!fileData) {
             Toaster.warning('Please select a file to upload.');
             return false;
         }
-
-        const file = new Blob([JSON.stringify(fileData)], { type: 'application/json' });
-
         const data = new FormData();
-        data.append('file', file, 'data.json');
+        data.append('file', fileData)
         data.append('loggedInUserId', loggedInUserId());
 
         if (this.props.fileName === 'Volume') {
