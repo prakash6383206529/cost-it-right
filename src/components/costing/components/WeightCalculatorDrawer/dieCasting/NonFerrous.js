@@ -137,7 +137,7 @@ function NonFerrous(props) {
         }
 
         if (scrapWeight < 0) {
-            Toaster.warning('Scrap weight cannot be negetive')
+            Toaster.warning('Scrap weight cannot be Negative')
             scrapWeight = 0
         }
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
