@@ -405,10 +405,12 @@ class AddFuel extends Component {
         if (Object.keys(reqData).length > 0) {
           let fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => item.Text === reqData.FuelName)
 
-          this.props.getUOMByFuelId(fuelObj.Value, (res) => {
-            let Data = res.data.DynamicData
-            this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
-          })
+          if (fuelObj) {
+            this.props.getUOMByFuelId(fuelObj.Value, (res) => {
+              let Data = res.data.DynamicData
+              this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
+            })
+          }
           this.setState({ fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [] })
         }
       })
