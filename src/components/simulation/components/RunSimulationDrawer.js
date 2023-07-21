@@ -13,7 +13,7 @@ import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHI
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
-import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../helper/validation";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
@@ -600,8 +600,10 @@ function RunSimulationDrawer(props) {
                                                                                         name={"OtherCost"}
                                                                                         Controller={Controller}
                                                                                         rules={
-                                                                                            { required: true }
-
+                                                                                            {
+                                                                                                required: true,
+                                                                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                                                            }
                                                                                         }
                                                                                         control={control}
                                                                                         register={register}
@@ -700,6 +702,7 @@ function RunSimulationDrawer(props) {
                                                                                                     value: /^\d*\.?\d*$/,
                                                                                                     message: 'Invalid Number.'
                                                                                                 },
+                                                                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                                             }}
                                                                                             handleChange={() => { }}
                                                                                             defaultValue={""}
@@ -827,7 +830,7 @@ function RunSimulationDrawer(props) {
                                                                                         value: /^\d*\.?\d*$/,
                                                                                         message: 'Invalid Number.'
                                                                                     },
-
+                                                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                                 }}
                                                                                 handleChange={() => { }}
                                                                                 defaultValue={""}
@@ -947,6 +950,7 @@ function RunSimulationDrawer(props) {
                                                                                         value: /^\d*\.?\d*$/,
                                                                                         message: 'Invalid Number.'
                                                                                     },
+                                                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                                 }}
                                                                                 handleChange={() => { }}
                                                                                 defaultValue={""}
@@ -1071,6 +1075,7 @@ function RunSimulationDrawer(props) {
                                                                                         value: /^\d*\.?\d*$/,
                                                                                         message: 'Invalid Number.'
                                                                                     },
+                                                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                                 }}
                                                                                 handleChange={() => { }}
                                                                                 defaultValue={""}
