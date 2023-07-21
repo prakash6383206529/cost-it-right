@@ -123,15 +123,17 @@ function CostingDetailStepTwo(props) {
       tempData = {
         ...tempData,
         NetSurfaceTreatmentCost: data.NetSurfaceTreatmentCost,
-        TotalCost: OverAllCost,
+        // TotalCost: OverAllCost,
+        BasicRate: OverAllCost + checkForNull(DiscountCostData?.AnyOtherCost),
+        TotalCost: OverAllCost + checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalConditionCost),
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
       setTimeout(() => {
         dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => {
+          dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
+          dispatch(setSurfaceCostData(data, () => { }))
         }))
       }, 500);
-      dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
-      dispatch(setSurfaceCostData(data, () => { }))
     }
   }
 
@@ -357,7 +359,6 @@ function CostingDetailStepTwo(props) {
           // BasicRate: OverAllCost,
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
-
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
         dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => {
         }))

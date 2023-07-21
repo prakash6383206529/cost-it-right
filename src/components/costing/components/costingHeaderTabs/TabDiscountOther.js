@@ -115,7 +115,6 @@ function TabDiscountOther(props) {
           totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : totalNpvCost,
           totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : totalConditionCost,
         }
-
         props.setHeaderCost(topHeaderData, headerCosts, costData)
       }
     }
@@ -193,81 +192,82 @@ function TabDiscountOther(props) {
   //USED TO SET ITEM DATA THAT WILL CALL WHEN CLICK ON OTHER TAB
   useEffect(() => {
 
-    setTimeout(() => {
+    dispatch(setComponentDiscountOtherItemData({}, () => { }))
+    // setTimeout(() => {
 
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: costData.CostingId }
-      })
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: costData.CostingId }
+    })
 
-      let otherCostFinalArray = []
-      Array.isArray(otherCostArray) && otherCostArray.map(item => {
-        let data1 = {
-          "Type": 'Other',
-          "ApplicabilityType": item?.OtherCostApplicability,
-          "ApplicabilityIdRef": item?.OtherCostApplicabilityId,
-          "ApplicabilityCost": item?.ApplicabilityCost,
-          "Description": item?.OtherCostDescription,
-          "NetCost": item?.AnyOtherCost,
-          "Value": item?.PercentageOtherCost,
-          "CRMHead": item?.CRMHead
-        }
-        otherCostFinalArray.push(data1)
-      })
-
-      let discountArray = [
-        {
-          "Type": 'Discount',
-          "ApplicabilityType": discountCostApplicability?.label,
-          "ApplicabilityIdRef": discountCostApplicability?.value,
-          "Description": '',
-          "NetCost": DiscountCostData?.HundiOrDiscountValue,
-          "Value": getValues('HundiOrDiscountPercentage'),
-          "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
-        }
-      ]
-
-      let data = {
-        "CostingId": costData?.CostingId,
-        "PartId": costData?.PartId,
-        "PartNumber": costData?.PartNumber,
-        "NetPOPrice": checkForNull(netPOPrice),
-        "TotalCost": checkForNull(netPOPrice),
-        "LoggedInUserId": loggedInUserId(),
-        "EffectiveDate": CostingEffectiveDate,
-        "BasicRate": checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
-        "CurrencyId": currency?.value,
-        "Currency": currency?.label,
-        "IsChangeCurrency": IsCurrencyChange,
-        "NetPOPriceInOtherCurrency": netPoPriceCurrencyState,
-        "CurrencyExchangeRate": CurrencyExchangeRate,
-        "Remark": getValues('Remarks'),
-
-        "CostingPartDetails": {
-
-          "CostingDetailId": costData?.CostingId,
-          "PartId": costData?.PartId,
-          "PartTypeId": "00000000-0000-0000-0000-000000000000",
-          "Type": costData?.VendorType,
-          "PartNumber": costData?.PartNumber,
-          "PartName": costData?.PartName,
-          "Quantity": 1,
-          "IsOpen": true,
-          "IsPrimary": true,
-          "Sequence": '0',
-          "NetDiscountsCost": DiscountCostData?.HundiOrDiscountValue,
-          "TotalCost": checkForNull(netPOPrice),
-          "NetOtherCost": DiscountCostData?.AnyOtherCost,
-          "OtherCostDetails": otherCostFinalArray,
-          "DiscountCostDetails": discountArray,
-          "NetNpvCost": checkForNull(totalNpvCost),
-          "NetConditionCost": checkForNull(totalConditionCost),
-        },
-        "Attachements": updatedFiles,
-        "IsChanged": true,
+    let otherCostFinalArray = []
+    Array.isArray(otherCostArray) && otherCostArray.map(item => {
+      let data1 = {
+        "Type": 'Other',
+        "ApplicabilityType": item?.OtherCostApplicability,
+        "ApplicabilityIdRef": item?.OtherCostApplicabilityId,
+        "ApplicabilityCost": item?.ApplicabilityCost,
+        "Description": item?.OtherCostDescription,
+        "NetCost": item?.AnyOtherCost,
+        "Value": item?.PercentageOtherCost,
+        "CRMHead": item?.CRMHead
       }
+      otherCostFinalArray.push(data1)
+    })
 
-      dispatch(setComponentDiscountOtherItemData(data, () => { }))
-    }, 1000)
+    let discountArray = [
+      {
+        "Type": 'Discount',
+        "ApplicabilityType": discountCostApplicability?.label,
+        "ApplicabilityIdRef": discountCostApplicability?.value,
+        "Description": '',
+        "NetCost": DiscountCostData?.HundiOrDiscountValue,
+        "Value": getValues('HundiOrDiscountPercentage'),
+        "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
+      }
+    ]
+
+    let data = {
+      "CostingId": costData?.CostingId,
+      "PartId": costData?.PartId,
+      "PartNumber": costData?.PartNumber,
+      "NetPOPrice": checkForNull(netPOPrice),
+      "TotalCost": checkForNull(netPOPrice),
+      "LoggedInUserId": loggedInUserId(),
+      "EffectiveDate": CostingEffectiveDate,
+      "BasicRate": checkForNull(netPOPrice) - (checkForNull(totalNpvCost) + checkForNull(totalConditionCost)),
+      "CurrencyId": currency?.value,
+      "Currency": currency?.label,
+      "IsChangeCurrency": IsCurrencyChange,
+      "NetPOPriceInOtherCurrency": netPoPriceCurrencyState,
+      "CurrencyExchangeRate": CurrencyExchangeRate,
+      "Remark": getValues('Remarks'),
+
+      "CostingPartDetails": {
+
+        "CostingDetailId": costData?.CostingId,
+        "PartId": costData?.PartId,
+        "PartTypeId": "00000000-0000-0000-0000-000000000000",
+        "Type": costData?.VendorType,
+        "PartNumber": costData?.PartNumber,
+        "PartName": costData?.PartName,
+        "Quantity": 1,
+        "IsOpen": true,
+        "IsPrimary": true,
+        "Sequence": '0',
+        "NetDiscountsCost": DiscountCostData?.HundiOrDiscountValue,
+        "TotalCost": checkForNull(netPOPrice),
+        "NetOtherCost": DiscountCostData?.AnyOtherCost,
+        "OtherCostDetails": otherCostFinalArray,
+        "DiscountCostDetails": discountArray,
+        "NetNpvCost": checkForNull(totalNpvCost),
+        "NetConditionCost": checkForNull(totalConditionCost),
+      },
+      "Attachements": updatedFiles,
+      "IsChanged": true,
+    }
+
+    dispatch(setComponentDiscountOtherItemData(data, () => { }))
+    // }, 1000)
   }, [DiscountCostData, fieldValues])
 
   useEffect(() => {
