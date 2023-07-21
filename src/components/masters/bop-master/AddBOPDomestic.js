@@ -1232,17 +1232,17 @@ class AddBOPDomestic extends Component {
                           )}
                         </Row>
 
-                        <Row>
-                          <Col md="12">
-                            <div className="left-border">{"BREAKUP:"}</div>
-                          </Col>
-                          <Col md="3" className='mb-4'>
-                            {initialConfiguration?.IsBoughtOutPartCostingConfigured &&
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured &&
+                          <Row>
+                            <Col md="12">
+                              <div className="left-border">{"Detailed BOP:"}</div>
+                            </Col>
+                            <Col md="3" className='mb-4'>
                               <label
                                 className={`custom-checkbox`}
                                 onChange={this.breakUpHandleChange}
                               >
-                                Breakup
+                                Detailed BOP
                                 <input
                                   type="checkbox"
                                   checked={isTechnologyVisible}
@@ -1254,27 +1254,27 @@ class AddBOPDomestic extends Component {
                                   onChange={this.breakUpHandleChange}
                                 />
                               </label>
-                            }
-                          </Col>
-                          {isTechnologyVisible && <Col md="3" className='mb-4'>
-                            <Field
-                              label="Technology"
-                              type="text"
-                              name="Technology"
-                              component={searchableSelect}
-                              placeholder={"Technology"}
-                              options={this.renderListing("technology")}
-                              validate={
-                                this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                              required={true}
-                              handleChangeDescription={
-                                this.handleTechnologyChange
-                              }
-                              valueDescription={this.state.Technology}
-                              disabled={isViewMode ? true : false}
-                            />
-                          </Col>}
-                        </Row>
+                            </Col>
+                            {isTechnologyVisible && <Col md="3" className='mb-4'>
+                              <Field
+                                label="Technology"
+                                type="text"
+                                name="Technology"
+                                component={searchableSelect}
+                                placeholder={"Technology"}
+                                options={this.renderListing("technology")}
+                                validate={
+                                  this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={
+                                  this.handleTechnologyChange
+                                }
+                                valueDescription={this.state.Technology}
+                                disabled={isViewMode ? true : false}
+                              />
+                            </Col>}
+                          </Row>
+                        }
 
                         <Row className='UOM-label-container'>
                           <Col md="12">
