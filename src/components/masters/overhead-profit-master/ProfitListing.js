@@ -378,7 +378,8 @@ function ProfitListing(props) {
     * @description confirm delete
     */
     const confirmDelete = (ID) => {
-        dispatch(deleteProfit(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        dispatch(deleteProfit(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)

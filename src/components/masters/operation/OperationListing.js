@@ -322,7 +322,8 @@ class OperationListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteOperationAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteOperationAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 this.resetState()

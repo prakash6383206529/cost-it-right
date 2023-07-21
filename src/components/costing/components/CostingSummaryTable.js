@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -805,7 +805,7 @@ const CostingSummaryTable = (props) => {
           obj.customerId = viewCostingData[index]?.customerId
           obj.customerCode = viewCostingData[index]?.customerCode
           obj.customer = viewCostingData[index]?.customer
-          obj.BasicRate = viewCostingData[index]?.BasicRate
+          obj.basicRate = viewCostingData[index]?.BasicRate
           obj.BudgetedPrice = viewCostingData[index]?.BudgetedPrice
           obj.BudgetedPriceVariance = viewCostingData[index]?.BudgetedPriceVariance
           temp.push(obj)
@@ -1141,9 +1141,9 @@ const CostingSummaryTable = (props) => {
         heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
         return heading;
       default:
-        break;
+        heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
+        return heading;
     }
-    return heading;
   }
 
   // FUNCTION FOR OPENING DRAWER WHEN USER CLICK ON HYPER LINK FOR VIEW MULTIPLE TECHNOLOGY
@@ -1449,7 +1449,10 @@ const CostingSummaryTable = (props) => {
                         { }
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
-                            const title = data.costingTypeId === ZBCTypeId ? data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : (data.costingTypeId === VBCTypeId || data.costingTypeId === NCCTypeId) ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
+                            const title = data.costingTypeId === ZBCTypeId ?
+                              data?.plantName + "(SOB: " + data?.shareOfBusinessPercent + "%)"
+                              : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId)
+                                ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
                             return (
                               <th scope="col" className={`${tableDataClass(data)} header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}
@@ -1523,7 +1526,7 @@ const CostingSummaryTable = (props) => {
                             <td>
                               <span className="d-block">Costing Version</span>
                               <span className="d-block mt-2">PO Price (Effective from)</span>
-                              <span className="d-block">Vendor</span>
+                              <span className="d-block">Vendor (Code)</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
@@ -1560,7 +1563,7 @@ const CostingSummaryTable = (props) => {
                                       </span>}
                                     </span>}
                                     {/* USE PART NUMBER KEY HERE */}
-                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId === VBCTypeId) ? `${data?.vendorName}(${data?.vendorCode})` : ''}</span>
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? `${data?.vendorName}(${data?.vendorCode})` : ''}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
