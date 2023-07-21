@@ -119,16 +119,11 @@ class VolumeBulkUploadDrawer extends Component {
     }
     responseHandler = (res) => {
         if (res?.data) {
-            let Data = res?.data?.Data;
-            if (Data[0]?.CountSucceeded > 0) {
-                Toaster.success(`${Data[0].CountSucceeded} uploaded successfully`)
+            if (res?.data?.Result === true) {
+                Toaster.success(res?.data?.Message)
             }
-            if (Data[0]?.CountFailed > 0) {
-                Toaster.warning(res.data.Message);
-                this.setState({
-                    failedData: Data[0].FaildRecords,
-                    faildRecords: true,
-                })
+            if (res?.data?.Result === false) {
+                Toaster.error(res?.data?.Message);
             }
         }
         this.toggleDrawer('', false)
