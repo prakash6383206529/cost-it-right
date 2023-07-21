@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, WACTypeId, SWAP_POSITIVE_NEGATIVE } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -805,7 +805,7 @@ const CostingSummaryTable = (props) => {
           obj.customerId = viewCostingData[index]?.customerId
           obj.customerCode = viewCostingData[index]?.customerCode
           obj.customer = viewCostingData[index]?.customer
-          obj.BasicRate = viewCostingData[index]?.BasicRate
+          obj.basicRate = viewCostingData[index]?.BasicRate
           obj.BudgetedPrice = viewCostingData[index]?.BudgetedPrice
           obj.BudgetedPriceVariance = viewCostingData[index]?.BudgetedPriceVariance
           temp.push(obj)
@@ -1144,7 +1144,6 @@ const CostingSummaryTable = (props) => {
       default:
         heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
         return heading;
-
     }
   }
 
