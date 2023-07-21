@@ -49,6 +49,7 @@ import {
   SET_OTHER_COST,
   RESET_EXCHANGE_RATE_DATA,
   SET_REJECTED_COSTING_VIEW_DATA,
+  SET_CALL_ST_API,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2620,3 +2621,16 @@ export const setRejectedCostingViewData = (data) => (dispatch) => {
     payload: temp,
   })
 }
+
+/**
+ * @method setCallSTAPI
+ * @description setCallSTAPI  
+ */
+export function setCallSTAPI(TabData) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_CALL_ST_API,
+      payload: TabData,
+    });
+  }
+};
