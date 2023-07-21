@@ -3,7 +3,7 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { deleteRawMaterialAPI, getAllRMDataList, } from '../actions/Material';
-import { userDepartmetList } from "../../../helper/auth"
+import { loggedInUserId, userDepartmetList } from "../../../helper/auth"
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -422,7 +422,8 @@ function RMDomesticListing(props) {
     * @description confirm delete Raw Material details
     */
     const confirmDelete = (ID) => {
-        dispatch(deleteRawMaterialAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        dispatch(deleteRawMaterialAPI(ID, loggedInUser, (res) => {
             if (res !== undefined && res.status === 417 && res.data.Result === false) {
                 Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {

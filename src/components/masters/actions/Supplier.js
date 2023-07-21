@@ -132,10 +132,11 @@ export function getSupplierByIdAPI(supplierId, isEditFlag, callback) {
  * @method deleteSupplierAPI
  * @description delete supplier
  */
-export function deleteSupplierAPI(Id, callback) {
+export function deleteSupplierAPI(vendorId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteSupplierAPI}/${Id}`, config())
+        const queryParams = `vendorId=${vendorId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteSupplierAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

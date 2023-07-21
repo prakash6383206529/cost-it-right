@@ -138,10 +138,11 @@ export function updateReasonAPI(requestData, callback) {
  * @method deleteReasonAPI
  * @description delete UOM 
  */
-export function deleteReasonAPI(Id, callback) {
+export function deleteReasonAPI(reasonId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteReasonAPI}/${Id}`, config())
+        const queryParams = `reasonId=${reasonId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteReasonAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
