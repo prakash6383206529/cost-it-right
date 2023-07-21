@@ -2577,7 +2577,9 @@ export const PFS3TypeId = Number(reactLocalStorage.getObject('CostingHeadsListSh
 export const ZBCADDMORE = 15
 export const VBCADDMORE = 16
 export const CBCADDMORE = 17
-
+export const ZBCADDMOREOPERATION = 18
+export const VBCADDMOREOPERATION = 19
+export const CBCADDMOREOPERATION = 20
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 export const NFRAPPROVALTYPEID = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 // export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
