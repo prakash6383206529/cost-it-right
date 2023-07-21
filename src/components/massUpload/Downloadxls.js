@@ -1,6 +1,6 @@
 import React from "react";
 import ReactExport from 'react-export-excel';
-import { CBCADDMORE, CBCTypeId, VBCADDMORE, VBCTypeId, ZBCADDMORE, ZBCTypeId } from "../../config/constants";
+import { CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from "../../config/constants";
 import {
     Fuel, FuelTempData,
     RMDomesticZBC, RMDomesticZBCTempData, RMDomesticVBC, RMDomesticVBCTempData,
@@ -93,6 +93,9 @@ export const checkVendorPlantConfig = (excelData, type = '') => {
         if (getConfigurationKey().IsShowClientVendorBOP === false) {
             if (el.value === 'IsClientVendorBOP') return false;
         }
+        if (getConfigurationKey().IsShowMinimumOrderQuantity === false) {
+            if (el.value === 'NumberOfPieces') return false;
+        }
         return true;
     })
 }
@@ -139,7 +142,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMImportZBC), RMImportZBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? ZBCOperation : checkLabourRateConfigure(ZBCOperationSmallForm)), ZBCOperationTempData);
+                return this.returnExcelColumn(checkLabourRateConfigure(ZBCOperationSmallForm), ZBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineZBC), MachineZBCTempData);
             case ZBCADDMORE:
@@ -148,10 +151,10 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(MHRMoreZBC), MHRMoreZBCTempData);
             case 'BOP Domestic':
             case 'Insert Domestic':
-                return this.returnExcelColumn(BOP_ZBC_DOMESTIC, BOP_ZBC_DOMESTIC_TempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_DOMESTIC), BOP_ZBC_DOMESTIC_TempData);
             case 'BOP Import':
             case 'Insert Import':
-                return this.returnExcelColumn(BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT), BOP_ZBC_IMPORT_TempData);
             case 'Actual Volume':
                 return this.returnExcelColumn(VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -162,6 +165,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(BUDGET_ZBC, BUDGET_ZBC_TEMPDATA);
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
+            case ZBCADDMOREOPERATION:
+                return this.returnExcelColumn(ZBCOperation, ZBCOperationTempData);
             default:
                 return 'foo';
         }
@@ -178,7 +183,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? VBCOperation : checkLabourRateConfigure(VBCOperationSmallForm)), VBCOperationTempData);
+                return this.returnExcelColumn(checkLabourRateConfigure(VBCOperationSmallForm), VBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case 'Insert Domestic':
@@ -197,6 +202,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(BUDGET_VBC, BUDGET_VBC_TEMPDATA);
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
+            case VBCADDMOREOPERATION:
+                return this.returnExcelColumn(VBCOperation, VBCOperationTempData);
             default:
                 return 'foo';
         }
@@ -212,7 +219,7 @@ class Downloadxls extends React.Component {
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportCBC, CBCTypeId), RMImportCBCTempData);
             case 'Operation':
-                return this.returnExcelColumn((getConfigurationKey().IsShowDetailedBreakup ? CBCOperation : checkLabourRateConfigure(CBCOperationSmallForm)), CBCOperationTempData);
+                return this.returnExcelColumn(checkLabourRateConfigure(CBCOperationSmallForm), CBCOperationTempData);
             case 'Machine':
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
             case 'Insert Domestic':
@@ -231,6 +238,8 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(BUDGET_CBC, BUDGET_CBC_TEMPDATA);
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
+            case CBCADDMOREOPERATION:
+                return this.returnExcelColumn(CBCOperation, CBCOperationTempData);
             default:
                 return 'foo';
         }
@@ -262,28 +271,28 @@ class Downloadxls extends React.Component {
         const { isFailedFlag, fileName, isZBCVBCTemplate, isMachineMoreTemplate, costingTypeId } = this.props;
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
-        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
 
             return (
                 <ExcelFile hideElement={true} filename={`${fileName} ZBC`} fileExtension={'.xls'} >
-                    {isMachineMoreTemplate ? this.renderZBCSwitch(costingTypeId) : this.renderZBCSwitch(fileName)}
+                    {isMachineMoreTemplate || costingTypeId === ZBCADDMOREOPERATION ? this.renderZBCSwitch(costingTypeId) : this.renderZBCSwitch(fileName)}
                 </ExcelFile>
             );
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
-        if (isFailedFlag && costingTypeId === VBCTypeId && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'Insert Domestic' || fileName === 'Insert Import' || fileName === 'BOP Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate')) {
+        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
             return (
                 <ExcelFile hideElement={true} filename={`${fileName}VBC`} fileExtension={'.xls'} >
-                    {this.renderVBCSwitch(fileName)}
+                    {costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(costingTypeId) : this.renderVBCSwitch(fileName)}
                 </ExcelFile>
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN CBC FILE FAILED
-        if (isFailedFlag && costingTypeId === CBCTypeId && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget' || fileName === 'Insert Domestic' || fileName === 'Insert Import')) {
+        if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
             return (
                 <ExcelFile hideElement={true} filename={`${fileName} CBC`} fileExtension={'.xls'} >
-                    {this.renderCBCSwitch(fileName)}
+                    {costingTypeId === CBCADDMOREOPERATION ? this.renderCBCSwitch(costingTypeId) : this.renderCBCSwitch(fileName)}
                 </ExcelFile>
             );
         }
@@ -300,18 +309,19 @@ class Downloadxls extends React.Component {
         if (isZBCVBCTemplate) {
             return (
                 <>
-                    {costingTypeId === ZBCTypeId &&
-                        <ExcelFile filename={`${fileName} ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download ZBC</button>}>
-                            {fileName ? this.renderZBCSwitch(fileName) : ''}
+                    {(costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) &&
+                        <ExcelFile filename={costingTypeId === ZBCADDMOREOPERATION ? 'ZBC More Details' : `${fileName} ZBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download ZBC</button>}>
+                            {costingTypeId !== ZBCADDMOREOPERATION ? this.renderZBCSwitch(fileName) : this.renderZBCSwitch(costingTypeId)}
                         </ExcelFile>}
 
-                    {costingTypeId === VBCTypeId &&
-                        <ExcelFile filename={`${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC</button>}>
-                            {fileName ? this.renderVBCSwitch(fileName) : ''}
+                    {(costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION) &&
+                        <ExcelFile filename={costingTypeId === VBCADDMOREOPERATION ? 'VBC More Details' : `${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC</button>}>
+
+                            {(costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(Number(costingTypeId)) : this.renderVBCSwitch(fileName))}
                         </ExcelFile>}
-                    {costingTypeId === CBCTypeId &&
-                        <ExcelFile filename={`${fileName} CBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download CBC</button>}>
-                            {fileName ? this.renderCBCSwitch(fileName) : ''}
+                    {(costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) &&
+                        <ExcelFile filename={costingTypeId === CBCADDMOREOPERATION ? 'CBC More Details' : `${fileName} CBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download CBC</button>}>
+                            {costingTypeId !== CBCADDMOREOPERATION ? this.renderCBCSwitch(fileName) : this.renderCBCSwitch(costingTypeId)}
                         </ExcelFile>}
                     {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}
                     {(costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) &&
