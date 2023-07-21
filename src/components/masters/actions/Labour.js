@@ -103,10 +103,11 @@ export function getLabourData(labourId, callback) {
  * @method deleteLabour
  * @description delete labour
  */
-export function deleteLabour(Id, callback) {
+export function deleteLabour(labourDetailId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteLabour}/${Id}`, config())
+        const queryParams = `labourDetailId=${labourDetailId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteLabour}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

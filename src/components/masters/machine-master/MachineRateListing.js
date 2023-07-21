@@ -309,7 +309,8 @@ class MachineRateListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        this.props.deleteMachine(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteMachine(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
                 this.resetState()

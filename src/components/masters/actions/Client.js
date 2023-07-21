@@ -116,10 +116,11 @@ export function getClientDataList(filterData, callback) {
  * @method deleteClient
  * @description delete Client
  */
-export function deleteClient(ID, callback) {
+export function deleteClient(clientId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteClient}/${ID}`, config())
+        const queryParams = `clientId=${clientId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteClient}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

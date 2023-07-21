@@ -102,10 +102,11 @@ export function getFreightData(freightId, callback) {
  * @method deleteFright
  * @description DELETE FREIGHT
  */
-export function deleteFright(Id, callback) {
+export function deleteFright(freightId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteFright}/${Id}`, config())
+        const queryParams = `freightId=${freightId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteFright}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

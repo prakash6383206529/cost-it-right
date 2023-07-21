@@ -255,7 +255,8 @@ class IndivisualPartListing extends Component {
     * @description confirm delete user item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deletePart(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deletePart(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 //this.getTableListData();

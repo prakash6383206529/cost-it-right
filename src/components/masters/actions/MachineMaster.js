@@ -279,10 +279,11 @@ export function getMachineDetailsData(ID, callback) {
  * @method deleteMachine
  * @description delete Machine
  */
-export function deleteMachine(Id, callback) {
+export function deleteMachine(machineId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteMachine}/${Id}`, config())
+        const queryParams = `machineId=${machineId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteMachine}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
