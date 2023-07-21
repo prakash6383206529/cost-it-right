@@ -24,7 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { searchableSelect } from '../../layout/FormInputs'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { searchNocontentFilter } from '../../../helper'
+import { loggedInUserId, searchNocontentFilter } from '../../../helper'
 import SelectRowWrapper from '../../common/SelectRowWrapper'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -208,7 +208,8 @@ class ProcessListing extends Component {
    * @description DELETE PROCESS
    */
   confirmDelete = (ID) => {
-    this.props.deleteProcess(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteProcess(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
         this.getDataList()

@@ -14,7 +14,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, searchNocontentFilter, userDepartmetList } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -295,7 +295,8 @@ class BOPDomesticListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        this.props.deleteBOP(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteBOP(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.resetState()

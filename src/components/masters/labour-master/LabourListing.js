@@ -25,7 +25,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -159,7 +159,8 @@ class LabourListing extends Component {
    * @description confirm delete item
    */
   confirmDeleteItem = (ID) => {
-    this.props.deleteLabour(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteLabour(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
         this.setState({ dataCount: 0 })

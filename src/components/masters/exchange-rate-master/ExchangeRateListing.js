@@ -26,6 +26,7 @@ import { getListingForSimulationCombined } from '../../simulation/actions/Simula
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -167,7 +168,8 @@ class ExchangeRateListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteExchangeRate(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteExchangeRate(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
 

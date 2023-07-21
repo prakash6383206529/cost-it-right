@@ -110,7 +110,8 @@ class ZBCPlantListing extends Component {
     * @description confirm delete user item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deletePlantAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deletePlantAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 this.setState({ dataCount: 0 })

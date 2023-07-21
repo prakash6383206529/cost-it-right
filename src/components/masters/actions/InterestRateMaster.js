@@ -99,10 +99,11 @@ export function getInterestRateData(ID, callback) {
  * @method deleteInterestRate
  * @description DELETE INTEREST RATE
  */
-export function deleteInterestRate(Id, callback) {
+export function deleteInterestRate(vendorIntrestRateId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteInterestRate}/${Id}`, config())
+        const queryParams = `vendorIntrestRateId=${vendorIntrestRateId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteInterestRate}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

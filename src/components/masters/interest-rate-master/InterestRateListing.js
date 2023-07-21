@@ -24,7 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
@@ -160,8 +160,8 @@ class InterestRateListing extends Component {
   * @description confirm delete item
   */
   confirmDeleteItem = (ID) => {
-
-    this.props.deleteInterestRate(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteInterestRate(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
         this.setState({ dataCount: 0 })

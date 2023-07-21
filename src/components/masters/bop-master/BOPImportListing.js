@@ -285,8 +285,8 @@ class BOPImportListing extends Component {
     * @description confirm delete BOP
     */
     confirmDelete = (ID) => {
-
-        this.props.deleteBOP(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteBOP(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.resetState()
