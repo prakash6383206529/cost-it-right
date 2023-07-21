@@ -87,10 +87,11 @@ export function getProcessDataList(data, callback) {
  * @method deleteProcess
  * @description DELETE PROCESS
  */
-export function deleteProcess(Id, callback) {
+export function deleteProcess(processId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProcess}/${Id}`, config())
+        const queryParams = `processId=${processId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteProcess}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -108,7 +109,7 @@ export function getProcessData(processId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         if (processId !== '') {
-            axios.get(`${API.getProcessData}/${processId}`, config())
+            axios.get(`${API.getProcessData} / ${processId}`, config())
                 .then((response) => {
                     if (response.data.Result === true) {
                         dispatch({
@@ -181,7 +182,7 @@ export function getInitialMachineSelectList(callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         const id = '802da383-4745-420d-9186-2dbe42f00f5b';
-        const request = axios.get(`${API.getMachineSelectList}/${id}`, config());
+        const request = axios.get(`${API.getMachineSelectList} / ${id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -229,7 +230,7 @@ export function getInitialProcessesSelectList(callback) {
 export function getMachineSelectListByPlant(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineSelectListByPlant}/${Id}`, config());
+        const request = axios.get(`${API.getMachineSelectListByPlant} / ${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -253,7 +254,7 @@ export function getMachineSelectListByPlant(Id, callback) {
 export function getPlantSelectListByMachine(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectListByMachine}/${Id}`, config());
+        const request = axios.get(`${API.getPlantSelectListByMachine} / ${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -277,7 +278,7 @@ export function getPlantSelectListByMachine(Id, callback) {
 export function getMachineTypeSelectListByPlant(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineTypeSelectListByPlant}/${Id}`, config());
+        const request = axios.get(`${API.getMachineTypeSelectListByPlant} / ${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -301,7 +302,7 @@ export function getMachineTypeSelectListByPlant(Id, callback) {
 export function getVendorSelectListByTechnology(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getVendorSelectListByTechnology}/${Id}`, config());
+        const request = axios.get(`${API.getVendorSelectListByTechnology} / ${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -325,7 +326,7 @@ export function getVendorSelectListByTechnology(Id, callback) {
 export function getMachineTypeSelectListByTechnology(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineTypeSelectListByTechnology}/${Id}`, config());
+        const request = axios.get(`${API.getMachineTypeSelectListByTechnology} / ${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -349,7 +350,7 @@ export function getMachineTypeSelectListByTechnology(Id, callback) {
 export function getMachineTypeSelectListByVendor(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMachineTypeSelectListByVendor}/${Id}`, config());
+        const request = axios.get(`${API.getMachineTypeSelectListByVendor} / ${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -373,7 +374,7 @@ export function getMachineTypeSelectListByVendor(Id, callback) {
 export function getProcessSelectListByMachineType(Id, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getProcessSelectListByMachineType}/${Id}`, config());
+        const request = axios.get(`${API.getProcessSelectListByMachineType} / ${Id}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

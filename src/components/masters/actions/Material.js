@@ -128,10 +128,11 @@ export function updateRawMaterialAPI(requestData, callback) {
  * @method deleteRawMaterialAPI
  * @description delete Raw Material API
  */
-export function deleteRawMaterialAPI(RawMaterialId, callback) {
+export function deleteRawMaterialAPI(rawMaterialId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteRawMaterialAPI}/${RawMaterialId}`, config())
+        const queryParams = `rawMaterialId=${rawMaterialId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteRawMaterialAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -222,10 +223,11 @@ export function updateCategoryAPI(requestData, callback) {
  * @method deleteCategoryAPI
  * @description delete Material type API
  */
-export function deleteCategoryAPI(CategoryId, callback) {
+export function deleteCategoryAPI(CategoryId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteCategoryAPI}/${CategoryId}`, config())
+        const queryParams = `CategoryId=${CategoryId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteCategoryAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -316,10 +318,11 @@ export function updateRMGradeAPI(requestData, callback) {
  * @method deleteRMGradeAPI
  * @description delete RM Grade API
  */
-export function deleteRMGradeAPI(ID, callback) {
+export function deleteRMGradeAPI(gradeId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteRMGradeAPI}/${ID}`, config())
+        const queryParams = `gradeId=${gradeId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteRMGradeAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -445,10 +448,11 @@ export function updateRMSpecificationAPI(requestData, callback) {
  * @method deleteRMSpecificationAPI
  * @description delete RM Specification API
  */
-export function deleteRMSpecificationAPI(ID, callback) {
+export function deleteRMSpecificationAPI(specificationId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteRMSpecificationAPI}/${ID}`, config())
+        const queryParams = `specificationId=${specificationId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteRMSpecificationAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
