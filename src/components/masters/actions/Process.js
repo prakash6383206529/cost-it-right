@@ -87,10 +87,11 @@ export function getProcessDataList(data, callback) {
  * @method deleteProcess
  * @description DELETE PROCESS
  */
-export function deleteProcess(Id, callback) {
+export function deleteProcess(processId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProcess}/${Id}`, config())
+        const queryParams = `processId=${processId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteProcess}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
