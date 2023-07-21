@@ -122,8 +122,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / (getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1)
                 tempArr.push(tempObj)
             }
             return null;
@@ -251,25 +251,27 @@ function BDSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.data;
+        const NumberOfPieces = getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1
         if (isImpactedMaster) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1
-            const NewBasicRate = Number(row.NewBasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1
+            const BasicRate = Number(row.BasicRate) / NumberOfPieces
+            const NewBasicRate = Number(row.NewBasicRate) / NumberOfPieces
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         }
     }
 
     const OldcostFormatter = (props) => {
         const row = props?.data;
+        const NumberOfPieces = getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1
         if (isImpactedMaster) {
             return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
 
-            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1, getConfigurationKey().NoOfDecimalForPrice) : ''
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice) : ''
 
         }
     }
