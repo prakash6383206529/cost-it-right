@@ -154,7 +154,7 @@ function HotForging(props) {
     let EndBitLength = BilletLength - (InputLength * NoOfPartsPerLength)
     let obj = dataSend
     if (EndBitLength < 0) {
-      Toaster.warning('End bit length cannot be negetive')
+      Toaster.warning('End bit length cannot be Negative')
       EndBitLength = 0
     }
     obj.EndBitLength = EndBitLength
