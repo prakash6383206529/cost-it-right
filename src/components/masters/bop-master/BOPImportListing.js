@@ -370,6 +370,14 @@ class BOPImportListing extends Component {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
+    /**
+    * @method bopCostingFormatter
+    * @description bopCostingFormatter
+    */
+    bopCostingFormatter = (props) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return rowData?.IsBreakupBoughtOutPart != null ? (rowData?.IsBreakupBoughtOutPart ? 'Yes' : 'No') : '-';
+    }
 
     /**
     * @method costingHeadFormatter
@@ -545,7 +553,7 @@ class BOPImportListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
         const { isBulkUpload, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
@@ -624,6 +632,7 @@ class BOPImportListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter,
             commonCostFormatter: this.commonCostFormatter,
             attachmentFormatter: this.attachmentFormatter,
+            bopCostingFormatter: this.bopCostingFormatter,
         };
 
 
@@ -794,6 +803,8 @@ class BOPImportListing extends Component {
                                     {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart " headerName="Detailed BOP" cellRenderer={'bopCostingFormatter'} ></AgGridColumn>}
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                     <AgGridColumn field="Currency"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>

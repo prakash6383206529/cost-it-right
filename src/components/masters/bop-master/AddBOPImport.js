@@ -23,7 +23,7 @@ import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
-import { AcceptableBOPUOM } from '../../../config/masterData'
+import { ASSEMBLY, AcceptableBOPUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
@@ -39,6 +39,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -105,7 +106,9 @@ class AddBOPImport extends Component {
       vendorFilterList: [],
       isCallCalculation: false,
       isClientVendorBOP: false,
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      isTechnologyVisible: false,
+      Technology: {}
     }
   }
   /**
@@ -134,6 +137,7 @@ class AddBOPImport extends Component {
     this.props.getIncoTermSelectList(() => { })
     // this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
+    this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCurrencySelectList(() => { })
       this.props.getClientSelectList(() => { })
@@ -335,6 +339,8 @@ class AddBOPImport extends Component {
               paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription ? Data.PaymentTermDescription : ''} ${Data.PaymentTerm ? `(${Data.PaymentTerm})` : '-'}`, value: Data.BoughtOutPartPaymentTermId } : [],
               showCurrency: true,
               isClientVendorBOP: Data.IsClientVendorBOP,
+              isTechnologyVisible: Data.IsBreakupBoughtOutPart,
+              Technology: { label: Data.TechnologyName, value: Data.TechnologyId },
             }, () => {
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
@@ -379,8 +385,8 @@ class AddBOPImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { clientSelectList, bopCategorySelectList, partSelectList, plantSelectList, cityList,
-      UOMSelectList, currencySelectList, IncoTermsSelectList, PaymentTermsSelectList } = this.props;
+    const { bopCategorySelectList, partSelectList, plantSelectList, cityList,
+      UOMSelectList, currencySelectList, clientSelectList, IncoTermsSelectList, PaymentTermsSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -454,6 +460,17 @@ class AddBOPImport extends Component {
       })
       return temp;
     }
+    if (label === 'technology') {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
+          if (item.Value === '0') return false
+          if (item.Value === String(ASSEMBLY)) return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
+
   }
 
   categoryToggler = () => {
@@ -783,7 +800,7 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP } = this.state;
+    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible, Technology } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -829,7 +846,10 @@ class AddBOPImport extends Component {
       BoughtOutPartIncoTermId: incoTerm.value,
       BoughtOutPartPaymentTermId: paymentTerm.value,
       EntryType: Number(ENTRY_TYPE_IMPORT),
-      IsClientVendorBOP: isClientVendorBOP
+      IsClientVendorBOP: isClientVendorBOP,
+      TechnologyName: Technology?.label,
+      TechnologyId: Technology?.value,
+      IsBreakupBoughtOutPart: isTechnologyVisible,
     }
     if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
 
@@ -956,13 +976,34 @@ class AddBOPImport extends Component {
   onIsClientVendorBOP = () => {
     this.setState({ isClientVendorBOP: !this.state.isClientVendorBOP })
   }
+
+  breakUpHandleChange = () => {
+    this.setState({ isTechnologyVisible: !this.state.isTechnologyVisible })
+  }
+
+  /**
+   * @method handleTechnologyChange
+   * @description Use to handle technology change
+  */
+  handleTechnologyChange = (newValue) => {
+    if (newValue.value === String(FORGING)) {
+      this.setState({ Technology: newValue })
+    } else if (newValue.value === String(SHEETMETAL)) {
+      this.setState({ Technology: newValue })
+    } else {
+      this.setState({ Technology: newValue })
+    }
+    // this.setState({ isDropDownChanged: true })
+  }
+
+
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle, isClientVendorBOP, CostingTypePermission } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle, isClientVendorBOP, CostingTypePermission, isTechnologyVisible } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1284,7 +1325,50 @@ class AddBOPImport extends Component {
                               </Col>
                             </>
                           )}
-                        </Row >
+                        </Row>
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured &&
+                          <Row>
+                            <Col md="12">
+                              <div className="left-border">{"Detailed BOP:"}</div>
+                            </Col>
+                            <Col md="3" className='mb-4'>
+                              <label
+                                className={`custom-checkbox`}
+                                onChange={this.breakUpHandleChange}
+                              >
+                                Detailed BOP
+                                <input
+                                  type="checkbox"
+                                  checked={isTechnologyVisible}
+                                  disabled={isViewMode ? true : false}
+                                />
+                                <span
+                                  className=" before-box"
+                                  checked={isTechnologyVisible}
+                                  onChange={this.breakUpHandleChange}
+                                />
+                              </label>
+                            </Col>
+                            {isTechnologyVisible && <Col md="3" className='mb-4'>
+                              <Field
+                                label="Technology"
+                                type="text"
+                                name="Technology"
+                                component={searchableSelect}
+                                placeholder={"Technology"}
+                                options={this.renderListing("technology")}
+                                validate={
+                                  this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                required={true}
+                                handleChangeDescription={
+                                  this.handleTechnologyChange
+                                }
+                                valueDescription={this.state.Technology}
+                                disabled={isViewMode ? true : false}
+                              />
+                            </Col>}
+                          </Row>
+                        }
 
                         <Row>
                           <Col md="12">
@@ -1429,24 +1513,26 @@ class AddBOPImport extends Component {
                         <Row> */}
 
                         </Row>
-                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
-                          <label
-                            className={`custom-checkbox`}
-                            onChange={this.onIsClientVendorBOP}
-                          >
-                            Client Approved Vendor
-                            <input
-                              type="checkbox"
-                              checked={isClientVendorBOP}
-                              disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
-                            />
-                            <span
-                              className=" before-box"
-                              checked={isClientVendorBOP}
+                        {
+                          getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                            <label
+                              className={`custom-checkbox`}
                               onChange={this.onIsClientVendorBOP}
-                            />
-                          </label>
-                        </Col>}
+                            >
+                              Client Approved Vendor
+                              <input
+                                type="checkbox"
+                                checked={isClientVendorBOP}
+                                disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                              />
+                              <span
+                                className=" before-box"
+                                checked={isClientVendorBOP}
+                                onChange={this.onIsClientVendorBOP}
+                              />
+                            </label>
+                          </Col>
+                        }
                         <Row>
                           <Col md="12">
                             <div className="left-border">
@@ -1582,41 +1668,47 @@ class AddBOPImport extends Component {
                           }
                         </div>
                       </Row>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                    </form >
+                  </div >
+                </div >
+              </div >
+            </div >
+          </div >
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {isCategoryDrawerOpen && (
-            <AddBOPCategory
-              isOpen={isCategoryDrawerOpen}
-              closeDrawer={this.closeCategoryDrawer}
-              isEditFlag={false}
-              anchor={"right"}
-            />
-          )}
-          {isOpenVendor && (
-            <AddVendorDrawer
-              isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenUOM && (
-            <AddUOM
-              isOpen={isOpenUOM}
-              closeDrawer={this.closeUOMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          {
+            isCategoryDrawerOpen && (
+              <AddBOPCategory
+                isOpen={isCategoryDrawerOpen}
+                closeDrawer={this.closeCategoryDrawer}
+                isEditFlag={false}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
           {
             this.state.approveDrawer && (
               <MasterSendForApproval
@@ -1647,7 +1739,7 @@ class AddBOPImport extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, supplier, boughtOutparts, part, auth, client } = state;
+  const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
   const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
 
   const { bopCategorySelectList, bopData, IncoTermsSelectList, PaymentTermsSelectList } = boughtOutparts;
@@ -1657,7 +1749,7 @@ function mapStateToProps(state) {
   const { partSelectList } = part;
   const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
-
+  const { costingSpecifiTechnology } = costing
   let initialValues = {};
   if (bopData && bopData !== undefined) {
     initialValues = {
@@ -1674,7 +1766,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI
+    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI, costingSpecifiTechnology
   }
 
 }
@@ -1703,7 +1795,8 @@ export default connect(mapStateToProps, {
   getClientSelectList,
   getIncoTermSelectList,
   getPaymentTermSelectList,
-  getUsersMasterLevelAPI
+  getUsersMasterLevelAPI,
+  getCostingSpecificTechnology,
 })(reduxForm({
   form: 'AddBOPImport',
   touchOnChange: true,
