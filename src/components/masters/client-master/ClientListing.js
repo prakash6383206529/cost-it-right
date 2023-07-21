@@ -23,6 +23,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -148,7 +149,8 @@ class ClientListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteClient(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteClient(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_CLIENT_SUCCESS);
                 this.setState({ dataCount: 0 })

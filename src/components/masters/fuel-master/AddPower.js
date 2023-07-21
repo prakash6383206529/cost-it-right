@@ -535,7 +535,7 @@ class AddPower extends Component {
           return false
         }
 
-        let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY') }
+        let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props.fuelId, cityId: this.props.cityId }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res?.data?.DynamicData;
           this.props.change('CostPerUnitOfMeasurement', DynamicData?.FuelRate)

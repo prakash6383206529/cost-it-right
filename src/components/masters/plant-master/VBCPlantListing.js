@@ -87,7 +87,8 @@ class VBCPlantListing extends Component {
     * @description confirm delete user item
     */
     confirmDeleteItem = (Id) => {
-        this.props.deletePlantAPI(Id, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deletePlantAPI(Id, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 // this.getTableListData();

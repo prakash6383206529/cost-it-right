@@ -13,7 +13,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import { FuelMaster } from '../../../config/constants';
 import { FUELLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -137,7 +137,8 @@ class FuelListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        this.props.deleteFuelDetailAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteFuelDetailAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
                 this.getDataList()

@@ -363,10 +363,11 @@ export function updateOperationAPI(requestData, callback) {
  * @method deleteOperationAPI
  * @description delete operation
  */
-export function deleteOperationAPI(OperationId, callback) {
+export function deleteOperationAPI(OperationId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteOperationAPI}/${OperationId}`, config())
+        const queryParams = `OperationId=${OperationId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteOperationAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

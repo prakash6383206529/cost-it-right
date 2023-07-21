@@ -9,6 +9,7 @@ import NoContentFound from '../../../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { loggedInUserId } from '../../../helper';
 
 class RMGradeDetail extends Component {
     constructor(props) {
@@ -49,7 +50,8 @@ class RMGradeDetail extends Component {
     * @description confirm delete RM Grade
     */
     confirmDelete = (ID) => {
-        this.props.deleteRMGradeAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteRMGradeAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_RM_GRADE_SUCCESS);
                 this.props.getRowMaterialDataAPI(res => { });

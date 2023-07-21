@@ -340,7 +340,8 @@ function OverheadListing(props) {
     * @description confirm delete
     */
     const confirmDelete = (ID) => {
-        dispatch(deleteOverhead(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        dispatch(deleteOverhead(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
                 dispatch(setSelectedRowForPagination([]))

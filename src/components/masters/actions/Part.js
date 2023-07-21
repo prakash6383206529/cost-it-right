@@ -135,10 +135,11 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
  * @method deletePart
  * @description delete part
  */
-export function deletePart(PartId, callback) {
+export function deletePart(partId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePart}/${PartId}`, config())
+        const queryParams = `partId=${partId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deletePart}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -345,10 +346,11 @@ export function updateAssemblyPart(requestData, callback) {
 * @method deleteAssemblyPart
 * @description DELETE ASSEMBLY PART
 */
-export function deleteAssemblyPart(PartId, callback) {
+export function deleteAssemblyPart(assyPartId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteAssemblyPart}/${PartId}`, config())
+        const queryParams = `assyPartId=${assyPartId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteAssemblyPart}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
