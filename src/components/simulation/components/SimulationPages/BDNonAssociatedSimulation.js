@@ -111,8 +111,8 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = val
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
-                tempObj.NewNetLandedCost = checkForNull(val) / checkForNull(item.NumberOfPieces)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(val) / (getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1)
                 tempObj.PercentageChange = checkForNull(item.Percentage)
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
@@ -123,8 +123,8 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / (getConfigurationKey().IsShowMinimumOrderQuantity ? checkForNull(item?.NumberOfPieces) : 1)
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
                 }
@@ -279,11 +279,12 @@ function BDNonAssociatedSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const NumberOfPieces = getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1
         let returnValue = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
+            returnValue = checkForDecimalAndNull((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice);
         } else {
-            returnValue = (row.NewBasicRate) / checkForNull(row.NumberOfPieces)
+            returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)
         }
 
         return returnValue
@@ -291,8 +292,9 @@ function BDNonAssociatedSimulation(props) {
 
     const OldcostFormatter = (props) => {
         const row = props?.data;
+        const NumberOfPieces = getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1
         if (!row.BasicRate || row.BasicRate === '') return ''
-        return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / checkForNull(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
+        return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const revisedBasicRateHeader = (props) => {
@@ -411,11 +413,12 @@ function BDNonAssociatedSimulation(props) {
 
     const ageValueGetterLanded = (params) => {
         let row = params.data
+        const NumberOfPieces = getConfigurationKey().IsShowMinimumOrderQuantity ? Number(row?.NumberOfPieces) : 1
         let valueReturn = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            valueReturn = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
+            valueReturn = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / NumberOfPieces
         } else {
-            valueReturn = (row?.NewBasicRate) / checkForNull(row.NumberOfPieces)
+            valueReturn = (row?.NewBasicRate) / NumberOfPieces
         }
         return valueReturn;
     };
