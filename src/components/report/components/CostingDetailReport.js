@@ -1069,7 +1069,7 @@ function ReportListing(props) {
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
+                            <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
 
                         </AgGridReact>
                         <div className='button-wrapper'>
