@@ -88,7 +88,7 @@ const CostingSummaryTable = (props) => {
   const [drawerDetailPDF, setDrawerDetailPDF] = useState(false);
   const [loader, setLoader] = useState(false);
   const [isAttachment, setAttachment] = useState(false)
-  const [viewPieChart, setViewPieChart] = useState(null)
+  const [viewPieChart, setViewPieChart] = useState({})
   const [pieChartColor, setPieChartColor] = useState([])
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
   const [partInfoStepTwo, setPartInfo] = useState({});
@@ -105,9 +105,11 @@ const CostingSummaryTable = (props) => {
   const [viewMultipleTechnologyDrawer, setViewMultipleTechnologyDrawer] = useState(false)
   const [multipleTechnologyData, setMultipleTechnologyData] = useState([])
   const [pieChartLabel, setPieChartLabel] = useState([])
+  const [activePieChart, setActivePieChart] = useState(null);
   const [npvIndex, setNpvIndex] = useState(0)
   const [showLabourData, setShowLabourData] = useState(initialConfiguration.IsShowCostingLabour ? initialConfiguration.IsShowCostingLabour : false)
   const [selectedCheckbox, setSelectedCheckbox] = useState('')
+  const [showPieChartObj, setShowPieChartObj] = useState([])
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
@@ -171,7 +173,6 @@ const CostingSummaryTable = (props) => {
       }))
 
     }
-    setViewPieChart(null)
   }, [viewCostingData])
 
   useEffect(() => {
@@ -183,84 +184,93 @@ const CostingSummaryTable = (props) => {
         setIsLogisticsTechnology(true)
       }
     })
+    let pieChartData = []
+    viewCostingData.map((item, index) => {
 
+      let temp = []
+      let tempObj = viewCostingData[index]
+      let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
+      let dataArray = [];
+      let tempColorArray = [];
 
-  }, [viewCostingData])
+      temp = [
+        checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
+      ]
 
-  const viewPieData = (index) => {
-    setViewPieChart(index)
-    let temp = []
-    let tempObj = viewCostingData[index]
-    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
-    let dataArray = [];
-    let tempColorArray = [];
+      let labelArray = temp.reduce((acc, item, index) => {
+        if (item !== 0) {
+          acc.push(labels[index]);
+        }
+        return acc;
+      }, []);
 
-    temp = [
-      checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-    ]
+      labelArray.forEach(item => {
+        switch (item) {
+          case 'RM':
+            dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[0])
+            break;
+          case 'BOP':
+            dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[1])
+            break;
+          case 'CC':
+            dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[2])
+            break;
+          case 'ST':
+            dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[3])
+            break;
+          case 'O&P':
+            dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[4])
+            break;
+          case 'P&F':
+            dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[5])
+            break;
+          case 'TC':
+            dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[6])
+            break;
+          case 'HUNDI/DIS':
+            dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[7])
+            break;
+          case 'ANY OTHER COST':
+            dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[8])
+            break;
+          default:
+            break;
+        }
+      })
 
-    let labelArray = temp.reduce((acc, item, index) => {
-      if (item !== 0) {
-        acc.push(labels[index]);
-      }
-      return acc;
-    }, []);
+      pieChartData.push({
+        labels: labelArray,
+        datasets: [
+          {
+            label: '',
+            data: dataArray,
+            backgroundColor: tempColorArray,
+            borderWidth: 0.5,
+            hoverOffset: 10
+          },
+        ]
+      })
 
-    labelArray.forEach(item => {
-      switch (item) {
-        case 'RM':
-          dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[0])
-          break;
-        case 'BOP':
-          dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[1])
-          break;
-        case 'CC':
-          dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[2])
-          break;
-        case 'ST':
-          dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[3])
-          break;
-        case 'O&P':
-          dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[4])
-          break;
-        case 'P&F':
-          dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[5])
-          break;
-        case 'TC':
-          dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[6])
-          break;
-        case 'HUNDI/DIS':
-          dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[7])
-          break;
-        case 'ANY OTHER COST':
-          dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[8])
-          break;
-        default:
-          break;
-      }
     })
-
-    setPieChartLabel(labelArray)
-    setPieChartDataArray(dataArray);
-    setPieChartColor(tempColorArray)
-  }
+    setShowPieChartObj(pieChartData)
+  }, [viewCostingData])
 
 
   useEffect(() => {
@@ -506,7 +516,10 @@ const CostingSummaryTable = (props) => {
     setIsEditFlag(true)
     setaddComparisonToggle(true)
     setEditObject(editObject)
-    setViewPieChart(null)
+    setViewPieChart((prevState) => ({
+      ...prevState,
+      0: false,
+    }))
   }
 
   /**
@@ -1224,6 +1237,19 @@ const CostingSummaryTable = (props) => {
       }
     }
   }
+  const viewPieChartHandler = (index) => {
+    setViewPieChart(prevState => ({
+      ...prevState,
+      [index]: true
+    }));
+  };
+
+  const pieChartCloseHandler = (index) => {
+    setViewPieChart(prevState => ({
+      ...prevState,
+      [index]: false
+    }));
+  };
 
   const PDFPageStyle = "@page { size: A4 landscape; }";
 
@@ -1534,6 +1560,7 @@ const CostingSummaryTable = (props) => {
                             </td>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
+                                const isPieChartVisible = viewPieChart[index];
                                 return (
                                   <td className={tableDataClass(data)}>
                                     <span className={`d-flex justify-content-between ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
@@ -1555,12 +1582,28 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    {(!data?.bestCost === true) && <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
-                                      <span className={`pie-chart-wrapper mt-3`}>
-                                        {viewPieChart === index ? <button type='button' className='CancelIcon' title='Discard' onClick={() => setViewPieChart(null)}></button> : <button title='View Pie Chart' type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>}
-                                        {viewPieChart === index && <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} /> </span>}
-                                      </span>}
-                                    </span>}
+                                    {(!data?.bestCost === true) && (
+                                      <span className="d-flex justify-content-between align-items-center pie-chart-container">
+                                        <span>
+                                          {(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)}
+                                          {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
+                                        </span>
+                                        {(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && (
+                                          <span className={`pie-chart-wrapper mt-3`}>
+                                            {isPieChartVisible ? (
+                                              <button type="button" className="CancelIcon" title="Discard" onClick={() => pieChartCloseHandler(index)}></button>
+                                            ) : (
+                                              <button title="View Pie Chart" type="button" className="pie-chart" onClick={() => viewPieChartHandler(index)}></button>
+                                            )}
+                                            {isPieChartVisible && (
+                                              <span className="pie-chart-inner">
+                                                <Costratiograph data={showPieChartObj[index]} options={pieChartOption} />
+                                              </span>
+                                            )}
+                                          </span>
+                                        )}
+                                      </span>
+                                    )}
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? `${data?.vendorName}(${data?.vendorCode})` : ''}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
