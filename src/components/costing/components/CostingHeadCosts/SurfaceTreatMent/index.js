@@ -117,6 +117,7 @@ function SurfaceTreatment(props) {
 
       let totalPOriceForAssembly = surfaceTabData?.CostingPartDetails?.BasicRate + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost)
 
+      let basicRate = surfaceTabData?.CostingPartDetails.BasicRate
 
       let requestData = {
         "CostingId": item.CostingId,
@@ -148,7 +149,7 @@ function SurfaceTreatment(props) {
           requestData.CostingPartDetails.TotalTransportationCostPerAssembly = item?.CostingPartDetails?.TransportationCost
           requestData.CostingPartDetails.IsAssemblyPart = IsAssemblyPart
 
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, totalPOriceForAssembly, getAssemBOPCharge, 2, CostingEffectiveDate)
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, totalPOriceForAssembly, getAssemBOPCharge, 2, CostingEffectiveDate, initialConfiguration?.IsShowCostingLabour, basicRate)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         } else if (partType) {
           setTimeout(() => {
