@@ -1475,6 +1475,9 @@ function CostingSimulation(props) {
                                             {"Verify Impact"}
                                         </button>
 
+                                        <div>
+                                            {disableApproveButton && <WarningMessage message={'Super Admin cannot send simulation for approval'} />}
+                                        </div>
                                     </div>
                                 </Row>
                             </div>

@@ -149,7 +149,7 @@ class BOMUploadDrawer extends Component {
       if (Data[0]?.CountFailed > 0) {
         Toaster.warning(res.data.Message);
         this.setState({
-          failedData: Data[0].FaildRecords,
+          failedData: Data[0].FailedRecords,
           faildRecords: true,
         })
       }
