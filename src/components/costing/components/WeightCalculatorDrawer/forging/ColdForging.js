@@ -152,7 +152,7 @@ function ColdForging(props) {
     let EndBitLength = checkForNull(BilletLength) - (checkForNull(InputLength) * checkForNull(NoOfPartsPerLength))
     let obj = dataSend
     if (EndBitLength < 0) {
-      Toaster.warning('End bit length cannot be Negative')
+      Toaster.warning('End bit length cannot be negative')
       EndBitLength = 0
     }
     obj.EndBitLength = EndBitLength
