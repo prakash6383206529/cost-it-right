@@ -193,10 +193,21 @@ function RfqListing(props) {
                 costingId = item?.costingId
             }
         })
-        if (selectedCostingList?.includes(costingId)) {
-            setMandatoryRemark(true)
+        let tempArray = _.map(arr, 'NetPOPrice')
+        const firstElement = tempArray[0];
+        let test = tempArray.every(element => element === firstElement);
+        if (arr?.length > 1) {
+            if (test) {
+                setMandatoryRemark(false)
+            } else {
+                setMandatoryRemark(true)
+            }
         } else {
-            setMandatoryRemark(false)
+            if (selectedCostingList?.includes(costingId)) {
+                setMandatoryRemark(false)
+            } else {
+                setMandatoryRemark(true)
+            }
         }
         // let data = {
         //     isEditFlag: true,
