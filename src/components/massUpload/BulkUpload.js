@@ -303,13 +303,13 @@ class BulkUpload extends Component {
                             break;
                         case String(OPERAIONBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(ZBCOperationSmallForm, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(ZBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(VBCOperationSmallForm, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(VBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(CBCOperationSmallForm, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkLabourRateConfigure(CBCOperationSmallForm), fileHeads)
                             }
                             else if (this.state.costingTypeId === ZBCADDMOREOPERATION) {
                                 checkForFileHead = checkForSameFileUpload(ZBCOperation, fileHeads)
