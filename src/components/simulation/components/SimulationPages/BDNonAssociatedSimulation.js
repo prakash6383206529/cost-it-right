@@ -135,13 +135,20 @@ function BDNonAssociatedSimulation(props) {
 
 
         let check = 0
+        let percentageCheck = 0
         tempArr && tempArr?.map(item => {
             if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
                 check = check + 1
             }
+            if (item?.PercentageChange >= 100) {
+                percentageCheck = percentageCheck + 1
+            }
         })
         if (check === 0) {
             Toaster.warning("There is no changes in net cost. Please change, then run simulation")
+            return false
+        } else if (percentageCheck !== 0) {
+            Toaster.warning("Percentage should be less than or equal to 100")
             return false
         }
         setIsDisable(true)
