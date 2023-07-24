@@ -193,10 +193,12 @@ function RfqListing(props) {
                 costingId = item?.costingId
             }
         })
-        if (selectedCostingList?.includes(costingId)) {
+        if (selectedCostingList?.length > 1) {
             setMandatoryRemark(true)
-        } else {
+        } else if (selectedCostingList?.includes(costingId)) {
             setMandatoryRemark(false)
+        } else {
+            setMandatoryRemark(true)
         }
         // let data = {
         //     isEditFlag: true,
