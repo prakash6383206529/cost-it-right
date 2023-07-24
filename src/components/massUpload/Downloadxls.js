@@ -93,7 +93,7 @@ export const checkVendorPlantConfig = (excelData, type = '') => {
         if (getConfigurationKey().IsShowClientVendorBOP === false) {
             if (el.value === 'IsClientVendorBOP') return false;
         }
-        if (getConfigurationKey().IsShowMinimumOrderQuantity === false) {
+        if (getConfigurationKey().IsMinimumOrderQuantityVisible === false) {
             if (el.value === 'NumberOfPieces') return false;
         }
         return true;

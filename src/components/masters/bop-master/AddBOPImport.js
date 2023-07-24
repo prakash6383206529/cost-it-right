@@ -854,7 +854,7 @@ class AddBOPImport extends Component {
       SourceLocation: sourceLocation.value,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       BasicRate: values.BasicRate,
-      NumberOfPieces: values.NumberOfPieces,
+      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1,
       NetLandedCost: this.state.netLandedcost,
       Remark: values.Remark,
       IsActive: true,
@@ -1406,8 +1406,7 @@ class AddBOPImport extends Component {
                               />
                             </div>
                           </Col>
-
-                          <Col md="3">
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && < Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
@@ -1420,7 +1419,7 @@ class AddBOPImport extends Component {
                               customClassName=" withBorder"
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
-                          </Col>
+                          </Col>}
 
                           <Col md="3">
                             <Field
