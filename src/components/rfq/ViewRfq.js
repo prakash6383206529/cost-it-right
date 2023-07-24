@@ -193,12 +193,21 @@ function RfqListing(props) {
                 costingId = item?.costingId
             }
         })
-        if (selectedCostingList?.length > 1) {
-            setMandatoryRemark(true)
-        } else if (selectedCostingList?.includes(costingId)) {
-            setMandatoryRemark(false)
+        let tempArray = _.map(arr, 'NetPOPrice')
+        const firstElement = tempArray[0];
+        let test = tempArray.every(element => element === firstElement);
+        if (arr?.length > 1) {
+            if (test) {
+                setMandatoryRemark(false)
+            } else {
+                setMandatoryRemark(true)
+            }
         } else {
-            setMandatoryRemark(true)
+            if (selectedCostingList?.includes(costingId)) {
+                setMandatoryRemark(false)
+            } else {
+                setMandatoryRemark(true)
+            }
         }
         // let data = {
         //     isEditFlag: true,
