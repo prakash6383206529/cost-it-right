@@ -1112,18 +1112,7 @@ export const checkForSameFileUpload = (master, fileHeads) => {
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
 
-  let temp = []
-  if (getConfigurationKey().IsOperationLabourRateConfigure === false) {
-    bulkUploadArray.map((item) => {
-      if (String(item) !== String('LabourRate')) {
-        temp.push(item)
-      }
-    })
-  } else {
-    temp = [...bulkUploadArray]
-  }
-
-  checkForFileHead = _.isEqual(fileHeads, temp)
+  checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
 
