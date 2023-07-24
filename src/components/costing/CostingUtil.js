@@ -7,7 +7,9 @@ import DayTime from "../common/DayTimeWrapper";
 import { getBriefCostingById, gridDataAdded, isDataChange, saveAssemblyBOPHandlingCharge, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setOverheadProfitData, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCData, setSurfaceCostData, setToolTabData } from "./actions/Costing";
 
 // TO CREATE OBJECT FOR IN SAVE-ASSEMBLY-PART-ROW-COSTING
-export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false) => {
+export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, effectiveDate, AddLabour = false, basicRateForST = '') => {
+  console.log('basicRateForST: ', basicRateForST);
+  console.log('tabId: ', tabId);
 
   let Arr = reactLocalStorage.getObject('costingArray')
   let surfaceTreatmentArr = reactLocalStorage.getObject('surfaceCostingArray')
@@ -96,7 +98,7 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetOtherCost": discountAndOtherTabData?.AnyOtherCost,
       "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
       "TotalCostINR": netPOPrice,
-      "BasicRate": discountAndOtherTabData?.BasicRateINR,
+      "BasicRate": tabId === 2 ? basicRateForST : discountAndOtherTabData?.BasicRateINR,
       "TabId": tabId,
       "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
