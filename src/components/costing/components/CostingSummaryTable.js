@@ -144,7 +144,7 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
-
+    setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
     return () => {
       dispatch(setCostingViewData([]))
     }
@@ -1421,8 +1421,8 @@ const CostingSummaryTable = (props) => {
                 {
                   !simulationMode && !props.isRfqCosting && <>
 
-                    {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
-                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag || isSuperAdmin} onClick={() => checkCostings()}>
+                    {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && !isSuperAdmin && (
+                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                         <div className="send-for-approval"></div>
                         {'Send For Approval'}
                       </button>
@@ -1486,7 +1486,7 @@ const CostingSummaryTable = (props) => {
                                   <div className="element d-inline-flex align-items-center">
                                     {
                                       !isApproval && (data?.status === DRAFT) && <>
-                                        {!pdfHead && !drawerDetailPDF && !viewMode && < div className="custom-check1 d-inline-block">
+                                        {!pdfHead && !drawerDetailPDF && !viewMode && !isSuperAdmin && < div className="custom-check1 d-inline-block">
                                           <label
                                             className="custom-checkbox pl-0 mb-0"
                                             onChange={() => moduleHandler(data?.costingId, 'top', data)}
@@ -1509,7 +1509,7 @@ const CostingSummaryTable = (props) => {
                                         </div>}
                                       </>
                                     }
-                                    {!isApproval && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && <div className="custom-check1 d-inline-block">
+                                    {!isApproval && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && !isSuperAdmin && <div className="custom-check1 d-inline-block">
                                       <label
                                         className="custom-checkbox pl-0 mb-0"
                                         onChange={() => moduleHandler(data?.costingId, 'top', data, index)}
@@ -2566,7 +2566,7 @@ const CostingSummaryTable = (props) => {
 
                                 <td className="text-center costing-summary">
                                   {(!viewMode && !isFinalApproverShow) &&
-                                    (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) &&
+                                    (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) && !isSuperAdmin &&
                                     <button
                                       className="user-btn"
                                       disabled={viewCostingData[index].IsApprovalLocked}
