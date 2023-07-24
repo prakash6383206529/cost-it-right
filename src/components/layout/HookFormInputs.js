@@ -325,7 +325,7 @@ export const SearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name, } }) => {
           return (
-            <div className={className} title={title}>
+            <div className={className} title={title ? title : isDisable ? value?.label : ''}>
               <Select
                 {...field}
                 {...register}
