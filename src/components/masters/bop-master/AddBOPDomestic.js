@@ -697,7 +697,7 @@ class AddBOPDomestic extends Component {
       SourceLocation: sourceLocation.value,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
       BasicRate: values.BasicRate,
-      NumberOfPieces: getConfigurationKey().IsShowMinimumOrderQuantity ? values.NumberOfPieces : 1,
+      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1,
       NetLandedCost: this.state.NetLandedCost,
       Remark: values.Remark,
       IsActive: true,
@@ -1219,7 +1219,7 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsShowMinimumOrderQuantity && < Col md="3">
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && < Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
