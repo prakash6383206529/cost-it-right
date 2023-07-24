@@ -374,16 +374,20 @@ function BDSimulation(props) {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
-
+        let tempData = []
         let temp = []
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
             temp.push(item)
         })
-
+        if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
+            tempData = hideColumnFromExcel(data, 'Quantity')
+        } else {
+            tempData = data
+        }
         return (
             <ExcelSheet data={temp} name={'BOP Data'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
