@@ -533,6 +533,7 @@ function MasterSendForApproval(props) {
                                                             selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
+                                                            dropdownMode="select"
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="-"
                                                             className="withBorder"
@@ -639,6 +640,7 @@ function MasterSendForApproval(props) {
                                                             selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
+                                                            dropdownMode="select"
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="-"
                                                             className="withBorder"
@@ -740,6 +742,7 @@ function MasterSendForApproval(props) {
                                                             selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
+                                                            dropdownMode="select"
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="-"
                                                             className="withBorder"
@@ -783,6 +786,7 @@ function MasterSendForApproval(props) {
                                                             selected={DayTime(approvalObj.EffectiveDate).isValid() ? new Date(approvalObj.EffectiveDate) : ''}
                                                             showMonthDropdown
                                                             showYearDropdown
+                                                            dropdownMode="select"
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="-"
                                                             className="withBorder"

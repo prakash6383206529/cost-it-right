@@ -773,6 +773,7 @@ const SendForApproval = (props) => {
                                       dateFormat="dd/MM/yyyy"
                                       showMonthDropdown
                                       showYearDropdown
+                                      dropdownMode='select'
                                       readonly="readonly"
                                       onBlur={() => null}
                                       autoComplete={'off'}

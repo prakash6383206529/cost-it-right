@@ -1163,6 +1163,7 @@ function AddRfq(props) {
                                                             onChange={handleSubmissionDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
+                                                            dropdownMode="select"
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="Select date"
@@ -1215,6 +1216,7 @@ function AddRfq(props) {
                                                             onChange={handleSOPDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
+                                                            dropdownMode='select'
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="Select date"
@@ -1545,6 +1547,7 @@ function AddRfq(props) {
                                                                 onChange={handleChangeDateAndTime}
                                                                 showMonthDropdown
                                                                 showYearDropdown
+                                                                dropdownMode='select'
                                                                 minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"
