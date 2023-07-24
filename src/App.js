@@ -98,6 +98,7 @@ class App extends Component {
     reactLocalStorage.setObject("isUserLoggedIn", false);
     reactLocalStorage.setObject("userDetail", {});
     reactLocalStorage.set('ModuleId', '');
+    reactLocalStorage.setObject('logoutRefresh', true);
 
     //setTimeout(() => {
     //}, 100)
