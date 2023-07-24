@@ -19,7 +19,7 @@ const OtherCostTable = (props) => {
                         <th>{`Other Cost Description`}</th>
                         {/* <th>{`Other Cost Type`}</th> */}
                         <th>{`Other Cost Applicability`}</th>
-                        <th>{'Percentage'}</th>
+                        <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
                         {props.actionButton && <th className='text-right'>{`Action`}</th>}
                     </tr>
