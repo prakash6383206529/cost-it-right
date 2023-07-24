@@ -294,6 +294,7 @@ function TransportationCost(props) {
                   defaultValue={item.TransportationCRMHead ? { label: item.TransportationCRMHead, value: 1 } : ''}
                   placeholder={'Select'}
                   options={CRMHeads}
+                  className="st-crm-head"
                   required={false}
                   handleChange={onCRMHeadChange}
                   disabled={CostingViewMode}

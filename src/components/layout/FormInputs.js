@@ -621,6 +621,7 @@ export function renderDatePicker(field) {
         minDate={minDate ? new Date(minDate) : null}
         showMonthDropdown
         showYearDropdown
+        dropdownMode="select"
         readonly="readonly"
         onBlur={field.selected ? () => null : input.onBlur}
         selected={input.value ? new Date(input.value) : null}
@@ -661,6 +662,7 @@ export function renderDatePickerOneDayAgo(field) {
         minDate={d.setDate(d.getDate() + 1)}
         showMonthDropdown
         showYearDropdown
+        dropdownMode="select"
         readonly="readonly"
         onBlur={() => null}
         selected={input.value ? new Date(input.value) : null}
@@ -892,6 +894,7 @@ export function renderYearPicker(field) {
         showMonthDropdown
         showYearDropdown
         showYearPicker
+        dropdownMode="select"
         readonly="readonly"
         onBlur={() => null}
         selected={input.value ? new Date(input.value) : null}

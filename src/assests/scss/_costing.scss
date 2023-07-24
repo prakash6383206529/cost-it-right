@@ -572,3 +572,9 @@
     }
   }
 }
+
+.st-crm-head {
+  .multi-select-container__menu {
+    z-index: 13 !important;
+  }
+}
