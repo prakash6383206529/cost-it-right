@@ -5417,6 +5417,7 @@ export const BOP_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Min Order Quantity", value: "Quantity", },
     { label: "Existing Basic Rate", value: "OldBOPRate", },
     { label: "Revised Basic Rate", value: "NewBOPRate", },
+    { label: "Minimum Order Quantity", value: "Quantity", },
     { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
     { label: "Revised Net Cost", value: "NewNetBoughtOutPartCost", },
     { label: "Current Effective date", value: "EffectiveDate", },
