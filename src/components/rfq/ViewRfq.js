@@ -66,6 +66,7 @@ function RfqListing(props) {
     const [index, setIndex] = useState('')
     const [selectedCostingList, setSelectedCostingList] = useState('')
     const [mandatoryRemark, setMandatoryRemark] = useState(false)
+    const [compareButtonPressed, setCompareButtonPressed] = useState(false)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -657,6 +658,7 @@ function RfqListing(props) {
                 arr.push(item?.CostingId)
             }
         })
+        setCompareButtonPressed(true)
         setCostingListToShow(arr)
         let temp = []
         let tempObj = {}
@@ -664,6 +666,7 @@ function RfqListing(props) {
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
         setloader(true)
+        setSelectedCostingList([])
         dispatch(getMultipleCostingDetails(costingIdList, (res) => {
             if (res) {
                 res.map((item) => {
@@ -679,6 +682,7 @@ function RfqListing(props) {
                 setaddComparisonToggle(true)
                 setloader(false)
             }
+            setCompareButtonPressed(false)
         }))
     }
 
@@ -969,6 +973,7 @@ function RfqListing(props) {
                                 isFromViewRFQ={true}
                                 checkCostingSelected={checkCostingSelected}
                                 disableApproveRejectButton={disableApproveRejectButton}
+                                compareButtonPressed={compareButtonPressed}
                             />
                         )}
                     </div>
