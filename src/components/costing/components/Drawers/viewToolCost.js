@@ -25,6 +25,7 @@ function ViewToolCost(props) {
             <th>{`Amortization Quantity (Tool Life)`}</th>
             <th>{`Tool Amortization Cost`}</th>
             <th>{`Net Tool Cost`}</th>
+            {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
           </tr>
         </thead>
         <tbody >
@@ -41,6 +42,7 @@ function ViewToolCost(props) {
                   <td>{item.Life ? item.Life : "-"}</td>
                   <td>{checkForDecimalAndNull(item.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice)}</td>
                   <td>{item.NetToolCost ? checkForDecimalAndNull(item.NetToolCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
+                  {initialConfiguration.IsShowCRMHead && <td>{item.ToolCRMHead ? item.ToolCRMHead : '-'}</td>}
                 </tr>
               )
             })
