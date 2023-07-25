@@ -1225,6 +1225,9 @@ const CostingSummaryTable = (props) => {
 
   };
   const pieChartOption = {
+    animation: {
+      duration: 0, // Set the animation duration to 0 to disable animation
+    },
     plugins: {
       legend: {
         position: 'bottom',
