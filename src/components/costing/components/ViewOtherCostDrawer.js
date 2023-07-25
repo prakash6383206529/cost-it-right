@@ -77,7 +77,7 @@ function ViewOtherCostDrawer(props) {
                         <tr>
                             <th>{`Other Cost Description`}</th>
                             <th>{`Other Cost Applicability`}</th>
-                            <th>{'Percentage'}</th>
+                            <th>{'Percentage (%)'}</th>
                             <th>{`Cost`}</th>
                         </tr>
                     </thead>
