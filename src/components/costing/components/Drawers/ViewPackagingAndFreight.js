@@ -41,11 +41,12 @@ function ViewPackagingAndFreight(props) {
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
             <tbody>
-            <tr className='thead'>
+              <tr className='thead'>
                 <th>{`${isLogisticsTechnology ? 'Charges' : 'Packaging Description'}`}</th>
                 <th>{`Criteria/Applicability`}</th>
                 <th>{`${isLogisticsTechnology ? 'Freight' : 'Packaging'} Type/Percentage`}</th>
-                <th className="costing-border-right">{`Cost`}</th>
+                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
+                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
               {packagingData &&
                 packagingData.map((item, index) => {
@@ -61,6 +62,7 @@ function ViewPackagingAndFreight(props) {
                       <td>
                         {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       </td>
+                      {initialConfiguration.IsShowCRMHead && <td>{item.PackagingCRMHead ? item.PackagingCRMHead : '-'}</td>}
                     </tr>
                   )
                 })}
@@ -90,12 +92,13 @@ function ViewPackagingAndFreight(props) {
         <Col md="12">
           <Table className="table cr-brdr-main" size="sm">
             <tbody>
-            <tr className='thead'>
+              <tr className='thead'>
                 <th>{`Freight Type`}</th>
                 <th>{`Criteria`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
-                <th className="costing-border-right">{`Cost`}</th>
+                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
+                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
               {freightData &&
                 freightData.map((item, index) => {
@@ -108,6 +111,7 @@ function ViewPackagingAndFreight(props) {
                       <td>
                         {item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       </td>
+                      {initialConfiguration.IsShowCRMHead && <td>{item.FreightCRMHead ? item.FreightCRMHead : '-'}</td>}
                     </tr>
                   )
                 })}

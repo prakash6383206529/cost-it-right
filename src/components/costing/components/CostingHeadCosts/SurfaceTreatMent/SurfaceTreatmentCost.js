@@ -355,6 +355,7 @@ function SurfaceTreatmentCost(props) {
                                 customClassName="costing-selectable-dropdown"
                                 defaultValue={item.SurfaceTreatmentCRMHead ? { label: item.SurfaceTreatmentCRMHead, value: index } : ''}
                                 options={CRMHeads}
+                                className="st-crm-head"
                                 required={false}
                                 handleChange={(e) => { onCRMHeadChange(e, index) }}
                                 disabled={CostingViewMode}
