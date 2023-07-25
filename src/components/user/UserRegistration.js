@@ -96,6 +96,7 @@ function UserRegistration(props) {
   const [costingApprovalType, setCostingApprovalType] = useState([]);
   const [simulationApprovalType, setSimulationApprovalType] = useState([]);
   const [masterApprovalType, setMasterApprovalType] = useState([]);
+  const [grantUserWisePermission, setGrantUserWisePermission] = useState(false);
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -522,8 +523,8 @@ function UserRegistration(props) {
             setIsEditFlag(true)
             setIsLoader(false)
             setIsShowAdditionalPermission(Data.IsAdditionalAccess)
+            setGrantUserWisePermission(Data.IsAdditionalAccess)
             // setDepartment((getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [])
-
             setDepartment([{ label: Data.Departments && Data.Departments[0]?.DepartmentName, value: Data.Departments && Data.Departments[0]?.DepartmentId }])
             setOldDepartment([{ label: Data.Departments && Data.Departments[0]?.DepartmentName, value: Data.Departments && Data.Departments[0]?.DepartmentId }])
             setRole(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
@@ -627,7 +628,12 @@ function UserRegistration(props) {
     if (role && role.value) {
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
-      getRoleDetail(role.value, !IsShowAdditionalPermission)
+
+      if (isEditFlag && grantUserWisePermission) {
+        getUserPermission(UserId)
+      } else {
+        getRoleDetail(role.value, !IsShowAdditionalPermission)
+      }
     } else {
       Toaster.warning('Please select role.')
     }
