@@ -3256,6 +3256,10 @@ body {
 .Toastify__toast--error {
   color: #fe002d;
   background-color: #fcf8f9;
+
+  .Toastify__toast-body>div:last-child {
+    word-break: break-word;
+  }
 }
 
 .Toastify__progress-bar--error {

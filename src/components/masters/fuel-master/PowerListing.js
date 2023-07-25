@@ -302,7 +302,7 @@ class PowerListing extends Component {
 
   onGridReady = (params) => {
     this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
+    window.screen.width >= 1600 && this.gridApi.sizeColumnsToFit();
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
     params.api.paginationGoToPage(0);
   };
