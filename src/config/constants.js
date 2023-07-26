@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-//const BASE_URL = `http://10.10.8.109:8081/api/v1`;
+// const BASE_URL = `http://10.10.1.100:10142/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
@@ -1886,7 +1886,7 @@ export const VIEW_COSTING_DATA = {
   costingHeadCheck: 'VBC/ZBC/NCC/CBC',
   // costingName: '',
   costingVersion: 'Costing Version',
-  PoPriceWithDate: 'PO Price (Effective from)',
+  PoPriceWithDate: 'Net Cost (Effective from)',
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
@@ -1960,10 +1960,10 @@ export const VIEW_COSTING_DATA = {
   BasicRate: 'Basic Rate',
   npvCost: 'Net NPV Cost',
   conditionCost: 'Net Costing Condition',
-  nPOPrice: 'Net PO Price (INR)',
+  nPOPrice: 'Net Cost (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
-  nPoPriceCurrency: 'Net PO Price (In Currency)',
+  nPoPriceCurrency: 'Net Cost (In Currency)',
   NCCPartQuantity: "Quantity",
   IsRegularized: "Is Regularized",
   remark: 'Remarks',
@@ -1983,7 +1983,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'costingVersion'
   },
   {
-    label: 'PO Price (Effective from)',
+    label: 'Net Cost (Effective from)',
     value: 'PoPriceWithDate'
   },
   {
@@ -2214,7 +2214,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'conditionCost'
   },
   {
-    label: 'Net PO Price (INR)',
+    label: 'Net Cost (INR)',
     value: 'nPOPrice'
   },
   {
@@ -2226,7 +2226,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'currencyRate'
   },
   {
-    label: 'Net PO Price (In Currency)',
+    label: 'Net Cost (In Currency)',
     value: 'nPoPriceCurrency'
   },
   {
@@ -2247,15 +2247,15 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
 export const VIEW_COSTING_DATA_LOGISTICS = {
   costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
   costingVersion: 'Costing Version',
-  PoPriceWithDate: 'PO Price (Effective from)',
+  PoPriceWithDate: 'Net Cost (Effective from)',
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
   plantExcel: 'Plant (Code)',
   nPackagingAndFreight: 'Net Freight',
-  nPOPrice: 'Net PO Price (INR)',
+  nPOPrice: 'Net Cost (INR)',
   currencyTitle: 'Currency',
-  nPoPriceCurrency: 'Net PO Price (In Currency)',
+  nPoPriceCurrency: 'Net Cost (In Currency)',
   remark: 'Remarks',
 }
 

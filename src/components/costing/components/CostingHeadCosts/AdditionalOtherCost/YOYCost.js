@@ -187,7 +187,7 @@ function YOYCost(props) {
                 {/* Display the net PO price */}
                 <Col md="12">
                     {!outside && <div className="pb-2">
-                        {`Quoted PO Price: ${checkForDecimalAndNull(props?.NetPOPrice, getConfigurationKey().NoOfDecimalForPrice)}`}
+                        {`Quoted Cost: ${checkForDecimalAndNull(props?.NetPOPrice, getConfigurationKey().NoOfDecimalForPrice)}`}
                     </div>}
                     {/* Table */}
                     <form>
