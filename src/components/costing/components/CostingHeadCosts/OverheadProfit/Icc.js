@@ -168,7 +168,7 @@ function Icc(props) {
             const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
             const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
             const RMCC = NetRawMaterialsCost + ConversionCostForCalculation;
-            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation;
+            const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const InterestRatePercentage = getValues('InterestRatePercentage')
 
             switch (Text) {
@@ -190,8 +190,8 @@ function Icc(props) {
                     setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
-                        CostApplicability: checkForNull(headerCosts.NetBoughtOutPartCost),
-                        NetICCTotal: checkForNull(headerCosts?.NetBoughtOutPartCost) * calculatePercentage(InterestRatePercentage)
+                        CostApplicability: checkForNull(headerCosts.NetBoughtOutPartCost) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0),
+                        NetICCTotal: (checkForNull(headerCosts?.NetBoughtOutPartCost) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
 
@@ -200,8 +200,8 @@ function Icc(props) {
                     setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
-                        CostApplicability: checkForNull(ConversionCostForCalculation),
-                        NetICCTotal: checkForNull(ConversionCostForCalculation) * calculatePercentage(InterestRatePercentage)
+                        CostApplicability: checkForNull(ConversionCostForCalculation) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0),
+                        NetICCTotal: (checkForNull(ConversionCostForCalculation) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
                     })
                     break;
 
@@ -261,7 +261,7 @@ function Icc(props) {
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: '-',
-                        NetICCTotal: checkForNull(InterestRatePercentage)
+                        NetICCTotal: checkForNull(InterestRatePercentage) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
                     })
                     break;
 
