@@ -2279,13 +2279,7 @@ html {
   }
 }
 
-.costing-table-next {
-  .w-100px {
-    .form-control {
-      width: 55px;
-    }
-  }
-}
+
 
 .react-datepicker__input-container {
   input {
@@ -3845,7 +3839,7 @@ body {
             min-height: unset;
 
             .text-help {
-              display: none;
+              position: absolute;
             }
           }
         }
@@ -7196,7 +7190,7 @@ body {
 
     td,
     th {
-      padding: 0.71rem 5px !important;
+      padding: 1.1rem 5px !important;
 
       &:first-child {
         padding-left: 10px !important;
