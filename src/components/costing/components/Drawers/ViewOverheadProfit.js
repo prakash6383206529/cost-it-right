@@ -11,7 +11,7 @@ import TooltipCustom from '../../../common/Tooltip'
 function ViewOverheadProfit(props) {
   const { overheadData, profitData, rejectAndModelType, iccPaymentData, isPDFShow } = props
 
-  const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit } = rejectAndModelType;
+  const { rejectData, modelType, isRmCutOffApplicable, rawMaterialCostWithCutOff, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit, isIncludeOverheadAndProfitInICC } = rejectAndModelType;
 
   const showTooltipForOH = [isRmCutOffApplicable, isIncludeToolCostWithOverheadAndProfit, isIncludeSurfaceTreatmentWithRejection, isIncludeSurfaceTreatmentWithOverheadAndProfit]
 
@@ -379,7 +379,7 @@ function ViewOverheadProfit(props) {
 
                 <th>{`Applicability`}</th>
                 <th>{`Interest Rate ${iccPaymentData.ICCApplicabilityDetail.ICCApplicability === 'Fixed' ? '' : '(%)'}`}</th>
-                <th>{`Cost (Applicability)`}</th>
+                <th><div className='w-fit'>Cost (Applicability){isIncludeOverheadAndProfitInICC && !isPDFShow && <TooltipCustom width="250px" customClass="mt-1 ml-1" id="icc-table" tooltipText={'Overhead and Profit Cost Included'} />}</div></th>
                 <th>{`Net ICC`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Remark`}</th>
