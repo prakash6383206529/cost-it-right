@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, NCC, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, searchCount, WACTypeId } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, VBC } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -1613,6 +1613,7 @@ function CostingDetails(props) {
               PartId: part.value,
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
+              CostingTypeId: ZBCTypeId
             }
             tempArr.push(data)
           }
@@ -1669,6 +1670,7 @@ function CostingDetails(props) {
             PartId: part.value,
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
+            CostingTypeId: ZBCTypeId
           }
           tempArr.push(data)
         }
@@ -1695,6 +1697,7 @@ function CostingDetails(props) {
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
             VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+            CostingTypeId: VBCTypeId
           }
           tempArr.push(data)
         }
@@ -1729,6 +1732,7 @@ function CostingDetails(props) {
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
               VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
+              CostingTypeId: VBCTypeId
             }
             tempArr.push(data)
           }
