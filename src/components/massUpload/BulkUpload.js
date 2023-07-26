@@ -729,7 +729,7 @@ class BulkUpload extends Component {
                                                     />{' '}
                                                     <span>VBC More Details</span>
                                                 </Label>}
-                                            {isMachineMoreTemplate &&
+                                            {(reactLocalStorage.getObject('cbcCostingPermission')) && isMachineMoreTemplate &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
