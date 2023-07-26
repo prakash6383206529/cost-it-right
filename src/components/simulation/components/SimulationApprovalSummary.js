@@ -1288,8 +1288,8 @@ function SimulationApprovalSummary(props) {
                                                                     (keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
                                                                         keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation
                                                                         || keysForDownloadSummary?.IsCombinedProcessSimulation) &&
-                                                                    < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft Net Cost" ></AgGridColumn>}
-                                                                    }
+                                                                    < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft Net Cost" ></AgGridColumn>
+                                                                }
 
 
                                                                 {(isCombinedProcess || keysForDownloadSummary.IsCombinedProcessSimulation) && <AgGridColumn width={140} field="OldNetCC" cellRenderer='oldCCFormatter' headerName="Existing CC" ></AgGridColumn>}
@@ -1345,24 +1345,26 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </>
                         }
-                        {isMasterAssociatedWithCosting && <><Row className="mt-2">
-                            <Col md="10">
-                                <div id="compare-costing" className="left-border">{'Compare Costing:'}</div>
-                            </Col>
-                            <Col md="2" className="text-right">
-                                <div className="right-border">
-                                    <button className="btn btn-small-primary-circle ml-1" type="button" disabled={!compareCosting} onClick={() => { setCompareCosting(!compareCosting) }}>
-                                        {compareCosting ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}
-                                    </button>
-                                </div>
-                            </Col>
-                        </Row>
-
-                            <Row>
-                                <Col md="12" className="costing-summary-row">
-                                    {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} />}
+                        {
+                            isMasterAssociatedWithCosting && <><Row className="mt-2">
+                                <Col md="10">
+                                    <div id="compare-costing" className="left-border">{'Compare Costing:'}</div>
                                 </Col>
-                            </Row></>}
+                                <Col md="2" className="text-right">
+                                    <div className="right-border">
+                                        <button className="btn btn-small-primary-circle ml-1" type="button" disabled={!compareCosting} onClick={() => { setCompareCosting(!compareCosting) }}>
+                                            {compareCosting ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}
+                                        </button>
+                                    </div>
+                                </Col>
+                            </Row>
+
+                                <Row>
+                                    <Col md="12" className="costing-summary-row">
+                                        {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} />}
+                                    </Col>
+                                </Row></>
+                        }
                         <Row>
                             <Col md="10 mb-3">
                                 <div className="left-border">{'Attachments:'}</div>
