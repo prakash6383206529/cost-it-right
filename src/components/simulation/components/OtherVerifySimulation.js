@@ -327,7 +327,7 @@ function OtherVerifySimulation(props) {
                                                 <AgGridColumn width={110} field="ECNNumber" cellRenderer='ecnFormatter' headerName="ECN No."></AgGridColumn>
                                                 <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
                                                 {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
-                                                <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price"></AgGridColumn>
+                                                <AgGridColumn width={130} field="POPrice" headerName="Existing Net Cost"></AgGridColumn>
 
 
                                                 {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}

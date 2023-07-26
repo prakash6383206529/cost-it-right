@@ -881,7 +881,7 @@ function OtherCostingSimulation(props) {
                                                     {(String(master) === EXCHNAGERATE || showExchangeRateColumn) &&
                                                         <>
                                                             <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldPOPrice" headerName='Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='Old PO Price(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='New PO Price(in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="POVariance" headerName='PO Variance' cellRenderer='ExchangeRatePOVarianceFormatter'></AgGridColumn>
@@ -891,8 +891,8 @@ function OtherCostingSimulation(props) {
                                                     }
                                                     {(String(master) === String(COMBINED_PROCESS) || showCombinedProcessColumn) &&
                                                         <>
-                                                            <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='Existing PO Price(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
-                                                            <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='Revised PO Price (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" headerName='Existing Net Cost (in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>
+                                                            <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" headerName='Revised Net Cost (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="POVariance" headerName='Variance (w.r.t. Existing)' cellRenderer='POVarianceFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="OldExchangeRate" headerName='Existing Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>
                                                             <AgGridColumn width={140} field="NewExchangeRate" headerName='Revised Exchange Rate' cellRenderer='newExchangeFormatter'></AgGridColumn>
@@ -904,8 +904,8 @@ function OtherCostingSimulation(props) {
                                                         <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>
                                                     </>}
 
-                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='Existing PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="NewPOPrice" headerName='Revised PO Price' cellRenderer='newPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="OldPOPrice" headerName='Existing Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="NewPOPrice" headerName='Revised Net Cost' cellRenderer='newPOFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="Variance" headerName='Variance (w.r.t. Existing)' cellRenderer='variancePOFormatter' ></AgGridColumn>
 
                                                     {(showRMColumn) && <>

@@ -86,21 +86,21 @@ function CostingDetailSimulationDrawer(props) {
                                             Number(master) === Number(EXCHNAGERATE) ?
                                                 <>
                                                     <Col md="3">
-                                                        <label>Existing PO Price(in Currency)</label>
+                                                        <label>Existing Net Cost(in Currency)</label>
                                                         <label className={`${pricesDetail?.OldNetPOPriceOtherCurrency > pricesDetail?.NewNetPOPriceOtherCurrency ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                     <Col md="3">
-                                                        <label>Revised PO Price(in Currency)</label>
+                                                        <label>Revised Net Cost(in Currency)</label>
                                                         <label className={`${pricesDetail?.OldNetPOPriceOtherCurrency > pricesDetail?.NewNetPOPriceOtherCurrency ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewNetPOPriceOtherCurrency, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                 </> :
                                                 <>
                                                     <Col md="3">
-                                                        <label>Existing PO Price</label>
+                                                        <label>Existing Net Cost</label>
                                                         <label className={`${pricesDetail?.OldPOPrice > pricesDetail?.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                     <Col md="3">
-                                                        <label>Revised PO Price</label>
+                                                        <label>Revised Net Cost</label>
                                                         <label className={`${pricesDetail?.OldPOPrice > pricesDetail?.NewPOPrice ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                     </Col>
                                                 </>

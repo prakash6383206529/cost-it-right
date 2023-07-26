@@ -9,8 +9,8 @@ export const SALES_PROVISION_EXCEL_TEMPLATE = [
     { label: 'Period From', value: 'FromDate', },
     { label: 'Period To', value: 'ToDate', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
-    { label: 'Existing Po Price (INR)', value: 'OldRate', },
-    { label: 'Revised Po Price (INR)', value: 'NewRate', },
+    { label: 'Existing Net Cost (INR)', value: 'OldRate', },
+    { label: 'Revised Net Cost (INR)', value: 'NewRate', },
     { label: 'Variance (w.r.t. Existing)', value: 'Difference', },
     { label: 'Supply Quantity (No.)', value: 'SupplyQuantity', },
     { label: 'Impact', value: 'Impact', }

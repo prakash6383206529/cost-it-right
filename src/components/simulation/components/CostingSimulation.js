@@ -1446,8 +1446,8 @@ function CostingSimulation(props) {
                                                         {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                         {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
 
-                                                        {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="OldPOPrice" headerName='Existing PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>}
-                                                        {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="NewPOPrice" headerName='Revised PO Price' cellRenderer='newPOFormatter'></AgGridColumn>}
+                                                        {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="OldPOPrice" headerName='Existing Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>}
+                                                        {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="NewPOPrice" headerName='Revised Net Cost' cellRenderer='newPOFormatter'></AgGridColumn>}
                                                         {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="Variance" headerName='Variance (w.r.t. Existing)' cellRenderer='variancePOFormatter' ></AgGridColumn>}
                                                         {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
@@ -1493,14 +1493,14 @@ function CostingSimulation(props) {
 
 
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>}
-                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>}
+                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" headerName='Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>}
 
 
-                                                        {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
+                                                        {/* <AgGridColumn width={140} field="NewPOPrice" headerName='Net Cost New' cellRenderer='newPOFormatter'></AgGridColumn> */}
 
 
-                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='Existing PO Price(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
-                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='Revised PO Price (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
+                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='Existing Net Cost(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
+                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='Revised Net Cost (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="POVariance" headerName='Variance (w.r.t. Existing)' cellRenderer={decimalFormatter}></AgGridColumn>}
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="OldExchangeRate" headerName='Existing Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>}

@@ -505,8 +505,8 @@ function CostMovementGraph(props) {
                                                 {<AgGridColumn field="VendorNameWithCode" headerName="Vendor (Code)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {(ModeId === 1 || ModeId === 2) && importEntry && <AgGridColumn field="NetLandedCostCurrency" headerName="Landed Total (Currency)" cellRenderer={hyphenFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" headerName="Basic Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="NetPOPrice" headerName="Net PO Price" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="NetPOPriceCurrency" headerName="Net PO Price (Currency)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="NetPOPrice" headerName="Net Cost" cellRenderer={POPriceFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="NetPOPriceCurrency" headerName="Net Cost (Currency)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' floatingFilter={true}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />

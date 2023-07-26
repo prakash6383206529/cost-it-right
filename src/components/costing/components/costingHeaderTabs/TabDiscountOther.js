@@ -1163,7 +1163,7 @@ function TabDiscountOther(props) {
                       <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} />
                       <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
                       <button type="button" id="overhead-refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
-                      <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Discount, Other cost and PO Price" />
+                      <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Discount, Other cost and Cost" />
                     </div>
                   </Col>
                 </Row>
@@ -1394,10 +1394,10 @@ function TabDiscountOther(props) {
                     />
                   }
                   <Row className="mt-2">
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net PO Price = Basic Rate + Total Costing Condition Cost + Total NPV Cost"} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net Cost = Basic Rate + Total Costing Condition Cost + Total NPV Cost"} />
                     <Col md="3">
                       <TextFieldHookForm
-                        label="Net PO Price (INR)"
+                        label="Net Cost (INR)"
                         name={'NetPOPriceINR'}
                         Controller={Controller}
                         id="net-po-price"
@@ -1454,7 +1454,7 @@ function TabDiscountOther(props) {
                         </Col>
                         <Col md="3">
                           <TextFieldHookForm
-                            label={`Net PO Price${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
+                            label={`Net Cost${Object.keys(currency).length > 0 ? '(' + currency.label + ')' : ''}`}
                             name={'NetPOPriceOtherCurrency'}
                             Controller={Controller}
                             control={control}
