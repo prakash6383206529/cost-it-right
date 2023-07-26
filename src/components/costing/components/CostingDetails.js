@@ -350,6 +350,8 @@ function CostingDetails(props) {
     resetGrid()
     if (newValue && newValue !== '') {
       if (IsTechnologySelected) {
+        setZBCPlantGrid([])
+        setVBCVendorGrid([])
         const data = { TechnologyId: technology.value, PartId: newValue.value }
         dispatch(checkPartWithTechnology(data, (response) => {
           setPart(newValue)
@@ -451,15 +453,18 @@ function CostingDetails(props) {
           setzbcPlantOldArray(Data)
           setIsLoader(false)
 
-          vbcArray && vbcArray.map((item, index) => {
-            setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
-            return null
-          })
+          setTimeout(() => {
+            vbcArray && vbcArray.map((item, index) => {
+              setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+              return null
+            })
 
-          zbvArray && zbvArray.map((item, index) => {
-            setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
-            return null
-          })
+            zbvArray && zbvArray.map((item, index) => {
+              setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+              return null
+            })
+
+          }, 500);
         }
       }))
       /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/
@@ -669,6 +674,12 @@ function CostingDetails(props) {
       let tempArr = [...vbcVendorGrid, { ...vendorData, Status: '' }]
       setTimeout(() => {
         setVBCVendorGrid(tempArr)
+        setTimeout(() => {
+          tempArr && tempArr.map((item, index) => {
+            setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+            return null
+          })
+        }, 200);
       }, 200)
     }
     setIsVendorDrawerOpen(false)
