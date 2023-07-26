@@ -66,6 +66,7 @@ function RfqListing(props) {
     const [index, setIndex] = useState('')
     const [selectedCostingList, setSelectedCostingList] = useState('')
     const [mandatoryRemark, setMandatoryRemark] = useState(false)
+    const [compareButtonPressed, setCompareButtonPressed] = useState(false)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -518,8 +519,8 @@ function RfqListing(props) {
         return (
             <>
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
-                {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => singleApprovalDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
-                {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
+                {/* {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => singleApprovalDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
+                {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />} */}
                 {showRemarkHistory && <button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
                 {showReminderIcon && !rowData?.IsLastSubmissionDateCrossed && rowData?.IsShowReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
                 {rowData?.CostingId && < button title='View' className="View mr-1" type={'button'} onClick={() => viewCostingDetail(rowData)} />}
@@ -660,6 +661,7 @@ function RfqListing(props) {
                 arr.push(item?.CostingId)
             }
         })
+        setCompareButtonPressed(true)
         setCostingListToShow(arr)
         let temp = []
         let tempObj = {}
@@ -667,6 +669,7 @@ function RfqListing(props) {
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
         setloader(true)
+        setSelectedCostingList([])
         dispatch(getMultipleCostingDetails(costingIdList, (res) => {
             if (res) {
                 res.map((item) => {
@@ -682,6 +685,7 @@ function RfqListing(props) {
                 setaddComparisonToggle(true)
                 setloader(false)
             }
+            setCompareButtonPressed(false)
         }))
     }
 
@@ -972,6 +976,7 @@ function RfqListing(props) {
                                 isFromViewRFQ={true}
                                 checkCostingSelected={checkCostingSelected}
                                 disableApproveRejectButton={disableApproveRejectButton}
+                                compareButtonPressed={compareButtonPressed}
                             />
                         )}
                     </div>
