@@ -124,7 +124,8 @@ class AddRMImport extends Component {
       vendorFilterList: [],
       isCallCalculation: false,
       isDropDownChanged: false,
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      isEditBuffer: false
     }
   }
 
@@ -214,7 +215,10 @@ class AddRMImport extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && !this.state.isCallCalculation) {
-      if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
+        this.handleNetCost()
+      }
+      if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isEditFlag && this.state.isEditBuffer) {
         this.handleNetCost()
       }
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -563,6 +567,9 @@ class AddRMImport extends Component {
                   this.commonFunction()
                 }
               }, 500)
+              setTimeout(() => {
+                this.setState({ isEditBuffer: true })
+              }, 500);
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -739,7 +746,7 @@ class AddRMImport extends Component {
   }
 
   closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false, setDisable: false })
+    this.setState({ approveDrawer: false, setDisable: false, isEditBuffer: true })
     if (type === 'submit') {
       this.clearForm('submit')
       this.cancel('submit')
@@ -1046,7 +1053,7 @@ class AddRMImport extends Component {
       return false
     }
 
-    this.setState({ isVendorNameNotSelected: false })
+    this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
