@@ -1556,7 +1556,7 @@ const CostingSummaryTable = (props) => {
                           <tr className={`${drawerDetailPDF ? "pdf-print" : ""}`} >
                             <td>
                               <span className="d-block">Costing Version</span>
-                              <span className="d-block mt-2">PO Price (Effective from)</span>
+                              <span className="d-block mt-2">Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
@@ -2405,7 +2405,7 @@ const CostingSummaryTable = (props) => {
                       {
 
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
-                          <th>Net PO Price ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
@@ -2448,7 +2448,7 @@ const CostingSummaryTable = (props) => {
                       {
                         viewCostingData[0]?.technologyId !== LOGISTICS &&
                         <tr className={`background-light-blue  ${getCurrencyVarianceFormatter()}`}>
-                          <th>Net PO Price (In Currency){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost (In Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
                         viewCostingData?.map((data, index) => {
                           return <td>Net PO Price({(data?.currency.currencyTitle !== '-' ? data?.currency.currencyTitle : 'INR')})</td>

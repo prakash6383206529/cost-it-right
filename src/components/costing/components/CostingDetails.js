@@ -2155,7 +2155,7 @@ function CostingDetails(props) {
                                       <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                       <th className="costing-version" >{`Costing Version`}</th>
                                       <th className="text-center costing-status" >{`Status`}</th>
-                                      <th className="costing-price">{`Price`}</th>
+                                      <th className="costing-price">{`Net Cost`}</th>
                                       <th className="costing-action text-right pr-2">{`Actions`}</th>
                                     </tr>
                                   </thead>
@@ -2294,7 +2294,7 @@ function CostingDetails(props) {
 
                                       <th className="costing-version">{`Costing Version`}</th>
                                       <th className="text-center costing-status">{`Status`}</th>
-                                      <th className="costing-price">{`Price`}</th>
+                                      <th className="costing-price">{`Net Cost`}</th>
                                       <th className="costing-action text-right">{`Actions`}</th>
                                     </tr>
                                   </thead>
@@ -2396,7 +2396,7 @@ function CostingDetails(props) {
                                       <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                       <th className="costing-version">{`Costing Version`}</th>
                                       <th className="text-center costing-status">{`Status`}</th>
-                                      <th className="costing-price">{`Price`}</th>
+                                      <th className="costing-price">{`Net Cost`}</th>
                                       <th className="costing-action text-right">{`Actions`}</th>
                                     </tr>
                                   </thead>
@@ -2525,7 +2525,7 @@ function CostingDetails(props) {
                                       {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
                                       <th className="costing-version">{`Costing Version`}</th>
                                       <th className="text-center costing-status">{`Status`}</th>
-                                      <th className="costing-price">{`Price`}</th>
+                                      <th className="costing-price">{`Net Cost`}</th>
                                       <th className="costing-action text-right">{`Actions`}</th>
                                     </tr>
                                   </thead>
@@ -2620,7 +2620,7 @@ function CostingDetails(props) {
                                       <th className='vendor'>{`Plant (Code)`}</th>
                                       <th className="costing-version" >{`Costing Version`}</th>
                                       <th className="text-center costing-status" >{`Status`}</th>
-                                      <th className="costing-price">{`Price`}</th>
+                                      <th className="costing-price">{`Net Cost`}</th>
                                       <th className="costing-action text-right pr-2">{`Actions`}</th>
                                     </tr>
                                   </thead>

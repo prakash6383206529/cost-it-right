@@ -219,8 +219,8 @@ const CostRatioListing = (props) => {
                                     <div className='column-data'> Vendor (Code)</div>
                                     <div className='column-data'>Plant (Code)</div>
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <div className='column-data'>Basic Price</div>}
-                                    <div className='column-data'> Net PO Price</div>
-                                    <div className='column-data'>Net PO Price (Currency)</div>
+                                    <div className='column-data'> Net Cost</div>
+                                    <div className='column-data'>Net Cost (Currency)</div>
                                     <div className='column-data'>Graph</div>
                                 </th>
                                 {tableData && tableData.map((item, index) => {
