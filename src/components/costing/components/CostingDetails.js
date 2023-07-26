@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, VBC } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
@@ -350,6 +350,8 @@ function CostingDetails(props) {
     resetGrid()
     if (newValue && newValue !== '') {
       if (IsTechnologySelected) {
+        setZBCPlantGrid([])
+        setVBCVendorGrid([])
         const data = { TechnologyId: technology.value, PartId: newValue.value }
         dispatch(checkPartWithTechnology(data, (response) => {
           setPart(newValue)
@@ -451,15 +453,18 @@ function CostingDetails(props) {
           setzbcPlantOldArray(Data)
           setIsLoader(false)
 
-          vbcArray && vbcArray.map((item, index) => {
-            setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
-            return null
-          })
+          setTimeout(() => {
+            vbcArray && vbcArray.map((item, index) => {
+              setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+              return null
+            })
 
-          zbvArray && zbvArray.map((item, index) => {
-            setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
-            return null
-          })
+            zbvArray && zbvArray.map((item, index) => {
+              setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+              return null
+            })
+
+          }, 500);
         }
       }))
       /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/
@@ -669,6 +674,12 @@ function CostingDetails(props) {
       let tempArr = [...vbcVendorGrid, { ...vendorData, Status: '' }]
       setTimeout(() => {
         setVBCVendorGrid(tempArr)
+        setTimeout(() => {
+          tempArr && tempArr.map((item, index) => {
+            setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+            return null
+          })
+        }, 200);
       }, 200)
     }
     setIsVendorDrawerOpen(false)
@@ -1599,6 +1610,7 @@ function CostingDetails(props) {
               PartId: part.value,
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
+              CostingTypeId: ZBCTypeId
             }
             tempArr.push(data)
           }
@@ -1655,6 +1667,7 @@ function CostingDetails(props) {
             PartId: part.value,
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
+            CostingTypeId: ZBCTypeId
           }
           tempArr.push(data)
         }
@@ -1675,13 +1688,13 @@ function CostingDetails(props) {
         let data = {}
         if (el.isSOBChanged === true) {
           data = {
-            PlantId: el.PlantId,
+            PlantId: el.PlantId ? el.PlantId : el.DestinationPlantId,
             PartId: part.value,
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
             VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: el.DestinationPlantId
+            CostingTypeId: VBCTypeId
           }
           tempArr.push(data)
         }
@@ -1710,13 +1723,13 @@ function CostingDetails(props) {
           let data = {}
           if (el.isSOBChanged === true) {
             data = {
-              PlantId: el.PlantId,
+              PlantId: el.PlantId ? el.PlantId : el.DestinationPlantId,
               PartId: part.value,
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
               VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
-              DestinationPlantId: el.DestinationPlantId
+              CostingTypeId: VBCTypeId
             }
             tempArr.push(data)
           }
