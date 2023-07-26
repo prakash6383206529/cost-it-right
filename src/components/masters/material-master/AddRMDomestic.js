@@ -140,7 +140,8 @@ class AddRMDomestic extends Component {
       showExtraCost: false,
       vendorFilterList: [],
       isDropDownChanged: false,
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      isEditBuffer: false
     }
   }
   /**
@@ -188,7 +189,12 @@ class AddRMDomestic extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-    if (this.props.fieldsObj !== prevProps.fieldsObj) {
+
+
+    if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
+      this.calculateNetCost()
+    }
+    if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isEditFlag && this.state.isEditBuffer) {
       this.calculateNetCost()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -550,6 +556,9 @@ class AddRMDomestic extends Component {
             if (this.dropzone.current !== null) {
               this.dropzone.current.files = files
             }
+            setTimeout(() => {
+              this.setState({ isEditBuffer: true })
+            }, 500);
           }, 200)
         }
       })
@@ -701,7 +710,7 @@ class AddRMDomestic extends Component {
     })
   }
   closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false, setDisable: false })
+    this.setState({ approveDrawer: false, setDisable: false, isEditBuffer: true })
     if (type === 'submit') {
       this.clearForm('submit')
       this.cancel('submit')
@@ -1034,7 +1043,7 @@ class AddRMDomestic extends Component {
       Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
     }
-    this.setState({ isVendorNameNotSelected: false })
+    this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
