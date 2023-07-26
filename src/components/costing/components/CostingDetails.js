@@ -2206,7 +2206,7 @@ function CostingDetails(props) {
                                                   validate: { number, percentageLimitValidation, decimalNumberLimit6 },
                                                   max: {
                                                     value: 100,
-                                                    message: "Percentage Should not be greater then 100"
+                                                    message: "Percentage should not be greater then 100"
                                                   }
                                                 }}
                                                 defaultValue={item.ShareOfBusinessPercent}
@@ -2438,7 +2438,7 @@ function CostingDetails(props) {
                                                 validate: { number, percentageLimitValidation, decimalNumberLimit6 },
                                                 max: {
                                                   value: 100,
-                                                  message: "Percentage Should not be greater then 100"
+                                                  message: "Percentage should not be greater then 100"
                                                 }
                                               }}
                                               defaultValue={item.ShareOfBusinessPercent}
