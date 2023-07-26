@@ -1700,13 +1700,12 @@ function CostingDetails(props) {
         let data = {}
         if (el.isSOBChanged === true) {
           data = {
-            PlantId: el.PlantId,
+            PlantId: el.PlantId ? el.PlantId : el.DestinationPlantId,
             PartId: part.value,
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
             VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: el.DestinationPlantId
           }
           tempArr.push(data)
         }
@@ -1735,13 +1734,12 @@ function CostingDetails(props) {
           let data = {}
           if (el.isSOBChanged === true) {
             data = {
-              PlantId: el.PlantId,
+              PlantId: el.PlantId ? el.PlantId : el.DestinationPlantId,
               PartId: part.value,
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
               VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
-              DestinationPlantId: el.DestinationPlantId
             }
             tempArr.push(data)
           }
