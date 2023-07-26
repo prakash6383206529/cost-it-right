@@ -430,6 +430,7 @@ const CostingSummaryTable = (props) => {
     let isIncludeToolCostWithOverheadAndProfit = viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit
     let isIncludeSurfaceTreatmentWithRejection = viewCostingData[index]?.isIncludeSurfaceTreatmentWithRejection
     let isIncludeSurfaceTreatmentWithOverheadAndProfit = viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit
+    let isIncludeOverheadAndProfitInICC = viewCostingData[index]?.isIncludeOverheadAndProfitInICC
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
@@ -442,7 +443,8 @@ const CostingSummaryTable = (props) => {
       rawMaterialCostWithCutOff: rawMaterialCostWithCutOff,
       isIncludeToolCostWithOverheadAndProfit: isIncludeToolCostWithOverheadAndProfit,
       isIncludeSurfaceTreatmentWithRejection: isIncludeSurfaceTreatmentWithRejection,
-      isIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatmentWithOverheadAndProfit
+      isIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatmentWithOverheadAndProfit,
+      isIncludeOverheadAndProfitInICC: isIncludeOverheadAndProfitInICC
     }
     setViewRejectAndModelType(obj)
   }
@@ -1224,6 +1226,9 @@ const CostingSummaryTable = (props) => {
 
   };
   const pieChartOption = {
+    animation: {
+      duration: 0, // Set the animation duration to 0 to disable animation
+    },
     plugins: {
       legend: {
         position: 'bottom',
@@ -1419,6 +1424,7 @@ const CostingSummaryTable = (props) => {
                   bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                   documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                   content={reactToPrintContent}
+                  pageStyle={PDFPageStyle}
                   onAfterPrint={handleAfterPrint}
                   onBeforeGetContent={handleOnBeforeGetContent}
                   trigger={reactToPrintTrigger}
@@ -1557,7 +1563,7 @@ const CostingSummaryTable = (props) => {
                           <tr className={`${drawerDetailPDF ? "pdf-print" : ""}`} >
                             <td>
                               <span className="d-block">Costing Version</span>
-                              <span className="d-block mt-2">PO Price (Effective from)</span>
+                              <span className="d-block mt-2">Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
@@ -2406,7 +2412,7 @@ const CostingSummaryTable = (props) => {
                       {
 
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
-                          <th>Net PO Price ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
@@ -2449,7 +2455,7 @@ const CostingSummaryTable = (props) => {
                       {
                         viewCostingData[0]?.technologyId !== LOGISTICS &&
                         <tr className={`background-light-blue  ${getCurrencyVarianceFormatter()}`}>
-                          <th>Net PO Price (In Currency){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost (In Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
                         viewCostingData?.map((data, index) => {
                           return <td>Net PO Price({(data?.currency.currencyTitle !== '-' ? data?.currency.currencyTitle : 'INR')})</td>
