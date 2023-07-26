@@ -430,6 +430,7 @@ const CostingSummaryTable = (props) => {
     let isIncludeToolCostWithOverheadAndProfit = viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit
     let isIncludeSurfaceTreatmentWithRejection = viewCostingData[index]?.isIncludeSurfaceTreatmentWithRejection
     let isIncludeSurfaceTreatmentWithOverheadAndProfit = viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit
+    let isIncludeOverheadAndProfitInICC = viewCostingData[index]?.isIncludeOverheadAndProfitInICC
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
@@ -442,7 +443,8 @@ const CostingSummaryTable = (props) => {
       rawMaterialCostWithCutOff: rawMaterialCostWithCutOff,
       isIncludeToolCostWithOverheadAndProfit: isIncludeToolCostWithOverheadAndProfit,
       isIncludeSurfaceTreatmentWithRejection: isIncludeSurfaceTreatmentWithRejection,
-      isIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatmentWithOverheadAndProfit
+      isIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatmentWithOverheadAndProfit,
+      isIncludeOverheadAndProfitInICC: isIncludeOverheadAndProfitInICC
     }
     setViewRejectAndModelType(obj)
   }
