@@ -740,23 +740,27 @@ export function fetchSupplierCityDataAPI(callback) {
  * @description Used to fetch costing heads
  */
 export function fetchCostingHeadsAPI(costingHeads, callback) {
-  return (dispatch) => {
-    dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingHeads}?applicabilityFor=${costingHeads}`, config());
-    request.then((response) => {
-      if (response.data.Result) {
-        dispatch({
-          type: GET_COSTING_HEAD_SUCCESS,
-          payload: response.data.SelectList,
-        });
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: FETCH_MATER_DATA_FAILURE, });
-      callback(error);
-      apiErrors(error);
-    });
-  };
+  return (dispatch, getState) => {
+    const state = getState();
+    console.log('state: ', state);
+    if (state?.common?.costingHeadsAPICount === 0) {
+      dispatch({ type: API_REQUEST });
+      const request = axios.get(`${API.getCostingHeads}?applicabilityFor=${costingHeads}`, config());
+      request.then((response) => {
+        if (response.data.Result) {
+          dispatch({
+            type: GET_COSTING_HEAD_SUCCESS,
+            payload: response.data.SelectList,
+          });
+          callback(response);
+        }
+      }).catch((error) => {
+        dispatch({ type: FETCH_MATER_DATA_FAILURE, });
+        callback(error);
+        apiErrors(error);
+      });
+    };
+  }
 }
 
 /**

@@ -29,44 +29,6 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 // const config() = config
 
 /**
- * @method createBOPAPI
- * @description create baught out parts master
- */
-export function createBOPDomestic(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.createBOPDomestic, data, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method createBOPImport
- * @description create BOP Import
- */
-export function createBOPImport(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.createBOPImport, data, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
  * @method getBOPDataList
  * @description get all BOP Domestic Data list.
  */
@@ -629,6 +591,21 @@ export function getPaymentTermSelectList(callback) {
             dispatch({ type: API_FAILURE, });
             callback(error);
             apiErrors(error);
+        });
+    };
+}
+
+export function createBOP(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.createBOP, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
         });
     };
 }

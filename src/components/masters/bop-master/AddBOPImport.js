@@ -9,8 +9,8 @@ import {
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
 import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
-  createBOP, createBOPImport, updateBOP, getBOPCategorySelectList, getBOPImportById,
-  fileUploadBOPDomestic, fileDeleteBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
+  createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
+  fileUploadBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
 } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -29,13 +29,13 @@ import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { CheckApprovalApplicableMaster, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
@@ -934,7 +934,7 @@ class AddBOPImport extends Component {
 
 
       } else {
-        this.props.createBOPImport(formData, (res) => {
+        this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
@@ -1526,7 +1526,7 @@ class AddBOPImport extends Component {
                                   const fileURL = `${FILE_URL}${withOutTild}`;
                                   return (
                                     <div className={"attachment images"}>
-                                      <a href={fileURL} target="_blank">
+                                      <a href={fileURL} target="_blank" rel="noreferrer">
                                         {f.OriginalFileName}
                                       </a>
 
@@ -1690,7 +1690,7 @@ export default connect(mapStateToProps, {
   getPlantBySupplier,
   getUOMSelectList,
   getCurrencySelectList,
-  createBOPImport,
+  createBOP,
   updateBOP,
   getBOPCategorySelectList,
   getBOPImportById,
@@ -1711,5 +1711,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-  touchOnChange: true
 })(AddBOPImport));
