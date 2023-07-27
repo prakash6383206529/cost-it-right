@@ -25,6 +25,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -476,7 +477,7 @@ class PowerListing extends Component {
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
                     <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
-                    <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>
+                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

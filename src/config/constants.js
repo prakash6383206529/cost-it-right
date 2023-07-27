@@ -1930,14 +1930,19 @@ export const VIEW_COSTING_DATA = {
   // iccOn: 'ICC On',
   // paymentTerms: 'Payment Terms',
   overHeadApplicablity: 'Overhead Applicability',
+  overHeadPercent: 'Overhead %',
   overHeadApplicablityValue: 'Overhead Value',
   ProfitApplicablity: 'Profit Applicability',
+  profitPercent: 'Profit %',
   ProfitApplicablityValue: 'Profit Value',
   rejectionApplicablity: 'Rejection Applicability',
+  rejectionPercent: 'Rejection %',
   rejectionApplicablityValue: 'Rejection Value',
   iccApplicablity: 'ICC Applicability',
+  iccPercent: 'ICC %',
   iccApplicablityValue: 'ICC Value',
   paymentApplicablity: 'Payment Applicability',
+  paymentPercent: 'Payment %',
   paymentcApplicablityValue: 'Payment Value',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
@@ -2589,4 +2594,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.218";
+export const VERSION = "V2.1.219";

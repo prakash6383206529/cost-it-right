@@ -1038,7 +1038,7 @@ class AddRMDomestic extends Component {
       return false
     }
 
-    if (((Technology.value !== SHEETMETAL && Technology.value !== FORGING) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate))) || (Technology.value === SHEETMETAL && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost))) || (Technology.value === SHEETMETAL && Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Technology.value === FORGING && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap))) || (Technology.value === FORGING && Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
+    if (((String(Technology.value) !== String(SHEETMETAL) && String(Technology.value) !== String(FORGING)) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate))) || (String(Technology.value) === String(SHEETMETAL) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost))) || (String(Technology.value) === String(SHEETMETAL) && Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (String(Technology.value) === String(FORGING) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap))) || (String(Technology.value) === String(FORGING) && Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
