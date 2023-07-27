@@ -37,7 +37,7 @@ function TabOverheadProfit(props) {
   }, [costData]);
 
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
-  const { ToolTabData } = useSelector(state => state.costing)
+  const { ToolTabData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   useEffect(() => {
 
@@ -689,7 +689,7 @@ function TabOverheadProfit(props) {
                       <tbody>
                         {OverheadProfitTabData && OverheadProfitTabData.map((item, index) => {
 
-                          if (item && item.PartType === 'Component') {
+                          if (item && (item.PartType === 'Component' || isBreakupBoughtOutPartCostingFromAPI)) {
 
                             return (
                               < >

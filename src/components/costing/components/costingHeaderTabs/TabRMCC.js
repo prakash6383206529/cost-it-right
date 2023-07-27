@@ -5,7 +5,7 @@ import { Row, Col, Table, } from 'reactstrap';
 import PartCompoment from '../CostingHeadCosts/Part'
 import {
   getRMCCTabData, setRMCCData, saveComponentCostingRMCCTab, setComponentItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, savePartNumber, setMessageForAssembly, saveBOMLevel, gridDataAdded
+  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, savePartNumber, setMessageForAssembly, saveBOMLevel, gridDataAdded, setIsBreakupBoughtOutPartCostingFromAPI
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
 import { checkForNull, loggedInUserId } from '../../../../helper';
@@ -27,7 +27,7 @@ function TabRMCC(props) {
   const dispatch = useDispatch()
 
   const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, ErrorObjOverheadProfit, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData,
-    OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj, costingData } = useSelector(state => state.costing)
+    OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj, costingData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
@@ -45,7 +45,7 @@ function TabRMCC(props) {
         EffectiveDate: CostingEffectiveDate ? CostingEffectiveDate : null
       }
       dispatch(getRMCCTabData(data, true, (res) => {
-
+        dispatch(setIsBreakupBoughtOutPartCostingFromAPI(res?.data?.DataList[0]?.IsBreakupBoughtOutPart))
         // dispatch(setAllCostingInArray(res.data.DataList,false))
         let tempArr = [];
         tempArr.push(res?.data?.DataList[0]);
@@ -493,7 +493,7 @@ function TabRMCC(props) {
       let quant = ''
       for (let i = useLevel; i >= 0; i--) {
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
-        if (item.PartType === "Part" || item.PartType === "Component") {
+        if (item.PartType === "Part" || item.PartType === "Component" || isBreakupBoughtOutPartCostingFromAPI) {
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
@@ -620,7 +620,7 @@ function TabRMCC(props) {
       let quant = ''
       for (let i = useLevel; i >= 0; i--) {
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
-        if (item.PartType === "Part" || item.PartType === "Component") {
+        if (item.PartType === "Part" || item.PartType === "Component" || isBreakupBoughtOutPartCostingFromAPI) {
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let partObj = calculationForPart(bopGrid, item, 'BOP', BOPHandlingFields)
@@ -730,7 +730,7 @@ function TabRMCC(props) {
       for (let i = useLevel; i >= 0; i--) {
 
         // THIS CONDITION IS FOR CALCULATING COSTING OF PART/COMPONENT ON THE LEVEL WE ARE WORKING
-        if (item.PartType === "Part" || item.PartType === "Component") {
+        if (item.PartType === "Part" || item.PartType === "Component" || isBreakupBoughtOutPartCostingFromAPI) {
           // IF LEVEL WE ARE WORKING IS OF PART TYPE UNDER SOME SUBASSMEBLY OR ASSEMBLY
           if (i === useLevel) {
             let partIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
@@ -1611,7 +1611,7 @@ function TabRMCC(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '70px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '110px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM Cost`}</th>
-                          <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`BOP Cost`}</th>
+                          {!isBreakupBoughtOutPartCostingFromAPI && <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`BOP Cost`}</th>}
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`CC`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RMC + CC/Pc`}</th>
@@ -1621,7 +1621,7 @@ function TabRMCC(props) {
                       <tbody>
                         {
                           RMCCTabData && RMCCTabData.map((item, index) => {
-                            if (item?.CostingPartDetails && item?.CostingPartDetails?.PartType === 'Component') {
+                            if (item?.CostingPartDetails && (item?.CostingPartDetails?.PartType === 'Component' || isBreakupBoughtOutPartCostingFromAPI)) {
                               return (
                                 < >
                                   <PartCompoment

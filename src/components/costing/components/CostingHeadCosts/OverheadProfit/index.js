@@ -67,7 +67,7 @@ function OverheadProfit(props) {
   const SurfaceTreatmentCost = useContext(SurfaceCostContext);
   const costingHead = useSelector(state => state.comman.costingHead)
 
-  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -75,6 +75,7 @@ function OverheadProfit(props) {
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [totalToolCost, setTotalToolCost] = useState(0)
+  const [showWarning, setShowWarning] = useState(false)
 
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)

@@ -7,7 +7,7 @@ import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo'
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPFromList } from '../../../../helper';
 import { CRMHeads, Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../helper/validation";
 
@@ -39,7 +39,7 @@ function AddFreight(props) {
   const costData = useContext(costingInfoContext);
 
   const costingHead = useSelector(state => state.comman.costingHead)
-  const { CostingDataList } = useSelector(state => state.costing)
+  const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [capacity, setCapacity] = useState([]);
   const [criteria, setCriteria] = useState([]);
@@ -102,6 +102,7 @@ function AddFreight(props) {
   const renderListing = (label) => {
 
     const temp = [];
+    let tempList = [];
 
     if (label === 'Capacity') {
       freightFullTruckCapacitySelectList && freightFullTruckCapacitySelectList.map(item => {
@@ -109,7 +110,8 @@ function AddFreight(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-      return temp;
+      tempList = [...temp]
+      return tempList;
     }
 
     if (label === 'RateCriteria') {
@@ -118,7 +120,8 @@ function AddFreight(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-      return temp;
+      tempList = [...temp]
+      return tempList;
     }
 
     if (label === 'Applicability') {
@@ -127,7 +130,12 @@ function AddFreight(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-      return temp;
+      if (isBreakupBoughtOutPartCostingFromAPI) {
+        tempList = removeBOPFromList([...temp])
+      } else {
+        tempList = [...temp]
+      }
+      return tempList;
     }
 
   }

@@ -6,7 +6,7 @@ import DatePicker from 'react-datepicker'
 import DayTime from '../../common/DayTimeWrapper'
 import {
   getPartInfo, checkPartWithTechnology,
-  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology,
+  storePartNumber, getCostingSummaryByplantIdPartNo, setCostingViewData, getSingleCostingDetails, getPartSelectListByTechnology, getCostingSpecificTechnology, setBreakupBOP,
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
@@ -17,9 +17,11 @@ import { useHistory } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import { MACHINING } from '../../../config/masterData'
-import { searchCount } from '../../../config/constants'
+import { PRODUCT_ID, searchCount } from '../../../config/constants'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
 import { MESSAGES } from '../../../config/message'
+import { getSelectListPartType } from '../../masters/actions/Part'
+import { DETAILED_BOP_ID } from '../../../config/masterData'
 
 function CostingSummary(props) {
 
@@ -48,11 +50,13 @@ function CostingSummary(props) {
   const partInfo = useSelector((state) => state.costing.partInfo)
   const [titleObj, setTitleObj] = useState({})
   const [partName, setpartName] = useState('')
+  const [partTypeList, setPartTypeList] = useState([])
   //dropdown loader 
   const [inputLoader, setInputLoader] = useState(false)
   const [isLoader, setIsLoader] = useState(false);
   const [costingIdExist, setCostingIdExist] = useState(true);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const [partType, setPartType] = useState([]);
 
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
@@ -76,6 +80,9 @@ function CostingSummary(props) {
     if (reactLocalStorage.get('location') === '/costing-summary') {
       dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
       dispatch(getPartInfo('', () => { }))
+      dispatch(getSelectListPartType((res) => {
+        setPartTypeList(res?.data?.SelectList)
+      }))
     }
     return () => {
       reactLocalStorage.setObject('PartData', [])
@@ -90,6 +97,8 @@ function CostingSummary(props) {
         setTechnology(costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
         setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setPart(costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
+        setValue('PartType', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
+        setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setDisabled(true)
         dispatch(getPartInfo(costingData.PartId, (res) => {
           let newValue = {}
@@ -166,6 +175,7 @@ function CostingSummary(props) {
       dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
+      setPartType([])
       setIsTechnologySelected(true)
       dispatch(getPartInfo('', () => { }))
       setEffectiveDate('')
@@ -186,6 +196,31 @@ function CostingSummary(props) {
   useEffect(() => {
     renderDropdownListing('PartList')
   }, [partSelectListByTechnology])
+
+  /**
+   * @method renderListing
+   * @description Used show listing of unit of measurement
+   */
+  const renderListing = (label) => {
+    const temp = []
+    if (label === 'Technology') {
+      technologySelectList && technologySelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'PartType') {
+      partTypeList && partTypeList.map((item) => {
+        if (item.Value === '0') return false
+        if (item.Value === PRODUCT_ID) return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+  }
 
   /**
    * @method handlePartChange
@@ -279,6 +314,26 @@ function CostingSummary(props) {
   }
 
   /**
+   * @method handlePartChange
+   * @description  USED TO HANDLE PART CHANGE
+   */
+  const handlePartTypeChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      if (IsTechnologySelected) {
+        dispatch(setBreakupBOP(newValue?.value === DETAILED_BOP_ID))
+        setPartType(newValue)
+        setValue('Part', '')
+        setPart('')
+      }
+    } else {
+      setPart([])
+      dispatch(getPartInfo('', () => { }))
+    }
+    setpartName([])
+    reactLocalStorage.setObject('PartData', [])
+  }
+
+  /**
    * @method handleEffectiveDateChange
    * @description Handle Effective Date
    */
@@ -293,6 +348,7 @@ function CostingSummary(props) {
   */
   const resetData = () => {
     setPart([])
+    setPartType([])
     setTechnology([])
     setDisabled(false)
     setEffectiveDate('')
@@ -309,6 +365,7 @@ function CostingSummary(props) {
       DrawingNumber: '',
       RevisionNumber: '',
       ShareOfBusiness: '',
+      PartType: '',
     })
   }
 
@@ -334,7 +391,7 @@ function CostingSummary(props) {
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
       setInputLoader(true)
-      const res = await getPartSelectListByTechnology(technology.value, resultInput);
+      const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value);
       setInputLoader(false)
       setpartName(resultInput)
       let partDataAPI = res?.data?.SelectList
@@ -422,6 +479,24 @@ function CostingSummary(props) {
                       </Col>
 
                       <Col className="col-md-15">
+                        <SearchableSelectHookForm
+                          label={"Part Type"}
+                          name={"PartType"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={partType.length !== 0 ? partType : ""}
+                          options={renderListing('PartType')}
+                          mandatory={true}
+                          handleChange={handlePartTypeChange}
+                          errors={errors.Part}
+                          disabled={(technology.length === 0) ? true : false}
+                        />
+                      </Col>
+                      <Col className="col-md-15">
+
                         <AsyncSearchableSelectHookForm
                           label={"Assembly/Part No."}
                           name={"Part"}
@@ -436,7 +511,7 @@ function CostingSummary(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(technology.length === 0) ? true : false}
+                          disabled={(partType.length === 0) ? true : false}
                           NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
 

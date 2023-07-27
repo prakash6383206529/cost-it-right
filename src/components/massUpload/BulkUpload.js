@@ -24,7 +24,7 @@ import Drawer from '@material-ui/core/Drawer';
 import Downloadxls, { checkLabourRateConfigure, checkRM_Process_OperationConfigurable, checkVendorPlantConfig } from './Downloadxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
 import { ACTUALVOLUMEBULKUPLOAD, ADDRFQ, BOPDOMESTICBULKUPLOAD, BOPIMPORTBULKUPLOAD, BOP_MASTER_ID, BUDGETBULKUPLOAD, BUDGETEDVOLUMEBULKUPLOAD, CBCADDMORE, CBCADDMOREOPERATION, CBCTypeId, ENTRY_TYPE_IMPORT, FUELBULKUPLOAD, INTERESTRATEBULKUPLOAD, LABOURBULKUPLOAD, MACHINEBULKUPLOAD, MACHINE_MASTER_ID, OPERAIONBULKUPLOAD, OPERATIONS_ID, PARTCOMPONENTBULKUPLOAD, PRODUCTCOMPONENTBULKUPLOAD, RMDOMESTICBULKUPLOAD, RMIMPORTBULKUPLOAD, RMSPECIFICATION, RM_MASTER_ID, VBCADDMORE, VBCADDMOREOPERATION, VBCTypeId, VENDORBULKUPLOAD, ZBCADDMORE, ZBCADDMOREOPERATION, ZBCTypeId } from '../../config/constants';
-import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm } from '../../config/masterData';
+import { AddRFQUpload, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_VBC_DOMESTIC, BOP_VBC_IMPORT, BOP_ZBC_DOMESTIC, BOP_ZBC_IMPORT, BUDGET_CBC, BUDGET_VBC, BUDGET_ZBC, CBCInterestRate, CBCOperation, CBCOperationSmallForm, Fuel, Labour, MachineCBC, MachineVBC, MachineZBC, MHRMoreZBC, PartComponent, ProductComponent, RMDomesticCBC, RMDomesticVBC, RMDomesticZBC, RMImportCBC, RMImportVBC, RMImportZBC, RMSpecification, VBCInterestRate, VBCOperation, VBCOperationSmallForm, Vendor, VOLUME_ACTUAL_CBC, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_ZBC, VOLUME_BUDGETED_CBC, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_ZBC, ZBCOperation, ZBCOperationSmallForm, BOP_DETAILED_DOMESTIC, BOP_DETAILED_IMPORT, DETAILED_BOP } from '../../config/masterData';
 import { CheckApprovalApplicableMaster, checkForSameFileUpload, userTechnologyDetailByMasterId } from '../../helper';
 import LoaderCustom from '../common/LoaderCustom';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
@@ -35,6 +35,7 @@ import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
+import _ from 'lodash';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -52,7 +53,8 @@ class BulkUpload extends Component {
             setDisable: false,
             bulkUploadLoader: false,
             costingTypeId: props?.fileName === "Interest Rate" ? VBCTypeId : ZBCTypeId,
-            showPopup: false
+            showPopup: false,
+            bopType: ''
         }
     }
 
@@ -194,9 +196,9 @@ class BulkUpload extends Component {
     * @method onPressHeads
     * @description Used for Costing head check
     */
-    onPressHeads = (costingHeadFlag) => {
+    onPressHeads = (costingHeadFlag, bopType) => {
         setTimeout(() => {
-            this.setState({ costingTypeId: costingHeadFlag, fileData: [], uploadfileName: "" });
+            this.setState({ costingTypeId: costingHeadFlag, fileData: [], uploadfileName: "", bopType: bopType });
         }, 300);
     }
 
@@ -262,6 +264,8 @@ class BulkUpload extends Component {
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_CBC_DOMESTIC), fileHeads)
+                            } else if (this.state.bopType === DETAILED_BOP) {
+                                checkForFileHead = checkForSameFileUpload(BOP_DETAILED_DOMESTIC, fileHeads)
                             }
                             break;
                         case String(BOPIMPORTBULKUPLOAD):
@@ -270,8 +274,9 @@ class BulkUpload extends Component {
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_IMPORT, VBCTypeId), fileHeads)
-                            }
-                            else {
+                            } else if (this.state.bopType === DETAILED_BOP) {
+                                checkForFileHead = checkForSameFileUpload(BOP_DETAILED_IMPORT, fileHeads)
+                            } else {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_CBC_IMPORT, CBCTypeId), fileHeads)
                             }
                             break;
@@ -489,7 +494,7 @@ class BulkUpload extends Component {
     * @description Used to Submit the form
     */
     onSubmit = (values) => {
-        const { fileData, costingTypeId, IsFinalApprover } = this.state;
+        const { fileData, costingTypeId, IsFinalApprover, bopType } = this.state;
         const { fileName, typeOfEntryId } = this.props;
         if (fileData.length === 0) {
             Toaster.warning('Please select a file to upload.')
@@ -498,7 +503,8 @@ class BulkUpload extends Component {
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
-            CostingTypeId: costingTypeId
+            CostingTypeId: costingTypeId,
+            bopType: bopType
         }
 
         let masterUploadData = {
@@ -529,6 +535,7 @@ class BulkUpload extends Component {
             });
 
         } else if (fileName === 'BOP Domestic' || fileName === 'BOP Import') {
+            masterUploadData.CostingTypeId = (bopType === DETAILED_BOP ? VBCTypeId : masterUploadData.CostingTypeId)
             this.props.bulkUploadBOP(masterUploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
@@ -644,7 +651,7 @@ class BulkUpload extends Component {
      */
     render() {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
-        const { faildRecords, failedData, costingTypeId, setDisable, noApprovalCycle, IsFinalApprover } = this.state;
+        const { faildRecords, failedData, costingTypeId, setDisable, noApprovalCycle, IsFinalApprover, bopType } = this.state;
         if (faildRecords) {
             return <Downloadxls
                 isFailedFlag={true}
@@ -708,6 +715,15 @@ class BulkUpload extends Component {
                                                     onClick={() => this.onPressHeads(CBCTypeId)}
                                                 />{' '}
                                                 <span>Customer Based</span>
+                                            </Label>}
+                                            {(this.props?.masterId === BOP_MASTER_ID) && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                                <input
+                                                    type="radio"
+                                                    name="costingHead"
+                                                    checked={bopType === DETAILED_BOP ? true : false}
+                                                    onClick={() => this.onPressHeads('', DETAILED_BOP)}
+                                                />{' '}
+                                                <span>VBC Detailed BOP</span>
                                             </Label>}
                                             {isMachineMoreTemplate &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
@@ -779,6 +795,7 @@ class BulkUpload extends Component {
                                             fileName={fileName}
                                             isFailedFlag={false}
                                             costingTypeId={costingTypeId}
+                                            bopType={bopType}
                                         />
                                     </div>
 

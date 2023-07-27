@@ -103,6 +103,12 @@ export const hideColumnFromExcel = (data, value) => {
     return excelData
 }
 
+export const hideMultipleColumnFromExcel = (data, value) => {
+    let excelData
+    excelData = data && data.filter((item) => !value?.includes(item.value))
+    return excelData
+}
+
 export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     let approvalTypeId;
     switch (Number(value)) {

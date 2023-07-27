@@ -851,7 +851,7 @@ class AddBOPImport extends Component {
       TechnologyId: Technology?.value,
       IsBreakupBoughtOutPart: isTechnologyVisible,
     }
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true) || (isEditFlag && isTechnologyVisible)) {
 
       this.setState({ setDisable: true })
       if (IsFinancialDataChanged) {
@@ -897,7 +897,7 @@ class AddBOPImport extends Component {
       }
 
     } else {
-      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
         formData.IsSendForApproval = true
       } else {
         formData.IsSendForApproval = false
@@ -905,7 +905,7 @@ class AddBOPImport extends Component {
       // this.setState({ setDisable: true })
 
 
-      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
@@ -1326,7 +1326,7 @@ class AddBOPImport extends Component {
                             </>
                           )}
                         </Row>
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured &&
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
                           <Row>
                             <Col md="12">
                               <div className="left-border">{"Detailed BOP:"}</div>
@@ -1340,7 +1340,7 @@ class AddBOPImport extends Component {
                                 <input
                                   type="checkbox"
                                   checked={isTechnologyVisible}
-                                  disabled={isViewMode ? true : false}
+                                  disabled={isViewMode || isEditFlag ? true : false}
                                 />
                                 <span
                                   className=" before-box"
@@ -1364,7 +1364,7 @@ class AddBOPImport extends Component {
                                   this.handleTechnologyChange
                                 }
                                 valueDescription={this.state.Technology}
-                                disabled={isViewMode ? true : false}
+                                disabled={isViewMode || isEditFlag ? true : false}
                               />
                             </Col>}
                           </Row>
@@ -1461,37 +1461,39 @@ class AddBOPImport extends Component {
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>}
-                          <Col md="3">
-                            <Field
-                              label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                              name={"BasicRate"}
-                              type="text"
-                              placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                              component={renderTextInputField}
-                              required={true}
-                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
-                          <Col md="3">
-                            <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
-                            <Field
-                              label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                              name={this.state.netLandedcost === 0 ? '' : "NetLandedCost"}
-                              type="text"
-                              placeholder={"-"}
-                              validate={[]}
-                              component={renderTextInputField}
-                              required={false}
-                              disabled={true}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
+                          {!isTechnologyVisible && <>
+                            <Col md="3">
+                              <Field
+                                label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                name={"BasicRate"}
+                                type="text"
+                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                              <Field
+                                label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                name={this.state.netLandedcost === 0 ? '' : "NetLandedCost"}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderTextInputField}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                          </>}
                           {
-                            this.state.showCurrency &&
+                            this.state.showCurrency && !isTechnologyVisible &&
                             <Col md="3">
                               <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
                               <Field
@@ -1648,7 +1650,7 @@ class AddBOPImport extends Component {
                           </button>
 
 
-                          {(!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                          {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
                               disabled={isViewMode || setDisable || noApprovalCycle}

@@ -16,9 +16,8 @@ import { useState } from 'react';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import { debounce } from 'lodash';
 import { ASSEMBLYNAME } from '../../../../../config/constants';
-import { ASSEMBLY } from '../../../../../config/masterData';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
-import { ASSEMBLY, ASSEMBLYNAME, LEVEL0, WACTypeId } from '../../../../../config/constants';
+import { LEVEL0, WACTypeId } from '../../../../../config/constants';
 
 function SurfaceTreatment(props) {
   const { surfaceData, transportationData, item } = props;
@@ -36,7 +35,7 @@ function SurfaceTreatment(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const price = useContext(NetPOPriceContext)
   const costData = useContext(costingInfoContext);
 

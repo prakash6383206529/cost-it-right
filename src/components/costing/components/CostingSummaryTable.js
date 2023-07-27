@@ -1847,7 +1847,7 @@ const CostingSummaryTable = (props) => {
                               anchor={'right'}
                               isPDFShow={true}
                             /></th></tr>}
-                            <tr className={highlighter("netBOP", "main-row")}>
+                            {viewCostingData && !viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart && <tr className={highlighter("netBOP", "main-row")}>
                               <th>Net BOP Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
 
                               {viewCostingData &&
@@ -1869,7 +1869,7 @@ const CostingSummaryTable = (props) => {
                                     </td>
                                   )
                                 })}
-                            </tr>
+                            </tr>}
                             {
                               !drawerDetailPDF ? <tr>
                                 <td>

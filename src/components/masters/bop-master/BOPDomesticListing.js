@@ -28,7 +28,7 @@ import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideColumnFromExcel } from '../../common/CommonFunctions';
+import { hideColumnFromExcel, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -518,6 +518,10 @@ class BOPDomesticListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured) {
+            excelData = hideMultipleColumnFromExcel(excelData, ["IsBreakupBoughtOutPart", "TechnologyName"])
+        }
         let temp = []
         let tempData = [...data]
         if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
