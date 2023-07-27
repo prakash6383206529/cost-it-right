@@ -2411,7 +2411,7 @@ const CostingSummaryTable = (props) => {
                               return <td className={tableDataClass(data)}>
                                 {displayValueWithSign(data, "nPOPrice")}
                                 {
-                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) && (initialConfiguration?.IsBasicRateAndCostingConditionVisible || initialConfiguration?.IsShowNpvCost) &&
+                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
