@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, VBC } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails, number, decimalNumberLimit6, percentageLimitValidation } from '../../../helper';
@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -31,11 +31,12 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import AddClientDrawer from './AddClientDrawer';
-import { IdForMultiTechnology } from '../../../config/masterData';
+import { DETAILED_BOP_ID, IdForMultiTechnology, partTypeDropdownList } from '../../../config/masterData';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { getUOMSelectList } from '../../../actions/Common';
 import { Redirect } from 'react-router';
 import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
+import { getSelectListPartType } from '../../masters/actions/Part';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -64,6 +65,7 @@ function CostingDetails(props) {
   const [technology, setTechnology] = useState([]);
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
+  const [partType, setPartType] = useState([]);
   const [effectiveDate, setEffectiveDate] = useState('');
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
   const [isZBCSOBEnabled, setZBCEnableSOBField] = useState(true);
@@ -132,6 +134,7 @@ function CostingDetails(props) {
   const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState({})
   const [partName, setpartName] = useState('')
   const [nfrListing, setNFRListing] = useState(false)
+  const [partTypeList, setPartTypeList] = useState([])
 
   const dispatch = useDispatch()
 
@@ -140,6 +143,7 @@ function CostingDetails(props) {
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
   const partNumber = useSelector(state => state.costing.partNo);
+  const breakupBOP = useSelector(state => state.costing.breakupBOP);
   const { topAndLeftMenuData } = useSelector(state => state.auth);
 
   useEffect(() => {
@@ -156,6 +160,9 @@ function CostingDetails(props) {
       dispatch(getPartInfo('', () => { }))
       dispatch(gridDataAdded(false))
       dispatch(getUOMSelectList(() => { }))
+      dispatch(getSelectListPartType((res) => {
+        setPartTypeList(res?.data?.SelectList)
+      }))
 
     }
     return () => {
@@ -238,6 +245,7 @@ function CostingDetails(props) {
           getPartInfo(partNumber.partId, (res) => {
             let Data = res.data.Data
             setValue("PartName", Data.PartName)
+            setValue("PartType", Data.PartType)
             setValue('Description', Data.Description)
             setValue('ECNNumber', Data.ECNNumber)
             setValue('DrawingNumber', Data.DrawingNumber)
@@ -275,7 +283,15 @@ function CostingDetails(props) {
       })
       return temp
     }
-
+    if (label === 'PartType') {
+      partTypeList && partTypeList.map((item) => {
+        if (item.Value === '0') return false
+        if (item.Value === PRODUCT_ID) return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
     // if (label === 'PartList') {
     //   partSelectListByTechnology && partSelectListByTechnology.map((item) => {
     //     if (item.Value === '0') return false
@@ -320,6 +336,7 @@ function CostingDetails(props) {
       dispatch(getPartInfo('', () => { }))
       setTechnology(newValue)
       setPart([])
+      setPartType([])
       setIsTechnologySelected(true)
       setZBCPlantGrid([])
       setVBCVendorGrid([])
@@ -337,6 +354,7 @@ function CostingDetails(props) {
         RevisionNumber: '',
         ShareOfBusiness: '',
         EffectiveDate: '',
+        PartType: '',
       })
 
     } else {
@@ -397,6 +415,28 @@ function CostingDetails(props) {
       setPart([])
       dispatch(getPartInfo('', () => { }))
     }
+  }
+
+  /**
+   * @method handlePartChange
+   * @description  USED TO HANDLE PART CHANGE
+   */
+  const handlePartTypeChange = (newValue) => {
+    resetGrid()
+    if (newValue && newValue !== '') {
+      if (IsTechnologySelected) {
+        dispatch(setBreakupBOP(newValue?.value === DETAILED_BOP_ID))
+        setPartType(newValue)
+        setValue('Part', '')
+        setPart('')
+        setShowNextBtn(false)
+      }
+    } else {
+      setPart([])
+      dispatch(getPartInfo('', () => { }))
+    }
+    setpartName([])
+    reactLocalStorage.setObject('PartData', [])
   }
 
   /**
@@ -1464,6 +1504,7 @@ function CostingDetails(props) {
   const cancel = () => {
     setTechnology([])
     setPart([])
+    setPartType([])
     setZBCPlantGrid([])
     setVBCVendorGrid([])
     setNccGrid([])
@@ -1480,6 +1521,7 @@ function CostingDetails(props) {
       DrawingNumber: '',
       RevisionNumber: '',
       ShareOfBusiness: '',
+      PartType: '',
     })
   }
 
@@ -1503,6 +1545,7 @@ function CostingDetails(props) {
       setIsLoader(true)
       dispatch(getBriefCostingById('', (res) => { }))
       dispatch(isDiscountDataChange(false))
+      dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
 
       reactLocalStorage.setObject('costingArray', [])
       reactLocalStorage.setObject('surfaceCostingArray', [])
@@ -1882,7 +1925,7 @@ function CostingDetails(props) {
     const resultInput = inputValue.slice(0, searchCount)
     if (inputValue?.length >= searchCount && partName !== resultInput) {
       setInputLoader(true)
-      const res = await getPartSelectListByTechnology(technology.value, resultInput);
+      const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value);
       setInputLoader(false)
       setpartName(resultInput)
       let partDataAPI = res?.data?.SelectList
@@ -1976,7 +2019,25 @@ function CostingDetails(props) {
                           errors={errors.Technology}
                         />
                       </Col>
+                      <Col className="col-md-15">
 
+                        <SearchableSelectHookForm
+                          label={"Part Type"}
+                          name={"PartType"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={partType.length !== 0 ? partType : ""}
+                          options={renderListing('PartType')}
+                          mandatory={true}
+                          handleChange={handlePartTypeChange}
+                          errors={errors.Part}
+                          disabled={(technology.length === 0) ? true : false}
+                        />
+
+                      </Col>
                       <Col className="col-md-15">
 
                         <AsyncSearchableSelectHookForm
@@ -1993,7 +2054,7 @@ function CostingDetails(props) {
                           isLoading={loaderObj}
                           handleChange={handlePartChange}
                           errors={errors.Part}
-                          disabled={(technology.length === 0) ? true : false}
+                          disabled={(partType.length === 0) ? true : false}
                           NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                         />
 
@@ -2166,7 +2227,7 @@ function CostingDetails(props) {
                           </Col>
                         </Row>
                       )}
-                      {IsOpenVendorSOBDetails && showCostingSection.ZBC && (
+                      {IsOpenVendorSOBDetails && showCostingSection.ZBC && !breakupBOP && (
                         <>
                           <Row className="align-items-center">
                             <Col md="6" className={"mb-2 mt-3"}>
@@ -2294,7 +2355,7 @@ function CostingDetails(props) {
                       )}
 
                       {/* ****************************************NCC UI HERE************************************************************* */}
-                      {IsOpenVendorSOBDetails && showCostingSection.NCC && (
+                      {IsOpenVendorSOBDetails && showCostingSection.NCC && !breakupBOP && (
                         <>
                           <Row className="align-items-center">
                             <Col md={'6'} className={"mb-2 mt-3"}>
@@ -2527,7 +2588,7 @@ function CostingDetails(props) {
 
 
                       {/* check here full component  @ashok */}
-                      {IsOpenVendorSOBDetails && showCostingSection.ZBC && (
+                      {IsOpenVendorSOBDetails && showCostingSection.ZBC && !breakupBOP && (
                         <>
                           <Row className="align-items-center">
                             <Col md="6" className={"mb-2 mt-3"}>
@@ -2571,6 +2632,8 @@ function CostingDetails(props) {
                                       let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
                                       let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
+                                      let list = item?.CostingOptions?.filter(element => element.Status !== DRAFT && element.Status !== REJECTED && element.Status !== REJECTED_BY_SYSTEM)
+                                      let showAddButtonInBOPBreakup = breakupBOP && list?.length > 0 ? false : true
 
                                       //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
                                       //AS OF NOW 25-03-2021
@@ -2634,7 +2697,7 @@ function CostingDetails(props) {
                                           <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                           <td style={{ width: "250px" }}>
                                             <div className='action-btn-wrapper pr-2'>
-                                              {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, WACTypeId)} />}
+                                              {AddAccessibility && actionPermission.addZBC && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, WACTypeId)} />}
                                               {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, WACTypeId)} />)}
                                               {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, WACTypeId)} />)}
                                               {CopyAccessibility && actionPermission.copyZBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, WACTypeId)} />)}

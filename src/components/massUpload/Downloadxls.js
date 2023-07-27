@@ -16,7 +16,7 @@ import {
     BOP_ZBC_IMPORT, BOP_ZBC_IMPORT_TempData, BOP_VBC_IMPORT, BOP_VBC_IMPORT_TempData,
     VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA, VOLUME_ACTUAL_VBC, VOLUME_ACTUAL_VBC_TEMPDATA,
     VOLUME_BUDGETED_ZBC, VOLUME_BUDGETED_ZBC_TEMPDATA, VOLUME_BUDGETED_VBC, VOLUME_BUDGETED_VBC_TEMPDATA,
-    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticCBC, RMDomesticCBCTempData, RMImportCBC, RMImportCBCTempData, MachineCBC, MachineCBCTempData, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, BOP_CBC_DOMESTIC_TempData, VOLUME_BUDGETED_CBC_TEMPDATA, VOLUME_ACTUAL_CBC_TEMPDATA, CBCOperationTempData, VOLUME_ACTUAL_CBC, VOLUME_BUDGETED_CBC, CBCOperation, CBCInterestRateTempData, CBCInterestRate, AddRFQUpload, AddRFQTempData, BUDGET_ZBC, BUDGET_ZBC_TEMPDATA, BUDGET_VBC_TEMPDATA, BUDGET_VBC, BUDGET_CBC_TEMPDATA, BUDGET_CBC, ZBCOperationSmallForm, VBCOperationSmallForm, CBCOperationSmallForm
+    ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticCBC, RMDomesticCBCTempData, RMImportCBC, RMImportCBCTempData, MachineCBC, MachineCBCTempData, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, BOP_CBC_DOMESTIC_TempData, VOLUME_BUDGETED_CBC_TEMPDATA, VOLUME_ACTUAL_CBC_TEMPDATA, CBCOperationTempData, VOLUME_ACTUAL_CBC, VOLUME_BUDGETED_CBC, CBCOperation, CBCInterestRateTempData, CBCInterestRate, AddRFQUpload, AddRFQTempData, BUDGET_ZBC, BUDGET_ZBC_TEMPDATA, BUDGET_VBC_TEMPDATA, BUDGET_VBC, BUDGET_CBC_TEMPDATA, BUDGET_CBC, ZBCOperationSmallForm, VBCOperationSmallForm, CBCOperationSmallForm, DETAILED_BOP, BOP_DETAILED_DOMESTIC, BOP_DETAILED_DOMESTIC_TempData, BOP_DETAILED_IMPORT, BOP_DETAILED_IMPORT_TempData
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey } from "../../helper";
 
@@ -95,6 +95,10 @@ export const checkVendorPlantConfig = (excelData, type = '') => {
         }
         if (getConfigurationKey().IsMinimumOrderQuantityVisible === false) {
             if (el.value === 'NumberOfPieces') return false;
+        }
+        if (getConfigurationKey().IsBoughtOutPartCostingConfigured === false) {
+            if (el.value === 'IsBreakupBoughtOutPart') return false;
+            if (el.value === 'TechnologyName') return false;
         }
         return true;
     })
@@ -176,7 +180,7 @@ class Downloadxls extends React.Component {
     * @method renderVBCSwitch
     * @description Switch case for different xls file head according to master
     */
-    renderVBCSwitch = (master) => {
+    renderVBCSwitch = (master, bopType) => {
         switch (master) {
             case 'RM Domestic':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMDomesticVBC), RMDomesticVBCTempData);
@@ -188,10 +192,18 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case 'Insert Domestic':
             case 'BOP Domestic':
-                return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_DOMESTIC), BOP_VBC_DOMESTIC_TempData);
+                if (bopType === DETAILED_BOP) {
+                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_DETAILED_DOMESTIC), BOP_DETAILED_DOMESTIC_TempData);
+                } else {
+                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_DOMESTIC), BOP_VBC_DOMESTIC_TempData);
+                }
             case 'BOP Import':
             case 'Insert Import':
-                return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_IMPORT), BOP_VBC_IMPORT_TempData);
+                if (bopType === DETAILED_BOP) {
+                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_DETAILED_IMPORT), BOP_DETAILED_IMPORT_TempData);
+                } else {
+                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_IMPORT), BOP_VBC_IMPORT_TempData);
+                }
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_VBC), VOLUME_ACTUAL_VBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -268,7 +280,7 @@ class Downloadxls extends React.Component {
     }
 
     render() {
-        const { isFailedFlag, fileName, isZBCVBCTemplate, isMachineMoreTemplate, costingTypeId } = this.props;
+        const { isFailedFlag, fileName, isZBCVBCTemplate, isMachineMoreTemplate, costingTypeId, bopType } = this.props;
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
         if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Insert Domestic' || fileName === 'Insert Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
@@ -329,6 +341,10 @@ class Downloadxls extends React.Component {
                     {(costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) &&
                         <ExcelFile filename={costingTypeId === CBCADDMOREOPERATION ? 'CBC More Details' : `${fileName} CBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download CBC</button>}>
                             {costingTypeId !== CBCADDMOREOPERATION ? this.renderCBCSwitch(fileName) : this.renderCBCSwitch(costingTypeId)}
+                        </ExcelFile>}
+                    {bopType === DETAILED_BOP &&
+                        <ExcelFile filename={`${fileName} VBC`} fileExtension={'.xls'} element={<button type="button" className={'btn btn-primary pull-right w-100'}><div class="download"></div> Download VBC Detailed BOP</button>}>
+                            {fileName ? this.renderVBCSwitch(fileName, bopType) : ''}
                         </ExcelFile>}
                     {/* ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER */}
                     {(costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) &&

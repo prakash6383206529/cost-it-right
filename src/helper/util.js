@@ -1222,3 +1222,8 @@ export function compareObjects(obj1, obj2) {
   // All key-value pairs are the same
   return true;
 }
+
+export function removeBOPFromList(list) {
+  let tempList = list?.filter(item => !item?.label?.includes('BOP'))
+  return tempList
+}

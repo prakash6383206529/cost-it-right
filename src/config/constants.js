@@ -1415,6 +1415,8 @@ export const SET_MESSAGE_FOR_ASSEMBLY = 'SET_MESSAGE_FOR_ASSEMBLY'
 export const SET_PROCESS_GROUP_GRID = 'SET_PROCESS_GROUP_GRID'
 export const SAVE_BOM_LEVEL_STOP_API_CALL = 'SAVE_BOM_LEVEL_STOP_API_CALL'
 export const SAVE_ASSEMBLY_NUMBER_STOP_API_CALL = 'SAVE_ASSEMBLY_NUMBER_STOP_API_CALL'
+export const SET_BREAKUP_BOP = 'SET_BREAKUP_BOP'
+export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1785,6 +1787,9 @@ export const MACHINE = 'Machine'
 export const VENDOR = 'Vendor'
 export const CLIENT = 'Customer'
 export const PLANT = 'Plant'
+
+export const PRODUCT = 'Product'
+export const PRODUCT_ID = '4'
 
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
 export const LABOUR = 'Labour'

@@ -97,6 +97,18 @@ export const hideCustomerFromExcel = (data, value) => {
     return excelData
 }
 
+export const hideColumnFromExcel = (data, value) => {
+    let excelData
+    excelData = data && data.filter((item) => item.value !== value)
+    return excelData
+}
+
+export const hideMultipleColumnFromExcel = (data, value) => {
+    let excelData
+    excelData = data && data.filter((item) => !value?.includes(item.value))
+    return excelData
+}
+
 export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     let approvalTypeId;
     switch (Number(value)) {
@@ -117,6 +129,7 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
             break;
         case PFS2TypeId:
             approvalTypeId = PFS2APPROVALTYPEID;
+            break;
         case WACTypeId:
             approvalTypeId = WACAPPROVALTYPEID;
             break;
@@ -126,8 +139,3 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     }
     return approvalTypeId;
 };
-export const hideColumnFromExcel = (data, value) => {
-    let excelData
-    excelData = data && data.filter((item) => item.value !== value)
-    return excelData
-}

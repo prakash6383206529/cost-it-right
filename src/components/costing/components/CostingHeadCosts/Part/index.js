@@ -33,7 +33,7 @@ function PartCompoment(props) {
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
   const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel, assemblyNumber } = useSelector(state => state.costing)
-  const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -224,7 +224,7 @@ function PartCompoment(props) {
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        {!isBreakupBoughtOutPartCostingFromAPI && <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalConversionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.Quantity !== undefined ? checkForNull(item?.CostingPartDetails?.Quantity) : 1}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost), initialConfiguration.NoOfDecimalForPrice) : 0}</td>
@@ -243,13 +243,13 @@ function PartCompoment(props) {
                 item={item}
               />
 
-              <BOPCost
+              {!isBreakupBoughtOutPartCostingFromAPI && <BOPCost
                 index={props.index}
                 data={bopData}
                 setBOPCost={props.setBOPCost}
                 setBOPHandlingCost={props.setBOPHandlingCost}
                 item={item}
-              />
+              />}
 
               <ProcessCost
                 index={props.index}
