@@ -454,7 +454,7 @@ function AddLabourCost(props) {
 
                                     <Col md="3" className='px-1'>
                                         <NumberFieldHookForm
-                                            label={`Absentism %`}
+                                            label={`Absenteeism %`}
                                             name={'absentism'}
                                             Controller={Controller}
                                             control={control}
