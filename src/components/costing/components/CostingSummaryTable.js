@@ -2288,20 +2288,8 @@ const CostingSummaryTable = (props) => {
                                 //check here @ashok
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                   <td className={tableDataClass(data)} width={"32%"}>
-                                    <div className="d-grid">
-
-                                      <span className="d-inline-block">{"Type"}</span>
-                                      <span className="d-inline-block">{"Applicability"}</span>
-                                      <span className="d-inline-block">{"Value"}</span>
-                                      <span className="d-inline-block">{"Cost"}</span>
-                                    </div>
                                     <div className={`d-grid ${highlighter("anyOtherCost")}`}>
-                                      <span className="d-inline-block small-grey-text">
-                                        {data?.CostingHeading !== VARIANCE ? data?.anyOtherCostType : ''}
-                                      </span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? data?.anyOtherCostApplicablity : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? <span title={checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}</span> : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
                                   </td>
                                   : ""
