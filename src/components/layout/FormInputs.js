@@ -711,7 +711,7 @@ export const searchableSelect = ({
           )}
         </label>
       )}
-      <div title={isDisable ? valueDescription.label : ''}
+      <div title={isDisable ? valueDescription?.label : ''}
       >
         <Select
           {...input}
