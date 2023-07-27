@@ -443,8 +443,8 @@ function NfrSummaryDrawer(props) {
                     CostingId={OutsourcingCostingData?.CostingId}
                     viewMode={true}
                 />}
-            {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} />}
-            {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} />}
+            {approvalDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={approvalDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} type='Approve' isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} technologyId={nfrData?.CostingData[0]?.TechnologyId} />}
+            {rejectDrawer && sendForApprovalButtonShow && <ApprovalDrawer isOpen={rejectDrawer} anchor="right" closeDrawer={closeDrawer} hideTable={true} nfrData={nfrData} rejectDrawer={true} isFinalLevelUser={isFinalLevelUser} pushData={selectedRowData} technologyId={nfrData?.CostingData[0]?.TechnologyId} />}
         </div >
     );
 }
