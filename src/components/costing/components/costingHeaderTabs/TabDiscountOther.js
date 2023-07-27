@@ -1607,7 +1607,7 @@ function TabDiscountOther(props) {
           </Row >
         </div >
 
-// check here @ashok      </div >}
+      </div >}
       {
         openCloseOtherCost &&
         <OtherCostDrawer

@@ -1145,6 +1145,7 @@ function SimulationApprovalSummary(props) {
                                     headerName={headerName}
                                     impactType={'FgWise'}
                                     tooltipEffectiveDate={DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}
+                                    fgWiseAccDisable={fgWiseAccDisable}
                                 />
                             }
                         </>}

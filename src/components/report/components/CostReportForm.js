@@ -446,7 +446,7 @@ function CostReportForm(props) {
                                 <DatePickerHookForm
                                     name={`fromDate`}
                                     label={'From Date'}
-                                    selected={fromDate !== "" ? DayTime(fromDate).format('DD/MM/YYYY') : ""}
+                                    selected={new Date(fromDate)}
                                     handleChange={(date) => {
                                         handleFromDate(date);
                                     }}
@@ -475,7 +475,7 @@ function CostReportForm(props) {
                                 <DatePickerHookForm
                                     name={`toDate`}
                                     label={'To Date'}
-                                    selected={toDate !== "" ? DayTime(toDate).format('DD/MM/YYYY') : ""}
+                                    selected={new Date(toDate)}
                                     handleChange={handleToDate}
                                     minDate={minDate}
                                     rules={{ required: isDateMandatory }}
