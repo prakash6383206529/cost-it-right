@@ -541,8 +541,13 @@
     height: 100%;
 
     .col-md-12 {
-      margin-bottom: 1px !important;
+      margin-bottom: 0px !important;
       text-align: right;
+
+      @media screen and (max-width: $max1367) {
+        margin-bottom: 1px !important;
+
+      }
 
       &:last-child {
         height: calc(100% - 45px);
