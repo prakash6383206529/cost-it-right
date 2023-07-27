@@ -1058,6 +1058,11 @@ const CostingSummaryTable = (props) => {
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
       item.currencyTitle = item.currency && item?.currency?.currencyTitle
+      item.overHeadPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? (item?.overheadOn.overheadTitle === 'RM' ? item?.overheadOn.overheadRMPercentage : item?.overheadOn.overheadTitle === 'BOP' ? item?.overheadOn.overheadBOPPercentage : item?.overheadOn.overheadTitle === 'CC' ? item?.overheadOn.overheadCCPercentage : item?.overheadOn.overheadTitle === 'RM + CC + BOP' && item?.overheadOn.overheadRMPercentage !== "-" ? `${item?.overheadOn.overheadRMPercentage} + ${item?.overheadOn.overheadCCPercentage} + ${item?.overheadOn.overheadBOPPercentage}` : item?.overheadOn.overheadPercentage) : " "
+      item.profitPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? (item?.profitOn.profitTitle === 'RM' ? item?.profitOn.profitRMPercentage : item?.profitOn.profitTitle === 'BOP' ? item?.profitOn.profitBOPPercentage : item?.profitOn.profitTitle === 'CC' ? item?.profitOn.profitCCPercentage : item?.profitOn.profitTitle === 'RM + CC + BOP' && item?.profitOn.profitRMPercentage !== "-" ? `${item?.profitOn.profitRMPercentage} + ${item?.profitOn.profitCCPercentage} + ${item?.profitOn.profitBOPPercentage}` : item?.profitOn.profitPercentage) : " "
+      item.rejectionPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : item?.rejectionOn.rejectionPercentage : '')
+      item.iccPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.iccOn.iccTitle === 'Fixed' ? '-' : item?.iccOn.iccPercentage : '')
+      item.paymentPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? item?.paymentTerms.paymentTitle === 'Fixed' ? '-' : item?.paymentTerms.paymentPercentage : ''
     })
 
     let masterDataArray = []
@@ -2289,21 +2294,9 @@ const CostingSummaryTable = (props) => {
                               return (
 
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
-                                  <td className={tableDataClass(data)} width={"32%"}>
-                                    <div className="d-grid">
-
-                                      <span className="d-inline-block">{"Type"}</span>
-                                      <span className="d-inline-block">{"Applicability"}</span>
-                                      <span className="d-inline-block">{"Value"}</span>
-                                      <span className="d-inline-block">{"Cost"}</span>
-                                    </div>
+                                  <td className={tableDataClass(data)}>
                                     <div className={`d-grid ${highlighter("anyOtherCost")}`}>
-                                      <span className="d-inline-block small-grey-text">
-                                        {data?.CostingHeading !== VARIANCE ? data?.anyOtherCostType : ''}
-                                      </span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? data?.anyOtherCostApplicablity : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? <span title={checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}</span> : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
                                   </td>
                                   : ""
