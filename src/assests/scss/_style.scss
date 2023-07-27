@@ -7686,7 +7686,7 @@ body {
   right: -15px;
 
   .loaderinner {
-    position: fixed;
+    position: fixed !important;
     top: 40%;
   }
 }
