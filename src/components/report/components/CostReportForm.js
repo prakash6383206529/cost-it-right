@@ -772,6 +772,7 @@ function CostReportForm(props) {
                     </Row>}
                 </form>
                 {!props.hideAddtable && <div className={`ag-grid-wrapper height-width-wrapper ${(gridData && gridData?.length <= 0) ? "overlay-contain" : ""}`}>
+                    {console.log('gridData: ', gridData)}
                     < div className={`ag-theme-material `}>
                         <AgGridReact
                             defaultColDef={defaultColDef}
