@@ -2289,8 +2289,7 @@ const CostingSummaryTable = (props) => {
                               return (
 
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
-                                  <td className={tableDataClass(data)} width={"32%"}>
-
+                                  <td className={tableDataClass(data)}>
                                     <div className={`d-grid ${highlighter("anyOtherCost")}`}>
                                       <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
