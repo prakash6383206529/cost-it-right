@@ -8,7 +8,7 @@ import {
 } from '../../actions/Costing';
 import { getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPFromList, } from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -64,7 +64,7 @@ function TabDiscountOther(props) {
   const headerCosts = useContext(netHeadCostContext);
   const currencySelectList = useSelector(state => state.comman.currencySelectList)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount } = useSelector(state => state.costing)
+  const { DiscountCostData, ExchangeRateData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, CostingDataList, getAssemBOPCharge, ErrorObjDiscount, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
@@ -605,6 +605,7 @@ function TabDiscountOther(props) {
   const renderListing = (label) => {
 
     const temp = [];
+    let tempList = [];
 
     if (label === 'Currency') {
       currencySelectList && currencySelectList.map(item => {
@@ -612,7 +613,8 @@ function TabDiscountOther(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-      return temp;
+      tempList = [...temp]
+      return tempList;
     }
 
     if (label === 'OtherCostType') {
@@ -633,7 +635,12 @@ function TabDiscountOther(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-      return temp;
+      if (isBreakupBoughtOutPartCostingFromAPI) {
+        tempList = removeBOPFromList([...temp])
+      } else {
+        tempList = [...temp]
+      }
+      return tempList;
     }
 
   }

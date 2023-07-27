@@ -669,7 +669,7 @@ function CommonApproval(props) {
     };
 
     const isRowSelectable = (rowNode) => {
-        if (rowNode?.data?.Status === DRAFT) {
+        if (rowNode?.data?.Status === DRAFT && rowNode?.data?.IsBreakupBoughtOutPart === false) {
             return true;
         } else {
             return false

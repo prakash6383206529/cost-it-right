@@ -49,6 +49,8 @@ import {
   SET_OTHER_COST,
   RESET_EXCHANGE_RATE_DATA,
   SET_REJECTED_COSTING_VIEW_DATA,
+  SET_BREAKUP_BOP,
+  SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -1873,8 +1875,8 @@ export function getPartCostingVendorSelectList(partNumber, callback) {
   }
 }
 
-export function getPartSelectListByTechnology(technologyId, partNumber, callback) {
-  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}`, config()).catch(error => {
+export function getPartSelectListByTechnology(technologyId, partNumber, partTypeId, callback) {
+  return axios.get(`${API.getPartByTechnologyId}?technologyId=${technologyId}&partNumber=${partNumber}&partTypeId=${partTypeId}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
@@ -2620,3 +2622,29 @@ export const setRejectedCostingViewData = (data) => (dispatch) => {
     payload: temp,
   })
 }
+
+/**
+ * @method setBreakupBOP
+ * @description setBreakupBOP
+ */
+export function setBreakupBOP(grid) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_BREAKUP_BOP,
+      payload: grid,
+    });
+  }
+};
+
+/**
+ * @method setIsBreakupBoughtOutPartCostingFromAPI
+ * @description setIsBreakupBoughtOutPartCostingFromAPI
+ */
+export function setIsBreakupBoughtOutPartCostingFromAPI(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
+      payload: value,
+    });
+  }
+};

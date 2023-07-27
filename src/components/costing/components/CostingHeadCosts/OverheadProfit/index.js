@@ -67,7 +67,7 @@ function OverheadProfit(props) {
     const SurfaceTreatmentCost = useContext(SurfaceCostContext);
     const costingHead = useSelector(state => state.comman.costingHead)
 
-    const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData } = useSelector(state => state.costing)
+    const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
     const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
     const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -75,6 +75,7 @@ function OverheadProfit(props) {
     const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
     const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
     const [totalToolCost, setTotalToolCost] = useState(0)
+    const [showWarning, setShowWarning] = useState(false)
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -364,7 +365,13 @@ function OverheadProfit(props) {
                 dispatch(getOverheadProfitDataByModelType(reqParams, res => {
                     if (res && res.data && res.data.Data) {
                         let Data = res.data.Data;
+                        let showWarning = false
                         if (applicabilityList.includes(Data?.CostingOverheadDetail?.OverheadApplicability)) {
+                            if (isBreakupBoughtOutPartCostingFromAPI) {
+                                showWarning = true
+                            } else {
+                                showWarning = false
+                            }
                             setOverheadObj(Data?.CostingOverheadDetail)
                             if (Data.CostingOverheadDetail) {
                                 setTimeout(() => {
@@ -382,6 +389,11 @@ function OverheadProfit(props) {
                                 }, 200)
                             }
                             dispatch(gridDataAdded(true))
+                        }
+                        if (showWarning) {
+                            setShowWarning(true)
+                        } else {
+                            setShowWarning(false)
                         }
                         //setRejectionObj(Data.CostingRejectionDetail)
                         // setIsSurfaceTreatmentAdded(false)

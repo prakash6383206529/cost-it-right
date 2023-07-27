@@ -28,7 +28,7 @@ import _ from 'lodash';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -514,6 +514,9 @@ class BOPImportListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured) {
+            excelData = hideMultipleColumnFromExcel(excelData, ["IsBreakupBoughtOutPart", "TechnologyName"])
+        }
         let temp = []
         temp = TempData && TempData.map((item) => {
             if (item.Plants === '-') {

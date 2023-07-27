@@ -300,8 +300,8 @@ export function checkRegularizationLimit(obj, callback) {
       });
   };
 }
-export function getPartSelectListWtihRevNo(partNumber, technologyId, callback) {
-  return axios.get(`${API.getPartSelectListWtihRevNo}?${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}`, config()).catch(error => {
+export function getPartSelectListWtihRevNo(partNumber, technologyId, nfrId, partTypeId, callback) {
+  return axios.get(`${API.getPartSelectListWtihRevNo}?${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}${nfrId ? `&nfrId=${nfrId}` : ''}${partTypeId ? `&partTypeId=${partTypeId}` : ''}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
