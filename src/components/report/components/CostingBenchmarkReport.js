@@ -29,7 +29,7 @@ function CostingBenchmarkReport(props) {
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
-    const [master, setMaster] = useState({})
+    const [master, setMaster] = useState([])
     const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
     const [showEditTable, setShowEditTable] = useState(false)
@@ -201,10 +201,11 @@ function CostingBenchmarkReport(props) {
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">
+                                        {console.log(master, "master")}
                                         <SearchableSelectHookForm
                                             label={''}
                                             name={'Masters'}
-                                            placeholder={'Masters'}
+                                            placeholder={'Select'}
                                             Controller={Controller}
                                             control={control}
                                             rules={{ required: false }}

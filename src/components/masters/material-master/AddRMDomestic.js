@@ -1752,7 +1752,7 @@ class AddRMDomestic extends Component {
                                   label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
                                   name={"CircleScrapCost"}
                                   type="text"
-                                  placeholder={""}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={false}
@@ -1766,7 +1766,7 @@ class AddRMDomestic extends Component {
                                   label={`Jali Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                                   name={"JaliScrapCost"}
                                   type="text"
-                                  placeholder={""}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={true}
