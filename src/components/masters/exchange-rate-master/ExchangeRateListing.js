@@ -37,6 +37,7 @@ const gridOptions = {};
 class ExchangeRateListing extends Component {
     constructor(props) {
         super(props);
+        this.myRef = React.createRef();
         this.state = {
             tableData: [],
             currency: [],
@@ -265,7 +266,12 @@ class ExchangeRateListing extends Component {
    * @description Filter data when user type in searching input
    */
     onFloatingFilterChanged = (value) => {
-        this.props.exchangeRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+
+        setTimeout(() => {
+            this.props.exchangeRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
+
+
     }
     /**
     * @name onSubmit
@@ -279,7 +285,7 @@ class ExchangeRateListing extends Component {
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
-
+        this.myRef.current = params.api
         var allColumnIds = [];
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
@@ -430,6 +436,7 @@ class ExchangeRateListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
+                                    ref={this.myRef}
                                     domLayout='autoHeight'
                                     rowData={this.props.exchangeRateDataList}
                                     pagination={true}

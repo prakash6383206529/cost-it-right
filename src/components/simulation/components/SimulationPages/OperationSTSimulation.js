@@ -113,9 +113,11 @@ function OperationSTSimulation(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const oldRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;

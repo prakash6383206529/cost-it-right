@@ -179,7 +179,9 @@ function CommonApproval(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-        if (approvalList?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            if (approvalList?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)

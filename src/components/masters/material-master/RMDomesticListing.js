@@ -261,10 +261,11 @@ function RMDomesticListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-
-        if (rmDataList.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (rmDataList.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)

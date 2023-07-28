@@ -134,9 +134,11 @@ function AssemblyWiseImpactSummary(props) {
         )
     }
     const onFloatingFilterChanged = (value) => {
-        if (simulationAssemblyListSummary.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (simulationAssemblyListSummary.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,

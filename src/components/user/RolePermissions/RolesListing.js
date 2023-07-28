@@ -279,7 +279,11 @@ class RolesListing extends Component {
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
-                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                    onFilterModified={(e) => {
+                      setTimeout(() => {
+                        this.setState({ noData: searchNocontentFilter(e) });
+                      }, 500);
+                    }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                       imagClass: 'imagClass'

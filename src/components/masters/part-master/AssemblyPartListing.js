@@ -165,7 +165,9 @@ class AssemblyPartListing extends Component {
        * @description Filter data when user type in searching input
        */
     onFloatingFilterChanged = (value) => {
-        this.props.partsListing.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.partsListing.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
     /**
     * @method closeVisualDrawer
