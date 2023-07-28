@@ -170,9 +170,11 @@ function AddProcess(props) {
     setSelectedRowData(selectedRows)
   }
   const onFloatingFilterChanged = (value) => {
-    if (tableData.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (tableData.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
   }
   /**
   * @method addRow

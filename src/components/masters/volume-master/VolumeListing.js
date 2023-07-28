@@ -496,9 +496,11 @@ function VolumeListing(props) {
   }
 
   const onFloatingFilterChanged = (value) => {
-    if (volumeDataList?.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (volumeDataList?.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)

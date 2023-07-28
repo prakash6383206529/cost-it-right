@@ -187,9 +187,11 @@ function OverheadListing(props) {
     }, [statusColumnData])
 
     const onFloatingFilterChanged = (value) => {
-        if (overheadProfitList?.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (overheadProfitList?.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)

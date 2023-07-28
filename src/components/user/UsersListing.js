@@ -675,7 +675,11 @@ class UsersListing extends Component {
 								frameworkComponents={frameworkComponents}
 								enableBrowserTooltips={true}
 								onSelectionChanged={this.onRowSelect}
-								onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+								onFilterModified={(e) => {
+									setTimeout(() => {
+										this.setState({ noData: searchNocontentFilter(e) });
+									}, 500);
+								}}
 								rowSelection={'multiple'}
 								suppressRowClickSelection={true}
 							>

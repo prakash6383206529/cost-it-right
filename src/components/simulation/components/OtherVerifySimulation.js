@@ -100,9 +100,11 @@ function OtherVerifySimulation(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        if (verifyList.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (verifyList.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const setGridSelection = (type, clickedElement) => {
         var selectedRows = gridApi.getSelectedRows();

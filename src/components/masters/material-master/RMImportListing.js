@@ -273,10 +273,11 @@ function RMImportListing(props) {
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
-
-    if (rmImportDataList.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (rmImportDataList.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
     if (!isFilterButtonClicked) {
       setWarningMessage(true)
     }

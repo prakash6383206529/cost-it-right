@@ -166,7 +166,9 @@ function NfrSummaryDrawer(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-        rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+        }, 500);
     }
 
 
