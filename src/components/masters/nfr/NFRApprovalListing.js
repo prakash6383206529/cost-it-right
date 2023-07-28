@@ -6,7 +6,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import WarningMessage from '../../common/WarningMessage';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { EMPTY_DATA, defaultPageSize } from '../../../config/constants';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getNFRApprovals } from './actions/nfr';
 import { getSingleCostingDetails, setCostingViewData } from '../../costing/actions/Costing';
 import { formViewData, loggedInUserId } from '../../../helper';
@@ -15,6 +15,9 @@ import ApprovalSummary from '../../costing/components/approval/ApprovalSummary';
 import { Redirect } from 'react-router';
 import NoContentFound from '../../common/NoContentFound';
 import NfrSummaryDrawer from './NfrSumaryDrawer';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
+import { useRef } from 'react';
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 
 const gridOptions = {};
 
@@ -26,6 +29,13 @@ function NFRApprovalListing(props) {
     const [showApprovalSumary, setShowApprovalSummary] = useState(false)
     const [approvalData, setApprovalData] = useState('')
     const [singleRowData, setSingleRowData] = useState([]);
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const agGridRef = useRef(null);
+    const floatingFilterNfr = {
+        maxValue: 12,
+        suppressFilterButton: true,
+        component: "NFR",
+    }
 
     const defaultColDef = {
         resizable: true,
@@ -37,6 +47,7 @@ function NFRApprovalListing(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        agGridRef.current = params.api;
     };
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -48,8 +59,15 @@ function NFRApprovalListing(props) {
                 setRowData(res?.data?.DataList)
             }
         }))
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "status"))
     }, [])
 
+    useEffect(() => {
+        if (statusColumnData) {
+            gridApi?.setQuickFilter(statusColumnData?.data);
+        }
+    }, [statusColumnData])
     /**
     * @method hyphenFormatter
     */
@@ -135,6 +153,7 @@ function NFRApprovalListing(props) {
     }
 
     const statusFormatter = (props) => {
+        dispatch(getGridHeight({ value: props.rowIndex, component: 'NFR' }))
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={row?.Status}>{row.DisplayStatus}</div>
     }
@@ -145,7 +164,8 @@ function NFRApprovalListing(props) {
         hyperLinkableFormatter: hyperLinkableFormatter,
         linkableFormatter: linkableFormatter,
         customNoRowsOverlay: NoContentFound,
-        statusFormatter: statusFormatter
+        statusFormatter: statusFormatter,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
 
     };
 
@@ -173,6 +193,8 @@ function NFRApprovalListing(props) {
         gridOptions?.api?.setFilterModel(null);
         window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "status"))
     }
 
     const onPageSizeChanged = (newPageSize) => {
@@ -189,7 +211,7 @@ function NFRApprovalListing(props) {
 
                     <Row>
                         <Col>
-                            <div className={`ag-grid-react`}>
+                            <div className={`ag-grid-react report-grid p-relative`}>
 
                                 <div id={'parentId'} className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${rowData.length <= 0 ? 'overlay-contain' : ''} `}>
                                     <div className="ag-grid-header d-flex justify-content-between">
@@ -228,6 +250,7 @@ function NFRApprovalListing(props) {
                                             // isRowSelectable={isRowSelectable}
                                             enableBrowserTooltips={true}
                                             frameworkComponents={frameworkComponents}
+                                            ref={agGridRef}
                                         >
                                             <AgGridColumn cellClass="has-checkbox" field="ApprovalToken" cellRenderer='linkableFormatter' headerName="Token No."></AgGridColumn>
                                             <AgGridColumn field="NfrNumber" headerName="NFR Number" cellRenderer='hyphenFormatter' ></AgGridColumn>
@@ -237,7 +260,7 @@ function NFRApprovalListing(props) {
                                             <AgGridColumn field="InitiatedByName" headerName="Initiated By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="CreatedByName" headerName=" Created By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field='LastApprovedByName' headerName="Last Approved /Rejected By" cellRenderer='hyphenFormatter'></AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status"></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                     </div>
