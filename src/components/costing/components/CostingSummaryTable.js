@@ -1705,7 +1705,7 @@ const CostingSummaryTable = (props) => {
                               anchor={'right'}
                               isPDFShow={true}
                             /></th></tr>}
-                            <tr className={`background-light-blue  ${isApproval && !props.isRfqCosting ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? 'green-row' : viewCostingData[0]?.netBOP < viewCostingData[1]?.netBOP ? 'red-row' : '' : '-'}`}>
+                            {viewCostingData && !viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart && <tr className={`background-light-blue  ${isApproval && !props.isRfqCosting ? viewCostingData?.length > 0 && viewCostingData[0]?.netBOP > viewCostingData[1]?.netBOP ? 'green-row' : viewCostingData[0]?.netBOP < viewCostingData[1]?.netBOP ? 'red-row' : '' : '-'}`}>
                               <th>Net BOP Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
 
                               {viewCostingData &&
@@ -1728,7 +1728,7 @@ const CostingSummaryTable = (props) => {
                                     </td>
                                   )
                                 })}
-                            </tr>
+                            </tr>}
                             {
                               !drawerDetailPDF ? <tr>
                                 <td>

@@ -728,7 +728,7 @@ class AddBOPDomestic extends Component {
       TechnologyId: Technology?.value,
       IsBreakupBoughtOutPart: isTechnologyVisible,
     }
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true) || (isEditFlag && isTechnologyVisible)) {
 
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
@@ -767,7 +767,7 @@ class AddBOPDomestic extends Component {
 
     } else {
 
-      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
         formData.IsSendForApproval = true
       } else {
         formData.IsSendForApproval = false
@@ -775,7 +775,7 @@ class AddBOPDomestic extends Component {
       // this.setState({ setDisable: true })
 
 
-      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
@@ -1232,7 +1232,7 @@ class AddBOPDomestic extends Component {
                           )}
                         </Row>
 
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured &&
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
                           <Row>
                             <Col md="12">
                               <div className="left-border">{"Detailed BOP:"}</div>
@@ -1246,7 +1246,7 @@ class AddBOPDomestic extends Component {
                                 <input
                                   type="checkbox"
                                   checked={isTechnologyVisible}
-                                  disabled={isViewMode ? true : false}
+                                  disabled={isViewMode || isEditFlag ? true : false}
                                 />
                                 <span
                                   className=" before-box"
@@ -1270,7 +1270,7 @@ class AddBOPDomestic extends Component {
                                   this.handleTechnologyChange
                                 }
                                 valueDescription={this.state.Technology}
-                                disabled={isViewMode ? true : false}
+                                disabled={isViewMode || isEditFlag ? true : false}
                               />
                             </Col>}
                           </Row>
@@ -1303,7 +1303,7 @@ class AddBOPDomestic extends Component {
                             </div>
                           </Col>
 
-                          <Col md="3">
+                          {!isTechnologyVisible && <> <Col md="3">
                             <Field
                               label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
                               name={"BasicRate"}
@@ -1317,21 +1317,22 @@ class AddBOPDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="3">
-                            <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
-                            <Field
-                              label={`Net Cost (INR)`}
-                              name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCost"}`}
-                              type="text"
-                              placeholder={"-"}
-                              validate={[]}
-                              component={renderTextInputField}
-                              required={false}
-                              disabled={true}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
+                            <Col md="3">
+                              <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                              <Field
+                                label={`Net Cost (INR)`}
+                                name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCost"}`}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderTextInputField}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                          </>}
 
                         </Row>
                         {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
@@ -1473,7 +1474,7 @@ class AddBOPDomestic extends Component {
                             {"Cancel"}
                           </button>
 
-                          {(!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                          {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
                             <button type="submit"
                               class="user-btn approval-btn save-btn mr5"
                               disabled={isViewMode || setDisable || noApprovalCycle}

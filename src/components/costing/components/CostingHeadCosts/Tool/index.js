@@ -6,7 +6,7 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/
 import NoContentFound from '../../../../common/NoContentFound';
 import { CRMHeads, EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPFromList } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -58,7 +58,7 @@ function Tool(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [applicability, setApplicability] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
   const [valueByAPI, setValueByAPI] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
-  const { costingData } = useSelector(state => state.costing)
+  const { costingData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
   const CostingViewMode = useContext(ViewCostingContext);
@@ -306,6 +306,7 @@ function Tool(props) {
 */
   const renderListing = (label) => {
     const temp = [];
+    let tempList = [];
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
@@ -319,7 +320,12 @@ function Tool(props) {
         }
         return null;
       });
-      return temp;
+      if (isBreakupBoughtOutPartCostingFromAPI) {
+        tempList = removeBOPFromList([...temp])
+      } else {
+        tempList = [...temp]
+      }
+      return tempList;
     }
   }
 

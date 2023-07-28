@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, removeBOPFromList } from '../../../../../helper';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -31,7 +31,7 @@ function Rejection(props) {
     const [applicability, setApplicability] = useState(CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : [])
     const [IsChangedApplicability, setIsChangedApplicability] = useState(false)
     const [percentageLimit, setPercentageLimit] = useState(false)
-    const { IsIncludedSurfaceInRejection } = useSelector(state => state.costing)
+    const { IsIncludedSurfaceInRejection, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
     const { SurfaceTabData } = useSelector(state => state.costing)
     const [errorMessage, setErrorMessage] = useState('')
 
@@ -98,14 +98,19 @@ function Rejection(props) {
  */
     const renderListing = (label) => {
         const temp = [];
-
+        let tempList = [];
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
                 if (item.Value === '0' || item.Text === 'Net Cost') return false;
                 temp.push({ label: item.Text, value: item.Value })
                 return null;
             });
-            return temp;
+            if (isBreakupBoughtOutPartCostingFromAPI) {
+                tempList = removeBOPFromList([...temp])
+            } else {
+                tempList = [...temp]
+            }
+            return tempList;
         }
     }
 
