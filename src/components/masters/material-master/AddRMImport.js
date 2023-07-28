@@ -1790,7 +1790,7 @@ class AddRMImport extends Component {
                                   label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"CircleScrapCost"}
                                   type="text"
-                                  placeholder={""}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={false}
@@ -1804,7 +1804,7 @@ class AddRMImport extends Component {
                                   label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"JaliScrapCost"}
                                   type="text"
-                                  placeholder={""}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={true}
