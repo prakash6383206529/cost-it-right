@@ -184,7 +184,6 @@ function ReportListing(props) {
             }
         }))
     }, [])
-
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
