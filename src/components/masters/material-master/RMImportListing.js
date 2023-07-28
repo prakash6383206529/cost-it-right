@@ -985,7 +985,7 @@ function RMImportListing(props) {
             messageLabel={"RM Import"}
             anchor={"right"}
             masterId={RM_MASTER_ID}
-            typeOfEntryId={RMIMPORT}
+            typeOfEntryId={ENTRY_TYPE_IMPORT}
           />
         )
       }

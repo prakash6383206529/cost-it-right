@@ -977,7 +977,7 @@ function RMDomesticListing(props) {
                         messageLabel={"RM Domestic"}
                         anchor={"right"}
                         masterId={RM_MASTER_ID}
-                        typeOfEntryId={RMDOMESTIC}
+                        typeOfEntryId={ENTRY_TYPE_DOMESTIC}
                     />
                 )
             }
