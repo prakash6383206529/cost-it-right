@@ -43,17 +43,7 @@ function MultiDropdownFloatingFilter(props) {
 
     useEffect(() => {
         if (props?.component === "costingReport") {
-            dispatch(fetchCostingHeadsAPI('master', res => {
-                if (res) {
-                    let temp = []
-                    res?.data?.SelectList && res?.data?.SelectList.map((item) => {
-                        if (item.Value === '0' || item.Text === 'Net Cost') return false;
-                        temp.push({ label: item.Text, value: item.Value })
-                        return null;
-                    })
-                    setDropdownData(temp)
-                }
-            }))
+            setDropdownData(props.applicabilityDropdown)
         }
         if (props?.component === "vendorType") {
             dispatch(getVendorTypesSelectList(res => {
