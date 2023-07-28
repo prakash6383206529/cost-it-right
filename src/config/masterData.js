@@ -7299,3 +7299,24 @@ export const partTypeDropdownList = [
 
 export const DETAILED_BOP = "Detailed BOP"
 export const DETAILED_BOP_ID = "3"
+
+//Status dropdown for RFQ and NFR
+export const statusDropdownforRfq = [
+    { label: "Approved", value: "1" },
+    { label: "Open", value: "2" },
+    { label: "Received", value: "3" },
+    { label: "UnderRevision", value: "4" },
+    { label: "Submitted", value: "5" },
+]
+export const statusDropdownforNfr = [
+    { label: 'Draft', value: 1 },
+    { label: 'PendingForApproval', value: 2 },
+    { label: 'Approved', value: 3 },
+    { label: 'Rejected', value: 4 },
+    { label: 'History', value: 5 },
+    { label: 'AwaitingApproval', value: 6 },
+    { label: 'Error', value: 12 },
+    { label: 'Pushed', value: 13 },
+    { label: 'UnderApproval', value: 21 },
+    { label: 'ExternalReject', value: 27 },
+];
