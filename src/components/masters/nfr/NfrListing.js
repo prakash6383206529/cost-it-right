@@ -218,7 +218,9 @@ function NfrListing(props) {
         setAttachment(false)
     }
     const onFloatingFilterChanged = (value) => {
-        rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+        }, 500);
     }
 
     const attachmentFormatter = (props) => {

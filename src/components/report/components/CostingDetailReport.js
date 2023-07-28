@@ -492,7 +492,9 @@ function ReportListing(props) {
 
     const onFloatingFilterChanged = (value) => {
         dispatch(getGridHeight({ value: reportListingData?.length, component: "costingReport" }))
-        if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        }, 500);
         setEnableSearchFilterButton(false)
 
         // Gets filter model via the grid API

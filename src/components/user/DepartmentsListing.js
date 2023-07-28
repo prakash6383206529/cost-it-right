@@ -263,7 +263,11 @@ class DepartmentsListing extends Component {
                     gridOptions={gridOptions}
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
-                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                    onFilterModified={(e) => {
+                      setTimeout(() => {
+                        this.setState({ noData: searchNocontentFilter(e) });
+                      }, 500);
+                    }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                       imagClass: 'imagClass'

@@ -692,9 +692,11 @@ function SimulationApprovalSummary(props) {
         // }, 350);
     }
     const onFloatingFilterChanged = (value) => {
-        if (costingList.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (costingList.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const buttonFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;

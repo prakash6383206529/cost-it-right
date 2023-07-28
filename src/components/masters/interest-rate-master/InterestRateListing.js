@@ -243,8 +243,11 @@ class InterestRateListing extends Component {
    * @description Filter data when user type in searching input
    */
   onFloatingFilterChanged = (value) => {
-    this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
+
   jsFunction(filterVal) {
     this.filterVal = filterVal;
     gridOptions.api.onFilterChanged(); //this invokes your custom logic by forcing grid filtering
