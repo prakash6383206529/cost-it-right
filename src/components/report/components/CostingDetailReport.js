@@ -18,7 +18,7 @@ import CostingDetailSimulationDrawer from '../../simulation/components/CostingDe
 import { formViewData, checkForDecimalAndNull, searchNocontentFilter } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common'
+import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 import { MESSAGES } from '../../../config/message'
 import SelectRowWrapper from '../../common/SelectRowWrapper'
@@ -63,6 +63,7 @@ function ReportListing(props) {
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
+    const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -93,32 +94,37 @@ function ReportListing(props) {
     var floatingFilterOverhead = {
         maxValue: 1,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
     var floatingFilterProfit = {
         maxValue: 2,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
     var floatingFilterRejection = {
 
         maxValue: 3,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
     var floatingFilterIcc = {
         maxValue: 4,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
     var floatingFilterStatus = {
         maxValue: 5,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
 
@@ -165,6 +171,19 @@ function ReportListing(props) {
 
     }, [statusColumnData])
 
+    useEffect(() => {
+        dispatch(fetchCostingHeadsAPI('master', res => {
+            if (res) {
+                let temp = []
+                res?.data?.SelectList && res?.data?.SelectList.map((item) => {
+                    if (item.Value === '0' || item.Text === 'Net Cost') return false;
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null;
+                })
+                setApplicabilityDropdown(temp)
+            }
+        }))
+    }, [])
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
@@ -492,7 +511,9 @@ function ReportListing(props) {
 
     const onFloatingFilterChanged = (value) => {
         dispatch(getGridHeight({ value: reportListingData?.length, component: "costingReport" }))
-        if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        }, 500);
         setEnableSearchFilterButton(false)
 
         // Gets filter model via the grid API
