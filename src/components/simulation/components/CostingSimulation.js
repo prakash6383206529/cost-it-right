@@ -277,7 +277,11 @@ function CostingSimulation(props) {
             setIsSimulationWithOutCosting(!Data.IsSimulationWithOutCosting)
             let tempArrayCosting
             if (isMasterAssociatedWithCosting) {
-                tempArrayCosting = Data.SimulatedCostingList
+                if (res.data?.Data?.IsBreakupBoughtOutPart === true && res.data?.DataList?.length > 0) {
+                    tempArrayCosting = [...Data.SimulatedCostingList, ...res.data?.DataList]
+                } else {
+                    tempArrayCosting = Data.SimulatedCostingList
+                }
             } else {
                 tempArrayCosting = Data.SimulationBoughtOutPart
             }
@@ -520,7 +524,13 @@ function CostingSimulation(props) {
     const setGridSelection = (isSelected, clickedElement) => {
         var selectedRows = gridApi.getSelectedRows();
         let sendInAPI = sendInAPIState ? sendInAPIState : []
+        let index
 
+        if (clickedElement?.data?.BreakupBoughtOutPartId) {
+            if (tableData?.findIndex(element => element?.BoughtOutPartId === clickedElement?.data?.BreakupBoughtOutPartId) !== -1) {
+                index = tableData?.findIndex(element => element?.BoughtOutPartId === clickedElement?.data?.BreakupBoughtOutPartId)
+            }
+        }
         // WHEN ROW IS SELECTED "isSelected" COMES TRUE | "IF" WILL GET EXECUTED || WHEN DEELECTED "ELSE" WILL GET EXECUTED
         if (isSelected) {
             // PUSH IN ARRAY | IF PlantCost, PartNo, VendorName of SELECTED ROW MATCHES WITH ANY RECORD OF REJECTED LIST'S PlantCost, PartNo, VendorName 
@@ -555,6 +565,9 @@ function CostingSimulation(props) {
                     node.data.PartNo === PartNo) {
                     node.setSelected(isSelected);
                 }
+            }
+            if (index === node.rowIndex) {
+                node.setSelected(isSelected);
             }
         });
         setSelectedRowData(selectedRows)

@@ -6,7 +6,7 @@ import OperationListing from './OperationListing';
 import AddOperation from './AddOperation';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from '../../../helper';
-import { APPROVED_STATUS_MASTER, OPERATIONS_ID } from '../../../config/constants';
+import { APPROVAL_CYCLE_STATUS_MASTER, OPERATIONS_ID } from '../../../config/constants';
 import CommonApproval from '../material-master/CommonApproval';
 import { MESSAGES } from '../../../config/message';
 
@@ -114,7 +114,7 @@ class OperationsMaster extends Component {
                                                 isMasterSummaryDrawer={false}
                                                 selectionForListingMasterAPI='Master'
                                                 stopAPICall={this.state.stopAPICall}
-                                                approvalStatus={APPROVED_STATUS_MASTER}
+                                                approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
                                             />
                                         </TabPane>}
 

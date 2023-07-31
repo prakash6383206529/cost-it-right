@@ -834,6 +834,7 @@ class BOPImportListing extends Component {
                         {
                             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                         }
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && <WarningMessage message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
                     </Col>
                 </Row>
                 {

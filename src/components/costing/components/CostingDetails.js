@@ -245,13 +245,14 @@ function CostingDetails(props) {
           getPartInfo(partNumber.partId, (res) => {
             let Data = res.data.Data
             setValue("PartName", Data.PartName)
-            setValue("PartType", Data.PartType)
+            setValue("PartType", { label: Data.PartType, value: Data.PartTypeId })
             setValue('Description', Data.Description)
             setValue('ECNNumber', Data.ECNNumber)
             setValue('DrawingNumber', Data.DrawingNumber)
             setValue('RevisionNumber', Data.RevisionNumber)
             setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate).format('MM/DD/YYYY') : '')
+            setPartType({ label: Data.PartType, value: Data.PartTypeId })
 
           }),
         )
