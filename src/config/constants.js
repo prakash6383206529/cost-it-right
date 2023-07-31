@@ -808,10 +808,8 @@ export const API = {
   updateMachineDetails: `${BASE_URL}/masters-machine/update-machine-Details`,
   getMachineDetailsData: `${BASE_URL}/masters-machine/get-machine-details`,
 
-  bulkUploadMachineZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-json`,
-  bulkUploadMachineVBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-vbc-json`,
-  bulkUploadMachineMoreZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-zbc-details-json`,
-  bulkUploadMachineCBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-cbc-json`,
+  bulkUploadMachine: `${BASE_URL}/masters-machine/bulk-upload-for-machine-json`,
+  bulkUploadMachineMoreZBC: `${BASE_URL}/masters-machine/bulk-upload-for-machine-details-json`,
 
   createProcess: `${BASE_URL}/masters-machine/create-process`,
   getProcessCode: `${BASE_URL}/masters-machine/generate-process-code`,
