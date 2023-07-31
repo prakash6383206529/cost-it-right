@@ -106,7 +106,7 @@ class AddMachineRate extends Component {
         processUOM: false,
         machineRate: false
       },
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
       noApprovalCycle: false,
@@ -160,6 +160,8 @@ class AddMachineRate extends Component {
             this.commonFunction()
           }, 100);
         })
+      } else {
+        this.setState({ finalApprovalLoader: false })
       }
 
     }
@@ -216,7 +218,6 @@ class AddMachineRate extends Component {
         Mode: 'master',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
       }
-      this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
@@ -225,7 +226,7 @@ class AddMachineRate extends Component {
       })
       this.setState({ noApprovalCycle: false, CostingTypePermission: false })
     } else {
-      this.setState({ noApprovalCycle: true })
+      this.setState({ noApprovalCycle: true, finalApprovalLoader: false })
     }
   }
 
