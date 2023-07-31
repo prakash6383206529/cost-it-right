@@ -101,6 +101,7 @@ function CostingSummary(props) {
         dispatch(getPartInfo(costingData.PartId, (res) => {
           let newValue = {}
           let Data = res.data.Data
+          setValue("PartType", { label: Data.PartType, value: Data.PartTypeId })
           setValue('PartName', Data.PartName)
           setValue('Description', Data.Description)
           setValue('ECNNumber', Data.ECNNumber)
@@ -108,6 +109,7 @@ function CostingSummary(props) {
           setValue('RevisionNumber', Data.RevisionNumber)
           setValue('ShareOfBusiness', checkForDecimalAndNull(Data.Price, initialConfiguration.NoOfDecimalForPrice))
           setTechnologyId(Data?.TechnologyId)
+          setPartType({ label: Data.PartType, value: Data.PartTypeId })
           setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
           newValue.revisionNumber = Data.RevisionNumber
           newValue.technologyId = costingData.TechnologyId

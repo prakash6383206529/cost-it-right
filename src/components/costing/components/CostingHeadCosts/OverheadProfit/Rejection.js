@@ -2,7 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, removeBOPFromList } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, removeBOPfromApplicability } from '../../../../../helper';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -106,7 +106,7 @@ function Rejection(props) {
                 return null;
             });
             if (isBreakupBoughtOutPartCostingFromAPI) {
-                tempList = removeBOPFromList([...temp])
+                tempList = removeBOPfromApplicability([...temp])
             } else {
                 tempList = [...temp]
             }

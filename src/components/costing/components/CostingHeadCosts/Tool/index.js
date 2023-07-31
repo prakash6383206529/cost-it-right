@@ -6,7 +6,7 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/
 import NoContentFound from '../../../../common/NoContentFound';
 import { CRMHeads, EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPFromList } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPfromApplicability } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -321,7 +321,7 @@ function Tool(props) {
         return null;
       });
       if (isBreakupBoughtOutPartCostingFromAPI) {
-        tempList = removeBOPFromList([...temp])
+        tempList = removeBOPfromApplicability([...temp])
       } else {
         tempList = [...temp]
       }
