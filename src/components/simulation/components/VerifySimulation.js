@@ -227,6 +227,7 @@ function VerifySimulation(props) {
                                 setHideRunButton(false)
                                 setEffectiveDate(data.EffectiveDate)
                             }
+
                         }))
                     }
                     break;
@@ -348,7 +349,6 @@ function VerifySimulation(props) {
     }
 
     const newBRFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let data = ''
         let classGreen = ''
@@ -748,6 +748,7 @@ function VerifySimulation(props) {
         existingBasicFormatter: existingBasicFormatter,
         newRMBasicRateFormatter: newRMBasicRateFormatter
     };
+
     return (
         <>
             {
@@ -830,7 +831,7 @@ function VerifySimulation(props) {
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate" cellRenderer={existingBasicFormatter}></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
 
                                             {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}
@@ -863,9 +864,9 @@ function VerifySimulation(props) {
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
                                         </AgGridReact>}
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                    </div >
-                                </div >
-                            </div >
+                                    </div>
+                                </div>
+                            </div>
                         </Col >
                     </Row >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
@@ -901,6 +902,7 @@ function VerifySimulation(props) {
                 simulationDrawer &&
                 <RunSimulationDrawer
                     tokenNo={tokenNo}
+                    simulationTechnologyId={simulationTechnologyId}
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
@@ -921,5 +923,6 @@ function VerifySimulation(props) {
         </>
     );
 }
+
 
 export default VerifySimulation;
