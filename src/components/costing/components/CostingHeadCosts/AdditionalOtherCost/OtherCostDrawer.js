@@ -5,7 +5,7 @@ import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs';
 import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
-import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, percentageLimitValidation, hashValidation, calculatePercentage, checkForNull, removeBOPFromList } from '../../../../../helper';
+import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, percentageLimitValidation, hashValidation, calculatePercentage, checkForNull, removeBOPfromApplicability } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
 import { ViewCostingContext } from '../../CostingDetails';
 import { STRINGMAXLENGTH } from '../../../../../config/masterData';
@@ -80,7 +80,7 @@ function OtherCostDrawer(props) {
                 return null;
             });
             if (isBreakupBoughtOutPartCostingFromAPI) {
-                tempList = removeBOPFromList([...temp])
+                tempList = removeBOPfromApplicability([...temp])
             } else {
                 tempList = [...temp]
             }

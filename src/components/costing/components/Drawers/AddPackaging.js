@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPFromList, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPfromApplicability, } from '../../../../helper';
 import { useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
@@ -108,7 +108,7 @@ function AddPackaging(props) {
         return null;
       });
       if (isBreakupBoughtOutPartCostingFromAPI) {
-        tempList = removeBOPFromList([...temp])
+        tempList = removeBOPfromApplicability([...temp])
       } else {
         tempList = [...temp]
       }
