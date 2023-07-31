@@ -324,6 +324,8 @@ function CostingSimulation(props) {
                         uniqeArray.push(item);                                   //  ALSO PUSH ITEM IN ARRAY WHICH BECOMES UNIQUE FROM COSTING NUMBER
                     }
                 }
+            } else {
+                uniqeArray = [...Data.SimulationBoughtOutPart]
             }
             let simulationList = isMasterAssociatedWithCosting ? Data?.SimulatedCostingList : Data?.SimulationBoughtOutPart
             setTokenNo(tokenNo)
@@ -333,14 +335,14 @@ function CostingSimulation(props) {
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
-            tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
+            tempObj.CostingHead = simulationList[0]?.CostingHead
             tempObj.SimulationHeadId = Data.SimulationHeadId
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-            tempObj.Technology = Data.SimulatedCostingList[0].Technology
-            tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+            tempObj.Technology = simulationList[0].Technology
+            tempObj.Vendor = simulationList[0].VendorName
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
-            tempObj.CustomerName = Data.SimulatedCostingList[0].CustomerName
-            tempObj.BudgetedPriceImpactPerQuarter = Data?.SimulatedCostingList[0]?.BudgetedPriceImpactPerQuarter
+            tempObj.CustomerName = simulationList[0].CustomerName
+            tempObj.BudgetedPriceImpactPerQuarter = simulationList[0]?.BudgetedPriceImpactPerQuarter
             setAmendmentDetails(tempObj)
 
             //LISTING

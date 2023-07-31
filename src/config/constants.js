@@ -942,12 +942,14 @@ export const API = {
   runSimulationOnSelectedMachineRateCosting: `${BASE_URL}/simulation/run-simulation-on-selected-machine-process-costing`,
   draftBoughtOutpartSimulation: `${BASE_URL}/simulation/draft-simulation-bought-out-part`,
   runSimulationOnSelectedBoughtOutPartCosting: `${BASE_URL}/simulation/run-simulation-on-selected-bought-out-part-costing`,
+  runSimulationOnSelectedBoughtOutPart: `${BASE_URL}/simulation/run-simulation-on-selected-bought-out-part`,
 
   getverifyMachineRateSimulationList: `${BASE_URL}/simulation/get-all-machine-process-impacted-simulation-costings`,
   getverifyBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-bought-out-part-impacted-simulation-costings`,
   getCostingSurfaceTreatmentSimulationList: `${BASE_URL}/simulation/get-all-simulated-surface-treatment-and-operation-costings`,
   getCostingBoughtOutPartSimulationList: `${BASE_URL}/simulation/get-all-simulated-bought-out-part-costings`,
   getMachineRateCostingSimulationList: `${BASE_URL}/simulation/get-all-simulated-machine-process-costings`,
+  getAllSimulatedBoughtOutPart: `${BASE_URL}/simulation/get-all-simulated-bought-out-part`,
 
   getSimulatedAssemblyWiseImpactDate: `${BASE_URL}/simulation/get-simulated-assembly-wise-impact-data-by-costingId`,
   getVerifyOverheadProfitSimulationList: `${BASE_URL}/simulation/get-all-overhead-profit-impacted-simulation-costings`,
@@ -960,6 +962,7 @@ export const API = {
   getTokenSelectListAPI: `${BASE_URL}/simulation/select-list-get-draft-token-number-by-technologyId`,
   getListingForSimulationCombined: `${BASE_URL}/simulation/get-master-details-by-token-number`,
   getMasterSelectListSimulation: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master-with-permission`,
+  getAllSimulationBoughtOutPart: `${BASE_URL}/simulation/get-all-simulation-bought-out-part`,
 
   // ASSEMBLY TECHNOLOGY
   getAssemblyTechnologySimulation: `${BASE_URL}/simulation/get-assembly-technology-simulation`,
@@ -2635,4 +2638,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.219.1";
+export const VERSION = "V2.1.219.2";
