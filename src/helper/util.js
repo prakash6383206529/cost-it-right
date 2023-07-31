@@ -1194,7 +1194,7 @@ export function compareObjects(obj1, obj2) {
   return true;
 }
 
-export function removeBOPFromList(list) {
+export function removeBOPfromApplicability(list) {
   let tempList = list?.filter(item => !item?.label?.includes('BOP'))
   return tempList
 }

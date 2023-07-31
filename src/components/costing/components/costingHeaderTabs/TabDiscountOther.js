@@ -8,7 +8,7 @@ import {
 } from '../../actions/Costing';
 import { getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPFromList, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, } from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -644,7 +644,7 @@ function TabDiscountOther(props) {
         return null;
       });
       if (isBreakupBoughtOutPartCostingFromAPI) {
-        tempList = removeBOPFromList([...temp])
+        tempList = removeBOPfromApplicability([...temp])
       } else {
         tempList = [...temp]
       }
