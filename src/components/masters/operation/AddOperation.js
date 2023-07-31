@@ -82,7 +82,7 @@ class AddOperation extends Component {
       showErrorOnFocus: false,
       operationName: '',
       operationCode: '',
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -123,6 +123,8 @@ class AddOperation extends Component {
           this.commonFunction()
         }, 100);
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
     this.getDetail()
   }
@@ -139,7 +141,6 @@ class AddOperation extends Component {
         Mode: 'master',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
       }
-      this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
@@ -148,7 +149,7 @@ class AddOperation extends Component {
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 

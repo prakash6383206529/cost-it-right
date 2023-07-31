@@ -159,7 +159,7 @@ function RubberWeightCalculator(props) {
     const percentageChange = (e) => {
         setTimeout(() => {
             if (totalPercentageValue() > 100) {
-                Toaster.warning('Total percentage value should not be greater than 100')
+                Toaster.warning('Total percentage must be 100% to save the values')
                 return false
             }
             calculateNetSCrapRate()
