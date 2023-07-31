@@ -198,14 +198,16 @@ a:hover {
 .disabled {
   opacity: 0.5;
   cursor: default;
-
-  &.disabled {
-    background-color: $disabledBackground;
-    color: $disabledFont;
-    opacity: 1;
-    border: 1px solid $disabledBorder;
-  }
 }
+
+.ag-react-container .disabled {
+  @extend .disabled;
+  background-color: $disabledBackground;
+  color: $disabledFont;
+  opacity: 1;
+  border: 1px solid $disabledBorder;
+}
+
 
 .zindex-2 {
   z-index: 2;
