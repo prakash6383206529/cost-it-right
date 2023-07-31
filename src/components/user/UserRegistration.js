@@ -31,10 +31,20 @@ import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
 import _ from "lodash";
+import { AgGridColumn, AgGridReact } from "ag-grid-react";
+import { PaginationWrapper } from "../common/commonPagination";
 
 var CryptoJS = require('crypto-js')
 const selector = formValueSelector('UserRegistration');
+const gridOptionsTechnology = {}
+const gridOptionsSimulation = {}
+const gridOptionsMaster = {}
 
+const gridOptions = {
+  gridOptionsTechnology: gridOptionsTechnology,
+  gridOptionsSimulation: gridOptionsSimulation,
+  gridOptionsMaster: gridOptionsMaster
+};
 function UserRegistration(props) {
 
   let child = React.createRef();
@@ -96,6 +106,13 @@ function UserRegistration(props) {
   const [masterApprovalType, setMasterApprovalType] = useState([]);
   const [primaryContact, setPrimaryContact] = useState(false);
   const [isForcefulUpdate, setIsForcefulUpdate] = useState(false);
+  const [grantUserWisePermission, setGrantUserWisePermission] = useState(false);
+  const [gridApiTechnology, setgridApiTechnology] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+  const [gridColumnApiTechnology, setgridColumnApiTechnology] = useState(null);
+  const [gridApiSimulation, setgridApiSimulation] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+  const [gridColumnApiSimulation, setgridColumnApiSimulation] = useState(null);
+  const [gridApiMaster, setgridApiMaster] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
+  const [gridColumnApiMaster, setgridColumnApiMaster] = useState(null);
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
@@ -135,7 +152,12 @@ function UserRegistration(props) {
     defaultValues: defaultValues,
   });
 
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
 
+  };
   useEffect(() => {
     if (registerUserData && props?.data?.isEditFlag) {
       setValue('FirstName', registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',)
@@ -521,8 +543,8 @@ function UserRegistration(props) {
             setIsEditFlag(true)
             setIsLoader(false)
             setIsShowAdditionalPermission(Data.IsAdditionalAccess)
+            setGrantUserWisePermission(Data.IsAdditionalAccess)
             // setDepartment((getConfigurationKey().IsMultipleDepartmentAllowed && Data.IsMultipleDepartmentAllowed) ? depatArr : (getConfigurationKey().IsMultipleDepartmentAllowed && !Data.IsMultipleDepartmentAllowed) ? [{ label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId }] : DepartmentObj !== undefined ? { label: DepartmentObj.DepartmentName, value: DepartmentObj.DepartmentId } : [])
-
             setDepartment([{ label: Data.Departments && Data.Departments[0]?.DepartmentName, value: Data.Departments && Data.Departments[0]?.DepartmentId }])
             setOldDepartment([{ label: Data.Departments && Data.Departments[0]?.DepartmentName, value: Data.Departments && Data.Departments[0]?.DepartmentId }])
             setRole(RoleObj !== undefined ? { label: RoleObj.RoleName, value: RoleObj.RoleId } : [])
@@ -626,7 +648,12 @@ function UserRegistration(props) {
     if (role && role.value) {
       setIsShowAdditionalPermission(!IsShowAdditionalPermission)
       setModules([])
-      getRoleDetail(role.value, !IsShowAdditionalPermission)
+
+      if (isEditFlag && grantUserWisePermission) {
+        getUserPermission(UserId)
+      } else {
+        getRoleDetail(role.value, !IsShowAdditionalPermission)
+      }
     } else {
       Toaster.warning('Please select role.')
     }
@@ -893,7 +920,6 @@ function UserRegistration(props) {
     setCostingApprovalType([])
     setValue('CostingApprovalType', "")
   };
-
   /**
   * @method updateTechnologyLevel
   * @description Used to handle updateTechnologyLevel
@@ -1043,9 +1069,8 @@ function UserRegistration(props) {
   * @method editItemDetails
   * @description used to edit costing technology and level
   */
-  const editItemDetails = (index) => {
-
-    const tempData = TechnologyLevelGrid[index];
+  const editItemDetails = (rowData, index) => {
+    const tempData = rowData[index];
     dispatch(getLevelByTechnology(true, tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
 
     setTechnologyLevelEditIndex(index)
@@ -1062,9 +1087,9 @@ function UserRegistration(props) {
   * @method deleteItem
   * @description used to Reset form
   */
-  const deleteItem = (index) => {
+  const deleteItem = (rowData, index) => {
 
-    let tempData = TechnologyLevelGrid.filter((item, i) => {
+    let tempData = rowData.filter((item, i) => {
       if (i === index) {
         return false;
       }
@@ -1083,9 +1108,9 @@ function UserRegistration(props) {
  * @method editSimulationItemDetails
  * @description used to edit simulation head and level
  */
-  const editSimulationItemDetails = (index) => {
+  const editSimulationItemDetails = (rowData, index) => {
 
-    const tempData = HeadLevelGrid[index];
+    const tempData = rowData[index];
     dispatch(getSimualationLevelByTechnology(true, tempData.TechnologyId, tempData.ApprovalTypeId, res => { }))
 
     setSimulationLevelEditIndex(index)
@@ -1102,9 +1127,9 @@ function UserRegistration(props) {
   * @method deleteItem
   * @description used to DELETE form
   */
-  const deleteSimulationItem = (index) => {
+  const deleteSimulationItem = (rowData, index) => {
 
-    let tempData = HeadLevelGrid.filter((item, i) => {
+    let tempData = rowData.filter((item, i) => {
       if (i === index) {
         return false;
       }
@@ -1212,9 +1237,9 @@ function UserRegistration(props) {
  * @method editMasterItem
  * @description used to edit master detail form
  */
-  const editMasterItem = (index) => {
+  const editMasterItem = (rowData, index) => {
 
-    const tempData = masterLevelGrid[index];
+    const tempData = rowData[index];
     dispatch(getMasterLevelByMasterId(true, tempData.MasterId, tempData.ApprovalTypeId, res => { }))
 
     setMasterLevelEditIndex(index)
@@ -1233,8 +1258,8 @@ function UserRegistration(props) {
   * @method deleteItem
   * @description used to delete master item 
   */
-  const deleteMasterItem = (index) => {
-    let tempData = masterLevelGrid.filter((item, i) => {
+  const deleteMasterItem = (rowData, index) => {
+    let tempData = rowData.filter((item, i) => {
       if (i === index) {
         return false;
       }
@@ -1625,6 +1650,80 @@ function UserRegistration(props) {
       }
     }
   };
+  const onGridReady = (params, setGridApi, setGridColumnApi) => {
+    setGridApi(params.api);
+    params.api.sizeColumnsToFit();
+    setGridColumnApi(params.columnApi);
+    params.api.paginationGoToPage(0);
+  };
+  const onActionTechnology = (props) => {
+    const RowData = props?.agGridReact?.gridOptions.rowData
+    return (
+      <div className="text-right">
+        <button
+          title="Edit"
+          className="Edit mr-2"
+          type="button"
+          onClick={() => editItemDetails(RowData, props?.rowIndex)}
+        />
+        <button
+          title="Delete"
+          className="Delete"
+          type="button"
+          onClick={() => deleteItem(RowData, props.rowIndex)}
+        />
+      </div>
+    )
+  }
+  const onActionSimulation = (props) => {
+    const RowData = props?.agGridReact?.gridOptions.rowData
+    return (
+      <div className="text-right">
+        <button
+          title="Edit"
+          className="Edit mr-2"
+          type="button"
+          onClick={() => editSimulationItemDetails(RowData, props?.rowIndex)}
+        />
+        <button
+          title="Delete"
+          className="Delete"
+          type="button"
+          onClick={() => deleteSimulationItem(RowData, props.rowIndex)}
+        />
+      </div>
+    )
+  }
+  const onActionMaster = (props) => {
+    const RowData = props?.agGridReact?.gridOptions.rowData
+    return (
+      <div className="text-right">
+        <button
+          title="Edit"
+          className="Edit mr-2"
+          type="button"
+          onClick={() => editMasterItem(RowData, props?.rowIndex)}
+        />
+        <button
+          title="Delete"
+          className="Delete"
+          type="button"
+          onClick={() => deleteMasterItem(RowData, props.rowIndex)}
+        />
+      </div>
+    )
+  }
+  const onPageSizeChanged = (gridApi, newPageSize) => {
+    gridApi.paginationSetPageSize(Number(newPageSize));
+  };
+  const frameworkComponents = {
+    customNoRowsOverlay: NoContentFound,
+  };
+  const resetState = (gridOption) => {
+    const options = gridOptions[gridOption];
+    options.columnApi?.resetColumnState(null);
+    options.api?.setFilterModel(null);
+  }
   return (
     <div className="container-fluid">
       {isLoader && <Loader />}
@@ -2270,41 +2369,49 @@ function UserRegistration(props) {
                           </div>
 
 
-                          <div className="row form-group">
+                          <div className="row form-group mb-0">
+                            <Col md="12" className="mb-2">
+                              <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState('gridOptionsTechnology')}>
+                                <div className="refresh mr-0"></div>
+                              </button>
+                            </Col>
                             <div className="col-md-12">
-                              <Table className="table border" size="sm" >
-                                <thead>
-                                  <tr>
-                                    <th>{`Technology`}</th>
-                                    <th>{`Approval Type`}</th>
-                                    <th>{`Level`}</th>
-                                    <th className="text-right ">{`Action`}</th>
-                                  </tr>
-                                </thead>
-                                <tbody >
-                                  {
-                                    TechnologyLevelGrid &&
-                                    TechnologyLevelGrid.map((item, index) => {
-                                      return (
-                                        <tr key={index}>
-                                          <td>{item?.Technology}</td>
-                                          <td>{item?.ApprovalType}</td>
-                                          <td>{item?.Level}</td>
-                                          <td className="text-right">
-                                            <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editItemDetails(index)} />
-                                            <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(index)} />
-                                          </td>
-                                        </tr>
-                                      )
-                                    })
-                                  }
-                                  {TechnologyLevelGrid.length === 0 && <tr>
-                                    <td colSpan={3}>
-                                      <NoContentFound title={EMPTY_DATA} />
-                                    </td>
-                                  </tr>}
-                                </tbody>
-                              </Table>
+                              <div className="ag-grid-react">
+                                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${TechnologyLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
+                                  <div className="ag-theme-material">
+                                    <AgGridReact
+                                      defaultColDef={defaultColDef}
+                                      floatingFilter={true}
+                                      pagination={true}
+                                      paginationPageSize={10}
+                                      onGridReady={params => onGridReady(params, setgridApiTechnology, setgridColumnApiTechnology)}
+                                      domLayout='autoHeight'
+                                      noRowsOverlayComponent={'customNoRowsOverlay'}
+                                      gridOptions={gridOptionsTechnology}
+                                      noRowsOverlayComponentParams={{
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
+                                      }}
+                                      rowData={TechnologyLevelGrid}
+                                      frameworkComponents={{
+                                        ...frameworkComponents,
+                                        onAction: onActionTechnology,
+                                      }}
+                                      // onFilterModified={onFloatingFilterChanged}
+                                      enableBrowserTooltips={true}
+                                    >
+                                      <AgGridColumn field="Technology" headerName="Technology" />
+                                      <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                      <AgGridColumn field="Level" headerName="Level" />
+                                      <AgGridColumn field="Technology" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
+                                    </AgGridReact>
+                                    <PaginationWrapper
+                                      gridApi={gridApiTechnology}
+                                      setPage={newPageSize => onPageSizeChanged(gridApiTechnology, newPageSize)}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
 
                             </div>
                           </div>
@@ -2412,44 +2519,50 @@ function UserRegistration(props) {
                                 ><div className={'plus'}></div>ADD</button>}
                             </div>
                           </div>
+                          <Row>
+                            <Col md="12" className="mb-2">
+                              <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState('gridOptionsSimulation')}>
+                                <div className="refresh mr-0"></div>
+                              </button>
+                            </Col>
+                            <Col md="12">
 
-                          <div className="row form-group">
-                            <div className="col-md-12">
-                              <Table className="table border" size="sm" >
-                                <thead>
-                                  <tr>
-                                    <th>{`Head`}</th>
-                                    <th>{`Approval Type`}</th>
-                                    <th>{`Level`}</th>
-                                    <th className="text-right ">{`Action`}</th>
-                                  </tr>
-                                </thead>
-                                <tbody >
-                                  {
-                                    HeadLevelGrid &&
-                                    HeadLevelGrid.map((item, index) => {
-                                      return (
-                                        <tr key={index}>
-                                          <td>{item.Technology}</td>
-                                          <td>{item.ApprovalType}</td>
-                                          <td>{item.Level}</td>
-                                          <td className="text-right">
-                                            <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editSimulationItemDetails(index)} />
-                                            <button title='Delete' className="Delete" type={'button'} onClick={() => deleteSimulationItem(index)} />
-                                          </td>
-                                        </tr>
-                                      )
-                                    })
-                                  }
-                                  {HeadLevelGrid.length === 0 && <tr>
-                                    <td colSpan={3}>
-                                      <NoContentFound title={EMPTY_DATA} />
-                                    </td>
-                                  </tr>}
-                                </tbody>
-                              </Table>
-                            </div>
-                          </div>
+                              <div className="ag-grid-react">
+                                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${HeadLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
+                                  <div className="ag-theme-material">
+                                    <AgGridReact
+                                      defaultColDef={defaultColDef}
+                                      floatingFilter={true}
+                                      pagination={true}
+                                      paginationPageSize={10}
+                                      domLayout='autoHeight'
+                                      onGridReady={params => onGridReady(params, setgridApiSimulation, setgridColumnApiSimulation)}
+                                      gridOptions={gridOptionsSimulation}
+                                      noRowsOverlayComponent="customNoRowsOverlay"
+                                      noRowsOverlayComponentParams={{
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
+                                      }}
+                                      rowData={HeadLevelGrid}
+                                      frameworkComponents={{
+                                        ...frameworkComponents,
+                                        onAction: onActionSimulation,
+                                      }}
+                                    >
+                                      <AgGridColumn field="Technology" headerName="Technology" />
+                                      <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                      <AgGridColumn field="Level" headerName="Level" />
+                                      <AgGridColumn field="Technology" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
+                                    </AgGridReact>
+                                    <PaginationWrapper
+                                      gridApi={gridApiSimulation}
+                                      setPage={newPageSize => onPageSizeChanged(gridApiSimulation, newPageSize)}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </Col>
+                          </Row>
                         </>
                       }
                       {
@@ -2552,46 +2665,49 @@ function UserRegistration(props) {
                                     ><div className={'plus'}></div>ADD</button>}
                                 </div>
                               </div>
-
-                              <div className="row form-group">
-                                <div className="col-md-12">
-                                  <Table className="table border" size="sm" >
-                                    <thead>
-                                      <tr>
-                                        <th>{`Master`}</th>
-                                        <th>{`Approval Type`}</th>
-                                        <th>{`Level`}</th>
-                                        <th className="text-right">{`Action`}</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      {
-                                        masterLevelGrid &&
-                                        masterLevelGrid.map((item, index) => {
-                                          return (
-                                            <tr key={index}>
-                                              <td>{item.Master}</td>
-                                              <td>{item.ApprovalType}</td>
-                                              <td>{item.Level}</td>
-                                              <td className="text-right">
-                                                <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editMasterItem(index)} />
-                                                <button title='Delete' className="Delete" type={'button'} onClick={() => deleteMasterItem(index)} />
-                                              </td>
-                                            </tr>
-                                          )
-                                        })
-                                      }
-                                      {masterLevelGrid.length === 0 && <tr>
-                                        <td colSpan={3}>
-                                          <NoContentFound title={EMPTY_DATA} />
-                                        </td>
-                                      </tr>
-                                      }
-                                    </tbody>
-                                  </Table>
-
-                                </div>
-                              </div>
+                              <Row>
+                                <Col md="12" className="mb-2">
+                                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState('gridOptionsMaster')}>
+                                    <div className="refresh mr-0"></div>
+                                  </button>
+                                </Col>
+                                <Col md="12">
+                                  <div className="ag-grid-react">
+                                    <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${masterLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
+                                      <div className="ag-theme-material">
+                                        <AgGridReact
+                                          defaultColDef={defaultColDef}
+                                          floatingFilter={true}
+                                          pagination={true}
+                                          paginationPageSize={10}
+                                          domLayout='autoHeight'
+                                          onGridReady={params => onGridReady(params, setgridApiMaster, setgridColumnApiMaster)}
+                                          gridOptions={gridOptionsMaster}
+                                          noRowsOverlayComponent="customNoRowsOverlay"
+                                          noRowsOverlayComponentParams={{
+                                            title: EMPTY_DATA,
+                                            imagClass: 'imagClass'
+                                          }}
+                                          rowData={masterLevelGrid}
+                                          frameworkComponents={{
+                                            ...frameworkComponents,
+                                            onAction: onActionMaster,
+                                          }}
+                                        >
+                                          <AgGridColumn field="Master" headerName="Master" />
+                                          <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                          <AgGridColumn field="Level" headerName="Level" />
+                                          <AgGridColumn field="Technology" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
+                                        </AgGridReact>
+                                        <PaginationWrapper
+                                          gridApi={gridApiMaster}
+                                          setPage={newPageSize => onPageSizeChanged(gridApiMaster, newPageSize)}
+                                        />
+                                      </div>
+                                    </div>
+                                  </div>
+                                </Col>
+                              </Row>
                             </>
                           }
                         </>

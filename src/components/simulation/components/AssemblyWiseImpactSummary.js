@@ -134,9 +134,11 @@ function AssemblyWiseImpactSummary(props) {
         )
     }
     const onFloatingFilterChanged = (value) => {
-        if (simulationAssemblyListSummary.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (simulationAssemblyListSummary.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const frameworkComponents = {
         customLoadingOverlay: LoaderCustom,
@@ -195,8 +197,8 @@ function AssemblyWiseImpactSummary(props) {
                                 <AgGridColumn field="PartName" headerName='Name' cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Level" headerName="Child's Level" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 {impactType === 'Assembly' && <AgGridColumn field="Quantity" headerName='Applicable Quantity' cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                <AgGridColumn field="OldPrice" headerName='Existing PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
-                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='Revised PO Price/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
+                                <AgGridColumn field="OldPrice" headerName='Existing Net Cost/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>
+                                {impactType === 'AssemblySummary' && <AgGridColumn field="NewPrice" headerName='Revised Net Cost/Assembly' cellRenderer={'costFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="Variance" headerName='Variance/Assembly (w.r.t. Existing)' cellRenderer={'costFormatter'}></AgGridColumn>
                                 <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
                             </AgGridReact>

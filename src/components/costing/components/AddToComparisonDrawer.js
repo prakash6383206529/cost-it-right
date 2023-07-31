@@ -313,6 +313,7 @@ function AddToComparisonDrawer(props) {
             overheadRMPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadRMPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadRMPercentage : '-',
             overheadBOPPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadBOPPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadBOPPercentage : '-',
             overheadCCPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadCCPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadCCPercentage : '-',
+            OverheadCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadCRMHead : '-',
           }
 
           obj.profitOn = {
@@ -322,24 +323,28 @@ function AddToComparisonDrawer(props) {
             profitRMPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitRMPercentage : '-',
             profitBOPPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitBOPPercentage : '-',
             profitCCPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitCCPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitCCPercentage : '-',
+            ProfitCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingProfitDetail.ProfitCRMHead : '-',
           }
 
           obj.rejectionOn = {
             rejectionTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionApplicability : '-',
             rejectionValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionTotalCost : 0,
             rejectionPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionPercentage !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionPercentage : '-',
+            RejectionCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingRejectionDetail.RejectionCRMHead : '-',
           }
 
           obj.iccOn = {
             iccTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCApplicability : '-',
             iccValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.NetCost : 0,
             iccPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.InterestRate : '-',
+            ICCCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead !== null ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.ICCApplicabilityDetail.ICCCRMHead : '-',
           }
 
           obj.paymentTerms = {
             paymentTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermApplicability : '-',
             paymentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.NetCost : 0,
             paymentPercentage: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.InterestRate : '-',
+            PaymentTermCRMHead: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.PaymentTermCRMHead : '-',
           }
 
 
@@ -511,6 +516,7 @@ function AddToComparisonDrawer(props) {
           obj.isIncludeToolCostWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit
           obj.isIncludeSurfaceTreatmentWithRejection = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection
           obj.isIncludeSurfaceTreatmentWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit
+          obj.isIncludeOverheadAndProfitInICC = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeOverheadAndProfitInICC && dataFromAPI?.CostingPartDetails?.IsIncludeOverheadAndProfitInICC
           obj.rawMaterialCostWithCutOff = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff ? dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff : ''
           obj.MachiningScrapRate = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapRate : '-'
           obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'

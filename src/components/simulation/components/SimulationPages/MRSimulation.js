@@ -144,9 +144,11 @@ function MRSimulation(props) {
         );
     };
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     /**
   * @method beforeSaveCell
@@ -538,6 +540,7 @@ function MRSimulation(props) {
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown
                                                 showYearDropdown
+                                                dropdownMode='select'
                                                 dateFormat="dd/MM/yyyy"
                                                 minDate={new Date(maxDate)}
                                                 placeholderText="Select effective date"

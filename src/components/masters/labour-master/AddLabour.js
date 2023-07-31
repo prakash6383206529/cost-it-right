@@ -865,7 +865,7 @@ class AddLabour extends Component {
                         />{" "}
                         <span>Vendor Based</span>
                       </Label>
-                      {<Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                      {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                         <input
                           type="radio"
                           name="costingHead"
@@ -1135,6 +1135,7 @@ class AddLabour extends Component {
                               onChange={this.handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
+                              dropdownMode="select"
                               dateFormat="dd/MM/yyyy"
                               placeholderText={isViewMode ? '-' : "Select Date"}
                               className="withBorder"

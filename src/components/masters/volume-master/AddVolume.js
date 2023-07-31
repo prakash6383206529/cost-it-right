@@ -550,16 +550,30 @@ class AddVolume extends Component {
       return false
     }
     this.setState({ isVendorNameNotSelected: false, isPartNumberNotSelected: false })
-    // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
-    const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
-    if (filteredArray.length === 12) {
-      Toaster.warning("Please fill atleast one entry")
-      return false
+    const filteredArray = tableData.filter(item => {
+      const budgetedQuantity = Number(item.BudgetedQuantity);
+      const approvedQuantity = Number(item.ApprovedQuantity);
+
+      // Check for valid numbers and non-negative values
+      return (isNaN(budgetedQuantity) || isNaN(approvedQuantity)) || (budgetedQuantity === 0 && approvedQuantity === 0);
+    });
+
+    if (filteredArray.length === tableData.length) {
+      Toaster.warning("Please fill at least one entry");
+      return false;
     }
-    //CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND ACTUAL QUANTITY
-    const filteredArrayForNegativeVlaue = tableData.filter(item => (Number(item.BudgetedQuantity) < 0) || (Number(item.ApprovedQuantity) < 0))
-    if (filteredArrayForNegativeVlaue.length !== 0) {
-      return false
+
+    // CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND APPROVED QUANTITY
+    const filteredArrayForNegativeValue = tableData.filter(item => {
+      const budgetedQuantity = Number(item.BudgetedQuantity);
+      const approvedQuantity = Number(item.ApprovedQuantity);
+
+      // Check for valid numbers and non-negative values
+      return isNaN(budgetedQuantity) || isNaN(approvedQuantity) || budgetedQuantity < 0 || approvedQuantity < 0;
+    });
+
+    if (filteredArrayForNegativeValue.length !== 0) {
+      return false;
     }
     let budgetArray = []
     tableData && tableData.map((item) => {

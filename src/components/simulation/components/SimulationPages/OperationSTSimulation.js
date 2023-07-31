@@ -114,9 +114,11 @@ function OperationSTSimulation(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const oldRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -522,6 +524,7 @@ function OperationSTSimulation(props) {
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown
                                                 showYearDropdown
+                                                dropdownMode='select'
                                                 dateFormat="dd/MM/yyyy"
                                                 minDate={new Date(maxDate)}
                                                 placeholderText="Select effective date"

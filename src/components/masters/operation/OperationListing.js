@@ -258,9 +258,11 @@ class OperationListing extends Component {
     }
 
     onFloatingFilterChanged = (value) => {
-        if (this.state.tableData?.length !== 0) {
-            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }
+        setTimeout(() => {
+            if (this.state.tableData?.length !== 0) {
+                this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+            }
+        }, 500);
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -322,7 +324,8 @@ class OperationListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteOperationAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteOperationAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 this.resetState()

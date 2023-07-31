@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-//const BASE_URL = `http://10.10.8.109:8081/api/v1`;
+// const BASE_URL = `http://10.10.1.100:10142/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
@@ -1887,7 +1887,7 @@ export const VIEW_COSTING_DATA = {
   costingHeadCheck: 'VBC/ZBC/NCC/CBC',
   // costingName: '',
   costingVersion: 'Costing Version',
-  PoPriceWithDate: 'PO Price (Effective from)',
+  PoPriceWithDate: 'Net Cost (Effective from)',
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
@@ -1931,14 +1931,19 @@ export const VIEW_COSTING_DATA = {
   // iccOn: 'ICC On',
   // paymentTerms: 'Payment Terms',
   overHeadApplicablity: 'Overhead Applicability',
+  overHeadPercent: 'Overhead %',
   overHeadApplicablityValue: 'Overhead Value',
   ProfitApplicablity: 'Profit Applicability',
+  profitPercent: 'Profit %',
   ProfitApplicablityValue: 'Profit Value',
   rejectionApplicablity: 'Rejection Applicability',
+  rejectionPercent: 'Rejection %',
   rejectionApplicablityValue: 'Rejection Value',
   iccApplicablity: 'ICC Applicability',
+  iccPercent: 'ICC %',
   iccApplicablityValue: 'ICC Value',
   paymentApplicablity: 'Payment Applicability',
+  paymentPercent: 'Payment %',
   paymentcApplicablityValue: 'Payment Value',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
@@ -1961,10 +1966,10 @@ export const VIEW_COSTING_DATA = {
   BasicRate: 'Basic Rate',
   npvCost: 'Net NPV Cost',
   conditionCost: 'Net Costing Condition',
-  nPOPrice: 'Net PO Price (INR)',
+  nPOPrice: 'Net Cost (INR)',
   currencyTitle: 'Currency',
   currencyRate: 'Currency Rate',
-  nPoPriceCurrency: 'Net PO Price (In Currency)',
+  nPoPriceCurrency: 'Net Cost (In Currency)',
   NCCPartQuantity: "Quantity",
   IsRegularized: "Is Regularized",
   remark: 'Remarks',
@@ -1984,7 +1989,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'costingVersion'
   },
   {
-    label: 'PO Price (Effective from)',
+    label: 'Net Cost (Effective from)',
     value: 'PoPriceWithDate'
   },
   {
@@ -2215,7 +2220,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'conditionCost'
   },
   {
-    label: 'Net PO Price (INR)',
+    label: 'Net Cost (INR)',
     value: 'nPOPrice'
   },
   {
@@ -2227,7 +2232,7 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
     value: 'currencyRate'
   },
   {
-    label: 'Net PO Price (In Currency)',
+    label: 'Net Cost (In Currency)',
     value: 'nPoPriceCurrency'
   },
   {
@@ -2248,15 +2253,15 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
 export const VIEW_COSTING_DATA_LOGISTICS = {
   costingHeadCheck: 'ZBC v/s VBC v/s NCC v/s CBC',
   costingVersion: 'Costing Version',
-  PoPriceWithDate: 'PO Price (Effective from)',
+  PoPriceWithDate: 'Net Cost (Effective from)',
   partNumber: 'Part Number',
   partName: 'Part Name',
   RevisionNumber: 'Revision Number',
   plantExcel: 'Plant (Code)',
   nPackagingAndFreight: 'Net Freight',
-  nPOPrice: 'Net PO Price (INR)',
+  nPOPrice: 'Net Cost (INR)',
   currencyTitle: 'Currency',
-  nPoPriceCurrency: 'Net PO Price (In Currency)',
+  nPoPriceCurrency: 'Net Cost (In Currency)',
   remark: 'Remarks',
 }
 
@@ -2275,6 +2280,9 @@ export const DISPLAY_KG = "kg"
 export const DISPLAY_MG = "mg"
 export const DISPLAY_HOURS = "hrs"
 export const DISPLAY_MINUTES = "min"
+export const DISPLAY_SECONDS = "sec"
+export const DISPLAY_MILISECONDS = "ms"
+export const DISPLAY_MICROSECONDS = "microsec"
 
 // export const INR = "INR"
 
@@ -2532,7 +2540,9 @@ export const PFS3TypeId = Number(reactLocalStorage.getObject('CostingHeadsListSh
 export const ZBCADDMORE = 15
 export const VBCADDMORE = 16
 export const CBCADDMORE = 17
-
+export const ZBCADDMOREOPERATION = 18
+export const VBCADDMOREOPERATION = 19
+export const CBCADDMOREOPERATION = 20
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 export const NFRAPPROVALTYPEID = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 // export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
@@ -2588,4 +2598,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.210";
+export const VERSION = "V2.1.219";

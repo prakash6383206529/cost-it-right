@@ -30,7 +30,7 @@ function LabourCost(props) {
                             <tr>
                                 <th>{`Description`}</th>
                                 <th>{`No. of Labour`}</th>
-                                <th>{`Absentism %`}</th>
+                                <th>{`Absenteeism %`}</th>
                                 <th>{`Labour Rate (Rs/Shift)`}</th>
                                 {<th>{`Working Time`}</th>}
                                 {<th>{`Efficiency`}</th>}

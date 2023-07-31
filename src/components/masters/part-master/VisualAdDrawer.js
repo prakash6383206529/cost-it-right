@@ -79,7 +79,7 @@ export default function VishualAdDrawer(props) {
                                             },
                                             min: {
                                                 value: (props.partType === 'BoughtOutPart' && BOPUom !== DIMENSIONLESS) ? 0 : 1,
-                                                message: (props.partType === 'BoughtOutPart' && BOPUom !== DIMENSIONLESS) ? 'Quantity should not be negetive' : 'Quantity should not be less than 1.',
+                                                message: (props.partType === 'BoughtOutPart' && BOPUom !== DIMENSIONLESS) ? 'Quantity should not be negative' : 'Quantity should not be less than 1.',
                                             },
 
                                         }}

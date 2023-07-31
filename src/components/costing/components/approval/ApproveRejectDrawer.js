@@ -865,6 +865,7 @@ function ApproveRejectDrawer(props) {
                                 // onChange={handleEffectiveDateChange}
                                 showMonthDropdown
                                 showYearDropdown
+                                dropdownMode='select'
                                 dateFormat="dd/MM/yyyy"
                                 //maxDate={new Date()}
                                 placeholderText="Select date"

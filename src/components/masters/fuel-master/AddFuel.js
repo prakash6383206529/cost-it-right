@@ -407,10 +407,12 @@ class AddFuel extends Component {
         if (Object.keys(reqData).length > 0) {
           let fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => item.Text === reqData.FuelName)
 
-          this.props.getUOMByFuelId(fuelObj.Value, (res) => {
-            let Data = res.data.DynamicData
-            this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
-          })
+          if (fuelObj) {
+            this.props.getUOMByFuelId(fuelObj.Value, (res) => {
+              let Data = res.data.DynamicData
+              this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
+            })
+          }
           this.setState({ fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [] })
         }
       })
@@ -833,7 +835,7 @@ class AddFuel extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {<Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1079,6 +1081,7 @@ class AddFuel extends Component {
                                   onChange={this.handleEffectiveDateChange}
                                   showMonthDropdown
                                   showYearDropdown
+                                  dropdownMode="select"
                                   dateFormat="dd/MM/yyyy"
                                   placeholderText={isViewMode ? '-' : "Select Date"}
                                   className="withBorder"

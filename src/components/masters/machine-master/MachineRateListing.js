@@ -211,9 +211,11 @@ class MachineRateListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-        if (this.props.machineDatalist?.length !== 0) {
-            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }
+        setTimeout(() => {
+            if (this.props.machineDatalist?.length !== 0) {
+                this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+            }
+        }, 500);
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -309,7 +311,8 @@ class MachineRateListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        this.props.deleteMachine(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteMachine(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
                 this.resetState()
