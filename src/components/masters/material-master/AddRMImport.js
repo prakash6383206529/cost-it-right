@@ -609,7 +609,9 @@ class AddRMImport extends Component {
       "CircleScrapCost",
       "JaliScrapCost",
       "EffectiveDate",
-      "clientName"];
+      "clientName",
+      'ShearingCost',
+      'FreightCharge'];
     fieldsToClear.forEach(fieldName => {
       this.props.dispatch(clearFields('AddRMImport', false, false, fieldName));
     });
@@ -617,12 +619,7 @@ class AddRMImport extends Component {
       costingTypeId: costingHeadFlag,
       vendorName: [],
       vendorLocation: [],
-    }, () => {
-      this.props.getPlantBySupplier('', () => { })
-      this.props.getCityBySupplier(0, () => { })
-
     });
-
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
