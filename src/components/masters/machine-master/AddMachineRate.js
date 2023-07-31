@@ -164,6 +164,9 @@ class AddMachineRate extends Component {
       }
 
     }
+    else {
+      this.setState({ finalApprovalLoader: false })
+    }
 
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
       this.props.getMachineTypeSelectList(() => { })
@@ -209,6 +212,7 @@ class AddMachineRate extends Component {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
+
     if (levelDetailsTemp?.length !== 0) {
       let obj = {
         TechnologyId: MACHINE_MASTER_ID,
