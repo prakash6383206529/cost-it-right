@@ -111,7 +111,7 @@ class AddRMDomestic extends Component {
       isOpenCategory: false,
       isOpenVendor: false,
       isOpenUOM: false,
-
+      finalApprovalLoader: true,
       isVisible: false,
       imageURL: '',
       isLoader: false,
@@ -185,6 +185,8 @@ class AddRMDomestic extends Component {
           this.commonFunction()
         }, 100);
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
   }
 
@@ -221,12 +223,12 @@ class AddRMDomestic extends Component {
 
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
         }
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 
@@ -1281,7 +1283,7 @@ class AddRMDomestic extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">

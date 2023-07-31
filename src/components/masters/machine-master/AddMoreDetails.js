@@ -133,7 +133,7 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -177,6 +177,8 @@ class AddMoreDetails extends Component {
           this.commonFunction()
         }, 100);
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
     this.getDetails()
   }
@@ -210,7 +212,6 @@ class AddMoreDetails extends Component {
         Mode: 'master',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(ZBCTypeId)
       }
-      this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
@@ -219,7 +220,7 @@ class AddMoreDetails extends Component {
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 

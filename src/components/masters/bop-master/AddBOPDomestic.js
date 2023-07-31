@@ -83,7 +83,7 @@ class AddBOPDomestic extends Component {
       remarks: '',
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       client: [],
       costingTypeId: ZBCTypeId,
       showPopup: false,
@@ -132,6 +132,8 @@ class AddBOPDomestic extends Component {
             this.commonFunction()
           }, 100);
         })
+      } else {
+        this.setState({ finalApprovalLoader: false })
       }
     }, 300);
   }
@@ -149,7 +151,6 @@ class AddBOPDomestic extends Component {
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
       }
 
-      this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
@@ -158,7 +159,7 @@ class AddBOPDomestic extends Component {
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 
