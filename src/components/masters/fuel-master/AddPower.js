@@ -27,6 +27,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getClientSelectList, } from '../actions/Client';
+import TooltipCustom from '../../common/Tooltip';
 
 const selector = formValueSelector('AddPower');
 
@@ -93,6 +94,8 @@ class AddPower extends Component {
       vendorFilterList: [],
       costingTypeId: ZBCTypeId,
       client: [],
+      costPerUnitTooltipText: 'Please fill in the mandatory fields of State Electricity Board Power Changes section, as the calculation will be based on them.',
+      segCostUnittooltipText: 'Please select the Source of Power, as the calculation will be based on them.',
     }
   }
 
@@ -177,6 +180,7 @@ class AddPower extends Component {
       if (AvgUnitConsumptionPerMonth <= MinDemandKWPerMonth) {
         const SEBCostPerUnit = checkForNull((MinDemandKWPerMonth * DemandChargesPerKW) / AvgUnitConsumptionPerMonth);
         power.SEBCostPerUnit = SEBCostPerUnit
+        this.setState({ costPerUnitTooltipText: 'Cost per Unit = Min Monthly Charge / Avg. Unit Consumption per Month' })
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
@@ -188,6 +192,7 @@ class AddPower extends Component {
         this.setState({
           power: { ...power, SEBCostPerUnit: power.SEBCostPerUnit }
         })
+        this.setState({ costPerUnitTooltipText: 'Cost per Unit = (Min Monthly Charge + (Avg. Unit Consumption per Month - Min Demand kW per Month) * Max Demand Charges per kW) / Avg. Unit Consumption per Month' })
         this.props.change('SEBCostPerUnit', SEBCostPerUnit === 0 ? '' : checkForDecimalAndNull(SEBCostPerUnit, initialConfiguration.NoOfDecimalForPrice))
       }
 
@@ -506,6 +511,11 @@ class AddPower extends Component {
   */
   handleSource = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
+      if (newValue.value === GENERATOR_DIESEL) {
+        this.setState({ segCostUnittooltipText: 'Cost per Unit = Cost per UOM / Unit Generated per Unit of Fuel' })
+      } else {
+        this.setState({ segCostUnittooltipText: 'Cost per Unit = Annual Cost / Unit Generated per Annum' })
+      }
       this.setState({ source: newValue, })
     } else {
       this.setState({ source: [] })
@@ -1755,9 +1765,11 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
+                                  <TooltipCustom id={"MinMonthlyCharge"} disabledIcon={true} tooltipText={`Min Monthly Charge = Min Demand kW per Month * Demand Charges per kW`} />
                                   <Field
                                     label={`Min Monthly Charge`}
                                     name={"MinMonthlyCharge"}
+                                    id={"MinMonthlyCharge"}
                                     type="text"
                                     placeholder={'-'}
                                     component={renderTextInputField}
@@ -1790,10 +1802,12 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
+                                  <TooltipCustom id={"UnitConsumptionPerAnnum"} disabledIcon={true} tooltipText={`Unit Consumption per Annum = Avg. Unit Consumption per Month * 12`} />
                                   <Field
                                     label={`Unit Consumption/Annum`}
                                     name={"UnitConsumptionPerAnnum"}
                                     type="text"
+                                    id={"UnitConsumptionPerAnnum"}
                                     placeholder={'-'}
                                     validate={[]}
                                     component={renderTextInputField}
@@ -1827,9 +1841,11 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
+                                  <TooltipCustom id={"SEBCostPerUnit"} width="260px" disabledIcon={true} tooltipText={this.state.costPerUnitTooltipText} />
                                   <Field
                                     label={`Cost/Unit`}
                                     name={"SEBCostPerUnit"}
+                                    id="SEBCostPerUnit"
                                     type="text"
                                     placeholder={!isCostPerUnitConfigurable || isViewMode ? '-' : 'Enter'}
                                     component={renderTextInputField}
@@ -1877,10 +1893,12 @@ class AddPower extends Component {
                             <Col md="2">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
+                                  <TooltipCustom id={"TotalUnitCharges"} width="360px" disabledIcon={true} tooltipText={"Total Charge per Unit = ((Unit Consumption per Annum * Cost per Unit) + Meter Rent and Other Charges per Annum + Duty Charges and FCA) / Unit Consumption per Annum"} />
                                   <Field
                                     label={`Total Charge/Unit`}
                                     name={this.state.power.TotalUnitCharges === 0 ? '' : "TotalUnitCharges"}
                                     type="text"
+                                    id={"TotalUnitCharges"}
                                     placeholder={'-'}
                                     validate={[positiveAndDecimalNumber, maxLength10, number]}
                                     component={renderTextInputField}
@@ -2090,10 +2108,12 @@ class AddPower extends Component {
                             <Col md="3">
                               <div className="d-flex justify-space-between align-items-center inputwith-icon">
                                 <div className="fullinput-icon">
+                                  <TooltipCustom id={"SelfGeneratedCostPerUnit"} width="260px" disabledIcon={true} tooltipText={this.state.segCostUnittooltipText} />
                                   <Field
                                     label={`Cost/Unit`}
                                     name={this.state.power.SelfGeneratedCostPerUnit === 0 ? '' : "SelfGeneratedCostPerUnit"}
                                     type="text"
+                                    id="SelfGeneratedCostPerUnit"
                                     placeholder={'-'}
                                     component={renderTextInputField}
                                     className=""
