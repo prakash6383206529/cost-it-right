@@ -49,18 +49,15 @@ function RfqListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const handleFilterChange = () => {
         if (agGridRef.current) {
-            const gridApi = agGridRef.current.api;
-            if (gridApi) {
-                const displayedRowCount = gridApi.getDisplayedRowCount();
-                const allRowData = [];
-                for (let i = 0; i < displayedRowCount; i++) {
-                    const rowNode = gridApi.getDisplayedRowAtIndex(i);
-                    if (rowNode) {
-                        allRowData.push(rowNode.data);
-                    }
+            setTimeout(() => {
+                if (!agGridRef.current.rowRenderer.allRowCons.length) {
+                    setNoData(true)
+                    dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+                } else {
+                    setNoData(false)
                 }
-                setNoData(!allRowData.length)
-            }
+            }, 100);
+
         }
     };
     const floatingFilterRFQ = {
@@ -68,6 +65,7 @@ function RfqListing(props) {
         suppressFilterButton: true,
         component: "RFQ",
         onFilterChange: handleFilterChange,
+        notPagination: true
     }
     useEffect(() => {
         setloader(true)
