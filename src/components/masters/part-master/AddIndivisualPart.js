@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, clearFields } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3, hashValidation } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
@@ -124,24 +124,31 @@ class AddIndivisualPart extends Component {
     }
   }
 
-
   onPartNoChange = debounce((e) => {
+    const assemblyPartNumber = e?.target?.value;
+    const hasSpecialCharacter = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(assemblyPartNumber);
 
-    if (!this.state.isEditFlag) {
-      this.props.getPartDescription(e?.target?.value, 2, (res) => {
-        if (res?.data?.Data) {
-          let finalData = res.data.Data
-          this.props.change("Description", finalData.Description)
-          this.props.change("PartName", finalData.PartName)
-          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: { label: finalData.Technology, value: finalData.TechnologyId } })
-        } else {
-          this.props.change("Description", "")
-          this.props.dispatch(clearFields('AddIndivisualPart', false, false, 'PartName'));
-          this.setState({ disablePartName: false, minEffectiveDate: "", TechnologySelected: [] })
-        }
-      })
+    if (!hasSpecialCharacter) {
+      if (!this.state.isEditFlag) {
+        this.props.getPartDescription(assemblyPartNumber, 1, (res) => {
+          if (res?.data?.Data) {
+            let finalData = res.data.Data;
+            this.props.change("Description", finalData.Description);
+            this.props.change("AssemblyPartName", finalData.PartName);
+            this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate });
+          } else {
+            this.props.change("Description", "");
+            this.props.change("AssemblyPartName", "");
+            this.setState({ disablePartName: false, minEffectiveDate: "" });
+          }
+        });
+      }
     }
-  }, 600)
+  }, 600);
+
+  resetDebounceTimer = () => {
+    this.onPartNoChange.cancel();
+  };
 
   /**
   * @method handlePlant
@@ -497,10 +504,15 @@ class AddIndivisualPart extends Component {
                               name={"PartNumber"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3, hashValidation]}
                               component={renderText}
                               required={true}
                               onChange={this.onPartNoChange}
+                              onKeyUp={(e) => {
+                                if (e.keyCode === 8 && e.target.value === "") {
+                                  this.resetDebounceTimer();
+                                }
+                              }}
                               className=""
                               customClassName={"withBorder"}
                               disabled={isEditFlag ? true : false}
@@ -512,7 +524,7 @@ class AddIndivisualPart extends Component {
                               name={"PartName"}
                               type="text"
                               placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85, hashValidation]}
                               component={renderText}
                               required={true}
                               className=""
@@ -565,7 +577,7 @@ class AddIndivisualPart extends Component {
                                 name={"GroupCode"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : "Enter"}
-                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20, hashValidation]}
                                 component={renderText}
                                 required={false}
                                 className=""
@@ -583,7 +595,7 @@ class AddIndivisualPart extends Component {
                               name={"ECNNumber"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
@@ -596,7 +608,7 @@ class AddIndivisualPart extends Component {
                               name={"RevisionNumber"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
@@ -609,7 +621,7 @@ class AddIndivisualPart extends Component {
                               name={"DrawingNumber"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
@@ -641,7 +653,7 @@ class AddIndivisualPart extends Component {
                               name={"SAPCode"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, hashValidation]}
                               component={renderText}
                               required={true}
                               onChange={() => { }}

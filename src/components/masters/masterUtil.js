@@ -7,8 +7,8 @@ import Toaster from '../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { setGroupProcessList, setProcessList } from './actions/MachineMaster';
 import NoContentFound from '../common/NoContentFound';
-import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, EMPTY_GUID, EXTERNAL_REJECT, RECEIVED, SENT, UNDER_REVISION } from '../../config/constants';
-
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, EXTERNAL_REJECT, RECEIVED, SENT, UNDER_REVISION, EMPTY_GUID } from '../../config/constants';
+import { hashValidation } from '../../helper';
 export const ProcessGroup = (props) => {
     const { isEditFlag, isViewFlag } = props
 
@@ -226,7 +226,10 @@ export const ProcessGroup = (props) => {
                             placeholder={props.isViewFlag ? '-' : "Enter"}
                             control={control}
                             register={register}
-                            rules={{ required: false }}
+                            rules={{
+                                required: false,
+                                validate: { hashValidation }
+                            }}
                             mandatory={true}
                             handleChange={(e) => { setGroupNameText(e.target.value) }}
                             defaultValue={""}

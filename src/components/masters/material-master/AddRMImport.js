@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number, hashValidation } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -1608,7 +1608,7 @@ class AddRMImport extends Component {
                                     name={"Source"}
                                     type="text"
                                     placeholder={isViewFlag ? "-" : "Enter"}
-                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation]}
                                     component={renderText}
                                     disabled={isViewFlag}
                                     onChange={this.handleSource}
