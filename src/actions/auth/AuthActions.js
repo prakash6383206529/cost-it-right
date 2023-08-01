@@ -1795,6 +1795,12 @@ export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
                     payload: response.data.Data.MasterLevels,
                 });
                 callback(response);
+            } else {
+                dispatch({
+                    type: GET_USERS_MASTER_LEVEL_API,
+                    payload: [],
+                });
+                callback(response);
             }
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
