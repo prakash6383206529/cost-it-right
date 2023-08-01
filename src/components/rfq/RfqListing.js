@@ -287,7 +287,7 @@ function RfqListing(props) {
         }
     }
     const statusFormatter = (props) => {
-        dispatch(getGridHeight({ value: props.rowIndex, component: 'RFQ' }))
+        dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'RFQ' }))
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
@@ -446,6 +446,7 @@ function RfqListing(props) {
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
+                                                ref={agGridRef}
                                                 domLayout='autoHeight'
                                                 rowData={rowData}
                                                 pagination={true}
@@ -462,7 +463,6 @@ function RfqListing(props) {
                                                 suppressRowClickSelection={true}
                                                 onFilterModified={onFloatingFilterChanged}
                                                 enableBrowserTooltips={true}
-                                                ref={agGridRef}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                                 {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
