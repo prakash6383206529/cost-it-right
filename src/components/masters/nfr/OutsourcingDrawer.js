@@ -3,7 +3,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, Table } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../layout/HookFormInputs';
+import { NumberFieldHookForm, SearchableSelectHookForm, } from '../../layout/HookFormInputs';
 import { EMPTY_DATA } from '../../../config/constants';
 import { checkForDecimalAndNull, checkWhiteSpaces, number, decimalNumberLimit6, loggedInUserId } from '../../../helper';
 import NoContentFound from '../../common/NoContentFound';
