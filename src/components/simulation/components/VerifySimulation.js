@@ -363,6 +363,11 @@ function VerifySimulation(props) {
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
+    const partTypeFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cell != null && cell.length !== 0) ? cell : '-'
+    }
+
     const ecnFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cell != null && cell.length !== 0) ? cell : '-'
@@ -703,7 +708,8 @@ function VerifySimulation(props) {
         renderCustomer: renderCustomer,
         bopNumberFormatter: bopNumberFormatter,
         existingBasicFormatter: existingBasicFormatter,
-        newRMBasicRateFormatter: newRMBasicRateFormatter
+        newRMBasicRateFormatter: newRMBasicRateFormatter,
+        partTypeFormatter: partTypeFormatter
     };
 
     return (
@@ -771,6 +777,7 @@ function VerifySimulation(props) {
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={110} field="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
                                             {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="Grade" ></AgGridColumn>}
