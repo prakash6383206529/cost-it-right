@@ -108,7 +108,7 @@ class AddBOPImport extends Component {
       isClientVendorBOP: false,
       CostingTypePermission: false,
       isTechnologyVisible: false,
-      Technology: {}
+      Technology: []
     }
   }
   /**
@@ -1233,6 +1233,47 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           )}
+                          {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
+                            <>
+
+                              <Col md="3" className='d-flex align-items-center'>
+                                <label
+                                  className={`custom-checkbox`}
+                                  onChange={this.breakUpHandleChange}
+                                >
+                                  Detailed BOP
+                                  <input
+                                    type="checkbox"
+                                    checked={isTechnologyVisible}
+                                    disabled={isViewMode || isEditFlag ? true : false}
+                                  />
+                                  <span
+                                    className=" before-box"
+                                    checked={isTechnologyVisible}
+                                    onChange={this.breakUpHandleChange}
+                                  />
+                                </label>
+                              </Col>
+                              {isTechnologyVisible && <Col md="3">
+                                <Field
+                                  label="Technology"
+                                  type="text"
+                                  name="Technology"
+                                  component={searchableSelect}
+                                  placeholder={"Technology"}
+                                  options={this.renderListing("technology")}
+                                  validate={
+                                    this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleTechnologyChange
+                                  }
+                                  valueDescription={this.state.Technology}
+                                  disabled={isViewMode || isEditFlag ? true : false}
+                                />
+                              </Col>}
+                            </>
+                          }
                           {costingTypeId === CBCTypeId && (
                             <Col md="3">
                               <Field
@@ -1329,49 +1370,7 @@ class AddBOPImport extends Component {
                             </>
                           )}
                         </Row>
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
-                          <Row>
-                            <Col md="12">
-                              <div className="left-border">{"Detailed BOP:"}</div>
-                            </Col>
-                            <Col md="3" className='mb-4'>
-                              <label
-                                className={`custom-checkbox`}
-                                onChange={this.breakUpHandleChange}
-                              >
-                                Detailed BOP
-                                <input
-                                  type="checkbox"
-                                  checked={isTechnologyVisible}
-                                  disabled={isViewMode || isEditFlag ? true : false}
-                                />
-                                <span
-                                  className=" before-box"
-                                  checked={isTechnologyVisible}
-                                  onChange={this.breakUpHandleChange}
-                                />
-                              </label>
-                            </Col>
-                            {isTechnologyVisible && <Col md="3" className='mb-4'>
-                              <Field
-                                label="Technology"
-                                type="text"
-                                name="Technology"
-                                component={searchableSelect}
-                                placeholder={"Technology"}
-                                options={this.renderListing("technology")}
-                                validate={
-                                  this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                                required={true}
-                                handleChangeDescription={
-                                  this.handleTechnologyChange
-                                }
-                                valueDescription={this.state.Technology}
-                                disabled={isViewMode || isEditFlag ? true : false}
-                              />
-                            </Col>}
-                          </Row>
-                        }
+
 
                         <Row>
                           <Col md="12">
