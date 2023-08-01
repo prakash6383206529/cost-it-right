@@ -198,13 +198,14 @@ a:hover {
 .disabled {
   opacity: 0.5;
   cursor: default;
+}
 
-  &.disabled {
-    background-color: $disabledBackground;
-    color: $disabledFont;
-    opacity: 1;
-    border: 1px solid $disabledBorder;
-  }
+.ag-react-container .disabled {
+  @extend .disabled;
+  background-color: $disabledBackground;
+  color: $disabledFont;
+  opacity: 1;
+  border: 1px solid $disabledBorder;
 }
 
 .disabled-background {
@@ -3269,6 +3270,10 @@ body {
 .Toastify__toast--error {
   color: #fe002d;
   background-color: #fcf8f9;
+
+  .Toastify__toast-body>div:last-child {
+    word-break: break-word;
+  }
 }
 
 .Toastify__progress-bar--error {

@@ -430,7 +430,7 @@ class AddVolume extends Component {
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
             plantArray.push({
-              label: `${Data.Plant[0].PlantName}.(${Data.Plant[0].PlantCode})`,
+              label: `${Data.Plant[0].PlantName} (${Data.Plant[0].PlantCode})`,
               value: Data.Plant[0].PlantId,
             })
           }
@@ -515,7 +515,11 @@ class AddVolume extends Component {
     )
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.props.data.isViewFlag) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -550,16 +554,30 @@ class AddVolume extends Component {
       return false
     }
     this.setState({ isVendorNameNotSelected: false, isPartNumberNotSelected: false })
-    // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
-    const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
-    if (filteredArray.length === 12) {
-      Toaster.warning("Please fill atleast one entry")
-      return false
+    const filteredArray = tableData.filter(item => {
+      const budgetedQuantity = Number(item.BudgetedQuantity);
+      const approvedQuantity = Number(item.ApprovedQuantity);
+
+      // Check for valid numbers and non-negative values
+      return (isNaN(budgetedQuantity) || isNaN(approvedQuantity)) || (budgetedQuantity === 0 && approvedQuantity === 0);
+    });
+
+    if (filteredArray.length === tableData.length) {
+      Toaster.warning("Please fill at least one entry");
+      return false;
     }
-    //CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND ACTUAL QUANTITY
-    const filteredArrayForNegativeVlaue = tableData.filter(item => (Number(item.BudgetedQuantity) < 0) || (Number(item.ApprovedQuantity) < 0))
-    if (filteredArrayForNegativeVlaue.length !== 0) {
-      return false
+
+    // CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND APPROVED QUANTITY
+    const filteredArrayForNegativeValue = tableData.filter(item => {
+      const budgetedQuantity = Number(item.BudgetedQuantity);
+      const approvedQuantity = Number(item.ApprovedQuantity);
+
+      // Check for valid numbers and non-negative values
+      return isNaN(budgetedQuantity) || isNaN(approvedQuantity) || budgetedQuantity < 0 || approvedQuantity < 0;
+    });
+
+    if (filteredArrayForNegativeValue.length !== 0) {
+      return false;
     }
     let budgetArray = []
     tableData && tableData.map((item) => {

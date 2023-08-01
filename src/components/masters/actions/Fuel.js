@@ -196,10 +196,11 @@ export function getFuelDetailData(fuelId, callback) {
  * @method deleteFuelDetailsAPI
  * @description delete FUEL DETAIL 
  */
-export function deleteFuelDetailAPI(Id, callback) {
+export function deleteFuelDetailAPI(fuelDetailId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteFuelDetailAPI}/${Id}`, config())
+        const queryParams = `fuelDetailId=${fuelDetailId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteFuelDetailAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -474,7 +475,7 @@ export function getPlantListByState(ID, callback) {
  */
 export function getDieselRateByStateAndUOM(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getDieselRateByStateAndUOM}?stateId=${Number(data.StateID)}&uomId=${data.UOMID}&plantId=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : null}&customerId=${data.customerId ? data.customerId : null}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&fuelId=${data.fuelId ? data.fuelId : null}&cityId=${data.cityId ? data.cityId : null}`, config());
+        const request = axios.get(`${API.getDieselRateByStateAndUOM}?stateId=${Number(data.StateID)}&uomId=${data.UOMID}&plantId=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : null}&customerId=${data.customerId ? data.customerId : null}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&fuelId=${data.fuelId ? data.fuelId : 0}&cityId=${data.cityId ? data.cityId : 0}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -607,10 +608,11 @@ export function deletePowerDetail(Id, callback) {
  * @method deleteVendorPowerDetail
  * @description DELETE VENDOR POWER DETAIL
  */
-export function deleteVendorPowerDetail(Id, callback) {
+export function deleteVendorPowerDetail(powerId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteVendorPowerDetail}/${Id}`, config())
+        const queryParams = `powerId=${powerId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteVendorPowerDetail}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

@@ -6,6 +6,7 @@ import {
 import { SearchableSelectHookForm } from "../../layout/HookFormInputs";
 import { Controller, useForm } from "react-hook-form";
 import { statusOptions, statusOptionsCosting, statusOptionsMasters, statusOptionsSimulation } from "../../../config/constants";
+import { statusDropdownforNfr, statusDropdownforRfq } from "../../../config/masterData";
 
 
 function SingleDropdownFloationFilter(props) {
@@ -40,18 +41,19 @@ function SingleDropdownFloationFilter(props) {
 
 
     useEffect(() => {
-
-        dispatch(fetchCostingHeadsAPI('master', res => {
-            if (res) {
-                let temp = []
-                res?.data?.SelectList && res?.data?.SelectList.map((item) => {
-                    if (item.Value === '0' || item.Text === 'Net Cost') return false;
-                    temp.push({ label: item.Text, value: item.Value })
-                    return null;
-                })
-                setDropdownData(temp)
-            }
-        }))
+        if (props.maxValue !== 11 || props.component !== 'RFQ') {
+            dispatch(fetchCostingHeadsAPI('master', res => {
+                if (res) {
+                    let temp = []
+                    res?.data?.SelectList && res?.data?.SelectList.map((item) => {
+                        if (item.Value === '0' || item.Text === 'Net Cost') return false;
+                        temp.push({ label: item.Text, value: item.Value })
+                        return null;
+                    })
+                    setDropdownData(temp)
+                }
+            }))
+        }
 
         if (isReset && isReset.component == "applicablity") {
             setActivate(false)
@@ -81,7 +83,6 @@ function SingleDropdownFloationFilter(props) {
 
     }
 
-
     const onParentModelChanged = (parentModel) => {
         // note that the filter could be anything here, but our purposes we're assuming a greater than filter only,
         // so just read off the value and use that
@@ -89,7 +90,7 @@ function SingleDropdownFloationFilter(props) {
 
     }
     const onFocus = () => {
-        if (getGridHeight.component === props.component) {
+        if (getGridHeight?.component === props?.component) {
             setGridHeight(getGridHeight.value)
         }
     }
@@ -122,13 +123,16 @@ function SingleDropdownFloationFilter(props) {
                     dropdownHeight={gridHeight}
                     onFocus={onFocus}
                     register={register}
-                    //defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
-                    options={activate || props?.maxValue == 5 ? (props.location == 'masters' ? statusOptionsMasters : (props.location == 'costing' ? statusOptionsCosting : (props.location == 'simulation' ? statusOptionsSimulation : statusOptions))) : dropdownData}
+                    // defaultValue={data.reason !== "" ? { label: data.reason, value: data.reasonId } : ""}
+                    options={activate || props?.maxValue == 5 ? (props.location == 'masters' ? statusOptionsMasters : (props.location == 'costing' ? statusOptionsCosting : (props.location == 'simulation' ? statusOptionsSimulation : maxValue === 11 ? statusDropdownforRfq : maxValue === 12 ? statusDropdownforNfr : maxValue === 3 ? dropdownData : statusOptions))) : dropdownData}
                     isMulti={false}
                     mandatory={true}
                     dropDownClass={true}
                     handleChange={(e) => {
                         valueChanged(e)
+                        if (props.onFilterChange) {
+                            props.onFilterChange();
+                        }
                     }}
                 />
             }

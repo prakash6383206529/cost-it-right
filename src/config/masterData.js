@@ -863,12 +863,12 @@ export const ZBCOperation = [
     { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'VendorPlant', value: 'VendorPlant' },
     { label: 'ForType', value: 'ForType' },
-    { label: 'MaterialGasCRMHead', value: 'MaterialGasCRMHead' },
-    { label: 'MaterialGasRate', value: 'MaterialGasRate' },
-    { label: 'MaterialGasConsumption', value: 'MaterialGasConsumption' },
-    { label: 'MaterialWireCRMHead', value: 'MaterialWireCRMHead' },
-    { label: 'MaterialWireRate', value: 'MaterialWireRate' },
-    { label: 'MaterialWireConsumption', value: 'MaterialWireConsumption' },
+    { label: 'MaterialGasCRMHead/NiScrapCrmHead ', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
+    { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
+    { label: 'MaterialWireCRMHead/NiRateCrmHead', value: 'MaterialWireCRMHead' },
+    { label: 'MaterialWireRate/NiRate', value: 'MaterialWireRate' },
+    { label: 'MaterialWireConsumption/NiRateConsumption', value: 'MaterialWireConsumption' },
     { label: 'PowerCRMHead', value: 'PowerCRMHead' },
     { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
     { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
@@ -880,12 +880,12 @@ export const ZBCOperation = [
     { label: 'LabourStaffCost', value: 'LabourStaffCost' },
     { label: 'ConsumableMaintenanceCRMHead', value: 'ConsumableMaintenanceCRMHead' },
     { label: 'ConsumableMaintenanceCost', value: 'ConsumableMaintenanceCost' },
-    { label: 'ConsumableCRMHead', value: 'ConsumableCRMHead' },
-    { label: 'ConsumableCost', value: 'ConsumableCost' },
-    { label: 'ConsumableWaterCRMHead', value: 'ConsumableWaterCRMHead' },
-    { label: 'ConsumableWaterCost', value: 'ConsumableWaterCost' },
-    { label: 'ConsumableJigStrippingCRMHead', value: 'ConsumableJigStrippingCRMHead' },
-    { label: 'ConsumableJigStrippingCost', value: 'ConsumableJigStrippingCost' },
+    { label: 'ConsumableCRMHead/NiOfficeExpCrmHead', value: 'ConsumableCRMHead' },
+    { label: 'ConsumableCost/NiOfficeExp', value: 'ConsumableCost' },
+    { label: 'ConsumableWaterCRMHead/AdditionalChemicalCostCrmHead', value: 'ConsumableWaterCRMHead' },
+    { label: 'ConsumableWaterCost/AdditionalChemicalCost', value: 'ConsumableWaterCost' },
+    { label: 'ConsumableJigStrippingCRMHead/CETPChargeCrmHead', value: 'ConsumableJigStrippingCRMHead' },
+    { label: 'ConsumableJigStrippingCost/CETPCharge', value: 'ConsumableJigStrippingCost' },
     { label: 'ConsumableMachineCRMHead', value: 'ConsumableMachineCRMHead' },
     { label: 'MachineConsumptionCost', value: 'MachineConsumptionCost' },
     { label: 'ConsumableWelderCRMHead', value: 'ConsumableWelderCRMHead' },
@@ -898,8 +898,8 @@ export const ZBCOperation = [
     { label: 'OtherOperationCode', value: 'OtherOperationCode' },
     { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
     { label: 'OtherOperationCost', value: 'OtherOperationCost' },
-    { label: 'StatuatoryAndLicenseCRMHead', value: 'StatuatoryAndLicenseCRMHead' },
-    { label: 'StatuatoryAndLicenseCost', value: 'StatuatoryAndLicenseCost' },
+    { label: 'StatuatoryAndLicenseCRMHead/FixedCostCrmHead', value: 'StatuatoryAndLicenseCRMHead' },
+    { label: 'StatuatoryAndLicenseCost/FixedCost', value: 'StatuatoryAndLicenseCost' },
     { label: 'RejectionAndReworkCRMHead', value: 'RejectionAndReworkCRMHead' },
     { label: 'RejectionAndReworkPercentage', value: 'RejectionAndReworkPercentage' },
     { label: 'ProfitCRMHead', value: 'ProfitCRMHead' },
@@ -1152,12 +1152,12 @@ export const VBCOperation = [
     { label: 'VendorPlant', value: 'VendorPlant' },
     { label: 'CustomerId', value: 'CustomerId' },
     { label: 'ForType', value: 'ForType' },
-    { label: 'MaterialGasCRMHead', value: 'MaterialGasCRMHead' },
-    { label: 'MaterialGasRate', value: 'MaterialGasRate' },
-    { label: 'MaterialGasConsumption', value: 'MaterialGasConsumption' },
-    { label: 'MaterialWireCRMHead', value: 'MaterialWireCRMHead' },
-    { label: 'MaterialWireRate', value: 'MaterialWireRate' },
-    { label: 'MaterialWireConsumption', value: 'MaterialWireConsumption' },
+    { label: 'MaterialGasCRMHead/NiScrapCrmHead ', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
+    { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
+    { label: 'MaterialWireCRMHead/NiRateCrmHead', value: 'MaterialWireCRMHead' },
+    { label: 'MaterialWireRate/NiRate', value: 'MaterialWireRate' },
+    { label: 'MaterialWireConsumption/NiRateConsumption', value: 'MaterialWireConsumption' },
     { label: 'PowerCRMHead', value: 'PowerCRMHead' },
     { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
     { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
@@ -1169,12 +1169,12 @@ export const VBCOperation = [
     { label: 'LabourStaffCost', value: 'LabourStaffCost' },
     { label: 'ConsumableMaintenanceCRMHead', value: 'ConsumableMaintenanceCRMHead' },
     { label: 'ConsumableMaintenanceCost', value: 'ConsumableMaintenanceCost' },
-    { label: 'ConsumableCRMHead', value: 'ConsumableCRMHead' },
-    { label: 'ConsumableCost', value: 'ConsumableCost' },
-    { label: 'ConsumableWaterCRMHead', value: 'ConsumableWaterCRMHead' },
-    { label: 'ConsumableWaterCost', value: 'ConsumableWaterCost' },
-    { label: 'ConsumableJigStrippingCRMHead', value: 'ConsumableJigStrippingCRMHead' },
-    { label: 'ConsumableJigStrippingCost', value: 'ConsumableJigStrippingCost' },
+    { label: 'ConsumableCRMHead/NiOfficeExpCrmHead', value: 'ConsumableCRMHead' },
+    { label: 'ConsumableCost/NiOfficeExp', value: 'ConsumableCost' },
+    { label: 'ConsumableWaterCRMHead/AdditionalChemicalCostCrmHead', value: 'ConsumableWaterCRMHead' },
+    { label: 'ConsumableWaterCost/AdditionalChemicalCost', value: 'ConsumableWaterCost' },
+    { label: 'ConsumableJigStrippingCRMHead/CETPChargeCrmHead', value: 'ConsumableJigStrippingCRMHead' },
+    { label: 'ConsumableJigStrippingCost/CETPCharge', value: 'ConsumableJigStrippingCost' },
     { label: 'ConsumableMachineCRMHead', value: 'ConsumableMachineCRMHead' },
     { label: 'MachineConsumptionCost', value: 'MachineConsumptionCost' },
     { label: 'ConsumableWelderCRMHead', value: 'ConsumableWelderCRMHead' },
@@ -1188,8 +1188,8 @@ export const VBCOperation = [
     { label: 'OtherOperationCode', value: 'OtherOperationCode' },
     { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
     { label: 'OtherOperationCost', value: 'OtherOperationCost' },
-    { label: 'StatuatoryAndLicenseCRMHead', value: 'StatuatoryAndLicenseCRMHead' },
-    { label: 'StatuatoryAndLicenseCost', value: 'StatuatoryAndLicenseCost' },
+    { label: 'StatuatoryAndLicenseCRMHead/FixedCostCrmHead', value: 'StatuatoryAndLicenseCRMHead' },
+    { label: 'StatuatoryAndLicenseCost/FixedCost', value: 'StatuatoryAndLicenseCost' },
     { label: 'RejectionAndReworkCRMHead', value: 'RejectionAndReworkCRMHead' },
     { label: 'RejectionAndReworkPercentage', value: 'RejectionAndReworkPercentage' },
     { label: 'ProfitCRMHead', value: 'ProfitCRMHead' },
@@ -1450,12 +1450,12 @@ export const CBCOperation = [
     { label: 'EffectiveDate', value: 'EffectiveDate' },
     { label: 'DetailedEntry', value: 'DetailedEntry' },
     { label: 'ForType', value: 'ForType' },
-    { label: 'MaterialGasCRMHead', value: 'MaterialGasCRMHead' },
-    { label: 'MaterialGasRate', value: 'MaterialGasRate' },
-    { label: 'MaterialGasConsumption', value: 'MaterialGasConsumption' },
-    { label: 'MaterialWireCRMHead', value: 'MaterialWireCRMHead' },
-    { label: 'MaterialWireRate', value: 'MaterialWireRate' },
-    { label: 'MaterialWireConsumption', value: 'MaterialWireConsumption' },
+    { label: 'MaterialGasCRMHead/NiScrapCrmHead ', value: 'MaterialGasCRMHead' },
+    { label: 'MaterialGasRate/NiScrapRate', value: 'MaterialGasRate' },
+    { label: 'MaterialGasConsumption/NiScrapRateConsumption', value: 'MaterialGasConsumption' },
+    { label: 'MaterialWireCRMHead/NiRateCrmHead', value: 'MaterialWireCRMHead' },
+    { label: 'MaterialWireRate/NiRate', value: 'MaterialWireRate' },
+    { label: 'MaterialWireConsumption/NiRateConsumption', value: 'MaterialWireConsumption' },
     { label: 'PowerCRMHead', value: 'PowerCRMHead' },
     { label: 'PowerElectricityRate', value: 'PowerElectricityRate' },
     { label: 'PowerElectricityConsumption', value: 'PowerElectricityConsumption' },
@@ -1467,12 +1467,12 @@ export const CBCOperation = [
     { label: 'LabourStaffCost', value: 'LabourStaffCost' },
     { label: 'ConsumableMaintenanceCRMHead', value: 'ConsumableMaintenanceCRMHead' },
     { label: 'ConsumableMaintenanceCost', value: 'ConsumableMaintenanceCost' },
-    { label: 'ConsumableCRMHead', value: 'ConsumableCRMHead' },
-    { label: 'ConsumableCost', value: 'ConsumableCost' },
-    { label: 'ConsumableWaterCRMHead', value: 'ConsumableWaterCRMHead' },
-    { label: 'ConsumableWaterCost', value: 'ConsumableWaterCost' },
-    { label: 'ConsumableJigStrippingCRMHead', value: 'ConsumableJigStrippingCRMHead' },
-    { label: 'ConsumableJigStrippingCost', value: 'ConsumableJigStrippingCost' },
+    { label: 'ConsumableCRMHead/NiOfficeExpCrmHead', value: 'ConsumableCRMHead' },
+    { label: 'ConsumableCost/NiOfficeExp', value: 'ConsumableCost' },
+    { label: 'ConsumableWaterCRMHead/AdditionalChemicalCostCrmHead', value: 'ConsumableWaterCRMHead' },
+    { label: 'ConsumableWaterCost/AdditionalChemicalCost', value: 'ConsumableWaterCost' },
+    { label: 'ConsumableJigStrippingCRMHead/CETPChargeCrmHead', value: 'ConsumableJigStrippingCRMHead' },
+    { label: 'ConsumableJigStrippingCost/CETPCharge', value: 'ConsumableJigStrippingCost' },
     { label: 'ConsumableMachineCRMHead', value: 'ConsumableMachineCRMHead' },
     { label: 'MachineConsumptionCost', value: 'MachineConsumptionCost' },
     { label: 'ConsumableWelderCRMHead', value: 'ConsumableWelderCRMHead' },
@@ -1485,8 +1485,8 @@ export const CBCOperation = [
     { label: 'OtherOperationCode', value: 'OtherOperationCode' },
     { label: 'OtherOperationIdRef', value: 'OtherOperationIdRef' },
     { label: 'OtherOperationCost', value: 'OtherOperationCost' },
-    { label: 'StatuatoryAndLicenseCRMHead', value: 'StatuatoryAndLicenseCRMHead' },
-    { label: 'StatuatoryAndLicenseCost', value: 'StatuatoryAndLicenseCost' },
+    { label: 'StatuatoryAndLicenseCRMHead/FixedCostCrmHead', value: 'StatuatoryAndLicenseCRMHead' },
+    { label: 'StatuatoryAndLicenseCost/FixedCost', value: 'StatuatoryAndLicenseCost' },
     { label: 'RejectionAndReworkCRMHead', value: 'RejectionAndReworkCRMHead' },
     { label: 'RejectionAndReworkPercentage', value: 'RejectionAndReworkPercentage' },
     { label: 'ProfitCRMHead', value: 'ProfitCRMHead' },
@@ -1883,6 +1883,7 @@ export const BOP_ZBC_DOMESTIC = [
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1897,6 +1898,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1908,6 +1910,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1919,6 +1922,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "shot/stroke/Number",
         'PlantCode': 'Plant101',
         'VendorCode': 'Sys01',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1942,6 +1946,7 @@ export const BOP_VBC_DOMESTIC = [
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -1963,7 +1968,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -1982,7 +1987,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2001,7 +2006,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2088,7 +2093,7 @@ export const BOP_ZBC_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'Currency', value: 'Currency', }, //*
-    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, 
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'IncoTerm', value: 'IncoTerm', },
     // { label: 'PaymentTerm', value: 'PaymentTerm', }, // FOR MINDA ONLY
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -2107,9 +2112,9 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2123,9 +2128,9 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2139,9 +2144,9 @@ export const BOP_ZBC_IMPORT_TempData = [
         'VendorName': 'Systematix',
         'VendorCode': 'VC1',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
-        // 'MinimumOrderQuantity': '1',
         'BasicRate': '100',
         'EffectiveDate': DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2155,6 +2160,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2169,7 +2175,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2181,7 +2187,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2193,7 +2199,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "UnitOfMeasurement": "shot/stroke/Number",
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
-        // 'MinimumOrderQuantity': '1',
+        'NumberOfPieces': '1',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2305,9 +2311,9 @@ export const BOP_VBC_IMPORT = [
     { label: 'SourceVendorName', value: 'SourceVendorName', },
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
     // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
-    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2328,6 +2334,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2347,6 +2354,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2366,6 +2374,7 @@ export const BOP_VBC_IMPORT_TempData = [
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2382,6 +2391,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
     { label: 'Currency', value: 'Currency', }, //*
+    { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
     // { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
     { label: 'BasicRate', value: 'BasicRate', }, //*
@@ -2399,6 +2409,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2413,6 +2424,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -2427,6 +2439,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "CustomerCode": "C-10008",
         'Currency': 'INR or USD',
+        'NumberOfPieces': '1',
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
@@ -4723,8 +4736,8 @@ export const CostingSimulationDownloadRM = [
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "Variance" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "Existing Basic Rate", value: "OldRMRate" },
@@ -4776,8 +4789,8 @@ export const CostingSimulationDownloadST = [
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "Variance" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "SurfaceArea", value: "SurfaceArea" },
@@ -4832,8 +4845,8 @@ export const CostingSimulationDownloadOperation = [
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "Variance" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "OperationName", value: "OperationName" },
@@ -4890,8 +4903,8 @@ export const CostingSimulationDownloadBOP = [
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "Variance" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "ExistingBOPRate", value: "OldBOPRate" },
@@ -4951,8 +4964,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Plant (Code)", value: "PlantName" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
     { label: "Existing RM Cost", value: "OldRMPrice" },
     { label: "Revised RM Cost", value: "NewRMPrice" },
@@ -4972,8 +4985,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Vendor (Code)", value: "VendorName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
     { label: "Existing Net ST Cost", value: "OldNetSurfaceTreatmentCost" },
     { label: "Revised Net ST Cost", value: "NewNetSurfaceTreatmentCost" },
@@ -4994,8 +5007,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "ExistingOperationCost", value: "OldOperationCost" },
@@ -5018,8 +5031,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADBOP = [
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "Existing BOP Cost", value: "OldNetBoughtOutPartCost" },
@@ -5364,8 +5377,8 @@ export const VOLUME_DOWNLOAD_EXCEl = [
 export const BUDGET_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
     { label: "Financial Year", value: "FinancialYear", },
-    { label: "Net Po Price", value: "NetPoPrice" },
-    { label: "Budgeted Po Price", value: "BudgetedPoPrice" },
+    { label: "Net Cost", value: "NetPoPrice" },
+    { label: "Budgeted Net Cost", value: "BudgetedPoPrice" },
     { label: "Part Name", value: "PartName" },
     { label: "Part Number", value: "PartNumber", },
     { label: "Plant Name", value: "PlantName", },
@@ -5479,8 +5492,8 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Quantity", value: "NCCPartQuantity", },
     { label: "Is Regularized", value: "IsRegularized", },
     { label: "Basic Price", value: "BasicRate", },
-    { label: "Net PO Price Other Currency", value: "NetPOPriceOtherCurrency", },
-    { label: "Net PO Price (INR)", value: "NetPOPriceINR", },
+    { label: "Net Cost Other Currency", value: "NetPOPriceOtherCurrency", },
+    { label: "Net Cost (INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
     { label: "Status", value: "Status", },
 
@@ -5491,8 +5504,8 @@ export const ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl = [
     { label: "Revision Number", value: "RevisionNumber", },
     { label: "Name", value: "PartName", },
     { label: "Child's Level", value: "Level", },
-    { label: "Existing PO Price/Assembly", value: "OldPrice", },
-    { label: "Revised PO Price/Assembly", value: "NewPrice", },
+    { label: "Existing Net Cost/Assembly", value: "OldPrice", },
+    { label: "Revised Net Cost/Assembly", value: "NewPrice", },
     { label: "Variance/Assembly (w.r.t. Existing)", value: "Variance", },
 
 ]
@@ -5530,6 +5543,7 @@ export const BOP_IMPACT_DOWNLOAD_EXCEl = [
     { label: "BOP Part Name", value: "BoughtOutPartName", },
     { label: "Existing Basic Rate", value: "OldBOPRate", },
     { label: "Revised Basic Rate", value: "NewBOPRate", },
+    { label: "Minimum Order Quantity", value: "Quantity", },
     { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
     { label: "Revised Net Cost", value: "NewNetBoughtOutPartCost", },
     { label: "Current Effective date", value: "EffectiveDate", },
@@ -5622,8 +5636,8 @@ export const InitialGridForToken = [
     { label: "Plant", value: "PlantName" },
     { label: "PlantCode", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "Variance" },
 ]
 
@@ -5670,10 +5684,10 @@ export const InitialGridForTokenSummary = [
 
 export const LastGridForTokenSummary = [
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
-    { label: "Draft PO Price", value: "DraftPOPrice" },
+    { label: "Draft Net Cost", value: "DraftPOPrice" },
 ]
 
 export const OperationGridForTokenSummary = [
@@ -5792,7 +5806,7 @@ export const EXCHANGESIMULATIONDOWNLOAD = [
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "ExistingNetPOPriceOtherCurrency", value: "OldNetPOPriceOtherCurrency" },
     { label: "RevisedNetPOPriceOtherCurrency", value: "NewNetPOPriceOtherCurrency" },
-    { label: "PO Price", value: "OldPOPrice" },
+    { label: "Net Cost", value: "OldPOPrice" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
     { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
 ]
@@ -5814,8 +5828,8 @@ export const CostingSimulationDownloadMR = [
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "Variance" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "ExistingMachineRate", value: "OldMachineRate" },
@@ -5869,8 +5883,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADMR = [
     { label: "Plant (Code)", value: "PlantName" },
     { label: "Customer (Code)", value: "CustomerName" },
     { label: "Budgeted Price", value: "BudgetedPrice" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
     { label: "Variance (w.r.t. Budgeted)", value: "BudgetedPriceVariance" },
     { label: "Existing Net Process Cost", value: "OldNetProcessCost" },
@@ -7063,8 +7077,8 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY = [
     { label: "Plant", value: "PlantName" },
     { label: "Plant Code", value: "PlantCode" },
     { label: "Customer (Code)", value: "CustomerName" },
-    { label: "Existing PO Price", value: "OldPOPrice" },
-    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
     { label: "Variance (w.r.t. Existing)", value: "POVariance" },
     { label: "ExistingNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "RevisedNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
@@ -7122,7 +7136,7 @@ export const tokenStatus = {
     History: 'The token is now old, it has new updated costing.',
     Linked: 'The token is linked to another token.',
     Provisional: 'The token is provisional, will not go for approval.',
-    POUpdated: 'PO price updated successfully on SAP.'
+    POUpdated: 'Net Cost updated successfully on SAP.'
 };
 
 export const tokenStatusName = {
@@ -7154,3 +7168,23 @@ export const partTypeDropdownList = [
 
 export const DETAILED_BOP = "Detailed BOP"
 export const DETAILED_BOP_ID = "3"
+//Status dropdown for RFQ and NFR
+export const statusDropdownforRfq = [
+    { label: "Approved", value: "1" },
+    { label: "Open", value: "2" },
+    { label: "Received", value: "3" },
+    { label: "UnderRevision", value: "4" },
+    { label: "Submitted", value: "5" },
+]
+export const statusDropdownforNfr = [
+    { label: 'Draft', value: 1 },
+    { label: 'PendingForApproval', value: 2 },
+    { label: 'Approved', value: 3 },
+    { label: 'Rejected', value: 4 },
+    { label: 'History', value: 5 },
+    { label: 'AwaitingApproval', value: 6 },
+    { label: 'Error', value: 12 },
+    { label: 'Pushed', value: 13 },
+    { label: 'UnderApproval', value: 21 },
+    { label: 'ExternalReject', value: 27 },
+];

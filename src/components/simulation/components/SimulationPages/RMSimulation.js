@@ -167,7 +167,7 @@ function RMSimulation(props) {
             if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                 isScrapRateGreaterThanBasiRate = true
             }
-            if (isScrapRateGreaterThanBasiRate) {
+            if (isScrapRateGreaterThanBasiRate && !(basicRateCount === list.length)) {
                 li.NewBasicRate = li?.BasicRate
                 li.NewScrapRate = li?.ScrapRate
                 Toaster.warning('Scrap Rate should be less than Basic Rate')
@@ -222,9 +222,11 @@ function RMSimulation(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -479,8 +481,8 @@ function RMSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
-                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To add revised scrap rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
+                        {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className="add-min-height mb-3 sm-edit-page">
                                 <div className={`ag-grid-wrapper height-width-wrapper reset-btn-container ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
@@ -638,6 +640,7 @@ function RMSimulation(props) {
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
                                             showYearDropdown
+                                            dropdownMode='select'
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
                                             placeholderText="Select effective date"

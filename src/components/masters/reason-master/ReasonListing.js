@@ -156,7 +156,8 @@ class ReasonListing extends Component {
    * @description confirm delete item
    */
   confirmDeleteItem = (ID) => {
-    this.props.deleteReasonAPI(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteReasonAPI(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_REASON_SUCCESSFULLY)
         this.getTableListData()
@@ -198,7 +199,9 @@ class ReasonListing extends Component {
    * @description Filter data when user type in searching input
    */
   onFloatingFilterChanged = (value) => {
-    this.props.reasonDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.reasonDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
   /**
    * @method statusButtonFormatter

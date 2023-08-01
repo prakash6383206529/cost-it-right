@@ -114,9 +114,11 @@ function OperationSTSimulation(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const oldRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -389,7 +391,7 @@ function OperationSTSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised net rate please double click on the field."}</Tooltip>}
+                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised net rate please double click on the field."}</Tooltip>}
                         <form>
 
                             <Row>
@@ -522,6 +524,7 @@ function OperationSTSimulation(props) {
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown
                                                 showYearDropdown
+                                                dropdownMode='select'
                                                 dateFormat="dd/MM/yyyy"
                                                 minDate={new Date(maxDate)}
                                                 placeholderText="Select effective date"

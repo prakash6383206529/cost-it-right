@@ -25,8 +25,9 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -159,7 +160,8 @@ class LabourListing extends Component {
    * @description confirm delete item
    */
   confirmDeleteItem = (ID) => {
-    this.props.deleteLabour(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteLabour(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
         this.setState({ dataCount: 0 })
@@ -297,7 +299,9 @@ class LabourListing extends Component {
    * @description Filter data when user type in searching input
    */
   onFloatingFilterChanged = (value) => {
-    this.props.labourDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.labourDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
   /**
    * @method hideForm
@@ -542,7 +546,7 @@ class LabourListing extends Component {
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>
+                {reactLocalStorage.getObject('cbcCostingPermission') && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
@@ -569,7 +573,7 @@ class LabourListing extends Component {
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LABOUR_DELETE_ALERT}`} />
           }
-        </div>
+        </div >
       </>
     )
   }

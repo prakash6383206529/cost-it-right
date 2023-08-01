@@ -49,7 +49,7 @@ function ViewRM(props) {
           dispatch(getSimulationRmFerrousCastingCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
 
             if (Number(res.status) === Number(204)) {
-              Toaster.warning('Data is not avaliabe for calculator')
+              Toaster.warning('Data is not available for calculator')
             } else {
               setCalculatorData(res, index)
             }
@@ -60,7 +60,7 @@ function ViewRM(props) {
           dispatch(getSimulationRmRubberCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
 
             if (Number(res.status) === Number(204)) {
-              Toaster.warning('Data is not avaliabe for calculator')
+              Toaster.warning('Data is not available for calculator')
             } else {
               setCalculatorData(res, index)
             }
@@ -73,7 +73,7 @@ function ViewRM(props) {
     }
     else {
       if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
-        Toaster.warning('Data is not avaliabe for calculator')
+        Toaster.warning('Data is not available for calculator')
         return false
       }
 
@@ -171,6 +171,7 @@ function ViewRM(props) {
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Casting Weight</th>}
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Melting Loss</th>}
               <th >{`Net RM Cost/Pc`}</th>
+              {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
               <th className="costing-border-right">{`Remark`}</th>
 
             </tr>
@@ -199,6 +200,7 @@ function ViewRM(props) {
                   {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.CastingWeight ? checkForDecimalAndNull(item.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
                   {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.MeltingLoss ? `${checkForDecimalAndNull(item.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)}(${item.LossPercentage}%)` : '-'}</td>}
                   <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" /></div>{item.RawMaterialCalculatorId === null && item.GrossWeight !== null && viewCostingData[props.index].technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
+                  {initialConfiguration.IsShowCRMHead && <td>{item.RawMaterialCRMHead}</td>}
                   <td>
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item.Remark}>
                       <span>{item?.Remark ? item.Remark : "-"}</span></div>

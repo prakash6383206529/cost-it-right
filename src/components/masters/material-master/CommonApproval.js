@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyDetailByMasterId } from '../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
 import { BOP_MASTER_ID, BUDGET_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -53,6 +53,7 @@ function CommonApproval(props) {
     const [noData, setNoData] = useState(false)
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", DisplayStatus: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", vendor: "", DestinationPlantName: "", UnitOfMeasurementName: "" })
     const [levelDetails, setLevelDetails] = useState({})
+    const [disableApprovalButton, setDisableApprovalButton] = useState(false)
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     let master = props?.MasterId
@@ -65,6 +66,10 @@ function CommonApproval(props) {
         getTableData(0, 10, true, floatingFilterData)
 
         dispatch(isResetClick(false, "status"))
+        if (userDetails().Role === 'SuperAdmin') {
+            setDisableApprovalButton(true)
+        }
+
         return () => {
             // Cleanup function
             dispatch(setSelectedRowForPagination([]))
@@ -174,7 +179,9 @@ function CommonApproval(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-        if (approvalList?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            if (approvalList?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -736,7 +743,7 @@ function CommonApproval(props) {
                             title="Send For Approval"
                             class="user-btn approval-btn"
                             onClick={sendForApproval}
-                            disabled={approvalList && (approvalList.length === 0 || isFinalApprover) ? true : false}
+                            disabled={approvalList && (approvalList.length === 0 || isFinalApprover || disableApprovalButton) ? true : false}
                         >
                             <div className="send-for-approval mr-0" ></div>
                         </button>}
@@ -858,8 +865,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="PlantName" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="160" field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
-                                    {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Po Price" ></AgGridColumn>}
-                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Po Price"></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" ></AgGridColumn>}
+                                    {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Cost"></AgGridColumn>}
 
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName="Breakup BOP"></AgGridColumn>}
                                     {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>}

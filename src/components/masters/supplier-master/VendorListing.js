@@ -121,9 +121,11 @@ class VendorListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-        if (this.props.supplierDataList?.length !== 0) {
-            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }
+        setTimeout(() => {
+            if (this.props.supplierDataList?.length !== 0) {
+                this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+            }
+        }, 500);
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
@@ -287,7 +289,8 @@ class VendorListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteSupplierAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteSupplierAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
                 this.filterList()

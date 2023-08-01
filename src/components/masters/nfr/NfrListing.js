@@ -19,6 +19,9 @@ import NfrPartsListing from './NfrPartsListing';
 import { fetchNfrDetailFromSap, getAllNfrList, nfrDetailsForDiscountAction } from './actions/nfr';
 import { StatusTooltip, hyphenFormatter } from '../masterUtil';
 import Toaster from '../../common/Toaster';
+import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
+import { useRef } from 'react';
+import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 const gridOptions = {};
 
 
@@ -46,16 +49,45 @@ function NfrListing(props) {
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const [addRfq, setAddRfq] = useState(props?.isFromDiscount ? true : false);
     const [isHover, setIsHover] = useState(false)
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const agGridRef = useRef(null);
+    const handleFilterChange = () => {
+        if (agGridRef.current) {
+            setTimeout(() => {
+                if (!agGridRef.current.rowRenderer.allRowCons.length) {
+                    setNoData(true)
+                    dispatch(getGridHeight({ value: 3, component: 'NFR' }))
+                } else {
+                    setNoData(false)
+                }
+            }, 100);
+
+        }
+    };
+
+    const floatingFilterNfr = {
+        maxValue: 12,
+        suppressFilterButton: true,
+        component: "NFR",
+        onFilterChange: handleFilterChange,
+
+    }
     useEffect(() => {
         setloader(true)
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
 
+    useEffect(() => {
+        if (statusColumnData) {
+            gridApi?.setQuickFilter(statusColumnData?.data);
+        }
+    }, [statusColumnData])
 
     useEffect(() => {
         getDataList()
-
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "status"))
     }, [])
 
     /**
@@ -95,6 +127,8 @@ function NfrListing(props) {
         gridOptions?.api?.setFilterModel(null);
         window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
         gridApi.deselectAll()
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "status"))
     }
 
 
@@ -156,6 +190,7 @@ function NfrListing(props) {
     }
 
     const onGridReady = (params) => {
+        agGridRef.current = params.api;
         setgridApi(params.api);
         window.screen.width >= 1920 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
@@ -196,6 +231,7 @@ function NfrListing(props) {
         }
     }
     const statusFormatter = (props) => {
+        dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'NFR' }))
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
@@ -218,7 +254,9 @@ function NfrListing(props) {
         setAttachment(false)
     }
     const onFloatingFilterChanged = (value) => {
-        rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+        }, 500);
     }
 
     const attachmentFormatter = (props) => {
@@ -268,7 +306,8 @@ function NfrListing(props) {
         linkableFormatter: linkableFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
-        dateFormater: dateFormater
+        dateFormater: dateFormater,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
     }
     const handleMouse = () => {
         setIsHover(true)
@@ -295,7 +334,7 @@ function NfrListing(props) {
     return (
         <>
             {!addRfq &&
-                <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+                <div className={`ag-grid-react report-grid p-relative${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
                             {sapLoader && <LoaderCustom message="Fetching data from SAP" />}
@@ -347,6 +386,7 @@ function NfrListing(props) {
                                                 suppressRowClickSelection={true}
                                                 onFilterModified={onFloatingFilterChanged}
                                                 enableBrowserTooltips={true}
+                                                ref={agGridRef}
                                             >
                                                 {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
                                                 <AgGridColumn field="NfrNumber" headerName="NFR Id" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
@@ -356,7 +396,7 @@ function NfrListing(props) {
                                                 <AgGridColumn field="NumberOfParts" headerName='No. of Parts' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="SimulatedOn" headerName='Simulated On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="ApprovedOn" headerName='Approved On' cellRenderer={dateFormater}></AgGridColumn>
-                                                <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
                                                 {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />

@@ -150,9 +150,11 @@ class IndivisualPartListing extends Component {
     }
 
     onFloatingFilterChanged = (value) => {
-        if (this.props.newPartsListing?.length !== 0) {
-            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }
+        setTimeout(() => {
+            if (this.props.newPartsListing?.length !== 0) {
+                this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+            }
+        }, 500);
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
@@ -255,7 +257,8 @@ class IndivisualPartListing extends Component {
     * @description confirm delete user item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deletePart(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deletePart(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 //this.getTableListData();

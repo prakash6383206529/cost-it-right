@@ -13,7 +13,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
-import { checkForDecimalAndNull, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import { FuelMaster } from '../../../config/constants';
 import { FUELLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -24,6 +24,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 import Toaster from '../../common/Toaster';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -137,7 +138,8 @@ class FuelListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        this.props.deleteFuelDetailAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteFuelDetailAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_FUEL_DETAIL_SUCCESS);
                 this.getDataList()
@@ -198,7 +200,9 @@ class FuelListing extends Component {
        * @description Filter data when user type in searching input
        */
     onFloatingFilterChanged = (value) => {
-        this.props.fuelDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.fuelDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
 
 
@@ -419,7 +423,7 @@ class FuelListing extends Component {
                                     <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)"></AgGridColumn>
-                                    <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>
+                                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" width={300} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

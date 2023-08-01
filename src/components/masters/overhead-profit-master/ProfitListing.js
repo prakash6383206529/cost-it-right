@@ -197,9 +197,11 @@ function ProfitListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-        if (overheadProfitList?.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (overheadProfitList?.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -378,7 +380,8 @@ function ProfitListing(props) {
     * @description confirm delete
     */
     const confirmDelete = (ID) => {
-        dispatch(deleteProfit(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        dispatch(deleteProfit(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_PROFIT_SUCCESS);
                 getDataList(null, null, null, null, 0, 10, true, floatingFilterData)

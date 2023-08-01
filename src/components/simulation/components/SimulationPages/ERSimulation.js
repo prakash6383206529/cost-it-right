@@ -160,9 +160,11 @@ function ERSimulation(props) {
         // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
@@ -338,6 +340,7 @@ function ERSimulation(props) {
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
                                             showYearDropdown
+                                            dropdownMode='select'
                                             dateFormat="dd/MM/yyyy"
                                             placeholderText="Select effective date"
                                             className="withBorder"

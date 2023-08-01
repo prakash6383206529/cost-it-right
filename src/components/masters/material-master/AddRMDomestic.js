@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { ASSEMBLY, AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
@@ -110,7 +110,7 @@ class AddRMDomestic extends Component {
       isOpenCategory: false,
       isOpenVendor: false,
       isOpenUOM: false,
-
+      finalApprovalLoader: true,
       isVisible: false,
       imageURL: '',
       isLoader: false,
@@ -140,7 +140,8 @@ class AddRMDomestic extends Component {
       showExtraCost: false,
       vendorFilterList: [],
       isDropDownChanged: false,
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      isEditBuffer: false
     }
   }
   /**
@@ -183,12 +184,19 @@ class AddRMDomestic extends Component {
           this.commonFunction()
         }, 100);
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
   }
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-    if (this.props.fieldsObj !== prevProps.fieldsObj) {
+
+
+    if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
+      this.calculateNetCost()
+    }
+    if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isEditFlag && this.state.isEditBuffer) {
       this.calculateNetCost()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -214,12 +222,12 @@ class AddRMDomestic extends Component {
 
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
         }
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 
@@ -550,6 +558,9 @@ class AddRMDomestic extends Component {
             if (this.dropzone.current !== null) {
               this.dropzone.current.files = files
             }
+            setTimeout(() => {
+              this.setState({ isEditBuffer: true })
+            }, 500);
           }, 200)
         }
       })
@@ -701,7 +712,7 @@ class AddRMDomestic extends Component {
     })
   }
   closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false, setDisable: false })
+    this.setState({ approveDrawer: false, setDisable: false, isEditBuffer: true })
     if (type === 'submit') {
       this.clearForm('submit')
       this.cancel('submit')
@@ -891,6 +902,9 @@ class AddRMDomestic extends Component {
     this.clearForm(type)
   }
   cancelHandler = () => {
+    if (this.state.isViewFlag) {
+      this.cancel('cancel')
+    }
     if (Object.keys(this.props.fieldsObj).length !== 0 || this.state.isDropDownChanged || this.state.files.length !== 0) {
       this.setState({ showPopup: true })
     } else {
@@ -1029,12 +1043,12 @@ class AddRMDomestic extends Component {
       return false
     }
 
-    if (((Technology.value !== SHEETMETAL && Technology.value !== FORGING) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate))) || (Technology.value === SHEETMETAL && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost))) || (Technology.value === SHEETMETAL && Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Technology.value === FORGING && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap))) || (Technology.value === FORGING && Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
+    if (((String(Technology.value) !== String(SHEETMETAL) && String(Technology.value) !== String(FORGING)) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate))) || (String(Technology.value) === String(SHEETMETAL) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost))) || (String(Technology.value) === String(SHEETMETAL) && Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (String(Technology.value) === String(FORGING) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap))) || (String(Technology.value) === String(FORGING) && Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
     }
-    this.setState({ isVendorNameNotSelected: false })
+    this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -1274,7 +1288,7 @@ class AddRMDomestic extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1601,7 +1615,7 @@ class AddRMDomestic extends Component {
                                     name={"Source"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
-                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation]}
                                     component={renderText}
                                     onChange={this.handleSource}
                                     valueDescription={this.state.source}
@@ -1743,7 +1757,7 @@ class AddRMDomestic extends Component {
                                   label={`Circle Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'}) `}
                                   name={"CircleScrapCost"}
                                   type="text"
-                                  placeholder={""}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={false}
@@ -1757,7 +1771,7 @@ class AddRMDomestic extends Component {
                                   label={`Jali Scrap Cost (INR/${this.state.UOM.label ? this.state.UOM.label : 'UOM'})`}
                                   name={"JaliScrapCost"}
                                   type="text"
-                                  placeholder={""}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={true}
@@ -1951,29 +1965,27 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
-                              onClick={() => scroll.scrollToTop()}
-                              disabled={isViewFlag || setDisable || noApprovalCycle}
-
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={isViewFlag || setDisable || noApprovalCycle}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-
-                            </button>
-                          }
-
-
+                          {!isViewFlag && <>
+                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                onClick={() => scroll.scrollToTop()}
+                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            }
+                          </>}
                         </div>
                       </Row>
                     </form>

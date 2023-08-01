@@ -252,10 +252,11 @@ export function getProfitDataList(data, skip, take, isPagination, obj, callback)
  * @method deleteOverhead
  * @description delete Overhead
  */
-export function deleteOverhead(Id, callback) {
+export function deleteOverhead(overheadId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteOverhead}/${Id}`, config())
+        const queryParams = `overheadId=${overheadId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteOverhead}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -269,10 +270,11 @@ export function deleteOverhead(Id, callback) {
  * @method deleteProfit
  * @description delete Profit
  */
-export function deleteProfit(Id, callback) {
+export function deleteProfit(profitId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProfit}/${Id}`, config())
+        const queryParams = `profitId=${profitId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteProfit}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -349,40 +351,6 @@ export function fileUploadProfit(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });
-    };
-}
-
-/**
- * @method fileDeleteOverhead
- * @description delete Overhead file API
- */
-export function fileDeleteOverhead(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteOverhead}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
-
-/**
- * @method fileDeleteProfit
- * @description delete Profit file API
- */
-export function fileDeleteProfit(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteProfit}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
     };
 }
 

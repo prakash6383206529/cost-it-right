@@ -742,7 +742,7 @@ function AddNfr(props) {
             }
         })
         if (checkPriceZero === true) {
-            Toaster.warning('Po Price should not be zero')
+            Toaster.warning('Net Cost should not be zero')
             return false
         }
         setShowDrawer(true)
@@ -889,7 +889,7 @@ function AddNfr(props) {
                                 <th>Vendor</th>
                                 <th>Costing Version</th>
                                 <th className="text-center">Status</th>
-                                <th>PO Price</th>
+                                <th>Net Cost</th>
                                 <th>Outsourcing Cost</th>
                                 <th className='text-right'>Action</th>
                                 <th className="table-record">Row Action</th>

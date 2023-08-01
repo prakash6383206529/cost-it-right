@@ -22,9 +22,10 @@ import { POWERLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { searchNocontentFilter } from '../../../helper';
+import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -138,8 +139,9 @@ class PowerListing extends Component {
   * @description confirm delete Raw Material details
   */
   confirmDelete = (ID) => {
+    const loggedInUser = loggedInUserId()
     if (this.state.IsVendor) {
-      this.props.deleteVendorPowerDetail(ID?.PowerDetailId, (res) => {
+      this.props.deleteVendorPowerDetail(ID?.PowerDetailId, loggedInUser, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
           this.getDataList()
@@ -253,7 +255,9 @@ class PowerListing extends Component {
      * @description Filter data when user type in searching input
      */
   onFloatingFilterChanged = (value) => {
-    this.props.powerDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.powerDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
   /**
   * @method onPressVendor
@@ -301,7 +305,7 @@ class PowerListing extends Component {
 
   onGridReady = (params) => {
     this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
+    window.screen.width >= 1600 && this.gridApi.sizeColumnsToFit();
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
     params.api.paginationGoToPage(0);
   };
@@ -475,7 +479,7 @@ class PowerListing extends Component {
                     <AgGridColumn field="StateName"></AgGridColumn>
                     <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
                     <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
-                    <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>
+                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                     <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     <AgGridColumn field="PowerId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
