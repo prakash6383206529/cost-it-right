@@ -2002,25 +2002,27 @@ class AddRMImport extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
-                              onClick={() => scroll.scrollToTop()}
-                              disabled={isViewFlag || setDisable || noApprovalCycle}
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={isViewFlag || setDisable || noApprovalCycle}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
-                          }
+                          {!isViewFlag && <>
+                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                onClick={() => scroll.scrollToTop()}
+                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            }
+                          </>}
                         </div>
                       </Row>
                     </form>

@@ -142,13 +142,12 @@ class AddMachineRate extends Component {
 
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
-
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
         this.props.change('MachineNumber', Data.MachineNumber)
       })
 
-      this.setState({ isFinalApprovar: data?.isFinalApprovar })
+      this.setState({ isFinalApprovar: data?.isFinalApprovar, finalApprovalLoader: false })
       return true
     }
     if (!editDetails.isViewMode) {
@@ -1944,26 +1943,29 @@ class AddMachineRate extends Component {
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
+                              {!isViewMode && <>
 
-                              {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                                <button type="submit"
-                                  class="user-btn approval-btn save-btn mr5"
-                                  disabled={isViewMode || setDisable || noApprovalCycle || (isEditFlag && IsDetailedEntry)}
-                                >
-                                  <div className="send-for-approval"></div>
-                                  {'Send For Approval'}
-                                </button>
-                                :
+                                {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                                  <button type="submit"
+                                    class="user-btn approval-btn save-btn mr5"
+                                    disabled={isViewMode || setDisable || noApprovalCycle || (isEditFlag && IsDetailedEntry)}
+                                  >
+                                    <div className="send-for-approval"></div>
+                                    {'Send For Approval'}
+                                  </button>
+                                  :
 
-                                <button
-                                  type="submit"
-                                  className="user-btn mr5 save-btn"
-                                  disabled={isViewMode || setDisable || noApprovalCycle}
-                                >
-                                  <div className={"save-icon"}></div>
-                                  {isEditFlag ? "Update" : "Save"}
-                                </button>
-                              }
+                                  <button
+                                    type="submit"
+                                    className="user-btn mr5 save-btn"
+                                    disabled={isViewMode || setDisable || noApprovalCycle}
+                                  >
+                                    <div className={"save-icon"}></div>
+                                    {isEditFlag ? "Update" : "Save"}
+                                  </button>
+                                }
+                              </>}
+
 
 
                             </>
