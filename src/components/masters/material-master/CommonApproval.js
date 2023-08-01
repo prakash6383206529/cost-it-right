@@ -7,7 +7,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
-import { checkForDecimalAndNull, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
+import { checkForDecimalAndNull, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyDetailByMasterId, getConfigurationKey } from '../../../helper'
 import { BOP_MASTER_ID, BUDGET_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
 import { getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
@@ -868,8 +868,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" ></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Cost"></AgGridColumn>}
 
-                                    <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName="Breakup BOP"></AgGridColumn>
-                                    <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>
+                                    {getConfigurationKey().IsBoughtOutPartCostingConfigured && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName="Breakup BOP"></AgGridColumn>}
+                                    {getConfigurationKey().IsBoughtOutPartCostingConfigured && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
