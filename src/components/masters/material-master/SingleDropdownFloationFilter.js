@@ -130,6 +130,9 @@ function SingleDropdownFloationFilter(props) {
                     dropDownClass={true}
                     handleChange={(e) => {
                         valueChanged(e)
+                        if (props.onFilterChange) {
+                            props.onFilterChange();
+                        }
                     }}
                 />
             }

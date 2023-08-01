@@ -49,18 +49,15 @@ function RfqListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const handleFilterChange = () => {
         if (agGridRef.current) {
-            const gridApi = agGridRef.current.api;
-            if (gridApi) {
-                const displayedRowCount = gridApi.getDisplayedRowCount();
-                const allRowData = [];
-                for (let i = 0; i < displayedRowCount; i++) {
-                    const rowNode = gridApi.getDisplayedRowAtIndex(i);
-                    if (rowNode) {
-                        allRowData.push(rowNode.data);
-                    }
+            setTimeout(() => {
+                if (!agGridRef.current.rowRenderer.allRowCons.length) {
+                    setNoData(true)
+                    dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+                } else {
+                    setNoData(false)
                 }
-                setNoData(!allRowData.length)
-            }
+            }, 100);
+
         }
     };
     const floatingFilterRFQ = {
@@ -68,6 +65,7 @@ function RfqListing(props) {
         suppressFilterButton: true,
         component: "RFQ",
         onFilterChange: handleFilterChange,
+        notPagination: true
     }
     useEffect(() => {
         setloader(true)
@@ -289,7 +287,7 @@ function RfqListing(props) {
         }
     }
     const statusFormatter = (props) => {
-        dispatch(getGridHeight({ value: props.rowIndex, component: 'RFQ' }))
+        dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'RFQ' }))
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
@@ -443,6 +441,7 @@ function RfqListing(props) {
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
+                                                ref={agGridRef}
                                                 domLayout='autoHeight'
                                                 rowData={rowData}
                                                 pagination={true}
@@ -459,7 +458,6 @@ function RfqListing(props) {
                                                 suppressRowClickSelection={true}
                                                 onFilterModified={onFloatingFilterChanged}
                                                 enableBrowserTooltips={true}
-                                                ref={agGridRef}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
                                                 {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}

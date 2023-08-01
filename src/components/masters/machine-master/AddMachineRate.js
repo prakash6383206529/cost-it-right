@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix
+  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
@@ -142,13 +142,12 @@ class AddMachineRate extends Component {
 
     /*WHEN ADD MORE DETAIL FORM IS CANCELLED in ADD FORMAT*/
     if (data.cancelFlag) {
-
       this.props.checkAndGetMachineNumber('', res => {
         let Data = res.data.DynamicData;
         this.props.change('MachineNumber', Data.MachineNumber)
       })
 
-      this.setState({ isFinalApprovar: data?.isFinalApprovar })
+      this.setState({ isFinalApprovar: data?.isFinalApprovar, finalApprovalLoader: false })
       return true
     }
     if (!editDetails.isViewMode) {
@@ -952,7 +951,11 @@ class AddMachineRate extends Component {
 
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('submit')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('submit')
@@ -1583,7 +1586,7 @@ class AddMachineRate extends Component {
                             name={"Specification"}
                             type="text"
                             placeholder={isViewMode ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             // required={true}
                             onChange={this.handleMachineSpecification}
@@ -1599,7 +1602,7 @@ class AddMachineRate extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={isViewMode ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             required={false}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
@@ -1633,7 +1636,7 @@ class AddMachineRate extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={isViewMode ? '-' : 'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, checkSpacesInString, hashValidation]}
                             component={renderText}
                             required={false}
                             disabled={(isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
@@ -1712,7 +1715,7 @@ class AddMachineRate extends Component {
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
                                 //validate={(this.state.processName == null || this.state.processName.length == 0) ? [required] : []}
                                 required={true}
-                                validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                                validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, hashValidation]}
                                 handleChangeDescription={this.handleProcessName}
                                 valueDescription={this.state.processName}
                                 disabled={isViewMode || (isEditFlag && isMachineAssociated) || (isEditFlag && IsDetailedEntry)}
@@ -1747,7 +1750,7 @@ class AddMachineRate extends Component {
                             name={"MachineRate"}
                             type="number"
                             placeholder={isViewMode || lockUOMAndRate || (isEditFlag && isMachineAssociated) ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix]}
+                            validate={[positiveAndDecimalNumber, maxLength10, decimalLengthsix, hashValidation]}
                             component={renderText}
                             onChange={this.handleMachineRate}
                             required={true}
@@ -1876,7 +1879,7 @@ class AddMachineRate extends Component {
                           <div className={`alert alert-danger mt-2 ${this.state.files?.length === 3 ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
-                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                          <div className={`${this.state.files?.length >= 3 ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
@@ -1944,26 +1947,29 @@ class AddMachineRate extends Component {
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
+                              {!isViewMode && <>
 
-                              {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                                <button type="submit"
-                                  class="user-btn approval-btn save-btn mr5"
-                                  disabled={isViewMode || setDisable || noApprovalCycle || (isEditFlag && IsDetailedEntry)}
-                                >
-                                  <div className="send-for-approval"></div>
-                                  {'Send For Approval'}
-                                </button>
-                                :
+                                {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                                  <button type="submit"
+                                    class="user-btn approval-btn save-btn mr5"
+                                    disabled={isViewMode || setDisable || noApprovalCycle || (isEditFlag && IsDetailedEntry)}
+                                  >
+                                    <div className="send-for-approval"></div>
+                                    {'Send For Approval'}
+                                  </button>
+                                  :
 
-                                <button
-                                  type="submit"
-                                  className="user-btn mr5 save-btn"
-                                  disabled={isViewMode || setDisable || noApprovalCycle}
-                                >
-                                  <div className={"save-icon"}></div>
-                                  {isEditFlag ? "Update" : "Save"}
-                                </button>
-                              }
+                                  <button
+                                    type="submit"
+                                    className="user-btn mr5 save-btn"
+                                    disabled={isViewMode || setDisable || noApprovalCycle}
+                                  >
+                                    <div className={"save-icon"}></div>
+                                    {isEditFlag ? "Update" : "Save"}
+                                  </button>
+                                }
+                              </>}
+
 
 
                             </>

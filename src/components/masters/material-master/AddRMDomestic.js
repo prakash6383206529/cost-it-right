@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { ASSEMBLY, AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
@@ -902,6 +902,9 @@ class AddRMDomestic extends Component {
     this.clearForm(type)
   }
   cancelHandler = () => {
+    if (this.state.isViewFlag) {
+      this.cancel('cancel')
+    }
     if (Object.keys(this.props.fieldsObj).length !== 0 || this.state.isDropDownChanged || this.state.files.length !== 0) {
       this.setState({ showPopup: true })
     } else {
@@ -1612,7 +1615,7 @@ class AddRMDomestic extends Component {
                                     name={"Source"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
-                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation]}
                                     component={renderText}
                                     onChange={this.handleSource}
                                     valueDescription={this.state.source}
@@ -1962,29 +1965,27 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
-                              onClick={() => scroll.scrollToTop()}
-                              disabled={isViewFlag || setDisable || noApprovalCycle}
-
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={isViewFlag || setDisable || noApprovalCycle}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-
-                            </button>
-                          }
-
-
+                          {!isViewFlag && <>
+                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                onClick={() => scroll.scrollToTop()}
+                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            }
+                          </>}
                         </div>
                       </Row>
                     </form>
