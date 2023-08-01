@@ -516,7 +516,11 @@ class AddVolume extends Component {
     )
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.props.data.isViewFlag) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')

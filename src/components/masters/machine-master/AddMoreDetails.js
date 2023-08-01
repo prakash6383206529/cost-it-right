@@ -1950,7 +1950,11 @@ class AddMoreDetails extends Component {
     //this.props.getRawMaterialDetailsAPI('', false, res => { })
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel()
