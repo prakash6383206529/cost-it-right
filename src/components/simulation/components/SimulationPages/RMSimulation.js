@@ -167,7 +167,7 @@ function RMSimulation(props) {
             if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                 isScrapRateGreaterThanBasiRate = true
             }
-            if (isScrapRateGreaterThanBasiRate) {
+            if (isScrapRateGreaterThanBasiRate && !(basicRateCount === list.length)) {
                 li.NewBasicRate = li?.BasicRate
                 li.NewScrapRate = li?.ScrapRate
                 Toaster.warning('Scrap Rate should be less than Basic Rate')
