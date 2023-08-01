@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString, minLength3 } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength75, maxLength20, maxLength80, maxLength512, checkSpacesInString, minLength3, hashValidation } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { renderText, renderTextAreaField, focusOnError, renderDatePicker, renderMultiSelectField, searchableSelect } from "../../layout/FormInputs";
 import {
@@ -188,23 +188,30 @@ class AddAssemblyPart extends Component {
   }
 
   onPartNoChange = debounce((e) => {
+    const assemblyPartNumber = e?.target?.value;
+    const hasSpecialCharacter = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(assemblyPartNumber);
 
-    if (!this.state.isEditFlag) {
-      this.props.getPartDescription(e?.target?.value, 1, (res) => {
-        if (res?.data?.Data) {
-          let finalData = res.data.Data
-          this.props.change("Description", finalData.Description)
-          this.props.change("AssemblyPartName", finalData.PartName)
-          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate })
-        } else {
-          this.props.change("Description", "")
-          this.props.change("AssemblyPartName", "")
-          this.setState({ disablePartName: false, minEffectiveDate: "" })
-        }
-      })
+    if (!hasSpecialCharacter) {
+      if (!this.state.isEditFlag) {
+        this.props.getPartDescription(assemblyPartNumber, 1, (res) => {
+          if (res?.data?.Data) {
+            let finalData = res.data.Data;
+            this.props.change("Description", finalData.Description);
+            this.props.change("AssemblyPartName", finalData.PartName);
+            this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate });
+          } else {
+            this.props.change("Description", "");
+            this.props.change("AssemblyPartName", "");
+            this.setState({ disablePartName: false, minEffectiveDate: "" });
+          }
+        });
+      }
     }
-  }, 600)
+  }, 600);
 
+  resetDebounceTimer = () => {
+    this.onPartNoChange.cancel();
+  };
 
   handlePartNo = (newValue, actionMeta) => {
 
@@ -969,7 +976,7 @@ class AddAssemblyPart extends Component {
                             name={"BOMNumber"}
                             type="text"
                             placeholder={(isEditFlag && this.state.isDisableBomNo === false) ? '-' : "Enter"}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3, hashValidation]}
                             component={renderText}
                             required={true}
                             className=""
@@ -983,10 +990,15 @@ class AddAssemblyPart extends Component {
                             name={"AssemblyPartNumber"}
                             type="text"
                             placeholder={isEditFlag || convertPartToAssembly ? '-' : "Enter"}
-                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3]}
+                            validate={[this.isRequired(), acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3, hashValidation]}
                             component={renderText}
                             required={true}
                             onChange={this.onPartNoChange}
+                            onKeyUp={(e) => {
+                              if (e.keyCode === 8 && e.target.value === "") {
+                                this.resetDebounceTimer();
+                              }
+                            }}
                             className=""
                             customClassName={"withBorder"}
                             disabled={isEditFlag || convertPartToAssembly ? true : false}
@@ -1026,7 +1038,7 @@ class AddAssemblyPart extends Component {
                             name={"ECNNumber"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -1041,7 +1053,7 @@ class AddAssemblyPart extends Component {
                             name={"RevisionNumber"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -1055,7 +1067,7 @@ class AddAssemblyPart extends Component {
                             name={"DrawingNumber"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                             component={renderText}
                             className=""
                             customClassName={"withBorder"}
@@ -1107,7 +1119,7 @@ class AddAssemblyPart extends Component {
                             name={"SAPCode"}
                             type="text"
                             placeholder={isEditFlag ? '-' : "Enter"}
-                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, hashValidation]}
                             component={renderText}
                             required={true}
                             onChange={() => { }}
@@ -1397,4 +1409,5 @@ export default connect(mapStateToProps, {
     focusOnError(errors);
   },
   enableReinitialize: true,
+  touchOnChange: true,
 })(AddAssemblyPart));

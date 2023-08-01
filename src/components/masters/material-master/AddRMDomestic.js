@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { ASSEMBLY, AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
@@ -1615,7 +1615,7 @@ class AddRMDomestic extends Component {
                                     name={"Source"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
-                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation]}
                                     component={renderText}
                                     onChange={this.handleSource}
                                     valueDescription={this.state.source}

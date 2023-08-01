@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString, hashValidation } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
 import { createProduct, updateProduct, getProductData, fileUploadProduct, } from '../actions/Part';
@@ -389,7 +389,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"ProductName"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, hashValidation]}
                                                             component={renderText}
                                                             required={true}
                                                             className=""
@@ -403,7 +403,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"ProductNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, hashValidation]}
                                                             component={renderText}
                                                             required={true}
                                                             className=""
@@ -435,7 +435,7 @@ class AddIndivisualProduct extends Component {
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
                                                                     placeholder={isViewMode ? '-' : "Enter"}
-                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20, hashValidation]}
                                                                     component={renderText}
                                                                     onChange={
                                                                         this.ProductGroupCodeUpdate
@@ -454,7 +454,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"ECNNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, hashValidation]}
                                                             component={renderText}
                                                             //required={true}
                                                             className=""
@@ -468,7 +468,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"RevisionNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, hashValidation]}
                                                             component={renderText}
                                                             //required={true}
                                                             className=""
@@ -482,7 +482,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"DrawingNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, hashValidation]}
                                                             component={renderText}
                                                             //required={true}
                                                             className=""
