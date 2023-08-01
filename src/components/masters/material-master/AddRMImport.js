@@ -114,7 +114,7 @@ class AddRMImport extends Component {
       attachmentLoader: false,
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -182,6 +182,8 @@ class AddRMImport extends Component {
           }, 100);
         }
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
   }
 
@@ -198,7 +200,6 @@ class AddRMImport extends Component {
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
       }
 
-      this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
@@ -207,7 +208,7 @@ class AddRMImport extends Component {
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 
