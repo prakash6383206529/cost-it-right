@@ -914,6 +914,9 @@ class AddRMImport extends Component {
     this.clearForm(type)
   }
   cancelHandler = () => {
+    if (this.state.isViewFlag) {
+      this.cancel('submit')
+    }
     if (Object.keys(this.props.fieldsObj).length !== 0 || this.state.isDropDownChanged || this.state.files.length !== 0) {
       this.setState({ showPopup: true })
     } else {
