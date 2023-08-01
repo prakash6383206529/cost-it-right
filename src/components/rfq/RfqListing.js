@@ -65,6 +65,7 @@ function RfqListing(props) {
         suppressFilterButton: true,
         component: "RFQ",
         onFilterChange: handleFilterChange,
+        notPagination: true
     }
     useEffect(() => {
         setloader(true)
