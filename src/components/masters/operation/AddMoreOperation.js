@@ -2761,13 +2761,13 @@ function AddMoreOperation(props) {
                                         CANCEL
                                     </button>
 
-                                    <button
+                                    {!isViewMode && <button
                                         type="submit"
                                         disabled={isViewMode}
                                         className="user-btn save-btn">
                                         <div className={"save-icon"}></div>
                                         {isEditFlag ? 'UPDATE' : 'SAVE'}
-                                    </button>
+                                    </button>}
                                 </div>
                             </div>
 

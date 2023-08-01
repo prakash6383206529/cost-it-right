@@ -649,7 +649,11 @@ class AddBOPDomestic extends Component {
     this.props.hideForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('submit')
@@ -1404,28 +1408,27 @@ class AddBOPDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
+                          {!isViewMode && <>
+                            {(!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                disabled={isViewMode || setDisable || noApprovalCycle}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
 
-                          {(!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
-                              disabled={isViewMode || setDisable || noApprovalCycle}
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
-
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={isViewMode || setDisable || noApprovalCycle}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
-                          }
-
-
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                                disabled={isViewMode || setDisable || noApprovalCycle}
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            }
+                          </>}
                         </div>
                       </Row>
                     </form>

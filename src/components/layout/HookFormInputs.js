@@ -336,6 +336,7 @@ export const SearchableSelectHookForm = (field) => {
                 isDisabled={isDisable}
                 onChange={(e, action) => {
                   handleChange(e, action);
+                  document.activeElement.blur();
                   onChange(e)
 
                 }}
