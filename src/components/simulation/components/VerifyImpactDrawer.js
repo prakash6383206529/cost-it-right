@@ -15,7 +15,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, isSimulationWithOutCosting } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, isSimulationWithCosting } = props
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
@@ -106,7 +106,7 @@ function VerifyImpactDrawer(props) {
                     <tbody>
                       <tr>
                         {CostingTypeId !== CBCTypeId && <th>Vendor (Code):</th>}
-                        {isSimulationWithOutCosting ? <th>Technology:</th> : <th>Association:</th>}
+                        {isSimulationWithCosting ? <th>Technology:</th> : <th>Association:</th>}
                         <th>Master:</th>
                         <th>Costing Head:</th>
                         {CostingTypeId === CBCTypeId && <th>CUSTOMER:</th>}
@@ -118,13 +118,13 @@ function VerifyImpactDrawer(props) {
                     <tbody>
                       <tr>
                         {CostingTypeId !== CBCTypeId && <td>{amendmentDetails.Vendor}</td>}
-                        {isSimulationWithOutCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
+                        {isSimulationWithCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
                         <td>{amendmentDetails.SimulationAppliedOn}</td>
                         <td>{amendmentDetails.CostingHead}</td>
                         {CostingTypeId === CBCTypeId && <td>{amendmentDetails.CustomerName}</td>}
                         <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
-                        <td>{amendmentDetails.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        <td>{amendmentDetails.BudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(amendmentDetails.BudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                        <td>{impactedMasterData.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                        <td>{impactedMasterData.TotalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
                       </tr>
                     </tbody>
                   </Table>

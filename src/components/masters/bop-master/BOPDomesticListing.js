@@ -28,7 +28,7 @@ import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideColumnFromExcel } from '../../common/CommonFunctions';
+import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -392,6 +392,15 @@ class BOPDomesticListing extends Component {
     }
 
     /**
+    * @method bopCostingFormatter
+    * @description bopCostingFormatter
+    */
+    bopCostingFormatter = (props) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return rowData?.IsBreakupBoughtOutPart != null ? (rowData?.IsBreakupBoughtOutPart ? 'Yes' : 'No') : '-';
+    }
+
+    /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
@@ -511,6 +520,10 @@ class BOPDomesticListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
+        let excelData = hideCustomerFromExcel(data, "CustomerName")
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured) {
+            excelData = hideMultipleColumnFromExcel(excelData, ["IsBreakupBoughtOutPart", "TechnologyName"])
+        }
         let temp = []
         let tempData = [...data]
         if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
@@ -553,7 +566,7 @@ class BOPDomesticListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
         const { isBulkUpload, noData } = this.state;
 
         var filterParams = {
@@ -645,6 +658,7 @@ class BOPDomesticListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
             commonCostFormatter: this.commonCostFormatter,
+            bopCostingFormatter: this.bopCostingFormatter,
             attachmentFormatter: this.attachmentFormatter,
         };
 
@@ -823,6 +837,8 @@ class BOPDomesticListing extends Component {
                                     {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart " headerName="Detailed BOP" cellRenderer={'bopCostingFormatter'} ></AgGridColumn>}
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
@@ -888,6 +904,7 @@ class BOPDomesticListing extends Component {
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                 }
+                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <WarningMessage message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
             </div >
         );
     }

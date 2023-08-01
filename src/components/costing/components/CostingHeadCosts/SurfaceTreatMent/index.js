@@ -34,7 +34,7 @@ function SurfaceTreatment(props) {
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate, RMCCTabData, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const price = useContext(NetPOPriceContext)
   const costData = useContext(costingInfoContext);
 
@@ -220,7 +220,7 @@ function SurfaceTreatment(props) {
       if (!partType) {
         rmCcData = findrmCctData(item)
         // THIS CONDITION IS USED FOR ASSEMBLY COSTING ,IN ASSEMBLY COSTING TOTAL COST IS SUM OF RMCCTAB DATA + SURFACE TREATEMNT TAB DATA OF THAT PART NUMBER (FOR PART/COMPONENT &ASSEMBLY KEY IS DIFFERENT)
-        surfacTreatmentCost = (item.PartType === 'Component' || item.PartType === 'Part') ? checkForNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost) : checkForNull(item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
+        surfacTreatmentCost = (item.PartType === 'Component' || item.PartType === 'Part' || isBreakupBoughtOutPartCostingFromAPI) ? checkForNull(item?.CostingPartDetails?.NetSurfaceTreatmentCost) : checkForNull(item?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys)
         rmCCCost = rmCcData !== undefined && (rmCcData.PartType === 'Part') ? checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : checkForNull(rmCcData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
 
         totalCost = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +

@@ -1033,6 +1033,10 @@ const CostingSummaryTable = (props) => {
       delete templateObj.BasicRate
     }
 
+    if (getConfigurationKey().IsBoughtOutPartCostingConfigured && viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart) {
+      delete templateObj.netBOP
+    }
+
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }
@@ -1862,29 +1866,30 @@ const CostingSummaryTable = (props) => {
                               anchor={'right'}
                               isPDFShow={true}
                             /></th></tr>}
-                            <tr className={highlighter("netBOP", "main-row")}>
-                              <th>Net BOP Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
+                            {
+                              viewCostingData && !viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart && <tr className={highlighter("netBOP", "main-row")}>
+                                <th>Net BOP Cost {simulationDrawer && (Number(master) === Number(BOPDOMESTIC) || Number(master) === Number(BOPIMPORT)) && '(Old)'}</th>
 
-                              {viewCostingData &&
-                                viewCostingData?.map((data, index) => {
-                                  return (
-                                    <td className={tableDataClass(data)}>
-                                      {displayValueWithSign(data, "netBOP")}
-                                      {
-                                        (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
-                                        <button
-                                          type="button"
-                                          title='View'
-                                          className="float-right mb-0 View "
-                                          onClick={() => viewBop(index)}
-                                        >
-                                        </button>
-                                      }
+                                {viewCostingData &&
+                                  viewCostingData?.map((data, index) => {
+                                    return (
+                                      <td className={tableDataClass(data)}>
+                                        {displayValueWithSign(data, "netBOP")}
+                                        {
+                                          (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
+                                          <button
+                                            type="button"
+                                            title='View'
+                                            className="float-right mb-0 View "
+                                            onClick={() => viewBop(index)}
+                                          >
+                                          </button>
+                                        }
 
-                                    </td>
-                                  )
-                                })}
-                            </tr>
+                                      </td>
+                                    )
+                                  })}
+                              </tr>}
                             {
                               !drawerDetailPDF ? <tr>
                                 <td>
@@ -1956,7 +1961,8 @@ const CostingSummaryTable = (props) => {
                                   )
                                 })}
                             </tr>
-                          </>}
+                          </>
+                        }
                         {
                           !drawerDetailPDF ? <tr>
                             <td>
@@ -2119,7 +2125,8 @@ const CostingSummaryTable = (props) => {
                             closeDrawer={closeViewDrawer}
                             anchor={'right'}
                             isPDFShow={true}
-                          /></td></tr>}
+                          /></td></tr>
+                        }
 
                         <tr className={highlighter("nOverheadProfit", "main-row")}>
                           <th>Net Overheads & Profits</th>
@@ -2315,56 +2322,59 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr>
 
-                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
-                          <td>
-                            <span className={highlighter("BasicRate")}>Basic Price</span>
-                          </td>
-                          {viewCostingData &&
-                            viewCostingData?.map((data) => {
-                              return (
-                                <td className={tableDataClass(data)}>
-                                  <span title={data?.BasicRate} className={highlighter("BasicRate")}>
-                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                  </span>
+                        {
+                          initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
+                            <td>
+                              <span className={highlighter("BasicRate")}>Basic Price</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span title={data?.BasicRate} className={highlighter("BasicRate")}>
+                                      {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                    </span>
 
-                                </td>
-                              )
-                            })}
-                        </tr>
+                                  </td>
+                                )
+                              })}
+                          </tr>
                         }
-                        {initialConfiguration?.IsShowNpvCost && <tr>
-                          <td>
-                            <span className={`d-block small-grey-text`}>Net NPV Cost</span>
-                          </td>
-                          {viewCostingData &&
-                            viewCostingData?.map((data) => {
-                              return (
-                                <td className={tableDataClass(data)}>
-                                  <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
-                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                  </span>
+                        {
+                          initialConfiguration?.IsShowNpvCost && <tr>
+                            <td>
+                              <span className={`d-block small-grey-text`}>Net NPV Cost</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
+                                      {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                    </span>
 
-                                </td>
-                              )
-                            })}
-                        </tr>
+                                  </td>
+                                )
+                              })}
+                          </tr>
                         }
-                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
-                          <td>
-                            <span className={`d-block small-grey-text`}>Net Condition Cost</span>
-                          </td>
-                          {viewCostingData &&
-                            viewCostingData?.map((data) => {
-                              return (
-                                <td className={tableDataClass(data)}>
-                                  <span title={data?.netConditionCost} className={`d-block small-grey-text w-fit `}>
-                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                  </span>
+                        {
+                          initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
+                            <td>
+                              <span className={`d-block small-grey-text`}>Net Condition Cost</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span title={data?.netConditionCost} className={`d-block small-grey-text w-fit `}>
+                                      {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                    </span>
 
-                                </td>
-                              )
-                            })}
-                        </tr>
+                                  </td>
+                                )
+                              })}
+                          </tr>
                         }
                         {
                           initialConfiguration?.IsShowNpvCost && drawerDetailPDF && <tr><th colSpan={2}>

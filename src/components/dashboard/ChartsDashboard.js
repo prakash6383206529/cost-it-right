@@ -29,7 +29,7 @@ export const graphColor15 = "#9932CC";
 export const graphColor16 = "#FFD700";
 // graph colors end
 
-export const colorArray = ['#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#9932CC', '#FFD700', '#8B4513', '#00CED1', '#A0522D', '#4682B4', '#CD853F', '#6495ED', '#FF4500', '#2E8B57', '#6A5ACD', '#FF6347','#F0E442', '#56B4E9', '#FFA500', '#00CC99', '#FF7F50', '#8A2BE2', '#6B8E23', '#1E90FF', '#8B008B', '#32CD32', '#BA55D3', '#ADFF2F',  '#5F9EA0', '#DA70D6', '#3CB371', '#9370DB', '#98FB98', '#8B008B', '#48D1CC', '#7FFF00', '#8B0000', '#AFEEEE', '#CD5C5C', '#F08080'];
+export const colorArray = ['#0072B2', '#E69F00', '#009E73', '#D55E00', '#CC79A7', '#9932CC', '#FFD700', '#8B4513', '#00CED1', '#A0522D', '#4682B4', '#CD853F', '#6495ED', '#FF4500', '#2E8B57', '#6A5ACD', '#FF6347', '#F0E442', '#56B4E9', '#FFA500', '#00CC99', '#FF7F50', '#8A2BE2', '#6B8E23', '#1E90FF', '#8B008B', '#32CD32', '#BA55D3', '#ADFF2F', '#5F9EA0', '#DA70D6', '#3CB371', '#9370DB', '#98FB98', '#8B008B', '#48D1CC', '#7FFF00', '#8B0000', '#AFEEEE', '#CD5C5C', '#F08080'];
 
 // graph 1 (Cost Movement by Cost Drivers) dashboard  
 export const options1 = {
@@ -51,29 +51,29 @@ export const data1 = {
       label: 'RM',
       data: [2, 4, 7, 3, 5, 2, 8, 4],
       fill: false,
-      borderColor: color1,
-      backgroundColor: color1,
+      borderColor: colorArray[0],
+      backgroundColor: colorArray[0],
+    },
+    {
+      label: 'BOP',
+      data: [5, 7, 10, 6, 8, 5, 11, 7],
+      fill: false,
+      borderColor: colorArray[1],
+      backgroundColor: colorArray[1],
     },
     {
       label: 'CC',
-      data: [5, 7, 10, 6, 8, 5, 11, 7],
-      fill: false,
-      borderColor: color6,
-      backgroundColor: color6,
-    },
-    {
-      label: 'VA',
       data: [9, 11, 14, 10, 12, 9, 15, 12],
       fill: false,
-      borderColor: color3,
-      backgroundColor: color3,
+      borderColor: colorArray[2],
+      backgroundColor: colorArray[2],
     },
     {
       label: 'Others',
       data: [14, 16, 20, 15, 18, 17, 21, 24],
       fill: false,
-      borderColor: color4,
-      backgroundColor: color4,
+      borderColor: colorArray[3],
+      backgroundColor: colorArray[3],
     },
   ],
   borderWidth: 1,
@@ -153,12 +153,7 @@ export const options3 = {
       labels: {
         boxWidth: 15,
         borderWidth: 1,
-        borderColor: [
-          color1,
-          color4,
-          color3,
-          color7,
-        ],
+        borderColor: colorArray,
       }
     },
   },
@@ -170,12 +165,7 @@ export const data3 = {
     {
       label: '',
       data: [15, 35, 16, 34,],
-      backgroundColor: [
-        color1,
-        color4,
-        color3,
-        color7,
-      ],
+      backgroundColor: colorArray,
       borderColor: [
         '#fff',
         '#fff',
