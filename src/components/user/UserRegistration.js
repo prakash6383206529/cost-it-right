@@ -1495,7 +1495,7 @@ function UserRegistration(props) {
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
 
-      const isDepartmentUpdate = (registerUserData.DepartmentId !== department.value) ? true : false;
+      const isDepartmentUpdate = (registerUserData?.Departments[0]?.DepartmentId !== department[0]?.value) ? true : false;
       const isRoleUpdate = (registerUserData.RoleId !== role.value) ? true : false;
       let isPermissionUpdate = false;
       let isTechnologyUpdate = false;
@@ -1532,7 +1532,7 @@ function UserRegistration(props) {
           }))
         }
         else {
-          reset();
+          props.hideForm()
           dispatch(updateUserAPI(updatedData, (res) => {
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
