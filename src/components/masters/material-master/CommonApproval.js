@@ -861,8 +861,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Po Price" ></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Po Price"></AgGridColumn>}
 
-                                    {getConfigurationKey().IsBoughtOutPartCostingConfigured && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName="Breakup BOP"></AgGridColumn>}
-                                    {getConfigurationKey().IsBoughtOutPartCostingConfigured && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>}
+                                    {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName="Breakup BOP"></AgGridColumn>}
+                                    {getConfigurationKey().IsBoughtOutPartCostingConfigured && props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>}
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
