@@ -431,7 +431,7 @@ class AddVolume extends Component {
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
             plantArray.push({
-              label: `${Data.Plant[0].PlantName}.(${Data.Plant[0].PlantCode})`,
+              label: `${Data.Plant[0].PlantName} (${Data.Plant[0].PlantCode})`,
               value: Data.Plant[0].PlantId,
             })
           }
