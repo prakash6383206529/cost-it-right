@@ -2592,3 +2592,5 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 //VERSION 
 export const VERSION = `${process.env.REACT_APP_VERSION}`
+
+
