@@ -104,6 +104,7 @@ function CostingSimulation(props) {
     const [isFinalLevelApprover, setIsFinalLevelApprover] = useState(false);
     const [count, setCount] = useState(0);
     const [storeTechnology, setStoreTechnology] = useState(0)
+    const [isBreakupBoughtOutPart, setIsBreakupBoughtOutPart] = useState(false)
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -277,6 +278,7 @@ function CostingSimulation(props) {
             setIsSimulationWithOutCosting(!Data.IsSimulationWithOutCosting)
             let tempArrayCosting
             if (isMasterAssociatedWithCosting) {
+                setIsBreakupBoughtOutPart(res.data?.Data?.IsBreakupBoughtOutPart)
                 if (res.data?.Data?.IsBreakupBoughtOutPart === true && res.data?.DataList?.length > 0) {
                     tempArrayCosting = [...Data.SimulatedCostingList, ...res.data?.DataList]
                 } else {
@@ -794,6 +796,11 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let value = row?.OldBOPRate - row?.NewBOPRate
         return cell != null ? checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    }
+
+    const partTypeFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const oldSTFormatter = (props) => {
@@ -1349,7 +1356,8 @@ function CostingSimulation(props) {
         processCostFormatter: processCostFormatter,
         processFormatter: processFormatter,
         processVarianceFormatter: processVarianceFormatter,
-        varianceFormatter: varianceFormatter
+        varianceFormatter: varianceFormatter,
+        partTypeFormatter: partTypeFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1447,6 +1455,7 @@ function CostingSimulation(props) {
                                                         <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
                                                         {isSimulationWithOutCosting && <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
+                                                        {isSimulationWithOutCosting && <AgGridColumn width={120} field="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
@@ -1499,9 +1508,9 @@ function CostingSimulation(props) {
                                                         {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldBOPRate" headerName='Existing BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
                                                         {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewBOPRate" headerName='Revised BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
                                                         {!isSimulationWithOutCosting && <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter' ></AgGridColumn>}
-                                                        {(isBOPDomesticOrImport || showBOPColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Existing Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
-                                                        {(isBOPDomesticOrImport || showBOPColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='Revised Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
-                                                        {(isBOPDomesticOrImport || showBOPColumn) && isSimulationWithOutCosting && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+                                                        {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithOutCosting && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Existing Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
+                                                        {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithOutCosting && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='Revised Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
+                                                        {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithOutCosting && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
                                                         {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldNetProcessCost" headerName='Existing Net Process Cost' cellRenderer='processCostFormatter' ></AgGridColumn>}

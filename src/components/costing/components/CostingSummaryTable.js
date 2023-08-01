@@ -1033,6 +1033,10 @@ const CostingSummaryTable = (props) => {
       delete templateObj.BasicRate
     }
 
+    if (getConfigurationKey().IsBoughtOutPartCostingConfigured && viewCostingData[0]?.CostingPartDetails?.IsBreakupBoughtOutPart) {
+      delete templateObj.netBOP
+    }
+
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }

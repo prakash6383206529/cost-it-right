@@ -146,7 +146,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                IsPushedButtonShow, SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, IsSimulationWithOutCosting } = res.data.Data
+                IsPushedButtonShow, SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, IsSimulationWithOutCosting, PartType } = res.data.Data
             let uniqueArr
             if (IsSimulationWithOutCosting) {
                 uniqueArr = SimulatedCostingList
@@ -172,6 +172,7 @@ function SimulationApprovalSummary(props) {
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements, DepartmentId: DepartmentId
                 , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
+                , PartType: PartType
             })
             dispatch(setAttachmentFileData(Attachements, () => { }))
             setIsApprovalDone(IsSent)
@@ -1250,6 +1251,7 @@ function SimulationApprovalSummary(props) {
 
                                                                 <AgGridColumn width={136} field="PartNo" headerName="Part No." cellRenderer='partFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
+                                                                <AgGridColumn width={160} field="PartType" headerName='Part Type'></AgGridColumn>
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}

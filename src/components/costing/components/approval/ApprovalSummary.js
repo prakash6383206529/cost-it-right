@@ -413,6 +413,7 @@ function ApprovalSummary(props) {
                   <thead>
                     <tr>
                       <th>Technology:</th>
+                      <th>Part Type:</th>
                       <th>Assembly/Part No:</th>
                       <th>Assembly/Part Name:</th>
                       <th>Assembly/Part Description:</th>
@@ -424,6 +425,11 @@ function ApprovalSummary(props) {
                   </thead>
                   <tbody>
                     <td>{partDetail.Technology ? partDetail.Technology : '-'}</td>
+                    <td className='overflow'>
+                      <span className="d-block " title={partDetail.PartType}>
+                        {partDetail.PartType ? partDetail.PartType : '-'}
+                      </span>
+                    </td>
                     <td className='overflow'>
                       <span className="d-block " title={partDetail.PartNumber}>
                         {partDetail.PartNumber ? partDetail.PartNumber : '-'}

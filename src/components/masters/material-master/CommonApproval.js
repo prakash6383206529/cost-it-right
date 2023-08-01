@@ -367,6 +367,44 @@ function CommonApproval(props) {
     }
 
     /**
+    * @method basicRateFormatter
+    * @description Renders buttons
+    */
+    const basicRateFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue ? cellValue : (row?.IsBreakupBoughtOutPart ? '-' : 0);
+    }
+
+    /**
+    * @method netCostFormatter
+    * @description Renders buttons
+    */
+    const netCostFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue ? cellValue : (row?.IsBreakupBoughtOutPart ? '-' : 0);
+    }
+
+    /**
+    * @method breakupFormatter
+    * @description Renders buttons
+    */
+    const breakupFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue ? 'Yes' : 'No';
+    }
+
+    /**
+    * @method technologyFormatter
+    * @description Renders buttons
+    */
+    const technologyFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue ? cellValue : '-';
+    }
+
+    /**
     * @method shearingCostFormatter
     * @description Renders buttons
     */
@@ -672,7 +710,11 @@ function CommonApproval(props) {
         linkableFormatter: linkableFormatter,
         effectiveDateRenderer: effectiveDateFormatter,
         hyphenFormatter: hyphenFormatter,
-        statusFilter: SingleDropdownFloationFilter
+        statusFilter: SingleDropdownFloationFilter,
+        basicRateFormatter: basicRateFormatter,
+        netCostFormatter: netCostFormatter,
+        breakupFormatter: breakupFormatter,
+        technologyFormatter: technologyFormatter
     };
 
     const isRowSelectable = (rowNode) => {
@@ -782,8 +824,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="IncoTermDescriptionAndInfoTerm" headerName='Inco Terms'></AgGridColumn>}
                                     {/* {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>} */}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Currency" headerName="Currency"></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate"></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost (INR)"></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate" cellRenderer='basicRateFormatter'></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost (INR)" cellRenderer='netCostFormatter'></AgGridColumn>}
                                     {/* {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
 
 
@@ -826,6 +868,8 @@ function CommonApproval(props) {
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" ></AgGridColumn>}
                                     {props?.MasterId === BUDGET_ID && <AgGridColumn width="145" field="NetPoPrice" headerName="Net Cost"></AgGridColumn>}
 
+                                    <AgGridColumn width="150" field="IsBreakupBoughtOutPart" cellRenderer='breakupFormatter' headerName="Breakup BOP"></AgGridColumn>
+                                    <AgGridColumn width="150" field="TechnologyName" cellRenderer='technologyFormatter' headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width="150" field="RequestedBy" cellRenderer='createdOnFormatter' headerName="Initiated By"></AgGridColumn>
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
