@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces } from "../../../helper/validation";
+import { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation } from "../../../helper/validation";
 import { renderText, } from "../../layout/FormInputs";
 import { createRawMaterialNameChild, getRawMaterialChildById, updateRawMaterialChildName } from '../actions/Material';
 import Toaster from '../../common/Toaster';
@@ -134,7 +134,7 @@ class AddRawMaterial extends Component {
                       name={"RawMaterialName"}
                       type="text"
                       placeholder={"Enter"}
-                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                      validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                       component={renderText}
                       required={true}
                       className=" "

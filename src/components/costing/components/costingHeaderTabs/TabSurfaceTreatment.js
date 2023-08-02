@@ -25,7 +25,7 @@ function TabSurfaceTreatment(props) {
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const vbcExistingCosting = useContext(SelectedCostingDetail);
-  const { ComponentItemData, CostingDataList } = useSelector(state => state.costing)
+  const { ComponentItemData, CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const netPOPrice = useContext(NetPOPriceContext);
 
   useEffect(() => {
@@ -1275,7 +1275,7 @@ function TabSurfaceTreatment(props) {
 
                         {
                           SurfaceTabData && SurfaceTabData.map((item, index) => {
-                            if ((item && item.PartType === 'Component') || partType) {
+                            if ((item && item.PartType === 'Component') || partType || isBreakupBoughtOutPartCostingFromAPI) {
 
                               return (
                                 < >

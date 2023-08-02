@@ -8,7 +8,7 @@ import { useSelector, useDispatch } from "react-redux"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { Col, Row } from "reactstrap"
 import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../../../actions/Common"
-import { defaultPageSize, EMPTY_DATA, searchCount, VBC_VENDOR_TYPE, ZBC } from "../../../config/constants"
+import { defaultPageSize, EMPTY_DATA, PRODUCT_ID, searchCount, VBC_VENDOR_TYPE, ZBC } from "../../../config/constants"
 import { MESSAGES } from "../../../config/message"
 import { loggedInUserId } from "../../../helper"
 import { autoCompleteDropdown, autoCompleteDropdownPart } from "../../common/CommonFunctions"
@@ -21,7 +21,7 @@ import { AsyncSearchableSelectHookForm, DatePickerHookForm, SearchableSelectHook
 import { getFormGridData, getRevisionNoFromPartId } from "../actions/ReportListing"
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getClientSelectList } from "../../masters/actions/Client"
-import { getProductGroupSelectList } from "../../masters/actions/Part"
+import { getProductGroupSelectList, getSelectListPartType } from "../../masters/actions/Part"
 import { getPartSelectListWtihRevNo } from "../../masters/actions/Volume"
 
 
@@ -45,6 +45,8 @@ function CostReportForm(props) {
     const [customerPoamSummary, setCustomerPoamSummary] = useState(props.customerPoamSummary ? true : false);
     const [productCategory, setProductCategory] = useState('');
     const [includeQuarterData, setIncludeQuarterData] = useState(false);
+    const [partType, setPartType] = useState('');
+    const [partTypeList, setPartTypeList] = useState([])
 
     const dispatch = useDispatch()
 
@@ -77,6 +79,9 @@ function CostReportForm(props) {
         dispatch(getPartInfo('', () => { }))
         dispatch(getProductGroupSelectList(() => { }))
         dispatch(getClientSelectList((res) => {
+        }))
+        dispatch(getSelectListPartType((res) => {
+            setPartTypeList(res?.data?.SelectList)
         }))
         if (props.isDataClear) {
             setValue('fromDate', startDate ? startDate : '')
@@ -239,6 +244,15 @@ function CostReportForm(props) {
             })
             return temp;
         }
+        if (label === 'PartType') {
+            partTypeList && partTypeList.map((item) => {
+                if (item.Value === '0') return false
+                if (item.Value === PRODUCT_ID) return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
     }
     const defaultColDef = {
         resizable: true,
@@ -267,6 +281,20 @@ function CostReportForm(props) {
         } else {
             setTechnology([])
             setIsTechnologySelected(false)
+        }
+        setpartName([])
+        reactLocalStorage.setObject('PartData', [])
+    }
+
+    /**
+     * @method handlePartChange
+     * @description  USED TO HANDLE PART CHANGE
+     */
+    const handlePartTypeChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setPartType(newValue)
+        } else {
+            setPartType([])
         }
         setpartName([])
         reactLocalStorage.setObject('PartData', [])
@@ -333,7 +361,7 @@ function CostReportForm(props) {
         if (inputValue?.length >= searchCount && partName !== resultInput) {
 
             if (props.partWithRevision) {
-                const res = await getPartSelectListWtihRevNo(resultInput, technology.value);
+                const res = await getPartSelectListWtihRevNo(resultInput, technology.value, null, partType?.value);
                 setpartName(resultInput)
                 let partDataAPI = res?.data?.DataList
                 if (inputValue) {
@@ -342,7 +370,7 @@ function CostReportForm(props) {
                     return partDataAPI
                 }
             } else {
-                const res = await getPartSelectListByTechnology(technology.value, resultInput);
+                const res = await getPartSelectListByTechnology(technology.value, resultInput, partType?.value);
                 setpartName(resultInput)
                 let partDataAPI = res?.data?.SelectList
                 if (inputValue) {
@@ -554,7 +582,24 @@ function CostReportForm(props) {
                         </Col>}
 
                         {!plantWiseGotGiven && <Col md="3">
+                            <SearchableSelectHookForm
+                                label={"Part Type"}
+                                name={"PartType"}
+                                placeholder={"Select"}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: true }}
+                                register={register}
+                                defaultValue={partType.length !== 0 ? partType : ""}
+                                options={renderListing('PartType')}
+                                mandatory={true}
+                                handleChange={handlePartTypeChange}
+                                errors={errors.Part}
+                                disabled={(technology.length === 0) ? true : false}
+                            />
+                        </Col>}
 
+                        {!plantWiseGotGiven && <Col md="3">
                             <AsyncSearchableSelectHookForm
                                 label={"Part No."}
                                 name={"Part"}
@@ -569,7 +614,7 @@ function CostReportForm(props) {
                                 //   isLoading={loaderObj}
                                 handleChange={handlePartChange}
                                 errors={errors.Part}
-                                disabled={(technology.length === 0) ? true : false}
+                                disabled={(partType.length === 0) ? true : false}
                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                             />
 

@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPfromApplicability, } from '../../../../helper';
 import { useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
@@ -54,7 +54,7 @@ function AddPackaging(props) {
   const [PackageType, setPackageType] = useState(true);
   const [packagingCost, setPackagingCost] = useState(0)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const { CostingDataList } = useSelector(state => state.costing)
+  const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const [showCostError, setShowCostError] = useState(false)
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
   const [errorMessage, setErrorMessage] = useState('')
@@ -99,6 +99,7 @@ function AddPackaging(props) {
   const renderListing = (label) => {
 
     const temp = [];
+    let tempList = [];
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
@@ -106,7 +107,12 @@ function AddPackaging(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-      return temp;
+      if (isBreakupBoughtOutPartCostingFromAPI) {
+        tempList = removeBOPfromApplicability([...temp])
+      } else {
+        tempList = [...temp]
+      }
+      return tempList;
     }
     if (label === 'FrieghtType') {
       freightType && freightType.map(item => {
@@ -116,7 +122,8 @@ function AddPackaging(props) {
         return null;
       });
       isEditFlag && temp.push({ label: rowObjData.PackagingDescription, value: rowObjData.PackagingDescription })
-      return temp;
+      tempList = [...temp]
+      return tempList;
     }
 
   }

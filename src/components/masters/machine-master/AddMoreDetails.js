@@ -5,7 +5,7 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue
+  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
@@ -133,7 +133,7 @@ class AddMoreDetails extends Component {
       labourDetailId: '',
       IsIncludeMachineRateDepreciation: false,
       powerIdFromAPI: EMPTY_GUID,
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -177,6 +177,8 @@ class AddMoreDetails extends Component {
           this.commonFunction()
         }, 100);
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
     this.getDetails()
   }
@@ -210,7 +212,6 @@ class AddMoreDetails extends Component {
         Mode: 'master',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId)
       }
-      this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
@@ -219,7 +220,7 @@ class AddMoreDetails extends Component {
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 
@@ -1950,7 +1951,11 @@ class AddMoreDetails extends Component {
     //this.props.getRawMaterialDetailsAPI('', false, res => { })
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel()
@@ -2616,7 +2621,7 @@ class AddMoreDetails extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             required={false}
                             disabled={this.state.isViewFlag ? true : false}
@@ -2630,7 +2635,7 @@ class AddMoreDetails extends Component {
                             name={"Specification"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             // required={true}
                             disabled={this.state.isViewFlag ? true : false}
@@ -2644,7 +2649,7 @@ class AddMoreDetails extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             // required={true}
                             disabled={this.state.isViewFlag ? true : false}
@@ -2679,7 +2684,7 @@ class AddMoreDetails extends Component {
                             name={"Manufacture"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, hashValidation]}
                             component={renderText}
                             //required={true}
                             disabled={this.state.isViewFlag ? true : false}
@@ -2762,7 +2767,7 @@ class AddMoreDetails extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, hashValidation]}
                             component={renderText}
                             disabled={this.state.isViewFlag ? true : false}
                             className=" "
@@ -2776,7 +2781,7 @@ class AddMoreDetails extends Component {
                             name={"MachineCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
-                            validate={[required, positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
+                            validate={[required, positiveAndDecimalNumber, maxLength20, decimalLengthFour, hashValidation]}
                             component={renderText}
                             required={true}
                             disabled={isEditFlag || disableAllForm ? true : false}
@@ -2790,7 +2795,7 @@ class AddMoreDetails extends Component {
                             name={"AccessoriesCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
+                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour, hashValidation]}
                             component={renderText}
                             //required={true}
                             disabled={isEditFlag || disableAllForm ? true : false}
@@ -2804,7 +2809,7 @@ class AddMoreDetails extends Component {
                             name={"InstallationCharges"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
+                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour, hashValidation]}
                             component={renderText}
                             //required={true}
                             disabled={isEditFlag || disableAllForm ? true : false}
@@ -3064,7 +3069,7 @@ class AddMoreDetails extends Component {
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[decimalAndNumberValidation]}
+                                validate={[hashValidation, decimalAndNumberValidation]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}
@@ -3186,7 +3191,7 @@ class AddMoreDetails extends Component {
                                   name={"DepreciationRatePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={this.state.depreciationType.value === WDM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : [decimalLengthThree]}
+                                  validate={this.state.depreciationType.value === WDM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : [hashValidation, decimalLengthThree]}
                                   component={renderText}
                                   required={this.state.depreciationType.value === WDM ? true : false}
                                   disabled={disableAllForm}
@@ -4326,27 +4331,29 @@ class AddMoreDetails extends Component {
                         </button>
 
 
+                        {!isViewMode && <>
+                          {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
+                            <button type="submit"
+                              class="user-btn approval-btn save-btn mr5"
 
-                        {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
-                          <button type="submit"
-                            class="user-btn approval-btn save-btn mr5"
+                              disabled={this.state.isViewMode || this.state.setDisable || noApprovalCycle}
+                            >
+                              <div className="send-for-approval"></div>
+                              {'Send For Approval'}
+                            </button>
+                            :
 
-                            disabled={this.state.isViewMode || this.state.setDisable || noApprovalCycle}
-                          >
-                            <div className="send-for-approval"></div>
-                            {'Send For Approval'}
-                          </button>
-                          :
+                            <button
+                              type="submit"
+                              className="user-btn mr5 save-btn"
+                              disabled={this.state.isViewMode || this.state.setDisable || noApprovalCycle}
+                            >
+                              <div className={"save-icon"}></div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          }
+                        </>}
 
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                            disabled={this.state.isViewMode || this.state.setDisable || noApprovalCycle}
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
-                        }
                       </div>
                     </Row>
 
