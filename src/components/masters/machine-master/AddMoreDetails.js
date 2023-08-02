@@ -5,7 +5,7 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue
+  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
@@ -2621,7 +2621,7 @@ class AddMoreDetails extends Component {
                             name={"MachineName"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             required={false}
                             disabled={this.state.isViewFlag ? true : false}
@@ -2635,7 +2635,7 @@ class AddMoreDetails extends Component {
                             name={"Specification"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             // required={true}
                             disabled={this.state.isViewFlag ? true : false}
@@ -2649,7 +2649,7 @@ class AddMoreDetails extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             // required={true}
                             disabled={this.state.isViewFlag ? true : false}
@@ -2684,7 +2684,7 @@ class AddMoreDetails extends Component {
                             name={"Manufacture"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, hashValidation]}
                             component={renderText}
                             //required={true}
                             disabled={this.state.isViewFlag ? true : false}
@@ -2767,7 +2767,7 @@ class AddMoreDetails extends Component {
                             name={"TonnageCapacity"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[checkWhiteSpaces, postiveNumber, maxLength10]}
+                            validate={[checkWhiteSpaces, postiveNumber, maxLength10, hashValidation]}
                             component={renderText}
                             disabled={this.state.isViewFlag ? true : false}
                             className=" "
@@ -2781,7 +2781,7 @@ class AddMoreDetails extends Component {
                             name={"MachineCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
-                            validate={[required, positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
+                            validate={[required, positiveAndDecimalNumber, maxLength20, decimalLengthFour, hashValidation]}
                             component={renderText}
                             required={true}
                             disabled={isEditFlag || disableAllForm ? true : false}
@@ -2795,7 +2795,7 @@ class AddMoreDetails extends Component {
                             name={"AccessoriesCost"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
+                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour, hashValidation]}
                             component={renderText}
                             //required={true}
                             disabled={isEditFlag || disableAllForm ? true : false}
@@ -2809,7 +2809,7 @@ class AddMoreDetails extends Component {
                             name={"InstallationCharges"}
                             type="text"
                             placeholder={isEditFlag || disableAllForm ? '-' : 'Enter'}
-                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour]}
+                            validate={[positiveAndDecimalNumber, maxLength20, decimalLengthFour, hashValidation]}
                             component={renderText}
                             //required={true}
                             disabled={isEditFlag || disableAllForm ? true : false}
@@ -3069,7 +3069,7 @@ class AddMoreDetails extends Component {
                                 name={"WorkingHoursPerShift"}
                                 type="text"
                                 placeholder={disableAllForm ? '-' : 'Enter'}
-                                validate={[decimalAndNumberValidation]}
+                                validate={[hashValidation, decimalAndNumberValidation]}
                                 component={renderText}
                                 required={false}
                                 disabled={disableAllForm}
@@ -3191,7 +3191,7 @@ class AddMoreDetails extends Component {
                                   name={"DepreciationRatePercentage"}
                                   type="text"
                                   placeholder={disableAllForm ? '-' : 'Enter'}
-                                  validate={this.state.depreciationType.value === WDM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : [decimalLengthThree]}
+                                  validate={this.state.depreciationType.value === WDM ? [required, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation] : [hashValidation, decimalLengthThree]}
                                   component={renderText}
                                   required={this.state.depreciationType.value === WDM ? true : false}
                                   disabled={disableAllForm}
