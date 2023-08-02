@@ -43,7 +43,6 @@ function ColdForging(props) {
     machiningScrapRecoveryPercent: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapRecoveryPercentage !== undefined ? WeightCalculatorRequest.MachiningScrapRecoveryPercentage : '',
     forgingScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ForgingScrapCost !== undefined ? WeightCalculatorRequest.ForgingScrapCost : '',
     machiningScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.MachiningScrapCost !== undefined ? WeightCalculatorRequest.MachiningScrapCost : '',
-
   }
 
   const {
@@ -62,7 +61,7 @@ function ColdForging(props) {
 
   const fieldValues = useWatch({
     control,
-    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent'],
+    name: ['finishedWeight', 'BilletDiameter', 'BilletLength', 'ScrapRecoveryPercentage', 'forgingScrapRecoveryPercent', 'machiningScrapRecoveryPercent', 'tolerance'],
 
   })
 
@@ -88,7 +87,13 @@ function ColdForging(props) {
       calculateScrapCost()
       calculateNetRmCostComponent()
     }
-  }, [fieldValues, lostWeight])
+  }, [fieldValues, lostWeight, forgeWeightValue])
+
+  useEffect(() => {
+    if (WeightCalculatorRequest) {
+      setValue("tolerance", WeightCalculatorRequest && WeightCalculatorRequest.Tolerance !== undefined ? WeightCalculatorRequest.Tolerance : '')
+    }
+  }, [])
 
   /**
    * @method calculateForgeWeight
@@ -183,7 +188,8 @@ function ColdForging(props) {
   const calculateTotalInputWeight = () => {
     const forgedWeight = checkForNull(forgeWeightValue)
     const EndBitLoss = checkForNull(dataSend.EndBitLoss)
-    const TotalInputWeight = checkForNull(forgedWeight) + checkForNull(lostWeight) + checkForNull(EndBitLoss)
+    const tolerance = checkForNull(getValues('tolerance'))
+    const TotalInputWeight = checkForNull(forgedWeight) + checkForNull(lostWeight) + checkForNull(EndBitLoss) + tolerance
     const ForgingScrapWeight = TotalInputWeight - forgedWeight
     let obj = dataSend
     obj.TotalInputWeight = TotalInputWeight
@@ -289,7 +295,7 @@ function ColdForging(props) {
     obj.MachiningScrapWeight = dataSend.machiningScrapWeight
     obj.ForgingScrapCost = dataSend.forgingScrapCost
     obj.MachiningScrapCost = dataSend.machiningScrapCost
-
+    obj.Tolerance = checkForNull(getValues('tolerance'))
     let tempArr = []
     tableVal && tableVal.map(item => (
       tempArr.push({ LossOfType: item.LossOfType, FlashLoss: item.FlashLoss, FlashLossId: item.FlashLossId, LossPercentage: item.LossPercentage, FlashLength: item.FlashLength, FlashThickness: item.FlashThickness, FlashWidth: item.FlashWidth, BarDiameter: item.BarDiameter, BladeThickness: item.BladeThickness, LossWeight: item.LossWeight, CostingCalculationDetailId: "00000000-0000-0000-0000-000000000000" })
@@ -615,9 +621,31 @@ function ColdForging(props) {
                   disabled={true}
                 />
               </Col>
-
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + End Bit Loss)'} />
+                <NumberFieldHookForm
+                  label={`Tolerance(Kg)`}
+                  name={'tolerance'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  rules={{
+                    required: false,
+                    pattern: {
+                      value: /^\d{0,6}(\.\d{0,4})?$/i,
+                      message: 'Maximum length for integer is 6 and for decimal is 4',
+                    },
+                  }}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.tolerance}
+                  disabled={props.CostingViewMode || disableAll}
+                />
+              </Col>
+              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + End Bit Loss + Tolerance)'} />
                 <NumberFieldHookForm
                   label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}
