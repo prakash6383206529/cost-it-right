@@ -129,6 +129,7 @@ function NfrListing(props) {
         gridApi.deselectAll()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
+        setNoData(false)
     }
 
 
