@@ -1780,10 +1780,9 @@ export const setCostingApprovalData = (data) => (dispatch) => {
 export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, callback) {
   return (dispatch) => {
     if (partId !== '') {
-      const query = `${partId}/${VendorId === '' ? EMPTY_GUID : VendorId}/${VendorPlantId === '' ? EMPTY_GUID : VendorPlantId}/${destinationPlantId === '' ? EMPTY_GUID : destinationPlantId}/${customerId === '' ? EMPTY_GUID : customerId}/${costingTypeId === '' ? EMPTY_GUID : costingTypeId}`
-      const request = axios.get(`${API.getCostingByVendorVendorPlant}/${query}`, config(),)
+      const queryParams = `partId=${partId}&VendorId=${VendorId}&vendorPlantId=${VendorPlantId}&destinationPlantId=${!destinationPlantId ? EMPTY_GUID : destinationPlantId}&customerId=${!customerId ? EMPTY_GUID : customerId}&costingTypeId=${costingTypeId}`
+      const request = axios.get(`${API.getCostingByVendorVendorPlant}?${queryParams}`, config());
       request.then((response) => {
-
         if (response.data.Result || response.status === 204) {
           dispatch({
             type: GET_COST_SUMMARY_BY_PART_PLANT,
