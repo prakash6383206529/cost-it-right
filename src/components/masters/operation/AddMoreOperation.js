@@ -6,7 +6,7 @@ import Toaster from "../../common/Toaster";
 import { Loader } from "../../common/Loader";
 import {
     maxLength12, required,
-    checkWhiteSpaces, maxLength25, hashValidation, checkForNull, checkForDecimalAndNull
+    checkWhiteSpaces, maxLength25, hashValidation, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength80,
 } from "../../../helper/validation";
 
 import { MESSAGES } from "../../../config/message";
@@ -871,6 +871,7 @@ function AddMoreOperation(props) {
                                             mandatory={true}
                                             rules={{
                                                 required: true,
+                                                validate: { required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation },
                                             }}
                                             handleChange={() => { }}
                                             placeholder={'Enter'}
@@ -916,7 +917,7 @@ function AddMoreOperation(props) {
                                             rules={{
                                                 required: false,
                                                 validate: {
-                                                    hashValidation,
+                                                    acceptAllExceptSingleSpecialCharacter,
                                                     maxLength25,
                                                     checkWhiteSpaces,
                                                 }
@@ -2532,7 +2533,7 @@ function AddMoreOperation(props) {
                                                             rules={{
                                                                 required: false,
                                                                 validate: {
-                                                                    hashValidation,
+                                                                    acceptAllExceptSingleSpecialCharacter,
                                                                     maxLength25,
                                                                     checkWhiteSpaces,
                                                                 }
@@ -2606,7 +2607,7 @@ function AddMoreOperation(props) {
                                                     rules={{
                                                         required: false,
                                                         validate: {
-                                                            hashValidation,
+                                                            acceptAllExceptSingleSpecialCharacter,
                                                             maxLength25,
                                                             checkWhiteSpaces,
                                                         }
@@ -2693,7 +2694,7 @@ function AddMoreOperation(props) {
                                         rules={{
                                             required: false,
                                             validate: {
-                                                hashValidation,
+                                                acceptAllExceptSingleSpecialCharacter,
                                                 checkWhiteSpaces,
                                             }
                                         }}

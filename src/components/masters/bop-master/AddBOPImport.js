@@ -1552,7 +1552,7 @@ class AddBOPImport extends Component {
                               placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
-                              validate={[maxLength512]}
+                              validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               value={this.state.remarks}
                               onChange={this.handleMessageChange}
                               disabled={isViewMode}

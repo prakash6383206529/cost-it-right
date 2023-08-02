@@ -2654,7 +2654,7 @@ class AddMoreDetails extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
-                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             // required={true}
                             disabled={this.state.isViewFlag ? true : false}
@@ -4259,7 +4259,7 @@ class AddMoreDetails extends Component {
                             customClassName=" textAreaWithBorder"
                             disabled={this.state.isViewMode}
                             onChange={this.handleMessageChange}
-                            validate={[maxLength512]}
+                            validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             // required={true}
                             component={renderTextAreaField}
                             maxLength="512"

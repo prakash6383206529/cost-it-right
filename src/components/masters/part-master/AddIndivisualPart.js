@@ -540,7 +540,7 @@ class AddIndivisualPart extends Component {
                                 name={"Description"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : "Enter"}
-                                validate={[maxLength80, checkWhiteSpaces]}
+                                validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                                 component={renderText}
                                 required={false}
                                 className=""
@@ -701,7 +701,7 @@ class AddIndivisualPart extends Component {
                               placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
-                              validate={[maxLength512, checkWhiteSpaces]}
+                              validate={[maxLength512, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter]}
                               component={renderTextAreaField}
                               maxLength="5000"
                               disabled={isViewMode}

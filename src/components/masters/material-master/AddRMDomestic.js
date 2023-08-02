@@ -1869,7 +1869,7 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
-                              validate={[maxLength512]}
+                              validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               required={false}
                               component={renderTextAreaField}
                               maxLength="512"
