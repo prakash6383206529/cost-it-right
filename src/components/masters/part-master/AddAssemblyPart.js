@@ -1298,14 +1298,15 @@ class AddAssemblyPart extends Component {
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
-                        <button
+                        {!isViewMode && <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                           disabled={isViewMode || setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
-                        </button>
+                        </button>}
+
                       </div>
                     </Row>
                   </form>
