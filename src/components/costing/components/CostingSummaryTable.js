@@ -1070,10 +1070,10 @@ const CostingSummaryTable = (props) => {
 
       if (index === 0) {
         masterDataArray.push({ label: "", value: `columnA${index}` })
-        masterDataArray.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+        masterDataArray.push({ label: props.uniqueShouldCostingId?.includes(item.costingId) ? "Should Cost" : item?.bestCost === true ? "Best Cost" : `Costing\u00A0${index + 1}`, value: `columnB${index}` })
 
       } else if (item?.CostingHeading !== VARIANCE) {
-        masterDataArray.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+        masterDataArray.push({ label: item?.bestCost === true ? "Best Cost" : `Costing\u00A0${index + 1}`, value: `columnB${index}` })
       }
 
       if (item?.CostingHeading === VARIANCE) {
