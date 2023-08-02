@@ -557,7 +557,17 @@
       }
     }
   }
+
+  &.profit {
+    .costing-border-inner-section .col-md-12 {
+      @media screen and (max-width: $max1367) {
+        margin-bottom: 2px !important;
+
+      }
+    }
+  }
 }
+
 
 .costing-selectable-dropdown {
   margin-bottom: 0 !important;
