@@ -769,7 +769,7 @@ class BOPImportListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                        <div className={`ag-grid-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                             <div className={`ag-theme-material p-relative ${this.state.isLoader && "max-loader-height"}`} >
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
@@ -834,7 +834,7 @@ class BOPImportListing extends Component {
                         {
                             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                         }
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && <WarningMessage message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
                     </Col>
                 </Row>
                 {
