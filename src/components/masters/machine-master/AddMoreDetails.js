@@ -832,7 +832,7 @@ class AddMoreDetails extends Component {
     if (newValue && newValue !== '') {
 
       if (newValue.type !== TIME) {
-        this.props.change("MachineRate", 0)
+        this.props.change("MachineRate", '')
       }
 
       this.setState({ UOM: newValue, errorObj: { ...this.state.errorObj, processMachineRate: false } }, () => { this.handleProcessCalculation() });
@@ -1352,7 +1352,7 @@ class AddMoreDetails extends Component {
     }
     this.setState({ machineRate: MachineRate })
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
-    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice) ? checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice) : '')
   }
 
   /**
@@ -1760,7 +1760,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
     });
   };
 
@@ -1819,7 +1819,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', tempData.length > 0 ? fieldsObj.MachineRate : 0)
+      this.props.change('MachineRate', tempData.length > 0 ? fieldsObj.MachineRate : '')
     })
   }
 
