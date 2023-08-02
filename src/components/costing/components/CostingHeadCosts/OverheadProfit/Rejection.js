@@ -384,157 +384,164 @@ function Rejection(props) {
                     />
                 </Col>}
 
-                {
-                    <Popup className='rm-popup' trigger={<button id={`popUpTriggerRejection`} title="Remark" className="Comment-box" type={'button'} />}
-                        position="top right">
-                        <TextAreaHookForm
-                            label="Remark:"
-                            name={`rejectionRemark`}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{
-                                maxLength: REMARKMAXLENGTH
-                            }}
-                            handleChange={() => { }}
-                            className=""
-                            customClassName={"withBorder"}
-                            errors={errors.rejectionRemark}
-                            disabled={CostingViewMode}
-                            hidden={false}
-                        />
-                        <Row>
-                            <Col md="12" className='remark-btn-container'>
-                                <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickRejection()} > <div className='save-icon'></div> </button>
-                                <button className='reset' onClick={() => onRemarkPopUpCloseRejection()} > <div className='cancel-icon'></div></button>
-                            </Col>
-                        </Row>
-                    </Popup>
-
-                }
-
-
             </Row>
-            <Row className="costing-border-inner-section border-bottom-none m-0">
-                <Col md="3">
-                    <span className="head-text">
-                        Applicability
-                    </span>
-                </Col>
-                <Col md="3">
-                    <span className="head-text">
-                        {applicability.label !== 'Fixed' ? 'Rejection (%)' : 'Rejection'}
-                    </span>
-                </Col>
-                {applicability.label !== 'Fixed' && <Col md="3">
-                    <span className="head-text">
-                        Cost (Applicability)
-                    </span>
-                </Col>}
-                <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
-                    <span className="head-text">
-                        Net Rejection
-                    </span>
-                </Col>
-            </Row>
-            <Row className="costing-border costing-border-with-labels pt-3 m-0 overhead-profit-tab-costing">
-                <Col md="3">
-                    <SearchableSelectHookForm
-                        label={false}
-                        name={'Applicability'}
-                        placeholder={'Select'}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: false }}
-                        register={register}
-                        defaultValue={applicability.length !== 0 ? applicability : ''}
-                        options={renderListing('Applicability')}
-                        customClassName={'overhead-rejection'}
-                        mandatory={false}
-                        disabled={CostingViewMode ? true : false}
-                        handleChange={handleApplicabilityChange}
-                        errors={errors.Applicability}
-                        buttonCross={resetData}
-                    />
-                </Col>
-                <Col md="3">
-                    {applicability.label !== 'Fixed' ?
-                        <TextFieldHookForm
-                            label={false}
-                            name={'RejectionPercentage'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            rules={{
-                                required: false,
-                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                max: {
-                                    value: 100,
-                                    message: 'Percentage cannot be greater than 100'
-                                },
-                            }}
-                            handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                            defaultValue={''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.RejectionPercentage}
-                            disabled={CostingViewMode ? true : false}
-                        />
-                        :
-                        //THIS FIELD WILL RENDER WHEN REJECTION TYPE FIXED
-                        <div className='p-relative error-wrapper'>
+            <Row>
+                <Col md="11" className='first-section'>
+                    <Row className="costing-border-inner-section border-bottom-none m-0">
+                        <Col md="3">
+                            <span className="head-text">
+                                Applicability
+                            </span>
+                        </Col>
+                        <Col md="3">
+                            <span className="head-text">
+                                {applicability.label !== 'Fixed' ? 'Rejection (%)' : 'Rejection'}
+                            </span>
+                        </Col>
+                        {applicability.label !== 'Fixed' && <Col md="3">
+                            <span className="head-text">
+                                Cost (Applicability)
+                            </span>
+                        </Col>}
+                        <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
+                            <span className="head-text">
+                                Net Rejection
+                            </span>
+                        </Col>
+                    </Row>
+                    <Row className="costing-border costing-border-with-labels pt-3 m-0 overhead-profit-tab-costing">
+                        <Col md="3">
+                            <SearchableSelectHookForm
+                                label={false}
+                                name={'Applicability'}
+                                placeholder={'Select'}
+                                Controller={Controller}
+                                control={control}
+                                rules={{ required: false }}
+                                register={register}
+                                defaultValue={applicability.length !== 0 ? applicability : ''}
+                                options={renderListing('Applicability')}
+                                customClassName={'overhead-rejection'}
+                                mandatory={false}
+                                disabled={CostingViewMode ? true : false}
+                                handleChange={handleApplicabilityChange}
+                                errors={errors.Applicability}
+                                buttonCross={resetData}
+                            />
+                        </Col>
+                        <Col md="3">
+                            {applicability.label !== 'Fixed' ?
+                                <TextFieldHookForm
+                                    label={false}
+                                    name={'RejectionPercentage'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                        required: false,
+                                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                        max: {
+                                            value: 100,
+                                            message: 'Percentage cannot be greater than 100'
+                                        },
+                                    }}
+                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.RejectionPercentage}
+                                    disabled={CostingViewMode ? true : false}
+                                />
+                                :
+                                //THIS FIELD WILL RENDER WHEN REJECTION TYPE FIXED
+                                <div className='p-relative error-wrapper'>
+                                    <TextFieldHookForm
+                                        label={false}
+                                        name={'RejectionPercentage'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={(e) => handleChangeRejectionPercentage(e)}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        disabled={CostingViewMode ? true : false}
+                                    />
+                                    {applicability.label === 'Fixed' && percentageLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                </div>}
+                        </Col>
+                        {applicability.label !== 'Fixed' &&
+                            <Col md="3">
+                                <TextFieldHookForm
+                                    label={false}
+                                    name={'RejectionCost'}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    handleChange={() => { }}
+                                    defaultValue={''}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.RejectionCost}
+                                    disabled={true}
+                                />
+                            </Col>}
+                        <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
                             <TextFieldHookForm
                                 label={false}
-                                name={'RejectionPercentage'}
+                                name={'RejectionTotalCost'}
                                 Controller={Controller}
                                 control={control}
                                 register={register}
                                 mandatory={false}
-                                handleChange={(e) => handleChangeRejectionPercentage(e)}
+                                handleChange={() => { }}
                                 defaultValue={''}
                                 className=""
                                 customClassName={'withBorder'}
-                                disabled={CostingViewMode ? true : false}
+                                errors={errors.RejectionTotalCost}
+                                disabled={true}
                             />
-                            {applicability.label === 'Fixed' && percentageLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
-                        </div>}
+                        </Col>
+                    </Row>
                 </Col>
-                {applicability.label !== 'Fixed' &&
-                    <Col md="3">
-                        <TextFieldHookForm
-                            label={false}
-                            name={'RejectionCost'}
-                            Controller={Controller}
-                            control={control}
-                            register={register}
-                            mandatory={false}
-                            handleChange={() => { }}
-                            defaultValue={''}
-                            className=""
-                            customClassName={'withBorder'}
-                            errors={errors.RejectionCost}
-                            disabled={true}
-                        />
-                    </Col>}
-                <Col md={applicability.label === 'Fixed' ? '6' : '3'}>
-                    <TextFieldHookForm
-                        label={false}
-                        name={'RejectionTotalCost'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        defaultValue={''}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.RejectionTotalCost}
-                        disabled={true}
-                    />
+                <Col md="1" className='second-section pr-2'>
+                    <div className='costing-border-inner-section'>
+                        <Col md="12" className='text-center'>Remark</Col>
+                        <Col md="12">
+                            <Popup trigger={<button id={`popUpTriggerRejection`} title="Remark" className="Comment-box" type={'button'} />}
+                                position="top center">
+                                <TextAreaHookForm
+                                    label="Remark:"
+                                    name={`rejectionRemark`}
+                                    Controller={Controller}
+                                    control={control}
+                                    register={register}
+                                    mandatory={false}
+                                    rules={{
+                                        maxLength: REMARKMAXLENGTH
+                                    }}
+                                    handleChange={() => { }}
+                                    className=""
+                                    customClassName={"withBorder"}
+                                    errors={errors.rejectionRemark}
+                                    disabled={CostingViewMode}
+                                    hidden={false}
+                                />
+                                <Row>
+                                    <Col md="12" className='remark-btn-container'>
+                                        <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickRejection()} > <div className='save-icon'></div> </button>
+                                        <button className='reset' onClick={() => onRemarkPopUpCloseRejection()} > <div className='cancel-icon'></div></button>
+                                    </Col>
+                                </Row>
+                            </Popup>
+                        </Col>
+                    </div>
                 </Col>
             </Row>
+
 
 
         </>

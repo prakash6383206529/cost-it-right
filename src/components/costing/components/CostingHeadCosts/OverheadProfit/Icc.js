@@ -426,169 +426,173 @@ function Icc(props) {
                         />
                     </Col>}
 
+                    <Row>
+                        <Col md="11" className='first-section'>
+                            <Row className="costing-border-inner-section border-bottom-none m-0">
+                                <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
+                                    <span className="head-text">
+                                        Applicability
+                                    </span>
+                                </Col>
+                                <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
+                                    <span className="head-text">
+                                        {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
+                                    </span>
+                                </Col>
 
-                    {<Col md="5">
-
-                        <Popup className='rm-popup' trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box" type={'button'} />}
-                            position="top right">
-                            <TextAreaHookForm
-                                label="Remark:"
-                                name={`iccRemark`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                    maxLength: REMARKMAXLENGTH
-                                }}
-                                handleChange={() => { }}
-                                className=""
-                                customClassName={"withBorder"}
-                                errors={errors.iccRemark}
-                                disabled={CostingViewMode}
-                                hidden={false}
-                            />
-                            <Row>
-                                <Col md="12" className='remark-btn-container'>
-                                    <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickIcc()} > <div className='save-icon'></div> </button>
-                                    <button className='reset' onClick={() => onRemarkPopUpCloseIcc()} > <div className='cancel-icon'></div></button>
+                                {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && <Col md="2"></Col>}
+                                {ICCapplicability.label !== 'Fixed' && <Col md="3">
+                                    <span className="head-text">
+                                        Cost (Applicability)
+                                    </span>
+                                </Col>}
+                                <Col md={ICCapplicability.label === 'Fixed' ? '6' : '3'}>
+                                    <span className="head-text">
+                                        Net ICC
+                                    </span>
                                 </Col>
                             </Row>
-                        </Popup>
-                    </Col>
+                            <Row className="costing-border costing-border-with-labels  pt-3 m-0 overhead-profit-tab-costing">
+                                <>
+                                    <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
+                                        <label className="col-label">
+                                            {ICCapplicability.label}
+                                        </label>
+                                    </Col>
 
-                    }
-
-
-                    <Row className="costing-border-inner-section border-bottom-none m-0">
-                        <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
-                            <span className="head-text">
-                                Applicability
-                            </span>
-                        </Col>
-                        <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
-                            <span className="head-text">
-                                {ICCapplicability.label !== 'Fixed' ? 'Interest Rate (%)' : 'Interest Rate'}
-                            </span>
-                        </Col>
-
-                        {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && <Col md="2"></Col>}
-                        {ICCapplicability.label !== 'Fixed' && <Col md="3">
-                            <span className="head-text">
-                                Cost (Applicability)
-                            </span>
-                        </Col>}
-                        <Col md={ICCapplicability.label === 'Fixed' ? '6' : '3'}>
-                            <span className="head-text">
-                                Net ICC
-                            </span>
-                        </Col>
-                    </Row>
-                    <Row className="costing-border costing-border-with-labels  pt-3 m-0 overhead-profit-tab-costing">
-                        <>
-                            <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
-                                <label className="col-label">
-                                    {ICCapplicability.label}
-                                </label>
-                            </Col>
-
-                            <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
-                                {ICCapplicability.label !== 'Fixed' ?
-                                    <TextFieldHookForm
-                                        label={false}
-                                        name={'InterestRatePercentage'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                            max: {
-                                                value: 100,
-                                                message: 'Percentage cannot be greater than 100'
-                                            },
-                                        }}
-                                        handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.InterestRatePercentage}
-                                        disabled={(CostingViewMode || ICCapplicability.label !== 'Fixed') ? true : false}
-                                    />
-                                    :
-                                    <div className='p-relative error-wrapper'>
+                                    <Col md={ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc ? '2' : '3'}>
+                                        {ICCapplicability.label !== 'Fixed' ?
+                                            <TextFieldHookForm
+                                                label={false}
+                                                name={'InterestRatePercentage'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={false}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                    max: {
+                                                        value: 100,
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
+                                                }}
+                                                handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.InterestRatePercentage}
+                                                disabled={(CostingViewMode || ICCapplicability.label !== 'Fixed') ? true : false}
+                                            />
+                                            :
+                                            <div className='p-relative error-wrapper'>
+                                                <TextFieldHookForm
+                                                    label={false}
+                                                    name={'InterestRatePercentage'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    mandatory={false}
+                                                    handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    disabled={CostingViewMode ? true : false}
+                                                />
+                                                {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
+                                            </div>}
+                                    </Col>
+                                    {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && < Col md="2" className="switch mt-2">
+                                        <label className="switch-level">
+                                            <div className={'right-title mr-2'}>RMC</div>
+                                            <Switch
+                                                onChange={onPressRmc}
+                                                checked={isNetWeight}
+                                                id="normal-switch"
+                                                disabled={CostingViewMode ? true : false}
+                                                background="#4DC771"
+                                                onColor="#4DC771"
+                                                onHandleColor="#ffffff"
+                                                offColor="#CCC"
+                                                uncheckedIcon={false}
+                                                checkedIcon={false}
+                                                height={20}
+                                                width={46}
+                                            />
+                                            <div className={'right-title word-nowrap'}>Net Weight</div>
+                                        </label>
+                                    </Col>}
+                                    {ICCapplicability.label !== 'Fixed' &&
+                                        <Col md="3">
+                                            <TextFieldHookForm
+                                                label={false}
+                                                name={'CostApplicability'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={false}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.CostApplicability}
+                                                disabled={true}
+                                            />
+                                        </Col>}
+                                    <Col md={ICCapplicability.label === 'Fixed' ? '6' : '3'}>
                                         <TextFieldHookForm
                                             label={false}
-                                            name={'InterestRatePercentage'}
+                                            name={'NetICCTotal'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
                                             mandatory={false}
-                                            handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                            handleChange={() => { }}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            disabled={CostingViewMode ? true : false}
+                                            errors={errors.NetICCTotal}
+                                            disabled={true}
                                         />
-                                        {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
-                                    </div>}
-                            </Col>
-                            {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && < Col md="2" className="switch mt-2">
-                                <label className="switch-level">
-                                    <div className={'right-title mr-2'}>RMC</div>
-                                    <Switch
-                                        onChange={onPressRmc}
-                                        checked={isNetWeight}
-                                        id="normal-switch"
-                                        disabled={CostingViewMode ? true : false}
-                                        background="#4DC771"
-                                        onColor="#4DC771"
-                                        onHandleColor="#ffffff"
-                                        offColor="#CCC"
-                                        uncheckedIcon={false}
-                                        checkedIcon={false}
-                                        height={20}
-                                        width={46}
-                                    />
-                                    <div className={'right-title'}>Net Weight</div>
-                                </label>
-                            </Col>}
-                            {ICCapplicability.label !== 'Fixed' &&
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={false}
-                                        name={'CostApplicability'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.CostApplicability}
-                                        disabled={true}
-                                    />
-                                </Col>}
-                            <Col md={ICCapplicability.label === 'Fixed' ? '6' : '3'}>
-                                <TextFieldHookForm
-                                    label={false}
-                                    name={'NetICCTotal'}
-                                    Controller={Controller}
-                                    control={control}
-                                    register={register}
-                                    mandatory={false}
-                                    handleChange={() => { }}
-                                    defaultValue={''}
-                                    className=""
-                                    customClassName={'withBorder'}
-                                    errors={errors.NetICCTotal}
-                                    disabled={true}
-                                />
-                            </Col>
-                        </>
+                                    </Col>
+                                </>
+                            </Row>
+                        </Col>
+                        <Col md="1" className='second-section pr-2'>
+                            <div className='costing-border-inner-section'>
+                                <Col md="12" className='text-center'>Remark</Col>
+                                <Col md="12">
+                                    <Popup trigger={<button id={`popUpTriggerIcc`} title="Remark" className="Comment-box" type={'button'} />}
+                                        position="top center">
+                                        <TextAreaHookForm
+                                            label="Remark:"
+                                            name={`iccRemark`}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={false}
+                                            rules={{
+                                                maxLength: REMARKMAXLENGTH
+                                            }}
+                                            handleChange={() => { }}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors.iccRemark}
+                                            disabled={CostingViewMode}
+                                            hidden={false}
+                                        />
+                                        <Row>
+                                            <Col md="12" className='remark-btn-container'>
+                                                <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickIcc()} > <div className='save-icon'></div> </button>
+                                                <button className='reset' onClick={() => onRemarkPopUpCloseIcc()} > <div className='cancel-icon'></div></button>
+                                            </Col>
+                                        </Row>
+                                    </Popup>
+                                </Col>
+                            </div>
+                        </Col>
                     </Row>
+
                 </>
             }
         </>
