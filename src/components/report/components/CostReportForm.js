@@ -763,7 +763,7 @@ function CostReportForm(props) {
                                 Reset
                             </button>
                         </Col>
-                            <Col md={customerPoamSummary ? 4 : 6} className="mt-4 pt-2 text-right">
+                            <Col md={customerPoamSummary ? 4 : 3} className="mt-4 pt-2 text-right">
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>

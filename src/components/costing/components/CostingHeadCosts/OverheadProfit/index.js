@@ -21,6 +21,14 @@ import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
+
+export const tooltipTextFunc = (id, condition, text) => {
+
+  let temp = condition && <TooltipCustom id={id} customClass="mt-2" tooltipText={text} />
+  return temp;
+  // {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
+  //     <TooltipCustom id="OverheadRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+}
 function OverheadProfit(props) {
 
   const { data } = props;
@@ -1325,7 +1333,6 @@ function OverheadProfit(props) {
     if (errors.profitRemark !== undefined) {
       return false
     }
-
     setProfitObj({
       ...profitObj,
       Remark: getValues('profitRemark')
@@ -1336,6 +1343,18 @@ function OverheadProfit(props) {
     }
     var button = document.getElementById(`popUpTriggerProfit`)
     button.click()
+  }
+
+  const renderText = (type, RMValue) => {
+    let text = '';
+    switch (type) {
+      case 'OverheadCombinedCost':
+        let checkValid = (overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true)
+        text = checkValid ? `RM cut-off price ${RMValue} applied` : ''
+        break;
+      default:
+        break;
+    }
   }
 
   const onRemarkPopUpCloseProfit = () => {
