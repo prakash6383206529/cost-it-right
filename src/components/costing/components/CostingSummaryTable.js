@@ -1764,7 +1764,7 @@ const CostingSummaryTable = (props) => {
                                 {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
                                 {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
                                 {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
-                                {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss</span>}
+                                {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
                                 <span className={highlighter("BurningLossWeight")}>Burning Loss Weight</span>
                                 <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
                               </td>
@@ -1800,7 +1800,7 @@ const CostingSummaryTable = (props) => {
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
                                       {data?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}>{`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}</span> : '-')}
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
 
