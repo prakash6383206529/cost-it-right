@@ -209,8 +209,8 @@ const CostingSummaryTable = (props) => {
         checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.CostingPartDetails.NetConditionCost, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.CostingPartDetails.NetNpvCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.CostingPartDetails?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.CostingPartDetails?.NetNpvCost, initialConfiguration.NoOfDecimalForPrice),
       ]
 
       let labelArray = temp.reduce((acc, item, index) => {

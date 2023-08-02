@@ -978,6 +978,7 @@ export const API = {
   getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
   getPoamSummaryReport: `${BASE_URL}/reports/get-poam-summary-report`,
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
+  rfqGetBestCostingDetails: `${BASE_URL}/rfq-costing/rfq-get-best-costing-details`,
   getAllNfrList: `${BASE_URL}/nfr/get-all-nfr-list`,
   getNfrPartDetails: `${BASE_URL}/nfr/get-nfr-part-details`,
   getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
