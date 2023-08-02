@@ -25,6 +25,7 @@ import { createOperationsAPI, fileUploadOperation, getOperationPartSelectList, u
 import LoaderCustom from "../../common/LoaderCustom";
 import Dropzone from "react-dropzone-uploader";
 import imgRedcross from '../../../assests/images/red-cross.png';
+import TooltipCustom from "../../common/Tooltip";
 
 function AddMoreOperation(props) {
     const { addMoreDetailObj, isEditFlag, detailObject, isViewMode } = props
@@ -1134,7 +1135,6 @@ function AddMoreOperation(props) {
 
                                             </Col>
                                             <Col md="3">
-
                                                 <NumberFieldHookForm
                                                     label={getLabel('wireRate')}
                                                     name={'wireRate'}
@@ -1185,9 +1185,12 @@ function AddMoreOperation(props) {
 
 
                                             <Col md="3">
+                                                <TooltipCustom id={"wireRate"} disabledIcon={true} width={"230px"} tooltipText={`${getLabel('wireCost')} = ${getLabel('wireRate')} * Consumption`} />
+
                                                 <NumberFieldHookForm
                                                     label={getLabel('wireCost')}
                                                     name={'wireCost'}
+                                                    id={"wireRate"}
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
@@ -1282,8 +1285,11 @@ function AddMoreOperation(props) {
                                             </Col>
 
                                             <Col md="3">
+                                                <TooltipCustom id={"gasCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Cost = ${getLabel('gasRate')} * Consumption`} />
+
                                                 <NumberFieldHookForm
                                                     label={`Cost`}
+                                                    id={"gasCostWelding"}
                                                     name={'gasCostWelding'}
                                                     Controller={Controller}
                                                     control={control}
@@ -1349,10 +1355,12 @@ function AddMoreOperation(props) {
 
                                         </Col>
                                             <Col md="3">
+                                                <TooltipCustom id={"electricityCost"} width={"230px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
 
                                                 <NumberFieldHookForm
                                                     label={`Electricity Cost`}
                                                     name={'electricityCost'}
+                                                    id={"electricityCost"}
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
@@ -1449,10 +1457,12 @@ function AddMoreOperation(props) {
                                             </Col>
 
                                             <Col md="3">
+                                                <TooltipCustom id={"electricityCostWelding"} width={"230px"} disabledIcon={true} tooltipText={`Electricity Cost = Electricity Rate * Consumption`} />
                                                 <NumberFieldHookForm
                                                     label={`Electricity Cost`}
                                                     name={'electricityCostWelding'}
                                                     Controller={Controller}
+                                                    id={"electricityCostWelding"}
                                                     control={control}
                                                     register={register}
                                                     mandatory={false}
@@ -1664,9 +1674,11 @@ function AddMoreOperation(props) {
                                                 </Col>
 
                                                 <Col md="3">
+                                                    <TooltipCustom id={"labourCost"} width={"230px"} disabledIcon={true} tooltipText={`Labour Cost = Labour Rate / Welding/Shift`} />
                                                     <NumberFieldHookForm
                                                         label={`Labour Cost`}
                                                         name={'labourCost'}
+                                                        id={"labourCost"}
                                                         Controller={Controller}
                                                         control={control}
                                                         register={register}
@@ -2382,10 +2394,12 @@ function AddMoreOperation(props) {
 
 
                                                 <Col md="3">
+                                                    <TooltipCustom id={"rejoinReworkCost"} disabledIcon={true} width={"270px"} tooltipText={`Rejection & Rework Cost = Statuatory & License * Rejection & Rework / 100`} />
                                                     <NumberFieldHookForm
                                                         label={`Rejection & Rework Cost`}
                                                         name={'rejoinReworkCost'}
                                                         Controller={Controller}
+                                                        id={"rejoinReworkCost"}
                                                         control={control}
                                                         register={register}
                                                         mandatory={false}
@@ -2458,8 +2472,10 @@ function AddMoreOperation(props) {
 
 
                                                 <Col md="3">
+                                                    <TooltipCustom id={"profitCost"} disabledIcon={true} width={"270px"} tooltipText={`Profit Cost = Statuatory & License * Profit  / 100`} />
                                                     <NumberFieldHookForm
                                                         label={`Profit Cost`}
+                                                        id={"profitCost"}
                                                         name={'profitCost'}
                                                         Controller={Controller}
                                                         control={control}
@@ -2631,12 +2647,13 @@ function AddMoreOperation(props) {
                                 }
                             </Row>
 
-
+                            <TooltipCustom id={"netCost"} disabledIcon={true} tooltipText={`Rate = Total Cost of all Section`} />
                             <Col md="3">
                                 <NumberFieldHookForm
                                     label={`Rate (INR)`}
                                     name={'netCost'}
                                     Controller={Controller}
+                                    id={"netCost"}
                                     control={control}
                                     register={register}
                                     mandatory={false}
