@@ -4041,8 +4041,8 @@ export const SurfaceTreatmentPartGetJSON = [
     }
 ]
 
-export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
-export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
+export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension', 'Area']
+export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension', 'Area']
 export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Time']
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableFuelUOM = ['Mass', 'Volume']
