@@ -41,13 +41,13 @@ function BDSimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
-    const [isDisable, setIsDisable] = useState(false)
     const gridRef = useRef();
+    const [isDisable, setIsDisable] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
-    const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
+    const [maxDate, setMaxDate] = useState('');
     const [noData, setNoData] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false)
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
@@ -110,8 +110,8 @@ function BDSimulation(props) {
         obj.SimulationTechnologyId = selectedMasterForSimulation?.value
         obj.SimulationTypeId = list[0].CostingTypeId
         obj.LoggedInUserId = loggedInUserId()
-        obj.TechnologyId = selectedTechnologyForSimulation.value
-        obj.TechnologyName = selectedTechnologyForSimulation.label
+        obj.TechnologyId = selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null
+        obj.TechnologyName = selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null
         obj.EffectiveDate = effectiveDate
         // if (filteredRMData.plantId && filteredRMData.plantId.value) {
         //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
@@ -361,8 +361,8 @@ function BDSimulation(props) {
         oldBasicRateFormatter: oldBasicRateFormatter,
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
-        revisedBasicRateHeader: revisedBasicRateHeader,
         customerFormatter: customerFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader
     };
 
     const basicRatetooltipToggle = () => {

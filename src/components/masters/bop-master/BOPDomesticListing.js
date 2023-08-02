@@ -852,6 +852,7 @@ class BOPDomesticListing extends Component {
                         messageLabel={'BOP Domestic'}
                         anchor={'right'}
                         masterId={BOP_MASTER_ID}
+                        typeOfEntryId={ENTRY_TYPE_DOMESTIC}
                     />
                 }
 

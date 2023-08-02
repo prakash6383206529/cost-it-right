@@ -829,6 +829,7 @@ class BOPImportListing extends Component {
                         messageLabel={'BOP Import'}
                         anchor={'right'}
                         masterId={BOP_MASTER_ID}
+                        typeOfEntryId={ENTRY_TYPE_IMPORT}
                     />
                 }
 
