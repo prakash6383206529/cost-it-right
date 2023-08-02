@@ -169,7 +169,7 @@ function ViewRM(props) {
               <th>{`Shearing Cost`}</th>
               <th>{`Burning Loss Weight`}</th>
               {viewCostingData[0].technologyId === DIE_CASTING && <th>Casting Weight</th>}
-              {viewCostingData[0].technologyId === DIE_CASTING && <th>Melting Loss</th>}
+              {viewCostingData[0].technologyId === DIE_CASTING && <th>Melting Loss (Loss%)</th>}
               <th >{`Net RM Cost/Pc`}</th>
               {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
               <th className="costing-border-right">{`Remark`}</th>
