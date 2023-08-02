@@ -856,7 +856,7 @@ function SimulationApprovalSummary(props) {
                 {cell}
                 {row?.IsImpactedPart && (
                     <i
-                        className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-2 pb-1 ml-4 float-unset`}
+                        className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-2 pb-1 ml-5 float-unset`}
                         id={`bop-tooltip${row?.CostingId}`}
                         onMouseEnter={() => tooltipToggle(row?.CostingId)}
                         onMouseLeave={() => tooltipToggle(row?.CostingId)}
