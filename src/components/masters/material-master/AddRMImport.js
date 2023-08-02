@@ -1903,7 +1903,7 @@ class AddRMImport extends Component {
                               className=""
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
-                              validate={[maxLength512]}
+                              validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               component={renderTextAreaField}
                               disabled={isViewFlag}
                               maxLength="512"

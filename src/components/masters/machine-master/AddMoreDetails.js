@@ -4249,7 +4249,7 @@ class AddMoreDetails extends Component {
                             customClassName=" textAreaWithBorder"
                             disabled={this.state.isViewMode}
                             onChange={this.handleMessageChange}
-                            validate={[maxLength512]}
+                            validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             // required={true}
                             component={renderTextAreaField}
                             maxLength="512"

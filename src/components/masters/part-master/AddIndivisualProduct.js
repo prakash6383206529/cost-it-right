@@ -402,7 +402,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"Description"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[maxLength80, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                                                             component={renderText}
                                                             required={false}
                                                             className=""
@@ -518,7 +518,7 @@ class AddIndivisualProduct extends Component {
                                                             placeholder={isViewMode ? "-" : "Type here..."}
                                                             className=""
                                                             customClassName=" textAreaWithBorder"
-                                                            validate={[maxLength512, checkWhiteSpaces]}
+                                                            validate={[maxLength512, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter]}
                                                             //required={true}
                                                             component={renderTextAreaField}
                                                             maxLength="5000"
