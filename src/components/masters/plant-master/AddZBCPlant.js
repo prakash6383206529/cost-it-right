@@ -572,15 +572,16 @@ class AddZBCPlant extends Component {
                       <div className={"cancel-icon"}></div>
                       {"Cancel"}
                     </button>
-                    <button
-                      type="button"
-                      onClick={this.onSubmit}
-                      className="user-btn save-btn"
-                      disabled={isViewMode || setDisable}
-                    >
-                      <div className={"save-icon"}></div>
-                      {isEditFlag ? "Update" : "Save"}
-                    </button>
+                    {!isViewMode &&
+                      <button
+                        type="button"
+                        onClick={this.onSubmit}
+                        className="user-btn save-btn"
+                        disabled={isViewMode || setDisable}
+                      >
+                        <div className={"save-icon"}></div>
+                        {isEditFlag ? "Update" : "Save"}
+                      </button>}
                   </div>
                 </Row>
               </form>
