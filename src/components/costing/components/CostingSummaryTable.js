@@ -1077,6 +1077,11 @@ const CostingSummaryTable = (props) => {
       item.rejectionPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : item?.rejectionOn.rejectionPercentage : '')
       item.iccPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.iccOn.iccTitle === 'Fixed' ? '-' : item?.iccOn.iccPercentage : '')
       item.paymentPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? item?.paymentTerms.paymentTitle === 'Fixed' ? '-' : item?.paymentTerms.paymentPercentage : ''
+      item.OverheadRemark = item?.overheadOn?.OverheadRemark
+      item.ProfitRemark = item?.profitOn?.ProfitRemark
+      item.RejectionRemark = item?.rejectionOn?.RejectionRemark
+      item.ICCRemark = item?.iccOn?.ICCRemark
+      item.PaymentTermRemark = item?.paymentTerms?.PaymentTermRemark
     })
 
     let masterDataArray = []
