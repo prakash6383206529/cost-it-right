@@ -1866,7 +1866,7 @@ class AddMachineRate extends Component {
                             className=""
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
-                            validate={[maxLength512]}
+                            validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             //required={true}
                             component={renderTextAreaField}
                             maxLength="512"

@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
@@ -1297,7 +1297,7 @@ class AddProfit extends Component {
                             className=""
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
-                            validate={[maxLength512]}
+                            validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             //required={true}
                             component={renderTextAreaField}
                             maxLength="512"
