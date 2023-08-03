@@ -232,16 +232,10 @@ function RMDomesticListing(props) {
                     setTimeout(() => {
                         for (var prop in floatingFilterData) {
 
-                            if (isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
-                                if (floatingFilterData[prop] !== "") {
-                                    isReset = false
-                                }
-                            } else {
-
-                                if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
-                                    isReset = false
-                                }
+                            if (prop !== "DepartmentName" && prop !== 'RawMaterialEntryType' && floatingFilterData[prop] !== "") {
+                                isReset = false
                             }
+
                         }
                         // Sets the filter model via the grid API
                         isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
