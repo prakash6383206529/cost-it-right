@@ -1530,15 +1530,27 @@ function UserRegistration(props) {
           }))
         }
         else {
-          reset();
-          dispatch(updateUserAPI(updatedData, (res) => {
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
-              cancel();
+          props.hideForm()
+          let temp = ['FirstName', 'FullName', 'Mobile', 'PhoneNumber', 'AddressLine1', 'AddressLine2', 'CityName', 'ZipCode']
+          let isDataChanged = false
+
+          temp.map((item) => {
+            if (updatedData[item] !== registerUserData[item]) {
+              isDataChanged = true
             }
-            setIsLoader(false)
-            setShowPopup(false)
-          }))
+            return false
+          })
+
+          if (isDataChanged) {
+            dispatch(updateUserAPI(updatedData, (res) => {
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+                cancel();
+              }
+              setIsLoader(false)
+              setShowPopup(false)
+            }))
+          }
         }
 
       }
