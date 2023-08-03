@@ -385,10 +385,10 @@ class AddOverhead extends Component {
         isHideRM: false,
       })
     }
-    if (this.state.overheadAppli.value === newValue.value) {
+    if (this.state.isEditFlag && this.state.overheadAppli.value === newValue.value) {
       this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false })
     }
-    else {
+    else if (this.state.isEditFlag) {
       this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
