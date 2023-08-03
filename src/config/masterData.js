@@ -2169,6 +2169,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
+    { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2186,6 +2187,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "CustomerCode": "C-10008",
         'NumberOfPieces': '1',
         'BasicRate': '100',
+        "IsClientVendorBOP": "YES",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2198,6 +2200,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "CustomerCode": "C-10008",
         'NumberOfPieces': '1',
         'BasicRate': '100',
+        "IsClientVendorBOP": "YES",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2210,6 +2213,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "CustomerCode": "C-10008",
         'NumberOfPieces': '1',
         'BasicRate': '100',
+        "IsClientVendorBOP": "YES",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
@@ -2403,6 +2407,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
     { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
+    { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2422,6 +2427,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'IncoTerm': 'CFR',
         'PaymentTerm': 'A000',
         'BasicRate': '100',
+        "IsClientVendorBOP": "NO",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2437,6 +2443,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'IncoTerm': 'CFR',
         'PaymentTerm': 'A000',
         'BasicRate': '100',
+        "IsClientVendorBOP": "NO",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2452,6 +2459,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'IncoTerm': 'CFR',
         'PaymentTerm': 'A000',
         'BasicRate': '100',
+        "IsClientVendorBOP": "NO",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
