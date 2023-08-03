@@ -68,7 +68,7 @@ function PaymentTerms(props) {
                 "PaymentTermCRMHead": tempPaymentTermObj.PaymentTermCRMHead ? tempPaymentTermObj.PaymentTermCRMHead : '',
                 "Remark": tempPaymentTermObj.Remark ? tempPaymentTermObj.Remark : ''
             }
-            setValue('NetCost', IsPaymentTermsApplicable ? checkForDecimalAndNull(tempPaymentTermObj.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
+            setValue('RepaymentPeriodCost', IsPaymentTermsApplicable ? checkForDecimalAndNull(tempPaymentTermObj.NetCost, initialConfiguration.NoOfDecimalForPrice) : '')
             if (!CostingViewMode) {
                 props.setPaymentTermsDetail(tempObj, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
             }
@@ -137,44 +137,7 @@ function PaymentTerms(props) {
         }
     }
 
-    // useEffect(() => {
-    //     if (IsPaymentTermsApplicable === true && Object.keys(costData).length >0) {
 
-    //         const reqParams = {
-    //             VendorId: costData.IsVendor ? costData.VendorId : EMPTY_GUID,
-    //             IsVendor: costData.IsVendor
-    //         }
-
-    //         if(costData?.IsVendor && (costData.IsVendor !== null|| costData.IsVendor !== undefined)){
-    //             dispatch(getPaymentTermsDataByHeads(reqParams, res => {
-
-    //                 if (res && res.data && res.data.Result) {
-    //                     let Data = res.data.Data;
-    //                     setValue('RepaymentPeriodDays', Data.RepaymentPeriod)
-    //                     setValue('RepaymentPeriodPercentage', Data.InterestRate !== null ? Data.InterestRate : 0)
-    //                     setPaymentTermInterestRateId(Data.InterestRateId !== EMPTY_GUID ? Data.InterestRateId : null)
-    //                     checkPaymentTermApplicability(Data.PaymentTermApplicability)
-    //                     setPaymentTermsApplicability({ label: Data.PaymentTermApplicability, value: Data.PaymentTermApplicability })
-    //                     setPaymentTermObj(Data)
-    //                 } else if (res.status === 204) {
-    //                     setValue('RepaymentPeriodDays', '')
-    //                     setValue('RepaymentPeriodPercentage', '')
-    //                     setValue('RepaymentPeriodCost', '')
-    //                     checkPaymentTermApplicability('')
-    //                     setPaymentTermsApplicability([])
-    //                     setPaymentTermObj({})
-    //                 }
-
-    //             }))
-    //         }
-
-    //     } else {
-    //         setPaymentTermsApplicability([])
-    //         if (!CostingViewMode) {
-    //             props.setPaymentTermsDetail(null, { BOMLevel: data.BOMLevel, PartNumber: data.PartNumber })
-    //         }
-    //     }
-    // }, [IsPaymentTermsApplicable])
 
 
     // //USEEFFECT CALLED FOR FIXED VALUES SELECTED IN DROPDOWN
@@ -484,16 +447,17 @@ function PaymentTerms(props) {
                                             <div className='p-relative error-wrapper'>
                                                 <TextFieldHookForm
                                                     label={false}
-                                                    name={'RepaymentPeriodPercentage'}
+                                                    name={'RepaymentPeriodFixed'}
                                                     Controller={Controller}
                                                     control={control}
                                                     register={register}
                                                     mandatory={false}
-                                                    handleChange={(e) => handleChangeInterestRateFixedLimit(e)}
+                                                    handleChange={() => { dispatch(isOverheadProfitDataChange(true)) }}
                                                     defaultValue={''}
                                                     className=""
                                                     customClassName={'withBorder'}
-                                                    disabled={CostingViewMode || paymentTermsApplicability.label !== 'Fixed' ? true : false}
+                                                    errors={errors.RepaymentPeriodDays}
+                                                    disabled={(paymentTermsApplicability.label !== 'Fixed' || CostingViewMode) ? true : false}
                                                 />
                                                 {paymentTermsApplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                                             </div>}
