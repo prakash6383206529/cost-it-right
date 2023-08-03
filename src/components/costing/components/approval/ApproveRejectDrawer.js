@@ -400,7 +400,8 @@ function ApproveRejectDrawer(props) {
                 CostingId: approvalData[0].CostingId,
                 DecimalOption: approvalData[0].DecimalOption,
                 InfoToConditions: props.conditionInfo,
-                TokenNumber: approvalData[0]?.ApprovalNumber
+                TokenNumber: approvalData[0]?.ApprovalNumber,
+                IsRequestForCosting: true
                 // Quantity: quantity
                 // effectiveDate: '11/30/2021',
                 // vendorCode: '203670',
@@ -575,7 +576,8 @@ function ApproveRejectDrawer(props) {
                   purchasingGroup: '',
                   materialGroup: '',
                   taxCode: 'YW', TokenNumber: simulationDetail.Token,
-                  DecimalOption: simulationDetail.DecimalOption
+                  DecimalOption: simulationDetail.DecimalOption,
+                  IsRequestForCosting: false
                   // Quantity: quantity
                 })
               })

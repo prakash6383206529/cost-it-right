@@ -340,7 +340,8 @@ function ApprovalSummary(props) {
       CostingId: approvalData.CostingId,
       DecimalOption: approvalData.DecimalOption,
       InfoToConditions: conditionInfo,
-      TokenNumber: approvalData?.ApprovalNumber
+      TokenNumber: approvalData?.ApprovalNumber,
+      IsRequestForCosting: true
       // effectiveDate: '11/30/2021',
       // vendorCode: '203670',
       // materialNumber: 'S07004-003A0Y',

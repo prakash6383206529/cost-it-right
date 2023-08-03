@@ -1011,7 +1011,8 @@ function SimulationApprovalSummary(props) {
                 materialGroup: '',
                 taxCode: 'YW',
                 TokenNumber: simulationDetail?.Token,
-                DecimalOption: simulationDetail?.DecimalOption
+                DecimalOption: simulationDetail?.DecimalOption,
+                IsRequestForCosting: false
             })
         })
 
