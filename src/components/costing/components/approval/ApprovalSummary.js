@@ -355,15 +355,15 @@ function ApprovalSummary(props) {
       // purchasingGroup: 'O02'
 
     }
-    // let obj = {
-    //   LoggedInUserId: loggedInUserId(),
-    //   Request: [pushdata]
-    // }
-    // dispatch(approvalPushedOnSap(obj, res => {
-    //   if (res && res.status && (res.status === 200 || res.status === 204)) {
-    //     Toaster.success('Approval pushed successfully.')
-    //   }
-    // }))
+    let obj = {
+      LoggedInUserId: loggedInUserId(),
+      Request: [pushdata]
+    }
+    dispatch(approvalPushedOnSap(obj, res => {
+      if (res && res.status && (res.status === 200 || res.status === 204)) {
+        Toaster.success('Approval pushed successfully.')
+      }
+    }))
     setShowListing(true)
 
   }, 500)
