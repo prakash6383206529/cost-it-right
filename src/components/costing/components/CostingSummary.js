@@ -81,6 +81,8 @@ function CostingSummary(props) {
       dispatch(getSelectListPartType((res) => {
         setPartTypeList(res?.data?.SelectList)
       }))
+      reactLocalStorage.setObject('costingArray', [])
+      reactLocalStorage.setObject('surfaceCostingArray', [])
     }
     return () => {
       reactLocalStorage.setObject('PartData', [])
@@ -124,6 +126,7 @@ function CostingSummary(props) {
               let dataFromAPI = res.data.Data
               const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
               dispatch(setCostingViewData(tempObj))
+
             }
           },
           ))
