@@ -207,7 +207,7 @@ function SupplierContributionReport(props) {
                 ctx.font = 1.5 + "em sans-serif";
                 ctx.textBaseline = "top";
                 var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString('en-IN')}`,
-                    textX = width / (2.1 + (0.02 * (String(totalCost).length))),
+                    textX = width / (2.01 + (0.02 * (String(totalCost).length))),
                     textY = height / 2;
                 ctx.fillText(text, textX, textY);
                 ctx.save();
