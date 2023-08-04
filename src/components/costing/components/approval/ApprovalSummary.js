@@ -355,15 +355,15 @@ function ApprovalSummary(props) {
       // purchasingGroup: 'O02'
 
     }
-    // let obj = {
-    //   LoggedInUserId: loggedInUserId(),
-    //   Request: [pushdata]
-    // }
-    // dispatch(approvalPushedOnSap(obj, res => {
-    //   if (res && res.status && (res.status === 200 || res.status === 204)) {
-    //     Toaster.success('Approval pushed successfully.')
-    //   }
-    // }))
+    let obj = {
+      LoggedInUserId: loggedInUserId(),
+      Request: [pushdata]
+    }
+    dispatch(approvalPushedOnSap(obj, res => {
+      if (res && res.status && (res.status === 200 || res.status === 204)) {
+        Toaster.success('Approval pushed successfully.')
+      }
+    }))
     setShowListing(true)
 
   }, 500)
@@ -693,7 +693,7 @@ function ApprovalSummary(props) {
               </div>
             </Row>
           }
-          {/* {
+          {
             showPushButton &&
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right bluefooter-butn">
@@ -705,7 +705,7 @@ function ApprovalSummary(props) {
                 </Fragment>
               </div>
             </Row>
-          } */}
+          }
 
 
           {
