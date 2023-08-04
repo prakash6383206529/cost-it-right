@@ -148,8 +148,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
-      reactLocalStorage.setObject('costingArray', [])
-      reactLocalStorage.setObject('surfaceCostingArray', [])
+
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -522,7 +521,10 @@ function CostingDetails(props) {
       //   }
       // })))
 
+      reactLocalStorage.setObject('costingArray', [])
+      reactLocalStorage.setObject('surfaceCostingArray', [])
       setIsOpenVendorSOBDetails(true)
+
     } else {
       Toaster.warning('Please select Technology or Part.')
     }
