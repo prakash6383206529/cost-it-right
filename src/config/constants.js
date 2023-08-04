@@ -2606,5 +2606,6 @@ export const LABOUR_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype
 export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_RAW_MATERIAL])
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
+
 //VERSION 
-export const VERSION = "V2.1.222";
+export const VERSION = "V2.1.226";
