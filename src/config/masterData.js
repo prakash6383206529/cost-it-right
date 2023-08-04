@@ -2473,6 +2473,7 @@ export const BOP_CBC_IMPORT_TempData = [
 */
 export const VOLUME_ACTUAL_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
@@ -2483,6 +2484,7 @@ export const VOLUME_ACTUAL_ZBC = [
 export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'PlantCode': 'P1',
+        'PartType': 'Component/Assembly/Bought Out Part',
         'PartNumber': 'Screw01',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2497,6 +2499,7 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
 export const VOLUME_ACTUAL_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
@@ -2508,6 +2511,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
         'VendorCode': 'Tata01',
         'PlantCode': 1032,
+        'PartType': 'Component/Assembly/Bought Out Part',
         'PartNumber': 'Screw Jack',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2521,6 +2525,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
 export const VOLUME_ACTUAL_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
@@ -2532,6 +2537,7 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
     {
         'CustomerCode': 'C-10008',
         'PlantCode': 1032,
+        'PartType': 'Component/Assembly/Bought Out Part',
         'PartNumber': 'Screw Jack',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2544,6 +2550,7 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
 */
 export const VOLUME_BUDGETED_ZBC = [
     { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
@@ -2555,6 +2562,7 @@ export const VOLUME_BUDGETED_ZBC = [
 export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'PlantCode': 'Systematix01',
+        'PartType': 'Component/Assembly/Bought Out Part',
         'PartNumber': 'Screw01',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2570,6 +2578,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
 export const VOLUME_BUDGETED_VBC = [
     { label: 'VendorCode', value: 'VendorCode', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
@@ -2582,6 +2591,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
     {
         'VendorCode': 'Tata01',
         'PlantCode': "1032",
+        'PartType': 'Component/Assembly/Bought Out Part',
         'PartNumber': 'Screw01',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2593,6 +2603,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
 export const VOLUME_BUDGETED_CBC = [
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', },
     { label: 'Year', value: 'Year', }, //*
@@ -2605,6 +2616,7 @@ export const VOLUME_BUDGETED_CBC_TEMPDATA = [
     {
         'CustomerCode': 'C-10008',
         'PlantCode': "1032",
+        'PartType': 'Component/Assembly/Bought Out Part',
         'PartNumber': 'Screw01',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2621,6 +2633,7 @@ let budgetCostingHeads = reactLocalStorage.getObject('budgetCostingHeads')
 export const BUDGET_ZBC = [
     { label: 'PartCostingHead', value: 'PartCostingHead', },
     { label: 'Year', value: 'Year', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
@@ -2636,6 +2649,7 @@ Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
         {
             'PartCostingHead': `${item.Text}`,
             'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartType': 'Component/Assembly/Bought Out Part',
             'PartNumber': 'Screw01',
             'RevisionNumber': '1',
             'PlantCode': '1032',
@@ -2652,6 +2666,7 @@ export const BUDGET_VBC = [
 
     { label: 'PartCostingHead', value: 'PartCostingHead', },
     { label: 'Year', value: 'Year', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
@@ -2668,6 +2683,7 @@ Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
         {
             'PartCostingHead': `${item.Text}`,
             'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartType': 'Component/Assembly/Bought Out Part',
             'PartNumber': 'Screw01',
             'RevisionNumber': '1',
             'VendorCode': "Tata01",
@@ -2684,6 +2700,7 @@ export const BUDGET_CBC = [
 
     { label: 'PartCostingHead', value: 'PartCostingHead', },
     { label: 'Year', value: 'Year', }, //*
+    { label: 'PartType', value: 'PartType', }, //*
     { label: 'PartNumber', value: 'PartNumber', }, //*
     { label: 'RevisionNumber', value: 'RevisionNumber', }, //*
     { label: 'PlantCode', value: 'PlantCode', }, //*
@@ -2700,6 +2717,7 @@ Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
         {
             'PartCostingHead': `${item.Text}`,
             'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
+            'PartType': 'Component/Assembly/Bought Out Part',
             'PartNumber': 'Screw01',
             'RevisionNumber': '1',
             'PlantCode': '1032',

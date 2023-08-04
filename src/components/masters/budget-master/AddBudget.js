@@ -7,7 +7,7 @@ import { getCurrencySelectList, getPlantSelectListByType, getVendorNameByVendorS
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
-import { BUDGET_ID, CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { BUDGET_ID, CBCTypeId, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -30,9 +30,8 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { userTechnologyDetailByMasterId } from '../../../helper'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
-
+import { getSelectListPartType } from '../actions/Part'
 const gridOptions = {};
-
 function AddBudget(props) {
 
 
@@ -88,6 +87,8 @@ function AddBudget(props) {
     const [showTooltip, setShowTooltip] = useState(false)
     const [viewTooltip, setViewTooltip] = useState(false)
     const [conditionAcc, setConditionAcc] = useState(false);
+    const [partType, setPartType] = useState([]);
+    const [partTypeList, setPartTypeList] = useState([])
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
 
     useEffect(() => {
@@ -121,7 +122,9 @@ function AddBudget(props) {
         getDetail()
 
         dispatch(getUsersMasterLevelAPI(loggedInUserId(), BUDGET_ID, (res) => { }))
-
+        dispatch(getSelectListPartType((res) => {
+            setPartTypeList(res?.data?.SelectList)
+        }))
     }, [])
 
 
@@ -176,6 +179,24 @@ function AddBudget(props) {
                 return null;
             });
             return temp;
+        }
+
+        if (label === 'currency') {
+            currencySelectList && currencySelectList.map(item => {
+                if (item.Value === '0') return false;
+                temp.push({ label: item.Text, value: item.Value })
+                return null;
+            });
+            return temp;
+        }
+        if (label === 'PartType') {
+            partTypeList && partTypeList.map((item) => {
+                if (item.Value === '0') return false
+                if (item.Value === PRODUCT_ID) return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
         }
     }
     /**
@@ -267,7 +288,21 @@ function AddBudget(props) {
             setClient([])
         }
     };
-
+    /**
+     * @method handlePartChange
+     * @description  USED TO HANDLE PART CHANGE
+     */
+    const handlePartTypeChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setPartType(newValue)
+            setValue('PartNumber', '')
+            setPart('')
+        } else {
+            setPartType([])
+        }
+        setPartName([])
+        reactLocalStorage.setObject('PartData', [])
+    }
 
     /**
      * @method buttonFormatter
@@ -699,7 +734,7 @@ function AddBudget(props) {
 
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput)
+            const res = await getPartSelectListWtihRevNo(resultInput, null, null, partType?.value)
 
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
@@ -941,7 +976,23 @@ function AddBudget(props) {
                                                                     </div>
                                                                 </>
                                                             )}
-
+                                                            <Col className="col-md-15">
+                                                                <SearchableSelectHookForm
+                                                                    label={"Part Type"}
+                                                                    name={"PartType"}
+                                                                    placeholder={"Select"}
+                                                                    Controller={Controller}
+                                                                    control={control}
+                                                                    rules={{ required: true }}
+                                                                    register={register}
+                                                                    defaultValue={partType.length !== 0 ? partType : ""}
+                                                                    options={renderListing('PartType')}
+                                                                    mandatory={true}
+                                                                    handleChange={handlePartTypeChange}
+                                                                    errors={errors.Part}
+                                                                    disabled={isEditFlag ? true : false}
+                                                                />
+                                                            </Col>
                                                             <Col md="3">
                                                                 <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
                                                                 <div className="d-flex justify-space-between align-items-center async-select">
@@ -957,7 +1008,7 @@ function AddBudget(props) {
                                                                             onKeyDown={(onKeyDown) => {
                                                                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                                                             }}
-                                                                            isDisabled={isEditFlag ? true : false}
+                                                                            isDisabled={(isEditFlag || partType.length === 0) ? true : false}
                                                                             onBlur={() => setShowErrorOnFocus(true)}
                                                                         />
                                                                         {((showErrorOnFocusPart && part.length === 0) || isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
