@@ -295,6 +295,14 @@ class SideBar extends Component {
     );
   };
 
+  getSpecificIdForElement = (data) => {
+    let id = '';
+    if (data) {
+      id = data.NavigationURL && data.NavigationURL.replace('/', '');
+    }
+    return id;
+  }
+
   /**
    * @method renderMaster
    * @description Render master menu.
@@ -356,6 +364,7 @@ class SideBar extends Component {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
+                              id={this.getSpecificIdForElement(item)}
                               onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
@@ -451,6 +460,7 @@ class SideBar extends Component {
                           <li key={i} className={`mb5`}>
                             <Link
                               onClick={() => this.setLeftMenu(el.ModuleId)}
+                              id={this.getSpecificIdForElement(item)}
                               to={{
                                 pathname: item.NavigationURL,
                                 state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
@@ -525,6 +535,7 @@ class SideBar extends Component {
                         <li key={i} className={`mb5`}>
                           <Link
                             onClick={() => this.setLeftMenu(el.ModuleId)}
+                            id={this.getSpecificIdForElement(item)}
                             to={{
                               pathname: item.NavigationURL,
                               state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
@@ -585,6 +596,8 @@ class SideBar extends Component {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
+
+                              id={this.getSpecificIdForElement(item)}
                               onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
@@ -663,6 +676,7 @@ class SideBar extends Component {
                         <li key={i} className={`mb5`}>
                           <Link
                             onClick={() => this.setLeftMenu(el.ModuleId)}
+                            id={this.getSpecificIdForElement(item)}
                             to={{
                               pathname: item.NavigationURL,
                               state: { ModuleId: localStorage.getItem('ModuleId'), PageName: item.PageName, PageURL: item.NavigationURL }   // CHECK
@@ -725,6 +739,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
+                id={this.getSpecificIdForElement(el)}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
@@ -765,6 +780,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
+                id={this.getSpecificIdForElement(el)}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
@@ -802,6 +818,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
+                id={this.getSpecificIdForElement(el)}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
@@ -838,6 +855,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
+                id={this.getSpecificIdForElement(el)}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu('NFR')}
                 to={{
