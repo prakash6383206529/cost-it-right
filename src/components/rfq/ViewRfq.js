@@ -704,9 +704,14 @@ function RfqListing(props) {
         if (event.node.isSelected()) {
             const selectedRowIndex = event.node.rowIndex;
             setSelectedRowIndex(selectedRowIndex)
+        } else {
+            setaddComparisonToggle(false)
+            setSelectedRowIndex('')
+            gridApi.deselectAll()
         }
+
+
         const selectedRows = gridApi?.getSelectedRows()
-        console.log('selectedRows: ', selectedRows);
         let partNumber = []
 
         selectedRows?.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
@@ -718,7 +723,6 @@ function RfqListing(props) {
             newArray = [...newArray, ...item]
             return null
         })
-
 
 
         if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
