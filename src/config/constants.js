@@ -1865,6 +1865,7 @@ export const PFS3 = 'PFS3'
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
+export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'

@@ -389,10 +389,10 @@ class AddProfit extends Component {
         isHideRM: false,
       })
     }
-    if (this.state.profitAppli.value === newValue.value) {
+    if (this.state.isEditFlag && this.state.profitAppli.value === newValue.value) {
       this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false })
     }
-    else {
+    else if (this.state.isEditFlag) {
       this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
