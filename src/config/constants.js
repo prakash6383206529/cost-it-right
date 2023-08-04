@@ -1865,6 +1865,7 @@ export const PFS3 = 'PFS3'
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
+export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -1902,13 +1903,11 @@ export const VIEW_COSTING_DATA = {
   status: 'Status',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
-  castingWeight: 'Casting Weight',
-  meltingLoss: 'Melting Loss',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
   castingWeightExcel: 'Casting Weight',
-  meltingLossExcel: 'Melting Loss',
+  meltingLossExcel: 'Melting Loss (Loss%)',
   BurningLossWeight: 'Burning Loss Weight',
   ScrapWeight: 'Scrap Weight',
   netRM: 'Net RM Cost',
@@ -2607,5 +2606,6 @@ export const LABOUR_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype
 export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_RAW_MATERIAL])
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
+
 //VERSION 
-export const VERSION = "V2.1.222";
+export const VERSION = "V2.1.226";
