@@ -1163,6 +1163,7 @@ export function userTechnologyLevelDetails(approvalTypeId, data = []) {
 }
 
 export function userTechnologyDetailByMasterId(costingTypeId, masterId, data = []) {
+
   let dataList = [...data]
   let filteredData = dataList?.filter(element => (element.MasterId === masterId && element.ApprovalTypeId === costingTypeId))
   let obj = {

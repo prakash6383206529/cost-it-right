@@ -104,6 +104,7 @@ function BDNonAssociatedSimulation(props) {
         //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         // }
         let tempArr = []
+        console.log('list: ', list);
         list && list.map(item => {
             if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
                 let tempObj = {}
@@ -194,10 +195,13 @@ function BDNonAssociatedSimulation(props) {
         let cellValue = cell
         if (cell && cell >= 100) {
             Toaster.warning("Percentage should be less than or equal to 100")
+            list[props.rowIndex].Percentage = 0
             cellValue = 0
         }
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cellValue)
+
+
+        const value = beforeSaveCell(cellValue, props.rowIndex, 'Percentage')
         return (
             <>
                 {
@@ -209,13 +213,16 @@ function BDNonAssociatedSimulation(props) {
     }
 
     const oldBasicRateFormatter = (props) => {
+
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell)
+
+
         return (
             <>
                 {
-                    <span>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                    <span>{cell && Number(row.BasicRate)} </span>
                 }
 
             </>
@@ -258,16 +265,29 @@ function BDNonAssociatedSimulation(props) {
     * @method beforeSaveCell
     * @description CHECK FOR ENTER NUMBER IN CELL
     */
-    const beforeSaveCell = (props) => {
+    const beforeSaveCell = (props, index = '', type = '', basicRate = '') => {
+        console.log('props: ', props);
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
                 Toaster.warning("Value should not be more than 8")
+                if (type === 'Percentage') {
+                    list[index].Percentage = 0
+                } else if (type === 'BasicRate') {
+                    list[index].NewBasicRate = basicRate
+
+                }
                 return false
             }
             return true
         } else if (cellValue && !/^[+-]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
             Toaster.warning('Please enter a valid numbers.')
+            if (type === 'Percentage') {
+                list[index].Percentage = 0
+            } else if (type === 'BasicRate') {
+                list[index].NewBasicRate = basicRate
+
+            }
             return false
         }
         return true
@@ -275,12 +295,22 @@ function BDNonAssociatedSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const value = beforeSaveCell(cell, props.rowIndex, 'BasicRate', row.OldNetLandedCost)
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = checkForDecimalAndNull((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice);
+        if (!value) {
+            returnValue = checkForDecimalAndNull(row.OldNetLandedCost)
+            console.log('returnValue: ', returnValue);
+
         } else {
-            returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)
+
+            if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
+
+                returnValue = checkForDecimalAndNull((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice);
+            } else {
+                returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)
+            }
         }
 
         return returnValue
