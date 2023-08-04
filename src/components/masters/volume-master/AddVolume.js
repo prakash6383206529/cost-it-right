@@ -11,7 +11,7 @@ import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,7 +24,7 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
-
+import { getSelectListPartType } from '../actions/Part'
 const gridOptions = {};
 
 // const initialTableData = [
@@ -130,7 +130,9 @@ class AddVolume extends Component {
       vendorFilter: [],
       viewTooltipBudgeted: false,
       showTooltip: false,
-      viewTooltipActual: false
+      viewTooltipActual: false,
+      partType: [],
+      partTypeList: [],
     }
   }
 
@@ -151,6 +153,9 @@ class AddVolume extends Component {
         this.props.getPlantSelectListByType(ZBC, () => { })
       }
     }, 300);
+    this.props.getSelectListPartType((res) => {
+      this.setState({ partTypeList: res?.data?.SelectList })
+    })
     this.getDetail()
   }
 
@@ -170,13 +175,8 @@ class AddVolume extends Component {
    * @description Used show listing of unit of measurement
    */
   renderListing = (label) => {
-    const {
-      plantSelectList,
-      vendorWithVendorCodeSelectList,
-      filterPlantList,
-      financialYearSelectList,
-      clientSelectList
-    } = this.props
+    const { plantSelectList, filterPlantList, financialYearSelectList, clientSelectList } = this.props
+    const { partTypeList } = this.state
     const temp = []
     if (label === 'plant') {
       plantSelectList && plantSelectList.map((item) => {
@@ -211,6 +211,15 @@ class AddVolume extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'PartType') {
+      partTypeList && partTypeList.map((item) => {
+        if (item.Value === '0') return false
+        if (item.Value === PRODUCT_ID) return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
     }
   }
   /**
@@ -322,6 +331,17 @@ class AddVolume extends Component {
       this.setState({ client: [] })
     }
   };
+  handlePartTypeChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ partType: newValue })
+      this.props.change('PartNumber', '')
+      this.setState({ part: [] })
+    } else {
+      this.setState({ partType: [] })
+    }
+    this.setState({ partName: [] })
+    reactLocalStorage.setObject('PartData', [])
+  }
   setStartDate = (date) => {
     this.setState({ year: date })
   }
@@ -479,6 +499,7 @@ class AddVolume extends Component {
               destinationPlant: Data.DestinationPlant !== undefined ? { label: Data.DestinationPlant, value: Data.DestinationPlantId } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+              partType: Data?.PartType !== undefined ? { label: Data?.PartType, value: Data?.PartTypeId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -756,7 +777,7 @@ class AddVolume extends Component {
       }
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && partName !== resultInput) {
-        const res = await getPartSelectListWtihRevNo(resultInput)
+        const res = await getPartSelectListWtihRevNo(resultInput, null, null, this.state.partType?.value)
 
         this.setState({ partName: resultInput })
         let partDataAPI = res?.data?.DataList
@@ -977,6 +998,27 @@ class AddVolume extends Component {
                               </Col>
                             )}
                             <Col md="3">
+                              <Field
+                                name="PartType"
+                                type="text"
+                                label="Part Type"
+                                component={searchableSelect}
+                                placeholder={isEditFlag ? '-' : "Select"}
+                                options={this.renderListing("PartType")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.partType == null ||
+                                    this.state.partType.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handlePartTypeChange}
+                                valueDescription={this.state.partType}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            <Col md="3">
                               <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
@@ -991,7 +1033,7 @@ class AddVolume extends Component {
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
-                                    isDisabled={isEditFlag ? true : false}
+                                    isDisabled={(isEditFlag || this.state.partType.length === 0) ? true : false}
                                     onBlur={() => this.setState({ showErrorOnFocusPart: true })}
                                   />
                                   {((this.state.showErrorOnFocusPart && this.state.part.length === 0) || this.state.isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
@@ -1173,7 +1215,8 @@ export default connect(mapStateToProps, {
   getVolumeData,
   getFinancialYearSelectList,
   getPartSelectList,
-  getClientSelectList
+  getClientSelectList,
+  getSelectListPartType
 })(
   reduxForm({
     form: 'AddVolume',
