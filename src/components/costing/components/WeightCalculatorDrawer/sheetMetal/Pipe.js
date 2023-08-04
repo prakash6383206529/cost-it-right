@@ -198,7 +198,7 @@ function Pipe(props) {
     let ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(convertmmTocm(fieldValues.Thickness));
 
     if (ID < 0) {
-      Toaster.warning('Inner diameter cannot be negetive')
+      Toaster.warning('Inner diameter cannot be negative')
       ID = 0
     }
     setValue('InnerDiameter', checkForDecimalAndNull(ID, localStorage.NoOfDecimalForInputOutput))

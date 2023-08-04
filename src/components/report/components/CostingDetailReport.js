@@ -20,7 +20,7 @@ import CostingDetailSimulationDrawer from '../../simulation/components/CostingDe
 import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common'
+import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 import { MESSAGES } from '../../../config/message'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
@@ -69,6 +69,7 @@ function ReportListing(props) {
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
+    const [applicabilityDropdown, setApplicabilityDropdown] = useState([])
     const { selectedRowForPagination } = useSelector((state => state.simulation))
     var filterParams = {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
@@ -99,32 +100,37 @@ function ReportListing(props) {
     var floatingFilterOverhead = {
         maxValue: 1,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
     var floatingFilterProfit = {
         maxValue: 2,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
     var floatingFilterRejection = {
 
         maxValue: 3,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
     var floatingFilterIcc = {
         maxValue: 4,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
     var floatingFilterStatus = {
         maxValue: 5,
         suppressFilterButton: true,
-        component: "costingReport"
+        component: "costingReport",
+        applicabilityDropdown: applicabilityDropdown
     }
 
 
@@ -171,6 +177,19 @@ function ReportListing(props) {
 
     }, [statusColumnData])
 
+    useEffect(() => {
+        dispatch(fetchCostingHeadsAPI('master', res => {
+            if (res) {
+                let temp = []
+                res?.data?.SelectList && res?.data?.SelectList.map((item) => {
+                    if (item.Value === '0' || item.Text === 'Net Cost') return false;
+                    temp.push({ label: item.Text, value: item.Value })
+                    return null;
+                })
+                setApplicabilityDropdown(temp)
+            }
+        }))
+    }, [])
     const simulatedOnFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         //return cell != null ? moment(cell).format('DD/MM/YYYY hh:mm A') : '';
@@ -509,7 +528,9 @@ function ReportListing(props) {
 
     const onFloatingFilterChanged = (value) => {
         dispatch(getGridHeight({ value: reportListingData?.length, component: "costingReport" }))
-        if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            if (reportListingDataStateArray?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        }, 500);
         setEnableSearchFilterButton(false)
 
         // Gets filter model via the grid API
@@ -1064,12 +1085,12 @@ function ReportListing(props) {
                             <AgGridColumn field='NCCPartQuantity' headerName='Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='IsRegularized' headerName='Is Regularized' cellRenderer='hyphenFormatter'></AgGridColumn>
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field='BasicRate' headerName='Basic Price' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
-                            <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net PO Price Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
-                            <AgGridColumn field='NetPOPriceINR' headerName='Net PO Price (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net Cost Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            <AgGridColumn field='NetPOPriceINR' headerName='Net Cost (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
+                            <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
 
                         </AgGridReact>
                         <div className='button-wrapper'>

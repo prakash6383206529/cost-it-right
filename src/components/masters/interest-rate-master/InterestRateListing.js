@@ -24,11 +24,12 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { agGridStatus, isResetClick } from '../../../actions/Common';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -81,7 +82,15 @@ class InterestRateListing extends Component {
       this.applyPermission(nextProps.topAndLeftMenuData)
     }
   }
-
+  componentDidUpdate(prevProps) {
+    const { statusColumnData } = this.props;
+    // Check if statusColumnData has changed
+    if (statusColumnData !== prevProps.statusColumnData) {
+      if (statusColumnData) {
+        this.state.gridApi?.setQuickFilter(statusColumnData.data);
+      }
+    }
+  }
   /**
   * @method applyPermission
   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -160,8 +169,8 @@ class InterestRateListing extends Component {
   * @description confirm delete item
   */
   confirmDeleteItem = (ID) => {
-
-    this.props.deleteInterestRate(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteInterestRate(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
         this.setState({ dataCount: 0 })
@@ -240,14 +249,9 @@ class InterestRateListing extends Component {
    * @description Filter data when user type in searching input
    */
   onFloatingFilterChanged = (value) => {
-    this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-  }
-  jsFunction(filterVal) {
-    this.filterVal = filterVal;
-    gridOptions.api.onFilterChanged(); //this invokes your custom logic by forcing grid filtering
-  }
-  doesExternalFilterPass = (value) => {
-
+    setTimeout(() => {
+      this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
   /**
   * @method hyphenFormatter
@@ -310,7 +314,6 @@ class InterestRateListing extends Component {
 
   onGridReady = (params) => {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
     params.api.paginationGoToPage(0);
     //if resolution greater than 1920 table listing fit to 100%
     window.screen.width >= 1921 && params.api.sizeColumnsToFit()
@@ -366,6 +369,8 @@ class InterestRateListing extends Component {
     this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    this.props.agGridStatus("", "")
+    this.props.isResetClick(true, "ICCApplicability")
   }
 
   plantFormatter = (props) => {
@@ -512,8 +517,6 @@ class InterestRateListing extends Component {
                   onSelectionChanged={this.onRowSelect}
                   frameworkComponents={frameworkComponents}
                   suppressRowClickSelection={true}
-                  isExternalFilterPresent={true}
-                  doesExternalFilterPass={this.doesExternalFilterPass}
                 >
                   <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
@@ -563,8 +566,8 @@ function mapStateToProps({ material, auth, interestRate, comman }) {
   const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
   const { vendorListByVendorType } = material;
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateDataList } = interestRate;
-  const { vendorWithVendorCodeSelectList } = comman;
-  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList, initialConfiguration, topAndLeftMenuData };
+  const { vendorWithVendorCodeSelectList, statusColumnData } = comman;
+  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList, initialConfiguration, topAndLeftMenuData, statusColumnData };
 }
 
 /**
@@ -576,6 +579,8 @@ function mapStateToProps({ material, auth, interestRate, comman }) {
 export default connect(mapStateToProps, {
   getInterestRateDataList,
   deleteInterestRate,
+  isResetClick,
+  agGridStatus
 })(reduxForm({
   form: 'InterestRateListing',
   onSubmitFail: errors => {

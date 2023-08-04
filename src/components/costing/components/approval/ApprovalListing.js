@@ -311,7 +311,9 @@ function ApprovalListing(props) {
   }
 
   const onFloatingFilterChanged = (value) => {
-    if ((isDashboard ? approvalList : approvalListDraft)?.length !== 0 || (isDashboard ? approvalList : approvalListDraft)?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+    setTimeout(() => {
+      if ((isDashboard ? approvalList : approvalListDraft)?.length !== 0 || (isDashboard ? approvalList : approvalListDraft)?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+    }, 500);
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
@@ -995,8 +997,8 @@ function ApprovalListing(props) {
                           {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" cellRenderer='basicRateFormatter' headerName="Basic Price"></AgGridColumn>}
-                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing PO Price"></AgGridColumn>
-                          <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="Revised PO Price"></AgGridColumn>
+                          <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing Net Cost"></AgGridColumn>
+                          <AgGridColumn field="NetPOPriceNew" cellRenderer='priceFormatter' headerName="Revised Net Cost"></AgGridColumn>
                           <AgGridColumn field="NCCPartQuantity" headerName="Quantity" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field="IsRegularized" headerName="Is Regularized" cellRenderer={"reasonFormatter"} ></AgGridColumn>
                           <AgGridColumn field='Reason' headerName="Reason" cellRenderer={"reasonFormatter"}></AgGridColumn>

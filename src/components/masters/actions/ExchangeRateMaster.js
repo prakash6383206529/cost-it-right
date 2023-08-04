@@ -101,10 +101,11 @@ export function getExchangeRateData(ID, callback) {
  * @method deleteExchangeRate
  * @description DELETE EXCHANGE RATE
  */
-export function deleteExchangeRate(Id, callback) {
+export function deleteExchangeRate(exchangeRateId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteExchangeRate}/${Id}`, config())
+        const queryParams = `exchangeRateId=${exchangeRateId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteExchangeRate}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

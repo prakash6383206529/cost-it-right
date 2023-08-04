@@ -286,7 +286,6 @@ class AddPower extends Component {
    */
   getDetails = () => {
     const { data } = this.props;
-
     if (data && data.isEditFlag) {
       this.setState({
         isEditFlagForStateElectricity: true
@@ -373,7 +372,8 @@ class AddPower extends Component {
               powerGrid: tempArray,
               isDetailEntry: Data.IsDetailedForm,
               costingTypeId: Data.CostingTypeId,
-              client: { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId }
+              client: { label: `${Data.CustomerName} (${Data.CustomerCode})`, value: Data.CustomerId },
+              vendorName: { label: `${Data?.VendorName} (${Data?.VendorCode})`, value: Data?.VendorId },
             }, () => this.setState({ isLoader: false }))
 
             if (!Data.IsDetailedForm) {
@@ -536,7 +536,7 @@ class AddPower extends Component {
           return false
         }
 
-        let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY') }
+        let data = { StateID: StateName.value, UOMID: UOM.value, plantId: selectedPlants[0].Value, vendorId: vendorName.value, customerId: client.value, effectiveDate: DayTime(effectiveDate).format('DD/MM/YYYY'), fuelId: this.props.fuelId, cityId: this.props.cityId }
         this.props.getDieselRateByStateAndUOM(data, (res) => {
           let DynamicData = res?.data?.DynamicData;
           this.props.change('CostPerUnitOfMeasurement', DynamicData?.FuelRate)
@@ -1432,7 +1432,7 @@ class AddPower extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {<Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"

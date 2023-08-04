@@ -1668,7 +1668,7 @@ class AddMachineRate extends Component {
                                     onClick={() => this.moreDetailsToggler(this.state.MachineID, true)}>
                                     <div className={`${isViewMode ? 'fa fa-eye' : 'edit_pencil_icon'}  d-inline-block mr5`}></div> {isViewMode ? "View" : "Edit"} MORE MACHINE DETAILS</button>
                                   :
-                                  AddAccessibility &&
+                                  AddAccessibility && !isEditFlag &&
                                   <button
                                     type="button"
                                     className={this.state.isViewFlag ? 'disabled-button user-btn' : 'user-btn'}

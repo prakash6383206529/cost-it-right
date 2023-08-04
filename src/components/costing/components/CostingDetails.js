@@ -7,10 +7,10 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, VBC } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
-import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails, number, decimalNumberLimit6, percentageLimitValidation } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
 import CostingDetailStepTwo from './CostingDetailStepTwo';
 import { DRAFT, EMPTY_GUID, REJECTED, COSTING } from '../../../config/constants';
@@ -355,6 +355,8 @@ function CostingDetails(props) {
     resetGrid()
     if (newValue && newValue !== '') {
       if (IsTechnologySelected) {
+        setZBCPlantGrid([])
+        setVBCVendorGrid([])
         const data = { TechnologyId: technology.value, PartId: newValue.value }
         dispatch(checkPartWithTechnology(data, (response) => {
           setPart(newValue)
@@ -456,15 +458,18 @@ function CostingDetails(props) {
           setzbcPlantOldArray(Data)
           setIsLoader(false)
 
-          vbcArray && vbcArray.map((item, index) => {
-            setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
-            return null
-          })
+          setTimeout(() => {
+            vbcArray && vbcArray.map((item, index) => {
+              setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+              return null
+            })
 
-          zbvArray && zbvArray.map((item, index) => {
-            setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
-            return null
-          })
+            zbvArray && zbvArray.map((item, index) => {
+              setValue(`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+              return null
+            })
+
+          }, 500);
         }
       }))
       /*********************UNCOMMENT IT WHEN NCC COME IS START****************************************/
@@ -533,8 +538,6 @@ function CostingDetails(props) {
       }
       tempArray = Object.assign([...zbcPlantGrid], { [index]: tempData })
       setZBCPlantGrid(tempArray)
-    } else {
-      warningMessageHandle('VALID_NUMBER_WARNING')
     }
   }
 
@@ -674,6 +677,12 @@ function CostingDetails(props) {
       let tempArr = [...vbcVendorGrid, { ...vendorData, Status: '' }]
       setTimeout(() => {
         setVBCVendorGrid(tempArr)
+        setTimeout(() => {
+          tempArr && tempArr.map((item, index) => {
+            setValue(`${vbcGridFields}.${index}.ShareOfBusinessPercent`, item.ShareOfBusinessPercent)
+            return null
+          })
+        }, 200);
       }, 200)
     }
     setIsVendorDrawerOpen(false)
@@ -800,8 +809,6 @@ function CostingDetails(props) {
       }
       tempArray = Object.assign([...vbcVendorGrid], { [index]: tempData })
       setVBCVendorGrid(tempArray)
-    } else {
-      warningMessageHandle('VALID_NUMBER_WARNING')
     }
   }
 
@@ -1613,6 +1620,7 @@ function CostingDetails(props) {
               PartId: part.value,
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
+              CostingTypeId: ZBCTypeId
             }
             tempArr.push(data)
           }
@@ -1669,6 +1677,7 @@ function CostingDetails(props) {
             PartId: part.value,
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
+            CostingTypeId: ZBCTypeId
           }
           tempArr.push(data)
         }
@@ -1689,13 +1698,13 @@ function CostingDetails(props) {
         let data = {}
         if (el.isSOBChanged === true) {
           data = {
-            PlantId: el.PlantId,
+            PlantId: el.PlantId ? el.PlantId : el.DestinationPlantId,
             PartId: part.value,
             ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
             LoggedInUserId: loggedInUserId(),
             VendorId: el.VendorId,
             VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
-            DestinationPlantId: el.DestinationPlantId
+            CostingTypeId: VBCTypeId
           }
           tempArr.push(data)
         }
@@ -1724,13 +1733,13 @@ function CostingDetails(props) {
           let data = {}
           if (el.isSOBChanged === true) {
             data = {
-              PlantId: el.PlantId,
+              PlantId: el.PlantId ? el.PlantId : el.DestinationPlantId,
               PartId: part.value,
               ShareOfBusinessPercentage: el.ShareOfBusinessPercent,
               LoggedInUserId: loggedInUserId(),
               VendorId: el.VendorId,
               VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? el.VendorPlantId : EMPTY_GUID,
-              DestinationPlantId: el.DestinationPlantId
+              CostingTypeId: VBCTypeId
             }
             tempArr.push(data)
           }
@@ -1808,10 +1817,11 @@ function CostingDetails(props) {
   const updateZBCState = () => {
     if (!isZBCSOBEnabled) {
       let findIndex = zbcPlantGrid && zbcPlantGrid.length > 0 && zbcPlantGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
-      if (!checkSOBTotal()) {
-        Toaster.warning('SOB should not be greater than 100.')
-        return false
-      } else if (checkSOBNegativeExist(ZBCTypeId, zbcPlantGrid)) {
+      if (errors && Object.keys(errors).length > 0) {
+        // Display an error message to the user, you can use a toast or an alert here
+        return false; // Stop the saving process
+      }
+      else if (checkSOBNegativeExist(ZBCTypeId, zbcPlantGrid)) {
         Toaster.warning('SOB could not be negative.')
         return false;
       } else if (findIndex !== -1) {
@@ -1832,10 +1842,11 @@ function CostingDetails(props) {
   const updateVBCState = () => {
     if (!isVBCSOBEnabled) {
       let findIndex = vbcVendorGrid && vbcVendorGrid.length > 0 && vbcVendorGrid.findIndex(el => isNaN(el.ShareOfBusinessPercent) === true)
-      if (!checkSOBTotal()) {
-        Toaster.warning('SOB should not be greater than 100.')
-        return false
-      } else if (checkSOBNegativeExist(VBCTypeId, vbcVendorGrid)) {
+      if (errors && Object.keys(errors).length > 0) {
+        // Display an error message to the user, you can use a toast or an alert here
+        return false; // Stop the saving process
+      }
+      else if (checkSOBNegativeExist(VBCTypeId, vbcVendorGrid)) {
         Toaster.warning('SOB could not be negative.')
         return false;
       } else if (findIndex !== -1) {
@@ -2129,6 +2140,7 @@ function CostingDetails(props) {
                               onChange={handleEffectiveDateChange}
                               showMonthDropdown
                               showYearDropdown
+                              dropdownMode='select'
                               dateFormat="dd/MM/yyyy"
                               // maxDate={new Date()}
                               placeholderText="-"
@@ -2184,7 +2196,7 @@ function CostingDetails(props) {
                                     <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                     <th className="costing-version" >{`Costing Version`}</th>
                                     <th className="text-center costing-status" >{`Status`}</th>
-                                    <th className="costing-price">{`Price`}</th>
+                                    <th className="costing-price">{`Net Cost`}</th>
                                     <th className="costing-action text-right pr-2">{`Actions`}</th>
                                   </tr>
                                 </thead>
@@ -2201,8 +2213,8 @@ function CostingDetails(props) {
                                       return (
                                         <tr key={index}>
                                           <td>{`${item.PlantName}`}</td>
-                                          <td className="cr-select-height w-100px">
-                                            <NumberFieldHookForm
+                                          <td className="cr-select-height w-100px costing-error-container">
+                                            <TextFieldHookForm
                                               label={""}
                                               name={`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`}
                                               Controller={Controller}
@@ -2211,13 +2223,10 @@ function CostingDetails(props) {
                                               mandatory={false}
                                               rules={{
                                                 required: true,
-                                                pattern: {
-                                                  value: /^\d*\.?\d*$/,
-                                                  message: "Invalid Number.",
-                                                },
+                                                validate: { number, percentageLimitValidation, decimalNumberLimit6 },
                                                 max: {
                                                   value: 100,
-                                                  message: "Should not be greater then 100"
+                                                  message: "Percentage should not be greater then 100"
                                                 }
                                               }}
                                               defaultValue={item.ShareOfBusinessPercent}
@@ -2320,7 +2329,7 @@ function CostingDetails(props) {
 
                                     <th className="costing-version">{`Costing Version`}</th>
                                     <th className="text-center costing-status">{`Status`}</th>
-                                    <th className="costing-price">{`Price`}</th>
+                                    <th className="costing-price">{`Net Cost`}</th>
                                     <th className="costing-action text-right">{`Actions`}</th>
                                   </tr>
                                 </thead>
@@ -2422,7 +2431,7 @@ function CostingDetails(props) {
                                     <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
                                     <th className="costing-version">{`Costing Version`}</th>
                                     <th className="text-center costing-status">{`Status`}</th>
-                                    <th className="costing-price">{`Price`}</th>
+                                    <th className="costing-price">{`Net Cost`}</th>
                                     <th className="costing-action text-right">{`Actions`}</th>
                                   </tr>
                                 </thead>
@@ -2437,8 +2446,8 @@ function CostingDetails(props) {
                                       <tr key={index}>
                                         <td className='break-word'>{item.VendorName}</td>
                                         {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
-                                        <td className="w-100px cr-select-height">
-                                          <NumberFieldHookForm
+                                        <td className="w-100px cr-select-height costing-error-container">
+                                          <TextFieldHookForm
                                             label=""
                                             name={`${vbcGridFields}.${index}.ShareOfBusinessPercent`}
                                             Controller={Controller}
@@ -2447,13 +2456,10 @@ function CostingDetails(props) {
                                             mandatory={false}
                                             rules={{
                                               required: true,
-                                              pattern: {
-                                                value: /^\d*\.?\d*$/,
-                                                message: "Invalid Number.",
-                                              },
+                                              validate: { number, percentageLimitValidation, decimalNumberLimit6 },
                                               max: {
                                                 value: 100,
-                                                message: "Should not be greater then 100"
+                                                message: "Percentage should not be greater then 100"
                                               }
                                             }}
                                             defaultValue={item.ShareOfBusinessPercent}
@@ -2551,7 +2557,7 @@ function CostingDetails(props) {
                                     <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
                                     <th className="costing-version" >{`Costing Version`}</th>
                                     <th className="text-center costing-status" >{`Status`}</th>
-                                    <th className="costing-price">{`Price`}</th>
+                                    <th className="costing-price">{`Net Cost`}</th>
                                     <th className="costing-action text-right pr-2">{`Actions`}</th>
                                   </tr>
                                 </thead>

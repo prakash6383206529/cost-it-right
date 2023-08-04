@@ -26,6 +26,7 @@ import { getListingForSimulationCombined } from '../../simulation/actions/Simula
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,6 +37,7 @@ const gridOptions = {};
 class ExchangeRateListing extends Component {
     constructor(props) {
         super(props);
+        this.myRef = React.createRef();
         this.state = {
             tableData: [],
             currency: [],
@@ -167,7 +169,8 @@ class ExchangeRateListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteExchangeRate(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteExchangeRate(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
 
@@ -263,7 +266,12 @@ class ExchangeRateListing extends Component {
    * @description Filter data when user type in searching input
    */
     onFloatingFilterChanged = (value) => {
-        this.props.exchangeRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+
+        setTimeout(() => {
+            this.props.exchangeRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
+
+
     }
     /**
     * @name onSubmit
@@ -277,7 +285,7 @@ class ExchangeRateListing extends Component {
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
-
+        this.myRef.current = params.api
         var allColumnIds = [];
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
@@ -428,6 +436,7 @@ class ExchangeRateListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
+                                    ref={this.myRef}
                                     domLayout='autoHeight'
                                     // columnDefs={c}
                                     rowData={this.props.exchangeRateDataList}

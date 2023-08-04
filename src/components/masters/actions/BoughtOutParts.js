@@ -186,10 +186,11 @@ export function getBOPImportById(bopId, callback) {
  * @method deleteBOP
  * @description delete BOP
  */
-export function deleteBOP(Id, callback) {
+export function deleteBOP(bopId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteBOP}/${Id}`, config())
+        const queryParams = `bopId=${bopId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteBOP}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

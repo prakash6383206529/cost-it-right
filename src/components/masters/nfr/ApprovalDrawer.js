@@ -66,7 +66,7 @@ const ApprovalDrawer = (props) => {
         let obj = {}
         obj.DepartmentId = userDetails().DepartmentId
         obj.UserId = loggedInUserId()
-        obj.TechnologyId = nfrData?.TechnologyId
+        obj.TechnologyId = technologyId
         obj.Mode = 'costing'
         obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
         dispatch(checkFinalUser(obj, (res) => {
@@ -172,7 +172,7 @@ const ApprovalDrawer = (props) => {
                 let obj = {}
                 obj.DepartmentId = userDetails().DepartmentId
                 obj.UserId = loggedInUserId()
-                obj.TechnologyId = nfrData?.TechnologyId
+                obj.TechnologyId = technologyId
                 obj.Mode = 'costing'
                 obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
                 dispatch(checkFinalUser(obj, (res) => {

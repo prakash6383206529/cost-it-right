@@ -111,8 +111,8 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = val
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
-                tempObj.NewNetLandedCost = checkForNull(val) / checkForNull(item.NumberOfPieces)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(val) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
                 tempObj.PercentageChange = checkForNull(item.Percentage)
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
@@ -123,8 +123,8 @@ function BDNonAssociatedSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
                 if (checkForNull(tempObj.OldNetLandedCost) === checkForNull(tempObj.NewNetLandedCost)) {
                     return false
                 }
@@ -135,13 +135,20 @@ function BDNonAssociatedSimulation(props) {
 
 
         let check = 0
+        let percentageCheck = 0
         tempArr && tempArr?.map(item => {
             if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
                 check = check + 1
             }
+            if (item?.PercentageChange >= 100) {
+                percentageCheck = percentageCheck + 1
+            }
         })
         if (check === 0) {
             Toaster.warning("There is no changes in net cost. Please change, then run simulation")
+            return false
+        } else if (percentageCheck !== 0) {
+            Toaster.warning("Percentage should be less than or equal to 100")
             return false
         }
         setIsDisable(true)
@@ -279,11 +286,12 @@ function BDNonAssociatedSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         let returnValue = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
+            returnValue = checkForDecimalAndNull((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice);
         } else {
-            returnValue = (row.NewBasicRate) / checkForNull(row.NumberOfPieces)
+            returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)
         }
 
         return returnValue
@@ -291,8 +299,9 @@ function BDNonAssociatedSimulation(props) {
 
     const OldcostFormatter = (props) => {
         const row = props?.data;
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         if (!row.BasicRate || row.BasicRate === '') return ''
-        return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / checkForNull(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
+        return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice) : ''
     }
 
     const revisedBasicRateHeader = (props) => {
@@ -333,9 +342,11 @@ function BDNonAssociatedSimulation(props) {
         }, 100);
     };
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
@@ -411,11 +422,12 @@ function BDNonAssociatedSimulation(props) {
 
     const ageValueGetterLanded = (params) => {
         let row = params.data
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         let valueReturn = ''
         if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            valueReturn = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / checkForNull(row.NumberOfPieces)
+            valueReturn = (row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / NumberOfPieces
         } else {
-            valueReturn = (row?.NewBasicRate) / checkForNull(row.NumberOfPieces)
+            valueReturn = (row?.NewBasicRate) / NumberOfPieces
         }
         return valueReturn;
     };
@@ -565,7 +577,7 @@ function BDNonAssociatedSimulation(props) {
                                             {list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {<AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
-                                            {<AgGridColumn field="NumberOfPieces" editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
+                                            {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" editable='false' headerName="Min Order Quantity" minWidth={140} ></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
@@ -601,6 +613,7 @@ function BDNonAssociatedSimulation(props) {
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
                                             showYearDropdown
+                                            dropdownMode='select'
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
                                             placeholderText="Select effective date"

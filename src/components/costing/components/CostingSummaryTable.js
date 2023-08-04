@@ -16,7 +16,7 @@ import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
 import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, WACTypeId, SWAP_POSITIVE_NEGATIVE } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -47,7 +47,7 @@ import ViewOtherCostDrawer from './ViewOtherCostDrawer'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, disableApproveRejectButton } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed, disableApproveRejectButton } = props
 
   let history = useHistory();
   const ExcelFile = ReactExport.ExcelFile;
@@ -88,7 +88,7 @@ const CostingSummaryTable = (props) => {
   const [drawerDetailPDF, setDrawerDetailPDF] = useState(false);
   const [loader, setLoader] = useState(false);
   const [isAttachment, setAttachment] = useState(false)
-  const [viewPieChart, setViewPieChart] = useState(null)
+  const [viewPieChart, setViewPieChart] = useState({})
   const [pieChartColor, setPieChartColor] = useState([])
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
   const [partInfoStepTwo, setPartInfo] = useState({});
@@ -105,9 +105,11 @@ const CostingSummaryTable = (props) => {
   const [viewMultipleTechnologyDrawer, setViewMultipleTechnologyDrawer] = useState(false)
   const [multipleTechnologyData, setMultipleTechnologyData] = useState([])
   const [pieChartLabel, setPieChartLabel] = useState([])
+  const [activePieChart, setActivePieChart] = useState(null);
   const [npvIndex, setNpvIndex] = useState(0)
   const [showLabourData, setShowLabourData] = useState(initialConfiguration.IsShowCostingLabour ? initialConfiguration.IsShowCostingLabour : false)
   const [selectedCheckbox, setSelectedCheckbox] = useState('')
+  const [showPieChartObj, setShowPieChartObj] = useState([])
 
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
@@ -142,11 +144,17 @@ const CostingSummaryTable = (props) => {
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
-
+    setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
     return () => {
       dispatch(setCostingViewData([]))
     }
   }, [])
+
+  useEffect(() => {
+    if (compareButtonPressed === true) {
+      setMultipleCostings([])
+    }
+  }, [compareButtonPressed])
 
   useEffect(() => {
 
@@ -171,7 +179,6 @@ const CostingSummaryTable = (props) => {
       }))
 
     }
-    setViewPieChart(null)
   }, [viewCostingData])
 
   useEffect(() => {
@@ -183,84 +190,93 @@ const CostingSummaryTable = (props) => {
         setIsLogisticsTechnology(true)
       }
     })
+    let pieChartData = []
+    viewCostingData.map((item, index) => {
 
+      let temp = []
+      let tempObj = viewCostingData[index]
+      let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
+      let dataArray = [];
+      let tempColorArray = [];
 
-  }, [viewCostingData])
+      temp = [
+        checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
+      ]
 
-  const viewPieData = (index) => {
-    setViewPieChart(index)
-    let temp = []
-    let tempObj = viewCostingData[index]
-    let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST']
-    let dataArray = [];
-    let tempColorArray = [];
+      let labelArray = temp.reduce((acc, item, index) => {
+        if (item !== 0) {
+          acc.push(labels[index]);
+        }
+        return acc;
+      }, []);
 
-    temp = [
-      checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
-      checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice),
-    ]
+      labelArray.forEach(item => {
+        switch (item) {
+          case 'RM':
+            dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[0])
+            break;
+          case 'BOP':
+            dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[1])
+            break;
+          case 'CC':
+            dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[2])
+            break;
+          case 'ST':
+            dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[3])
+            break;
+          case 'O&P':
+            dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[4])
+            break;
+          case 'P&F':
+            dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[5])
+            break;
+          case 'TC':
+            dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[6])
+            break;
+          case 'HUNDI/DIS':
+            dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[7])
+            break;
+          case 'ANY OTHER COST':
+            dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
+            tempColorArray.push(colorArray[8])
+            break;
+          default:
+            break;
+        }
+      })
 
-    let labelArray = temp.reduce((acc, item, index) => {
-      if (item !== 0) {
-        acc.push(labels[index]);
-      }
-      return acc;
-    }, []);
+      pieChartData.push({
+        labels: labelArray,
+        datasets: [
+          {
+            label: '',
+            data: dataArray,
+            backgroundColor: tempColorArray,
+            borderWidth: 0.5,
+            hoverOffset: 10
+          },
+        ]
+      })
 
-    labelArray.forEach(item => {
-      switch (item) {
-        case 'RM':
-          dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[0])
-          break;
-        case 'BOP':
-          dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[1])
-          break;
-        case 'CC':
-          dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[2])
-          break;
-        case 'ST':
-          dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[3])
-          break;
-        case 'O&P':
-          dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[4])
-          break;
-        case 'P&F':
-          dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[5])
-          break;
-        case 'TC':
-          dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[6])
-          break;
-        case 'HUNDI/DIS':
-          dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[7])
-          break;
-        case 'ANY OTHER COST':
-          dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCost, initialConfiguration.NoOfDecimalForPrice))
-          tempColorArray.push(colorArray[8])
-          break;
-        default:
-          break;
-      }
     })
-
-    setPieChartLabel(labelArray)
-    setPieChartDataArray(dataArray);
-    setPieChartColor(tempColorArray)
-  }
+    setShowPieChartObj(pieChartData)
+  }, [viewCostingData])
 
 
   useEffect(() => {
@@ -414,6 +430,7 @@ const CostingSummaryTable = (props) => {
     let isIncludeToolCostWithOverheadAndProfit = viewCostingData[index]?.isIncludeToolCostWithOverheadAndProfit
     let isIncludeSurfaceTreatmentWithRejection = viewCostingData[index]?.isIncludeSurfaceTreatmentWithRejection
     let isIncludeSurfaceTreatmentWithOverheadAndProfit = viewCostingData[index]?.isIncludeSurfaceTreatmentWithOverheadAndProfit
+    let isIncludeOverheadAndProfitInICC = viewCostingData[index]?.isIncludeOverheadAndProfitInICC
 
     setIsViewOverheadProfit(true)
     setViewOverheadData(overHeadData)
@@ -426,7 +443,8 @@ const CostingSummaryTable = (props) => {
       rawMaterialCostWithCutOff: rawMaterialCostWithCutOff,
       isIncludeToolCostWithOverheadAndProfit: isIncludeToolCostWithOverheadAndProfit,
       isIncludeSurfaceTreatmentWithRejection: isIncludeSurfaceTreatmentWithRejection,
-      isIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatmentWithOverheadAndProfit
+      isIncludeSurfaceTreatmentWithOverheadAndProfit: isIncludeSurfaceTreatmentWithOverheadAndProfit,
+      isIncludeOverheadAndProfitInICC: isIncludeOverheadAndProfitInICC
     }
     setViewRejectAndModelType(obj)
   }
@@ -506,7 +524,10 @@ const CostingSummaryTable = (props) => {
     setIsEditFlag(true)
     setaddComparisonToggle(true)
     setEditObject(editObject)
-    setViewPieChart(null)
+    setViewPieChart((prevState) => ({
+      ...prevState,
+      0: false,
+    }))
   }
 
   /**
@@ -805,7 +826,7 @@ const CostingSummaryTable = (props) => {
           obj.customerId = viewCostingData[index]?.customerId
           obj.customerCode = viewCostingData[index]?.customerCode
           obj.customer = viewCostingData[index]?.customer
-          obj.BasicRate = viewCostingData[index]?.BasicRate
+          obj.basicRate = viewCostingData[index]?.BasicRate
           obj.BudgetedPrice = viewCostingData[index]?.BudgetedPrice
           obj.BudgetedPriceVariance = viewCostingData[index]?.BudgetedPriceVariance
           temp.push(obj)
@@ -1037,6 +1058,11 @@ const CostingSummaryTable = (props) => {
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
       item.currencyTitle = item.currency && item?.currency?.currencyTitle
+      item.overHeadPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? (item?.overheadOn.overheadTitle === 'RM' ? item?.overheadOn.overheadRMPercentage : item?.overheadOn.overheadTitle === 'BOP' ? item?.overheadOn.overheadBOPPercentage : item?.overheadOn.overheadTitle === 'CC' ? item?.overheadOn.overheadCCPercentage : item?.overheadOn.overheadTitle === 'RM + CC + BOP' && item?.overheadOn.overheadRMPercentage !== "-" ? `${item?.overheadOn.overheadRMPercentage} + ${item?.overheadOn.overheadCCPercentage} + ${item?.overheadOn.overheadBOPPercentage}` : item?.overheadOn.overheadPercentage) : " "
+      item.profitPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? (item?.profitOn.profitTitle === 'RM' ? item?.profitOn.profitRMPercentage : item?.profitOn.profitTitle === 'BOP' ? item?.profitOn.profitBOPPercentage : item?.profitOn.profitTitle === 'CC' ? item?.profitOn.profitCCPercentage : item?.profitOn.profitTitle === 'RM + CC + BOP' && item?.profitOn.profitRMPercentage !== "-" ? `${item?.profitOn.profitRMPercentage} + ${item?.profitOn.profitCCPercentage} + ${item?.profitOn.profitBOPPercentage}` : item?.profitOn.profitPercentage) : " "
+      item.rejectionPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : item?.rejectionOn.rejectionPercentage : '')
+      item.iccPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.iccOn.iccTitle === 'Fixed' ? '-' : item?.iccOn.iccPercentage : '')
+      item.paymentPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? item?.paymentTerms.paymentTitle === 'Fixed' ? '-' : item?.paymentTerms.paymentPercentage : ''
     })
 
     let masterDataArray = []
@@ -1144,7 +1170,6 @@ const CostingSummaryTable = (props) => {
       default:
         heading = { mainHeading: value?.vendorName, subHeading: value?.vendorCode }
         return heading;
-
     }
   }
 
@@ -1207,6 +1232,9 @@ const CostingSummaryTable = (props) => {
 
   };
   const pieChartOption = {
+    animation: {
+      duration: 0, // Set the animation duration to 0 to disable animation
+    },
     plugins: {
       legend: {
         position: 'bottom',
@@ -1225,6 +1253,19 @@ const CostingSummaryTable = (props) => {
       }
     }
   }
+  const viewPieChartHandler = (index) => {
+    setViewPieChart(prevState => ({
+      ...prevState,
+      [index]: true
+    }));
+  };
+
+  const pieChartCloseHandler = (index) => {
+    setViewPieChart(prevState => ({
+      ...prevState,
+      [index]: false
+    }));
+  };
 
   const PDFPageStyle = "@page { size: A4 landscape; }";
 
@@ -1389,6 +1430,7 @@ const CostingSummaryTable = (props) => {
                   bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                   documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                   content={reactToPrintContent}
+                  pageStyle={PDFPageStyle}
                   onAfterPrint={handleAfterPrint}
                   onBeforeGetContent={handleOnBeforeGetContent}
                   trigger={reactToPrintTrigger}
@@ -1396,8 +1438,8 @@ const CostingSummaryTable = (props) => {
                 {
                   !simulationMode && !props.isRfqCosting && <>
 
-                    {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && (
-                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag || isSuperAdmin} onClick={() => checkCostings()}>
+                    {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && !isSuperAdmin && (
+                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
                         <div className="send-for-approval"></div>
                         {'Send For Approval'}
                       </button>
@@ -1460,7 +1502,7 @@ const CostingSummaryTable = (props) => {
                                   <div className="element d-inline-flex align-items-center">
                                     {
                                       !isApproval && (data?.status === DRAFT) && <>
-                                        {!pdfHead && !drawerDetailPDF && !viewMode && < div className="custom-check1 d-inline-block">
+                                        {!pdfHead && !drawerDetailPDF && !viewMode && !isSuperAdmin && < div className="custom-check1 d-inline-block">
                                           <label
                                             className="custom-checkbox pl-0 mb-0"
                                             onChange={() => moduleHandler(data?.costingId, 'top', data)}
@@ -1483,7 +1525,7 @@ const CostingSummaryTable = (props) => {
                                         </div>}
                                       </>
                                     }
-                                    {disableApproveRejectButton && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && <div className="custom-check1 d-inline-block">
+                                    {!isApproval && !data?.IsApprovalLocked && props?.isRfqCosting && isFromViewRFQ && costingIdList?.includes(data?.costingId) && !isSuperAdmin && <div className="custom-check1 d-inline-block">
                                       <label
                                         className="custom-checkbox pl-0 mb-0"
                                         onChange={() => moduleHandler(data?.costingId, 'top', data, index)}
@@ -1525,7 +1567,7 @@ const CostingSummaryTable = (props) => {
                           <tr className={`${drawerDetailPDF ? "pdf-print" : ""}`} >
                             <td>
                               <span className="d-block">Costing Version</span>
-                              <span className="d-block mt-2">PO Price (Effective from)</span>
+                              <span className="d-block mt-2">Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
@@ -1535,6 +1577,7 @@ const CostingSummaryTable = (props) => {
                             </td>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
+                                const isPieChartVisible = viewPieChart[index];
                                 return (
                                   <td className={tableDataClass(data)}>
                                     <span className={`d-flex justify-content-between ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
@@ -1556,12 +1599,28 @@ const CostingSummaryTable = (props) => {
                                         </button>
                                       }
                                     </span>
-                                    {(!data?.bestCost === true) && <span className="d-flex justify-content-between align-items-center pie-chart-container"><span>{(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)} {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}</span>{(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) &&
-                                      <span className={`pie-chart-wrapper mt-3`}>
-                                        {viewPieChart === index ? <button type='button' className='CancelIcon' title='Discard' onClick={() => setViewPieChart(null)}></button> : <button title='View Pie Chart' type='button' className='pie-chart' onClick={() => viewPieData(index)}></button>}
-                                        {viewPieChart === index && <span className='pie-chart-inner'> <Costratiograph data={pieChartData} options={pieChartOption} /> </span>}
-                                      </span>}
-                                    </span>}
+                                    {(!data?.bestCost === true) && (
+                                      <span className="d-flex justify-content-between align-items-center pie-chart-container">
+                                        <span>
+                                          {(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)}
+                                          {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
+                                        </span>
+                                        {(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && (
+                                          <span className={`pie-chart-wrapper mt-3`}>
+                                            {isPieChartVisible ? (
+                                              <button type="button" className="CancelIcon" title="Discard" onClick={() => pieChartCloseHandler(index)}></button>
+                                            ) : (
+                                              <button title="View Pie Chart" type="button" className="pie-chart" onClick={() => viewPieChartHandler(index)}></button>
+                                            )}
+                                            {isPieChartVisible && (
+                                              <span className="pie-chart-inner">
+                                                <Costratiograph data={showPieChartObj[index]} options={pieChartOption} />
+                                              </span>
+                                            )}
+                                          </span>
+                                        )}
+                                      </span>
+                                    )}
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? `${data?.vendorName}(${data?.vendorCode})` : ''}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
@@ -1986,7 +2045,7 @@ const CostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
-                                        {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? (data?.overheadOn.overheadTitle === 'RM' ? data?.overheadOn.overheadRMPercentage : data?.overheadOn.overheadTitle === 'BOP' ? data?.overheadOn.overheadBOPPercentage : data?.overheadOn.overheadTitle === 'CC' ? data?.overheadOn.overheadCCPercentage : data?.overheadOn.overheadTitle === 'RM + CC + BOP' && data?.overheadOn.overheadRMPercentage !== "-" ? `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}` : data?.overheadOn.overheadPercentage) : " "}
+                                        {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? (data?.overheadOn.overheadTitle === 'RM' ? data?.overheadOn.overheadRMPercentage : data?.overheadOn.overheadTitle === 'BOP' ? data?.overheadOn.overheadBOPPercentage : data?.overheadOn.overheadTitle === 'CC' ? data?.overheadOn.overheadCCPercentage : data?.overheadOn.overheadTitle === 'RM + CC + BOP' && data?.overheadOn.overheadRMPercentage !== "-" ? `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage} + ${data?.overheadOn.overheadBOPPercentage}` : data?.overheadOn.overheadPercentage) : " "}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -1997,7 +2056,7 @@ const CostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
-                                        {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? (data?.profitOn.profitTitle === 'RM' ? data?.profitOn.profitRMPercentage : data?.profitOn.profitTitle === 'BOP' ? data?.profitOn.profitBOPPercentage : data?.profitOn.profitTitle === 'CC' ? data?.profitOn.profitCCPercentage : data?.profitOn.profitTitle === 'RM + CC + BOP' && data?.profitOn.profitRMPercentage !== "-" ? `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitBOPPercentage} + ${data?.profitOn.profitCCPercentage}` : data?.profitOn.profitPercentage) : " "}
+                                        {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? (data?.profitOn.profitTitle === 'RM' ? data?.profitOn.profitRMPercentage : data?.profitOn.profitTitle === 'BOP' ? data?.profitOn.profitBOPPercentage : data?.profitOn.profitTitle === 'CC' ? data?.profitOn.profitCCPercentage : data?.profitOn.profitTitle === 'RM + CC + BOP' && data?.profitOn.profitRMPercentage !== "-" ? `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage} + ${data?.profitOn.profitBOPPercentage}` : data?.profitOn.profitPercentage) : " "}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -2234,20 +2293,8 @@ const CostingSummaryTable = (props) => {
                                 //check here @ashok
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                   <td className={tableDataClass(data)} width={"32%"}>
-                                    <div className="d-grid">
-
-                                      <span className="d-inline-block">{"Type"}</span>
-                                      <span className="d-inline-block">{"Applicability"}</span>
-                                      <span className="d-inline-block">{"Value"}</span>
-                                      <span className="d-inline-block">{"Cost"}</span>
-                                    </div>
                                     <div className={`d-grid ${highlighter("anyOtherCost")}`}>
-                                      <span className="d-inline-block small-grey-text">
-                                        {data?.CostingHeading !== VARIANCE ? data?.anyOtherCostType : ''}
-                                      </span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? data?.anyOtherCostApplicablity : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.anyOtherCostType === "Percentage" ? <span title={checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostPercent, initialConfiguration.NoOfDecimalForPrice)}</span> : '-'}</span>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
                                   </td>
                                   : ""
@@ -2356,13 +2403,13 @@ const CostingSummaryTable = (props) => {
                       {
 
                         <tr className={`${highlighter("nPOPrice", "main-row")} netPo-row`}>
-                          <th>Net PO Price ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost ({getConfigurationKey().BaseCurrency}){simulationDrawer && '(Old)'}</th>
                           {viewCostingData &&
                             viewCostingData?.map((data, index) => {
                               return <td className={tableDataClass(data)}>
                                 {displayValueWithSign(data, "nPOPrice")}
                                 {
-                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) && (initialConfiguration?.IsBasicRateAndCostingConditionVisible || initialConfiguration?.IsShowNpvCost) &&
+                                  (data?.bestCost !== true) && (data?.CostingHeading !== VARIANCE) && (!pdfHead && !drawerDetailPDF) &&
                                   <button
                                     type="button"
                                     title='View'
@@ -2399,7 +2446,7 @@ const CostingSummaryTable = (props) => {
                       {
                         viewCostingData[0]?.technologyId !== LOGISTICS &&
                         <tr className={`background-light-blue  ${getCurrencyVarianceFormatter()}`}>
-                          <th>Net PO Price (In Currency){simulationDrawer && '(Old)'}</th>
+                          <th>Net Cost (In Currency){simulationDrawer && '(Old)'}</th>
                           {/* {viewCostingData &&
                         viewCostingData?.map((data, index) => {
                           return <td>Net PO Price({(data?.currency.currencyTitle !== '-' ? data?.currency.currencyTitle : 'INR')})</td>
@@ -2522,7 +2569,7 @@ const CostingSummaryTable = (props) => {
 
                                 <td className="text-center costing-summary">
                                   {(!viewMode && !isFinalApproverShow) &&
-                                    (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) &&
+                                    (data?.status === DRAFT) && (!pdfHead && !drawerDetailPDF) && !isSuperAdmin &&
                                     <button
                                       className="user-btn"
                                       disabled={viewCostingData[index].IsApprovalLocked}

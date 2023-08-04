@@ -45,7 +45,8 @@ function ViewBOP(props) {
                 <th>{`Currency`}</th>
                 <th>{`Landed Cost (INR)`}</th>
                 <th>{`Quantity`}</th>
-                <th className="costing-border-right">{`Net Insert Cost`}</th>
+                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net BOP Cost`}</th>
+                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
             </thead>
             <tbody>
@@ -64,6 +65,7 @@ function ViewBOP(props) {
                       <td>
                         {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
                       </td>
+                      {initialConfiguration.IsShowCRMHead && <td>{item.BoughtOutPartCRMHead}</td>}
                     </tr>
                   )
                 })}

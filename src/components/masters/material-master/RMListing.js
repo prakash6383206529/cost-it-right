@@ -81,7 +81,9 @@ class RMListing extends Component {
        * @description Filter data when user type in searching input
        */
     onFloatingFilterChanged = (value) => {
-        this.props.rawMaterialTypeDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.rawMaterialTypeDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
 
     /**

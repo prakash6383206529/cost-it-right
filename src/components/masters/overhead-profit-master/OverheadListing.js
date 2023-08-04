@@ -187,9 +187,11 @@ function OverheadListing(props) {
     }, [statusColumnData])
 
     const onFloatingFilterChanged = (value) => {
-        if (overheadProfitList?.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (overheadProfitList?.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -339,7 +341,8 @@ function OverheadListing(props) {
     * @description confirm delete
     */
     const confirmDelete = (ID) => {
-        dispatch(deleteOverhead(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        dispatch(deleteOverhead(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OVERHEAD_SUCCESS);
                 dispatch(setSelectedRowForPagination([]))

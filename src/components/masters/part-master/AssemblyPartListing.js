@@ -21,7 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { searchNocontentFilter } from '../../../helper';
+import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -116,7 +116,8 @@ class AssemblyPartListing extends Component {
     * @description DELETE ASSEMBLY PART
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteAssemblyPart(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteAssemblyPart(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_BOM_SUCCESS);
                 this.getTableListData();
@@ -164,7 +165,9 @@ class AssemblyPartListing extends Component {
        * @description Filter data when user type in searching input
        */
     onFloatingFilterChanged = (value) => {
-        this.props.partsListing.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.partsListing.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
     /**
     * @method closeVisualDrawer

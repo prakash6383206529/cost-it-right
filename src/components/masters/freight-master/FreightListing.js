@@ -18,7 +18,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { searchNocontentFilter } from '../../../helper';
+import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -111,7 +111,8 @@ class FreightListing extends Component {
   * @description confirm delete Raw Material details
   */
   confirmDelete = (ID) => {
-    this.props.deleteFright(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteFright(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
         this.setState({ dataCount: 0 })
@@ -132,7 +133,9 @@ class FreightListing extends Component {
      * @description Filter data when user type in searching input
      */
   onFloatingFilterChanged = (value) => {
-    this.props.freightDetail.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.freightDetail.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
   /**
   * @method renderPaginationShowsTotal

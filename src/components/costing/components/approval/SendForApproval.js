@@ -395,7 +395,7 @@ const SendForApproval = (props) => {
         tempObj.ImpactOfTheYear = data.yearImpact
         tempObj.Remark = getValues("remarks")
         tempObj.IsApproved = true
-        tempObj.BasicRate = data.BasicRate
+        tempObj.BasicRate = data.basicRate
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
@@ -517,7 +517,7 @@ const SendForApproval = (props) => {
         tempObj.CustomerId = data.customerId
         tempObj.CustomerName = data.customerName
         tempObj.CustomerCode = data.customerCode
-        tempObj.BasicRate = data.BasicRate
+        tempObj.BasicRate = data.basicRate
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
@@ -773,6 +773,7 @@ const SendForApproval = (props) => {
                                       dateFormat="dd/MM/yyyy"
                                       showMonthDropdown
                                       showYearDropdown
+                                      dropdownMode='select'
                                       readonly="readonly"
                                       onBlur={() => null}
                                       autoComplete={'off'}

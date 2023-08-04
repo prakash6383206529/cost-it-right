@@ -74,10 +74,11 @@ export function getPlantDataAPI(isVe, callback) {
  * @method deleteFuelDetailsAPI
  * @description delete UOM 
  */
-export function deletePlantAPI(Id, callback) {
+export function deletePlantAPI(plantId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePlantAPI}/${Id}`, config())
+        const queryParams = `plantId=${plantId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deletePlantAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

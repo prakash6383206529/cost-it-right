@@ -180,9 +180,11 @@ function AddRM(props) {
   };
 
   const onFloatingFilterChanged = (value) => {
-    if (rmDrawerList.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (rmDrawerList.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
   }
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));

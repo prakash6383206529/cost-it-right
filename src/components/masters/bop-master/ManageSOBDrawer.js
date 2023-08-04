@@ -253,6 +253,7 @@ function ManageSOBDrawer(props) {
                       register={register}
                       showMonthDropdown
                       showYearDropdown
+                      dropdownMode="select"
                       dateFormat="dd/MM/yyyy"
                       mandatory={true}
                       rules={{ required: true }}

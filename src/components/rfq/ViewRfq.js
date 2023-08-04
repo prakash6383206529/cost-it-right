@@ -66,6 +66,7 @@ function RfqListing(props) {
     const [index, setIndex] = useState('')
     const [selectedCostingList, setSelectedCostingList] = useState('')
     const [mandatoryRemark, setMandatoryRemark] = useState(false)
+    const [compareButtonPressed, setCompareButtonPressed] = useState(false)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -193,10 +194,21 @@ function RfqListing(props) {
                 costingId = item?.costingId
             }
         })
-        if (selectedCostingList?.includes(costingId)) {
-            setMandatoryRemark(true)
+        let tempArray = _.map(arr, 'NetPOPrice')
+        const firstElement = tempArray[0];
+        let test = tempArray.every(element => element === firstElement);
+        if (arr?.length > 1) {
+            if (test) {
+                setMandatoryRemark(false)
+            } else {
+                setMandatoryRemark(true)
+            }
         } else {
-            setMandatoryRemark(false)
+            if (selectedCostingList?.includes(costingId)) {
+                setMandatoryRemark(false)
+            } else {
+                setMandatoryRemark(true)
+            }
         }
         // let data = {
         //     isEditFlag: true,
@@ -649,6 +661,7 @@ function RfqListing(props) {
                 arr.push(item?.CostingId)
             }
         })
+        setCompareButtonPressed(true)
         setCostingListToShow(arr)
         let temp = []
         let tempObj = {}
@@ -656,6 +669,7 @@ function RfqListing(props) {
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
         setloader(true)
+        setSelectedCostingList([])
         dispatch(getMultipleCostingDetails(costingIdList, (res) => {
             if (res) {
                 res.map((item) => {
@@ -671,6 +685,7 @@ function RfqListing(props) {
                 setaddComparisonToggle(true)
                 setloader(false)
             }
+            setCompareButtonPressed(false)
         }))
     }
 
@@ -867,7 +882,7 @@ function RfqListing(props) {
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
-                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="NetPOPrice" headerName=" Net Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -961,6 +976,7 @@ function RfqListing(props) {
                                 isFromViewRFQ={true}
                                 checkCostingSelected={checkCostingSelected}
                                 disableApproveRejectButton={disableApproveRejectButton}
+                                compareButtonPressed={compareButtonPressed}
                             />
                         )}
                     </div>
@@ -983,7 +999,7 @@ function RfqListing(props) {
                 }
 
             </div >
-            {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="sf-btn-footer no-gutters justify-content-between">
+            {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
 
                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >

@@ -67,6 +67,7 @@ function RawMaterialCost(props) {
   const [inputValue, setInputValue] = useState('');
   const [deleteIndex, setDeleteIndex] = useState('');
   const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
+  const [headerPinned, setHeaderPinned] = useState(true)
   const [dataFromAPI, setDataFromAPI] = useState([
     {
       "RawMaterialId": "c9132533-1e8a-40b0-bf3f-d6b616afdf5a",
@@ -1404,7 +1405,7 @@ function RawMaterialCost(props) {
 
               <Col md="12">
                 <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
-                  <thead className='rm-table-header'>
+                  <thead className={`${headerPinned ? 'sticky-headers' : ''} rm-table-header`}>
                     <tr>
                       <th className='rm-name-head'>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
@@ -1420,7 +1421,8 @@ function RawMaterialCost(props) {
                       {/* //Add i here for MB+ */}
                       <th className='net-rm-cost'>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
                       {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
-                      <th style={{ textAlign: "right" }}>{`Action`}</th>
+                      <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
+
                     </tr>
                   </thead>
                   <tbody className='rm-table-body'>

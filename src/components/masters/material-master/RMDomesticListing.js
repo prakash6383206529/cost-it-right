@@ -2,9 +2,9 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { deleteRawMaterialAPI, getAllRMDataList, getRMDomesticDataList } from '../actions/Material';
-import { userDepartmetList } from "../../../helper/auth"
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, RmDomestic } from '../../../config/constants';
+import { deleteRawMaterialAPI, getAllRMDataList } from '../actions/Material';
+import { loggedInUserId, userDepartmetList } from "../../../helper/auth"
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, RmDomestic } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -262,10 +262,11 @@ function RMDomesticListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-
-        if (rmDataList.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (rmDataList.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -423,7 +424,8 @@ function RMDomesticListing(props) {
     * @description confirm delete Raw Material details
     */
     const confirmDelete = (ID) => {
-        dispatch(deleteRawMaterialAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        dispatch(deleteRawMaterialAPI(ID, loggedInUser, (res) => {
             if (res !== undefined && res.status === 417 && res.data.Result === false) {
                 Toaster.error(res.data.Message)
             } else if (res && res.data && res.data.Result === true) {

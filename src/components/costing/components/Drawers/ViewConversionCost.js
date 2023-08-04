@@ -288,6 +288,7 @@ function ViewConversionCost(props) {
                 {!isPDFShow && <th>{`Calculator`}</th>}
                 <th width="125px"><span>Quantity  {!isPDFShow && <div class="tooltip-n ml-1"><i className="fa fa-info-circle text-primary tooltip-icon"></i><span class="tooltiptext process-tooltip">{tooltipText}</span></div>}</span></th>
                 <th>{`Net Cost`}</th>
+                {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
               {costingProcessCost &&
@@ -326,8 +327,9 @@ function ViewConversionCost(props) {
                           }
                         </td>}
                         <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
-                        <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0}
-                        </td>
+                        <td>{item.ProcessCost ? checkForDecimalAndNull(item.ProcessCost, initialConfiguration.NoOfDecimalForPrice) : 0} </td>
+                        {initialConfiguration.IsShowCRMHead && <td>{item.ProcessCRMHead}</td>}
+
                         <td className={`${isPDFShow ? '' : 'text-overflow'}`}><span title={item?.Remark ? item.Remark : "-"}>{item?.Remark ? item.Remark : "-"}</span></td>
                       </tr>
                       {isPDFShow && renderSingleProcess(item, index)}
@@ -379,6 +381,7 @@ function ViewConversionCost(props) {
                 {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
                 {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
+                {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
               {costingOperationCost &&
@@ -403,6 +406,7 @@ function ViewConversionCost(props) {
                         <td>
                           {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                         </td>
+                        {initialConfiguration.IsShowCRMHead && <td>{item.OperationCRMHead}</td>}
                         <td>
                           {item.Remark !== null ? item.Remark : '-'}
                         </td>
@@ -500,6 +504,7 @@ function ViewConversionCost(props) {
                 {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
                 {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
+                {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th className="costing-border-right">{`Remark`}</th>
               </tr>
               {othercostingOperationCost &&
@@ -522,6 +527,7 @@ function ViewConversionCost(props) {
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                       </td>
+                      {initialConfiguration.IsShowCRMHead && <td>{item.OtherOperationCRMHead}</td>}
                       <td>
                         {item.Remark !== null ? item.Remark : '-'}
                       </td>
@@ -561,7 +567,8 @@ function ViewConversionCost(props) {
                 <th>{`Rate/UOM`}</th>
                 {surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate/UOM`}</th>}
                 {surfaceTreatmentCost && surfaceTreatmentCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
-                <th className="costing-border-right">{`Cost`}</th>
+                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Cost`}</th>
+                {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
               {surfaceTreatmentCost &&
                 surfaceTreatmentCost.map((item, index) => {
@@ -575,7 +582,7 @@ function ViewConversionCost(props) {
                       {item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>}
                       {item.IsLabourRateExist === true && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
                       <td>{item.SurfaceTreatmentCost ? checkForDecimalAndNull(item.SurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
-
+                      {initialConfiguration.IsShowCRMHead && <td>{item.SurfaceTreatmentCRMHead}</td>}
                     </tr>
                   )
                 })}
@@ -606,6 +613,7 @@ function ViewConversionCost(props) {
             <tbody>
               <tr className='thead'>
                 {/* {partNumberList.length ===0 && <th>{`Part No`}</th>}  */}
+                {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th>{`Type`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
@@ -616,6 +624,7 @@ function ViewConversionCost(props) {
                   return (
                     <tr key={index}>
                       {/* <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td> */}
+                      {initialConfiguration.IsShowCRMHead && <td>{item.TransportationCRMHead ? item.TransportationCRMHead : '-'}</td>}
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>

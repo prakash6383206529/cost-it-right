@@ -50,7 +50,7 @@ function Simulation(props) {
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
-    const [master, setMaster] = useState({})
+    const [master, setMaster] = useState([])
     const [technology, setTechnology] = useState({})
     const [showMasterList, setShowMasterList] = useState(false)
     const [showUploadDrawer, setShowDrawer] = useState(false)
@@ -1084,7 +1084,7 @@ function Simulation(props) {
                                         <SearchableSelectHookForm
                                             label={''}
                                             name={'Masters'}
-                                            placeholder={'Masters'}
+                                            placeholder={'Select'}
                                             Controller={Controller}
                                             control={control}
                                             rules={{ required: false }}

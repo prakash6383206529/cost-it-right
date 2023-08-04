@@ -160,9 +160,11 @@ function AddBOP(props) {
 
   };
   const onFloatingFilterChanged = (value) => {
-    if (bopDrawerList.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (bopDrawerList.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
   }
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));

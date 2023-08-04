@@ -39,7 +39,7 @@ function ConditionCosting(props) {
                                             <tr key={index}>
                                                 <td>{item.condition} </td>
                                                 {<td>{item.ConditionType}</td>}
-                                                {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage) : '-'}</td>}
+                                                {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {<td>{item.Percentage ? '-' : checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />

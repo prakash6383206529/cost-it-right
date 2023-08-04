@@ -1934,9 +1934,9 @@ class AddMoreDetails extends Component {
     // For cancel of mpre detail form to reset form in addMachine form
     data.cancelFlag = true
     data.isFinalApprovar = this.state.isFinalApprovar
-    data.isViewFlag = true
     /* IF CANCEL IS CLICKED AND MACHINE FORM IS IN EDIT FORM CONTAINING VALUE */
     if (editDetails.isIncompleteMachine || this.state.isEditFlag) {
+      data.isViewFlag = true
       data.Id = this.state.MachineID ? this.state.MachineID : editDetails.Id
       data.isEditFlag = true
       this.props.hideMoreDetailsForm({}, data)
@@ -2702,6 +2702,7 @@ class AddMoreDetails extends Component {
                                 showMonthDropdown
                                 showYearDropdown
                                 showYearPicker
+                                dropdownMode='select'
                                 dateFormat="yyyy"
                                 //maxDate={new Date()}
                                 placeholderText="Enter"
@@ -3236,6 +3237,7 @@ class AddMoreDetails extends Component {
                                     onChange={this.handleDateOfPurchase}
                                     showMonthDropdown
                                     showYearDropdown
+                                    dropdownMode="select"
                                     dateFormat="dd/MM/yyyy"
                                     //maxDate={new Date()}
                                     placeholderText={disableAllForm ? '-' : "Select Date"}

@@ -122,7 +122,7 @@ export function Clientbasedcostingdrawer(props) {
                             <Row className="px-3">
                                 <Col md="12" className="pb-4">
                                     <div className="blue-header-box">
-                                        <h5>Net PO Price: Auto Calculated</h5>
+                                        <h5>Net Cost: Auto Calculated</h5>
                                     </div>
                                 </Col>
                                 <Col md="12">
@@ -485,11 +485,11 @@ export function Clientbasedcostingdrawer(props) {
                             </Row>
                             <Row className="px-3">
                                 <Col md="12">
-                                    <h5 className="left-border">Net PO Price</h5>
+                                    <h5 className="left-border">Net Cost</h5>
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`Net PO Price (INR)`}
+                                        label={`Net Cost (INR)`}
                                         type="text"
                                         placeholder={"Auto Calculated"}
                                         component={renderText}
@@ -523,7 +523,7 @@ export function Clientbasedcostingdrawer(props) {
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`Net PO Price`}
+                                        label={`Net Cost`}
                                         type="text"
                                         placeholder={"Auto Calculated"}
                                         component={renderText}

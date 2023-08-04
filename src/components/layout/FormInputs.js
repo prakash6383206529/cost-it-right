@@ -252,7 +252,7 @@ export function renderMultiSelectField(field) {
           ""
         )}
       </label>
-      <div className={inputbox} onClick={field.onTouched} title={field && field?.title}>
+      <div className={inputbox} onClick={field.onTouched} title={field && field?.title ? field.title : field.disabled ? field.selection?.label : ''}>
         <Select
           {...input}
           className={InputClassName}
@@ -367,6 +367,7 @@ export function renderTextInputField(field) {
       </label>
       <div className={inputbox} id={field.id}>
         <input
+          title={field.disabled ? field.input?.value : ''}
           maxLength={field.maxLength}
           {...others}
           type="text"
@@ -508,6 +509,7 @@ export function renderTextAreaField(field) {
       </label>
       <div className="inputbox ">
         <textarea
+          title={field.disabled ? field.input?.value : ''}
           maxLength={field.maxLength}
           value={field.value}
           className="form-control withoutBorder"
@@ -587,6 +589,7 @@ export function renderText(field) {
       </label>
       <div id={field.id}>
         <input
+          title={field.disabled ? field.input?.value : ''}
           id={field.id}
           maxLength={field.maxLength}
           {...input}
@@ -622,6 +625,7 @@ export function renderDatePicker(field) {
         minDate={minDate ? new Date(minDate) : null}
         showMonthDropdown
         showYearDropdown
+        dropdownMode="select"
         readonly="readonly"
         onBlur={field.selected ? () => null : input.onBlur}
         selected={input.value ? new Date(input.value) : null}
@@ -662,6 +666,7 @@ export function renderDatePickerOneDayAgo(field) {
         minDate={d.setDate(d.getDate() + 1)}
         showMonthDropdown
         showYearDropdown
+        dropdownMode="select"
         readonly="readonly"
         onBlur={() => null}
         selected={input.value ? new Date(input.value) : null}
@@ -707,21 +712,24 @@ export const searchableSelect = ({
           )}
         </label>
       )}
-      <Select
-        {...input}
-        isClearable={false}
-        options={options}
-        onChange={handleChangeDescription}
-        value={valueDescription}
-        isDisabled={isDisable}
-        placeholder={placeholder}
-        menuPlacement={menuPlacement}
-        className={"searchable multidropdown-container"}
-        onKeyDown={(onKeyDown) => {
-          if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-        }}
-        filterOption={createFilter(filterConfig)}
-      />
+      <div title={isDisable ? valueDescription?.label : ''}
+      >
+        <Select
+          {...input}
+          isClearable={false}
+          options={options}
+          onChange={handleChangeDescription}
+          value={valueDescription}
+          isDisabled={isDisable}
+          placeholder={placeholder}
+          menuPlacement={menuPlacement}
+          className={"searchable multidropdown-container"}
+          onKeyDown={(onKeyDown) => {
+            if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+          }}
+          filterOption={createFilter(filterConfig)}
+        />
+      </div>
       {children}
       <div className="text-help mb-2 mb-2">{touched && error ? error : ""}</div>
     </div>
@@ -893,6 +901,7 @@ export function renderYearPicker(field) {
         showMonthDropdown
         showYearDropdown
         showYearPicker
+        dropdownMode="select"
         readonly="readonly"
         onBlur={() => null}
         selected={input.value ? new Date(input.value) : null}

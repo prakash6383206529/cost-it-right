@@ -17,7 +17,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, searchNocontentFilter, userDepartmetList, userDetails, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails, } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -273,10 +273,11 @@ function RMImportListing(props) {
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
-
-    if (rmImportDataList.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (rmImportDataList.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
     if (!isFilterButtonClicked) {
       setWarningMessage(true)
     }
@@ -393,7 +394,8 @@ function RMImportListing(props) {
   * @description confirm delete Raw Material details
   */
   const confirmDelete = (ID) => {
-    dispatch(deleteRawMaterialAPI(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    dispatch(deleteRawMaterialAPI(ID, loggedInUser, (res) => {
       if (res.status === 417 && res.data.Result === false) {
         Toaster.error(res.data.Message)
       } else if (res && res.data && res.data.Result === true) {

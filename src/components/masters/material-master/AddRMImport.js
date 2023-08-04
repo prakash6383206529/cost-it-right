@@ -124,7 +124,8 @@ class AddRMImport extends Component {
       vendorFilterList: [],
       isCallCalculation: false,
       isDropDownChanged: false,
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      isEditBuffer: false
     }
   }
 
@@ -214,7 +215,10 @@ class AddRMImport extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && !this.state.isCallCalculation) {
-      if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
+        this.handleNetCost()
+      }
+      if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isEditFlag && this.state.isEditBuffer) {
         this.handleNetCost()
       }
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -563,6 +567,9 @@ class AddRMImport extends Component {
                   this.commonFunction()
                 }
               }, 500)
+              setTimeout(() => {
+                this.setState({ isEditBuffer: true })
+              }, 500);
             })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -739,7 +746,7 @@ class AddRMImport extends Component {
   }
 
   closeApprovalDrawer = (e = '', type) => {
-    this.setState({ approveDrawer: false, setDisable: false })
+    this.setState({ approveDrawer: false, setDisable: false, isEditBuffer: true })
     if (type === 'submit') {
       this.clearForm('submit')
       this.cancel('submit')
@@ -1040,13 +1047,13 @@ class AddRMImport extends Component {
     }
 
 
-    if (((Technology.value !== SHEETMETAL && Technology.value !== FORGING) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate))) || (Technology.value === SHEETMETAL && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost))) || (Technology.value === SHEETMETAL && Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (Technology.value === FORGING && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap))) || (Technology.value === FORGING && Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
+    if (((String(Technology.value) !== String(SHEETMETAL) && String(Technology.value) !== String(FORGING)) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ScrapRate))) || (String(Technology.value) === String(SHEETMETAL) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.JaliScrapCost))) || (String(Technology.value) === String(SHEETMETAL) && Number(fieldsObj.BasicRate) <= Number(fieldsObj.CircleScrapCost)) || (String(Technology.value) === String(FORGING) && (Number(fieldsObj.BasicRate) <= Number(fieldsObj.ForgingScrap))) || (String(Technology.value) === String(FORGING) && Number(fieldsObj.BasicRate) <= Number(fieldsObj.MachiningScrap))) {
       this.setState({ setDisable: false })
       Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
       return false
     }
 
-    this.setState({ isVendorNameNotSelected: false })
+    this.setState({ isVendorNameNotSelected: false, isEditBuffer: false })
 
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -1790,7 +1797,7 @@ class AddRMImport extends Component {
                                   label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"CircleScrapCost"}
                                   type="text"
-                                  placeholder={""}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={false}
@@ -1804,7 +1811,7 @@ class AddRMImport extends Component {
                                   label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                   name={"JaliScrapCost"}
                                   type="text"
-                                  placeholder={""}
+                                  placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, maxLength15, decimalLengthsix]}
                                   component={renderText}
                                   required={true}

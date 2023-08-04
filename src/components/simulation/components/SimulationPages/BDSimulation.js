@@ -23,6 +23,7 @@ import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { hideColumnFromExcel } from '../../../common/CommonFunctions';
 
 const gridOptions = {
 
@@ -55,8 +56,6 @@ function BDSimulation(props) {
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
-
-
 
     const dispatch = useDispatch()
 
@@ -124,8 +123,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / checkForNull(item.NumberOfPieces)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / checkForNull(item.NumberOfPieces)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
                 tempArr.push(tempObj)
             }
             return null;
@@ -253,24 +252,27 @@ function BDSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.data;
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         if (isImpactedMaster) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate) / Number(row.NumberOfPieces)
-            const NewBasicRate = Number(row.NewBasicRate) / Number(row.NumberOfPieces)
+            const BasicRate = Number(row.BasicRate) / NumberOfPieces
+            const NewBasicRate = Number(row.NewBasicRate) / NumberOfPieces
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         }
     }
 
     const OldcostFormatter = (props) => {
         const row = props?.data;
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         if (isImpactedMaster) {
             return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
-            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / Number(row.NumberOfPieces), getConfigurationKey().NoOfDecimalForPrice) : ''
+
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice) : ''
 
         }
     }
@@ -312,9 +314,11 @@ function BDSimulation(props) {
         }, 100);
     };
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
@@ -372,16 +376,20 @@ function BDSimulation(props) {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
-
+        let tempData = []
         let temp = []
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
             temp.push(item)
         })
-
+        if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
+            tempData = hideColumnFromExcel(data, 'Quantity')
+        } else {
+            tempData = data
+        }
         return (
             <ExcelSheet data={temp} name={'BOP Data'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -490,7 +498,7 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
-                                            {<AgGridColumn field="Quantity" editable='false' headerName="Min Order Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>}
+                                            {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" editable='false' headerName="Min Order Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
@@ -525,6 +533,7 @@ function BDSimulation(props) {
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
                                             showYearDropdown
+                                            dropdownMode='select'
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
                                             placeholderText="Select effective date"

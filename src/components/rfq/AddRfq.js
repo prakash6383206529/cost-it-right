@@ -76,6 +76,7 @@ function AddRfq(props) {
     const [IsOpen, setIsOpen] = useState(false);
     const [apiData, setData] = useState({});
     const [isDisable, setIsDisable] = useState(false)
+    const [apiCallCounter, setApiCallCounter] = useState(0)
     const [partNoDisable, setPartNoDisable] = useState(true)
     const [attachmentLoader, setAttachmentLoader] = useState(false)
     const [partName, setPartName] = useState('')
@@ -267,11 +268,12 @@ function AddRfq(props) {
             setIsOpen(!IsOpen)
         }
 
-        setIsDisable(true)
-        setAttachmentLoader(true)
         if (status === 'done') {
             let data = new FormData()
             data.append('file', file)
+            setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
+            setAttachmentLoader(true);
+            setIsDisable(true)
             dispatch(fileUploadQuotation(data, (res) => {
                 setDisableFalseFunction()
                 if ('response' in res) {
@@ -281,13 +283,20 @@ function AddRfq(props) {
                 }
                 else {
                     let Data = res.data[0]
-                    files.push(Data)
-                    setFiles(files)
+                    setFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+                }
+                setApiCallCounter(prevCounter => prevCounter - 1);
+
+                // Check if this is the last API call
+                console.log('apiCallCounter: ', apiCallCounter);
+                if (apiCallCounter === 0) {
                     setAttachmentLoader(false)
+                    setIsDisable(false)
                     setTimeout(() => {
-                        setIsOpen(!IsOpen)
+                        setIsOpen(!IsOpen);
                     }, 500);
                 }
+
             }))
         }
 
@@ -1183,6 +1192,7 @@ function AddRfq(props) {
                                                             onChange={handleSubmissionDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
+                                                            dropdownMode="select"
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="Select date"
@@ -1235,6 +1245,7 @@ function AddRfq(props) {
                                                             onChange={handleSOPDateChange}
                                                             showMonthDropdown
                                                             showYearDropdown
+                                                            dropdownMode='select'
                                                             minDate={new Date()}
                                                             dateFormat="dd/MM/yyyy"
                                                             placeholderText="Select date"
@@ -1565,6 +1576,7 @@ function AddRfq(props) {
                                                                 onChange={handleChangeDateAndTime}
                                                                 showMonthDropdown
                                                                 showYearDropdown
+                                                                dropdownMode='select'
                                                                 minDate={new Date()}
                                                                 timeFormat='HH:mm'
                                                                 dateFormat="dd/MM/yyyy HH:mm"

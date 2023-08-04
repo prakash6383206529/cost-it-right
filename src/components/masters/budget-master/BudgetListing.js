@@ -396,9 +396,11 @@ function BudgetListing(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        if (volumeDataList?.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (volumeDataList?.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -639,8 +641,8 @@ function BudgetListing(props) {
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                                     <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
-                                    <AgGridColumn field="NetPoPrice" headerName="Net Po Price"></AgGridColumn>
-                                    <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Po Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="NetPoPrice" headerName="Net Cost"></AgGridColumn>
+                                    <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
                                     <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
