@@ -202,7 +202,9 @@ class AddBOPDomestic extends Component {
       costingTypeId: costingHeadFlag,
       vendorLocation: [],
       selectedPlants: [],
+      isTechnologyVisible: false
     });
+
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }

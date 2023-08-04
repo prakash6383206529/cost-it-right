@@ -220,7 +220,7 @@ class AddBOPImport extends Component {
       vendorName: [],
       costingTypeId: costingHeadFlag,
       selectedPlants: [],
-      costingTypeId: costingHeadFlag,
+      isTechnologyVisible: false
     });
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
