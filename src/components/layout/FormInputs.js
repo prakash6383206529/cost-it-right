@@ -620,7 +620,7 @@ export function InputHiddenField(field) {
 }
 
 export function renderDatePicker(field) {
-  const { input, placeholder, disabled, meta: { touched, error }, minDate, form } = field;
+  const { input, placeholder, disabled, meta: { touched, error, form }, minDate } = field;
   const specificId = `${form}_${input.name}`;
   return (
     <div className={"react-picker-box"}>
