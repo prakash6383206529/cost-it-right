@@ -67,6 +67,7 @@ function RfqListing(props) {
     const [selectedCostingList, setSelectedCostingList] = useState('')
     const [mandatoryRemark, setMandatoryRemark] = useState(false)
     const [compareButtonPressed, setCompareButtonPressed] = useState(false)
+    const [isVisibiltyConditionMet, setisVisibiltyConditionMet] = useState(false)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -700,8 +701,15 @@ function RfqListing(props) {
         if (event.node.isSelected()) {
             const selectedRowIndex = event.node.rowIndex;
             setSelectedRowIndex(selectedRowIndex)
+        } else {
+            setaddComparisonToggle(false)
+            setSelectedRowIndex('')
+            gridApi.deselectAll()
         }
+
+
         const selectedRows = gridApi?.getSelectedRows()
+
         let partNumber = []
 
         selectedRows.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
@@ -713,6 +721,13 @@ function RfqListing(props) {
             newArray = [...newArray, ...item]
             return null
         })
+
+
+        if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
+            setisVisibiltyConditionMet(true)
+        } else {
+            setisVisibiltyConditionMet(false)
+        }
 
 
         setSelectedRows(newArray)
@@ -822,7 +837,7 @@ function RfqListing(props) {
                                         <button type="button" className="user-btn ml-2" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        {rowData[0]?.IsVisibiltyConditionMet === true && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
+                                        {isVisibiltyConditionMet && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
                                             <button
                                                 type="button"
                                                 className={'user-btn comparison-btn ml-1'}
