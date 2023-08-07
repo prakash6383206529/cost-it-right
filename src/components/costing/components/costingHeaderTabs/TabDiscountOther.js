@@ -16,7 +16,7 @@ import { EMPTY_DATA, CRMHeads, FILE_URL, NFRTypeId, VBCTypeId } from '../../../.
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
-import { IsNFR, ViewCostingContext } from '../CostingDetails';
+import { IsNFR, IsPartType, ViewCostingContext } from '../CostingDetails';
 import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
@@ -88,6 +88,7 @@ function TabDiscountOther(props) {
   const { otherCostData } = useSelector(state => state.costing)
   const [otherCostArray, setOtherCostArray] = useState([])
   const isNFR = useContext(IsNFR);
+  const isPartType = useContext(IsPartType);
 
   const fieldValues = useWatch({
     control,
@@ -844,7 +845,7 @@ function TabDiscountOther(props) {
       "Attachements": updatedFiles
     }
     if (costData.IsAssemblyPart === true && !partType) {
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 6, CostingEffectiveDate, '', '', isPartType)
       if (!CostingViewMode) {
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         dispatch(isDiscountDataChange(false))
@@ -855,7 +856,7 @@ function TabDiscountOther(props) {
       dispatch(saveDiscountOtherCostTab(data, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OTHER_DISCOUNT_COSTING_SAVE_SUCCESS);
-          dispatch(setComponentDiscountOtherItemData({}, () => { }))
+          // dispatch(setComponentDiscountOtherItemData({}, () => { }))
           dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
           dispatch(isDiscountDataChange(false))
           if (gotoNextValue && !isNFR) {

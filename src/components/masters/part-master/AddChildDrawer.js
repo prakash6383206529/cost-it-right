@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import { getSelectListPartType } from '../actions/Part';
-import { ASSEMBLYNAME, COMPONENT_PART, BOUGHTOUTPART } from "../../../config/constants";
+import { ASSEMBLYNAME, COMPONENT_PART, BOUGHTOUTPARTSPACING } from "../../../config/constants";
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../../common/HeaderTitle';
 import AddAssemblyForm from './AddAssemblyForm';
@@ -119,8 +119,8 @@ class AddChildDrawer extends Component {
                                             <input
                                                 type="radio"
                                                 name="childType"
-                                                checked={childType === BOUGHTOUTPART ? true : false}
-                                                onClick={() => this.checkRadio(BOUGHTOUTPART)}
+                                                checked={childType === BOUGHTOUTPARTSPACING ? true : false}
+                                                onClick={() => this.checkRadio(BOUGHTOUTPARTSPACING)}
                                             />{' '}
                                             <span>Insert</span>
                                         </Label>
@@ -149,7 +149,7 @@ class AddChildDrawer extends Component {
                                     />
                                 }
 
-                                {childType === BOUGHTOUTPART &&
+                                {childType === BOUGHTOUTPARTSPACING &&
                                     <AddBOPForm
                                         toggleDrawer={this.toggleDrawer}
                                         selectedPartType={this.state.selectedPartType}

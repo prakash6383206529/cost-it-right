@@ -18,7 +18,7 @@ import {
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
 import { LEVEL1, WACTypeId } from '../../../../config/constants';
-import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsNFR } from '../CostingDetails';
+import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsPartType, IsNFR } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
@@ -55,8 +55,8 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
-  const isNFR = useContext(IsNFR);
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const isPartType = useContext(IsPartType);
 
   const costingApprovalStatus = useContext(CostingStatusContext);
   const { nfrDetailsForDiscount } = useSelector(state => state.costing)
@@ -245,7 +245,7 @@ function CostingHeaderTabs(props) {
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
       if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -253,7 +253,7 @@ function CostingHeaderTabs(props) {
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
@@ -269,7 +269,7 @@ function CostingHeaderTabs(props) {
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate, '', '', isPartType)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
     }
   }
@@ -288,10 +288,6 @@ function CostingHeaderTabs(props) {
   */
   const toggle = (tab) => {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
-    if (isNFR && !openAllTabs) {
-      Toaster.warning("All Raw Material's price has not added in the Raw Material master against this vendor and plant.")
-      return false;
-    }
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
     delete tempErrorObjRMCC?.bopGridFields
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;

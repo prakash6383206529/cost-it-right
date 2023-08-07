@@ -42,6 +42,7 @@ function TabSurfaceTreatment(props) {
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];
         tempArr.push(res?.data?.DataList[0]);
+        tempArr.push(...res?.data?.DataList[0]?.CostingChildPartDetails);
         reactLocalStorage.setObject('surfaceCostingArray', tempArr)
       }))
     }
@@ -241,6 +242,7 @@ function TabSurfaceTreatment(props) {
             newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerAssembly = checkForNull(obj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerAssembly)
             newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(obj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostPerSubAssembly)
             newItem.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(obj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostComponent)
+            newItem.CostingPartDetails.BasicRate = checkForNull(obj.CostingPartDetails?.BasicRate)
           }
 
           if (newItem.CostingChildPartDetails.length > 0) {
@@ -250,7 +252,6 @@ function TabSurfaceTreatment(props) {
         })
 
         const updatedArr = mapArray(SurfaceTabData)
-
 
         dispatch(setSurfaceData(updatedArr, () => { }))
 
@@ -532,6 +533,7 @@ function TabSurfaceTreatment(props) {
   */
   const dispatchSurfaceCost = (surfaceGrid, params, arr) => {
     let tempArr = [];
+    let dataList = CostingDataList[0]
     try {
 
       tempArr = arr && arr.map(i => {
@@ -570,6 +572,8 @@ function TabSurfaceTreatment(props) {
         partObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(surfaceCost(surfaceGrid)) + checkForNull(i?.CostingPartDetails?.TransportationCost);
         partObj.CostingPartDetails.SurfaceTreatmentCost = surfaceCost(surfaceGrid);
         partObj.CostingPartDetails.SurfaceTreatmentDetails = surfaceGrid;
+        const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost) + checkForNull(dataList.NetOtherCost) - checkForNull(dataList.NetDiscountsCost)
+        partObj.CostingPartDetails.BasicRate = total;
         tempArr = Object.assign([...tempArr], { 0: partObj })
 
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
@@ -624,9 +628,10 @@ function TabSurfaceTreatment(props) {
   const setTransportationCost = (transportationObj, params) => {
 
     let arr = dispatchTransportationCost(transportationObj, params, SurfaceTabData)
+    let tempArr = reactLocalStorage.getObject('surfaceCostingArray')
 
     // let arr1 = assemblyTotalSurfaceTransportCost(arr)
-    dispatch(setSurfaceData(arr, () => { }))
+    dispatch(setSurfaceData(tempArr, () => { }))
   }
 
   /**
@@ -636,6 +641,7 @@ function TabSurfaceTreatment(props) {
   const dispatchTransportationCost = (transportationObj, params, arr) => {
     let tempArr = [];
     let NetSurfaceTreatmentCost
+    let dataList = CostingDataList[0]
     try {
 
       tempArr = arr && arr.map(i => {
@@ -673,6 +679,8 @@ function TabSurfaceTreatment(props) {
 
         let partObj = tempArr[0]
 
+        const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(NetSurfaceTreatmentCost) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost) + checkForNull(dataList.NetOtherCost) - checkForNull(dataList.NetDiscountsCost)
+        partObj.CostingPartDetails.BasicRate = total;
         partObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(surfaceCost(i?.CostingPartDetails?.SurfaceTreatmentDetails)) +
           checkForNull(transportationObj.TransportationCost);
         partObj.CostingPartDetails.TransportationCost = checkForNull(transportationObj.TransportationCost);
@@ -788,7 +796,6 @@ function TabSurfaceTreatment(props) {
 
 
     let subAssemblyObj = obj
-    console.log('subAssemblyObj: ', subAssemblyObj);
     let rmCcData = findrmCctData(subAssemblyObj)
     switch (type) {
       case 'Operation':
@@ -1007,11 +1014,9 @@ function TabSurfaceTreatment(props) {
           assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(assemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostComponent)
           assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostWithQuantity)
 
-          console.log(assemblyObj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys, "assemblyObj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys");
-          const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(assemblyObj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost) - checkForNull(dataList.NetDiscountsCost)
+          const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(assemblyObj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost) + checkForNull(dataList.NetOtherCost) - checkForNull(dataList.NetDiscountsCost)
 
           assemblyObj.CostingPartDetails.BasicRate = total;
-          console.log('assemblyObj: ', assemblyObj);
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })
         }
         // STORING CALCULATED AND UPDATED COSTING VALUE IN LOCAL STORAGE
@@ -1156,7 +1161,6 @@ function TabSurfaceTreatment(props) {
         // WILL RUN IF IT IS ASSEMBLY COSTING. WILL NOT RUN FOR COMPONENT COSTING
         if (assemblyObj.PartType === 'Assembly') {
           let dataList = CostingDataList[0]
-          console.log('dataList: ', dataList);
           assemblyObj.CostingPartDetails.TransportationDetails = params.PartNumber === assemblyObj.PartNumber ? TransportationObj : assemblyObj?.CostingPartDetails?.TransportationDetails
           assemblyObj.CostingPartDetails.TotalTransportationCostPerAssembly = params.PartNumber === assemblyObj.PartNumber ? checkForNull(TransportationObj.TransportationCost) : checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
           assemblyObj.CostingPartDetails.TransportationCost = checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerAssembly)
@@ -1168,7 +1172,7 @@ function TabSurfaceTreatment(props) {
           assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostPerSubAssembly = checkForNull(assemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostPerSubAssembly) + checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostPerSubAssembly)
           assemblyObj.CostingPartDetails.TotalCalculatedSurfaceTreatmentCostComponent = checkForNull(assemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostComponent) + checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostComponent)
           assemblyObj.CostingPartDetails.NetSurfaceTreatmentCost = checkForNull(assemblyObj?.CostingPartDetails?.TotalSurfaceTreatmentCostWithQuantity) + checkForNull(assemblyObj?.CostingPartDetails?.TotalTransportationCostWithQuantity)
-          const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(assemblyObj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost) - checkForNull(dataList.NetDiscountsCost)
+          const total = checkForNull(dataList.NetTotalRMBOPCC) + checkForNull(assemblyObj?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(dataList.NetOverheadAndProfitCost) + checkForNull(dataList.NetPackagingAndFreight) + checkForNull(dataList.ToolCost) + checkForNull(dataList.NetOtherCost) - checkForNull(dataList.NetDiscountsCost)
 
           assemblyObj.CostingPartDetails.BasicRate = total;
           tempArrForCosting = Object.assign([...tempArrForCosting], { 0: assemblyObj })

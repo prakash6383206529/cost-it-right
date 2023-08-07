@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { NetPOPriceContext, costingInfoContext } from '../../CostingDetailStepTwo';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
-import { ViewCostingContext } from '../../CostingDetails';
+import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import EditPartCost from './EditPartCost';
 import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
@@ -15,6 +15,7 @@ import { EMPTY_GUID, WACTypeId } from '../../../../../config/constants';
 import _ from 'lodash';
 import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
 import Toaster from '../../../../common/Toaster';
+import { PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 
 function AssemblyTechnology(props) {
     const { children, item, index } = props;
@@ -41,6 +42,7 @@ function AssemblyTechnology(props) {
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
     const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, RMCCTabData } = useSelector(state => state.costing)
     const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
+    const isPartType = useContext(IsPartType);
 
     const toggle = (BOMLevel, PartNumber, PartType) => {
         if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
@@ -278,6 +280,16 @@ function AssemblyTechnology(props) {
             const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
             const toolTabData = ToolTabData && ToolTabData[0]
             let stCostingData = findSurfaceTreatmentData(item)
+            let basicRate = 0
+            if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+                basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+                    checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+                    checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+            } else {
+                basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+                    checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+                    checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+            }
 
             let requestData = {
                 "CostingId": item.CostingId,
@@ -316,6 +328,10 @@ function AssemblyTechnology(props) {
                 "StaffCost": item.StaffCost,
                 "StaffCostPercentage": item.StaffCostPercentage,
                 "IndirectLaborCostPercentage": item.IndirectLaborCostPercentage,
+                "StaffCRMHead": item?.CostingPartDetails?.StaffCRMHead,
+                "NetLabourCRMHead": item?.CostingPartDetails?.NetLabourCRMHead,
+                "IndirectLabourCRMHead": item?.CostingPartDetails?.IndirectLabourCRMHead,
+                "BasicRate": basicRate,
                 "CostingPartDetails": {
                     "CostingId": item.CostingId,
                     "CostingNumber": item.CostingNumber,

@@ -45,6 +45,7 @@ export const SelectedCostingDetail = React.createContext()
 export const CostingStatusContext = React.createContext()
 export const CostingTypeContext = React.createContext()
 export const IsNFR = React.createContext()
+export const IsPartType = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -2755,12 +2756,14 @@ function CostingDetails(props) {
                           <SelectedCostingDetail.Provider value={costingOptionsSelectedObject} >
                             <CostingStatusContext.Provider value={approvalStatus}>
                               <IsNFR.Provider value={props?.isNFR}>
-                                <CostingDetailStepTwo
-                                  backBtn={backToFirstStep}
-                                  toggle={props.toggle}
-                                  IsCostingViewMode={IsCostingViewMode}
-                                  IsCopyCostingMode={IsCopyCostingMode}
-                                />
+                                <IsPartType.Provider value={partType}>
+                                  <CostingDetailStepTwo
+                                    backBtn={backToFirstStep}
+                                    toggle={props.toggle}
+                                    IsCostingViewMode={IsCostingViewMode}
+                                    IsCopyCostingMode={IsCopyCostingMode}
+                                  />
+                                </IsPartType.Provider>
                               </IsNFR.Provider>
                             </CostingStatusContext.Provider>
                           </SelectedCostingDetail.Provider>

@@ -20,7 +20,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDat
 import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
-import { IsNFR, ViewCostingContext } from '../../CostingDetails';
+import { IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
 
@@ -43,6 +43,7 @@ function PartCompoment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const isNFR = useContext(IsNFR);
+  const isPartType = useContext(IsPartType);
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
@@ -183,7 +184,7 @@ function PartCompoment(props) {
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }

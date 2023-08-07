@@ -7,12 +7,13 @@ import { gridDataAdded, saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCa
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
-import { ASSEMBLY } from '../../../../config/masterData';
-import { IdForMultiTechnology } from '../../../../config/masterData';
+import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { useEffect } from 'react';
 import { useRef } from 'react';
+import { WACTypeId } from '../../../../config/constants';
+import { IsPartType } from '../CostingDetails';
 
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
@@ -24,6 +25,7 @@ function AddAssemblyOperation(props) {
   const [operationCostAssemblyTechnology, setOperationCostAssemblyTechnology] = useState(item?.CostingPartDetails?.TotalOperationCost);
 
   const costData = useContext(costingInfoContext)
+  const isPartType = useContext(IsPartType);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const operationCost = item?.CostingPartDetails && item?.CostingPartDetails?.TotalOperationCostPerAssembly !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice) : 0
@@ -118,6 +120,16 @@ function AddAssemblyOperation(props) {
       return item1
     })
 
+    let basicRate = 0
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+      basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    } else {
+      basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    }
 
     let requestData = {
       "CostingId": item.CostingId,
@@ -158,6 +170,7 @@ function AddAssemblyOperation(props) {
       "StaffCost": item.StaffCost,
       "StaffCostPercentage": item.StaffCostPercentage,
       "IndirectLaborCostPercentage": item.IndirectLaborCostPercentage,
+      "BasicRate": basicRate,
 
       "CostingPartDetails": {
         "CostingId": item.CostingId,
@@ -201,7 +214,7 @@ function AddAssemblyOperation(props) {
     } else {
       dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
         if (!CostingViewMode) {
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
 
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }

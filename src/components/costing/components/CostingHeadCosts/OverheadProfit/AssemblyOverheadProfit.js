@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../../../helper';
-import { getOverheadProfitTabData, gridDataAdded, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, setComponentOverheadItemData } from '../../../actions/Costing';
+import { getOverheadProfitTabData, gridDataAdded, isOverheadProfitDataChange, saveAssemblyOverheadProfitTab, saveAssemblyPartRowCostingCalculation, saveDiscountOtherCostTab, setComponentOverheadItemData } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
 import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../../CostingUtil';
-import { ViewCostingContext } from '../../CostingDetails';
-import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { IsPartType, ViewCostingContext } from '../../CostingDetails';
+import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
+import { WACTypeId } from '../../../../../config/constants';
 
 function AssemblyOverheadProfit(props) {
   const { item } = props;
@@ -21,8 +22,9 @@ function AssemblyOverheadProfit(props) {
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingViewMode = useContext(ViewCostingContext);
+  const isPartType = useContext(IsPartType);
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const { CostingEffectiveDate, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsOverheadProfitChange, ComponentItemDiscountData } = useSelector(state => state.costing)
   const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
 
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
@@ -76,6 +78,21 @@ function AssemblyOverheadProfit(props) {
   //   />
   // })
 
+  const InjectDiscountAPICall = () => {
+    let basicRate = 0
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+      basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    } else {
+      basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    }
+
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3, BasicRate: basicRate }, res => { }))
+  }
+
   /**
   * @method saveCosting
   * @description Used to Submit the form
@@ -112,8 +129,8 @@ function AssemblyOverheadProfit(props) {
     }
 
     if (!CostingViewMode && checkIsOverheadProfitChange) {
-      if (!IdForMultiTechnology.includes(String(costData?.TechnologyId))) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate)
+      if (!IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId) {
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 3, CostingEffectiveDate, '', '', isPartType)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -135,11 +152,13 @@ function AssemblyOverheadProfit(props) {
           dispatch(gridDataAdded(true))
         }, 500);
       }
-
       dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
         if (res.data.Result) {
           Toaster.success(MESSAGES.OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS);
           dispatch(isOverheadProfitDataChange(false))
+          dispatch(setComponentOverheadItemData({}, () => { }))
+          InjectDiscountAPICall()
+
         }
       }))
     }

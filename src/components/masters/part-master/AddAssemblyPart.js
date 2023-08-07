@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -658,7 +658,7 @@ class AddAssemblyPart extends Component {
         childPartArray.push({
           PartId: item.PartType && (item.PartType === ASSEMBLYNAME || item.PartType === COMPONENT_PART) ? item.PartId : '',
           ParentPartId: isEditFlag ? PartId : '',
-          BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? ((item.BoughtOutPartId !== undefined && item.BoughtOutPartId !== null) ? item.BoughtOutPartId : item.PartId) : '',
+          BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPARTSPACING ? ((item.BoughtOutPartId !== undefined && item.BoughtOutPartId !== null) ? item.BoughtOutPartId : item.PartId) : '',
           PartTypeId: item.PartTypeId ? item.PartTypeId : '',
           PartType: item.PartType ? item.PartType : '',
           BOMLevel: 1,

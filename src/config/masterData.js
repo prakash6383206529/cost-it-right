@@ -4121,6 +4121,10 @@ export const DIE_CASTING = 23
 export const ASSEMBLY_TECHNOLOGY_MASTER = 10
 export const LOGISTICS = 24
 
+// PART TYPE
+export const PART_TYPE_ASSEMBLY = 1
+
+
 export const STRINGMAXLENGTH = 50
 export const NUMBERMAXLENGTH = 6
 export const REMARKMAXLENGTH = 512
