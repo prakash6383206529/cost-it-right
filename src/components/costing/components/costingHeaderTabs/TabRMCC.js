@@ -13,13 +13,14 @@ import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
-import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
+import { IsPartType, SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import DayTime from '../../../common/DayTimeWrapper'
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../CostingUtil';
 import _, { debounce } from 'lodash'
 import ScrollToTop from '../../../common/ScrollToTop';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 
 function TabRMCC(props) {
 
@@ -27,13 +28,13 @@ function TabRMCC(props) {
   const dispatch = useDispatch()
 
   const { RMCCTabData, ComponentItemData, ComponentItemDiscountData, ErrorObjRMCC, ErrorObjOverheadProfit, CostingEffectiveDate, getAssemBOPCharge, SurfaceTabData,
-    OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj, costingData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
+    OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, masterBatchObj, costingData, isBreakupBoughtOutPartCostingFromAPI, CostingDataList } = useSelector(state => state.costing)
 
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const selectedCostingDetail = useContext(SelectedCostingDetail);
-
+  const isPartType = useContext(IsPartType);
 
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
@@ -49,6 +50,7 @@ function TabRMCC(props) {
         // dispatch(setAllCostingInArray(res.data.DataList,false))
         let tempArr = [];
         tempArr.push(res?.data?.DataList[0]);
+        tempArr.push(...res?.data?.DataList[0]?.CostingChildPartDetails);
         reactLocalStorage.setObject('costingArray', tempArr);
 
       }))
@@ -291,6 +293,7 @@ function TabRMCC(props) {
   const calculationForPart = (gridData, obj, type, checkboxFields = {}) => {
     let partObj = obj
     let GrandTotalCost = 0
+    let sumForBasicRate = (CostingDataList[0]?.NetSurfaceTreatmentCost + CostingDataList[0]?.NetOverheadAndProfitCost + CostingDataList[0]?.NetPackagingAndFreight + CostingDataList[0]?.ToolCost + CostingDataList[0]?.NetOtherCost) - CostingDataList[0]?.NetDiscountsCost
     switch (type) {
       case 'RM':
 
@@ -314,13 +317,18 @@ function TabRMCC(props) {
         partObj.CostingPartDetails.MasterBatchPercentage = checkForNull(checkboxFields?.MasterBatchPercentage);
         partObj.CostingPartDetails.MasterBatchTotal = checkForNull(checkboxFields?.MasterBatchTotal);
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partObj.Quantity;
+        partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(GrandTotalCost) * checkForNull(partObj?.CostingPartDetails?.Quantity);
         partObj.CostingPartDetails.CostingRawMaterialCommonCalculationId = gridData[0]?.WeightCalculationId;
         partObj.CostingPartDetails.NetPOPrice =
           checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity) +
           checkForNull(partObj?.CostingPartDetails?.TotalBoughtOutPartCost) +
           checkForNull(partObj?.CostingPartDetails?.TotalProcessCost) +
           checkForNull(partObj?.CostingPartDetails?.TotalOperationCost)
+        partObj.CostingPartDetails.BasicRate = checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity) +
+          checkForNull(partObj?.CostingPartDetails?.TotalBoughtOutPartCost) +
+          checkForNull(partObj?.CostingPartDetails?.TotalProcessCost) +
+          checkForNull(partObj?.CostingPartDetails?.TotalOperationCost)
+
 
         // partObj.CostingPartDetails.NetPOPrice = gridData[0]?.WeightCalculationId;
         break;
@@ -336,7 +344,8 @@ function TabRMCC(props) {
 
         GrandTotalCost = checkForNull(partObj?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(partObj?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(partObj?.CostingPartDetails?.TotalConversionCost)
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partObj.Quantity;
+        partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(GrandTotalCost) * checkForNull(partObj?.CostingPartDetails?.Quantity);
+        partObj.CostingPartDetails.BasicRate = checkForNull(GrandTotalCost) * checkForNull(partObj?.CostingPartDetails?.Quantity)
 
         break;
       case 'CC':
@@ -361,12 +370,17 @@ function TabRMCC(props) {
         GrandTotalCost = checkForNull(partObj?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(partObj?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(partObj?.CostingPartDetails?.TotalConversionCost)
 
         partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
-        partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = GrandTotalCost * partObj.Quantity;
+        partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(GrandTotalCost) * checkForNull(partObj?.CostingPartDetails?.Quantity);
+
         break;
       default:
         break;
     }
-
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+      partObj.CostingPartDetails.BasicRate = checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCost) + findSurfaceTreatmentData(partObj)?.CostingPartDetails?.NetSurfaceTreatmentCost
+    } else {
+      partObj.CostingPartDetails.BasicRate = checkForNull(sumForBasicRate) + checkForNull(partObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity)
+    }
     return partObj
   }
 
@@ -461,7 +475,7 @@ function TabRMCC(props) {
       newItem.CostingPartDetails.CostingRawMaterialsCost = obj?.CostingPartDetails?.CostingRawMaterialsCost;
       newItem.CostingPartDetails.CostingBoughtOutPartCost = obj?.CostingPartDetails?.CostingBoughtOutPartCost;
       newItem.CostingPartDetails.CostingConversionCost = obj?.CostingPartDetails?.CostingConversionCost;
-      newItem.CostingPartDetails.BasicRate = costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) : netPOPrice;
+      newItem.CostingPartDetails.BasicRate = obj?.CostingPartDetails?.BasicRate
       // newItem?.CostingPartDetails?.BOPHandlingFixed = checkForNull(obj?.CostingPartDetails?.BOPHandlingFixed);
 
 
@@ -992,6 +1006,7 @@ function TabRMCC(props) {
           newItem.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = checkForNull(obj?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity)
           newItem.CostingPartDetails.IsRMCutOffApplicable = obj?.CostingPartDetails?.IsRMCutOffApplicable
           newItem.CostingPartDetails.TotalOtherOperationCostPerAssembly = obj?.CostingPartDetails?.TotalOtherOperationCostPerAssembly
+          newItem.CostingPartDetails.BasicRate = obj?.CostingPartDetails?.BasicRate
           if (item.CostingChildPartDetails.length > 0) {
             mapArray(newItem.CostingChildPartDetails)
           }
@@ -1411,7 +1426,7 @@ function TabRMCC(props) {
         "NetToolCost": ComponentItemData?.CostingPartDetails?.TotalToolCost,
         "NetTotalRMBOPCC": ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
         "TotalCost": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,
-        "BasicRate": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : netPOPrice,
+        "BasicRate": costData.IsAssemblyPart ? (stCostingData && Object.keys(stCostingData).length > 0) ? (checkForNull(stCostingData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost)) : ComponentItemData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost : ComponentItemData?.CostingPartDetails?.BasicRate,
         "LoggedInUserId": loggedInUserId(),
         "EffectiveDate": CostingEffectiveDate,
         "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
@@ -1444,7 +1459,7 @@ function TabRMCC(props) {
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -1472,7 +1487,18 @@ function TabRMCC(props) {
   }), 500)
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, EffectiveDate: CostingEffectiveDate, CallingFrom: 2 }, res => { }))
+    let basicRate = 0
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+      basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    } else {
+      basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    }
+
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate, EffectiveDate: CostingEffectiveDate, CallingFrom: 2 }, res => { }))
   }
 
 
@@ -1579,7 +1605,7 @@ function TabRMCC(props) {
       checkForNull(discountAndOtherTabData?.HundiOrDiscountValue)) + checkForNull(discountAndOtherTabData?.AnyOtherCost)
     if (!CostingViewMode) {
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, TotalCost, getAssemBOPCharge, 1, CostingEffectiveDate)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, TotalCost, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
     }
 

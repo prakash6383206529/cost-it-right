@@ -12,7 +12,7 @@ import Switch from "react-switch";
 import Tool from '../CostingHeadCosts/Tool';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
-import { ViewCostingContext } from '../CostingDetails';
+import { IsPartType, ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import { defaultPageSize, EMPTY_DATA, ASSEMBLYNAME } from '../../../../config/constants';
@@ -24,7 +24,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import AddTool from '../Drawers/AddTool';
 import { gridDataAdded } from '../../actions/Costing'
 import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../CostingUtil';
-import { IdForMultiTechnology } from '../../../../config/masterData';
+import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 import { debounce } from 'lodash';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
@@ -52,6 +52,7 @@ function TabToolCost(props) {
   const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
   const [disableSwitch, setDisableSwitch] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+  const isPartType = useContext(IsPartType);
 
   const dispense = () => {
     setIsApplicableProcessWise(IsToolCostApplicable)
@@ -274,7 +275,7 @@ function TabToolCost(props) {
       if (costData.IsAssemblyPart === true && !partType) {
 
         if (!CostingViewMode) {
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 5, CostingEffectiveDate)
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 5, CostingEffectiveDate, '', '', isPartType)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
       }
@@ -310,7 +311,17 @@ function TabToolCost(props) {
   }), 500);
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 5 }, res => { }))
+    let basicRate = 0
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+      basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    } else {
+      basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    }
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate, CallingFrom: 5 }, res => { }))
   }
 
 

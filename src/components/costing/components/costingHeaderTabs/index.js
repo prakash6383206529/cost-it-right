@@ -18,7 +18,7 @@ import {
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
 import { LEVEL1, WACTypeId } from '../../../../config/constants';
-import { EditCostingContext, ViewCostingContext, CostingStatusContext } from '../CostingDetails';
+import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsPartType } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
@@ -52,7 +52,8 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const isPartType = useContext(IsPartType);
 
   const costingApprovalStatus = useContext(CostingStatusContext);
 
@@ -240,7 +241,7 @@ function CostingHeaderTabs(props) {
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
       if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -248,7 +249,7 @@ function CostingHeaderTabs(props) {
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
@@ -264,7 +265,7 @@ function CostingHeaderTabs(props) {
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate, '', '', isPartType)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
     }
   }

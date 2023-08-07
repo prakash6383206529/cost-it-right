@@ -234,7 +234,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i?.CostingPartDetails?.RejectionCost) +
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
             checkForNull(i?.CostingPartDetails?.ICCCost) +
             checkForNull(i?.CostingPartDetails?.PaymentTermCost);
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
@@ -249,7 +249,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.OverheadCost = OverheadCost;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i?.CostingPartDetails?.RejectionCost) +
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
             checkForNull(i?.CostingPartDetails?.ICCCost) +
             checkForNull(i?.CostingPartDetails?.PaymentTermCost);
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
@@ -301,7 +301,7 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i?.CostingPartDetails?.RejectionCost) +
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
             checkForNull(i?.CostingPartDetails?.ICCCost) +
             checkForNull(i?.CostingPartDetails?.PaymentTermCost);
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
@@ -312,7 +312,7 @@ function TabOverheadProfit(props) {
 
           i.CostingPartDetails.CostingProfitDetail = profitObj;
           i.CostingPartDetails.ProfitCost = ProfitCost;
-          i.CostingPartDetails.NetOverheadAndProfitCost = OverheadCost + ProfitCost + checkForNull(i?.CostingPartDetails?.RejectionCost) +
+          i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
             checkForNull(i?.CostingPartDetails?.ICCCost) +
             checkForNull(i?.CostingPartDetails?.PaymentTermCost);
           i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;

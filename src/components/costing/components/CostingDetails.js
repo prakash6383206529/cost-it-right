@@ -45,6 +45,7 @@ export const SelectedCostingDetail = React.createContext()
 export const CostingStatusContext = React.createContext()
 export const CostingTypeContext = React.createContext()
 export const IsNFR = React.createContext()
+export const IsPartType = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -2795,32 +2796,32 @@ function CostingDetails(props) {
 
                   </>
                 )}
-                {
-                  stepTwo && (
-                    <CostingTypeContext.Provider value={costingType}>
-                      <ViewCostingContext.Provider value={IsCostingViewMode} >
-                        <EditCostingContext.Provider value={IsCostingEditMode} >
-                          <CopyCostingContext.Provider value={IsCopyCostingMode} >
-                            <SelectedCostingDetail.Provider value={costingOptionsSelectedObject} >
-                              <CostingStatusContext.Provider value={approvalStatus}>
-                                <IsNFR.Provider value={props?.isNFR}>
+                {stepTwo && (
+                  <CostingTypeContext.Provider value={costingType}>
+                    <ViewCostingContext.Provider value={IsCostingViewMode} >
+                      <EditCostingContext.Provider value={IsCostingEditMode} >
+                        <CopyCostingContext.Provider value={IsCopyCostingMode} >
+                          <SelectedCostingDetail.Provider value={costingOptionsSelectedObject} >
+                            <CostingStatusContext.Provider value={approvalStatus}>
+                              <IsNFR.Provider value={props?.isNFR}>
+                                <IsPartType.Provider value={partType}>
                                   <CostingDetailStepTwo
                                     backBtn={backToFirstStep}
                                     toggle={props.toggle}
                                     IsCostingViewMode={IsCostingViewMode}
                                     IsCopyCostingMode={IsCopyCostingMode}
                                   />
-                                </IsNFR.Provider>
-                              </CostingStatusContext.Provider>
-                            </SelectedCostingDetail.Provider>
-                          </CopyCostingContext.Provider>
-                        </EditCostingContext.Provider>
-                      </ViewCostingContext.Provider>
-                    </CostingTypeContext.Provider>
-                  )
-                }
-              </form >
-            </div >
+                                </IsPartType.Provider>
+                              </IsNFR.Provider>
+                            </CostingStatusContext.Provider>
+                          </SelectedCostingDetail.Provider>
+                        </CopyCostingContext.Provider>
+                      </EditCostingContext.Provider>
+                    </ViewCostingContext.Provider>
+                  </CostingTypeContext.Provider>
+                )}
+              </form>
+            </div>
             {
               showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
             }
