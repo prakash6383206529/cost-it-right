@@ -418,7 +418,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"Description"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[maxLength80, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                                                             component={renderText}
                                                             required={false}
                                                             className=""
@@ -557,7 +557,7 @@ class AddIndivisualProduct extends Component {
                                                             placeholder={isViewMode ? "-" : "Type here..."}
                                                             className=""
                                                             customClassName=" textAreaWithBorder"
-                                                            validate={[maxLength512, checkWhiteSpaces]}
+                                                            validate={[maxLength512, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter]}
                                                             //required={true}
                                                             component={renderTextAreaField}
                                                             maxLength="5000"
@@ -658,14 +658,17 @@ class AddIndivisualProduct extends Component {
                                                         <div className={"cancel-icon"}></div>
                                                         {"Cancel"}
                                                     </button>
-                                                    <button
-                                                        type="submit"
-                                                        className="user-btn mr5 save-btn"
-                                                        disabled={isViewMode || setDisable}
-                                                    >
-                                                        <div className={"save-icon"}></div>
-                                                        {isEditFlag ? "Update" : "Save"}
-                                                    </button>
+                                                    {!isViewMode &&
+                                                        <button
+                                                            type="submit"
+                                                            className="user-btn mr5 save-btn"
+                                                            disabled={isViewMode || setDisable}
+                                                        >
+                                                            <div className={"save-icon"}></div>
+                                                            {isEditFlag ? "Update" : "Save"}
+                                                        </button>
+                                                    }
+
                                                 </div>
                                             </Row>
                                         </form>

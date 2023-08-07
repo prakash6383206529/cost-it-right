@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
-import { Row, Col, Table } from 'reactstrap'
+import { Row, Col, Table, Tooltip } from 'reactstrap'
 import DayTime from '../../common/DayTimeWrapper'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
@@ -101,6 +101,9 @@ function SimulationApprovalSummary(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [noData, setNoData] = useState(false);
+    const [tooltipStates, setTooltipStates] = useState({});
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [listWithTooltip, setListWithTooltip] = useState([])
 
     const isSurfaceTreatment = (Number(SimulationTechnologyId) === Number(SURFACETREATMENT));
     const isOperation = (Number(SimulationTechnologyId) === Number(OPERATIONS));
@@ -838,15 +841,27 @@ function SimulationApprovalSummary(props) {
         }
         return cell != null ? temp : '-';
     }
+    const tooltipToggle = (costingId) => {
+        setTooltipStates((prevTooltipStates) => ({
+            ...prevTooltipStates,
+            [costingId]: !prevTooltipStates[costingId]
+        }));
+    };
 
     const partFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         return (
             <>
                 {cell}
-                {row?.IsImpactedPart && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"quantity-tooltip"}></i>}
+                {row?.IsImpactedPart && (
+                    <i
+                        className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-2 pb-1 ml-5 float-unset`}
+                        id={`bop-tooltip${row?.CostingId}`}
+                        onMouseEnter={() => tooltipToggle(row?.CostingId)}
+                        onMouseLeave={() => tooltipToggle(row?.CostingId)}
+                    ></i>
+                )}
             </>
         )
     }
@@ -873,6 +888,11 @@ function SimulationApprovalSummary(props) {
         if (!isMasterAssociatedWithCosting) {
             params.api.sizeColumnsToFit();
         }
+        const isTooltip = costingList.filter(item => item.IsImpactedPart === true)
+        setListWithTooltip(isTooltip)
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 300);
     };
 
 
@@ -1130,6 +1150,18 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
+                        {listWithTooltip.length !== 0 && listWithTooltip.map(item => {
+                            return showTooltip && <Tooltip
+                                key={`tooltip-${item.CostingId}`}
+                                className=""
+                                placement={"top"}
+                                isOpen={tooltipStates[item.CostingId]}
+                                toggle={() => tooltipToggle(item.CostingId)}
+                                target={`bop-tooltip${item.CostingId}`}
+                            >
+                                {"This part is impacted by BOP costing"}
+                            </Tooltip>
+                        })}
 
                         {costingSummary && keysForDownloadSummary && Object.keys(keysForDownloadSummary).length > 0 &&
                             <>

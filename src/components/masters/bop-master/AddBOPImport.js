@@ -219,6 +219,7 @@ class AddBOPImport extends Component {
       vendorName: [],
       costingTypeId: costingHeadFlag,
       selectedPlants: [],
+      isTechnologyVisible: false
     });
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
@@ -1554,7 +1555,7 @@ class AddBOPImport extends Component {
                               placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
-                              validate={[maxLength512]}
+                              validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               value={this.state.remarks}
                               onChange={this.handleMessageChange}
                               disabled={isViewMode}

@@ -660,14 +660,16 @@ class AddVendorDrawer extends Component {
                                             onClick={this.cancelHandler} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
-                                        <button
-                                            type="submit"
-                                            disabled={this.state.isLoader || isViewMode || setDisable ? true : false}
-                                            className="user-btn save-btn">
+                                        {!isViewMode &&
+                                            <button
+                                                type="submit"
+                                                disabled={this.state.isLoader || isViewMode || setDisable ? true : false}
+                                                className="user-btn save-btn">
 
-                                            <div className={"save-icon"}></div>
-                                            {isEditFlag ? 'Update' : 'Save'}
-                                        </button>
+                                                <div className={"save-icon"}></div>
+                                                {isEditFlag ? 'Update' : 'Save'}
+                                            </button>}
+
                                     </div>
                                 </Row>
                             </form>

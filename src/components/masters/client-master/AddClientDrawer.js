@@ -779,13 +779,13 @@ class AddClientDrawer extends Component {
                                             >
                                                 <div className={'cancel-icon'}></div> {'Cancel'}
                                             </button>
-                                            <button
+                                            {!isViewMode && <button
                                                 type="submit"
                                                 disabled={isViewMode || setDisable}
                                                 className="user-btn save-btn" >
                                                 <div className={"save-icon"}></div>
                                                 {this.props.isEditFlag ? 'Update' : 'Save'}
-                                            </button>
+                                            </button>}
                                         </div>
                                     </div>
                                 </Row>

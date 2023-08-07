@@ -2171,13 +2171,13 @@ class AddPower extends Component {
                         >
                           <div className={"cancel-icon"}></div> {'Cancel'}
                         </button>
-                        <button
+                        {!isViewMode && <button
                           type="submit"
                           disabled={isViewMode || setDisable}
                           className="user-btn mr5 save-btn" >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? 'Update' : 'Save'}
-                        </button>
+                        </button>}
                       </div>
                     </Row>
 

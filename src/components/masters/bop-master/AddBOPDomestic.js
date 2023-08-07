@@ -199,7 +199,9 @@ class AddBOPDomestic extends Component {
       costingTypeId: costingHeadFlag,
       vendorLocation: [],
       selectedPlants: [],
+      isTechnologyVisible: false
     });
+
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
@@ -1380,7 +1382,7 @@ class AddBOPDomestic extends Component {
                               placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
-                              validate={[maxLength512]}
+                              validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               disabled={isViewMode}
                               value={this.state.remarks}
                               onChange={this.handleMessageChange}

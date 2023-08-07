@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { required, getVendorCode, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, maxLength512, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
@@ -384,10 +384,10 @@ class AddOverhead extends Component {
         isHideRM: false,
       })
     }
-    if (this.state.overheadAppli.value === newValue.value) {
+    if (this.state.isEditFlag && this.state.overheadAppli.value === newValue.value) {
       this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false })
     }
-    else {
+    else if (this.state.isEditFlag) {
       this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
@@ -1286,6 +1286,7 @@ class AddOverhead extends Component {
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
                             component={renderTextAreaField}
+                            validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             maxLength="512"
                             disabled={isViewMode}
                           />
@@ -1380,14 +1381,14 @@ class AddOverhead extends Component {
                           {"Cancel"}
                         </button>
                         {/* <button onClick={this.options}>13</button> */}
-                        <button
+                        {!isViewMode && <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                           disabled={isViewMode || setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
-                        </button>
+                        </button>}
                       </div>
                     </Row>
                   </form>
