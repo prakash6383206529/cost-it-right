@@ -58,7 +58,7 @@ export const TextFieldHookForm = (field) => {
   const isDisabled = field.disabled === true ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let loaderClass = isLoading && isLoading?.isLoader ? isLoading?.loaderClass !== undefined ? isLoading?.loaderClass : '' : '';
-
+  let containerId = `${name}_container`;
   return (
     <>
       <div className={className}>
@@ -69,7 +69,7 @@ export const TextFieldHookForm = (field) => {
             {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
           </label>
         }
-        <div id={id}>
+        <div id={id ? id : containerId}>
           <Controller
             name={name}
             control={control}
@@ -83,6 +83,7 @@ export const TextFieldHookForm = (field) => {
                 <div className={`${isLoader ? "p-relative" : ''}`}>
                   <input
                     {...field}
+                    id={name}
                     {...register}
                     title={isDisabled ? value : ''}
                     name={name}
@@ -227,7 +228,7 @@ export const NumberFieldHookForm = (field) => {
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
-
+  let containerId = `${name}_container`;
   return (
     <>
       <div className={className} >
@@ -235,7 +236,7 @@ export const NumberFieldHookForm = (field) => {
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
-        <div id={id}>
+        <div id={id ? id : containerId}>
           <Controller
             name={name}
             control={control}
@@ -246,6 +247,7 @@ export const NumberFieldHookForm = (field) => {
               return (
                 <input
                   {...field}
+                  id={name}
                   {...register}
                   title={isDisabled ? value : ''}
                   type={'number'}
@@ -281,6 +283,7 @@ export const SearchableSelectHookForm = (field) => {
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
   const className = `${isLoader ? 'p-relative' : ''} ${buttonCross ? 'cross-btn-container' : ''}`
+  let containerId = `${name}_container`;
   let temp = 300;
   if (dropdownHeight < 6) {
     if (dropdownHeight === 0) {
@@ -314,7 +317,7 @@ export const SearchableSelectHookForm = (field) => {
     stringify: option => `${option.label}`,
   };
   return (
-    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`} id={containerId}>
       <label className={label === false ? 'd-none' : ''}>
         {label}
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
@@ -330,12 +333,14 @@ export const SearchableSelectHookForm = (field) => {
             <div className={className} title={title ? title : isDisable ? value?.label : ''}>
               <Select
                 {...field}
+                id={name}
                 {...register}
                 name={name}
                 placeholder={placeholder ? placeholder : isDisable ? '-' : 'Select'}
                 isDisabled={isDisable}
                 onChange={(e, action) => {
                   handleChange(e, action);
+                  document.activeElement.blur();
                   onChange(e)
 
                 }}
@@ -400,9 +405,10 @@ export const TextAreaHookForm = (field) => {
   const InputClassName = `form-control text-area ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
   let minHeight = rowHeight ? rowHeight : 4
+  let containerId = `${name}_container`;
   return (
     <>
-      <div className={className}>
+      <div className={className} id={containerId}>
         <label>
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
@@ -419,6 +425,7 @@ export const TextAreaHookForm = (field) => {
                 {...field}
                 {...register}
                 title={isDisabled ? value : ''}
+                id={name}
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
@@ -451,9 +458,10 @@ export const DatePickerHookForm = (field) => {
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''} ${buttonCross ? 'cross-btn-container' : ''}`
   const isDisabled = field.disabled === true ? true : false
+  let containerId = `${name}_container`;
   return (
     <React.Fragment>
-      <div className={className}>
+      <div className={className} id={containerId}>
         <label>
           {label} {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
@@ -469,8 +477,10 @@ export const DatePickerHookForm = (field) => {
               // return (
               <DatePicker
                 {...field}
+
                 {...register}
                 name={name}
+                id={name}
                 value={value}
                 dateFormat="dd/MM/yyyy"
                 placeholderText={placeholder}
@@ -566,10 +576,12 @@ export const RadioHookForm = (field) => {
   const { label, Controller, control, register, name, defaultValue, mandatory, errors, rules, handleChange } = field
   const className = `${field.customClassName ? field.customClassName : ""}`;
   const isDisabled = field.disabled === true ? true : false;
+  let containerId = `${name}_container`;
   return (
     <>
       <div
         className={className}
+        id={containerId}
       >
         <label className="label-container">
           {label}
@@ -587,6 +599,7 @@ export const RadioHookForm = (field) => {
                   {...field}
                   {...register}
                   type="radio"
+                  id={name}
                   name={name}
                   checked={defaultValue}
                   // className={InputClassName}
@@ -615,9 +628,9 @@ export const AsyncSearchableSelectHookForm = (field) => {
 
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isLoaderClass = isLoading && isLoading?.isLoader ? isLoading?.isLoaderClass !== undefined ? isLoading?.isLoaderClass : '' : '';
-
+  let containerId = `${name}_container`;
   return (
-    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`} id={containerId}>
       <label>
         {label}
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
@@ -636,6 +649,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
                 {...field}
                 {...register}
                 name={name}
+                id={name}
                 placeholder={placeholder}
                 isDisabled={disabled}
                 onChange={(e) => {
@@ -687,9 +701,10 @@ export const DateTimePickerHookForm = (field) => {
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
   const InputClassName = `form-control ${field.className ? field.className : ''}`
   const isDisabled = field.disabled === true ? true : false
+  let containerId = `${name}_container`;
   return (
     <React.Fragment>
-      <div className={className}>
+      <div className={className} id={containerId}>
         <label>
           {label} {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
@@ -704,6 +719,7 @@ export const DateTimePickerHookForm = (field) => {
             // return (
             <DatePicker
               {...field}
+              id={name}
               name={name}
               value={value}
               dateFormat={"dd/MM/yyyy HH:mm"}

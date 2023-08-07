@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number } from "../../../helper/validation";
+import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { ASSEMBLY, AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
@@ -110,7 +110,7 @@ class AddRMDomestic extends Component {
       isOpenCategory: false,
       isOpenVendor: false,
       isOpenUOM: false,
-
+      finalApprovalLoader: true,
       isVisible: false,
       imageURL: '',
       isLoader: false,
@@ -184,6 +184,8 @@ class AddRMDomestic extends Component {
           this.commonFunction()
         }, 100);
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
   }
 
@@ -220,12 +222,12 @@ class AddRMDomestic extends Component {
 
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
+          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
         }
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 
@@ -900,6 +902,9 @@ class AddRMDomestic extends Component {
     this.clearForm(type)
   }
   cancelHandler = () => {
+    if (this.state.isViewFlag) {
+      this.cancel('cancel')
+    }
     if (Object.keys(this.props.fieldsObj).length !== 0 || this.state.isDropDownChanged || this.state.files.length !== 0) {
       this.setState({ showPopup: true })
     } else {
@@ -1283,7 +1288,7 @@ class AddRMDomestic extends Component {
 
     return (
       <>
-        {this.state.isLoader && <LoaderCustom customClass="add-page-loader" />}
+        {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom customClass="add-page-loader" />}
         <div className="container-fluid">
           <div>
             <div className="login-container signup-form">
@@ -1610,7 +1615,7 @@ class AddRMDomestic extends Component {
                                     name={"Source"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
-                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70]}
+                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength70, hashValidation]}
                                     component={renderText}
                                     onChange={this.handleSource}
                                     valueDescription={this.state.source}
@@ -1864,7 +1869,7 @@ class AddRMDomestic extends Component {
                               className=""
                               customClassName=" textAreaWithBorder"
                               onChange={this.handleMessageChange}
-                              validate={[maxLength512]}
+                              validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               required={false}
                               component={renderTextAreaField}
                               maxLength="512"
@@ -1960,29 +1965,27 @@ class AddRMDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
-                              onClick={() => scroll.scrollToTop()}
-                              disabled={isViewFlag || setDisable || noApprovalCycle}
-
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={isViewFlag || setDisable || noApprovalCycle}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-
-                            </button>
-                          }
-
-
+                          {!isViewFlag && <>
+                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                onClick={() => scroll.scrollToTop()}
+                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            }
+                          </>}
                         </div>
                       </Row>
                     </form>

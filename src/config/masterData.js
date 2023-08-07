@@ -1941,6 +1941,8 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
+    { label: 'TechnologyName', value: 'TechnologyName', }, //NOUI
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
@@ -1960,6 +1962,8 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'No',
+        'TechnologyName': '',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -1977,6 +1981,8 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'No',
+        'TechnologyName': '',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -1994,12 +2000,82 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'No',
+        'TechnologyName': '',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
         'NumberOfPieces': '1',
         'BasicRate': '100',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }
+]
+
+export const BOP_DETAILED_DOMESTIC = [
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'Specification', value: 'Specification', },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+    { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
+    { label: 'TechnologyName', value: 'TechnologyName', }, //NOUI
+    { label: 'Source', value: 'Source', },
+    { label: 'SourceLocation', value: 'SourceLocation', },
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark' }
+]
+
+export const BOP_DETAILED_DOMESTIC_TempData = [
+    {
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
+        'Specification': '20 mm',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        'DestinationPlantCode': "1032",
+        'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'Yes',
+        'TechnologyName': 'Sheet Metal',
+        'VendorPlant': 'VPlant',
+        'Source': 'VPlant01',
+        'VendorSourceName': 'TATA Steel',
+        'SourceLocation': 'Jamshedpur',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }, {
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
+        'Specification': '20 mm',
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        'DestinationPlantCode': "1032",
+        'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'Yes',
+        'TechnologyName': 'Sheet Metal',
+        'VendorPlant': 'VPlant',
+        'Source': 'VPlant01',
+        'VendorSourceName': 'TATA Steel',
+        'SourceLocation': 'Jamshedpur',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }, {
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
+        'Specification': '20 mm',
+        "UnitOfMeasurement": "shot/stroke/Number",
+        'DestinationPlantCode': "1032",
+        'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'Yes',
+        'TechnologyName': 'Sheet Metal',
+        'VendorPlant': 'VPlant',
+        'Source': 'VPlant01',
+        'VendorSourceName': 'TATA Steel',
+        'SourceLocation': 'Jamshedpur',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
@@ -2084,6 +2160,7 @@ export const BOP_CBC_DOMESTIC = [
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'CustomerCode', value: 'CustomerCode', }, //NOUI
+    { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2101,6 +2178,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "CustomerCode": "C-10008",
         'NumberOfPieces': '1',
         'BasicRate': '100',
+        "IsClientVendorBOP": "YES",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2113,6 +2191,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
         "CustomerCode": "C-10008",
         'NumberOfPieces': '1',
         'BasicRate': '100',
+        "IsClientVendorBOP": "YES",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2124,6 +2203,93 @@ export const BOP_CBC_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "CustomerCode": "C-10008",
         'NumberOfPieces': '1',
+        'BasicRate': '100',
+        "IsClientVendorBOP": "YES",
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }
+]
+
+/** 
+* @desc USED IN EXCEL HEADER FOR BULK UPLOAD
+*/
+export const BOP_DETAILED_IMPORT = [
+    { label: 'BoughtOutPartNumber', value: 'BoughtOutPartNumber', }, //*
+    { label: 'BoughtOutPartName', value: 'BoughtOutPartName', }, //*
+    { label: 'CategoryName', value: 'CategoryName', }, //*
+    { label: 'Specification', value: 'Specification', },
+    { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
+    { label: 'PlantCode', value: 'DestinationPlantCode', },
+    { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
+    { label: 'TechnologyName', value: 'TechnologyName', }, //NOUI
+    // { label: 'VendorPlant', value: 'VendorPlant' },
+    // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
+    { label: 'SourceVendorName', value: 'SourceVendorName', },
+    { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
+    { label: 'Currency', value: 'Currency', }, //*
+    { label: 'IncoTerm', value: 'IncoTerm', },
+    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
+    // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', },
+    { label: 'Remark', value: 'Remark' }
+]
+
+export const BOP_DETAILED_IMPORT_TempData = [
+    {
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
+        'Specification': '20 mm',
+        "UnitOfMeasurement": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
+        'DestinationPlantCode': '1032',
+        "IsClientVendorBOP": "YES",
+        'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'Yes',
+        'TechnologyName': 'Sheet Metal',
+        'SourceVendorName': 'TATA Steel',
+        'SourceVendorLocation': 'Jamshedpur',
+        'Currency': 'INR or USD',
+        'IncoTerm': 'CFR',
+        // 'PaymentTerm': 'A000',
+        'BasicRate': '100',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }, {
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
+        'Specification': '20 mm',
+        "UnitOfMeasurement": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
+        'DestinationPlantCode': '1032',
+        "IsClientVendorBOP": "YES",
+        'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'Yes',
+        'TechnologyName': 'Sheet Metal',
+        'SourceVendorName': 'TATA Steel',
+        'SourceVendorLocation': 'Jamshedpur',
+        'Currency': 'INR or USD',
+        'IncoTerm': 'CFR',
+        // 'PaymentTerm': 'A000',
+        'BasicRate': '100',
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        'Remark': 'Remark Text'
+    }, {
+        'BoughtOutPartNumber': 'BOP Part123',
+        'BoughtOutPartName': 'Screw',
+        'CategoryName': 'Machine',
+        'Specification': '20 mm',
+        "UnitOfMeasurement": "shot/stroke/Number",
+        'DestinationPlantCode': '1032',
+        "IsClientVendorBOP": "NO",
+        'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'Yes',
+        'TechnologyName': 'Sheet Metal',
+        'SourceVendorName': 'TATA Steel',
+        'SourceVendorLocation': 'Jamshedpur',
+        'Currency': 'INR or USD',
+        'IncoTerm': 'CFR',
+        // 'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2142,6 +2308,8 @@ export const BOP_VBC_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
+    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
+    { label: 'TechnologyName', value: 'TechnologyName', }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -2165,6 +2333,8 @@ export const BOP_VBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'No',
+        'TechnologyName': '',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -2183,6 +2353,8 @@ export const BOP_VBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'No',
+        'TechnologyName': '',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -2201,6 +2373,8 @@ export const BOP_VBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
+        'IsBreakupBoughtOutPart': 'No',
+        'TechnologyName': '',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -2224,6 +2398,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
     // { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
+    { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2243,6 +2418,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
+        "IsClientVendorBOP": "NO",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2258,6 +2434,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
+        "IsClientVendorBOP": "NO",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }, {
@@ -2273,6 +2450,7 @@ export const BOP_CBC_IMPORT_TempData = [
         'IncoTerm': 'CFR',
         // 'PaymentTerm': 'A000',
         'BasicRate': '100',
+        "IsClientVendorBOP": "NO",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
     }
@@ -3871,8 +4049,8 @@ export const SurfaceTreatmentPartGetJSON = [
     }
 ]
 
-export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
-export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension']
+export const AcceptableRMUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension', 'Area']
+export const AcceptableBOPUOM = ['Mass', 'Dimensionless', 'Volume', 'Dimension', 'Area']
 export const AcceptableMachineUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Time']
 export const AcceptableOperationUOM = ['Mass', 'Dimensionless', 'Volume', 'Area', 'Dimension', 'Time']
 export const AcceptableFuelUOM = ['Mass', 'Volume']
@@ -4893,6 +5071,8 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Specification", value: "Specification", },
     { label: "Plant (Code)", value: "Plants", },
     { label: "Vendor (Code)", value: "Vendor", },
+    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
+    { label: 'TechnologyName', value: 'TechnologyName', },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "Basic Rate", value: "BasicRate", },
     { label: "Net Cost", value: "NetLandedCost", },
@@ -4910,6 +5090,8 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: "Plant (Code)", value: "Plants" },
     { label: "Vendor (Code)", value: "Vendor" },
     { label: "Customer (Code)", value: "CustomerName", },
+    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
+    { label: 'TechnologyName', value: 'TechnologyName', },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     // { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" }, // FOR MINDA ONLY
     { label: "Basic Rate", value: "BasicRate" },
@@ -6986,6 +7168,14 @@ export const associationDropdownList = [
 
 export const NON_ASSOCIATED = "Not associated with costing"
 export const ASSOCIATED = "Associated with costing"
+
+export const partTypeDropdownList = [
+    { label: 'Part', value: 'Part' },
+    { label: 'BOP', value: 'BOP' },
+]
+
+export const DETAILED_BOP = "Detailed BOP"
+export const DETAILED_BOP_ID = "3"
 //Status dropdown for RFQ and NFR
 export const statusDropdownforRfq = [
     { label: "Approved", value: "1" },

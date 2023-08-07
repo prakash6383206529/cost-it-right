@@ -1493,7 +1493,7 @@ function UserRegistration(props) {
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
 
-      const isDepartmentUpdate = (registerUserData.DepartmentId !== department.value) ? true : false;
+      const isDepartmentUpdate = (registerUserData?.Departments[0]?.DepartmentId !== department[0]?.value) ? true : false;
       const isRoleUpdate = (registerUserData.RoleId !== role.value) ? true : false;
       let isPermissionUpdate = false;
       let isTechnologyUpdate = false;
@@ -1530,15 +1530,27 @@ function UserRegistration(props) {
           }))
         }
         else {
-          reset();
-          dispatch(updateUserAPI(updatedData, (res) => {
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
-              cancel();
+          props.hideForm()
+          let temp = ['FirstName', 'FullName', 'Mobile', 'PhoneNumber', 'AddressLine1', 'AddressLine2', 'CityName', 'ZipCode']
+          let isDataChanged = false
+
+          temp.map((item) => {
+            if (updatedData[item] !== registerUserData[item]) {
+              isDataChanged = true
             }
-            setIsLoader(false)
-            setShowPopup(false)
-          }))
+            return false
+          })
+
+          if (isDataChanged) {
+            dispatch(updateUserAPI(updatedData, (res) => {
+              if (res?.data?.Result) {
+                Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
+                cancel();
+              }
+              setIsLoader(false)
+              setShowPopup(false)
+            }))
+          }
         }
 
       }

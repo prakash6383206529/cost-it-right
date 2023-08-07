@@ -7856,7 +7856,7 @@ body {
 
 // <-------END Calculator css--------->
 .simulation-height {
-  min-height: calc(100vh - 404px) !important;
+  min-height: calc(100vh - 365px) !important;
 
   .min-height {
     min-height: auto !important;
@@ -8066,8 +8066,6 @@ body {
   z-index: 1301 !important;
 
   .drawer-wrapper {
-    width: 1100px;
-
     table {
       th {
         vertical-align: middle;
@@ -8891,7 +8889,6 @@ table.group-process-table {
 }
 
 .report-grid .ag-focus-managed,
-.report-grid .ag-column-hover,
 .report-grid .ag-header-viewport,
 .report-grid .ag-header-row.ag-header-row-floating-filter {
   overflow: visible !important;

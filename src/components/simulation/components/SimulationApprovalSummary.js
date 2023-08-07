@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react'
-import { Row, Col, Table } from 'reactstrap'
+import { Row, Col, Table, Tooltip } from 'reactstrap'
 import DayTime from '../../common/DayTimeWrapper'
 import { Fragment } from 'react'
 import ApprovalWorkFlow from '../../costing/components/approval/ApprovalWorkFlow';
@@ -101,6 +101,9 @@ function SimulationApprovalSummary(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [noData, setNoData] = useState(false);
+    const [tooltipStates, setTooltipStates] = useState({});
+    const [showTooltip, setShowTooltip] = useState(false)
+    const [listWithTooltip, setListWithTooltip] = useState([])
 
     const isSurfaceTreatment = (Number(SimulationTechnologyId) === Number(SURFACETREATMENT));
     const isOperation = (Number(SimulationTechnologyId) === Number(OPERATIONS));
@@ -137,7 +140,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, IsSimulationWithOutCosting } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting } = res.data.Data
             let uniqueArr
             if (IsSimulationWithOutCosting) {
                 uniqueArr = SimulatedCostingList
@@ -162,6 +165,7 @@ function SimulationApprovalSummary(props) {
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements, DepartmentId: DepartmentId
                 , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
+                , PartType: PartType
             })
             setFiles(Attachements)
             setIsApprovalDone(IsSent)
@@ -837,6 +841,30 @@ function SimulationApprovalSummary(props) {
         }
         return cell != null ? temp : '-';
     }
+    const tooltipToggle = (costingId) => {
+        setTooltipStates((prevTooltipStates) => ({
+            ...prevTooltipStates,
+            [costingId]: !prevTooltipStates[costingId]
+        }));
+    };
+
+    const partFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {cell}
+                {row?.IsImpactedPart && (
+                    <i
+                        className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-2 pb-1 ml-5 float-unset`}
+                        id={`bop-tooltip${row?.CostingId}`}
+                        onMouseEnter={() => tooltipToggle(row?.CostingId)}
+                        onMouseLeave={() => tooltipToggle(row?.CostingId)}
+                    ></i>
+                )}
+            </>
+        )
+    }
 
     const impactPerQuarterFormatter = (props) => {
         const cell = props?.value;
@@ -860,6 +888,11 @@ function SimulationApprovalSummary(props) {
         if (!isMasterAssociatedWithCosting) {
             params.api.sizeColumnsToFit();
         }
+        const isTooltip = costingList.filter(item => item.IsImpactedPart === true)
+        setListWithTooltip(isTooltip)
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 300);
     };
 
 
@@ -932,7 +965,8 @@ function SimulationApprovalSummary(props) {
         decimalFormatter: decimalFormatter,
         processFormatter: processFormatter,
         processVarianceFormatter: processVarianceFormatter,
-        percentageFormatter: percentageFormatter
+        percentageFormatter: percentageFormatter,
+        partFormatter: partFormatter
     };
     const deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
@@ -1116,6 +1150,18 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
+                        {listWithTooltip.length !== 0 && listWithTooltip.map(item => {
+                            return showTooltip && <Tooltip
+                                key={`tooltip-${item.CostingId}`}
+                                className=""
+                                placement={"top"}
+                                isOpen={tooltipStates[item.CostingId]}
+                                toggle={() => tooltipToggle(item.CostingId)}
+                                target={`bop-tooltip${item.CostingId}`}
+                            >
+                                {"This part is impacted by BOP costing"}
+                            </Tooltip>
+                        })}
 
                         {costingSummary && keysForDownloadSummary && Object.keys(keysForDownloadSummary).length > 0 &&
                             <>
@@ -1179,8 +1225,9 @@ function SimulationApprovalSummary(props) {
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMSpecs" headerName="Spec" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>}
 
 
-                                                                <AgGridColumn width={136} field="PartNo" headerName="Part No."></AgGridColumn>
+                                                                <AgGridColumn width={136} field="PartNo" headerName="Part No." cellRenderer='partFormatter'></AgGridColumn>
                                                                 <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
+                                                                <AgGridColumn width={160} field="PartType" headerName='Part Type'></AgGridColumn>
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}

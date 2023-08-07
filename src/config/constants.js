@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-// const BASE_URL = `http://10.10.1.100:10142/api/v1`;
+//const BASE_URL = `http://10.10.8.109:8081/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
@@ -978,6 +978,7 @@ export const API = {
   getSalePurchaseProvisionReport: `${BASE_URL}/reports/get-sale-purchase-provision-report`,
   getPoamSummaryReport: `${BASE_URL}/reports/get-poam-summary-report`,
   getPoamImpactReport: `${BASE_URL}/reports/get-poam-impact-report`,
+  rfqGetBestCostingDetails: `${BASE_URL}/rfq-costing/rfq-get-best-costing-details`,
   getAllNfrList: `${BASE_URL}/nfr/get-all-nfr-list`,
   getNfrPartDetails: `${BASE_URL}/nfr/get-nfr-part-details`,
   getRMCostMovement: `${BASE_URL}/reports/get-raw-material-cost-movement`,
@@ -1397,6 +1398,8 @@ export const SET_MESSAGE_FOR_ASSEMBLY = 'SET_MESSAGE_FOR_ASSEMBLY'
 export const SET_PROCESS_GROUP_GRID = 'SET_PROCESS_GROUP_GRID'
 export const SAVE_BOM_LEVEL_STOP_API_CALL = 'SAVE_BOM_LEVEL_STOP_API_CALL'
 export const SAVE_ASSEMBLY_NUMBER_STOP_API_CALL = 'SAVE_ASSEMBLY_NUMBER_STOP_API_CALL'
+export const SET_BREAKUP_BOP = 'SET_BREAKUP_BOP'
+export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1720,7 +1723,8 @@ export const AWAITING_APPROVAL_ID = 6
 
 // MASTER APPROVAL STATUS ID
 export const APPROVED_STATUS = '3'
-export const APPROVED_STATUS_MASTER = '3,5'
+export const APPROVAL_CYCLE_STATUS_MASTER = '3,5'
+export const NON_APPROVAL_CYCLE_STATUS_MASTER = '3,5,1'
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1767,6 +1771,7 @@ export const CLIENT = 'Customer'
 export const PLANT = 'Plant'
 
 export const PRODUCT = 'Product'
+export const PRODUCT_ID = '4'
 
 export const OVERHEAD_AND_PROFIT = 'Overhead and Profits'
 export const LABOUR = 'Labour'
@@ -1860,6 +1865,7 @@ export const PFS3 = 'PFS3'
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
+export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -1875,6 +1881,7 @@ export const SIMULATION_HISTORY_PATH = '/simulation-history'
 export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
 export const NFR_LISTING = '/nfr'
+export const PRODUCT_ROLLOUT = '/product-rollout'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -1896,13 +1903,11 @@ export const VIEW_COSTING_DATA = {
   status: 'Status',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
-  castingWeight: 'Casting Weight',
-  meltingLoss: 'Melting Loss',
   scrapRate: 'Scrap Rate',
   gWeight: 'Gross Weight',
   fWeight: 'Finish Weight',
   castingWeightExcel: 'Casting Weight',
-  meltingLossExcel: 'Melting Loss',
+  meltingLossExcel: 'Melting Loss (Loss%)',
   BurningLossWeight: 'Burning Loss Weight',
   ScrapWeight: 'Scrap Weight',
   netRM: 'Net RM Cost',
@@ -1932,18 +1937,23 @@ export const VIEW_COSTING_DATA = {
   overHeadApplicablity: 'Overhead Applicability',
   overHeadPercent: 'Overhead %',
   overHeadApplicablityValue: 'Overhead Value',
+  OverheadRemark: 'Overhead Remark',
   ProfitApplicablity: 'Profit Applicability',
   profitPercent: 'Profit %',
   ProfitApplicablityValue: 'Profit Value',
+  ProfitRemark: 'Profit Remark',
   rejectionApplicablity: 'Rejection Applicability',
   rejectionPercent: 'Rejection %',
   rejectionApplicablityValue: 'Rejection Value',
+  RejectionRemark: 'Rejection Remark',
   iccApplicablity: 'ICC Applicability',
   iccPercent: 'ICC %',
   iccApplicablityValue: 'ICC Value',
+  ICCRemark: 'Icc Remark',
   paymentApplicablity: 'Payment Applicability',
   paymentPercent: 'Payment %',
   paymentcApplicablityValue: 'Payment Value',
+  PaymentTermRemark: 'Payment Remark',
   nOverheadProfit: 'Net Overhead Profits',
   packagingCost: 'Packaging Cost',
   freight: 'Freight',
@@ -2272,8 +2282,8 @@ export const STROKE = "Stroke"
 export const SHOTS = "SHOT"
 export const MINUTES = 'Minutes'
 export const SECONDS = 'Seconds'
-export const MILLISECONDS = 'Milliseconds'
-export const MICROSECONDS = 'Microseconds'
+export const MILLISECONDS = 'MilliSeconds'
+export const MICROSECONDS = 'MicroSeconds'
 export const DISPLAY_G = "g"
 export const DISPLAY_KG = "kg"
 export const DISPLAY_MG = "mg"
@@ -2542,6 +2552,7 @@ export const CBCADDMORE = 17
 export const ZBCADDMOREOPERATION = 18
 export const VBCADDMOREOPERATION = 19
 export const CBCADDMOREOPERATION = 20
+
 export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 export const NFRAPPROVALTYPEID = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NFR])
 // export const NFRTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[NCC])
@@ -2596,5 +2607,6 @@ export const LABOUR_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype
 export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_RAW_MATERIAL])
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
+
 //VERSION 
-export const VERSION = "V2.1.219";
+export const VERSION = "V2.1.227";

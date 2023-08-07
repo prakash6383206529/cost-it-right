@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number } from "../../../helper/validation";
+import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, } from '../../../actions/Common';
@@ -82,7 +82,7 @@ class AddOperation extends Component {
       showErrorOnFocus: false,
       operationName: '',
       operationCode: '',
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       showPopup: false,
       levelDetails: {},
       noApprovalCycle: false,
@@ -123,6 +123,8 @@ class AddOperation extends Component {
           this.commonFunction()
         }, 100);
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
     this.getDetail()
   }
@@ -139,7 +141,6 @@ class AddOperation extends Component {
         Mode: 'master',
         approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
       }
-      this.setState({ finalApprovalLoader: true })
       this.props.checkFinalUser(obj, (res) => {
         if (res?.data?.Result) {
           this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
@@ -148,7 +149,7 @@ class AddOperation extends Component {
       })
       this.setState({ noApprovalCycle: false })
     } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
     }
   }
 
@@ -628,7 +629,11 @@ class AddOperation extends Component {
     this.props.hideForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -1010,7 +1015,7 @@ class AddOperation extends Component {
                           name={"OperationName"}
                           type="text"
                           placeholder={isEditFlag ? '-' : "Select"}
-                          validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                          validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                           onChange={this.checkUniqCodeByName}
                           component={renderText}
                           required={true}
@@ -1257,7 +1262,7 @@ class AddOperation extends Component {
                           className=""
                           customClassName=" textAreaWithBorder"
                           onChange={this.handleMessageChange}
-                          validate={[maxLength512]}
+                          validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                           disabled={isViewMode}
                           component={renderTextAreaField}
                           maxLength="512"
@@ -1336,26 +1341,26 @@ class AddOperation extends Component {
                         <div className={"cancel-icon"}></div>
                         {"Cancel"}
                       </button>
-                      {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                        <button type="submit"
-                          class="user-btn approval-btn save-btn mr5"
-                          disabled={isViewMode || setDisable || noApprovalCycle}
-                        >
-                          <div className="send-for-approval"></div>
-                          {'Send For Approval'}
-                        </button>
-                        :
-                        <button
-                          type="submit"
-                          className="user-btn mr5 save-btn"
-                          disabled={isViewMode || setDisable || noApprovalCycle}
-                        >
-                          <div className={"save-icon"}></div>
-                          {isEditFlag ? "Update" : "Save"}
-                        </button>
-                      }
-
-
+                      {!isViewMode && <>
+                        {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                          <button type="submit"
+                            class="user-btn approval-btn save-btn mr5"
+                            disabled={isViewMode || setDisable || noApprovalCycle}
+                          >
+                            <div className="send-for-approval"></div>
+                            {'Send For Approval'}
+                          </button>
+                          :
+                          <button
+                            type="submit"
+                            className="user-btn mr5 save-btn"
+                            disabled={isViewMode || setDisable || noApprovalCycle}
+                          >
+                            <div className={"save-icon"}></div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
+                        }
+                      </>}
                     </div>
                   </Row>
                 </form>

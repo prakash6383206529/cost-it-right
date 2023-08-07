@@ -64,7 +64,7 @@ function PlantWiseGotGivenListing(props) {
             if (res.status === 200) {
                 setTopHeaderData({
                     Month: Data.Month,
-                    PlantName: Data.PlantName,
+                    PlantName: Data.Plant,
                     PlantAddress: Data.PlantAddress,
                     NetSales: checkForDecimalAndNull(Data.NetSales.NetCost, initialConfiguration.NoOfDecimalForPrice),
                     EffectiveDate: Data.SelectedEffectiveDate ? DayTime(Data.SelectedEffectiveDate).format('DD/MM/YYYY') : '-',

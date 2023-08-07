@@ -52,40 +52,45 @@ $base: 20px;
 $max: 150;
 
 @for $i from 0 through $max {
-    $width: $i * $base !important;
-    $customWidth: $i * 2px !important;
+    $max20Value: $i * $base !important;
+    $max2Value: $i * 2px !important;
 
-    .layout-width-#{$width} {
-        width: $width;
+    .layout-width-#{$max20Value} {
+        width: $max20Value;
     }
 
-    .layout-max-width-#{$width} {
-        max-width: $width;
+    .layout-max-width-#{$max20Value} {
+        max-width: $max20Value;
     }
 
-    .layout-min-width-#{$width} {
-        min-width: $width;
+    .layout-min-width-#{$max20Value} {
+        min-width: $max20Value;
     }
 
-    .layout-min-height-#{$width} {
-        min-height: $width;
+    .layout-min-height-#{$max20Value} {
+        min-height: $max20Value;
     }
 
-    .custom-width-#{$customWidth} {
-        width: $customWidth;
+    .custom-width-#{$max2Value} {
+        width: $max2Value;
     }
 
-    .custom-max-width-#{$customWidth} {
-        max-width: $customWidth;
+    .custom-max-width-#{$max2Value} {
+        max-width: $max2Value;
     }
 
-    .custom-min-width-#{$customWidth} {
-        min-width: $customWidth;
+    .custom-min-width-#{$max2Value} {
+        min-width: $max2Value;
     }
 
-    .custom-min-height-#{$customWidth} {
-        min-height: $customWidth;
+    .custom-min-height-#{$max2Value} {
+        min-height: $max2Value;
     }
+
+    .custom-height-#{$max2Value} {
+        height: $max2Value;
+    }
+
 
     .font-size-#{$i} {
         font-size: $i * 1px;

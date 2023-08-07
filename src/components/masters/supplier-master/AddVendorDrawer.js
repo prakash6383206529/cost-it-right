@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import {
     required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
-    postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString, number
+    postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString, number, hashValidation
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
@@ -460,7 +460,7 @@ class AddVendorDrawer extends Component {
                                             name={"VendorName"}
                                             type="text"
                                             placeholder={this.state.isEditFlag ? '-' : 'Enter'}
-                                            validate={[required, maxLength71, checkWhiteSpaces, checkSpacesInString]}
+                                            validate={[required, maxLength71, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                                             component={renderText}
                                             required={true}
                                             className=" "
@@ -624,7 +624,7 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine1"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : 'Enter'}
-                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
                                             component={renderText}
                                             //  required={true}
                                             maxLength={26}
@@ -639,7 +639,7 @@ class AddVendorDrawer extends Component {
                                             name={"AddressLine2"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : 'Enter'}
-                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
                                             component={renderText}
                                             //required={true}
                                             maxLength={26}
@@ -660,14 +660,16 @@ class AddVendorDrawer extends Component {
                                             onClick={this.cancelHandler} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
-                                        <button
-                                            type="submit"
-                                            disabled={this.state.isLoader || isViewMode || setDisable ? true : false}
-                                            className="user-btn save-btn">
+                                        {!isViewMode &&
+                                            <button
+                                                type="submit"
+                                                disabled={this.state.isLoader || isViewMode || setDisable ? true : false}
+                                                className="user-btn save-btn">
 
-                                            <div className={"save-icon"}></div>
-                                            {isEditFlag ? 'Update' : 'Save'}
-                                        </button>
+                                                <div className={"save-icon"}></div>
+                                                {isEditFlag ? 'Update' : 'Save'}
+                                            </button>}
+
                                     </div>
                                 </Row>
                             </form>

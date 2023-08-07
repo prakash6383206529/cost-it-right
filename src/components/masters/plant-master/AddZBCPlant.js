@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number, maxLength4 } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number, maxLength4, hashValidation } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -370,7 +370,7 @@ class AddZBCPlant extends Component {
                       name={"PlantName"}
                       type="text"
                       placeholder={isViewMode ? '-' : "Enter"}
-                      validate={[required, alphaNumeric, maxLength71, checkWhiteSpaces, checkSpacesInString]}
+                      validate={[required, hashValidation, alphaNumeric, maxLength71, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""
@@ -384,7 +384,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={isEditFlag ? '-' : "Enter"}
-                      validate={[required, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4]}
+                      validate={[required, hashValidation, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4]}
                       component={renderText}
                       required={true}
                       className=""
@@ -458,7 +458,7 @@ class AddZBCPlant extends Component {
                       name={"AddressLine1"}
                       type="text"
                       placeholder={isViewMode ? '-' : "Enter"}
-                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, hashValidation, maxLength80]}
                       component={renderText}
                       maxLength={26}
                       className=""
@@ -472,7 +472,7 @@ class AddZBCPlant extends Component {
                       name={"AddressLine2"}
                       type="text"
                       placeholder={isViewMode ? '-' : "Enter"}
-                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                      validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, hashValidation, maxLength80]}
                       component={renderText}
                       //required={true}
                       maxLength={26}
@@ -577,15 +577,16 @@ class AddZBCPlant extends Component {
                       <div className={"cancel-icon"}></div>
                       {"Cancel"}
                     </button>
-                    <button
-                      type="button"
-                      onClick={this.onSubmit}
-                      className="user-btn save-btn"
-                      disabled={isViewMode || setDisable}
-                    >
-                      <div className={"save-icon"}></div>
-                      {isEditFlag ? "Update" : "Save"}
-                    </button>
+                    {!isViewMode &&
+                      <button
+                        type="button"
+                        onClick={this.onSubmit}
+                        className="user-btn save-btn"
+                        disabled={isViewMode || setDisable}
+                      >
+                        <div className={"save-icon"}></div>
+                        {isEditFlag ? "Update" : "Save"}
+                      </button>}
                   </div>
                 </Row>
               </form>

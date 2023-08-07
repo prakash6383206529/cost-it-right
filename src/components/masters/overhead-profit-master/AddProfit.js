@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
@@ -389,10 +389,10 @@ class AddProfit extends Component {
         isHideRM: false,
       })
     }
-    if (this.state.profitAppli.value === newValue.value) {
+    if (this.state.isEditFlag && this.state.profitAppli.value === newValue.value) {
       this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false })
     }
-    else {
+    else if (this.state.isEditFlag) {
       this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
@@ -733,7 +733,11 @@ class AddProfit extends Component {
     this.props.hideForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -1293,7 +1297,7 @@ class AddProfit extends Component {
                             className=""
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
-                            validate={[maxLength512]}
+                            validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             //required={true}
                             component={renderTextAreaField}
                             maxLength="512"
@@ -1395,14 +1399,14 @@ class AddProfit extends Component {
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
-                        <button
+                        {!isViewMode && <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                           disabled={isViewMode || setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
-                        </button>
+                        </button>}
                       </div>
                     </Row>
                   </form>

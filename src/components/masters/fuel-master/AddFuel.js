@@ -556,7 +556,11 @@ class AddFuel extends Component {
     this.props.hideForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -1205,14 +1209,14 @@ class AddFuel extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          <button
+                          {!isViewMode && <button
                             type="submit"
                             className="user-btn mr5 save-btn"
                             disabled={isViewMode || setDisable}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
-                          </button>
+                          </button>}
                         </div>
                       </Row>
                     </form>

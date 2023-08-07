@@ -51,10 +51,26 @@ function NfrListing(props) {
     const [isHover, setIsHover] = useState(false)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const agGridRef = useRef(null);
+    const handleFilterChange = () => {
+        if (agGridRef.current) {
+            setTimeout(() => {
+                if (!agGridRef.current.rowRenderer.allRowCons.length) {
+                    setNoData(true)
+                    dispatch(getGridHeight({ value: 3, component: 'NFR' }))
+                } else {
+                    setNoData(false)
+                }
+            }, 100);
+
+        }
+    };
+
     const floatingFilterNfr = {
         maxValue: 12,
         suppressFilterButton: true,
         component: "NFR",
+        onFilterChange: handleFilterChange,
+
     }
     useEffect(() => {
         setloader(true)
@@ -113,6 +129,7 @@ function NfrListing(props) {
         gridApi.deselectAll()
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
+        setNoData(false)
     }
 
 
@@ -215,7 +232,7 @@ function NfrListing(props) {
         }
     }
     const statusFormatter = (props) => {
-        dispatch(getGridHeight({ value: props.rowIndex, component: 'NFR' }))
+        dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'NFR' }))
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'

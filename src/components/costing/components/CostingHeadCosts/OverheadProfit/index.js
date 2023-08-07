@@ -21,6 +21,14 @@ import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
+
+export const tooltipTextFunc = (id, condition, text) => {
+
+    let temp = condition && <TooltipCustom id={id} customClass="mt-2" tooltipText={text} />
+    return temp;
+    // {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
+    //     <TooltipCustom id="OverheadRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+}
 function OverheadProfit(props) {
 
     const { data } = props;
@@ -51,6 +59,7 @@ function OverheadProfit(props) {
         RepaymentPeriodDays: PaymentTermDetail !== null ? PaymentTermDetail.RepaymentPeriod : '',
         RepaymentPeriodPercentage: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '',
         RepaymentPeriodCost: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '',
+        RepaymentPeriodFixed: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : ''
     }
 
     const { register, handleSubmit, control, clearErrors, setValue, getValues, formState: { errors } } = useForm({
@@ -67,7 +76,7 @@ function OverheadProfit(props) {
     const SurfaceTreatmentCost = useContext(SurfaceCostContext);
     const costingHead = useSelector(state => state.comman.costingHead)
 
-    const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData } = useSelector(state => state.costing)
+    const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
     const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
     const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -75,6 +84,7 @@ function OverheadProfit(props) {
     const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
     const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
     const [totalToolCost, setTotalToolCost] = useState(0)
+    const [showWarning, setShowWarning] = useState(false)
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -364,7 +374,13 @@ function OverheadProfit(props) {
                 dispatch(getOverheadProfitDataByModelType(reqParams, res => {
                     if (res && res.data && res.data.Data) {
                         let Data = res.data.Data;
+                        let showWarning = false
                         if (applicabilityList.includes(Data?.CostingOverheadDetail?.OverheadApplicability)) {
+                            if (isBreakupBoughtOutPartCostingFromAPI) {
+                                showWarning = true
+                            } else {
+                                showWarning = false
+                            }
                             setOverheadObj(Data?.CostingOverheadDetail)
                             if (Data.CostingOverheadDetail) {
                                 setTimeout(() => {
@@ -382,6 +398,11 @@ function OverheadProfit(props) {
                                 }, 200)
                             }
                             dispatch(gridDataAdded(true))
+                        }
+                        if (showWarning) {
+                            setShowWarning(true)
+                        } else {
+                            setShowWarning(false)
                         }
                         //setRejectionObj(Data.CostingRejectionDetail)
                         // setIsSurfaceTreatmentAdded(false)
@@ -1346,7 +1367,20 @@ function OverheadProfit(props) {
         }
         button.click()
     }
+    const renderText = (type, RMValue) => {
+        let text = '';
+        switch (type) {
+            case 'OverheadCombinedCost':
+                let checkValid = (overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true)
+                text = checkValid ? `RM cut-off price ${RMValue} applied` : ''
+                break;
+            default:
+                break;
+        }
 
+        let temp = <div>{<p>{text}</p>}{showWarning && <p>BOP cost is not included for BOP part type</p>}</div>
+        return temp;
+    }
     return (
         <>
             <div className="user-page p-0">
@@ -1559,7 +1593,10 @@ function OverheadProfit(props) {
                                                         errors={errors.OverheadCombinedCost}
                                                         disabled={true}
                                                     />
-                                                    {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) && <TooltipCustom id="OverheadCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+
+                                                    {
+                                                        tooltipTextFunc("OverheadCombinedCost", (overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable), renderText('OverheadCombinedCost', CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice))}
+                                                    {/* {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) && <TooltipCustom id="OverheadCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />} */}
 
                                                 </div>
                                             </Col>
@@ -1625,8 +1662,11 @@ function OverheadProfit(props) {
                                                         errors={errors.OverheadRMCost}
                                                         disabled={true}
                                                     />
-                                                    {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                                                        <TooltipCustom id="OverheadRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+
+
+                                                    {tooltipTextFunc("OverheadRMCost", CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true, `RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`)}
+                                                    {/* {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
+                                                        <TooltipCustom id="OverheadRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />} */}
                                                 </div>
                                             </Col>
                                             <Col md="3">
@@ -2165,7 +2205,7 @@ function OverheadProfit(props) {
                             </Col>
                             {
                                 profitObj && profitObj.ProfitApplicability &&
-                                <Col md="1" className='second-section'>
+                                <Col md="1" className='second-section profit'>
                                     <div className='costing-border-inner-section'>
                                         <Col md="12" className='text-center'>Remark</Col>
                                         <Col md="12"> <Popup trigger={<button id={`popUpTriggerProfit`} title="Remark" className="Comment-box" type={'button'} />}
