@@ -103,6 +103,7 @@ function CostingSimulation(props) {
     const [count, setCount] = useState(0);
     const [storeTechnology, setStoreTechnology] = useState(0)
     const [isBreakupBoughtOutPart, setIsBreakupBoughtOutPart] = useState(false)
+    const [disableSendForApproval, setDisableSendForApproval] = useState(false);
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -150,27 +151,21 @@ function CostingSimulation(props) {
 
     useEffect(() => {
         if (SimulationTechnologyIdState && count === 0 && amendmentDetails.SimulationHeadId) {
-            let levelDetailsTemp
-            dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
-                if (res?.data?.Data) {
-                    levelDetailsTemp = userTechnologyLevelDetails(amendmentDetails.SimulationHeadId, res?.data?.Data?.TechnologyLevels)
-                    // setLevelDetails(levelDetailsTemp)
-                    if (levelDetailsTemp?.length !== 0) {
-                        let obj = {
-                            DepartmentId: userData.DepartmentId,
-                            UserId: loggedInUserId(),
-                            TechnologyId: SimulationTechnologyIdState,
-                            Mode: 'simulation',
-                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
-                        }
-                        dispatch(checkFinalUser(obj, res => {
-                            if (res && res.data && res.data.Result) {
-                                setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                                let countTemp = count + 1
-                                setCount(countTemp)
-                            }
-                        }))
+            let obj = {
+                DepartmentId: userData.DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: SimulationTechnologyIdState,
+                Mode: 'simulation',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+            }
+            dispatch(checkFinalUser(obj, res => {
+                if (res && res.data && res.data.Result) {
+                    setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                    if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                        setDisableSendForApproval(true)
                     }
+                    let countTemp = count + 1
+                    setCount(countTemp)
                 }
             }))
         }
@@ -1473,12 +1468,12 @@ function CostingSimulation(props) {
                                     </Row>
                                 </div>
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
-
+                                    <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                                        {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={() => { setIsApprovalDrawer(true) }}
-                                            disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover) ? true : disableApproveButton ? true : false}
+                                            disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover || disableSendForApproval) ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
                                         >
                                             <div className="send-for-approval"></div>
