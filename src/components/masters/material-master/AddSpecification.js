@@ -20,6 +20,7 @@ import AddMaterialType from './AddMaterialType';
 import AddRawMaterial from './AddRawMaterial';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import Button from '../../layout/Button';
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -530,19 +531,20 @@ class AddSpecification extends Component {
 
                         {isEditFlag
                           ? EditAccessibilityRMANDGRADE && (
-                            <button
-                              className="Edit drawer-edit mt30"
-                              type={"button"}
-                              onClick={() =>
-                                this.rawMaterialToggler(specificationData.RawMaterialId)
-                              }
+                            <Button
+                              id="RawMaterialName-edit"
+                              className="drawer-edit mt30"
+                              variant="Edit"
+                              onClick={() => this.rawMaterialToggler(specificationData.RawMaterialId)}
                             />
                           )
                           : AddAccessibilityRMANDGRADE && (
-                            <div
+                            <Button
+                              id="RawMaterialName-add"
+                              className="mt30 right"
+                              variant="plus-icon-square"
                               onClick={() => this.rawMaterialToggler("")}
-                              className={"plus-icon-square mt30  right"}
-                            ></div>
+                            />
                           )}
                       </div>
                     </Col>
@@ -568,28 +570,22 @@ class AddSpecification extends Component {
                         </div>
                         {isEditFlag ? (
                           EditAccessibilityRMANDGRADE && (
-                            <button
-                              className="Edit drawer-edit mt-2"
-                              type={"button"}
-                              onClick={() =>
-                                this.gradeToggler(specificationData.GradeId)
-                              }
+                            <Button
+                              id="GradeId-edit"
+                              className="drawer-edit mt-2"
+                              variant="Edit"
+                              onClick={() => this.gradeToggler(specificationData.GradeId)}
                             />
                           )
-                        ) : (this.state.RawMaterial == null ||
-                          this.state.RawMaterial.length === 0) &&
-                          AddAccessibilityRMANDGRADE ? (
-                          <div
-                            className={"plus-icon-square blurPlus-icon-square right"}
-                          ></div>
-                        ) : (
-                          AddAccessibilityRMANDGRADE && (
-                            <div
-                              onClick={() => this.gradeToggler("")}
-                              className={"plus-icon-square right"}
-                            ></div>
-                          )
-                        )}
+                        ) :
+                          AddAccessibilityRMANDGRADE &&
+                          <Button
+                            id="GradeId-add"
+                            className="mt-2"
+                            variant={`plus-icon-square ${this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? "blurPlus-icon-square" : ""}`}
+                            onClick={() => this.gradeToggler("")}
+                          />
+                        }
                       </div>
                     </Col>
                   </Row>
@@ -671,23 +667,23 @@ class AddSpecification extends Component {
                   <Row className="sf-btn-footer no-gutters justify-content-between">
                     <div className="col-md-12 pr-3">
                       <div className="text-right ">
-                        <button
-                          type={"button"}
-                          className=" mr15 cancel-btn"
+                        <Button
+                          id="rm-specification-cancel"
+                          className="mr-2"
+                          variant={"cancel-btn"}
+                          disabled={setDisable}
                           onClick={this.cancelHandler}
-                          disabled={setDisable}
-                        >
-                          <div className={"cancel-icon"}></div>
-                          {"Cancel"}
-                        </button>
-                        <button
+                          icon={"cancel-icon"}
+                          buttonName={"Cancel"}
+                        />
+                        <Button
+                          id="rm-specification-submit"
                           type="submit"
-                          className="user-btn save-btn"
+                          className="save-btn"
                           disabled={setDisable}
-                        >
-                          <div className={"save-icon"}></div>
-                          {isEditFlag ? "Update" : "Save"}
-                        </button>
+                          icon={"save-icon"}
+                          buttonName={isEditFlag ? "Update" : "Save"}
+                        />
                       </div>
                     </div>
                   </Row>
