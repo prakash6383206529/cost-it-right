@@ -197,7 +197,7 @@ function Ferrous(props) {
     const onSubmit = debounce(handleSubmit((values) => {
 
         if (totalPercentageValue() !== 100) {
-            Toaster.warning('Percentage value should be equal to 100')
+            Toaster.warning('Total percentage must be 100% to save the values')
             return false
         }
         let obj = {}
