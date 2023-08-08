@@ -49,6 +49,7 @@ import {
   SET_OTHER_COST,
   RESET_EXCHANGE_RATE_DATA,
   SET_REJECTED_COSTING_VIEW_DATA,
+  SET_CALL_ST_API,
   SET_BREAKUP_BOP,
   SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
 } from '../../../config/constants'
@@ -2623,9 +2624,21 @@ export const setRejectedCostingViewData = (data) => (dispatch) => {
 }
 
 /**
- * @method setBreakupBOP
- * @description setBreakupBOP
+ * @method setCallSTAPI
+ * @description setCallSTAPI  
  */
+export function setCallSTAPI(TabData) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_CALL_ST_API,
+      payload: TabData,
+    });
+  }
+};
+
+/* @method setBreakupBOP
+* @description setBreakupBOP
+*/
 export function setBreakupBOP(grid) {
   return (dispatch) => {
     dispatch({
