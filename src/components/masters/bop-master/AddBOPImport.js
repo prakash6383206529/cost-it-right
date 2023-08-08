@@ -102,13 +102,13 @@ class AddBOPImport extends Component {
       incoTerm: [],
       paymentTerm: [],
       levelDetails: {},
-      noApprovalCycle: false,
       vendorFilterList: [],
       isCallCalculation: false,
       isClientVendorBOP: false,
       CostingTypePermission: false,
       isTechnologyVisible: false,
-      Technology: []
+      Technology: [],
+      disableSendForApproval: false
     }
   }
   /**
@@ -158,25 +158,27 @@ class AddBOPImport extends Component {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
-    if (levelDetailsTemp?.length !== 0) {
-      let obj = {
-        TechnologyId: BOP_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        UserId: loggedInUserId(),
-        Mode: 'master',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
-      }
-
-      this.props.checkFinalUser(obj, (res) => {
-        if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
-          this.setState({ finalApprovalLoader: false })
-        }
-      })
-      this.setState({ noApprovalCycle: false })
-    } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
+    let obj = {
+      TechnologyId: BOP_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      UserId: loggedInUserId(),
+      Mode: 'master',
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
     }
+
+    this.props.checkFinalUser(obj, (res) => {
+      if (res?.data?.Result) {
+        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+      }
+      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+        this.setState({ disableSendForApproval: true })
+      } else {
+        this.setState({ disableSendForApproval: false })
+      }
+    })
+
+    this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
+
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -1010,7 +1012,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle, isClientVendorBOP, CostingTypePermission, isTechnologyVisible } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle, isClientVendorBOP, CostingTypePermission, isTechnologyVisible, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1644,6 +1646,7 @@ class AddBOPImport extends Component {
                       </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                          {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                           {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <button
                             type={"button"}
@@ -1659,7 +1662,7 @@ class AddBOPImport extends Component {
                             {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
-                                disabled={isViewMode || setDisable || noApprovalCycle}
+                                disabled={isViewMode || setDisable || disableSendForApproval}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -1668,7 +1671,7 @@ class AddBOPImport extends Component {
                               <button
                                 type="submit"
                                 className="user-btn mr5 save-btn"
-                                disabled={isViewMode || setDisable || noApprovalCycle}
+                                disabled={isViewMode || setDisable || disableSendForApproval}
                               >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? "Update" : "Save"}

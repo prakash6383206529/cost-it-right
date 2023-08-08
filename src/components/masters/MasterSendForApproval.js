@@ -545,7 +545,6 @@ function MasterSendForApproval(props) {
                                                         />
                                                     </div>
                                                 </div>
-
                                                 <div className="input-group form-group col-md-6">
                                                     <TextFieldHookForm
                                                         label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label)}
@@ -622,11 +621,9 @@ function MasterSendForApproval(props) {
                                                         customClassName={'withBorder'}
                                                         errors={errors.netCost}
                                                         disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                                        defaultValue={Object.keys(approvalObj).length > 0 && props?.IsImportEntery ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}
                                                     />
-
                                                 </div>
-
                                             </>
                                         }
 

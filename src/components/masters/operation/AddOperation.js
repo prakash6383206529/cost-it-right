@@ -30,6 +30,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import AddMoreOperation from './AddMoreOperation';
+import WarningMessage from '../../common/WarningMessage';
 
 const selector = formValueSelector('AddOperation');
 
@@ -92,7 +93,8 @@ class AddOperation extends Component {
       addMoreDetailObj: {},
       isDetailEntry: false,
       detailObject: {},
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      disableSendForApproval: false
     }
   }
 
@@ -133,24 +135,24 @@ class AddOperation extends Component {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, OPERATIONS_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
-    if (levelDetailsTemp?.length !== 0) {
-      let obj = {
-        TechnologyId: OPERATIONS_ID,
-        DepartmentId: userDetails().DepartmentId,
-        UserId: loggedInUserId(),
-        Mode: 'master',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
-      }
-      this.props.checkFinalUser(obj, (res) => {
-        if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
-          this.setState({ finalApprovalLoader: false })
-        }
-      })
-      this.setState({ noApprovalCycle: false })
-    } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
+    let obj = {
+      TechnologyId: OPERATIONS_ID,
+      DepartmentId: userDetails().DepartmentId,
+      UserId: loggedInUserId(),
+      Mode: 'master',
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
     }
+    this.props.checkFinalUser(obj, (res) => {
+      if (res?.data?.Result) {
+        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+      }
+      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+        this.setState({ disableSendForApproval: true })
+      } else {
+        this.setState({ disableSendForApproval: false })
+      }
+    })
+    this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -868,7 +870,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1325,7 +1327,8 @@ class AddOperation extends Component {
                   </div>
 
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                    <div className="col-sm-12 text-right bluefooter-butn">
+                    <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                      {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                       <button
                         type={"button"}
                         className="mr15 cancel-btn"
@@ -1339,7 +1342,7 @@ class AddOperation extends Component {
                         {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
                           <button type="submit"
                             class="user-btn approval-btn save-btn mr5"
-                            disabled={isViewMode || setDisable || noApprovalCycle}
+                            disabled={isViewMode || setDisable || disableSendForApproval}
                           >
                             <div className="send-for-approval"></div>
                             {'Send For Approval'}
@@ -1348,7 +1351,7 @@ class AddOperation extends Component {
                           <button
                             type="submit"
                             className="user-btn mr5 save-btn"
-                            disabled={isViewMode || setDisable || noApprovalCycle}
+                            disabled={isViewMode || setDisable || disableSendForApproval}
                           >
                             <div className={"save-icon"}></div>
                             {isEditFlag ? "Update" : "Save"}
