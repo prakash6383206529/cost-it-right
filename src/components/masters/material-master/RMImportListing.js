@@ -32,6 +32,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
+import Button from '../../layout/Button';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -438,10 +439,34 @@ function RMImportListing(props) {
 
     return (
       <>
-        <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
-        {ViewRMAccessibility && <button title='View' className="View" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-        {isEditbale && <button title='Edit' className="Edit align-middle" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-        {isDeleteButton && <button title='Delete' className="Delete align-middle" type={'button'} onClick={() => deleteItem(cellValue)} />}
+        <Button
+          id={`rmImportListing_movement${props.rowIndex}`}
+          className={"mr-1"}
+          variant="cost-movement"
+          onClick={() => showAnalytics(cellValue, rowData)}
+          title={"Cost Movement"}
+        />
+        {ViewRMAccessibility && <Button
+          id={`rmImportListing_view${props.rowIndex}`}
+          className={"mr-1"}
+          variant="View"
+          onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
+          title={"View"}
+        />}
+        {isEditbale && <Button
+          id={`rmImportListing_edit${props.rowIndex}`}
+          className={"mr-1"}
+          variant="Edit"
+          onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+          title={"Edit"}
+        />}
+        {isDeleteButton && <Button
+          id={`rmImportListing_delete${props.rowIndex}`}
+          className={"mr-1"}
+          variant="Delete"
+          onClick={() => deleteItem(cellValue)}
+          title={"Delete"}
+        />}
       </>
     )
   };
@@ -788,12 +813,13 @@ function RMImportListing(props) {
                 </a>
               )
 
-            }) : <button
-              type='button'
-              title='View Attachment'
-              className='btn-a pl-0'
+            }) : <Button
+              id={`rmImportListing_attachment${props.rowIndex}`}
+              className={"mr5"}
+              variant="btn-a"
               onClick={() => viewAttachmentData(row)}
-            >View Attachment</button>}
+              title={"View Attachment"}
+            >View Attachment</Button>}
         </div>
       </>
     )
@@ -831,7 +857,16 @@ function RMImportListing(props) {
                 {isSimulation &&
                   <div className="warning-message d-flex align-items-center">
                     {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                    <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+
+                    <Button
+                      id="rmImportListing_filter"
+                      className={"mr5"}
+                      onClick={() => onSearch()}
+                      title={"Filtered data"}
+                      icon={"filter"}
+                      disabled={disableFilter}
+                    />
+
                   </div>
                 }
                 {!isSimulation &&
@@ -843,43 +878,47 @@ function RMImportListing(props) {
                         </div>
                       }
 
-                      {
-                        <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                      }
+                      <Button
+                        id="rmImportListing_filter"
+                        className={"mr5"}
+                        onClick={() => onSearch()}
+                        title={"Filtered data"}
+                        icon={"filter"}
+                        disabled={disableFilter}
+                      />
 
                       {AddAccessibility && (
-                        <button
-                          type="button"
-                          className={"user-btn mr5"}
+
+                        <Button
+                          id="rmImportListing_add"
+                          className={"mr5"}
                           onClick={formToggle}
-                          title="Add"
-                        >
-                          <div className={"plus mr-0"}></div>
-                          {/* ADD */}
-                        </button>
+                          title={"Add"}
+                          icon={"plus"}
+                        />
                       )}
                       {BulkUploadAccessibility && (
-                        <button
-                          type="button"
-                          className={"user-btn mr5"}
+                        <Button
+                          id="rmImportListing_add"
+                          className={"mr5"}
                           onClick={bulkToggle}
-                          title="Bulk Upload"
-                        >
-                          <div className={"upload mr-0"}></div>
-                          {/* Bulk Upload */}
-                        </button>
+                          title={"Bulk Upload"}
+                          icon={"upload"}
+                        />
                       )}
                       {
                         DownloadAccessibility &&
                         <>
-                          <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
-                            {/* DOWNLOAD */}
-                            {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                          </button>
-
+                          <Button
+                            className="mr5"
+                            id={"rmImportListing_excel_download"}
+                            onClick={onExcelDownload}
+                            title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                            icon={"download mr-1"}
+                            buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                          />
                           <ExcelFile filename={'RM Import'} fileExtension={'.xls'} element={
-                            <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
-                            </button>}>
+                            <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />}>
                             {onBtExport()}
                           </ExcelFile>
                         </>
@@ -887,9 +926,12 @@ function RMImportListing(props) {
                     </>
                   </div>
                 }
-                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                  <div className="refresh mr-0"></div>
-                </button>
+                <Button
+                  id={"rmImportListing_refresh"}
+                  onClick={() => resetState()}
+                  title={"Reset Grid"}
+                  icon={"refresh"}
+                />
               </>}
             </Col>
           </Row>
@@ -955,11 +997,11 @@ function RMImportListing(props) {
                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
 
                     <div className="d-flex pagination-button-container">
-                      <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                      <p><Button id="rmImportListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
                       {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
                       {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
                       {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                      <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                      <p><Button id="rmImportListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
                     </div>
                   </div>
                 </div>

@@ -29,6 +29,7 @@ import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
+import Button from '../../layout/Button';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -466,10 +467,35 @@ function RMDomesticListing(props) {
 
         return (
             <>
-                <button className="mr-1 cost-movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
-                {ViewRMAccessibility && < button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditbale && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isDeleteButton && <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => deleteItem(cellValue)} />}
+
+                <Button
+                    id={`rmDomesticListing_movement${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="cost-movement"
+                    onClick={() => showAnalytics(cellValue, rowData)}
+                    title={"Cost Movement"}
+                />
+                {ViewRMAccessibility && <Button
+                    id={`rmDomesticListing_view${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="View"
+                    onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
+                    title={"View"}
+                />}
+                {isEditbale && <Button
+                    id={`rmDomesticListing_edit${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="Edit"
+                    onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+                    title={"Edit"}
+                />}
+                {isDeleteButton && <Button
+                    id={`rmDomesticListing_delete${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="Delete"
+                    onClick={() => deleteItem(cellValue)}
+                    title={"Delete"}
+                />}
             </>
         )
     };
@@ -780,13 +806,18 @@ function RMDomesticListing(props) {
                                 </a>
                             )
 
-                        }) : <button
-                            type='button'
-                            title='View Attachment'
-                            className='btn-a pl-0'
+                        }) :
+
+
+                        <Button
+                            id={`rmDomesticListing_attachment${props.rowIndex}`}
+                            className={"mr5"}
+                            variant="btn-a"
                             onClick={() => viewAttachmentData(row)}
-                        >View Attachment</button>}
-                </div>
+                            title={"View Attachment"}
+                        >View Attachment</Button>}
+
+                </div >
             </>
         )
 
@@ -824,7 +855,15 @@ function RMDomesticListing(props) {
 
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+
+                                            <Button
+                                                id="rmDomesticListing_filter"
+                                                className={"mr5"}
+                                                onClick={() => onSearch()}
+                                                title={"Filtered data"}
+                                                icon={"filter"}
+                                                disabled={disableFilter}
+                                            />
                                         </div>
                                     }
                                     {!isSimulation &&
@@ -837,42 +876,51 @@ function RMDomesticListing(props) {
                                                     </div>
                                                 }
                                                 {(props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
-                                                    <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+
+                                                    <Button
+                                                        id="rmDomesticListing_filter"
+                                                        className={"mr5"}
+                                                        onClick={() => onSearch()}
+                                                        title={"Filtered data"}
+                                                        icon={"filter"}
+                                                        disabled={disableFilter}
+                                                    />
                                                 }
 
                                                 {AddAccessibility && (
-                                                    <button
-                                                        type="button"
-                                                        className={"user-btn mr5"}
+                                                    <Button
+                                                        id="rmDomesticListing_add"
+                                                        className={"mr5"}
                                                         onClick={formToggle}
-                                                        title="Add"
-                                                    >
-                                                        <div className={"plus mr-0"}></div>
-                                                        {/* ADD */}
-                                                    </button>
+                                                        title={"Add"}
+                                                        icon={"plus"}
+                                                    />
                                                 )}
                                                 {BulkUploadAccessibility && (
-                                                    <button
-                                                        type="button"
-                                                        className={"user-btn mr5"}
+                                                    <Button
+                                                        id="rmDomesticListing_add"
+                                                        className={"mr5"}
                                                         onClick={bulkToggle}
-                                                        title="Bulk Upload"
-                                                    >
-                                                        <div className={"upload mr-0"}></div>
-                                                        {/* Bulk Upload */}
-                                                    </button>
+                                                        title={"Bulk Upload"}
+                                                        icon={"upload"}
+                                                    />
                                                 )}
                                                 {
                                                     DownloadAccessibility &&
                                                     <>
-                                                        <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                            {/* DOWNLOAD */}
-                                                            {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                                        </button>
 
+                                                        <Button
+                                                            className="mr5"
+                                                            id={"rmDomesticListing_excel_download"}
+                                                            onClick={onExcelDownload}
+                                                            title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                            icon={"download mr-1"}
+                                                            buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                        />
                                                         <ExcelFile filename={'RM Domestic'} fileExtension={'.xls'} element={
-                                                            <button id={'Excel-Downloads-rm-import'} className="p-absolute" type="button" >
-                                                            </button>}>
+                                                            <Button id={"Excel-Downloads-rm-import"} className="p-absolute" />
+
+                                                        }>
                                                             {onBtExport()}
                                                         </ExcelFile>
                                                     </>
@@ -881,9 +929,13 @@ function RMDomesticListing(props) {
                                             </>
                                         </div>
                                     }
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
+
+                                    <Button
+                                        id={"rmDomesticListing_refresh"}
+                                        onClick={() => resetState()}
+                                        title={"Reset Grid"}
+                                        icon={"refresh"}
+                                    />
                                 </>
                             }
                         </Col>
@@ -946,11 +998,11 @@ function RMDomesticListing(props) {
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                                         {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                                             <div className="d-flex pagination-button-container">
-                                                <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                                <p><Button id="rmDomesticListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
                                                 {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
                                                 {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
                                                 {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                                <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                                <p><Button id="rmDomesticListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
                                             </div>
                                         }
                                     </div>

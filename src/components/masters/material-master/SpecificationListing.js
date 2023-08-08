@@ -23,6 +23,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId, searchNocontentFilter } from '../../../helper';
+import Button from '../../layout/Button';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -172,8 +173,25 @@ class SpecificationListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {EditAccessibility &&
+
+                    <Button
+                        id={`rmSpecification_edit${props.rowIndex}`}
+                        className={"mr-1"}
+                        variant="Edit"
+                        onClick={() => this.editItemDetails(cellValue, rowData, false)}
+                        title={"Edit"}
+                    />
+                }
+                {DeleteAccessibility &&
+
+                    <Button
+                        id={`rmSpecification_delete${props.rowIndex}`}
+                        className={"mr-1"}
+                        variant="Delete"
+                        onClick={() => this.deleteItem(cellValue)}
+                        title={"Delete"}
+                    />}
             </>
         )
     };
@@ -345,28 +363,27 @@ class SpecificationListing extends Component {
                     <Row className="pt-4">
 
                         <Col md={6} className="text-right mb-3 search-user-block">
-                            {this.state.shown ? (
-                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                                    <div className="cancel-icon-white"></div></button>
-                            ) : (
-                                <>
-                                </>
-                            )}
-                            {AddAccessibility && <button
-                                type={'button'}
-                                className={'user-btn mr5'}
-                                title="Add"
-                                onClick={this.openModel}>
-                                <div className={'plus mr-0'}></div></button>}
-                            {BulkUploadAccessibility && <button
-                                type="button"
-                                className={"user-btn mr5"}
-                                onClick={this.bulkToggle}
-                                title="Bulk Upload"
-                            >
-                                <div className={"upload mr-0"}></div>
-                                {/* Bulk Upload */}
-                            </button>}
+                            {AddAccessibility &&
+
+
+                                <Button
+                                    id="rmSpecification_filter"
+                                    className={"mr5"}
+                                    onClick={this.openModel}
+                                    title={"Add"}
+                                    icon={"plus"}
+                                />
+
+                            }
+                            {BulkUploadAccessibility &&
+                                <Button
+                                    id="rmSpecification_add"
+                                    className={"mr5"}
+                                    onClick={this.bulkToggle}
+                                    title={"Bulk Upload"}
+                                    icon={"upload"}
+                                />
+                            }
                             {
                                 DownloadAccessibility &&
                                 <>
@@ -374,8 +391,15 @@ class SpecificationListing extends Component {
                                     <>
 
                                         <ExcelFile filename={'RM Specification'} fileExtension={'.xls'} element={
-                                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
-                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
+                                            <Button
+                                                className="mr5"
+                                                id={"rmSpecification_excel_download"}
+                                                title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                                icon={"download mr-1"}
+                                                buttonName={`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                            />
+
+                                        }>
                                             {this.onBtExport()}
                                         </ExcelFile>
 
@@ -386,9 +410,12 @@ class SpecificationListing extends Component {
                                 //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                             }
-                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                <div className="refresh mr-0"></div>
-                            </button>
+                            <Button
+                                id={"rmSpecification_refresh"}
+                                onClick={() => this.resetState()}
+                                title={"Reset Grid"}
+                                icon={"refresh"}
+                            />
 
                         </Col>
                     </Row>
