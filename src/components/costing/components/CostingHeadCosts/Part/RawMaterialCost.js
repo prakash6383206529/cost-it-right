@@ -651,7 +651,6 @@ function RawMaterialCost(props) {
             }
             dispatch(setRMCutOff({ IsCutOffApplicable: tempData?.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
             setGridData(tempArr)
-            setValue(`${rmGridFields}.${index}.FinishWeight`, FinishWeight)
 
           } else {
 
