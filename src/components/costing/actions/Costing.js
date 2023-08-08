@@ -49,6 +49,7 @@ import {
   SET_OTHER_COST,
   RESET_EXCHANGE_RATE_DATA,
   SET_REJECTED_COSTING_VIEW_DATA,
+  SET_CALL_ST_API,
   SET_BREAKUP_BOP,
   SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
 } from '../../../config/constants'
@@ -1776,10 +1777,9 @@ export const setCostingApprovalData = (data) => (dispatch) => {
 export function getCostingByVendorAndVendorPlant(partId, VendorId, VendorPlantId, destinationPlantId, customerId, costingTypeId, callback) {
   return (dispatch) => {
     if (partId !== '') {
-      const query = `${partId}/${VendorId === '' ? EMPTY_GUID : VendorId}/${VendorPlantId === '' ? EMPTY_GUID : VendorPlantId}/${destinationPlantId === '' ? EMPTY_GUID : destinationPlantId}/${customerId === '' ? EMPTY_GUID : customerId}/${costingTypeId === '' ? EMPTY_GUID : costingTypeId}`
-      const request = axios.get(`${API.getCostingByVendorVendorPlant}/${query}`, config(),)
+      const queryParams = `partId=${partId}&VendorId=${VendorId}&vendorPlantId=${VendorPlantId}&destinationPlantId=${!destinationPlantId ? EMPTY_GUID : destinationPlantId}&customerId=${!customerId ? EMPTY_GUID : customerId}&costingTypeId=${costingTypeId}`
+      const request = axios.get(`${API.getCostingByVendorVendorPlant}?${queryParams}`, config());
       request.then((response) => {
-
         if (response.data.Result || response.status === 204) {
           dispatch({
             type: GET_COST_SUMMARY_BY_PART_PLANT,
@@ -2624,9 +2624,21 @@ export const setRejectedCostingViewData = (data) => (dispatch) => {
 }
 
 /**
- * @method setBreakupBOP
- * @description setBreakupBOP
+ * @method setCallSTAPI
+ * @description setCallSTAPI  
  */
+export function setCallSTAPI(TabData) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_CALL_ST_API,
+      payload: TabData,
+    });
+  }
+};
+
+/* @method setBreakupBOP
+* @description setBreakupBOP
+*/
 export function setBreakupBOP(grid) {
   return (dispatch) => {
     dispatch({

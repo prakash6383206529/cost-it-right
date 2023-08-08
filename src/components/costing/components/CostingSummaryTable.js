@@ -141,6 +141,7 @@ const CostingSummaryTable = (props) => {
   const onBeforeContentResolveDetail = useRef(null)
   const [pieChartDataArray, setPieChartDataArray] = useState([])
   const [count, setCount] = useState(0);
+  const [disableSendForApproval, setDisableSendForApproval] = useState(false)
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
@@ -159,22 +160,19 @@ const CostingSummaryTable = (props) => {
   useEffect(() => {
 
     if (!viewMode && viewCostingData?.length !== 0 && partInfo && count === 0 && technologyId) {
-      let levelDetailsTemp = ''
       setCount(1)
-      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
-        levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
-        if (levelDetailsTemp?.length !== 0) {
-          let obj = {}
-          obj.DepartmentId = userDetails().DepartmentId
-          obj.UserId = loggedInUserId()
-          obj.TechnologyId = partInfo.TechnologyId
-          obj.Mode = 'costing'
-          obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
-          dispatch(checkFinalUser(obj, res => {
-            if (res.data?.Result) {
-              setIsFinalApproverShow(res.data?.Data?.IsFinalApprover) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
-            }
-          }))
+      let obj = {}
+      obj.DepartmentId = userDetails().DepartmentId
+      obj.UserId = loggedInUserId()
+      obj.TechnologyId = partInfo.TechnologyId
+      obj.Mode = 'costing'
+      obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+      dispatch(checkFinalUser(obj, res => {
+        if (res.data?.Result) {
+          setIsFinalApproverShow(res.data?.Data?.IsFinalApprover) // UNCOMMENT IT AFTER DEPLOTED FROM KAMAL SIR END
+          if (res.data?.Data?.IsUserInApprovalFlow === false) {
+            setDisableSendForApproval(true)
+          }
         }
       }))
 
@@ -209,8 +207,8 @@ const CostingSummaryTable = (props) => {
         checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.CostingPartDetails.NetConditionCost, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.CostingPartDetails.NetNpvCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.CostingPartDetails?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj.CostingPartDetails?.NetNpvCost, initialConfiguration.NoOfDecimalForPrice),
       ]
 
       let labelArray = temp.reduce((acc, item, index) => {
@@ -1077,6 +1075,11 @@ const CostingSummaryTable = (props) => {
       item.rejectionPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : item?.rejectionOn.rejectionPercentage : '')
       item.iccPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.iccOn.iccTitle === 'Fixed' ? '-' : item?.iccOn.iccPercentage : '')
       item.paymentPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? item?.paymentTerms.paymentTitle === 'Fixed' ? '-' : item?.paymentTerms.paymentPercentage : ''
+      item.OverheadRemark = item?.overheadOn?.OverheadRemark ? item?.overheadOn?.OverheadRemark : '-'
+      item.ProfitRemark = item?.profitOn?.ProfitRemark ? item?.profitOn?.ProfitRemark : '-'
+      item.RejectionRemark = item?.rejectionOn?.RejectionRemark ? item?.rejectionOn?.RejectionRemark : '-'
+      item.ICCRemark = item?.iccOn?.ICCRemark ? item?.iccOn?.ICCRemark : '-'
+      item.PaymentTermRemark = item?.paymentTerms?.PaymentTermRemark ? item?.paymentTerms?.PaymentTermRemark : '-'
     })
 
     let masterDataArray = []
@@ -1084,10 +1087,10 @@ const CostingSummaryTable = (props) => {
 
       if (index === 0) {
         masterDataArray.push({ label: "", value: `columnA${index}` })
-        masterDataArray.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+        masterDataArray.push({ label: props.uniqueShouldCostingId?.includes(item.costingId) ? "Should Cost" : item?.bestCost === true ? "Best Cost" : `Costing\u00A0${index + 1}`, value: `columnB${index}` })
 
       } else if (item?.CostingHeading !== VARIANCE) {
-        masterDataArray.push({ label: `Costing\u00A0${index + 1}`, value: `columnB${index}` })
+        masterDataArray.push({ label: item?.bestCost === true ? "Best Cost" : `Costing\u00A0${index + 1}`, value: `columnB${index}` })
       }
 
       if (item?.CostingHeading === VARIANCE) {
@@ -1453,7 +1456,7 @@ const CostingSummaryTable = (props) => {
                   !simulationMode && !props.isRfqCosting && <>
 
                     {(!viewMode && !isFinalApproverShow) && !props.isRfqCosting && !isSuperAdmin && (
-                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag} onClick={() => checkCostings()}>
+                      <button className="user-btn mr-1 mb-2 approval-btn" disabled={isWarningFlag || disableSendForApproval} onClick={() => checkCostings()}>
                         <div className="send-for-approval"></div>
                         {'Send For Approval'}
                       </button>
@@ -1470,7 +1473,7 @@ const CostingSummaryTable = (props) => {
                 }
               </div >
               {!simulationMode && !props.isRfqCosting && (showWarningMsg && !warningMsg) && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'Costing for this part/Assembly is not yet done!'} />}
-
+              {disableSendForApproval && <WarningMessage dClass={"col-md-12 pr-0 justify-content-end"} message={'This user is not in the approval cycle'} />}
             </Col>}
           </Row>
           <div ref={componentRef}>
@@ -1517,7 +1520,7 @@ const CostingSummaryTable = (props) => {
                                   <div className="element d-inline-flex align-items-center">
                                     {
                                       !isApproval && (data?.status === DRAFT) && <>
-                                        {!pdfHead && !drawerDetailPDF && !viewMode && !isSuperAdmin && < div className="custom-check1 d-inline-block">
+                                        {!disableSendForApproval && !pdfHead && !drawerDetailPDF && !viewMode && !isSuperAdmin && < div className="custom-check1 d-inline-block">
                                           <label
                                             className="custom-checkbox pl-0 mb-0"
                                             onChange={() => moduleHandler(data?.costingId, 'top', data)}
@@ -1618,7 +1621,7 @@ const CostingSummaryTable = (props) => {
                                       <span className="d-flex justify-content-between align-items-center pie-chart-container">
                                         <span>
                                           {(data?.bestCost === true) ? ' ' : checkForDecimalAndNull(data?.poPrice, initialConfiguration.NoOfDecimalForPrice)}
-                                          {(data?.bestCost === true) ? ' ' : `(${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
+                                          {(data?.bestCost === true) ? ' ' : ` (${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
                                         </span>
                                         {(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && (
                                           <span className={`pie-chart-wrapper mt-3`}>
@@ -1637,7 +1640,7 @@ const CostingSummaryTable = (props) => {
                                       </span>
                                     )}
                                     {/* USE PART NUMBER KEY HERE */}
-                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? `${data?.vendorName}(${data?.vendorCode})` : ''}</span>
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? `${data?.vendorName} (${data?.vendorCode})` : ''}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
@@ -1774,7 +1777,7 @@ const CostingSummaryTable = (props) => {
                                 {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("ForgingScrapWeight")}>Forging Scrap Weight</span>}
                                 {viewCostingData && viewCostingData[0]?.technologyId === FORGING && <span className={highlighter("MachiningScrapWeight")}>Machining Scrap Weight</span>}
                                 {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("CastingWeight")}>Casting Weight</span>}
-                                {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss</span>}
+                                {viewCostingData && viewCostingData[0]?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>Melting Loss (Loss%)</span>}
                                 <span className={highlighter("BurningLossWeight")}>Burning Loss Weight</span>
                                 <span className={highlighter("ScrapWeight")}>Scrap Weight</span>
                               </td>
@@ -1810,7 +1813,7 @@ const CostingSummaryTable = (props) => {
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
                                       {data?.technologyId === DIE_CASTING && <span className={highlighter("MeltingLoss")}>
-                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={(data?.netRMCostView && data?.netRMCostView[0]?.MeltingLoss)}>{checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)}</span> : '-')}
+                                        {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (data?.netRMCostView.length > 1 || data?.IsAssemblyCosting === true) ? "Multiple RM" : <span title={`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}>{`${checkForDecimalAndNull(data?.netRMCostView[0]?.MeltingLoss, initialConfiguration.NoOfDecimalForPrice)} (${(data?.netRMCostView[0]?.LossPercentage ? data?.netRMCostView[0]?.LossPercentage : 0)}%)`}</span> : '-')}
                                         {/* {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.fWeight, initialConfiguration.NoOfDecimalForInputOutput) : ''} */}
                                       </span>}
 

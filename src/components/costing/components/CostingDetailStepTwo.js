@@ -10,7 +10,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
-import { ViewCostingContext, CostingTypeContext } from './CostingDetails';
+import { ViewCostingContext, CostingTypeContext, IsPartType } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../config/masterData';
@@ -41,6 +41,7 @@ function CostingDetailStepTwo(props) {
 
   const CostingViewMode = useContext(ViewCostingContext);
   const costingType = useContext(CostingTypeContext);
+  const isPartType = useContext(IsPartType);
 
 
   const { initialConfiguration } = useSelector(state => state.auth)
@@ -74,10 +75,10 @@ function CostingDetailStepTwo(props) {
         const ApplyCost = IsToolCostApplicable ? checkForNull(data?.NetToolsCost) : checkForNull(tempData?.ToolCost);
         OverAllCost =
           checkForNull(data.NetTotalRMBOPCC) +
-          tempData.NetSurfaceTreatmentCost +
-          tempData.NetOverheadAndProfitCost +
-          tempData.NetPackagingAndFreight +
-          ApplyCost - checkForNull(tempData.NetDiscountsCost)
+          checkForNull(tempData.NetSurfaceTreatmentCost) +
+          checkForNull(tempData.NetOverheadAndProfitCost) +
+          checkForNull(tempData.NetPackagingAndFreight) +
+          checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost)
       }
 
       tempData = {
@@ -115,25 +116,27 @@ function CostingDetailStepTwo(props) {
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
-          tempData.NetTotalRMBOPCC +
-          data.NetSurfaceTreatmentCost +
-          tempData.NetOverheadAndProfitCost +
-          tempData.NetPackagingAndFreight +
-          tempData.ToolCost - checkForNull(tempData.NetDiscountsCost)
+          checkForNull(tempData.NetTotalRMBOPCC) +
+          checkForNull(data.NetSurfaceTreatmentCost) +
+          checkForNull(tempData.NetOverheadAndProfitCost) +
+          checkForNull(tempData.NetPackagingAndFreight) +
+          checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost)
       }
 
       tempData = {
         ...tempData,
         NetSurfaceTreatmentCost: data.NetSurfaceTreatmentCost,
-        TotalCost: OverAllCost,
+        // TotalCost: OverAllCost,
+        BasicRate: OverAllCost + checkForNull(DiscountCostData?.AnyOtherCost),
+        TotalCost: OverAllCost + checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalNpvCost) + checkForNull(DiscountCostData?.totalConditionCost),
       }
       let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
       setTimeout(() => {
         dispatch(setCostingDataList('setHeaderCostSurfaceTab', tempArr, () => {
+          dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
+          dispatch(setSurfaceCostData(data, () => { }))
         }))
       }, 500);
-      dispatch(setPOPrice(calculateNetPOPrice(tempArr), () => { }))
-      dispatch(setSurfaceCostData(data, () => { }))
     }
   }
 
@@ -148,6 +151,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
@@ -185,11 +189,11 @@ function CostingDetailStepTwo(props) {
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
-          tempData.NetTotalRMBOPCC +
-          tempData.NetSurfaceTreatmentCost +
-          tempData.NetOverheadAndProfitCost +
+          checkForNull(tempData.NetTotalRMBOPCC) +
+          checkForNull(tempData.NetSurfaceTreatmentCost) +
+          checkForNull(tempData.NetOverheadAndProfitCost) +
           checkForNull(data.NetFreightPackagingCost) +
-          tempData.ToolCost - checkForNull(tempData.NetDiscountsCost)
+          checkForNull(tempData.ToolCost) - checkForNull(tempData.NetDiscountsCost)
       }
 
       tempData = {
@@ -221,11 +225,11 @@ function CostingDetailStepTwo(props) {
         if (tempData && tempData !== undefined) {
           const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
           OverAllCost =
-            tempData.NetTotalRMBOPCC +
-            tempData.NetSurfaceTreatmentCost +
-            tempData.NetOverheadAndProfitCost +
-            tempData.NetPackagingAndFreight +
-            ApplyCost - checkForNull(tempData.NetDiscountsCost)
+            checkForNull(tempData.NetTotalRMBOPCC) +
+            checkForNull(tempData.NetSurfaceTreatmentCost) +
+            checkForNull(tempData.NetOverheadAndProfitCost) +
+            checkForNull(tempData.NetPackagingAndFreight) +
+            checkForNull(ApplyCost) - checkForNull(tempData.NetDiscountsCost)
 
           tempData = {
             ...tempData,
@@ -359,7 +363,6 @@ function CostingDetailStepTwo(props) {
           // BasicRate: OverAllCost,
           NetPackagingAndFreight: tempData.NetPackagingAndFreight,
         }
-
         let tempArr = DataList && Object.assign([...DataList], { [headerIndex]: tempData })
         dispatch(setCostingDataList('setHeaderDiscountTab', tempArr, () => {
         }))
@@ -394,14 +397,14 @@ function CostingDetailStepTwo(props) {
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
       if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
       let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
@@ -481,25 +484,27 @@ function CostingDetailStepTwo(props) {
                           {
                             CostingDataList && CostingDataList.map((item, index) => {
                               return (
-                                <> {costingData.TechnologyId !== LOGISTICS ? <>
-                                  <td className="part-overflow pr-0 pl-2"><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetRMCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  {!breakupBOP && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetBOPCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>}
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetConversionCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOverheadAndProfitCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetDiscountsCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.BasicRate, initialConfiguration.NoOfDecimalForPrice)}</span></td>}
-                                  <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                </> : <>
-                                  <td className="pr-0 pl-2"><span>Part Number: </span><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500"><span>Freight Cost: </span>{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                  <td><span className="dark-blue fs1 font-weight-500"><span>Net Cost(INR): </span>{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
-                                </>}
+                                <> {
+                                  costingData.TechnologyId !== LOGISTICS ? <>
+                                    <td className="part-overflow pr-0 pl-2"><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetRMCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    {!breakupBOP && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetBOPCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>}
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetConversionCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetTotalRMBOPCC, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetSurfaceTreatmentCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOverheadAndProfitCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.ToolCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetOtherCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.NetDiscountsCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.BasicRate, initialConfiguration.NoOfDecimalForPrice)}</span></td>}
+                                    <td><span className="dark-blue fs1 font-weight-500">{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                  </> : <>
+                                    <td className="pr-0 pl-2"><span>Part Number: </span><span className="cr-prt-nm fs1 font-weight-500" title={item.PartNumber}>{item.PartNumber}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500"><span>Freight Cost: </span>{checkForDecimalAndNull(item.NetPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                    <td><span className="dark-blue fs1 font-weight-500"><span>Net Cost(INR): </span>{checkForDecimalAndNull(item.TotalCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                  </>
+                                }
                                 </>
                               )
                             }

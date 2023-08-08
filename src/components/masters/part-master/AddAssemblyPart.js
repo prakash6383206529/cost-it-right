@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { BOUGHTOUTPART, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -675,7 +675,7 @@ class AddAssemblyPart extends Component {
         childPartArray.push({
           PartId: item.PartType && (item.PartType === ASSEMBLYNAME || item.PartType === COMPONENT_PART) ? item.PartId : '',
           ParentPartId: isEditFlag ? PartId : '',
-          BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPART ? ((item.BoughtOutPartId !== undefined && item.BoughtOutPartId !== null) ? item.BoughtOutPartId : item.PartId) : '',
+          BoughtOutPartId: item.PartType && item.PartType === BOUGHTOUTPARTSPACING ? ((item.BoughtOutPartId !== undefined && item.BoughtOutPartId !== null) ? item.BoughtOutPartId : item.PartId) : '',
           PartTypeId: item.PartTypeId ? item.PartTypeId : '',
           PartType: item.PartType ? item.PartType : '',
           BOMLevel: 1,
@@ -1024,7 +1024,7 @@ class AddAssemblyPart extends Component {
                             name={"Description"}
                             type="text"
                             placeholder={isViewMode ? '-' : "Enter"}
-                            validate={[maxLength80, checkWhiteSpaces]}
+                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                             component={renderText}
                             required={false}
                             className=""
@@ -1200,7 +1200,7 @@ class AddAssemblyPart extends Component {
                             placeholder={isViewMode ? '-' : "Type here..."}
                             className=""
                             customClassName=" textAreaWithBorder"
-                            validate={[maxLength512, checkWhiteSpaces]}
+                            validate={[maxLength512, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter]}
                             component={renderTextAreaField}
                             maxLength="5000"
                             disabled={isViewMode}
@@ -1298,14 +1298,15 @@ class AddAssemblyPart extends Component {
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
-                        <button
+                        {!isViewMode && <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                           disabled={isViewMode || setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
-                        </button>
+                        </button>}
+
                       </div>
                     </Row>
                   </form>

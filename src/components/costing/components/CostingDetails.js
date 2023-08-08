@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR, VBC } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR, VBC, BOUGHTOUTPARTSPACING } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails, number, decimalNumberLimit6, percentageLimitValidation } from '../../../helper';
@@ -44,6 +44,7 @@ export const SelectedCostingDetail = React.createContext()
 export const CostingStatusContext = React.createContext()
 export const CostingTypeContext = React.createContext()
 export const IsNFR = React.createContext()
+export const IsPartType = React.createContext()
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -147,8 +148,7 @@ function CostingDetails(props) {
 
   useEffect(() => {
     if (reactLocalStorage.get('location') === '/costing') {
-      reactLocalStorage.setObject('costingArray', [])
-      reactLocalStorage.setObject('surfaceCostingArray', [])
+
       setValue('Technology', '')
       setValue('Part', '')
       reset()
@@ -518,7 +518,10 @@ function CostingDetails(props) {
       //   }
       // })))
 
+      reactLocalStorage.setObject('costingArray', [])
+      reactLocalStorage.setObject('surfaceCostingArray', [])
       setIsOpenVendorSOBDetails(true)
+
     } else {
       Toaster.warning('Please select Technology or Part.')
     }
@@ -2543,7 +2546,7 @@ function CostingDetails(props) {
                                               {AddAccessibility && actionPermission.addVBC && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} />}
                                               {ViewAccessibility && actionPermission.viewVBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBCTypeId)} />)}
                                               {EditAccessibility && actionPermission.editVBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBCTypeId)} />)}
-                                              {CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} />)}
+                                              {String(partType.label) !== BOUGHTOUTPARTSPACING && CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} />)}
                                               {DeleteAccessibility && actionPermission.deleteVBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBCTypeId)} />)}
                                               {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBCTypeId)} />}
                                             </div>
@@ -2797,12 +2800,14 @@ function CostingDetails(props) {
                           <SelectedCostingDetail.Provider value={costingOptionsSelectedObject} >
                             <CostingStatusContext.Provider value={approvalStatus}>
                               <IsNFR.Provider value={props?.isNFR}>
-                                <CostingDetailStepTwo
-                                  backBtn={backToFirstStep}
-                                  toggle={props.toggle}
-                                  IsCostingViewMode={IsCostingViewMode}
-                                  IsCopyCostingMode={IsCopyCostingMode}
-                                />
+                                <IsPartType.Provider value={partType}>
+                                  <CostingDetailStepTwo
+                                    backBtn={backToFirstStep}
+                                    toggle={props.toggle}
+                                    IsCostingViewMode={IsCostingViewMode}
+                                    IsCopyCostingMode={IsCopyCostingMode}
+                                  />
+                                </IsPartType.Provider>
                               </IsNFR.Provider>
                             </CostingStatusContext.Provider>
                           </SelectedCostingDetail.Provider>

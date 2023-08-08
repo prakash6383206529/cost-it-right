@@ -6,7 +6,7 @@ import PartCompoment from '../Part';
 import { getCostingLabourDetails, getRMCCTabData, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setRMCCData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
-import { CostingStatusContext, ViewCostingContext } from '../../CostingDetails';
+import { CostingStatusContext, IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { ASSEMBLYNAME, EMPTY_GUID, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
 import _ from 'lodash'
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
@@ -34,6 +34,7 @@ function AssemblyPart(props) {
   const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
+  const isPartType = useContext(IsPartType);
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const netPOPrice = useContext(NetPOPriceContext);
@@ -173,7 +174,7 @@ function AssemblyPart(props) {
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, true)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, true, '', isPartType)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       setCallSaveAssemblyApi(false)
     }
@@ -306,7 +307,7 @@ function AssemblyPart(props) {
                 onClick={labourHandlingDrawer}>
                 <div className={'plus'}></div>{`LABOUR`}</button>
               </>}
-              {isBOPExists && <><button
+              {isBOPExists && item?.CostingPartDetails?.IsOpen && <><button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={bopHandlingDrawer}>
