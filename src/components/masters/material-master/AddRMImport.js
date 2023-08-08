@@ -117,14 +117,14 @@ class AddRMImport extends Component {
       finalApprovalLoader: true,
       showPopup: false,
       levelDetails: {},
-      noApprovalCycle: false,
       showForgingMachiningScrapCost: false,
       showExtraCost: false,
       vendorFilterList: [],
       isCallCalculation: false,
       isDropDownChanged: false,
       CostingTypePermission: false,
-      isEditBuffer: false
+      isEditBuffer: false,
+      disableSendForApproval: false
     }
   }
 
@@ -191,25 +191,26 @@ class AddRMImport extends Component {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, RM_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
-    if (levelDetailsTemp?.length !== 0) {
-      let obj = {
-        DepartmentId: userDetails().DepartmentId,
-        UserId: loggedInUserId(),
-        TechnologyId: RM_MASTER_ID,
-        Mode: 'master',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
-      }
-
-      this.props.checkFinalUser(obj, (res) => {
-        if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
-          this.setState({ finalApprovalLoader: false })
-        }
-      })
-      this.setState({ noApprovalCycle: false })
-    } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false, finalApprovalLoader: false })
+    let obj = {
+      DepartmentId: userDetails().DepartmentId,
+      UserId: loggedInUserId(),
+      TechnologyId: RM_MASTER_ID,
+      Mode: 'master',
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
     }
+
+
+    this.props.checkFinalUser(obj, (res) => {
+      if (res?.data?.Result) {
+        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+      }
+      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+        this.setState({ disableSendForApproval: true })
+      } else {
+        this.setState({ disableSendForApproval: false })
+      }
+    })
+    this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -1247,7 +1248,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission } = this.state;
+      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1991,7 +1992,8 @@ class AddRMImport extends Component {
                         </Row>
                       </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                        <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                          {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                           {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <button
                             type={"button"}
@@ -2007,7 +2009,7 @@ class AddRMImport extends Component {
                               <button type="submit"
                                 class="user-btn approval-btn save-btn mr5"
                                 onClick={() => scroll.scrollToTop()}
-                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                                disabled={isViewFlag || setDisable || disableSendForApproval}
                               >
                                 <div className="send-for-approval"></div>
                                 {'Send For Approval'}
@@ -2016,7 +2018,7 @@ class AddRMImport extends Component {
                               <button
                                 type="submit"
                                 className="user-btn mr5 save-btn"
-                                disabled={isViewFlag || setDisable || noApprovalCycle}
+                                disabled={isViewFlag || setDisable || disableSendForApproval}
                               >
                                 <div className={"save-icon"}></div>
                                 {isEditFlag ? "Update" : "Save"}

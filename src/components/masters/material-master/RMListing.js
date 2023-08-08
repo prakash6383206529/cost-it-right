@@ -20,6 +20,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import Button from '../../layout/Button';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -349,9 +350,12 @@ class RMListing extends Component {
                             //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
 
                         }
-                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                            <div className="refresh mr-0"></div>
-                        </button>
+                        <Button
+                            id={"rmSpecification_refresh"}
+                            onClick={() => this.resetState()}
+                            title={"Reset Grid"}
+                            icon={"refresh"}
+                        />
 
                     </Col>
 
