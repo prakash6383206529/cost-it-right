@@ -5472,9 +5472,10 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Month", value: "Month", },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
+    { label: "Plant (Code)", value: "Plant", },
+    { label: "Part Type", value: "PartType", },
     { label: "Part No. (Revision No.)", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
-    { label: "Plant (Code)", value: "Plant", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
     //  { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE
     { label: "Actual Quantity", value: "ApprovedQuantity", },
@@ -5482,17 +5483,14 @@ export const VOLUME_DOWNLOAD_EXCEl = [
 
 export const BUDGET_DOWNLOAD_EXCEl = [
     { label: "Costing Head", value: "CostingHead", },
+    { label: "Vendor (Code)", value: "vendorNameWithCode", },
+    { label: "Customer (Code)", value: "customerNameWithCode", },
+    { label: "Plant (Code)", value: "plantNameWithCode", },
+    { label: "Part Type", value: "PartType", },
+    { label: "Part No. (Revision No.)", value: "partNoWithRevNo" },
     { label: "Financial Year", value: "FinancialYear", },
     { label: "Net Cost", value: "NetPoPrice" },
     { label: "Budgeted Net Cost", value: "BudgetedPoPrice" },
-    { label: "Part Name", value: "PartName" },
-    { label: "Part Number", value: "PartNumber", },
-    { label: "Plant Name", value: "PlantName", },
-    { label: "Plant Code", value: "PlantCode", },
-    { label: "Vendor Name", value: "VendorName", },
-    { label: "Vendor Code", value: "VendorCode", },
-    { label: "Customer Name", value: "CustomerName", },
-    { label: "CustomerCode", value: "CustomerCode", },
 ]
 
 export const PROFIT_DOWNLOAD_EXCEl = [
