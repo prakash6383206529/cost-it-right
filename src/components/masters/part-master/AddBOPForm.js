@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { BOUGHTOUTPARTSPACING, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
+import { BOUGHTOUTPART, BOUGHTOUTPARTSPACING, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
