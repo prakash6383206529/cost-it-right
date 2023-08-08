@@ -36,6 +36,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMSimulation(props) {
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
+    console.log('list: ', list);
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -76,9 +77,6 @@ function RMSimulation(props) {
     }, [])
     useEffect(() => {
         if (list && list.length > 0) {
-            if (isImpactedMaster) {
-                window.screen.width >= 1365 && gridRef.current.api.sizeColumnsToFit();    //FOR RE SPECIFIC DUE TO LESS COLUMN IN GRID
-            }
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
 
             let maxDate = getMaxDate(list)
@@ -423,6 +421,7 @@ function RMSimulation(props) {
         setIsWarningMessageShow(false)
     }
 
+
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
         costingHeadFormatter: costingHeadFormatter,
@@ -440,6 +439,8 @@ function RMSimulation(props) {
         revisedBasicRateHeader: revisedBasicRateHeader,
         revisedScrapRateHeader: revisedScrapRateHeader,
         customerFormatter: customerFormatter,
+        nullHandler: props.nullHandler && props.nullHandler
+
     };
 
     const closePopUp = () => {
@@ -613,6 +614,7 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="New" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
                                             }
+                                            {props.children}
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} ></AgGridColumn>
                                             <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 

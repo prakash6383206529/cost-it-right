@@ -291,9 +291,10 @@ function OperationSTSimulation(props) {
         oldRateFormatter: oldRateFormatter,
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
-        revisedBasicRateHeader: revisedBasicRateHeader,
         costingHeadFormatter: costingHeadFormatter,
-        customerFormatter: customerFormatter
+        customerFormatter: customerFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        nullHandler: props.nullHandler && props.nullHandler
     };
 
 
@@ -501,7 +502,7 @@ function OperationSTSimulation(props) {
                                                     <AgGridColumn minWidth={120} field="Rate" editable='false' headerName="Existing" colId="Rate" cellRenderer="oldRateFormatter"></AgGridColumn>
                                                     <AgGridColumn minWidth={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewRate" headerName="Revised" colId='NewRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
-                                                { }
+                                                {props.children}
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? `Current Effective date` : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 

@@ -7,6 +7,8 @@ import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
 import { ProcessListingSimulation } from './ProcessListingSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
+import { AgGridColumn } from 'ag-grid-react';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 export function Impactedmasterdata(props) {
     const { data, masterId, viewCostingAndPartNo, customClass, lastRevision } = props;
@@ -30,18 +32,29 @@ export function Impactedmasterdata(props) {
             machineListing = data?.MachineProcessImpactedMasterDataList?.length === 0 || data?.MachineProcessImpactedMasterDataList === null ? false : true
             combinedProcessListing = (data?.CombinedProcessImpactedMasterDataList?.length > 0) ? true : false
         }
+        const commonGridColumns = <>
+            <AgGridColumn width={140} field="PreviousMinimum" cellRenderer={'nullHandler'} headerName={"Previous Min."} ></AgGridColumn>
+            <AgGridColumn width={140} field="PreviousMaximum" cellRenderer={'nullHandler'} headerName={"Previous Max."} ></AgGridColumn>
+            <AgGridColumn width={140} field="PreviousAverage" cellRenderer={'nullHandler'} headerName={"Previous Avg."} ></AgGridColumn>
+            <AgGridColumn width={140} field="Minimum" cellRenderer={'nullHandler'} headerName={"Current Min."} ></AgGridColumn>
+            <AgGridColumn width={140} field="Maximum" cellRenderer={'nullHandler'} headerName={"Current Max."} ></AgGridColumn>
+            <AgGridColumn width={140} field="Average" cellRenderer={'nullHandler'} headerName={"Current Avg."} ></AgGridColumn>
+        </>
 
+        const nullHandler = (props) => {
+            const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+            return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
+        }
         return (<>
-            {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.RawMaterialImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} lastRevision={lastRevision} />}
-            {operationListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
-            {surfaceTreatmentListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.SurfaceTreatmentImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />}
-            {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} lastRevision={lastRevision} />}
-            {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} />}
-            {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} />}
+            {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.RawMaterialImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} lastRevision={lastRevision} nullHandler={nullHandler}>
+                {commonGridColumns}
+            </RMSimulation>}
+            {operationListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} nullHandler={nullHandler}>{commonGridColumns}</OperationSTSimulation>}
+            {surfaceTreatmentListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.SurfaceTreatmentImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} nullHandler={nullHandler}>{commonGridColumns}</OperationSTSimulation>}
+            {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} lastRevision={lastRevision} nullHandler={nullHandler}>{commonGridColumns}</ERSimulation>}
+            {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} nullHandler={nullHandler}>{commonGridColumns}</BDSimulation>}
+            {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} nullHandler={nullHandler}>{commonGridColumns}</MRSimulation>}
             {combinedProcessListing && <ProcessListingSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.CombinedProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} />}
-            {/* {surfaceTreatment && masterId && <OperationSTSimulation isSurfaceTreatmentMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} />} */}
-            {/* {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} />} */}
-            {/* {machineRateListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data} isImpactedMaster={true} isbulkUpload={false} />} */}
         </>
         )
 
