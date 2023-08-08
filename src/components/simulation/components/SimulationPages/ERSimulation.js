@@ -186,6 +186,7 @@ function ERSimulation(props) {
         customNoRowsOverlay: NoContentFound,
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
+        nullHandler: props.nullHandler && props.nullHandler
     };
 
     const onRowSelect = () => {
@@ -318,6 +319,7 @@ function ERSimulation(props) {
                                                 <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Existing Exchange Rate(INR)" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="Revised Exchange Rate(INR)" minWidth={190}></AgGridColumn>
                                             </>}
+                                            {props.children}
                                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="ExchangeRateId" hide={true}></AgGridColumn>
 

@@ -312,8 +312,9 @@ function MRSimulation(props) {
         onCellValueChanged: onCellValueChanged,
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
+        customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
-        customerFormatter: customerFormatter
+        nullHandler: props.nullHandler && props.nullHandler
     };
     const verifySimulation = debounce(() => {
         /**********CONDITION FOR: IS ANY FIELD EDITED****************/
@@ -519,7 +520,8 @@ function MRSimulation(props) {
                                                     <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                                 </AgGridColumn>
-                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster ? "Current Process Effective date" : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
+                                                {props.children}
+                                                <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                                 <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
                                             </AgGridReact >}

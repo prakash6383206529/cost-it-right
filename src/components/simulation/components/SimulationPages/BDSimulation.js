@@ -364,7 +364,8 @@ function BDSimulation(props) {
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
         customerFormatter: customerFormatter,
-        revisedBasicRateHeader: revisedBasicRateHeader
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        nullHandler: props.nullHandler && props.nullHandler
     };
 
     const basicRatetooltipToggle = () => {
@@ -509,7 +510,7 @@ function BDSimulation(props) {
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
-
+                                            {props.children}
                                             <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
