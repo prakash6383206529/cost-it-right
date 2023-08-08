@@ -254,6 +254,7 @@ function AddNpvCost(props) {
                 }
             })
             setTableData(temp) // Update the tableData state with the updated array
+            resetData()
         }
 
         // If the operation is 'edit', set the editIndex state to the index of the data being edited, and set the isEditMode state to true.
