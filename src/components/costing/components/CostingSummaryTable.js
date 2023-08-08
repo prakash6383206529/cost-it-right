@@ -2206,7 +2206,7 @@ const CostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.toolApplicability.value : '')}
                                       </span>
                                     </div>
-                                    <div className={`${highlighter("toolMaintenanceCost")}`}>
+                                    <div className={`${highlighter("toolMaintenanceCost")} d-flex`}>
                                       <span className="d-inline-block w-50 ">{(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.toolApplicabilityValue.toolTitle : '')}</span> &nbsp;{' '}
                                       <span className="d-inline-block w-50 "> {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.toolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}</span>
                                     </div>
@@ -2270,7 +2270,6 @@ const CostingSummaryTable = (props) => {
                                     <div className="d-grid">
                                       {/* <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.discount : ''}</span> &nbsp;{' '}
                                        <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.value : ''}</span> */}
-                                      <span className="d-inline-block ">{"Type"}</span>
                                       <span className="d-inline-block ">{"Applicability"}</span>
                                       <span className="d-inline-block ">{"Value"}</span>
                                       <span className="d-inline-block ">{"Cost"}</span>
@@ -2306,22 +2305,18 @@ const CostingSummaryTable = (props) => {
                             })}
                         </tr>
 
-                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
-                          <td>
-                            <span className={highlighter("BasicRate")}>Basic Price</span>
-                          </td>
-                          {viewCostingData &&
-                            viewCostingData?.map((data) => {
-                              return (
-                                <td className={tableDataClass(data)}>
-                                  <span title={data?.BasicRate} className={highlighter("BasicRate")}>
-                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                  </span>
-
-                                </td>
-                              )
-                            })}
-                        </tr>
+                        {
+                          initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
+                            <th>Basic Price </th>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    {displayValueWithSign(data, 'BasicRate')}
+                                  </td>
+                                )
+                              })}
+                          </tr>
                         }
                         {initialConfiguration?.IsShowNpvCost && <tr>
                           <td>
