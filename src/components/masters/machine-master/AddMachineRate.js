@@ -40,6 +40,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import WarningMessage from '../../common/WarningMessage';
 
 
 const selector = formValueSelector('AddMachineRate');
@@ -108,9 +109,9 @@ class AddMachineRate extends Component {
       finalApprovalLoader: false,
       costingTypeId: ZBCTypeId,
       levelDetails: {},
-      noApprovalCycle: false,
       vendorFilterList: [],
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      disableSendForApproval: false
     }
   }
 
@@ -120,6 +121,8 @@ class AddMachineRate extends Component {
    */
   componentDidMount() {
     const { data, editDetails, initialConfiguration } = this.props;
+    console.log('data: ', data);
+    console.log('editDetails: ', editDetails);
 
 
     // For Showing form in view mode if data is added in add more detail form
@@ -207,25 +210,26 @@ class AddMachineRate extends Component {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
-    if (levelDetailsTemp?.length !== 0) {
-      let obj = {
-        TechnologyId: MACHINE_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        UserId: loggedInUserId(),
-        Mode: 'master',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
-      }
-      this.setState({ finalApprovalLoader: true })
-      this.props.checkFinalUser(obj, (res) => {
-        if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
-          this.setState({ finalApprovalLoader: false })
-        }
-      })
-      this.setState({ noApprovalCycle: false, CostingTypePermission: false })
-    } else {
-      this.setState({ noApprovalCycle: true })
+
+    let obj = {
+      TechnologyId: MACHINE_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      UserId: loggedInUserId(),
+      Mode: 'master',
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
     }
+    this.props.checkFinalUser(obj, (res) => {
+      if (res?.data?.Result) {
+        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+      }
+      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+        this.setState({ disableSendForApproval: true })
+      } else {
+        this.setState({ disableSendForApproval: false })
+      }
+    })
+
+    this.setState({ finalApprovalLoader: false, CostingTypePermission: false })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -1358,7 +1362,7 @@ class AddMachineRate extends Component {
   */
   render() {
     const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, noApprovalCycle, IsDetailedEntry, CostingTypePermission } = this.state;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1921,7 +1925,8 @@ class AddMachineRate extends Component {
                       </Row>
                     </div>
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                      <div className="col-sm-12 text-right bluefooter-butn">
+                      <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                        {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                         {
                           !isViewFlag ?
                             <>
@@ -1933,26 +1938,29 @@ class AddMachineRate extends Component {
                               >
                                 <div className={"cancel-icon"}></div> {'Cancel'}
                               </button>
+                              {!isViewMode && <>
 
-                              {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                                <button type="submit"
-                                  class="user-btn approval-btn save-btn mr5"
-                                  disabled={isViewMode || setDisable || noApprovalCycle || (isEditFlag && IsDetailedEntry)}
-                                >
-                                  <div className="send-for-approval"></div>
-                                  {'Send For Approval'}
-                                </button>
-                                :
+                                {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                                  <button type="submit"
+                                    class="user-btn approval-btn save-btn mr5"
+                                    disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry)}
+                                  >
+                                    <div className="send-for-approval"></div>
+                                    {'Send For Approval'}
+                                  </button>
+                                  :
 
-                                <button
-                                  type="submit"
-                                  className="user-btn mr5 save-btn"
-                                  disabled={isViewMode || setDisable || noApprovalCycle}
-                                >
-                                  <div className={"save-icon"}></div>
-                                  {isEditFlag ? "Update" : "Save"}
-                                </button>
-                              }
+                                  <button
+                                    type="submit"
+                                    className="user-btn mr5 save-btn"
+                                    disabled={isViewMode || setDisable || disableSendForApproval}
+                                  >
+                                    <div className={"save-icon"}></div>
+                                    {isEditFlag ? "Update" : "Save"}
+                                  </button>
+                                }
+                              </>}
+
 
 
                             </>

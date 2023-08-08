@@ -30,6 +30,7 @@ import MasterSendForApproval from '../MasterSendForApproval'
 import { userTechnologyDetailByMasterId } from '../../../helper'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import WarningMessage from '../../common/WarningMessage'
 import { getSelectListPartType } from '../actions/Part'
 const gridOptions = {};
 function AddBudget(props) {
@@ -89,6 +90,7 @@ function AddBudget(props) {
     const [viewTooltip, setViewTooltip] = useState(false)
     const [partType, setPartType] = useState([]);
     const [partTypeList, setPartTypeList] = useState([])
+    const [disableSendForApproval, setDisableSendForApproval] = useState(false);
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
 
     useEffect(() => {
@@ -117,6 +119,11 @@ function AddBudget(props) {
         dispatch(checkFinalUser(obj, res => {
             if (res.data?.Result) {
                 setIsFinalApprover(res.data?.Data?.IsFinalApprover)
+                if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                    setDisableSendForApproval(true)
+                } else {
+                    setDisableSendForApproval(false)
+                }
             }
         }))
 
@@ -225,6 +232,11 @@ function AddBudget(props) {
         dispatch(checkFinalUser(obj, res => {
             if (res.data?.Result) {
                 setIsFinalApprover(res.data?.Data?.IsFinalApprover)
+                if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                    setDisableSendForApproval(true)
+                } else {
+                    setDisableSendForApproval(false)
+                }
             }
         }))
     }
@@ -1227,7 +1239,8 @@ function AddBudget(props) {
 
                                             </div>
                                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                                                <div className="col-sm-12 text-right bluefooter-butn">
+                                                <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                                                    {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                                                     <button
                                                         type={"button"}
                                                         className="mr15 cancel-btn"
@@ -1241,7 +1254,7 @@ function AddBudget(props) {
                                                     {!isFinalApprover ?
                                                         <button type="submit"
                                                             class="user-btn approval-btn save-btn mr5"
-                                                            disabled={setDisable}
+                                                            disabled={setDisable || disableSendForApproval}
                                                         >
                                                             <div className="send-for-approval"></div>
                                                             {'Send For Approval'}
@@ -1250,7 +1263,7 @@ function AddBudget(props) {
                                                         <button
                                                             type="submit"
                                                             className="user-btn mr5 save-btn"
-                                                        //disabled={isViewMode || setDisable || noApprovalCycle}
+                                                            disabled={setDisable || disableSendForApproval}
                                                         >
                                                             <div className={"save-icon"}></div>
                                                             {isEditFlag ? "Update" : "Save"}

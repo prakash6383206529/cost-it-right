@@ -44,6 +44,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import WarningMessage from '../../common/WarningMessage';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -136,7 +137,6 @@ class AddMoreDetails extends Component {
       finalApprovalLoader: false,
       showPopup: false,
       levelDetails: {},
-      noApprovalCycle: false,
       selectedCustomer: [],
       selectedVedor: [],
       costingTypeId: ZBCTypeId,
@@ -146,7 +146,8 @@ class AddMoreDetails extends Component {
       LabourCRMHead: '',
       crmHeads: {},
       updateCrmHeadObj: {},
-      CostingTypePermission: false
+      CostingTypePermission: false,
+      disableSendForApproval: false
     }
     this.dropzone = React.createRef();
   }
@@ -202,25 +203,24 @@ class AddMoreDetails extends Component {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.CostingTypeId, MACHINE_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
-    if (levelDetailsTemp?.length !== 0) {
-      let obj = {
-        TechnologyId: MACHINE_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        UserId: loggedInUserId(),
-        Mode: 'master',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(ZBCTypeId)
-      }
-      this.setState({ finalApprovalLoader: true })
-      this.props.checkFinalUser(obj, (res) => {
-        if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true })
-          this.setState({ finalApprovalLoader: false })
-        }
-      })
-      this.setState({ noApprovalCycle: false })
-    } else {
-      this.setState({ noApprovalCycle: true, CostingTypePermission: false })
+    let obj = {
+      TechnologyId: MACHINE_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      UserId: loggedInUserId(),
+      Mode: 'master',
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.CostingTypeId)
     }
+    this.props.checkFinalUser(obj, (res) => {
+      if (res?.data?.Result) {
+        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+      }
+      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+        this.setState({ disableSendForApproval: true })
+      } else {
+        this.setState({ disableSendForApproval: false })
+      }
+    })
+    this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -2529,7 +2529,7 @@ class AddMoreDetails extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, noApprovalCycle, CostingTypePermission } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, CostingTypePermission, disableSendForApproval } = this.state;
     return (
       <>
         {(isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -4322,7 +4322,8 @@ class AddMoreDetails extends Component {
                       </Row>
                     </div>
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                      <div className="col-sm-12 text-right bluefooter-butn">
+                      <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                        {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                         <button
                           type={'button'}
                           className=" mr15 cancel-btn"
@@ -4331,46 +4332,48 @@ class AddMoreDetails extends Component {
                         </button>
 
 
+                        {!isViewMode && <>
+                          {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
+                            <button type="submit"
+                              class="user-btn approval-btn save-btn mr5"
 
-                        {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
-                          <button type="submit"
-                            class="user-btn approval-btn save-btn mr5"
+                              disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
+                            >
+                              <div className="send-for-approval"></div>
+                              {'Send For Approval'}
+                            </button>
+                            :
 
-                            disabled={this.state.isViewMode || this.state.setDisable || noApprovalCycle}
-                          >
-                            <div className="send-for-approval"></div>
-                            {'Send For Approval'}
-                          </button>
-                          :
-
-                          <button
-                            type="submit"
-                            className="user-btn mr5 save-btn"
-                            disabled={this.state.isViewMode || this.state.setDisable || noApprovalCycle}
-                          >
-                            <div className={"save-icon"}></div>
-                            {isEditFlag ? "Update" : "Save"}
-                          </button>
-                        }
+                            <button
+                              type="submit"
+                              className="user-btn mr5 save-btn"
+                              disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
+                            >
+                              <div className={"save-icon"}></div>
+                              {isEditFlag ? "Update" : "Save"}
+                            </button>
+                          }
+                        </>}
                       </div>
                     </Row>
 
                   </form>
                 </div>
               </div>
-            </div>
-          </div>
+            </div >
+          </div >
         </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
-        {isOpenMachineType && <AddMachineTypeDrawer
-          isOpen={isOpenMachineType}
-          closeDrawer={this.closeMachineTypeDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-        />
+        {
+          isOpenMachineType && <AddMachineTypeDrawer
+            isOpen={isOpenMachineType}
+            closeDrawer={this.closeMachineTypeDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+          />
         }
         {
           isOpenAvailability && <EfficiencyDrawer
