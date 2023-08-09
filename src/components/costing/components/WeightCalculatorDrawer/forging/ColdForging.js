@@ -773,7 +773,7 @@ function ColdForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = (Machining Scrap Weight * Forging Scrap Recovery (%)) / 100'} />
+                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = (Machining Scrap Weight * Machining Scrap Recovery (%)) / 100'} />
                 <NumberFieldHookForm
                   label={`Machining Scrap Cost`}
                   name={'machiningScrapCost'}
