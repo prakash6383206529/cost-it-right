@@ -146,7 +146,6 @@ function Simulation(props) {
         setIsTechnologyDisable(false)
         dispatch(setMasterForSimulation(value))
         dispatch(setTechnologyForSimulation(''))
-        dispatch(setIsMasterAssociatedWithCosting(''))
         setAssociation('')
         setValue('Association', '')
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
