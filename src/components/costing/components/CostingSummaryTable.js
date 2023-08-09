@@ -2283,18 +2283,32 @@ const CostingSummaryTable = (props) => {
                               return (
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                   <td className={tableDataClass(data)} width={"32%"}>
-                                    <div className="d-grid">
-                                      {/* <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.discount : ''}</span> &nbsp;{' '}
+                                    {/* <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.discount : ''}</span> &nbsp;{' '}
                                        <span className="d-inline-block w-50 ">{data?.CostingHeading !== VARIANCE ? data?.otherDiscount.value : ''}</span> */}
-                                      <span className="d-inline-block ">{"Applicability"}</span>
+
+                                    <div style={{ width: '95%' }} className={`d-flex justify-content-between`}>
+                                      <div>
+                                        <div className=''>Applicability</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0 && (data?.CostingPartDetails.DiscountCostDetails[0]?.ApplicabilityType ?? '-')}</div>
+                                      </div>
+                                      <div>
+                                        <div>Value</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</div>
+                                      </div>
+                                      <div className='mr-2'>
+                                        <div>Cost</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</div>
+                                      </div>
+                                    </div>
+                                    {/* <span className="d-inline-block ">{"Applicability"}</span>
                                       <span className="d-inline-block ">{"Value"}</span>
                                       <span className="d-inline-block ">{"Cost"}</span>
-                                    </div>
+                                 
                                     <div className={`d-grid ${highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}`}>
                                       <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0 && data?.CostingPartDetails.DiscountCostDetails[0]?.ApplicabilityType}</span>
                                       <span className="d-inline-block small-grey-text">{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</span>
                                       <span className="d-inline-block small-grey-text">{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
-                                    </div>
+                                    </div> */}
                                   </td>
                                   : ""
                               )
@@ -2311,7 +2325,7 @@ const CostingSummaryTable = (props) => {
 
                                 (data?.bestCost !== true) && data?.CostingHeading !== VARIANCE ?
                                   <td className={tableDataClass(data)}>
-                                    <div className={`d-grid ${highlighter("anyOtherCost")}`}>
+                                    <div className={`${highlighter("anyOtherCost")}`}>
                                       <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div>
                                   </td>
