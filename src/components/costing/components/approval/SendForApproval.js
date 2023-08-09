@@ -20,6 +20,7 @@ import Dropzone from 'react-dropzone-uploader'
 import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
+import PushSection from '../../../common/PushSection'
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
@@ -29,7 +30,7 @@ import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  const { isApprovalisting, selectedRows } = props
+  const { isApprovalisting, selectedRows, mandatoryRemark } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -39,6 +40,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+  const SAPData = useSelector(state => state.approval.SAPObj)
 
 
   const partNo = useSelector((state) => state.costing.partNo)
@@ -51,6 +53,7 @@ const SendForApproval = (props) => {
   const [approvalDropDown, setApprovalDropDown] = useState([])
   const [showValidation, setShowValidation] = useState(false)
   const [approver, setApprover] = useState('')
+  const [dataToPush, setDataToPush] = useState({})
   const [isDisable, setIsDisable] = useState('')
   const [isRegularize, setIsRegularize] = useState(false);
   const [files, setFiles] = useState([]);
@@ -65,6 +68,7 @@ const SendForApproval = (props) => {
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
+  const [tentativeCost, setTentativeCost] = useState(false);
   const [levelDetails, setLevelDetails] = useState('');
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
@@ -399,8 +403,8 @@ const SendForApproval = (props) => {
       let data = {
         "QuotationPartId": selectedRows[0]?.QuotationPartId,
         "NetRawMaterialsCost": tempData?.netRM,
-        "NetBoughtOutPartCost": tempData?.netBoughtOutPartCost,
-        "NetConversionCost": tempData?.netConversionCostView,
+        "NetBoughtOutPartCost": tempData?.netBOP,
+        "NetConversionCost": tempData?.nConvCost,
         "NetProcessCost": tempData?.netProcessCost,
         "NetOperationCost": tempData?.netOperationCost,
         "NetOtherOperationCost": tempData?.netOtherOperationCost,
@@ -465,7 +469,9 @@ const SendForApproval = (props) => {
         tempObj.ImpactOfTheYear = data.yearImpact
         tempObj.Remark = getValues("remarks")
         tempObj.IsApproved = true
-
+        tempObj.BasicRate = data.basicRate
+        tempObj.BudgetedPrice = data.BudgetedPrice
+        tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
         return null
       })
@@ -515,6 +521,7 @@ const SendForApproval = (props) => {
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
         ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0].costingTypeId),
+        IsTentativeSaleRate: tentativeCost
         // Quantity: getValues('Quantity'),
         // Attachment: files,
         // IsLimitCrossed: IsLimitCrossed
@@ -584,10 +591,16 @@ const SendForApproval = (props) => {
         tempObj.CustomerId = data.customerId
         tempObj.CustomerName = data.customerName
         tempObj.CustomerCode = data.customerCode
+        tempObj.BasicRate = data.basicRate
+        tempObj.BudgetedPrice = data.BudgetedPrice
+        tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
         return null
       })
       obj.CostingsList = temp
+      obj.MaterialGroup = SAPData.MaterialGroup?.label
+      obj.DecimalOption = SAPData.DecimalOption?.value
+
       // debounce_fun()
       // 
       // props.closeDrawer()
@@ -599,13 +612,9 @@ const SendForApproval = (props) => {
         dispatch(setCostingViewData([]))
       }))
     }
-
-
-
-
-
-
   }), 500)
+
+
 
   const handleApproverChange = (data) => {
     setApprover(data.label)
@@ -744,6 +753,10 @@ const SendForApproval = (props) => {
     checkQuantityLimitValue(getValues('Quantity'), !isRegularize)
   };
 
+  const tentativeCheckboxHandler = () => {
+    setTentativeCost(!tentativeCost)
+  }
+
   const reasonField = 'reasonField'
   const dateField = 'dateField'
 
@@ -760,7 +773,7 @@ const SendForApproval = (props) => {
         open={props.isOpen}
       // onClose={(e) => toggleDrawer(e)}
       ><div className="container">
-          <div className={"drawer-wrapper drawer-md"}>
+          <div className={"drawer-wrapper layout-width-900px"}>
             <Row className="drawer-heading ">
               <Col>
                 <div className={"header-wrapper left"}>
@@ -773,7 +786,6 @@ const SendForApproval = (props) => {
                 ></div>
               </Col>
             </Row>
-            { }
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
@@ -835,6 +847,7 @@ const SendForApproval = (props) => {
                                       dateFormat="dd/MM/yyyy"
                                       showMonthDropdown
                                       showYearDropdown
+                                      dropdownMode='select'
                                       readonly="readonly"
                                       onBlur={() => null}
                                       autoComplete={'off'}
@@ -880,7 +893,7 @@ const SendForApproval = (props) => {
                           <div className="form-group">
                             <label>Basic Price</label>
                             <label className="form-control bg-grey input-form-control">
-                              {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.basicRate && data.basicRate !== '-' ? checkForDecimalAndNull(data.basicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
                           </div>
                         </Col>}
@@ -913,10 +926,10 @@ const SendForApproval = (props) => {
                         {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
                           <Col md="4">
                             <div className="form-group">
-                              <TooltipCustom id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                              <TooltipCustom disabledIcon={true} id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
                               <label>Consumed Quantity</label>
                               <div className="d-flex align-items-center">
-                                <label className="form-control bg-grey input-form-control">
+                                <label id={"consumed-quantity"} className="form-control bg-grey input-form-control">
                                   {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
                                 </label>
                                 {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
@@ -952,6 +965,23 @@ const SendForApproval = (props) => {
                               </label>
                             </div>
                           </Col>
+
+                          {data.oldPrice > 0 && <Col md="4">
+                            <div className="form-group">
+                              <label>Budgeted Price</label>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                {data.BudgetedPrice && data.BudgetedPrice ? checkForDecimalAndNull(data.BudgetedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>}
+                          {data.oldPrice > 0 && <Col md="4">
+                            <div className="form-group">
+                              <label>Impact/Quarter (w.r.t. Budgeted Price)</label>
+                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              </label>
+                            </div>
+                          </Col>}
                         </>}
                       </Row>
                     </div>
@@ -965,14 +995,18 @@ const SendForApproval = (props) => {
                   // isFinalApproverShow === false ?
                   <>
                     {/* <Row className="px-3">
-                        <Col md="12">
-                          <div className="left-border">{"Push Drawer"}</div>
-                        </Col>
-                        <Col md="12">
-
-                          <PushSection />
-                        </Col>
-                      </Row> */}
+                      <Col md="12">
+                        <div className="left-border">{"SAP-Push Details"}</div>
+                      </Col>
+                      <div className="w-100">
+                        <PushSection
+                          Controller={Controller}
+                          register={register}
+                          errors={errors}
+                          control={control}
+                        />
+                      </div>
+                    </Row> */}
                     <Row className="px-3">
                       <Col md="4">
                         <div className="left-border">{"Approver"}</div>
@@ -1052,6 +1086,24 @@ const SendForApproval = (props) => {
                         </Col>
                       </>
                       }
+
+                      {initialConfiguration.IsShowTentativeSaleRate && <Col md="6" className="d-flex align-items-center mb-3 ml-1 ">
+                        <span className="d-inline-block">
+                          <label
+                            className={`custom-checkbox mb-0`}
+                            onChange={tentativeCheckboxHandler}>
+                            Tentative Cost
+                            <input
+                              type="checkbox"
+                            />
+                            <span
+                              className=" before-box"
+                              onChange={tentativeCheckboxHandler}
+                            />
+                          </label>
+                        </span>
+                      </Col>}
+
                       <Col md="12">
                         <TextAreaHookForm
                           label="Remarks"
@@ -1059,7 +1111,8 @@ const SendForApproval = (props) => {
                           Controller={Controller}
                           control={control}
                           register={register}
-                          mandatory={false}
+                          mandatory={mandatoryRemark ? true : false}
+                          rules={{ required: mandatoryRemark ? true : false }}
                           handleChange={() => { }}
                           defaultValue={""}
                           className=""

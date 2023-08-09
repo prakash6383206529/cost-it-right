@@ -137,7 +137,7 @@ function NonFerrous(props) {
         }
 
         if (scrapWeight < 0) {
-            Toaster.warning('Scrap weight cannot be negetive')
+            Toaster.warning('Scrap weight cannot be negative')
             scrapWeight = 0
         }
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
@@ -553,10 +553,9 @@ function NonFerrous(props) {
                             type="button"
                             onClick={onSubmit}
                             disabled={props.CostingViewMode || isDisable ? true : false}
-                            className="btn-primary save-btn"
+                            className="submit-button save-btn"
                         >
-                            <div className={'check-icon'}>
-                                <i class="fa fa-check" aria-hidden="true"></i>
+                            <div className={'save-icon'}>
                             </div>
                             {'SAVE'}
                         </button>

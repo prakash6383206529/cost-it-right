@@ -103,7 +103,7 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
 
         var queryParams2 = `take=${take}`
         var queryParams1 = `skip=${skip}`
-        var queryParams3 = `effectiveDate=${obj.newDate !== null && obj.newDate !== undefined ? obj.newDate : ""}&partNumber=${obj.PartNumber !== null || obj.PartNumber !== "" ? obj.PartNumber : ""}&partName=${obj.PartName !== null || obj.PartName !== "" ? obj.PartName : ""}&ecnNumber=${obj.ECNNumber !== null || obj.ECNNumber !== "" ? obj.ECNNumber : ""}&revisionNumber=${obj.RevisionNumber !== null || obj.RevisionNumber !== "" ? obj.RevisionNumber : ""}&drawingNumber=${obj.DrawingNumber !== null || obj.DrawingNumber !== "" ? obj.DrawingNumber : ""}&technology=${obj.Technology ? obj.Technology : ""}`
+        var queryParams3 = `effectiveDate=${obj.newDate !== null && obj.newDate !== undefined ? obj.newDate : ""}&partNumber=${obj.PartNumber !== null || obj.PartNumber !== "" ? obj.PartNumber : ""}&partName=${obj.PartName !== null || obj.PartName !== "" ? obj.PartName : ""}&ecnNumber=${obj.ECNNumber !== null || obj.ECNNumber !== "" ? obj.ECNNumber : ""}&revisionNumber=${obj.RevisionNumber !== null || obj.RevisionNumber !== "" ? obj.RevisionNumber : ""}&drawingNumber=${obj.DrawingNumber !== null || obj.DrawingNumber !== "" ? obj.DrawingNumber : ""}&technology=${obj.Technology ? obj.Technology : ""}&sapCode=${obj.SAPCode ? obj.SAPCode : ""}`
         const request = axios.get(`${API.getPartDataList}?${queryParams}&${queryParams1}&${queryParams2}&${queryParams3}`, config());
         request.then((response) => {
             if (response?.data?.Result === true || response.status === 204) {
@@ -135,10 +135,11 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
  * @method deletePart
  * @description delete part
  */
-export function deletePart(PartId, callback) {
+export function deletePart(partId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deletePart}/${PartId}`, config())
+        const queryParams = `partId=${partId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deletePart}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -175,22 +176,6 @@ export function fileUploadPart(data, callback) {
     };
 }
 
-/**
- * @method fileDeletePart
- * @description delete PART file API
- */
-export function fileDeletePart(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeletePart}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
 
 /**
  * @method partComponentBulkUpload
@@ -361,10 +346,11 @@ export function updateAssemblyPart(requestData, callback) {
 * @method deleteAssemblyPart
 * @description DELETE ASSEMBLY PART
 */
-export function deleteAssemblyPart(PartId, callback) {
+export function deleteAssemblyPart(assyPartId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteAssemblyPart}/${PartId}`, config())
+        const queryParams = `assyPartId=${assyPartId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteAssemblyPart}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

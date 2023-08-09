@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
-import { getBOPImportDataList, deleteBOP, getAllVendorSelectList, } from '../actions/BoughtOutParts';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT, FILE_URL } from '../../../config/constants';
+import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
@@ -28,7 +28,8 @@ import _ from 'lodash';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { hideColumnFromExcel, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -63,7 +64,7 @@ class BOPImportListing extends Component {
             analyticsDrawer: false,
             selectedRowData: [],
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "", PaymentTermDescriptionAndPaymentTerm: "", IncoTermDescriptionAndInfoTerm: "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", PaymentTermDescriptionAndPaymentTerm: "", IncoTermDescriptionAndInfoTerm: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -74,7 +75,9 @@ class BOPImportListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            attachment: false,
+            viewAttachment: []
         }
     }
 
@@ -108,6 +111,9 @@ class BOPImportListing extends Component {
                 }
             }
         }, 300);
+        if (this.props.isSimulation) {
+            this.props.callBackLoader(this.state.isLoader)
+        }
 
     }
 
@@ -140,7 +146,7 @@ class BOPImportListing extends Component {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
             bop_for: bopFor,
@@ -148,13 +154,15 @@ class BOPImportListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
             ListFor: this.props.ListFor,
-            StatusId: statusString
+            StatusId: statusString,
+            IsBOPAssociated: this.props?.isBOPAssociated
         }
         this.setState({ isLoader: isPagination ? true : false })
 
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
-        this.props.getBOPImportDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+        dataObj.EntryType = ENTRY_TYPE_IMPORT
+        this.props.getBOPDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
             this.setState({ noData: false })
             if (this.props.isSimulation) {
                 this.props?.changeTokenCheckBox(true)
@@ -218,9 +226,11 @@ class BOPImportListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-        if (this.props.bopImportList?.length !== 0) {
-            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }
+        setTimeout(() => {
+            if (this.props.bopImportList?.length !== 0) {
+                this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+            }
+        }, 500);
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -277,8 +287,8 @@ class BOPImportListing extends Component {
     * @description confirm delete BOP
     */
     confirmDelete = (ID) => {
-
-        this.props.deleteBOP(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteBOP(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.resetState()
@@ -362,6 +372,14 @@ class BOPImportListing extends Component {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell != null ? cell : '-';
     }
+    /**
+    * @method bopCostingFormatter
+    * @description bopCostingFormatter
+    */
+    bopCostingFormatter = (props) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return rowData?.IsBreakupBoughtOutPart != null ? (rowData?.IsBreakupBoughtOutPart ? 'Yes' : 'No') : '-';
+    }
 
     /**
     * @method costingHeadFormatter
@@ -403,7 +421,42 @@ class BOPImportListing extends Component {
 
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
+    viewAttachmentData = (index) => {
+        this.setState({ viewAttachment: index, attachment: true })
+    }
+    closeAttachmentDrawer = (e = '') => {
+        this.setState({ attachment: false })
+    }
+    attachmentFormatter = (props) => {
+        const row = props?.data;
+        let files = row?.Attachements
+        if (files && files?.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => this.viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
     formToggle = () => {
         this.props.displayForm()
     }
@@ -463,7 +516,20 @@ class BOPImportListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured) {
+            excelData = hideMultipleColumnFromExcel(excelData, ["IsBreakupBoughtOutPart", "TechnologyName"])
+        }
         let temp = []
+        let tempData = [...data]
+        if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
+            tempData = hideColumnFromExcel(tempData, 'Quantity')
+        }
+        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+            tempData = hideColumnFromExcel(tempData, 'CustomerName')
+        }
+        else {
+            tempData = data
+        }
         temp = TempData && TempData.map((item) => {
             if (item.Plants === '-') {
                 item.Plants = ' '
@@ -479,7 +545,7 @@ class BOPImportListing extends Component {
         return (
 
             <ExcelSheet data={temp} name={BopImport}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -493,7 +559,7 @@ class BOPImportListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
         const { isBulkUpload, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
 
@@ -570,7 +636,9 @@ class BOPImportListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
-            commonCostFormatter: this.commonCostFormatter
+            commonCostFormatter: this.commonCostFormatter,
+            attachmentFormatter: this.attachmentFormatter,
+            bopCostingFormatter: this.bopCostingFormatter,
         };
 
 
@@ -701,8 +769,8 @@ class BOPImportListing extends Component {
                 <Row>
                     <Col>
 
-                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`} >
+                        <div className={`ag-grid-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                            <div className={`ag-theme-material p-relative ${this.state.isLoader && "max-loader-height"}`} >
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -732,19 +800,24 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                    <AgGridColumn field="Currency"></AgGridColumn>
                                     <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms" ></AgGridColumn>
                                     {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
+                                    {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart " headerName="Detailed BOP" cellRenderer={'bopCostingFormatter'} ></AgGridColumn>}
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
+                                    <AgGridColumn field="Currency"></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} headerName="Action" cellClass={"actions-wrapper"} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
@@ -761,6 +834,7 @@ class BOPImportListing extends Component {
                         {
                             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                         }
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
                     </Col>
                 </Row>
                 {
@@ -773,6 +847,7 @@ class BOPImportListing extends Component {
                         messageLabel={'BOP Import'}
                         anchor={'right'}
                         masterId={BOP_MASTER_ID}
+                        typeOfEntryId={ENTRY_TYPE_IMPORT}
                     />
                 }
 
@@ -791,6 +866,17 @@ class BOPImportListing extends Component {
                         rowData={this.state.selectedRowData}
                         import={true}
                     />
+                }
+                {
+                    this.state.attachment && (
+                        <Attachament
+                            isOpen={this.state.attachment}
+                            index={this.state.viewAttachment}
+                            closeDrawer={this.closeAttachmentDrawer}
+                            anchor={'right'}
+                            gridListing={true}
+                        />
+                    )
                 }
 
             </div >
@@ -820,9 +906,8 @@ function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation })
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getBOPImportDataList,
+    getBOPDataList,
     deleteBOP,
-    getAllVendorSelectList,
     getListingForSimulationCombined,
     setSelectedRowForPagination,
     disabledClass

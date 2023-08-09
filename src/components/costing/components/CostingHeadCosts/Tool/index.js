@@ -4,20 +4,19 @@ import { useForm, Controller, useWatch } from 'react-hook-form';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPfromApplicability } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
 import { costingInfoContext, netHeadCostContext } from '../../CostingDetailStepTwo';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
-import WarningMessage from '../../../../common/WarningMessage';
 import { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
-import { number, decimalNumberLimit6, checkWhiteSpaces, NoSignNoDecimalMessage, isNumber, percentageLimitValidation } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8 } from "../../../../../helper/validation";
 
 let counter = 0;
 function Tool(props) {
@@ -42,7 +41,8 @@ function Tool(props) {
     maintanencePercentage: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenancePercentage !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenancePercentage, initialConfiguration.NoOfDecimalForPrice) : '',
     MaintananceCostApplicability: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolApplicabilityCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolApplicabilityCost, initialConfiguration.NoOfDecimalForPrice) : '',
     ToolAmortizationCost: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolAmortizationCost !== undefined ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolAmortizationCost, initialConfiguration.NoOfDecimalForPrice) : '',
-    maintanenceToolCost: (ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined && ObjectForOverAllApplicability.ToolCostType === 'Fixed') ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : ''
+    maintanenceToolCost: (ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolMaintenanceCost !== undefined && ObjectForOverAllApplicability.ToolCostType === 'Fixed') ? checkForDecimalAndNull(ObjectForOverAllApplicability.ToolMaintenanceCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    crmHeadTool: ObjectForOverAllApplicability && ObjectForOverAllApplicability.ToolCRMHead && { label: ObjectForOverAllApplicability.ToolCRMHead, value: 1 }
   }
 
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
@@ -58,10 +58,9 @@ function Tool(props) {
   const [isDrawerOpen, setDrawerOpen] = useState(false)
   const [applicability, setApplicability] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? { label: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType, value: data?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityTypeId } : [])
   const [valueByAPI, setValueByAPI] = useState(data && data?.CostingPartDetails?.CostingToolCostResponse.length > 0 && data?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? true : false)
-  const { costingData } = useSelector(state => state.costing)
+  const { costingData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [toolObj, setToolObj] = useState(data?.CostingPartDetails?.CostingToolCostResponse[0])
-  const [errorMessage, setErrorMessage] = useState('')
   const CostingViewMode = useContext(ViewCostingContext);
   const costData = useContext(costingInfoContext);
   const [percentageLimit, setPercentageLimit] = useState(false);
@@ -172,7 +171,8 @@ function Tool(props) {
         "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null
+        "IsCostForPerAssembly": null,
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
       }
 
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
@@ -190,6 +190,17 @@ function Tool(props) {
   * @method handleToolCostChange
   * @description HANDLE TOOL COST CHANGE
   */
+  const onCRMHeadChange = (event) => {
+    if ((event?.label)) {
+      const zeroIndex = 0;
+      let rowArray = gridData[zeroIndex]
+      rowArray.ToolCRMHead = event?.label
+      let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
+      setGridData(tempArr)
+      dispatch(isToolDataChange(true))
+    }
+  }
+
   const handleToolCostChange = (event) => {
 
     if (!isNaN(event.target.value)) {
@@ -221,7 +232,8 @@ function Tool(props) {
         "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null
+        "IsCostForPerAssembly": null,
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
@@ -265,7 +277,8 @@ function Tool(props) {
         "ToolMaintenancePercentage": toolObj.MaintanencePercentage,
         "ToolApplicabilityCost": toolObj.ToolApplicabilityCost,
         "ToolAmortizationCost": ToolAmortizationCost,
-        "IsCostForPerAssembly": null
+        "IsCostForPerAssembly": null,
+        "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
       }
       let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
       setGridData(tempArr)
@@ -293,6 +306,7 @@ function Tool(props) {
 */
   const renderListing = (label) => {
     const temp = [];
+    let tempList = [];
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
@@ -306,7 +320,12 @@ function Tool(props) {
         }
         return null;
       });
-      return temp;
+      if (isBreakupBoughtOutPartCostingFromAPI) {
+        tempList = removeBOPfromApplicability([...temp])
+      } else {
+        tempList = [...temp]
+      }
+      return tempList;
     }
   }
 
@@ -534,7 +553,8 @@ function Tool(props) {
       "ToolMaintenancePercentage": maintanencePercentage,
       "ToolApplicabilityCost": applicabilityCost,
       "ToolAmortizationCost": ToolAmortizationCost,
-      "IsCostForPerAssembly": null
+      "IsCostForPerAssembly": null,
+      "ToolCRMHead": getValues('crmHeadTool') ? getValues('crmHeadTool').label : ''
     }
 
     let tempArr = Object.assign([...gridData], { [zeroIndex]: rowArray })
@@ -558,6 +578,7 @@ function Tool(props) {
     setValue('Life', 0)
     setValue('ToolAmortizationCost', 0)
     setValue('NetToolCost', 0)
+    setValue('crmHeadTool', '')
 
   }
 
@@ -794,7 +815,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit8 }
                       }}
                       defaultValue={''}
                       className=""
@@ -847,6 +868,28 @@ function Tool(props) {
                       disabled={true}
                     />
                   </Col>
+                  {/* // check here @ashok */}
+                  {initialConfiguration.IsShowCRMHead && <Col md="3">
+                    <SearchableSelectHookForm
+                      name={`crmHeadTool`}
+                      type="text"
+                      label="CRM Head"
+                      errors={`${errors.crmHeadTool}`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                      }}
+                      //defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                      placeholder={'Select'}
+                      options={CRMHeads}
+                      required={true}
+                      handleChange={onCRMHeadChange}
+                      disabled={CostingViewMode}
+                    />
+                  </Col>}
                 </>
               }
 

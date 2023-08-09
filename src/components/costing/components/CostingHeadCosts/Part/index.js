@@ -20,7 +20,7 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDat
 import { EMPTY_GUID, LEVEL1 } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
-import { ViewCostingContext } from '../../CostingDetails';
+import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
 
@@ -32,7 +32,7 @@ function PartCompoment(props) {
   const [totalFinishWeight, setTotalFinishWeight] = useState(0);
   const [Count, setCount] = useState(0);
   const { CostingEffectiveDate, partNumberAssembly, partNumberArrayAPICall, bomLevel, assemblyNumber } = useSelector(state => state.costing)
-  const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge } = useSelector(state => state.costing)
+  const { ComponentItemData, RMCCTabData, checkIsDataChange, DiscountCostData, OverheadProfitTabData, SurfaceTabData, ToolTabData, PackageAndFreightTabData, getAssemBOPCharge, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -41,6 +41,7 @@ function PartCompoment(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const isPartType = useContext(IsPartType);
 
   const toggle = (BOMLevel, PartNumber, IsOpen, AssemblyPartNumber) => {
     let isOpen = IsOpen
@@ -177,7 +178,7 @@ function PartCompoment(props) {
         const overHeadAndProfitTabData = OverheadProfitTabData[0]
         const discountAndOtherTabData = DiscountCostData
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -218,47 +219,45 @@ function PartCompoment(props) {
         <td>{item && item.BOMLevel}</td>
         <td>{item && item.PartType}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalRawMaterialsCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
-        <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
+        {!isBreakupBoughtOutPartCostingFromAPI && <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalBoughtOutPartCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>}
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalConversionCost !== null ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.Quantity !== undefined ? checkForNull(item?.CostingPartDetails?.Quantity) : 1}</td>
         <td>{item?.CostingPartDetails && item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost !== null ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost), initialConfiguration.NoOfDecimalForPrice) : 0}</td>
         {costData.IsAssemblyPart && <td>{checkForDecimalAndNull((checkForNull(item?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(item?.CostingPartDetails?.TotalConversionCost)) * item?.CostingPartDetails?.Quantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
         {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
         <td className="text-right"><div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child parts costing are coming from individual costing, please edit there if want to change costing." : "This part is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div></td>
-      </tr >
-      {
-        item.IsOpen && <tr>
-          <td colSpan={`${costData.IsAssemblyPart ? 10 : 9}`} className="cr-innerwrap-td pb-4">
-            <div className="user-page p-0">
-              <div>
-                <RawMaterialCost
-                  index={props.index}
-                  data={rmData}
-                  setRMCost={props.setRMCost}
-                  item={item}
-                />
+      </tr>
+      {item.IsOpen && <tr>
+        <td colSpan={`${costData.IsAssemblyPart ? 10 : 9}`} className="cr-innerwrap-td pb-4">
+          <div className="user-page p-0">
+            <div>
+              <RawMaterialCost
+                index={props.index}
+                data={rmData}
+                setRMCost={props.setRMCost}
+                item={item}
+              />
 
-                <BOPCost
-                  index={props.index}
-                  data={bopData}
-                  setBOPCost={props.setBOPCost}
-                  setBOPHandlingCost={props.setBOPHandlingCost}
-                  item={item}
-                />
+              {!isBreakupBoughtOutPartCostingFromAPI && <BOPCost
+                index={props.index}
+                data={bopData}
+                setBOPCost={props.setBOPCost}
+                setBOPHandlingCost={props.setBOPHandlingCost}
+                item={item}
+              />}
 
-                <ProcessCost
-                  index={props.index}
-                  data={ccData}
-                  rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? totalFinishWeight : 0}
-                  setConversionCost={props.setConversionCost}
-                  item={item}
-                  isAssemblyTechnology={false}
-                />
-              </div>
-            </div >
-          </td>
-        </tr>
-      }
+              <ProcessCost
+                index={props.index}
+                data={ccData}
+                rmFinishWeight={rmData && rmData.length > 0 && rmData[0].FinishWeight !== undefined ? totalFinishWeight : 0}
+                setConversionCost={props.setConversionCost}
+                item={item}
+                isAssemblyTechnology={false}
+              />
+            </div>
+          </div >
+        </td>
+      </tr>}
     </ >
   );
 }

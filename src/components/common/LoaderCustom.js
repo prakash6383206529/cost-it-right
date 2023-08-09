@@ -1,5 +1,5 @@
 import React from 'react';
-import './Loadercustom.scss';
+// import './Loadercustom.scss';
 
 /* Loader Image  */
 export const gearLoader = '../../images/loader.gif';

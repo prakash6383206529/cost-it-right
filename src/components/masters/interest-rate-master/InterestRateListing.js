@@ -24,9 +24,11 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getConfigurationKey } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
+import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { agGridStatus, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -80,7 +82,15 @@ class InterestRateListing extends Component {
       this.applyPermission(nextProps.topAndLeftMenuData)
     }
   }
-
+  componentDidUpdate(prevProps) {
+    const { statusColumnData } = this.props;
+    // Check if statusColumnData has changed
+    if (statusColumnData !== prevProps.statusColumnData) {
+      if (statusColumnData) {
+        this.state.gridApi?.setQuickFilter(statusColumnData.data);
+      }
+    }
+  }
   /**
   * @method applyPermission
   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -158,8 +168,8 @@ class InterestRateListing extends Component {
   * @description confirm delete item
   */
   confirmDeleteItem = (ID) => {
-
-    this.props.deleteInterestRate(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteInterestRate(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_INTEREST_RATE_SUCCESS);
         this.setState({ dataCount: 0 })
@@ -237,8 +247,11 @@ class InterestRateListing extends Component {
    * @description Filter data when user type in searching input
    */
   onFloatingFilterChanged = (value) => {
-    this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
+
   jsFunction(filterVal) {
     this.filterVal = filterVal;
     gridOptions.api.onFilterChanged(); //this invokes your custom logic by forcing grid filtering
@@ -307,7 +320,6 @@ class InterestRateListing extends Component {
 
   onGridReady = (params) => {
     this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-
     params.api.paginationGoToPage(0);
     //if resolution greater than 1920 table listing fit to 100%
     window.screen.width >= 1921 && params.api.sizeColumnsToFit()
@@ -344,11 +356,15 @@ class InterestRateListing extends Component {
       }
       return item
     })
-    return (
-
-      <ExcelSheet data={temp} name={InterestMaster}>
-        {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-      </ExcelSheet>);
+    const isShowRawMaterial = getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC
+    const excelColumns = excelData && excelData.map((ele, index) => {
+      if ((ele.label === 'Raw Material Name' || ele.label === 'Raw Material Grade') && !isShowRawMaterial) {
+        return null // hide column
+      } else {
+        return <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+      }
+    }).filter(Boolean) // remove null columns
+    return <ExcelSheet data={temp} name={InterestMaster}>{excelColumns}</ExcelSheet>
   }
 
   onFilterTextBoxChanged(e) {
@@ -359,6 +375,8 @@ class InterestRateListing extends Component {
     this.state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    this.props.agGridStatus("", "")
+    this.props.isResetClick(true, "ICCApplicability")
   }
 
   /**
@@ -500,6 +518,8 @@ class InterestRateListing extends Component {
                   suppressRowClickSelection={true}
                 >
                   <AgGridColumn width={180} field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                  {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialName" headerName='Raw Material Name'></AgGridColumn>}
+                  {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                   {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
@@ -509,7 +529,7 @@ class InterestRateListing extends Component {
                   <AgGridColumn width={210} field="RepaymentPeriod" headerName="Repayment Period (Days)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                  <AgGridColumn width={150} field="VendorInterestRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
@@ -545,8 +565,8 @@ function mapStateToProps({ material, auth, interestRate, comman }) {
   const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
   const { vendorListByVendorType } = material;
   const { paymentTermsSelectList, iccApplicabilitySelectList, interestRateDataList } = interestRate;
-  const { vendorWithVendorCodeSelectList } = comman;
-  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList, initialConfiguration, topAndLeftMenuData };
+  const { vendorWithVendorCodeSelectList, statusColumnData } = comman;
+  return { vendorListByVendorType, paymentTermsSelectList, iccApplicabilitySelectList, leftMenuData, interestRateDataList, vendorWithVendorCodeSelectList, initialConfiguration, topAndLeftMenuData, statusColumnData };
 }
 
 /**
@@ -558,6 +578,8 @@ function mapStateToProps({ material, auth, interestRate, comman }) {
 export default connect(mapStateToProps, {
   getInterestRateDataList,
   deleteInterestRate,
+  isResetClick,
+  agGridStatus
 })(reduxForm({
   form: 'InterestRateListing',
   onSubmitFail: errors => {

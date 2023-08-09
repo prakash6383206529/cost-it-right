@@ -136,7 +136,7 @@ function VolumeListing(props) {
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
   const [currentRowIndex, setCurrentRowIndex] = useState(0)
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', CustomerName: '' })
+  const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', CustomerName: '', PartType: '' })
   const [disableDownload, setDisableDownload] = useState(false)
   const [noData, setNoData] = useState(false)
 
@@ -495,9 +495,11 @@ function VolumeListing(props) {
   }
 
   const onFloatingFilterChanged = (value) => {
-    if (volumeDataList?.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (volumeDataList?.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
     setDisableFilter(false)
     const model = gridOptions?.api?.getFilterModel();
     setFilterModel(model)
@@ -544,6 +546,7 @@ function VolumeListing(props) {
   }
 
   const resetState = () => {
+    setNoData(false)
     gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -750,12 +753,13 @@ function VolumeListing(props) {
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                  <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="PartNumber" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
                   <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                   <AgGridColumn field="BudgetedQuantity" headerName="Budgeted Quantity"></AgGridColumn>
                   {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
                   <AgGridColumn field="ApprovedQuantity" headerName="Actual Quantity"></AgGridColumn>
-                  <AgGridColumn field="VolumeId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="VolumeId" width={120} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 <div className='button-wrapper'>
                   {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}

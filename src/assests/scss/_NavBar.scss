@@ -1,4 +1,4 @@
-@import "../commonCss/cssVariable.scss";
+@import "./abstracts/variable.scss";
 
 .flex-conatiner {
   display: flex;
@@ -447,7 +447,7 @@ li.nav-item .logo {
     animation: fadeInDown 0.5s;
     display: none;
     position: absolute;
-    top: 30px;
+    top: 31px;
     width: fit-content;
     z-index: 10;
     text-align: left;
@@ -898,13 +898,6 @@ label.btn.btn-link.align-middle.checkbox-label {
   top: 0 !important;
   max-height: 100vh;
   overflow-y: auto;
-
-  .MuiBackdrop-root,
-  .MuiDrawer-paper {
-    top: 0;
-    padding-bottom: 20px;
-    overflow-x: hidden;
-  }
 }
 
 .cr-other-logo {
@@ -1029,5 +1022,11 @@ label.btn.btn-link.align-middle.checkbox-label {
 .hide-navbar {
   @media screen and (max-width: $middleDesktop) {
     display: none;
+  }
+}
+
+.header-secondry {
+  .navbar {
+    border-bottom: none !important;
   }
 }

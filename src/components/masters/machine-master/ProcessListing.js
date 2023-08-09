@@ -23,7 +23,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { searchNocontentFilter } from '../../../helper'
+import { loggedInUserId, searchNocontentFilter } from '../../../helper'
 import SelectRowWrapper from '../../common/SelectRowWrapper'
 
 
@@ -61,25 +61,6 @@ class ProcessListing extends Component {
     setTimeout(() => {
       this.getDataList()
     }, 300);
-  }
-
-  getDataList = (plant_id = '', machine_id = '') => {
-    const filterData = {
-      plant_id: plant_id,
-      machine_id: machine_id,
-    }
-    this.setState({ isLoader: true })
-    this.props.getProcessDataList(filterData, (res) => {
-      this.setState({ isLoader: false })
-      if (res && res.status === 200) {
-        let Data = res.data.DataList;
-        this.setState({ tableData: Data })
-      } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [] })
-      } else {
-        this.setState({ tableData: [] })
-      }
-    })
   }
 
   /**
@@ -141,10 +122,10 @@ class ProcessListing extends Component {
     return cell ? 'VBC' : 'ZBC';
   }
 
-  getDataList = (plant_id = '', machine_id = '') => {
+  getDataList = (ProcessName = '', ProcessCode = '') => {
     const filterData = {
-      plant_id: plant_id,
-      machine_id: machine_id,
+      ProcessName: ProcessName,
+      ProcessCode: ProcessCode,
     }
     this.setState({ isLoader: true })
     this.props.getProcessDataList(filterData, (res) => {
@@ -198,7 +179,8 @@ class ProcessListing extends Component {
    * @description DELETE PROCESS
    */
   confirmDelete = (ID) => {
-    this.props.deleteProcess(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteProcess(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
         this.getDataList()
@@ -288,39 +270,6 @@ class ProcessListing extends Component {
     )
   }
 
-  /**
-   * @method renderListing
-   * @description Used to show type of listing
-   */
-  renderListing = (label) => {
-    const { filterSelectList } = this.props
-    const temp = []
-
-    if (label === 'plant') {
-      filterSelectList &&
-        filterSelectList.plants &&
-        filterSelectList.plants.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-
-    if (label === 'Machine') {
-      filterSelectList &&
-        filterSelectList.machine &&
-        filterSelectList.machine.map((item) => {
-          if (item.Value === '0') return false
-          temp.push({ label: item.Text, value: item.Value })
-          return null
-        })
-      return temp
-    }
-  }
-
-
-
   processToggler = () => {
     this.setState({ isOpenProcessDrawer: true, isEditFlag: false, Id: '' })
   }
@@ -338,7 +287,9 @@ class ProcessListing extends Component {
     * @description Filter data when user type in searching input
     */
   onFloatingFilterChanged = (value) => {
-    this.props.processList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.processList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
   /**
    * @method onSubmit
@@ -488,7 +439,7 @@ class ProcessListing extends Component {
                 >
                   <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                   <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
-                  <AgGridColumn field="ProcessId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="ProcessId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
@@ -520,8 +471,8 @@ class ProcessListing extends Component {
  * @param {*} state
  */
 function mapStateToProps({ process }) {
-  const { filterSelectList, processList } = process
-  return { filterSelectList, processList }
+  const { processList } = process
+  return { processList }
 }
 
 /**

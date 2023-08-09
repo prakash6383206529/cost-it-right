@@ -3,11 +3,11 @@ import { useForm, Controller } from 'react-hook-form';
 import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import OperationCost from './OperationCost';
-import { TextFieldHookForm, TextAreaHookForm } from '../../../../layout/HookFormInputs';
+import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs';
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { EMPTY_DATA, EMPTY_GUID, MASS, TIME } from '../../../../../config/constants';
+import { CRMHeads, EMPTY_DATA, EMPTY_GUID, MASS, TIME, defaultPageSize } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
@@ -16,7 +16,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import Popup from 'reactjs-popup';
 import OperationCostExcludedOverhead from './OperationCostExcludedOverhead';
 import { MACHINING, REMARKMAXLENGTH, } from '../../../../../config/masterData'
-import { findProcessCost, findProductionPerHour } from '../../../CostingUtil';
+import { findProcessCost, findProductionPerHour, swappingLogicCommon } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
@@ -845,6 +845,26 @@ function ProcessCost(props) {
     // }
   }
 
+  const onCRMHeadChange = (e, index) => {
+    let tempArr = []
+    let tempData = gridData[index]
+    tempData = {
+      ...tempData,
+      ProcessCRMHead: e?.label
+    }
+    let gridTempArr = Object.assign([...gridData], { [index]: tempData })
+    let apiArr = formatMainArr(gridTempArr)
+
+    tempArr = {
+      ...tabData,
+      CostingProcessCostResponse: apiArr,
+    }
+    setIsFromApi(false)
+    setTabData(tempArr)
+    setGridData(gridTempArr)
+    dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
+  }
+
   const handleQuantityChangeOfGroupProcess = (event, index, list, parentIndex, processName) => {
 
     let tempArr = []
@@ -1137,148 +1157,156 @@ function ProcessCost(props) {
   }
 
   const onMouseLeave = (e) => {
-    dragEnd = e.target.title
+    dragEnd = e?.target?.title
 
   }
 
   const onDragComplete = (e) => {   //SWAPPING ROWS LOGIC FOR PROCESS
-    let dragStart = e.target.title
+    let dragStart = e?.target?.title
 
-    const swappingLogicCommon = (groupProcess, processArray) => {
-      // Check if dragStart and dragEnd are the same, if so return false
-      if (String(dragStart) === String(dragEnd)) {
-        return false
-      }
 
-      // Initialize temporary arrays and variables
-      let temp = []
-      let finalTemp = []
-      let addingIndex = 0
-      let dragStartIndex = 0
+    if (dragEnd && dragStart && (String(dragStart) !== String(dragEnd))) {
 
-      // Loop over the items in processGroupGrid and update the temporary arrays and variables
-      processArray.map((item, index) => {
-        if (item.ProcessName !== null ? (item.ProcessName !== dragStart) : (item.GroupName !== dragStart)) {
-          // if the item is not the same as dragStart, add it to the temp array
-          temp.push(item)
-        } else {
-          // if the item is the same as dragStart, update the dragStartIndex variable
-          dragStartIndex = index
+
+      const swappingLogicGroup = (groupProcess, processArray) => {
+
+        // Check if dragStart and dragEnd are the same, if so return false
+        if (String(dragStart) === String(dragEnd)) {
+          return false
         }
 
-        if (item.ProcessName === dragEnd) {
-          // if the item is the same as dragEnd, update the addingIndex variable
-          addingIndex = index
+        // Initialize temporary arrays and variables
+        let temp = []
+        let finalTemp = []
+        let addingIndex = 0
+        let dragStartIndex = 0
+
+        // Loop over the items in processGroupGrid and update the temporary arrays and variables
+        processArray.map((item, index) => {
+          if ((item.ProcessName !== null ? (item.ProcessName !== dragStart) : (item.GroupName !== dragStart))) {
+            // if the item is not the same as dragStart, add it to the temp array
+            temp.push(item)
+          } else {
+            // if the item is the same as dragStart, update the dragStartIndex variable
+            dragStartIndex = index
+          }
+
+          if (item.ProcessName === dragEnd) {
+            // if the item is the same as dragEnd, update the addingIndex variable
+            addingIndex = index
+          }
+          return null
+        })
+
+        // Check if the item after dragStart is dragEnd, if so return false
+        if (String(processArray[dragStartIndex + 1]?.ProcessName) === String(dragEnd)) {
+          return false
         }
-        return null
-      })
 
-      // Check if the item after dragStart is dragEnd, if so return false
-      if (String(processArray[dragStartIndex + 1]?.ProcessName) === String(dragEnd)) {
-        return false
-      }
-
-      // Loop over the items in temp and update the finalTemp array
-      temp.map((item, index) => {
-        if (addingIndex === index) {
-          // if the index is the same as addingIndex, add the dragStart item to the finalTemp array
-          finalTemp.push(processArray[dragStartIndex])
-        }
-        // add the current item to the finalTemp array
-        finalTemp.push(item)
-        return null
-      })
-
-      // Check if the finalTemp array is the same length as the processGroupGrid array
-      if (finalTemp.length !== processArray.length) {
-        // if not, reset the finalTemp array and loop over the temp array again
-        finalTemp = []
+        // Loop over the items in temp and update the finalTemp array
         temp.map((item, index) => {
-          if (index === temp.length - 1) {
-            // if at the end of the temp array, add the dragStart item to the finalTemp array
+          if (addingIndex === index) {
+            // if the index is the same as addingIndex, add the dragStart item to the finalTemp array
             finalTemp.push(processArray[dragStartIndex])
           }
           // add the current item to the finalTemp array
           finalTemp.push(item)
           return null
         })
-      }
 
-      setIsProcessSequenceChanged(true)
-      return finalTemp
-    }
-
-    const setTabDataCommon = (processArray) => {
-      let apiArr = formatMainArr(processArray)
-      let obj = {
-        ...tabData,
-        CostingProcessCostResponse: apiArr
-      }
-      setTabData(obj)
-    }
-
-    const setGridDataCommon = (processArray) => {
-      dispatch(setProcessGroupGrid(formatReducerArray(processArray)))
-      setGridData(processArray)
-    }
-
-    if (dragStart?.includes('-group') && dragEnd?.includes('-group')) {       //LOGIC STARTS FOR GROUP PROCESS
-      let finalGroupArray = []
-
-      let groupIndex = 0
-      let groupProcessList = []
-
-      let parts = dragStart.split('-')
-      let groupName = parts[parts.length - 1]
-      dragStart = parts[0]
-      parts = dragEnd.split('-')
-      dragEnd = parts[0]
-
-      // Find the group that the dragged process belongs to and get the index and process list for that group
-      processGroupGrid.map((item, index) => {
-        if (String(item.GroupName) === String(groupName)) {
-          groupIndex = index
-          groupProcessList = item.ProcessList
+        // Check if the finalTemp array is the same length as the processGroupGrid array
+        if (finalTemp.length !== processArray.length) {
+          // if not, reset the finalTemp array and loop over the temp array again
+          finalTemp = []
+          temp.map((item, index) => {
+            if (index === temp.length - 1) {
+              // if at the end of the temp array, add the dragStart item to the finalTemp array
+              finalTemp.push(processArray[dragStartIndex])
+            }
+            // add the current item to the finalTemp array
+            finalTemp.push(item)
+            return null
+          })
         }
-        return null
-      })
 
-      ////////////////////////////////////////////////////////
+        setIsProcessSequenceChanged(true)
+        return finalTemp
+      }
 
-      let finalTemp = swappingLogicCommon(true, groupProcessList) //COMMON SWAPPING LOGIC
 
-      // Update the processGroupGrid with the new process list order for the group
-      finalGroupArray = processGroupGrid
-      finalGroupArray[groupIndex].ProcessList = finalTemp
-      setGridDataCommon(finalGroupArray)
+      const setTabDataCommon = (processArray) => {
+        let apiArr = formatMainArr(processArray)
+        let obj = {
+          ...tabData,
+          CostingProcessCostResponse: apiArr
+        }
+        setTabData(obj)
+      }
 
-      // Update field values
-      finalTemp && finalTemp.map((el, index) => {
-        setTimeout(() => {
-          setValue(`${SingleProcessGridField}.${index}.${groupIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-          setValue(`${SingleProcessGridField}.${index}${groupIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
-          setValue(`${SingleProcessGridField}.${index}${groupIndex}.remarkPopUp`, (el.Remark))
-        }, 200);
+      const setGridDataCommon = (processArray) => {
+        dispatch(setProcessGroupGrid(formatReducerArray(processArray)))
+        setGridData(processArray)
+      }
 
-        return null
-      })
+      if (dragStart?.includes('-group') && dragEnd?.includes('-group')) {       //LOGIC STARTS FOR GROUP PROCESS
 
-      setTabDataCommon(finalGroupArray)
+        let finalGroupArray = []
+        let groupIndex = 0
+        let groupProcessList = []
 
-    } else if (dragStart && dragEnd && !dragStart?.includes('-group') && !dragEnd?.includes('-group')) {   // LOGIC STARTS FOR NORMAL PROCESS
+        let parts = dragStart.split('-')
+        let groupName = parts[parts.length - 1]
+        dragStart = parts[0]
+        parts = dragEnd.split('-')
+        dragEnd = parts[0]
 
-      let finalTemp = swappingLogicCommon(false, processGroupGrid) //COMMON SWAPPING LOGIC
-      setGridDataCommon(finalTemp)
+        // Find the group that the dragged process belongs to and get the index and process list for that group
+        processGroupGrid.map((item, index) => {
+          if (String(item.GroupName) === String(groupName)) {
+            groupIndex = index
+            groupProcessList = item.ProcessList
+          }
+          return null
+        })
 
-      finalTemp && finalTemp.map((el, index) => {
+        ////////////////////////////////////////////////////////
+
+        let finalTemp = swappingLogicGroup(true, groupProcessList) //COMMON SWAPPING LOGIC
+
+        // Update the processGroupGrid with the new process list order for the group
+        finalGroupArray = processGroupGrid
+        finalGroupArray[groupIndex].ProcessList = finalTemp
+        setGridDataCommon(finalGroupArray)
+
         // Update field values
-        setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
-        setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue(`${ProcessGridFields}.${index}.remarkPopUp`, (el.Remark))
-        return null
-      })
+        finalTemp && finalTemp.map((el, index) => {
+          setTimeout(() => {
+            setValue(`${SingleProcessGridField}.${index}.${groupIndex}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue(`${SingleProcessGridField}.${index}${groupIndex}${el.ProcessName}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+            setValue(`${SingleProcessGridField}.${index}${groupIndex}.remarkPopUp`, (el.Remark))
+          }, 200);
 
-      setTabDataCommon(finalTemp)
+          return null
+        })
+
+        setTabDataCommon(finalGroupArray)
+
+      } else if (dragStart && dragEnd && !dragStart?.includes('-group') && !dragEnd?.includes('-group')) {   // LOGIC STARTS FOR NORMAL PROCESS
+
+        let finalTemp = swappingLogicCommon(processGroupGrid, dragStart, dragEnd, e) //COMMON SWAPPING LOGIC
+        setGridDataCommon(finalTemp)
+
+        finalTemp && finalTemp.map((el, index) => {
+          // Update field values
+          setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(el.ProcessCost, initialConfiguration.NoOfDecimalForPrice))
+          setValue(`${ProcessGridFields}.${index}.Quantity`, checkForDecimalAndNull(el.Quantity, getConfigurationKey().NoOfDecimalForInputOutput))
+          setValue(`${ProcessGridFields}.${index}.remarkPopUp`, (el.Remark))
+          setValue(`crmHeadProcess${index}`, { label: el.ProcessCRMHead, value: 1 })
+          return null
+        })
+
+        setTabDataCommon(finalTemp)
+      }
     }
   }
 
@@ -1335,6 +1363,7 @@ function ProcessCost(props) {
                     <th style={{ width: "160px" }}>{`Parts/Hour`}</th>
                     <th style={{ width: "180px" }}><span>Quantity <TooltipCustom customClass="float-unset" tooltipClass="process-quatity-tooltip" id={`quantity-info`} tooltipText={tooltipText} /></span></th>
                     <th style={{ width: "110px" }} >{`Net Cost`}</th>
+                    {initialConfiguration.IsShowCRMHead && <th style={{ width: "110px" }} >{`CRM Head`}</th>}
                     <th style={{ width: "145px" }}><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                   </tr>
                 </thead>
@@ -1353,7 +1382,7 @@ function ProcessCost(props) {
                                     className={`${processAccObj[index] ? 'Open' : 'Close'}`}></div>
 
                               }
-                              <span title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName} draggable={CostingViewMode ? false : true}>
+                              <span title={item?.GroupName === '' || item?.GroupName === null ? item.ProcessName + index : item.GroupName + index} draggable={CostingViewMode ? false : true}>
                                 {item?.GroupName === '' || item?.GroupName === null ? item.ProcessName : item.GroupName}</span>
                             </td>
                             {processGroup && <td className='text-overflow'><span title={item.ProcessName}>{'-'}</span></td>}
@@ -1430,6 +1459,28 @@ function ProcessCost(props) {
                                 </>
                               }
                             </td>
+                            {initialConfiguration.IsShowCRMHead && <td>
+                              <SearchableSelectHookForm
+                                name={`crmHeadProcess${index}`}
+                                type="text"
+                                label="CRM Head"
+                                errors={`${errors.crmHeadProcess}${index}`}
+                                Controller={Controller}
+                                control={control}
+                                register={register}
+                                mandatory={false}
+                                rules={{
+                                  required: false,
+                                }}
+                                placeholder={'Select'}
+                                customClassName="costing-selectable-dropdown"
+                                defaultValue={item.ProcessCRMHead ? { label: item.ProcessCRMHead, value: index } : ''}
+                                options={CRMHeads}
+                                required={false}
+                                handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                disabled={CostingViewMode}
+                              />
+                            </td>}
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
@@ -1464,7 +1515,7 @@ function ProcessCost(props) {
                                 </Popup>}
                                 {
 
-                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || IsLocked) ? '' : <button className="add-process" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
+                                  (item?.GroupName === '' || item?.GroupName === null) || (CostingViewMode || IsLocked) ? '' : <button className="additional-add" type={"button"} title={"Add Process"} onClick={() => openProcessDrawer(index, item)} />
                                 }
                               </div>
                             </td>

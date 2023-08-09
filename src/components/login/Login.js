@@ -39,6 +39,12 @@ class Login extends Component {
       })
     } else {
       reactLocalStorage.setObject('isUserLoggedIn', false);
+      if (reactLocalStorage.getObject('logoutRefresh')) {
+        reactLocalStorage.setObject('logoutRefresh', false)
+        setTimeout(() => {
+          window.location.reload()
+        }, 500);
+      }
     }
   }
 

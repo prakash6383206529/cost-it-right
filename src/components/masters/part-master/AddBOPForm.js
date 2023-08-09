@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { BOUGHTOUTPART, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
+import { BOUGHTOUTPART, BOUGHTOUTPARTSPACING, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
@@ -104,7 +104,7 @@ class AddBOPForm extends Component {
     let tempArr = [];
 
     BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === BOUGHTOUTPART) {                           //UPDATING BOUGHT OUT PART IN TEMPARR
+      if (el.PartType === BOUGHTOUTPARTSPACING) {                           //UPDATING BOUGHT OUT PART IN TEMPARR
         tempArr.push(el.PartId)
       }
       return null;

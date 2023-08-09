@@ -5,7 +5,8 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import ReduxThunk from 'redux-thunk';
 import reducers from './reducers';
-import './../src/components/commonCss/global.scss';
+import './assests/scss/main.scss'
+import 'react-toastify/dist/ReactToastify.css';
 
 const createStoreWithMiddleware = applyMiddleware(ReduxThunk)(createStore);
 

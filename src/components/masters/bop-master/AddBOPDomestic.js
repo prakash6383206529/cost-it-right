@@ -4,26 +4,24 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString
+  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
-import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
+import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
-import { createBOPDomestic, updateBOPDomestic, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, fileDeleteBOPDomestic, } from '../actions/BoughtOutParts';
+import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { checkVendorPlantConfigurable, getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
-import DatePicker from "react-datepicker";
+import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount } from '../../../config/constants';
+import { BOP_MASTER_ID, FILE_URL, ZBC, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
-import { AcceptableBOPUOM } from '../../../config/masterData'
+import { ASSEMBLY, AcceptableBOPUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
@@ -37,6 +35,8 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
+import WarningMessage from '../../common/WarningMessage';
 
 const selector = formValueSelector('AddBOPDomestic');
 
@@ -61,7 +61,6 @@ class AddBOPDomestic extends Component {
       vendorLocation: [],
       oldDate: '',
       sourceLocation: [],
-      IsSendForApproval: false,
       UOM: [],
       isOpenUOM: false,
       approveDrawer: false,
@@ -85,13 +84,17 @@ class AddBOPDomestic extends Component {
       remarks: '',
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       client: [],
       costingTypeId: ZBCTypeId,
       showPopup: false,
       levelDetails: {},
-      noApprovalCycle: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      isClientVendorBOP: false,
+      CostingTypePermission: false,
+      isTechnologyVisible: false,
+      Technology: [],
+      disableSendForApproval: false
     }
   }
 
@@ -120,6 +123,7 @@ class AddBOPDomestic extends Component {
     }
     setTimeout(() => {
       this.getDetails()
+      this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
       }
@@ -129,6 +133,8 @@ class AddBOPDomestic extends Component {
             this.commonFunction()
           }, 100);
         })
+      } else {
+        this.setState({ finalApprovalLoader: false })
       }
     }, 300);
   }
@@ -137,26 +143,26 @@ class AddBOPDomestic extends Component {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
-    if (levelDetailsTemp?.length !== 0) {
-      let obj = {
-        TechnologyId: BOP_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        UserId: loggedInUserId(),
-        Mode: 'master',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
-      }
-
-      this.setState({ finalApprovalLoader: true })
-      this.props.checkFinalUser(obj, (res) => {
-        if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
-          this.setState({ finalApprovalLoader: false })
-        }
-      })
-      this.setState({ noApprovalCycle: false })
-    } else {
-      this.setState({ noApprovalCycle: true })
+    let obj = {
+      TechnologyId: BOP_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      UserId: loggedInUserId(),
+      Mode: 'master',
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId)
     }
+
+    this.props.checkFinalUser(obj, (res) => {
+      if (res?.data?.Result) {
+        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+      }
+      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+        this.setState({ disableSendForApproval: true })
+      } else {
+        this.setState({ disableSendForApproval: false })
+      }
+    })
+    this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
+
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -195,7 +201,9 @@ class AddBOPDomestic extends Component {
       costingTypeId: costingHeadFlag,
       vendorLocation: [],
       selectedPlants: [],
+      isTechnologyVisible: false
     });
+
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
@@ -273,6 +281,9 @@ class AddBOPDomestic extends Component {
               UOM: Data.UnitOfMeasurement !== undefined ? { label: Data.UnitOfMeasurement, value: Data.UnitOfMeasurementId } : [],
               isLoader: false,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+              isClientVendorBOP: Data.IsClientVendorBOP,
+              isTechnologyVisible: Data.IsBreakupBoughtOutPart,
+              Technology: { label: Data.TechnologyName, value: Data.TechnologyId },
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
@@ -314,7 +325,7 @@ class AddBOPDomestic extends Component {
   */
   renderListing = (label) => {
     const { bopCategorySelectList, plantSelectList, cityList,
-      UOMSelectList, partSelectList, clientSelectList } = this.props;
+      UOMSelectList, partSelectList, clientSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -366,6 +377,16 @@ class AddBOPDomestic extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'technology') {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
+          if (item.Value === '0') return false
+          if (item.Value === String(ASSEMBLY)) return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
     }
   }
 
@@ -429,7 +450,7 @@ class AddBOPDomestic extends Component {
       const { costingTypeId } = this.state;
       if (costingTypeId === VBCTypeId) {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -438,7 +459,7 @@ class AddBOPDomestic extends Component {
         }
       } else {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorTypeBOPSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -507,7 +528,8 @@ class AddBOPDomestic extends Component {
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
     const BasicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const NetLandedCost = checkForNull(BasicRate)
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
+    const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
 
     if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
 
@@ -604,18 +626,13 @@ class AddBOPDomestic extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      this.props.fileDeleteBOPDomestic(deleteData, (res) => {
-        Toaster.success('File deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
       this.setState({ files: tempArr })
     }
 
@@ -651,12 +668,13 @@ class AddBOPDomestic extends Component {
       UOM: [],
     })
     this.props.hideForm(type)
-    if (type === 'submit') {
-      this.getDetails()
-    }
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('submit')
@@ -673,8 +691,9 @@ class AddBOPDomestic extends Component {
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId,
 
-      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged } = this.state;
+      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, isSourceChange, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged, isClientVendorBOP, isTechnologyVisible, Technology } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
+    console.log('here');
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
       return false
@@ -686,35 +705,46 @@ class AddBOPDomestic extends Component {
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: BOPID }
+    })
     // if (isEditFlag && this.state.isFinalApprovar) {
-
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
-
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: BOPID }
-      })
-      let requestData = {
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        BoughtOutPartId: BOPID,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
-        BasicRate: values.BasicRate,
-        NetLandedCost: this.state.NetLandedCost,
-        Remark: values.Remark,
-        LoggedInUserId: loggedInUserId(),
-        Plant: selectedPlants !== undefined ? [{ PlantName: selectedPlants.label, PlantId: selectedPlants.value, PlantCode: '' }] : {},
-        Attachements: updatedFiles,
-        UnitOfMeasurementId: UOM.value,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-        NumberOfPieces: 1,
-        VendorPlant: [],
-        IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value
-      }
+    const formData = {
+      IsFinancialDataChanged: isDateChange ? true : false,
+      BoughtOutPartId: BOPID,
+      CostingTypeId: costingTypeId,
+      BoughtOutPartNumber: values.BoughtOutPartNumber,
+      BoughtOutPartName: values.BoughtOutPartName,
+      CategoryId: BOPCategory.value,
+      Specification: values.Specification,
+      UnitOfMeasurementId: UOM.value,
+      Vendor: vendorName.value,
+      Source: values.Source,
+      SourceLocation: sourceLocation.value,
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      BasicRate: values.BasicRate,
+      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1,
+      NetLandedCost: this.state.NetLandedCost,
+      Remark: values.Remark,
+      IsActive: true,
+      LoggedInUserId: loggedInUserId(),
+      Plant: [plantArray],
+      VendorPlant: [],
+      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
+      Attachements: isEditFlag ? updatedFiles : files,
+      CustomerId: client.value,
+      EntryType: Number(ENTRY_TYPE_DOMESTIC),
+      CategoryName: BOPCategory.label,
+      IsClientVendorBOP: isClientVendorBOP,
+      TechnologyName: Technology?.label,
+      TechnologyId: Technology?.value,
+      IsBreakupBoughtOutPart: isTechnologyVisible,
+    }
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true) || (isEditFlag && isTechnologyVisible)) {
 
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOPDomestic(requestData, (res) => {
+          this.props.updateBOP(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -731,12 +761,12 @@ class AddBOPDomestic extends Component {
       else {
         if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && JSON.stringify(updatedFiles) === JSON.stringify(DataToCheck.Attachements) && Number(DataToCheck.BasicRate) === Number(values.BasicRate) &&
           ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
-          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : ''))) {
+          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : '')) && DataToCheck.IsClientVendorBOP === isClientVendorBOP) {
           this.cancel('submit')
           return false;
         }
         else {
-          this.props.updateBOPDomestic(requestData, (res) => {
+          this.props.updateBOP(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -749,40 +779,15 @@ class AddBOPDomestic extends Component {
 
     } else {
 
-      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
+      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
+        formData.IsSendForApproval = true
       } else {
-        this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
-      const formData = {
-        IsSendForApproval: this.state.IsSendForApproval,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        BoughtOutPartId: BOPID,
-        CostingTypeId: costingTypeId,
-        BoughtOutPartNumber: values.BoughtOutPartNumber,
-        BoughtOutPartName: values.BoughtOutPartName,
-        CategoryId: BOPCategory.value,
-        Specification: values.Specification,
-        UnitOfMeasurementId: UOM.value,
-        Vendor: vendorName.value,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        BasicRate: values.BasicRate,
-        NumberOfPieces: 1,
-        NetLandedCost: this.state.NetLandedCost,
-        Remark: values.Remark,
-        IsActive: true,
-        LoggedInUserId: loggedInUserId(),
-        Plant: [plantArray],
-        VendorPlant: [],
-        DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
-        Attachements: files,
-        CustomerId: client.value
-      }
 
-      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+
+      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
@@ -833,7 +838,7 @@ class AddBOPDomestic extends Component {
           return false
         }
       } else {
-        this.props.createBOPDomestic(formData, (res) => {
+        this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
@@ -860,13 +865,36 @@ class AddBOPDomestic extends Component {
       <span className='d-flex'>Basic Rate/{displayUOM(value)} (INR)</span>
     </div>
   }
+  onIsClientVendorBOP = () => {
+    this.setState({ isClientVendorBOP: !this.state.isClientVendorBOP })
+  }
+
+  breakUpHandleChange = () => {
+    this.setState({ isTechnologyVisible: !this.state.isTechnologyVisible })
+  }
+
+  /**
+   * @method handleTechnologyChange
+   * @description Use to handle technology change
+  */
+  handleTechnologyChange = (newValue) => {
+    if (newValue.value === String(FORGING)) {
+      this.setState({ Technology: newValue })
+    } else if (newValue.value === String(SHEETMETAL)) {
+      this.setState({ Technology: newValue })
+    } else {
+      this.setState({ Technology: newValue })
+    }
+    // this.setState({ isDropDownChanged: true })
+  }
+
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, noApprovalCycle } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission, isTechnologyVisible, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -874,10 +902,10 @@ class AddBOPDomestic extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         }
         else {
-          res = await getVendorTypeBOPSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, resultInput)
         }
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -987,7 +1015,7 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -1001,7 +1029,7 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -1042,7 +1070,7 @@ class AddBOPDomestic extends Component {
                               name={"Specification"}
                               type="text"
                               placeholder={isViewMode ? "-" : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, hashValidation]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}
@@ -1092,6 +1120,46 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
+                          {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
+                            <>
+                              <Col md="3" className='d-flex align-items-center'>
+                                <label
+                                  className={`custom-checkbox`}
+                                  onChange={this.breakUpHandleChange}
+                                >
+                                  Detailed BOP
+                                  <input
+                                    type="checkbox"
+                                    checked={isTechnologyVisible}
+                                    disabled={isViewMode || isEditFlag ? true : false}
+                                  />
+                                  <span
+                                    className=" before-box"
+                                    checked={isTechnologyVisible}
+                                    onChange={this.breakUpHandleChange}
+                                  />
+                                </label>
+                              </Col>
+                              {isTechnologyVisible && <Col md="3">
+                                <Field
+                                  label="Technology"
+                                  type="text"
+                                  name="Technology"
+                                  component={searchableSelect}
+                                  placeholder={"Technology"}
+                                  options={this.renderListing("technology")}
+                                  validate={
+                                    this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleTechnologyChange
+                                  }
+                                  valueDescription={this.state.Technology}
+                                  disabled={isViewMode || isEditFlag ? true : false}
+                                />
+                              </Col>}
+                            </>
+                          }
                           {costingTypeId === CBCTypeId && (
                             <Col md="3">
                               <Field
@@ -1180,7 +1248,7 @@ class AddBOPDomestic extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={isViewMode ? "-" : "Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), hashValidation]}
                                   component={renderText}
                                   valueDescription={this.state.source}
                                   onChange={this.handleSource}
@@ -1213,7 +1281,6 @@ class AddBOPDomestic extends Component {
                             </>
                           )}
                         </Row>
-
                         <Row className='UOM-label-container'>
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
@@ -1240,8 +1307,21 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-
-                          <Col md="3">
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && < Col md="3">
+                            <Field
+                              label={`Minimum Order Quantity`}
+                              name={"NumberOfPieces"}
+                              type="text"
+                              placeholder={"Enter"}
+                              validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderText}
+                              required={false}
+                              className=""
+                              customClassName=" withBorder"
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                            />
+                          </Col>}
+                          {!isTechnologyVisible && <> <Col md="3">
                             <Field
                               label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
                               name={"BasicRate"}
@@ -1255,24 +1335,42 @@ class AddBOPDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-                          <Col md="3">
-                            <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
-                            <Field
-                              label={`Net Cost (INR)`}
-                              name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCost"}`}
-                              type="text"
-                              placeholder={"-"}
-                              validate={[]}
-                              component={renderTextInputField}
-                              required={false}
-                              disabled={true}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
+                            <Col md="3">
+                              <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                              <Field
+                                label={`Net Cost (INR)`}
+                                name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCost"}`}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderTextInputField}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                          </>}
 
                         </Row>
-
+                        {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                          <label
+                            className={`custom-checkbox`}
+                            onChange={this.onIsClientVendorBOP}
+                          >
+                            Client Approved Vendor
+                            <input
+                              type="checkbox"
+                              checked={isClientVendorBOP}
+                              disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={isClientVendorBOP}
+                              onChange={this.onIsClientVendorBOP}
+                            />
+                          </label>
+                        </Col>}
                         <Row>
                           <Col md="12">
                             <div className="left-border">
@@ -1286,7 +1384,7 @@ class AddBOPDomestic extends Component {
                               placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
-                              validate={[maxLength512]}
+                              validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               disabled={isViewMode}
                               value={this.state.remarks}
                               onChange={this.handleMessageChange}
@@ -1383,7 +1481,8 @@ class AddBOPDomestic extends Component {
                         </Row>
                       </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
-                        <div className="col-sm-12 text-right bluefooter-butn">
+                        <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                          {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                           <button
                             type={"button"}
                             className="mr15 cancel-btn"
@@ -1393,28 +1492,27 @@ class AddBOPDomestic extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
+                          {!isViewMode && <>
+                            {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                disabled={isViewMode || setDisable || disableSendForApproval}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
 
-                          {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
-                              disabled={isViewMode || setDisable || noApprovalCycle}
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
-
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={isViewMode || setDisable || noApprovalCycle}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
-                          }
-
-
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                                disabled={isViewMode || setDisable || disableSendForApproval}
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            }
+                          </>}
                         </div>
                       </Row>
                     </form>
@@ -1422,36 +1520,42 @@ class AddBOPDomestic extends Component {
                 </div>
               </div>
             </div>
-          </div>
+          </div >
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {isCategoryDrawerOpen && (
-            <AddBOPCategory
-              isOpen={isCategoryDrawerOpen}
-              closeDrawer={this.closeCategoryDrawer}
-              isEditFlag={false}
-              anchor={"right"}
-            />
-          )}
-          {isOpenVendor && (
-            <AddVendorDrawer
-              isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenUOM && (
-            <AddUOM
-              isOpen={isOpenUOM}
-              closeDrawer={this.closeUOMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          {
+            isCategoryDrawerOpen && (
+              <AddBOPCategory
+                isOpen={isCategoryDrawerOpen}
+                closeDrawer={this.closeCategoryDrawer}
+                isEditFlag={false}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
 
           {
             this.state.approveDrawer && (
@@ -1483,8 +1587,8 @@ class AddBOPDomestic extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, supplier, boughtOutparts, part, auth, client } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'NoOfPieces');
+  const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
+  const fieldsObj = selector(state, 'BasicRate', 'NumberOfPieces');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;
@@ -1492,6 +1596,7 @@ function mapStateToProps(state) {
   const { vendorWithVendorCodeSelectList } = supplier;
   const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
+  const { costingSpecifiTechnology } = costing
 
   let initialValues = {};
   if (bopData && bopData !== undefined) {
@@ -1503,12 +1608,13 @@ function mapStateToProps(state) {
       BasicRate: bopData.BasicRate,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
+      NumberOfPieces: bopData?.NumberOfPieces,
     }
   }
 
   return {
     vendorWithVendorCodeSelectList, plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList,
-    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI
+    plantSelectList, bopCategorySelectList, bopData, partSelectList, costingHead, fieldsObj, initialValues, initialConfiguration, clientSelectList, userMasterLevelAPI, costingSpecifiTechnology
   }
 
 }
@@ -1520,8 +1626,8 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  createBOPDomestic,
-  updateBOPDomestic,
+  createBOP,
+  updateBOP,
   getVendorWithVendorCodeSelectList,
   getVendorTypeBOPSelectList,
   getPlantBySupplier,
@@ -1530,13 +1636,14 @@ export default connect(mapStateToProps, {
   getBOPCategorySelectList,
   getBOPDomesticById,
   fileUploadBOPDomestic,
-  fileDeleteBOPDomestic,
   getPlantSelectListByType,
   checkFinalUser,
   getCityByCountry,
   getAllCity,
   getClientSelectList,
-  getUsersMasterLevelAPI
+  getUsersMasterLevelAPI,
+  getVendorNameByVendorSelectList,
+  getCostingSpecificTechnology,
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,

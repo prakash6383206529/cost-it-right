@@ -654,7 +654,7 @@ class UsersListing extends Component {
 								domLayout='autoHeight'
 								floatingFilter={true}
 								// columnDefs={c}
-								rowData={this.props.userDataList}
+								rowData={this.props.RFQUser ? this.props.rfqUserList : this.props.userDataList}
 								pagination={true}
 								paginationPageSize={defaultPageSize}
 								onGridReady={this.onGridReady}
@@ -667,7 +667,11 @@ class UsersListing extends Component {
 								frameworkComponents={frameworkComponents}
 								enableBrowserTooltips={true}
 								onSelectionChanged={this.onRowSelect}
-								onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+								onFilterModified={(e) => {
+									setTimeout(() => {
+										this.setState({ noData: searchNocontentFilter(e) });
+									}, 500);
+								}}
 								rowSelection={'multiple'}
 								suppressRowClickSelection={true}
 							>
@@ -681,9 +685,10 @@ class UsersListing extends Component {
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Purchase Group"></AgGridColumn>
+								{this.props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="RoleName" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
 							</AgGridReact>
 							{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
 						</div>
@@ -721,9 +726,9 @@ class UsersListing extends Component {
 * @param {*} state
 */
 function mapStateToProps({ auth }) {
-	const { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData } = auth;
+	const { userDataList, rfqUserList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData } = auth;
 
-	return { userDataList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData };
+	return { userDataList, rfqUserList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData };
 }
 
 

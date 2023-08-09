@@ -150,9 +150,11 @@ class IndivisualPartListing extends Component {
     }
 
     onFloatingFilterChanged = (value) => {
-        if (this.props.newPartsListing?.length !== 0) {
-            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }
+        setTimeout(() => {
+            if (this.props.newPartsListing?.length !== 0) {
+                this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+            }
+        }, 500);
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
 
@@ -255,7 +257,8 @@ class IndivisualPartListing extends Component {
     * @description confirm delete user item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deletePart(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deletePart(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 //this.getTableListData();
@@ -522,7 +525,7 @@ class IndivisualPartListing extends Component {
     */
     render() {
         const { isBulkUpload, noData } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
         const ExcelFile = ReactExport.ExcelFile;
 
         var filterParams = {
@@ -695,11 +698,12 @@ class IndivisualPartListing extends Component {
                                 <AgGridColumn field="Technology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                                 <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+                                {initialConfiguration?.IsSAPCodeRequired && <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                 <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}  ></AgGridColumn>
-                                <AgGridColumn field="PartId" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="PartId" cellClass="ag-grid-action-container" headerName="Action" width={160} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             <div className="button-wrapper">
                                 {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}

@@ -4,42 +4,42 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number
+  maxLength10, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkWhiteSpaces, checkSpacesInString, maxLength80, number, postiveNumber, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, renderDatePicker, renderTextInputField, focusOnError } from "../../layout/FormInputs";
-import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity } from '../../../actions/Common';
+import { getPlantBySupplier, getUOMSelectList, getCurrencySelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
-  createBOPImport, updateBOPImport, getBOPCategorySelectList, getBOPImportById,
-  fileUploadBOPDomestic, fileDeleteBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
+  createBOP, updateBOP, getBOPCategorySelectList, getBOPImportById,
+  fileUploadBOPDomestic, getIncoTermSelectList, getPaymentTermSelectList
 } from '../actions/BoughtOutParts';
-import { getVendorWithVendorCodeSelectList, getVendorTypeBOPSelectList, } from '../actions/Supplier';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount } from '../../../config/constants';
+import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
-import { AcceptableBOPUOM } from '../../../config/masterData'
+import { ASSEMBLY, AcceptableBOPUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency } from "../../costing/actions/Costing"
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { CheckApprovalApplicableMaster, onFocus, userTechnologyDetailByMasterId } from '../../../helper';
 import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -62,7 +62,6 @@ class AddBOPImport extends Component {
       costingTypeId: ZBCTypeId,
       isOpenVendor: false,
       isVendorNameNotSelected: false,
-      IsSendForApproval: false,
       vendorName: [],
       approvalObj: {},
       minEffectiveDate: '',
@@ -98,14 +97,18 @@ class AddBOPImport extends Component {
       remarks: '',
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       showPopup: false,
       incoTerm: [],
       paymentTerm: [],
       levelDetails: {},
-      noApprovalCycle: false,
       vendorFilterList: [],
-      isCallCalculation: false
+      isCallCalculation: false,
+      isClientVendorBOP: false,
+      CostingTypePermission: false,
+      isTechnologyVisible: false,
+      Technology: [],
+      disableSendForApproval: false
     }
   }
   /**
@@ -134,6 +137,7 @@ class AddBOPImport extends Component {
     this.props.getIncoTermSelectList(() => { })
     // this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
+    this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getCurrencySelectList(() => { })
       this.props.getClientSelectList(() => { })
@@ -145,6 +149,8 @@ class AddBOPImport extends Component {
           this.commonFunction()
         }, 100);
       })
+    } else {
+      this.setState({ finalApprovalLoader: false })
     }
   }
 
@@ -152,26 +158,27 @@ class AddBOPImport extends Component {
     let levelDetailsTemp = []
     levelDetailsTemp = userTechnologyDetailByMasterId(this.state.costingTypeId, BOP_MASTER_ID, this.props.userMasterLevelAPI)
     this.setState({ levelDetails: levelDetailsTemp })
-    if (levelDetailsTemp?.length !== 0) {
-      let obj = {
-        TechnologyId: BOP_MASTER_ID,
-        DepartmentId: userDetails().DepartmentId,
-        UserId: loggedInUserId(),
-        Mode: 'master',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
-      }
-
-      this.setState({ finalApprovalLoader: true })
-      this.props.checkFinalUser(obj, (res) => {
-        if (res?.data?.Result) {
-          this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover })
-          this.setState({ finalApprovalLoader: false })
-        }
-      })
-      this.setState({ noApprovalCycle: false })
-    } else {
-      this.setState({ noApprovalCycle: true })
+    let obj = {
+      TechnologyId: BOP_MASTER_ID,
+      DepartmentId: userDetails().DepartmentId,
+      UserId: loggedInUserId(),
+      Mode: 'master',
+      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(this.state.costingTypeId),
     }
+
+    this.props.checkFinalUser(obj, (res) => {
+      if (res?.data?.Result) {
+        this.setState({ isFinalApprovar: res?.data?.Data?.IsFinalApprover, CostingTypePermission: true, finalApprovalLoader: false })
+      }
+      if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+        this.setState({ disableSendForApproval: true })
+      } else {
+        this.setState({ disableSendForApproval: false })
+      }
+    })
+
+    this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
+
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -212,7 +219,9 @@ class AddBOPImport extends Component {
     });
     this.setState({
       vendorName: [],
-      costingTypeId: costingHeadFlag
+      costingTypeId: costingHeadFlag,
+      selectedPlants: [],
+      isTechnologyVisible: false
     });
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
@@ -307,7 +316,7 @@ class AddBOPImport extends Component {
 
           setTimeout(() => {
             let plantObj;
-            this.handleEffectiveDateChange(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+            // this.handleEffectiveDateChange(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
 
             if (getConfigurationKey().IsDestinationPlantConfigure) {
               plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
@@ -333,7 +342,10 @@ class AddBOPImport extends Component {
               isLoader: false,
               incoTerm: Data.IncoTerm !== undefined ? { label: `${Data.IncoTermDescription ? Data.IncoTermDescription : ''} ${Data.IncoTerm ? `(${Data.IncoTerm})` : '-'}`, value: Data.BoughtOutPartIncoTermId } : [],
               paymentTerm: Data.PaymentTerm !== undefined ? { label: `${Data.PaymentTermDescription ? Data.PaymentTermDescription : ''} ${Data.PaymentTerm ? `(${Data.PaymentTerm})` : '-'}`, value: Data.BoughtOutPartPaymentTermId } : [],
-              showCurrency: true
+              showCurrency: true,
+              isClientVendorBOP: Data.IsClientVendorBOP,
+              isTechnologyVisible: Data.IsBreakupBoughtOutPart,
+              Technology: { label: Data.TechnologyName, value: Data.TechnologyId },
             }, () => {
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
@@ -378,8 +390,8 @@ class AddBOPImport extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { clientSelectList, bopCategorySelectList, partSelectList, plantSelectList, cityList,
-      UOMSelectList, currencySelectList, IncoTermsSelectList, PaymentTermsSelectList } = this.props;
+    const { bopCategorySelectList, partSelectList, plantSelectList, cityList,
+      UOMSelectList, currencySelectList, clientSelectList, IncoTermsSelectList, PaymentTermsSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
       bopCategorySelectList && bopCategorySelectList.map(item => {
@@ -453,6 +465,17 @@ class AddBOPImport extends Component {
       })
       return temp;
     }
+    if (label === 'technology') {
+      costingSpecifiTechnology &&
+        costingSpecifiTechnology.map((item) => {
+          if (item.Value === '0') return false
+          if (item.Value === String(ASSEMBLY)) return false
+          temp.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return temp
+    }
+
   }
 
   categoryToggler = () => {
@@ -526,7 +549,7 @@ class AddBOPImport extends Component {
       const { costingTypeId } = this.state;
       if (costingTypeId === VBCTypeId) {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -535,7 +558,7 @@ class AddBOPImport extends Component {
         }
       } else {
         if (this.state.vendorName && this.state.vendorName.length > 0) {
-          const res = await getVendorTypeBOPSelectList(this.state.vendorName)
+          const res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, this.state.vendorName)
           let vendorDataAPI = res?.data?.SelectList
           reactLocalStorage?.setObject('vendorData', vendorDataAPI)
         }
@@ -603,12 +626,13 @@ class AddBOPImport extends Component {
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props;
     const { currency, effectiveDate } = this.state;
+    const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const basicRate = fieldsObj && fieldsObj.BasicRate !== undefined ? fieldsObj.BasicRate : 0;
-    const netLandedCost = checkForNull((basicRate) * this.state.currencyValue);
+    const netLandedCost = checkForNull((basicRate / NoOfPieces) * this.state.currencyValue);
 
     if (
       this.state.isEditFlag &&
-      Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice)) &&
+      Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) &&
       this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value &&
       this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value
     ) {
@@ -724,18 +748,13 @@ class AddBOPImport extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      this.props.fileDeleteBOPDomestic(deleteData, (res) => {
-        Toaster.success('File deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+      this.setState({ files: tempArr })
     }
     if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
       this.setState({ files: tempArr })
     }
 
@@ -769,11 +788,14 @@ class AddBOPImport extends Component {
       UOM: {},
     })
     this.props.getBOPImportById('', res => { })
-    this.getDetails()
     this.props.hideForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('submit')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('submit')
@@ -787,7 +809,7 @@ class AddBOPImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm } = this.state;
+    const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, isSourceChange, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate, UOM, netLandedConverionCost, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible, Technology } = this.state;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -801,38 +823,49 @@ class AddBOPImport extends Component {
     if (selectedPlants.length === 0 && costingTypeId === ZBCTypeId) {
       return false;
     }
-
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true)) {
+    let updatedFiles = files.map((file) => {
+      return { ...file, ContextId: BOPID }
+    })
+    const formData = {
+      BoughtOutPartId: BOPID,
+      Currency: currency.label,
+      CostingTypeId: costingTypeId,
+      BoughtOutPartNumber: values.BoughtOutPartNumber,
+      BoughtOutPartName: values.BoughtOutPartName,
+      CategoryId: BOPCategory.value,
+      Specification: values.Specification,
+      Vendor: vendorName.value,
+      Source: values.Source,
+      SourceLocation: sourceLocation.value,
+      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+      BasicRate: values.BasicRate,
+      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1,
+      NetLandedCost: this.state.netLandedcost,
+      Remark: values.Remark,
+      IsActive: true,
+      LoggedInUserId: loggedInUserId(),
+      Plant: [plantArray],
+      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
+      Attachements: isEditFlag ? updatedFiles : files,
+      UnitOfMeasurementId: UOM.value,
+      VendorPlant: [],
+      NetLandedCostConversion: netLandedConverionCost,
+      IsFinancialDataChanged: isDateChange ? true : false,
+      CustomerId: client.value,
+      BoughtOutPartIncoTermId: incoTerm.value,
+      BoughtOutPartPaymentTermId: paymentTerm.value,
+      EntryType: Number(ENTRY_TYPE_IMPORT),
+      IsClientVendorBOP: isClientVendorBOP,
+      TechnologyName: Technology?.label,
+      TechnologyId: Technology?.value,
+      IsBreakupBoughtOutPart: isTechnologyVisible,
+    }
+    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true) || (isEditFlag && isTechnologyVisible)) {
 
       this.setState({ setDisable: true })
-      let updatedFiles = files.map((file) => {
-        return { ...file, ContextId: BOPID }
-      })
-      let requestData = {
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        Currency: currency.label,
-        BoughtOutPartId: BOPID,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value ? sourceLocation.value : '',
-        BasicRate: values.BasicRate,
-        NetLandedCost: this.state.netLandedcost,
-        Remark: values.Remark,
-        LoggedInUserId: loggedInUserId(),
-        Plant: costingTypeId !== VBCTypeId ? [plantArray] : [],
-        VendorPlant: [],
-        Attachements: updatedFiles,
-        UnitOfMeasurementId: UOM.value,
-        NetLandedCostConversion: netLandedConverionCost,
-        IsForcefulUpdated: isDateChange ? false : isSourceChange ? false : true,
-        NumberOfPieces: 1,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value,
-        BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value
-      }
       if (IsFinancialDataChanged) {
         if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOPImport(requestData, (res) => {
+          this.props.updateBOP(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -854,13 +887,13 @@ class AddBOPImport extends Component {
         if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
           Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && JSON.stringify(updatedFiles) === JSON.stringify(DataToChange.Attachements) &&
           ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-')) && (DataToChange.BoughtOutPartIncoTermId === incoTerm.value)) {
+          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-')) && (DataToChange.BoughtOutPartIncoTermId === incoTerm.value) && DataToChange.IsClientVendorBOP === isClientVendorBOP) {
           this.cancel('submit')
           return false;
         }
         else {
           // if (isSourceChange) {
-          this.props.updateBOPImport(requestData, (res) => {
+          this.props.updateBOP(formData, (res) => {
             this.setState({ setDisable: false })
             if (res?.data?.Result) {
               Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
@@ -873,45 +906,15 @@ class AddBOPImport extends Component {
       }
 
     } else {
-      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        this.setState({ IsSendForApproval: true })
+      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
+        formData.IsSendForApproval = true
       } else {
-        this.setState({ IsSendForApproval: false })
+        formData.IsSendForApproval = false
       }
       // this.setState({ setDisable: true })
-      const formData = {
-        IsSendForApproval: this.state.IsSendForApproval,
-        BoughtOutPartId: BOPID,
-        Currency: currency.label,
-        CostingTypeId: costingTypeId,
-        EntryType: 0,
-        BoughtOutPartNumber: values.BoughtOutPartNumber,
-        BoughtOutPartName: values.BoughtOutPartName,
-        CategoryId: BOPCategory.value,
-        Specification: values.Specification,
-        Vendor: vendorName.value,
-        Source: values.Source,
-        SourceLocation: sourceLocation.value,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        BasicRate: values.BasicRate,
-        NumberOfPieces: 1,
-        NetLandedCost: this.state.netLandedcost,
-        Remark: values.Remark,
-        IsActive: true,
-        LoggedInUserId: loggedInUserId(),
-        Plant: [plantArray],
-        DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
-        Attachements: files,
-        UnitOfMeasurementId: UOM.value,
-        VendorPlant: [],
-        NetLandedCostConversion: netLandedConverionCost,
-        IsFinancialDataChanged: isDateChange ? true : false,
-        CustomerId: client.value,
-        BoughtOutPartIncoTermId: incoTerm.value,
-        BoughtOutPartPaymentTermId: paymentTerm.value
-      }
 
-      if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+
+      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
         if (IsFinancialDataChanged) {
           if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ approveDrawer: true, approvalObj: formData })
@@ -960,9 +963,9 @@ class AddBOPImport extends Component {
 
 
       } else {
-        this.props.createBOPImport(formData, (res) => {
+        this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
-          if (res.data.Result) {
+          if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             //this.clearForm()
             this.cancel('submit')
@@ -979,6 +982,29 @@ class AddBOPImport extends Component {
       e.preventDefault();
     }
   };
+  onIsClientVendorBOP = () => {
+    this.setState({ isClientVendorBOP: !this.state.isClientVendorBOP })
+  }
+
+  breakUpHandleChange = () => {
+    this.setState({ isTechnologyVisible: !this.state.isTechnologyVisible })
+  }
+
+  /**
+   * @method handleTechnologyChange
+   * @description Use to handle technology change
+  */
+  handleTechnologyChange = (newValue) => {
+    if (newValue.value === String(FORGING)) {
+      this.setState({ Technology: newValue })
+    } else if (newValue.value === String(SHEETMETAL)) {
+      this.setState({ Technology: newValue })
+    } else {
+      this.setState({ Technology: newValue })
+    }
+    // this.setState({ isDropDownChanged: true })
+  }
+
 
   /**
   * @method render
@@ -986,7 +1012,7 @@ class AddBOPImport extends Component {
   */
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
-    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle } = this.state;
+    const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, noApprovalCycle, isClientVendorBOP, CostingTypePermission, isTechnologyVisible, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -994,10 +1020,10 @@ class AddBOPImport extends Component {
         this.setState({ inputLoader: true })
         let res
         if (costingTypeId === VBCTypeId) {
-          res = await getVendorWithVendorCodeSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         }
         else {
-          res = await getVendorTypeBOPSelectList(resultInput)
+          res = await getVendorNameByVendorSelectList(BOP_VENDOR_TYPE, resultInput)
         }
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
@@ -1107,7 +1133,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartNumber"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -1121,7 +1147,7 @@ class AddBOPImport extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={"Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, checkSpacesInString, hashValidation]}
                               component={renderText}
                               required={true}
                               disabled={isEditFlag ? true : false}
@@ -1163,7 +1189,7 @@ class AddBOPImport extends Component {
                               name={"Specification"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, hashValidation]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}
@@ -1213,6 +1239,47 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                           )}
+                          {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
+                            <>
+
+                              <Col md="3" className='d-flex align-items-center'>
+                                <label
+                                  className={`custom-checkbox`}
+                                  onChange={this.breakUpHandleChange}
+                                >
+                                  Detailed BOP
+                                  <input
+                                    type="checkbox"
+                                    checked={isTechnologyVisible}
+                                    disabled={isViewMode || isEditFlag ? true : false}
+                                  />
+                                  <span
+                                    className=" before-box"
+                                    checked={isTechnologyVisible}
+                                    onChange={this.breakUpHandleChange}
+                                  />
+                                </label>
+                              </Col>
+                              {isTechnologyVisible && <Col md="3">
+                                <Field
+                                  label="Technology"
+                                  type="text"
+                                  name="Technology"
+                                  component={searchableSelect}
+                                  placeholder={"Technology"}
+                                  options={this.renderListing("technology")}
+                                  validate={
+                                    this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleTechnologyChange
+                                  }
+                                  valueDescription={this.state.Technology}
+                                  disabled={isViewMode || isEditFlag ? true : false}
+                                />
+                              </Col>}
+                            </>
+                          }
                           {costingTypeId === CBCTypeId && (
                             <Col md="3">
                               <Field
@@ -1284,7 +1351,7 @@ class AddBOPImport extends Component {
                                   name={"Source"}
                                   type="text"
                                   placeholder={isEditFlag ? '-' : "Enter"}
-                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength80]}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
                                   component={renderText}
                                   valueDescription={this.state.source}
                                   onChange={this.handleSource}
@@ -1308,7 +1375,8 @@ class AddBOPImport extends Component {
                               </Col>
                             </>
                           )}
-                        </Row >
+                        </Row>
+
 
                         <Row>
                           <Col md="12">
@@ -1387,37 +1455,53 @@ class AddBOPImport extends Component {
                               />
                             </div>
                           </Col>
-                          <Col md="3">
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && < Col md="3">
                             <Field
-                              label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                              name={"BasicRate"}
+                              label={`Minimum Order Quantity`}
+                              name={"NumberOfPieces"}
                               type="text"
-                              placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                              component={renderTextInputField}
-                              required={true}
-                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
-                          </Col>
-                          <Col md="3">
-                            <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
-                            <Field
-                              label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                              name={this.state.netLandedcost === 0 ? '' : "NetLandedCost"}
-                              type="text"
-                              placeholder={"-"}
-                              validate={[]}
-                              component={renderTextInputField}
+                              placeholder={"Enter"}
+                              validate={this.state.uomIsNo ? [postiveNumber, maxLength10] : [positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderText}
                               required={false}
-                              disabled={true}
-                              className=" "
+                              className=""
                               customClassName=" withBorder"
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
-                          </Col>
+                          </Col>}
+                          {!isTechnologyVisible && <>
+                            <Col md="3">
+                              <Field
+                                label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                name={"BasicRate"}
+                                type="text"
+                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                              <Field
+                                label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                name={this.state.netLandedcost === 0 ? '' : "NetLandedCost"}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderTextInputField}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                          </>}
                           {
-                            this.state.showCurrency &&
+                            this.state.showCurrency && !isTechnologyVisible &&
                             <Col md="3">
                               <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
                               <Field
@@ -1439,7 +1523,26 @@ class AddBOPImport extends Component {
                         <Row> */}
 
                         </Row>
-
+                        {
+                          getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
+                            <label
+                              className={`custom-checkbox`}
+                              onChange={this.onIsClientVendorBOP}
+                            >
+                              Client Approved Vendor
+                              <input
+                                type="checkbox"
+                                checked={isClientVendorBOP}
+                                disabled={(isEditFlag && isBOPAssociated) || isViewMode ? true : false}
+                              />
+                              <span
+                                className=" before-box"
+                                checked={isClientVendorBOP}
+                                onChange={this.onIsClientVendorBOP}
+                              />
+                            </label>
+                          </Col>
+                        }
                         <Row>
                           <Col md="12">
                             <div className="left-border">
@@ -1453,7 +1556,7 @@ class AddBOPImport extends Component {
                               placeholder={isViewMode ? '-' : "Type here..."}
                               className=""
                               customClassName=" textAreaWithBorder"
-                              validate={[maxLength512]}
+                              validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                               value={this.state.remarks}
                               onChange={this.handleMessageChange}
                               disabled={isViewMode}
@@ -1519,7 +1622,7 @@ class AddBOPImport extends Component {
                                   const fileURL = `${FILE_URL}${withOutTild}`;
                                   return (
                                     <div className={"attachment images"}>
-                                      <a href={fileURL} target="_blank">
+                                      <a href={fileURL} target="_blank" rel="noreferrer">
                                         {f.OriginalFileName}
                                       </a>
 
@@ -1543,6 +1646,7 @@ class AddBOPImport extends Component {
                       </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
+                          {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                           {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
                           <button
                             type={"button"}
@@ -1554,62 +1658,70 @@ class AddBOPImport extends Component {
                             {"Cancel"}
                           </button>
 
+                          {!isViewMode && <>
+                            {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
+                              <button type="submit"
+                                class="user-btn approval-btn save-btn mr5"
+                                disabled={isViewMode || setDisable || disableSendForApproval}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                                disabled={isViewMode || setDisable || disableSendForApproval}
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            }
+                          </>}
 
-                          {!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure ?
-                            <button type="submit"
-                              class="user-btn approval-btn save-btn mr5"
-                              disabled={isViewMode || setDisable || noApprovalCycle}
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={isViewMode || setDisable || noApprovalCycle}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
-                          }
-                        </div>
-                      </Row>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                        </div >
+                      </Row >
+                    </form >
+                  </div >
+                </div >
+              </div >
+            </div >
+          </div >
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {isCategoryDrawerOpen && (
-            <AddBOPCategory
-              isOpen={isCategoryDrawerOpen}
-              closeDrawer={this.closeCategoryDrawer}
-              isEditFlag={false}
-              anchor={"right"}
-            />
-          )}
-          {isOpenVendor && (
-            <AddVendorDrawer
-              isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenUOM && (
-            <AddUOM
-              isOpen={isOpenUOM}
-              closeDrawer={this.closeUOMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          {
+            isCategoryDrawerOpen && (
+              <AddBOPCategory
+                isOpen={isCategoryDrawerOpen}
+                closeDrawer={this.closeCategoryDrawer}
+                isEditFlag={false}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
           {
             this.state.approveDrawer && (
               <MasterSendForApproval
@@ -1640,7 +1752,7 @@ class AddBOPImport extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, supplier, boughtOutparts, part, auth, client } = state;
+  const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
   const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRate',);
 
   const { bopCategorySelectList, bopData, IncoTermsSelectList, PaymentTermsSelectList } = boughtOutparts;
@@ -1650,7 +1762,7 @@ function mapStateToProps(state) {
   const { partSelectList } = part;
   const { initialConfiguration, userMasterLevelAPI } = auth;
   const { clientSelectList } = client;
-
+  const { costingSpecifiTechnology } = costing
   let initialValues = {};
   if (bopData && bopData !== undefined) {
     initialValues = {
@@ -1659,6 +1771,7 @@ function mapStateToProps(state) {
       Specification: bopData.Specification,
       Source: bopData.Source,
       BasicRate: bopData.BasicRate,
+      NumberOfPieces: bopData?.NumberOfPieces,
       NetLandedCost: bopData.NetLandedCost,
       Remark: bopData.Remark,
     }
@@ -1666,7 +1779,7 @@ function mapStateToProps(state) {
 
   return {
     vendorWithVendorCodeSelectList, bopCategorySelectList, plantList, filterPlantList, filterCityListBySupplier,
-    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI
+    plantSelectList, cityList, partSelectList, clientSelectList, UOMSelectList, currencySelectList, fieldsObj, initialValues, initialConfiguration, IncoTermsSelectList, PaymentTermsSelectList, userMasterLevelAPI, costingSpecifiTechnology
   }
 
 }
@@ -1678,17 +1791,15 @@ function mapStateToProps(state) {
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-  getVendorWithVendorCodeSelectList,
-  getVendorTypeBOPSelectList,
+  getVendorNameByVendorSelectList,
   getPlantBySupplier,
   getUOMSelectList,
   getCurrencySelectList,
-  createBOPImport,
-  updateBOPImport,
+  createBOP,
+  updateBOP,
   getBOPCategorySelectList,
   getBOPImportById,
   fileUploadBOPDomestic,
-  fileDeleteBOPDomestic,
   getPlantSelectListByType,
   getExchangeRateByCurrency,
   checkFinalUser,
@@ -1697,7 +1808,8 @@ export default connect(mapStateToProps, {
   getClientSelectList,
   getIncoTermSelectList,
   getPaymentTermSelectList,
-  getUsersMasterLevelAPI
+  getUsersMasterLevelAPI,
+  getCostingSpecificTechnology,
 })(reduxForm({
   form: 'AddBOPImport',
   touchOnChange: true,
@@ -1705,5 +1817,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-  touchOnChange: true
 })(AddBOPImport));

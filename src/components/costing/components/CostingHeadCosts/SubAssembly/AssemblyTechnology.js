@@ -1,18 +1,21 @@
 import React, { useContext, useEffect, useState, } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { costingInfoContext } from '../../CostingDetailStepTwo';
-import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, } from '../../../../../helper';
+import { NetPOPriceContext, costingInfoContext } from '../../CostingDetailStepTwo';
+import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
-import { ViewCostingContext } from '../../CostingDetails';
+import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import EditPartCost from './EditPartCost';
 import AddAssemblyProcess from '../../Drawers/AddAssemblyProcess';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../../actions/SubAssembly';
 import BoughtOutPart from '../BOP';
 import AddBOPHandling from '../../Drawers/AddBOPHandling';
-import { formatMultiTechnologyUpdate } from '../../../CostingUtil';
-import { getRMCCTabData, gridDataAdded } from '../../../actions/Costing';
-import { EMPTY_GUID } from '../../../../../config/constants';
+import { findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../../CostingUtil';
+import { getRMCCTabData, gridDataAdded, saveAssemblyCostingRMCCTab, saveCostingLabourDetails } from '../../../actions/Costing';
+import { EMPTY_GUID, WACTypeId } from '../../../../../config/constants';
 import _ from 'lodash';
+import AddLabourCost from '../AdditionalOtherCost/AddLabourCost';
+import Toaster from '../../../../common/Toaster';
+import { PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 
 function AssemblyTechnology(props) {
     const { children, item, index } = props;
@@ -25,6 +28,11 @@ function AssemblyTechnology(props) {
     const [tabAssemblyIndividualPartDetail, setTabAssemblyIndividualPartDetail] = useState({})
     const [isOpenBOPDrawer, setIsOpenBOPDrawer] = useState(false)
     const [isBOPExists, setIsBOPExists] = useState(false)
+    const [isOpenLabourDrawer, setIsOpenLabourDrawer] = useState(false)
+    const [labourTableData, setLabourTableData] = useState([])
+    const [labourObj, setLabourObj] = useState(false)
+    const [callSaveAssemblyApi, setCallSaveAssemblyApi] = useState(false)
+    const netPOPrice = useContext(NetPOPriceContext);
 
     const CostingViewMode = useContext(ViewCostingContext);
     const costData = useContext(costingInfoContext);
@@ -32,8 +40,9 @@ function AssemblyTechnology(props) {
     const { CostingEffectiveDate } = useSelector(state => state.costing)
     const dispatch = useDispatch()
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-    const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData } = useSelector(state => state.costing)
+    const { ToolTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, RMCCTabData } = useSelector(state => state.costing)
     const OverheadProfitTabData = useSelector(state => state.costing.OverheadProfitTabData)
+    const isPartType = useContext(IsPartType);
 
     const toggle = (BOMLevel, PartNumber, PartType) => {
         if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
@@ -58,6 +67,8 @@ function AssemblyTechnology(props) {
                         let costPerPieceTotal = 0
                         let CostPerAssemblyBOPTotal = 0
 
+
+
                         tempsubAssemblyTechnologyArray[0].CostingChildPartDetails && tempsubAssemblyTechnologyArray[0]?.CostingChildPartDetails.map((item) => {
                             costPerPieceTotal = checkForNull(costPerPieceTotal) + checkForNull(item?.CostingPartDetails?.NetChildPartsCostWithQuantity)
                             CostPerAssemblyBOPTotal = checkForNull(CostPerAssemblyBOPTotal) + checkForNull(item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity)
@@ -77,11 +88,20 @@ function AssemblyTechnology(props) {
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost)
 
+
                         tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalCalculatedRMBOPCCCost =
                             checkForNull(costPerPieceTotal) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalBoughtOutPartCost) +
                             checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalProcessCost) +
-                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost)
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalOperationCost) +
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
+
+                        tempsubAssemblyTechnologyArray[0].CostingPartDetails.TotalLabourCost =
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.NetLabourCost) +
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.IndirectLaborCost) +
+                            checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.StaffCost)
 
                         dispatch(setSubAssemblyTechnologyArray(tempsubAssemblyTechnologyArray, res => { }))
                     }
@@ -133,6 +153,9 @@ function AssemblyTechnology(props) {
     useEffect(() => {
         let final = _.map(subAssemblyTechnologyArray && subAssemblyTechnologyArray[0]?.CostingChildPartDetails, 'PartType')
         setIsBOPExists(final.includes('BOP'))
+        return () => {
+            setLabourTableData([])
+        }
     }, [subAssemblyTechnologyArray])
 
     const nestedAssembly = children && children.map(el => {
@@ -218,6 +241,148 @@ function AssemblyTechnology(props) {
         dispatch(gridDataAdded(true))
     }
 
+
+    const labourHandlingDrawer = () => {
+        if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
+        setIsOpenLabourDrawer(true)
+    }
+
+    const closeLabourDrawer = (type, data = labourTableData) => {
+        setIsOpenLabourDrawer(false)
+        if (type === 'save') {
+            setCallSaveAssemblyApi(true)
+            let sum = data.reduce((acc, obj) => Number(acc) + Number(obj.LabourCost), 0);
+            let obj = {}
+            obj.CostingId = item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000"
+            obj.LoggedInUserId = loggedInUserId()
+            obj.IndirectLaborCost = data.length > 0 ? data[0].indirectLabourCost : 0
+            obj.StaffCost = data.length > 0 ? data[0].staffCost : 0
+            obj.StaffCostPercentage = data.length > 0 ? data[0].staffCostPercent : 0
+            obj.IndirectLaborCostPercentage = data.length > 0 ? data[0].indirectLabourCostPercent : 0
+            obj.NetLabourCost = sum
+            obj.CostingLabourDetailList = data
+            obj.NetLabourCRMHead = data.length > 0 ? data[0].NetLabourCRMHead : 0
+            obj.IndirectLabourCRMHead = data.length > 0 ? data[0].IndirectLabourCRMHead : 0
+            obj.StaffCRMHead = data.length > 0 ? data[0].StaffCRMHead : 0
+            props.setAssemblyLabourCost(obj)
+            dispatch(saveCostingLabourDetails(obj, (res) => {
+                if (res) {
+                    Toaster.success('Labour details saved successfully.')
+                }
+            }))
+        }
+    }
+
+    useEffect(() => {
+        if (subAssemblyTechnologyArray && callSaveAssemblyApi) {
+            const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
+            const overHeadAndProfitTabData = OverheadProfitTabData[0]
+            const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
+            const toolTabData = ToolTabData && ToolTabData[0]
+            let stCostingData = findSurfaceTreatmentData(item)
+            let basicRate = 0
+            if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+                basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+                    checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+                    checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+            } else {
+                basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+                    checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+                    checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+            }
+
+            let requestData = {
+                "CostingId": item.CostingId,
+                "CostingNumber": item.CostingNumber,
+                "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+                "PartId": item.PartId,
+                "PartNumber": item.PartNumber,
+                "PartTypeId": item.PartTypeId,
+                "Type": item.PartType,
+                "SubAssemblyCostingId": item.SubAssemblyCostingId,
+                "PlantId": costData.PlantId,
+                "VendorId": costData.VendorId,
+                "VendorCode": costData.VendorCode,
+                "VendorPlantId": costData.VendorPlantId,
+                "TechnologyName": item.Technology,
+                "TechnologyId": item.TechnologyId,
+                "TypeOfCosting": costData.VendorType,
+                "PlantCode": costData.PlantCode,
+                "PlantName": costData.PlantName,
+                "Version": item.Version,
+                "ShareOfBusinessPercent": item.ShareOfBusinessPercent,
+                "NetRawMaterialsCost": item?.CostingPartDetails?.TotalRawMaterialsCost,
+                "NetBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCost,
+                "NetConversionCost": item?.CostingPartDetails?.TotalConversionCost,
+                "TotalProcessCost": item?.CostingPartDetails?.TotalProcessCost,
+                "TotalOperationCost": item?.CostingPartDetails?.TotalOperationCost,
+                "NetTotalRMBOPCC": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+                "TotalCost": stCostingData && Object.keys.length > 0 ? checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(stCostingData?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) : item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+                "LoggedInUserId": loggedInUserId(),
+                "EffectiveDate": CostingEffectiveDate,
+                "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
+                "NetOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
+                "NetToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
+                "NetLabourCost": item.NetLabourCost,
+                "IndirectLaborCost": item.IndirectLaborCost,
+                "StaffCost": item.StaffCost,
+                "StaffCostPercentage": item.StaffCostPercentage,
+                "IndirectLaborCostPercentage": item.IndirectLaborCostPercentage,
+                "StaffCRMHead": item?.CostingPartDetails?.StaffCRMHead,
+                "NetLabourCRMHead": item?.CostingPartDetails?.NetLabourCRMHead,
+                "IndirectLabourCRMHead": item?.CostingPartDetails?.IndirectLabourCRMHead,
+                "BasicRate": basicRate,
+                "CostingPartDetails": {
+                    "CostingId": item.CostingId,
+                    "CostingNumber": item.CostingNumber,
+                    "CostingDetailId": "00000000-0000-0000-0000-000000000000",
+                    "PartId": item.PartId,
+                    "PartNumber": item.PartNumber,
+                    "PartName": item.PartName,
+                    "PartTypeId": item.PartTypeId,
+                    "Type": item.PartType,
+                    "TotalRawMaterialsCost": item?.CostingPartDetails?.TotalRawMaterialsCost,
+                    "TotalBoughtOutPartCost": item?.CostingPartDetails?.TotalBoughtOutPartCost,
+                    "TotalConversionCost": item?.CostingPartDetails?.TotalConversionCost,
+                    "TotalCalculatedRMBOPCCCost": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost,
+                    "TotalRawMaterialsCostWithQuantity": item?.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
+                    "TotalBoughtOutPartCostWithQuantity": item?.CostingPartDetails?.TotalBoughtOutPartCostWithQuantity,
+                    "TotalConversionCostWithQuantity": item?.CostingPartDetails?.TotalConversionCostWithQuantity,
+                    "TotalCalculatedRMBOPCCCostWithQuantity": item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity,
+                    "Quantity": item?.CostingPartDetails?.Quantity,
+                    "IsOpen": true,
+                    "IsShowToolCost": item?.CostingPartDetails?.IsShowToolCost === null ? true : true,
+                    "TotalOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
+                    "TotalToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
+                    "AssemblyCostingOperationCostRequest": item.CostingPartDetails.CostingOperationCostResponse,
+                    "AssemblyCostingToolsCostRequest": item?.CostingPartDetails?.CostingToolCostResponse ? item?.CostingPartDetails?.CostingToolCostResponse : [],
+                    "AssemblyCostingProcessCostResponse": item?.CostingPartDetails?.CostingProcessCostResponse ? item?.CostingPartDetails?.CostingProcessCostResponse : [],
+                    "TotalOperationCost": item?.CostingPartDetails?.TotalOperationCost,
+                }
+            }
+
+            let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray
+            let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+                checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
+                checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
+                checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) +
+                checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
+                checkForNull(DiscountCostData?.AnyOtherCost)) -
+                checkForNull(DiscountCostData?.HundiOrDiscountValue)
+
+            item.TotalOperationCost = item?.CostingPartDetails?.TotalOperationCost
+            let request = formatMultiTechnologyUpdate(item, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
+            dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => {
+            }))
+
+            dispatch(saveAssemblyCostingRMCCTab(requestData, res => {
+            }))
+            setCallSaveAssemblyApi(false)
+        }
+
+    }, [subAssemblyTechnologyArray])
+
+
     /**
     * @method render
     * @description Renders the component
@@ -272,6 +437,13 @@ function AssemblyTechnology(props) {
 
                 {item?.CostingPartDetails?.PartType === 'Assembly' ? <td>
                     <div className='assembly-button-container'>
+                        {(initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <><button
+                            type="button"
+                            className={'user-btn add-oprn-btn mr-1'}
+                            onClick={labourHandlingDrawer}>
+                            <div className={'plus'}></div>{`LABOUR`}</button>
+                        </>}
+
                         {isBOPExists && <>
                             <button
                                 type="button"
@@ -357,6 +529,18 @@ function AssemblyTechnology(props) {
                     costingSummary={false}
                 />
             }
+
+            {
+                isOpenLabourDrawer && <AddLabourCost
+                    isOpen={isOpenLabourDrawer}
+                    tableData={labourTableData}
+                    labourObj={labourObj}
+                    item={item}
+                    closeDrawer={closeLabourDrawer}
+                    anchor={'right'}
+                />
+            }
+
         </ >
     );
 }

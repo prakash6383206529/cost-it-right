@@ -11,9 +11,10 @@ import { checkForDecimalAndNull, checkForNull, loggedInUserId, } from '../../../
 import PackageAndFreight from '../CostingHeadCosts/PackageAndFreight';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
-import { ViewCostingContext } from '../CostingDetails';
+import { IsPartType, ViewCostingContext } from '../CostingDetails';
 import { createToprowObjAndSave, formatMultiTechnologyUpdate } from '../../CostingUtil';
-import { IdForMultiTechnology } from '../../../../config/masterData';
+import { Link } from 'react-scroll';
+import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 import { debounce } from 'lodash';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import { LOGISTICS } from '../../../../config/masterData';
@@ -28,6 +29,7 @@ function TabPackagingFreight(props) {
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const isPartType = useContext(IsPartType);
 
   const { PackageAndFreightTabData, CostingEffectiveDate, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, ToolTabData, getAssemBOPCharge, checkIsFreightPackageChange } = useSelector(state => state.costing)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -163,7 +165,7 @@ function TabPackagingFreight(props) {
       const tabData = RMCCTabData[0]
       const surfaceTabData = SurfaceTabData[0]
       const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData[0]
+      const discountAndOtherTabData = DiscountCostData
       const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
       const toolTabData = ToolTabData && ToolTabData[0]
 
@@ -177,11 +179,12 @@ function TabPackagingFreight(props) {
         "TotalCost": netPOPrice,
         "CostingNumber": costData.CostingNumber,
         // "NetPackagingAndFreight": PackageAndFreightTabData && PackageAndFreightTabData[0].NetPackagingAndFreight,
-        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails
+        "CostingPartDetails": PackageAndFreightTabData && PackageAndFreightTabData[0]?.CostingPartDetails,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       if (costData.IsAssemblyPart === true && !partType) {
         if (!CostingViewMode) {
-          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate)
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 4, CostingEffectiveDate, '', '', isPartType)
           dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
         }
       }
@@ -220,7 +223,17 @@ function TabPackagingFreight(props) {
 
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 3 }, res => { }))
+    let basicRate = 0
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+      basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    } else {
+      basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    }
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate }, res => { }))
   }
 
   return (

@@ -3,6 +3,7 @@ import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from 'reactstra
 import classnames from 'classnames'
 import Rubber from './Rubber'
 import StandardRub from './StandardRub'
+import RubberWeightCalculator from './RubberWeightCalculator'
 
 
 function RubberCalciTab(props) {
@@ -31,7 +32,7 @@ function RubberCalciTab(props) {
             return
         }
 
-        props.toggleDrawer('', weightData, originalWeight)
+        props.toggleDrawer(event, weightData, originalWeight)
     }
 
 
@@ -53,7 +54,7 @@ function RubberCalciTab(props) {
                             //  disabled={rmRowData.WeightCalculatorRequest.LayoutType && rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
                             // disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '1' ? true : false}
                             >
-                                Standard
+                                Rubber Compound
                             </NavLink>
                         </NavItem>
                         <NavItem>
@@ -65,7 +66,7 @@ function RubberCalciTab(props) {
                                 disabled={true}
                             // disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '2' ? true : false}
                             >
-                                Hose
+                                STANDARD
                             </NavLink>
                         </NavItem>
 
@@ -74,12 +75,27 @@ function RubberCalciTab(props) {
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
                             <TabPane tabId="1">
-                                <StandardRub rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
+                                <RubberWeightCalculator rmRowData={props.rmRowData}
+                                    inputDiameter={props.inputDiameter}
+                                    isEditFlag={props.isEditFlag}
+                                    toggleDrawer={toggleDrawer}
+                                    rmData={props.rmData}
+                                    item={props.item}
+                                    appyMasterBatch={props.appyMasterBatch}
+                                    CostingViewMode={props.CostingViewMode} />
                             </TabPane>
                         )}
                         {activeTab === '2' && (
                             <TabPane tabId="2">
-                                <Rubber rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} />
+                                <StandardRub rmRowData={props.rmRowData}
+                                    inputDiameter={props.inputDiameter}
+                                    isEditFlag={props.isEditFlag}
+                                    toggleDrawer={toggleDrawer}
+                                    rmData={props.rmData}
+                                    item={props.item}
+                                    appyMasterBatch={props.appyMasterBatch}
+                                    CostingViewMode={props.CostingViewMode} />
+                                {/* <Rubber rmRowData={props.rmRowData} isEditFlag={props.isEditFlag} toggleDrawer={toggleDrawer} item={props.item} /> */}
                             </TabPane>
                         )}
 

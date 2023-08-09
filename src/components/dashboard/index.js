@@ -11,7 +11,6 @@ import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTE
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
 import Tabs from "./Tabs";
-import './dashboard.scss';
 import MasterApprovalTabs from "./MasterApprovalTabs";
 import ScrollToTop from "../common/ScrollToTop";
 import { MESSAGES } from "../../config/message";
@@ -149,7 +148,7 @@ function Dashboard(props) {
                         ) : (
                           <i className="fa fa-plus"></i>
                         )}
-                        
+
                       </button>
                     </Col>
                   </Row>

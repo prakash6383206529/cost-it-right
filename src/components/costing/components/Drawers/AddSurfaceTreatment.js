@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { getSurfaceTreatmentDrawerDataList, getSurfaceTreatmentDrawerVBCDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, NFRTypeId, VBC, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, NFRTypeId, VBC, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { EMPTY_GUID, ZBC } from '../../../../config/constants';
@@ -51,8 +51,8 @@ function AddSurfaceTreatment(props) {
       VendorPlantId: initialConfiguration?.IsVendorPlantConfigurable ? costData.VendorPlantId : EMPTY_GUID,
       EffectiveDate: CostingEffectiveDate,
       CostingId: costData.CostingId,
-      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId) ? costData.PlantId : EMPTY_GUID,
-      CostingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
+      PlantId: (initialConfiguration?.IsDestinationPlantConfigure && (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NCCTypeId || costData.CostingTypeId === NFRTypeId)) || costData.CostingTypeId === CBCTypeId ? costData.DestinationPlantId : (costData.CostingTypeId === ZBCTypeId || costData.CostingTypeId === WACTypeId) ? costData.PlantId : EMPTY_GUID,
+      CostingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : Number(costData.CostingTypeId) === WACTypeId ? ZBCTypeId : costData.CostingTypeId,
       CustomerId: costData.CustomerId
     }
     dispatch(getSurfaceTreatmentDrawerDataList(data, (res) => {
@@ -149,9 +149,11 @@ function AddSurfaceTreatment(props) {
     return cellValue !== null ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
   }
   const onFloatingFilterChanged = (value) => {
-    if (tableData.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (tableData.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
   }
 
   const frameworkComponents = {
@@ -191,7 +193,7 @@ function AddSurfaceTreatment(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD Surface Treatment:'}</h3>
+                    <h3>{'Add Surface Treatment:'}</h3>
                   </div>
                   <div
                     onClick={cancel}

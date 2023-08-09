@@ -6,7 +6,7 @@ import AddBOPDomestic from './AddBOPDomestic';
 import AddBOPImport from './AddBOPImport';
 import BOPDomesticListing from './BOPDomesticListing';
 import BOPImportListing from './BOPImportListing';
-import { BOP, BOP_MASTER_ID, MASTERS } from '../../../config/constants';
+import { APPROVAL_CYCLE_STATUS_MASTER, BOP, BOP_MASTER_ID, MASTERS, NON_APPROVAL_CYCLE_STATUS_MASTER } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import SOBListing from './SOBListing';
 import ScrollToTop from '../../common/ScrollToTop';
@@ -29,12 +29,20 @@ class BOPMaster extends Component {
       DeleteAccessibility: false,
       BulkUploadAccessibility: false,
       isBOPAssociated: false,
-      stopApiCallOnCancel: false
+      stopApiCallOnCancel: false,
+      approvalStatusState: ''
     }
   }
 
   componentDidMount() {
+    const { initialConfiguration } = this.props;
+
     this.applyPermission(this.props.topAndLeftMenuData)
+    if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
+      this.setState({ approvalStatusState: APPROVAL_CYCLE_STATUS_MASTER })
+    } else {
+      this.setState({ approvalStatusState: NON_APPROVAL_CYCLE_STATUS_MASTER })
+    }
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
@@ -129,7 +137,7 @@ class BOPMaster extends Component {
   * @description Renders the component
   */
   render() {
-    const { isBOPDomesticForm, isBOPImportForm, data, } = this.state;
+    const { isBOPDomesticForm, isBOPImportForm, data, approvalStatusState } = this.state;
 
     if (isBOPDomesticForm === true) {
       return <AddBOPDomestic
@@ -220,6 +228,7 @@ class BOPMaster extends Component {
                       isMasterSummaryDrawer={false}
                       selectionForListingMasterAPI='Master'
                       stopApiCallOnCancel={this.state.stopApiCallOnCancel}
+                      approvalStatus={approvalStatusState}
                     />
                   </TabPane>
                 )}
@@ -237,6 +246,7 @@ class BOPMaster extends Component {
                       DownloadAccessibility={this.state.DownloadAccessibility}
                       stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                       selectionForListingMasterAPI='Master'
+                      approvalStatus={approvalStatusState}
                     />
                   </TabPane>
                 )}
@@ -283,9 +293,9 @@ class BOPMaster extends Component {
 */
 function mapStateToProps({ boughtOutparts, auth, comman }) {
   const { BOPListing, loading } = boughtOutparts;
-  const { leftMenuData, topAndLeftMenuData } = auth;
+  const { leftMenuData, topAndLeftMenuData, initialConfiguration } = auth;
   const { disabledClass } = comman
-  return { BOPListing, leftMenuData, topAndLeftMenuData, loading, disabledClass }
+  return { BOPListing, leftMenuData, topAndLeftMenuData, loading, disabledClass, initialConfiguration }
 }
 
 

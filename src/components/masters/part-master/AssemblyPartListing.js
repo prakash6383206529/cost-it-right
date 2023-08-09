@@ -21,7 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { searchNocontentFilter } from '../../../helper';
+import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -116,7 +116,8 @@ class AssemblyPartListing extends Component {
     * @description DELETE ASSEMBLY PART
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteAssemblyPart(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteAssemblyPart(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_BOM_SUCCESS);
                 this.getTableListData();
@@ -164,7 +165,9 @@ class AssemblyPartListing extends Component {
        * @description Filter data when user type in searching input
        */
     onFloatingFilterChanged = (value) => {
-        this.props.partsListing.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.partsListing.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
     /**
     * @method closeVisualDrawer
@@ -303,7 +306,7 @@ class AssemblyPartListing extends Component {
     */
     render() {
         const { isOpenVisualDrawer, isBulkUpload, noData } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
 
         const isFirstColumn = (params) => {
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -408,13 +411,14 @@ class AssemblyPartListing extends Component {
                             <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
                             <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
                             <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+                            {initialConfiguration?.IsSAPCodeRequired && <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"></AgGridColumn>
                             <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count"></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={180} headerName="Action" cellClass={"actions-wrapper"} pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PartId" width={180} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                     </div>

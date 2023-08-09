@@ -169,7 +169,7 @@ function SupplierContributionReport(props) {
                             label += ': ';
                         }
                         if (context.parsed !== null) {
-                            label += new Intl.NumberFormat('en-US', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed);
+                            label += new Intl.NumberFormat('en-IN', { style: 'currency', currency: (props?.rowData?.Currency) ? props.rowData.Currency : 'INR' }).format(context.parsed);
                         }
                         return `Price :${label} | No. of Parts: ${context?.dataset?.vendorPartCount[context?.dataIndex] ? (context?.dataset?.vendorPartCount[context?.dataIndex]) : '-'}`;
                     }
@@ -206,8 +206,8 @@ function SupplierContributionReport(props) {
                 var fontSize = (width + 6) / width;
                 ctx.font = 1.5 + "em sans-serif";
                 ctx.textBaseline = "top";
-                var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString()}`,
-                    textX = width / 2.1,
+                var text = `${getCurrencySymbol(getConfigurationKey().BaseCurrency)} ${totalCost.toLocaleString('en-IN')}`,
+                    textX = width / (2.01 + (0.02 * (String(totalCost).length))),
                     textY = height / 2;
                 ctx.fillText(text, textX, textY);
                 ctx.save();
@@ -367,7 +367,7 @@ function SupplierContributionReport(props) {
     return (
 
         <div className="p-relative">{reportListing &&
-            < div className="container-fluid custom-pagination report-listing-page ag-grid-react" >
+            < div className="container-fluid custom-pagination report-listing-page supplier-contribution ag-grid-react" >
                 <form noValidate >
                     {!hideSideBarNavbar && <Row className=" mb-2">
                         <Col md="3" className="form-group mb-0">
@@ -469,7 +469,7 @@ function SupplierContributionReport(props) {
             {graphListing &&
                 <div className="doughnut-graph-container">
                     <div className="doughnut-graph">
-                        <Doughnut type="outlabeledDoughnut" data={data3} options={options3} plugins={plugins} height="650" width={600} />
+                        <Doughnut type="outlabeledDoughnut" data={data3} options={options3} plugins={plugins} height="600" width={550} />
                     </div>
                 </div>
 

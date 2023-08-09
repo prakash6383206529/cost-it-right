@@ -5,7 +5,6 @@ import {
     API_FAILURE,
     GET_LABOUR_FAILURE,
     GET_LABOUR_DATA_SUCCESS,
-    LABOUR_TYPE_VENDOR_SELECTLIST,
     GET_LABOUR_TYPE_BY_PLANT_SELECTLIST,
     GET_LABOUR_TYPE_BY_MACHINE_TYPE_SELECTLIST,
     config,
@@ -104,10 +103,11 @@ export function getLabourData(labourId, callback) {
  * @method deleteLabour
  * @description delete labour
  */
-export function deleteLabour(Id, callback) {
+export function deleteLabour(labourDetailId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteLabour}/${Id}`, config())
+        const queryParams = `labourDetailId=${labourDetailId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteLabour}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -133,14 +133,6 @@ export function updateLabour(requestData, callback) {
                 callback(error);
             });
     };
-}
-
-/**
- * @method labourTypeVendorSelectList
- * @description LABOUR TYPE VENDOR SELECT LIST
- */
-export function labourTypeVendorSelectList(vendorName, callback) {
-    return axios.get(`${API.labourTypeVendorSelectList}?vendorName=${vendorName}`, config());
 }
 
 /**

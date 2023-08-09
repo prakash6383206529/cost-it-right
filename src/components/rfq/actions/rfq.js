@@ -20,7 +20,7 @@ import Toaster from '../../common/Toaster';
 export function getQuotationList(DepartmentCode, callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}`, config());
+        const request = axios.get(`${API.getQuotationList}?DepartmentCode=${''}&LoggedInUserId=${loggedInUserId()}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
 
@@ -351,5 +351,20 @@ export function getNfrSelectList(callback) {
                 dispatch({ type: API_FAILURE });
                 apiErrors(error);
             });
+    };
+}
+
+export function rfqGetBestCostingDetails(bestCostId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.rfqGetBestCostingDetails}?bestCostId=${bestCostId}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
     };
 }

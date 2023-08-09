@@ -691,7 +691,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={true}
+                        disabled={false}
                       />
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
@@ -707,7 +707,7 @@ function ApproveRejectDrawer(props) {
                         options={approvalDropDown}
                         mandatory={true}
                         handleChange={() => { }}
-                        disabled={true}
+                        disabled={false}
                         errors={errors.approver}
                       />
                     </div>
@@ -748,6 +748,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.approver}
+                        disabled={false}
                       />
                     </div>
                     {
@@ -809,6 +810,7 @@ function ApproveRejectDrawer(props) {
                                 // onChange={handleEffectiveDateChange}
                                 showMonthDropdown
                                 showYearDropdown
+                                dropdownMode='select'
                                 dateFormat="dd/MM/yyyy"
                                 //maxDate={new Date()}
                                 placeholderText="Select date"

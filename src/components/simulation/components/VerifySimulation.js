@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, COMBINED_PROCESS, CBCTypeId } from '../../../config/constants';
-import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList } from '../actions/Simulation';
+import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
@@ -16,6 +16,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import DayTime from '../../common/DayTimeWrapper';
+import DatePicker from "react-datepicker";
 // import AssemblySimulation from './AssemblySimulation';
 
 const gridOptions = {};
@@ -49,6 +51,7 @@ function VerifySimulation(props) {
     const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     const gridRef = useRef();
 
@@ -193,40 +196,77 @@ function VerifySimulation(props) {
                     }))
                     break;
                 case Number(BOPDOMESTIC):
-
-                    dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this bought out part.')
-                                setHideRunButton(true)
-                                return false
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
+                                    Toaster.warning('No approved costing exist for this bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationtechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
                             }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                        }))
+                    } else {
+                        dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.SimulationBoughtOutPart.length === 0) {
+                                    Toaster.warning('No approved bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationTechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
+                            }
+
+                        }))
+                    }
                     break;
                 case Number(BOPIMPORT):
 
-                    dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
-                        if (res.data.Result) {
-                            const data = res.data.Data
-                            if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
-                                Toaster.warning('No approved costing exist for this bought out part.')
-                                setHideRunButton(true)
-                                return false
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(getVerifyBoughtOutPartSimulationList(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.simulationBoughtOutPartImpactedCostings.length === 0) {
+                                    Toaster.warning('No approved costing exist for this bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationtechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
                             }
-                            setTokenNo(data.TokenNumber)
-                            setSimualtionId(data.SimulationId)
-                            setSimulationTechnologyId(data.SimulationtechnologyId)
-                            setHideRunButton(false)
-                            setEffectiveDate(data.EffectiveDate)
-                        }
-                    }))
+                        }))
+                    } else {
+                        dispatch(getAllSimulationBoughtOutPart(props.token, (res) => {
+                            if (res.data.Result) {
+                                const data = res.data.Data
+                                if (data.SimulationBoughtOutPart.length === 0) {
+                                    Toaster.warning('No approved bought out part.')
+                                    setHideRunButton(true)
+                                    return false
+                                }
+                                setTokenNo(data.TokenNumber)
+                                setSimualtionId(data.SimulationId)
+                                setSimulationTechnologyId(data.SimulationTechnologyId)
+                                setHideRunButton(false)
+                                setEffectiveDate(data.EffectiveDate)
+                            }
+
+                        }))
+                    }
                     break;
                 // case Number(BOPIMPORT):
 
@@ -309,6 +349,20 @@ function VerifySimulation(props) {
     }
 
     const newBRFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let data = ''
+        let classGreen = ''
+        if (isMasterAssociatedWithCosting) {
+            data = (row?.NewBoughtOutPartRate ? row?.NewBoughtOutPartRate : '-')
+            classGreen = (row?.NewBoughtOutPartRate > row?.OldBoughtOutPartRate) ? 'red-value form-control' : (row?.NewBoughtOutPartRate < row?.OldBoughtOutPartRate) ? 'green-value form-control' : 'form-class'
+        } else {
+            data = row?.NewBOPRate ? row?.NewBOPRate : '-'
+            classGreen = (row?.NewBasicRate > row?.OldBasicRate) ? 'red-value form-control' : (row?.NewBasicRate < row?.OldBasicRate) ? 'green-value form-control' : 'form-class'
+        }
+        return data != null ? <span className={classGreen}>{checkForDecimalAndNull(data, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
+    const newRMBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row?.NewBasicRate > row?.OldBasicRate) ? 'red-value form-control' : (row?.NewBasicRate < row?.OldBasicRate) ? 'green-value form-control' : 'form-class'
@@ -323,6 +377,11 @@ function VerifySimulation(props) {
     }
 
     const descriptionFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cell != null && cell.length !== 0) ? cell : '-'
+    }
+
+    const partTypeFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return (cell != null && cell.length !== 0) ? cell : '-'
     }
@@ -376,6 +435,11 @@ function VerifySimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
     }
 
+    const bopNumberFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isMasterAssociatedWithCosting ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')
+    }
+
     const newCCFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -384,8 +448,13 @@ function VerifySimulation(props) {
     }
 
     const decimalFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isMasterAssociatedWithCosting ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')
+    }
+
+    const existingBasicFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isMasterAssociatedWithCosting ? (row?.OldBoughtOutPartRate ? row?.OldBoughtOutPartRate : '-') : (row?.OldBOPRate ? row?.OldBOPRate : '-')
     }
 
     const onRowSelect = () => {
@@ -399,22 +468,26 @@ function VerifySimulation(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        if (verifyList.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (verifyList.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
 
     const setGridSelection = (type, clickedElement) => {
         var selectedRows = gridApi.getSelectedRows();
         const rowIndex = clickedElement.rowIndex
         const costingNumber = clickedElement.data.CostingNumber
-        gridApi.forEachNode(node => {
-            if (node.rowIndex !== rowIndex) {
-                if (node.data.CostingNumber === costingNumber) {
-                    node.setSelected(type);
+        if (isMasterAssociatedWithCosting) {
+            gridApi.forEachNode(node => {
+                if (node.rowIndex !== rowIndex) {
+                    if (node.data.CostingNumber === costingNumber) {
+                        node.setSelected(type);
+                    }
                 }
-            }
-        });
+            });
+        }
         setSelectedRowData(selectedRows)
     }
 
@@ -424,111 +497,186 @@ function VerifySimulation(props) {
         }
     }, [verifyList])
 
-    const runSimulation = debounce(() => {
-        if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one costing.')
-            return false
+    const checkForResponse = (res) => {
+        if ('response' in res) {
+            if (res && res?.response?.data?.Result === false) {
+            }
         }
+        if (res?.data?.Result) {
+            Toaster.success('Simulation process run successfully.')
+            closeDrawer('', true)
+        }
+    }
 
-        let obj = {};
-        obj.SimulationId = simulationId
-        obj.LoggedInUserId = loggedInUserId()
-        let tempArr = []
+    const runSimulation = debounce(() => {
+        if (isMasterAssociatedWithCosting) {
+            if (selectedRowData.length === 0) {
+                Toaster.warning('Please select atleast one costing.')
+                return false
+            }
 
-        if (isMultiTechnology) {
+            let obj = {};
+            obj.SimulationId = simulationId
+            obj.LoggedInUserId = loggedInUserId()
+            let tempArr = []
+
+            if (isMultiTechnology) {
+                selectedRowData && selectedRowData.map(item => {
+                    let tempObj = {}
+                    tempObj.AssemblyCostingId = item.AssemblyCostingId
+                    tempObj.BaseWeightedAverageCostingId = item.BaseWeightedAverageCostingId
+                    tempObj.BaseCostingId = item.BaseCostingId
+                    tempObj.NewBaseCostingId = item.NewBaseCostingId
+                    tempObj.PartTypeId = item.PartTypeId
+                    tempArr.push(tempObj)
+                    return null;
+                })
+            } else {
+                switch (Number(selectedMasterForSimulation.value)) {
+                    case Number(RMDOMESTIC):
+                    case Number(RMIMPORT):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.RawMaterialId = item.RawMaterialId
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        break;
+
+                    case Number(SURFACETREATMENT):
+                    case Number(OPERATIONS):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.OperationId = item.OperationId
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        break;
+
+                    case Number(BOPDOMESTIC):
+                    case Number(BOPIMPORT):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.BoughtOutPartId = item.BoughtOutPartId
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        break;
+
+                    case Number(EXCHNAGERATE):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        obj.RunSimualtionExchangeRateCostingInfos = tempArr
+                        setObj(obj)
+                        setSimulationDrawer(true)
+
+                        break;
+
+                    case Number(MACHINERATE):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.CostingId = item.CostingId
+                            tempObj.MachineId = item.MachineId
+                            tempObj.ProcessId = item.ProcessId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        obj.RunSimualtionCostingInfo = tempArr
+                        setObj(obj)
+                        setSimulationDrawer(true)
+                        break;
+                    case Number(COMBINED_PROCESS):
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.CostingId = item.CostingId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        obj.RunSimualtionCostingInfo = tempArr
+                        setObj(obj)
+                        setSimulationDrawer(true)
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            if (!isExchangeRate) {
+                obj.RunSimualtionCostingInfo = tempArr
+                setObj(obj)
+                setSimulationDrawer(true)
+            }
+        } else {
+            if (selectedRowData.length === 0) {
+                Toaster.warning('Please select atleast one Bought Out Part.')
+                return false
+            }
+
+
+            let tempArr = []
+            let obj = {}
+            let obj2 = {}
+
+            let temp1 = []
+            let temp = []
+            obj2.IsOverhead = false
+            obj2.IsProfit = false
+            obj2.IsRejection = false
+            obj2.IsInventory = false
+            obj2.IsPaymentTerms = false
+            obj2.IsDiscountAndOtherCost = false
+            obj2.IsAdditionalDiscount = false
+            obj2.IsAdditionalOtherCost = false
+            obj2.AdditionalOtherValue = ''                  // if toggleSwitchAdditionalOtherCOst==true then we will fetch percent value else (fixed value)
+            obj2.AdditionalDiscountPercentage = ''               // if toggleSwitchAdditionalDiscount==true then we will fetch discount percent value else fixed value
+            obj2.IsAdditionalOtherCostPercentage = false
+            obj2.IsAdditionalDiscountPercentage = false
+            obj2.IsTool = false
+            obj2.IsFreight = false
+            obj2.IsPackaging = false
+            obj2.IsBOPHandlingCharge = false
+            obj2.AdditionalOtherCostApplicability = ''
+            obj2.AdditionalDiscountApplicability = ''
+            obj2.IsAdditionalToolPercentage = ''
+            obj2.AdditionalToolApplicability = ''
+            obj2.IsAdditionalTool = false
+            obj2.AdditionalToolValue = ''
+            obj2.IsAdditionalPackagingPercentage = false
+            obj2.AdditionalPackagingApplicability = ''
+            obj2.IsAdditionalPackaging = false
+            obj2.AdditionalPackagingValue = ''
+            obj2.IsAdditionalFreightPercentage = false
+            obj2.AdditionalFreightApplicability = ''
+            obj2.IsAdditionalFreight = false
+            obj2.AdditionalFreightValue = ''
+            obj2.IsApplyLatestExchangeRate = false
+            obj2.IsCostingCondition = false
+            obj2.IsCostingNPV = false
+            temp1.push(obj2)
+
             selectedRowData && selectedRowData.map(item => {
                 let tempObj = {}
-                tempObj.AssemblyCostingId = item.AssemblyCostingId
-                tempObj.BaseWeightedAverageCostingId = item.BaseWeightedAverageCostingId
-                tempObj.BaseCostingId = item.BaseCostingId
-                tempObj.NewBaseCostingId = item.NewBaseCostingId
-                tempObj.PartTypeId = item.PartTypeId
+                tempObj.BoughtOutPartId = item.BoughtOutPartId
+                tempObj.CostingId = item.CostingId
                 tempArr.push(tempObj)
                 return null;
             })
-        } else {
-            switch (Number(selectedMasterForSimulation.value)) {
-                case Number(RMDOMESTIC):
-                case Number(RMIMPORT):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.RawMaterialId = item.RawMaterialId
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    break;
 
-                case Number(SURFACETREATMENT):
-                case Number(OPERATIONS):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.OperationId = item.OperationId
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    break;
-
-                case Number(BOPDOMESTIC):
-                case Number(BOPIMPORT):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.BoughtOutPartId = item.BoughtOutPartId
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    break;
-
-                case Number(EXCHNAGERATE):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    obj.RunSimualtionExchangeRateCostingInfos = tempArr
-                    setObj(obj)
-                    setSimulationDrawer(true)
-
-                    break;
-
-                case Number(MACHINERATE):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.CostingId = item.CostingId
-                        tempObj.MachineId = item.MachineId
-                        tempObj.ProcessId = item.ProcessId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    obj.RunSimualtionCostingInfo = tempArr
-                    setObj(obj)
-                    setSimulationDrawer(true)
-                    break;
-                case Number(COMBINED_PROCESS):
-                    selectedRowData && selectedRowData.map(item => {
-                        let tempObj = {}
-                        tempObj.CostingId = item.CostingId
-                        tempArr.push(tempObj)
-                        return null;
-                    })
-                    obj.RunSimualtionCostingInfo = tempArr
-                    setObj(obj)
-                    setSimulationDrawer(true)
-                    break;
-                default:
-                    break;
-            }
-        }
-
-        if (!isExchangeRate && !isCombinedProcess) {
+            obj.SimulationId = simulationId
+            obj.LoggedInUserId = loggedInUserId()
             obj.RunSimualtionCostingInfo = tempArr
-            setObj(obj)
-            setSimulationDrawer(true)
-        }
 
+            dispatch(runSimulationOnSelectedBoughtOutPart({ ...obj, EffectiveDate: DayTime(effectiveDate !== null ? effectiveDate : "").format('YYYY/MM/DD HH:mm'), IsProvisional: false, SimulationApplicability: temp1 }, (res) => {
+                checkForResponse(res)
+            }))
+        }
     }, 500)
 
     const closeDrawer = (e = '', mode) => {
@@ -559,7 +707,11 @@ function VerifySimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
-        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        if (!isMasterAssociatedWithCosting) {
+            params.api.sizeColumnsToFit();
+        } else {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
     };
 
     const onPageSizeChanged = (newPageSize) => {
@@ -575,8 +727,11 @@ function VerifySimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridApi.setQuickFilter(null);
         document.getElementById("filter-text-box").value = "";
-        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
-
+        if (!isMasterAssociatedWithCosting && isBOPDomesticOrImport) {
+            gridRef.current.api.sizeColumnsToFit();
+        } else {
+            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
+        }
     }
 
     const frameworkComponents = {
@@ -595,8 +750,13 @@ function VerifySimulation(props) {
         decimalFormatter: decimalFormatter,
         newCCFormatter: newCCFormatter,
         renderPart: renderPart,
-        renderCustomer: renderCustomer
+        renderCustomer: renderCustomer,
+        bopNumberFormatter: bopNumberFormatter,
+        existingBasicFormatter: existingBasicFormatter,
+        newRMBasicRateFormatter: newRMBasicRateFormatter,
+        partTypeFormatter: partTypeFormatter
     };
+
     return (
         <>
             {
@@ -634,7 +794,7 @@ function VerifySimulation(props) {
                                     </div>
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        <AgGridReact
+                                        {verifyList && <AgGridReact
                                             defaultColDef={defaultColDef}
                                             floatingFilter={true}
                                             domLayout='autoHeight'
@@ -659,27 +819,28 @@ function VerifySimulation(props) {
 
                                         >
                                             <AgGridColumn field="CostingId" hide ></AgGridColumn>
-                                            <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>
-                                            <AgGridColumn width={110} field="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>
-                                            <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>
-                                            <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={185} field="CostingNumber" headerName="Costing Number"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={110} field="PartNo" headerName="Part No." cellRenderer='renderPart'></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartName" cellRenderer='descriptionFormatter' headerName="Part Name"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={120} field="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="RevisionNumber" cellRenderer='revisionFormatter' headerName="Revision No."></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMName" headerName="RM Name" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={120} field="RMGrade" headerName="Grade" ></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={145} field="ProcessName" headerName="Process Name"></AgGridColumn>}
                                             {isMachineRate && <AgGridColumn width={150} field="MachineNumber" headerName="Machine Number"></AgGridColumn>}
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartCode" headerName="BOP Number" cellRenderer={"bopNumberFormatter"}></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" headerName="Operation Code"></AgGridColumn>}
-                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
-                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
-                                            <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price" cellRenderer='poPriceFormatter'></AgGridColumn>
+                                            {isMasterAssociatedWithCosting && <AgGridColumn width={130} field="POPrice" headerName="Existing Net Cost" cellRenderer='poPriceFormatter'></AgGridColumn>}
 
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OldOperationRate" headerName="Existing Rate"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="NewOperationRate" headerName="Revised Rate"></AgGridColumn>}
 
-                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate"></AgGridColumn>}
+                                            {isBOPDomesticOrImport === true && <AgGridColumn width={145} field="OldBoughtOutPartRate" headerName="Existing Basic Rate" cellRenderer={existingBasicFormatter}></AgGridColumn>}
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={150} field="NewBoughtOutPartRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
 
                                             {isMachineRate && <AgGridColumn width={145} field="OldMachineRate" headerName="Existing Machine Rate"></AgGridColumn>}
@@ -687,13 +848,13 @@ function VerifySimulation(props) {
 
 
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldBasicRate" headerName="Existing Basic Rate"></AgGridColumn>}
-                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newBRFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
+                                            {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewBasicRate" cellRenderer='newRMBasicRateFormatter' headerName="Revised Basic Rate"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={145} field="OldScrapRate" headerName="Existing Scrap Rate"></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn width={150} field="NewScrapRate" cellRenderer='newSRFormatter' headerName="Revised Scrap Rate" ></AgGridColumn>}
                                             {isRMDomesticOrRMImport === true && <AgGridColumn field="RawMaterialId" hide ></AgGridColumn>}
 
                                             {isExchangeRate && <AgGridColumn width={130} field="Currency" headerName="Currency"></AgGridColumn>}
-                                            {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="Existing PO Price"></AgGridColumn>}
+                                            {isExchangeRate && <AgGridColumn width={130} field="POPrice" headerName="Existing Net Cost"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="Revised Exchange Rate"></AgGridColumn>}
 
@@ -705,12 +866,12 @@ function VerifySimulation(props) {
                                             {isMultiTechnology && <AgGridColumn width={150} field="DeltaSign" headerName="DeltaSign"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="NetCost" headerName="Net Cost"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="SOBPercentage" headerName="SOB Percentage"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="OldPOPrice" headerName="Existing PO Price"></AgGridColumn>}
-                                            {isMultiTechnology && <AgGridColumn width={150} field="NewPOPrice" headerName="Revised PO Price"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn width={150} field="OldPOPrice" headerName="Existing Net Cost"></AgGridColumn>}
+                                            {isMultiTechnology && <AgGridColumn width={150} field="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
 
 
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
-                                        </AgGridReact>
+                                        </AgGridReact>}
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
                                 </div>
@@ -718,22 +879,26 @@ function VerifySimulation(props) {
                         </Col >
                     </Row >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
-                        <div className="col-sm-12 text-right bluefooter-butn">
+                        <div className="col-sm-12 text-right bluefooter-butn run-simulation">
                             {/* {!isAssemblyCosting && */}
                             {/* <button onClick={runSimulation} type="submit" disabled={hideRunButton || runSimulationPermission} className="user-btn mr5 save-btn"                    > */}
+                            {!isMasterAssociatedWithCosting && <DatePicker
+                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                dateFormat="dd/MM/yyyy"
+                                showMonthDropdown
+                                showYearDropdown
+                                readonly="readonly"
+                                onBlur={() => null}
+                                autoComplete={'off'}
+                                disabledKeyboardNavigation
+                                disabled={true}
+                                className='form-control bottom-disabled-date'
+                            />}
                             <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button>
-                            {/* } */}
-                            {/* {isAssemblyCosting &&    // REJECTED ASSEMBLY
-                                <button onClick={assemblySimulation} type="submit" disabled={hideRunButton} className="user-btn mr5 save-btn"                    >
-                                    <div className={"Run-icon"}>
-                                    </div>{" "}
-                                    {"assembly SIMULATION"}
-                                </button>
-                            } */}
                         </div>
                     </Row>
                 </>
@@ -746,6 +911,7 @@ function VerifySimulation(props) {
                 simulationDrawer &&
                 <RunSimulationDrawer
                     tokenNo={tokenNo}
+                    simulationTechnologyId={simulationTechnologyId}
                     vendorId={vendorId}
                     isOpen={simulationDrawer}
                     closeDrawer={closeDrawer}
@@ -766,5 +932,6 @@ function VerifySimulation(props) {
         </>
     );
 }
+
 
 export default VerifySimulation;

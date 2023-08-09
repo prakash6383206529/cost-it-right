@@ -26,6 +26,7 @@ import { getListingForSimulationCombined } from '../../simulation/actions/Simula
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -36,6 +37,7 @@ const gridOptions = {};
 class ExchangeRateListing extends Component {
     constructor(props) {
         super(props);
+        this.myRef = React.createRef();
         this.state = {
             tableData: [],
             currency: [],
@@ -168,7 +170,8 @@ class ExchangeRateListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteExchangeRate(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteExchangeRate(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
                 this.getTableListData()
@@ -263,7 +266,12 @@ class ExchangeRateListing extends Component {
    * @description Filter data when user type in searching input
    */
     onFloatingFilterChanged = (value) => {
-        this.props.exchangeRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+
+        setTimeout(() => {
+            this.props.exchangeRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
+
+
     }
     /**
     * @name onSubmit
@@ -277,7 +285,7 @@ class ExchangeRateListing extends Component {
     onGridReady = (params) => {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
         params.api.paginationGoToPage(0);
-
+        this.myRef.current = params.api
         var allColumnIds = [];
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
@@ -329,6 +337,7 @@ class ExchangeRateListing extends Component {
     }
 
     resetState() {
+        this.setState({ noData: false })
         this.state.gridApi.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
@@ -427,6 +436,7 @@ class ExchangeRateListing extends Component {
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
                                     floatingFilter={true}
+                                    ref={this.myRef}
                                     domLayout='autoHeight'
                                     rowData={this.props.exchangeRateDataList}
                                     pagination={true}
@@ -454,7 +464,7 @@ class ExchangeRateListing extends Component {
                                     <AgGridColumn field="CustomRate" headerName="Custom Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
-                                    {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
+                                    {!this.props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>

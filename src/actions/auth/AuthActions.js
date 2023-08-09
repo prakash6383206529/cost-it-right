@@ -7,7 +7,7 @@ import {
     GET_MODULE_SELECTLIST_SUCCESS, GET_PAGE_SELECTLIST_BY_MODULE_SUCCESS, GET_PAGES_SELECTLIST_SUCCESS, GET_ACTION_HEAD_SELECTLIST_SUCCESS,
     GET_MENU_BY_USER_DATA_SUCCESS, GET_LEFT_MENU_BY_MODULE_ID_AND_USER, LOGIN_PAGE_INIT_CONFIGURATION, config, GET_USERS_BY_TECHNOLOGY_AND_LEVEL,
     GET_LEVEL_BY_TECHNOLOGY, GET_MENU_BY_MODULE_ID_AND_USER, LEVEL_MAPPING_API, GET_SIMULATION_TECHNOLOGY_SELECTLIST_SUCCESS,
-    SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, COSTINGS_APPROVAL_DASHBOARD, AMENDMENTS_APPROVAL_DASHBOARD, GET_USERS_MASTER_LEVEL_API
+    SIMULATION_LEVEL_DATALIST_API, GET_SIMULATION_LEVEL_BY_TECHNOLOGY, GET_TOP_AND_LEFT_MENU_DATA, GET_MASTER_SELECT_LIST, MASTER_LEVEL_DATALIST_API, GET_MASTER_LEVEL_BY_MASTERID, COSTINGS_APPROVAL_DASHBOARD, AMENDMENTS_APPROVAL_DASHBOARD, GET_USERS_MASTER_LEVEL_API, GET_RFQ_USER_DATA_SUCCESS
 } from '../../config/constants';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import { MESSAGES } from "../../config/message";
@@ -225,10 +225,17 @@ export function getAllUserDataAPI(data, callback) {
         //dispatch({ type: API_REQUEST });
         axios.get(`${API.getAllUserDataAPI}?department_id=${data.DepartmentId}&role_id=${data.RoleId}&logged_in_user=${data.logged_in_user}&userType=${data.userType}`, config())
             .then((response) => {
-                dispatch({
-                    type: GET_USER_DATA_SUCCESS,
-                    payload: response.data.DataList,
-                });
+                if (data.userType === 'RFQ') {
+                    dispatch({
+                        type: GET_RFQ_USER_DATA_SUCCESS,
+                        payload: response.status === 200 ? response.data.DataList : [],
+                    });
+                } else {
+                    dispatch({
+                        type: GET_USER_DATA_SUCCESS,
+                        payload: response.status === 200 ? response.data.DataList : [],
+                    });
+                }
                 callback(response);
             }).catch((error) => {
                 dispatch({ type: API_FAILURE });
@@ -974,7 +981,7 @@ export function getSimulationLevelDataList(callback) {
 }
 
 /**
- * @method fetchPlantDataAPI
+ * @method getAllTechnologyAPI
  * @description Used to fetch plant list
  */
 export function getAllTechnologyAPI(callback, data) {
@@ -1786,6 +1793,12 @@ export function getUsersMasterLevelAPI(UserId, technologyId, callback) {
                 dispatch({
                     type: GET_USERS_MASTER_LEVEL_API,
                     payload: response.data.Data.MasterLevels,
+                });
+                callback(response);
+            } else {
+                dispatch({
+                    type: GET_USERS_MASTER_LEVEL_API,
+                    payload: [],
                 });
                 callback(response);
             }

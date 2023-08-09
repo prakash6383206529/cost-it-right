@@ -61,7 +61,13 @@ function RfqListing(props) {
     const [selectedCostingsToShow, setSelectedCostingsToShow] = useState([])
     const [multipleCostingDetails, setMultipleCostingDetails] = useState([])
     const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
+    const [costingListToShow, setCostingListToShow] = useState([])
     const [selectedRowIndex, setSelectedRowIndex] = useState('')
+    const [index, setIndex] = useState('')
+    const [selectedCostingList, setSelectedCostingList] = useState('')
+    const [mandatoryRemark, setMandatoryRemark] = useState(false)
+    const [compareButtonPressed, setCompareButtonPressed] = useState(false)
+    const [isVisibiltyConditionMet, setisVisibiltyConditionMet] = useState(false)
 
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -163,15 +169,48 @@ function RfqListing(props) {
     * @description edit material type
     */
     const approvemDetails = (Id, rowData = {}) => {
-        let filteredArr = _.map(viewCostingData, 'costingId')
+        if (selectedCostingList?.length === 0) {
+            Toaster.warning("Select at least one costing to send for approval")
+            return false
+        }
+        const arrayOfObjects = [...viewCostingData]
+        const matchingItems = selectedCostingList.filter(item =>
+            arrayOfObjects.some(obj => obj.costingId === item)
+        );
         let arr = []
-        filteredArr.map(item => rowData.filter(el => {
+        matchingItems.map(item => rowData.filter(el => {
             if (el.CostingId === item) {
                 arr.push(el)
             }
             return null
         }))
 
+
+        let data = arrayOfObjects?.filter(element => element?.costingId !== "-")
+        let val = data[0]?.poPrice
+        let costingId = data[0]?.costingId
+        data && data?.map((item, index) => {
+            if (val > item?.poPrice) {
+                val = item?.poPrice
+                costingId = item?.costingId
+            }
+        })
+        let tempArray = _.map(arr, 'NetPOPrice')
+        const firstElement = tempArray[0];
+        let test = tempArray.every(element => element === firstElement);
+        if (arr?.length > 1) {
+            if (test) {
+                setMandatoryRemark(false)
+            } else {
+                setMandatoryRemark(true)
+            }
+        } else {
+            if (selectedCostingList?.includes(costingId)) {
+                setMandatoryRemark(false)
+            } else {
+                setMandatoryRemark(true)
+            }
+        }
         // let data = {
         //     isEditFlag: true,
         //     rowData: rowData,
@@ -319,7 +358,7 @@ function RfqListing(props) {
                     obj.customerId = quotationGrid[index]?.customerId
                     obj.customerCode = quotationGrid[index]?.customerCode
                     obj.customer = quotationGrid[index]?.customer
-
+                    obj.basicRate = quotationGrid[index]?.BasicRate
 
 
                     // if (quotationGrid[index]?.EffectiveDate) {
@@ -440,6 +479,11 @@ function RfqListing(props) {
         setIsOpen(true)
     }
 
+    const checkCostingSelected = (list, index) => {
+        setIndex(index)
+        setSelectedCostingList(list)
+    }
+
     /**
     * @method buttonFormatter
     * @description Renders buttons
@@ -472,10 +516,10 @@ function RfqListing(props) {
         return (
             <>
                 {/* {< button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />} */}
-                {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => singleApprovalDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
-                {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />}
+                {/* {showActionIcons && <button title='Approve' className="approve-icon mr-1" type={'button'} onClick={() => singleApprovalDetails(cellValue, rowData)}><div className='approve-save-tick'></div></button>}
+                {showActionIcons && <button title='Reject' className="CancelIcon mr-1" type={'button'} onClick={() => rejectDetails(cellValue, rowData)} />} */}
                 {showRemarkHistory && <button title='Remark History' className="btn-history-remark mr-1" type={'button'} onClick={() => { getRemarkHistory(cellValue, rowData) }}><div className='history-remark'></div></button>}
-                {showReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
+                {showReminderIcon && !rowData?.IsLastSubmissionDateCrossed && rowData?.IsShowReminderIcon && <button title={`Reminder: ${reminderCount}`} className="btn-reminder mr-1" type={'button'} onClick={() => { sendReminder(cellValue, rowData) }}><div className="reminder"><div className="count">{reminderCount}</div></div></button>}
                 {rowData?.CostingId && < button title='View' className="View mr-1" type={'button'} onClick={() => viewCostingDetail(rowData)} />}
 
             </>
@@ -550,6 +594,7 @@ function RfqListing(props) {
         } else {
             // Define an array of keys to check when finding the "best cost"
             const keysToCheck = ["netRM", "netBOP", "pCost", "oCost", "sTreatment", "nPackagingAndFreight", "totalToolCost", "nsTreamnt", "tCost", "nConvCost", "nTotalRMBOPCC", "netSurfaceTreatmentCost", "nOverheadProfit", "nPoPriceCurrency", "nPOPrice", "nPOPriceWithCurrency"];
+            const keysToCheckSum = ["netRM", "netBOP", "nPackagingAndFreight", "totalToolCost", "nConvCost", "netSurfaceTreatmentCost", "nOverheadProfit"];
             // const keysToCheck = ["nPOPriceWithCurrency"];
 
             // Create a new object to represent the "best cost" and set it to the first object in the input array
@@ -583,8 +628,21 @@ function RfqListing(props) {
                     }
                 }
                 // Set the attachment and bestCost properties of the minimum object
+                let sum = 0
+                for (let key in finalArrayList[0]) {
+                    if (keysToCheckSum?.includes(key)) {
+                        if (isNumber(minObject[key])) {
+                            sum = sum + checkForNull(minObject[key]);
+                        } else if (Array.isArray(minObject[key])) {
+                            minObject[key] = [];
+                        }
+                    } else {
+                        minObject[key] = "-";
+                    }
+                }
                 minObject.attachment = []
                 minObject.bestCost = true
+                minObject.nPOPrice = sum
             }
             // Add the minimum object to the end of the array
             finalArrayList.push(minObject);
@@ -595,12 +653,21 @@ function RfqListing(props) {
     }
 
     const addComparisonDrawerToggle = () => {
+        let arr = []
+        selectedRows && selectedRows?.map(item => {
+            if (item?.CostingId) {
+                arr.push(item?.CostingId)
+            }
+        })
+        setCompareButtonPressed(true)
+        setCostingListToShow(arr)
         let temp = []
         let tempObj = {}
         const isApproval = selectedRows.filter(item => item.ShowApprovalButton)
         setDisableApproveRejectButton(isApproval.length > 0)
         let costingIdList = [...selectedRows[0]?.ShouldCostings, ...selectedRows]
         setloader(true)
+        setSelectedCostingList([])
         dispatch(getMultipleCostingDetails(costingIdList, (res) => {
             if (res) {
                 res.map((item) => {
@@ -616,6 +683,7 @@ function RfqListing(props) {
                 setaddComparisonToggle(true)
                 setloader(false)
             }
+            setCompareButtonPressed(false)
         }))
     }
 
@@ -633,8 +701,15 @@ function RfqListing(props) {
         if (event.node.isSelected()) {
             const selectedRowIndex = event.node.rowIndex;
             setSelectedRowIndex(selectedRowIndex)
+        } else {
+            setaddComparisonToggle(false)
+            setSelectedRowIndex('')
+            gridApi.deselectAll()
         }
+
+
         const selectedRows = gridApi?.getSelectedRows()
+
         let partNumber = []
 
         selectedRows.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER
@@ -646,6 +721,13 @@ function RfqListing(props) {
             newArray = [...newArray, ...item]
             return null
         })
+
+
+        if (selectedRows && selectedRows.length > 0 && selectedRows[0]?.IsVisibiltyConditionMet && selectedRows[0].IsShowNetPoPrice) {
+            setisVisibiltyConditionMet(true)
+        } else {
+            setisVisibiltyConditionMet(false)
+        }
 
 
         setSelectedRows(newArray)
@@ -669,7 +751,7 @@ function RfqListing(props) {
         resizable: true,
         filter: true,
         sortable: false,
-        headerCheckboxSelection: true ? isFirstColumn : false,
+        headerCheckboxSelection: false,
         headerCheckboxSelectionFilteredOnly: true,
         checkboxSelection: isFirstColumn,
         hyphenFormatter: hyphenFormatter
@@ -691,7 +773,8 @@ function RfqListing(props) {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
         dateFormatter: dateFormatter,
-        partNumberFormatter: partNumberFormatter
+        partNumberFormatter: partNumberFormatter,
+        customNoRowsOverlay: NoContentFound
     }
 
     const closeSendForApproval = (e = '', type) => {
@@ -734,7 +817,7 @@ function RfqListing(props) {
                                         type="text"
                                         className="form-control mx-2 defualt-input-value"
                                         value={data.RaisedBy}
-                                        style={{ width: (data.RaisedBy.length * 9 + 10) + 'px' }}
+                                        style={{ width: (data.RaisedBy.length * 9 + 13) + 'px' }}
                                         disabled={true}
                                     /> </div>
                                 <div className='d-flex align-items-center pr-0'><div className='w-min-fit'>Raised On:</div>
@@ -754,7 +837,7 @@ function RfqListing(props) {
                                         <button type="button" className="user-btn ml-2" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        {rowData[0]?.IsVisibiltyConditionMet === true && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
+                                        {isVisibiltyConditionMet && <Link to={"rfq-compare-drawer"} smooth={true} spy={true} offset={-250}>
                                             <button
                                                 type="button"
                                                 className={'user-btn comparison-btn ml-1'}
@@ -800,6 +883,7 @@ function RfqListing(props) {
                                             enableBrowserTooltips={true}
                                         >
                                             <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
+                                            <AgGridColumn field="NfrNumber" headerName='NFR No.' ></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -810,10 +894,10 @@ function RfqListing(props) {
                                             <AgGridColumn field="VisibilityDuration" headerName='Visibility Duration' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingNumber" headerName=' Costing Number' cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="CostingId" headerName='Costing Id ' hide={true}></AgGridColumn>
-                                            <AgGridColumn field="NetPOPrice" headerName=" Net PO Price" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                            <AgGridColumn field="NetPOPrice" headerName=" Net Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="SubmissionDate" headerName='Submission Date' cellRenderer={dateFormatter}></AgGridColumn>
                                             <AgGridColumn field="EffectiveDate" headerName='Effective Date' cellRenderer={dateFormatter}></AgGridColumn>
-                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                            {rowData[0]?.IsVisibiltyConditionMet === true && <AgGridColumn width={window.screen.width >= 1920 ? 280 : 220} field="QuotationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />}
@@ -837,6 +921,7 @@ function RfqListing(props) {
                             technologyId={technologyId}
                             cancel={cancel}
                             selectedRows={selectedRows}
+                            mandatoryRemark={mandatoryRemark}
                         />
                     )
                 }
@@ -888,7 +973,8 @@ function RfqListing(props) {
                     <div id='rfq-compare-drawer'>
                         {addComparisonToggle && (
 
-                            <CostingSummaryTable viewMode={true}
+                            <CostingSummaryTable
+                                viewMode={true}
                                 isRfqCosting={true}
                                 // costingID={approvalDetails.CostingId}
                                 approvalMode={true}
@@ -898,6 +984,11 @@ function RfqListing(props) {
                                 costingIdExist={true}
                                 bestCostObjectFunction={bestCostObjectFunction}
                                 crossButton={hideSummaryHandler}
+                                costingIdList={costingListToShow}
+                                isFromViewRFQ={true}
+                                checkCostingSelected={checkCostingSelected}
+                                disableApproveRejectButton={disableApproveRejectButton}
+                                compareButtonPressed={compareButtonPressed}
                             />
                         )}
                     </div>
@@ -919,7 +1010,7 @@ function RfqListing(props) {
                 }
 
             </div >
-            {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="sf-btn-footer no-gutters justify-content-between">
+            {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
 
                     <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >

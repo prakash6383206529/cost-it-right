@@ -190,7 +190,7 @@ export function getProfitData(ID, callback) {
 export function getOverheadDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&overhead_applicability_type_id=${data.overhead_applicability_type_id}&model_type_id=${data.model_type_id}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&VendorName=${obj.VendorName ? obj.VendorName : ""}&ClientName=${obj.ClientName ? obj.ClientName : ""}&ModelType=${obj.ModelType ? obj.ModelType : ""}&OverheadApplicability=${obj.OverheadApplicabilityType ? obj.OverheadApplicabilityType : ""}&OverheadApplicabilityPercentage=${obj.OverheadPercentage ? obj.OverheadPercentage : ""}&OverheadOnRMPercentage=${obj.OverheadRMPercentage ? obj.OverheadRMPercentage : ""}&OverheadOnBOPPercentage=${obj.OverheadBOPPercentage ? obj.OverheadBOPPercentage : ""}&OverheadOnCCPercentage=${obj.OverheadMachiningCCPercentage ? obj.OverheadMachiningCCPercentage : ""}&EffectiveDate=${obj.EffectiveDateNew ? obj.EffectiveDateNew : ""}&Plant=${obj.PlantName ? obj.PlantName : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
+        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&overhead_applicability_type_id=${data.overhead_applicability_type_id}&model_type_id=${data.model_type_id}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&VendorName=${obj.VendorName ? obj.VendorName : ""}&ClientName=${obj.ClientName ? obj.ClientName : ""}&ModelType=${obj.ModelType ? obj.ModelType : ""}&OverheadApplicability=${obj.OverheadApplicabilityType ? obj.OverheadApplicabilityType : ""}&OverheadApplicabilityPercentage=${obj.OverheadPercentage ? obj.OverheadPercentage : ""}&OverheadOnRMPercentage=${obj.OverheadRMPercentage ? obj.OverheadRMPercentage : ""}&OverheadOnBOPPercentage=${obj.OverheadBOPPercentage ? obj.OverheadBOPPercentage : ""}&OverheadOnCCPercentage=${obj.OverheadMachiningCCPercentage ? obj.OverheadMachiningCCPercentage : ""}&EffectiveDate=${obj.EffectiveDateNew ? obj.EffectiveDateNew : ""}&Plant=${obj.PlantName ? obj.PlantName : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&RawMaterialName=${obj.RawMaterialName !== undefined ? obj.RawMaterialName : ''}&RawMaterialGrade=${obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : ''}&TechnologyName=${obj.TechnologyName !== undefined ? obj.TechnologyName : ''}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
         axios.get(`${API.getOverheadDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
@@ -222,7 +222,7 @@ export function getOverheadDataList(data, skip, take, isPagination, obj, callbac
 export function getProfitDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&profit_applicability_type_id=${data.profit_applicability_type_id}&model_type_id=${data.model_type_id}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&VendorName=${obj.VendorName ? obj.VendorName : ""}&ClientName=${obj.ClientName ? obj.ClientName : ""}&ModelType=${obj.ModelType ? obj.ModelType : ""}&ProfitApplicability=${obj.ProfitApplicabilityType ? obj.ProfitApplicabilityType : ""}&ProfitApplicabilityPercentage=${obj.ProfitPercentage ? obj.ProfitPercentage : ""}&ProfitOnRMPercentage=${obj.ProfitRMPercentage ? obj.ProfitRMPercentage : ""}&ProfitOnBOPPercentage=${obj.ProfitBOPPercentage ? obj.ProfitBOPPercentage : ""}&ProfitOnCCPercentage=${obj.ProfitMachiningCCPercentage ? obj.ProfitMachiningCCPercentage : ""}&EffectiveDate=${obj.EffectiveDateNew ? obj.EffectiveDateNew : ""}&Plant=${obj.PlantName ? obj.PlantName : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
+        const queryParams = `costing_head=${data.costing_head}&vendor_id=${data.vendor_id}&profit_applicability_type_id=${data.profit_applicability_type_id}&model_type_id=${data.model_type_id}&CostingHead=${obj.CostingHead ? obj.CostingHead : ""}&VendorName=${obj.VendorName ? obj.VendorName : ""}&ClientName=${obj.ClientName ? obj.ClientName : ""}&ModelType=${obj.ModelType ? obj.ModelType : ""}&ProfitApplicability=${obj.ProfitApplicabilityType ? obj.ProfitApplicabilityType : ""}&ProfitApplicabilityPercentage=${obj.ProfitPercentage ? obj.ProfitPercentage : ""}&ProfitOnRMPercentage=${obj.ProfitRMPercentage ? obj.ProfitRMPercentage : ""}&ProfitOnBOPPercentage=${obj.ProfitBOPPercentage ? obj.ProfitBOPPercentage : ""}&ProfitOnCCPercentage=${obj.ProfitMachiningCCPercentage ? obj.ProfitMachiningCCPercentage : ""}&EffectiveDate=${obj.EffectiveDateNew ? obj.EffectiveDateNew : ""}&Plant=${obj.PlantName ? obj.PlantName : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&RawMaterialName=${obj.RawMaterialName !== undefined ? obj.RawMaterialName : ''}&RawMaterialGrade=${obj.RawMaterialGrade !== undefined ? obj.RawMaterialGrade : ''}&TechnologyName=${obj.TechnologyName !== undefined ? obj.TechnologyName : ''}&IsCustomerDataShow=${reactLocalStorage.getObject('cbcCostingPermission') !== undefined ? reactLocalStorage.getObject('cbcCostingPermission') : false}`
         axios.get(`${API.getProfitDataList}?${queryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
@@ -252,10 +252,11 @@ export function getProfitDataList(data, skip, take, isPagination, obj, callback)
  * @method deleteOverhead
  * @description delete Overhead
  */
-export function deleteOverhead(Id, callback) {
+export function deleteOverhead(overheadId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteOverhead}/${Id}`, config())
+        const queryParams = `overheadId=${overheadId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteOverhead}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -269,10 +270,11 @@ export function deleteOverhead(Id, callback) {
  * @method deleteProfit
  * @description delete Profit
  */
-export function deleteProfit(Id, callback) {
+export function deleteProfit(profitId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProfit}/${Id}`, config())
+        const queryParams = `profitId=${profitId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteProfit}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -353,40 +355,6 @@ export function fileUploadProfit(data, callback) {
 }
 
 /**
- * @method fileDeleteOverhead
- * @description delete Overhead file API
- */
-export function fileDeleteOverhead(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteOverhead}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
-
-/**
- * @method fileDeleteProfit
- * @description delete Profit file API
- */
-export function fileDeleteProfit(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteProfit}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
-
-/**
  * @method overheadBulkUpload
  * @description create Overhead by Bulk Upload
  */
@@ -446,14 +414,6 @@ export function fetchModelTypeAPI(modelTypeHeading, callback) {
             apiErrors(error);
         });
     };
-}
-
-/**
- * @method getVendorWithVendorCodeSelectList
- * @description GET VENDOR WITH VENDOR CODE SELECTLIST
- */
-export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
 }
 
 /**

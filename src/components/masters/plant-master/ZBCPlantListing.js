@@ -110,7 +110,8 @@ class ZBCPlantListing extends Component {
     * @description confirm delete user item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deletePlantAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deletePlantAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 this.setState({ dataCount: 0 })
@@ -282,7 +283,9 @@ class ZBCPlantListing extends Component {
    * @description Filter data when user type in searching input
    */
     onFloatingFilterChanged = (value) => {
-        this.props.plantDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.plantDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
 
     /**
@@ -371,7 +374,7 @@ class ZBCPlantListing extends Component {
 
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.state.isLoader && <LoaderCustom customClass ="loader-center" />}
+                {this.state.isLoader && <LoaderCustom customClass="loader-center" />}
                 <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
                     <Row className="pt-4">
 
@@ -451,7 +454,7 @@ class ZBCPlantListing extends Component {
                             <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="130" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
                         {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}

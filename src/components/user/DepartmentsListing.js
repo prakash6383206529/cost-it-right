@@ -263,7 +263,11 @@ class DepartmentsListing extends Component {
                     gridOptions={gridOptions}
                     loadingOverlayComponent={'customLoadingOverlay'}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
-                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                    onFilterModified={(e) => {
+                      setTimeout(() => {
+                        this.setState({ noData: searchNocontentFilter(e) });
+                      }, 500);
+                    }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                       imagClass: 'imagClass'
@@ -272,16 +276,16 @@ class DepartmentsListing extends Component {
                   >
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}></AgGridColumn>
-                    <AgGridColumn field="DepartmentCode" headerName="Purchase Group Code"></AgGridColumn>
+                    <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Purchase Group Code'}></AgGridColumn>
                     <AgGridColumn field="DepartmentId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                  </AgGridReact>
-                  {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                  </AgGridReact >
+                  {< PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                 </div>
-              </div>
+              </div >
 
 
-            </Col>
-          </Row>
+            </Col >
+          </Row >
           {isOpen && (
             <Department
               isOpen={isOpen}
@@ -296,7 +300,7 @@ class DepartmentsListing extends Component {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.DEPARTMENT_DELETE_ALERT}`} />
           }
         </>
-      </div>
+      </div >
     );
   }
 }

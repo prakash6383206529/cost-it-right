@@ -2,23 +2,33 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useForm, Controller, useWatch, } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
-import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, } from '../../../../../helper';
+import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isMultiTechnologyCosting, } from '../../../../../helper';
 import { fetchModelTypeAPI, getPaymentTermsAppliSelectListKeyValue } from '../../../../../actions/Common';
 import { getOverheadProfitDataByModelType, gridDataAdded, isOverheadProfitDataChange, setOverheadProfitErrors, } from '../../../actions/Costing';
 import { costingInfoContext, netHeadCostContext, SurfaceCostContext } from '../../CostingDetailStepTwo';
-import { CBCTypeId, EMPTY_GUID, NFRTypeId, PART_COST, VBCTypeId } from '../../../../../config/constants';
+import { CBCTypeId, CRMHeads, EMPTY_GUID, NFRTypeId, PART_COST, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../../config/constants';
 import { SelectedCostingDetail, ViewCostingContext } from '../../CostingDetails';
 import Rejection from './Rejection';
 import Icc from './Icc';
 import PaymentTerms from './PaymentTerms';
 import { Link } from 'react-scroll'
-import { IdForMultiTechnology } from '../../../../../config/masterData';
+import { ASSEMBLY, IdForMultiTechnology, REMARKMAXLENGTH } from '../../../../../config/masterData';
 import _, { debounce } from 'lodash';
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
 import TooltipCustom from '../../../../common/Tooltip';
+import Popup from 'reactjs-popup';
+import Toaster from '../../../../common/Toaster';
 
 let counter = 0;
+
+export const tooltipTextFunc = (id, condition, text) => {
+
+  let temp = condition && <TooltipCustom id={id} customClass="mt-2" tooltipText={text} />
+  return temp;
+  // {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
+  //     <TooltipCustom id="OverheadRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+}
 function OverheadProfit(props) {
 
   const { data } = props;
@@ -31,7 +41,8 @@ function OverheadProfit(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
 
   const defaultValues = {
-
+    overHeadRemark: CostingOverheadDetail.Remark ? CostingOverheadDetail.Remark : '',
+    crmHeadOverhead: CostingOverheadDetail && CostingOverheadDetail.OverheadCRMHead && { label: CostingOverheadDetail.OverheadCRMHead, value: 1 },
     //REJECTION FIELDS
     Applicability: CostingRejectionDetail && CostingRejectionDetail.RejectionApplicability !== null ? { label: CostingRejectionDetail.RejectionApplicability, value: CostingRejectionDetail.RejectionApplicabilityId } : '',
     RejectionPercentage: CostingRejectionDetail && CostingRejectionDetail.RejectionPercentage !== null ? CostingRejectionDetail.RejectionPercentage : '',
@@ -48,6 +59,7 @@ function OverheadProfit(props) {
     RepaymentPeriodDays: PaymentTermDetail !== null ? PaymentTermDetail.RepaymentPeriod : '',
     RepaymentPeriodPercentage: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : '',
     RepaymentPeriodCost: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.NetCost, initialConfiguration.NoOfDecimalForPrice) : '',
+    RepaymentPeriodFixed: PaymentTermDetail !== null ? checkForDecimalAndNull(PaymentTermDetail.InterestRate, initialConfiguration.NoOfDecimalForPrice) : ''
   }
 
   const { register, handleSubmit, control, clearErrors, setValue, getValues, formState: { errors } } = useForm({
@@ -59,7 +71,12 @@ function OverheadProfit(props) {
   const dispatch = useDispatch()
   const headerCosts = useContext(netHeadCostContext);
   const costData = useContext(costingInfoContext);
-  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData } = useSelector(state => state.costing)
+
+  const CostingViewMode = useContext(ViewCostingContext);
+  const SurfaceTreatmentCost = useContext(SurfaceCostContext);
+  const costingHead = useSelector(state => state.comman.costingHead)
+
+  const { CostingEffectiveDate, CostingDataList, IsIncludedSurfaceInOverheadProfit, IsIncludedToolCost, ToolTabData, OverheadProfitTabData, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
 
   const [overheadObj, setOverheadObj] = useState(CostingOverheadDetail)
   const [profitObj, setProfitObj] = useState(CostingProfitDetail)
@@ -67,13 +84,10 @@ function OverheadProfit(props) {
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [totalToolCost, setTotalToolCost] = useState(0)
-
-  const CostingViewMode = useContext(ViewCostingContext);
-  const SurfaceTreatmentCost = useContext(SurfaceCostContext);
-  const costingHead = useSelector(state => state.comman.costingHead)
+  const [showWarning, setShowWarning] = useState(false)
 
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
 
   const [modelType, setModelType] = useState((data?.CostingPartDetails && data?.CostingPartDetails.ModelType !== null) ? { label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId } : [])
 
@@ -94,6 +108,10 @@ function OverheadProfit(props) {
     //GET FIXED VALUE IN GET API
     if (Object.keys(CostingProfitDetail).length > 0) {
       setProfitValues(CostingProfitDetail, false)
+      setValue('crmHeadProfit', CostingProfitDetail && CostingProfitDetail.ProfitCRMHead && {
+        label: CostingProfitDetail.ProfitCRMHead, value: 1
+      })
+      setValue('profitRemark', CostingProfitDetail && CostingProfitDetail.Remark ? CostingProfitDetail.Remark : '')
     }
 
     setTimeout(() => {
@@ -101,6 +119,7 @@ function OverheadProfit(props) {
     }, 3000)
 
   }, []);
+
 
   useEffect(() => {
     IncludeSurfaceTreatmentCall()
@@ -166,6 +185,7 @@ function OverheadProfit(props) {
 
     setTimeout(() => {
 
+
       let tempObj = {
         "OverheadId": overheadObj && overheadObj.OverheadId,
         "OverheadApplicabilityId": overheadObj && overheadObj.OverheadApplicabilityId,
@@ -197,6 +217,8 @@ function OverheadProfit(props) {
         "OverheadFixedTotalCost": overheadObj && overheadObj.IsOverheadFixedApplicable ? overheadObj.OverheadFixedPercentage : '',
 
         "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
+        "OverheadCRMHead": overheadObj.OverheadCRMHead ? overheadObj.OverheadCRMHead : '',
+        "Remark": overheadObj.Remark ? overheadObj.Remark : ''
       }
 
       let profitTempObj = {
@@ -230,6 +252,8 @@ function OverheadProfit(props) {
         "ProfitFixedTotalCost": profitObj && profitObj.IsProfitFixedApplicable ? profitObj.ProfitFixedTotalCost : '',
 
         "IsSurfaceTreatmentApplicable": IsIncludedSurfaceInOverheadProfit,
+        "ProfitCRMHead": profitObj.ProfitCRMHead ? profitObj.ProfitCRMHead : '',
+        "Remark": profitObj.Remark ? profitObj.Remark : ''
       }
 
       if (!CostingViewMode) {
@@ -320,7 +344,7 @@ function OverheadProfit(props) {
     // if(CheckIsCostingDateSelected(CostingEffectiveDate) && IsDropdownClicked){
     //   setModelType('')
     //   return false
-    // }
+    // } 
 
     if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate)) {
       dispatch(isOverheadProfitDataChange(true))
@@ -336,10 +360,13 @@ function OverheadProfit(props) {
         const reqParams = {
           ModelTypeId: newValue.value,
           VendorId: (costData.CostingTypeId === VBCTypeId || costData.CostingTypeId === NFRTypeId) ? costData.VendorId : EMPTY_GUID,
-          costingTypeId: (Number(costData.CostingTypeId) === NFRTypeId || Number(costData.CostingTypeId) === VBCTypeId) ? VBCTypeId : costData.CostingTypeId,
+          costingTypeId: Number(costData.CostingTypeId) === NFRTypeId ? VBCTypeId : costData.CostingTypeId,
           EffectiveDate: CostingEffectiveDate,
           plantId: (getConfigurationKey()?.IsPlantRequiredForOverheadProfitInterestRate && costData?.CostingTypeId !== VBCTypeId) ? costData.PlantId : (getConfigurationKey()?.IsDestinationPlantConfigure && costData?.CostingTypeId === VBCTypeId) || (costData?.CostingTypeId === CBCTypeId) || (costData?.CostingTypeId === NFRTypeId) ? costData.DestinationPlantId : EMPTY_GUID,
-          customerId: costData.CustomerId
+          customerId: costData.CustomerId,
+          rawMaterialGradeId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialGradeId : EMPTY_GUID,
+          rawMaterialChildId: initialConfiguration.IsShowRawMaterialInOverheadProfitAndICC ? OverheadProfitTabData[0]?.CostingPartDetails?.RawMaterialChildId : EMPTY_GUID,
+          technologyId: null,
         }
 
         dispatch(getOverheadProfitDataByModelType(reqParams, res => {
@@ -373,6 +400,7 @@ function OverheadProfit(props) {
       }
     }
   }
+
 
   /**
   * @method setOverheadValues
@@ -914,33 +942,37 @@ function OverheadProfit(props) {
           case 'RM + CC + BOP':
           case 'Part Cost + CC + BOP':
 
-            overheadCombinedCost = checkForNull(RM_CC_BOP) + checkForNull(NetSurfaceTreatmentCost)
-            overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
+            if ((partType && OverheadApplicability === 'Part Cost + CC + BOP') || (!partType && OverheadApplicability === 'RM + CC + BOP')) {
 
-            setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setOverheadObj({
-              ...overheadObj,
-              OverheadCombinedCost: overheadCombinedCost,
-              OverheadCombinedTotalCost: overheadTotalCost,
-            })
+              overheadCombinedCost = checkForNull(RM_CC_BOP) + checkForNull(NetSurfaceTreatmentCost)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
+
+              setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setOverheadObj({
+                ...overheadObj,
+                OverheadCombinedCost: overheadCombinedCost,
+                OverheadCombinedTotalCost: overheadTotalCost,
+              })
+            }
             break;
 
           case 'RM + CC':
           case 'Part Cost + CC':
 
-
-            overheadCombinedCost = checkForNull(RM_CC) + checkForNull(NetSurfaceTreatmentCost)
-            overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
-            setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setOverheadObj({
-              ...overheadObj,
-              OverheadCombinedCost: overheadCombinedCost,
-              OverheadCombinedTotalCost: overheadTotalCost,
-            })
+            if ((partType && OverheadApplicability === 'Part Cost + CC') || (!partType && OverheadApplicability === 'RM + CC')) {
+              overheadCombinedCost = checkForNull(RM_CC) + checkForNull(NetSurfaceTreatmentCost)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
+              setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setOverheadObj({
+                ...overheadObj,
+                OverheadCombinedCost: overheadCombinedCost,
+                OverheadCombinedTotalCost: overheadTotalCost,
+              })
+            }
             break;
 
           case 'BOP + CC':
@@ -961,17 +993,19 @@ function OverheadProfit(props) {
           case 'RM + BOP':
           case 'Part Cost + BOP':
 
-            overheadCombinedCost = checkForNull(RM_BOP)
-            overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
+            if ((partType && OverheadApplicability === 'Part Cost + BOP') || (!partType && OverheadApplicability === 'RM + BOP')) {
+              overheadCombinedCost = checkForNull(RM_BOP)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
 
-            setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setOverheadObj({
-              ...overheadObj,
-              OverheadCombinedCost: overheadCombinedCost,
-              OverheadCombinedTotalCost: overheadTotalCost,
-            })
+              setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setOverheadObj({
+                ...overheadObj,
+                OverheadCombinedCost: overheadCombinedCost,
+                OverheadCombinedTotalCost: overheadTotalCost,
+              })
+            }
             break;
 
           default:
@@ -985,34 +1019,39 @@ function OverheadProfit(props) {
         switch (OverheadApplicability) {
           case 'RM + CC + BOP':
           case 'Part Cost + CC + BOP':
-            overheadCombinedCost = checkForNull(RM_CC_BOP)
-            overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
-            setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setIsSurfaceTreatmentAdded(false)
-            setOverheadObj({
-              ...overheadObj,
-              OverheadCombinedCost: overheadCombinedCost,
-              OverheadCombinedTotalCost: overheadTotalCost
-            })
+
+            if ((partType && OverheadApplicability === 'Part Cost + CC + BOP') || (!partType && OverheadApplicability === 'RM + CC + BOP')) {
+              overheadCombinedCost = checkForNull(RM_CC_BOP)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
+              setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setIsSurfaceTreatmentAdded(false)
+              setOverheadObj({
+                ...overheadObj,
+                OverheadCombinedCost: overheadCombinedCost,
+                OverheadCombinedTotalCost: overheadTotalCost
+              })
+            }
             break;
 
           case 'RM + CC':
           case 'Part Cost + CC':
 
-            overheadCombinedCost = checkForNull(RM_CC)
-            overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
+            if ((partType && OverheadApplicability === 'Part Cost + CC') || (!partType && OverheadApplicability === 'RM + CC')) {
+              overheadCombinedCost = checkForNull(RM_CC)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
 
-            setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setIsSurfaceTreatmentAdded(false)
-            setOverheadObj({
-              ...overheadObj,
-              OverheadCombinedCost: overheadCombinedCost,
-              OverheadCombinedTotalCost: overheadTotalCost,
-            })
+              setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setIsSurfaceTreatmentAdded(false)
+              setOverheadObj({
+                ...overheadObj,
+                OverheadCombinedCost: overheadCombinedCost,
+                OverheadCombinedTotalCost: overheadTotalCost,
+              })
+            }
             break;
 
           case 'BOP + CC':
@@ -1034,16 +1073,18 @@ function OverheadProfit(props) {
           case 'RM + BOP':
           case 'Part Cost + BOP':
 
-            overheadCombinedCost = checkForNull(RM_BOP)
-            overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
-            setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setOverheadObj({
-              ...overheadObj,
-              OverheadCombinedCost: overheadCombinedCost,
-              OverheadCombinedTotalCost: overheadTotalCost,
-            })
+            if ((partType && OverheadApplicability === 'Part Cost + BOP') || (!partType && OverheadApplicability === 'RM + BOP')) {
+              overheadCombinedCost = checkForNull(RM_BOP)
+              overheadTotalCost = checkForNull(overheadCombinedCost) * calculatePercentage(checkForNull(OverheadPercentage))
+              setValue('OverheadPercentage', checkForDecimalAndNull(OverheadPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedCost', checkForDecimalAndNull(overheadCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('OverheadCombinedTotalCost', checkForDecimalAndNull(overheadTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setOverheadObj({
+                ...overheadObj,
+                OverheadCombinedCost: overheadCombinedCost,
+                OverheadCombinedTotalCost: overheadTotalCost,
+              })
+            }
             break;
 
           default:
@@ -1059,33 +1100,36 @@ function OverheadProfit(props) {
           case 'RM + CC + BOP':
           case 'Part Cost + CC + BOP':
 
-            profitCombinedCost = checkForNull(RM_CC_BOP) + checkForNull(NetSurfaceTreatmentCost)
-            profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
+            if ((partType && OverheadApplicability === 'Part Cost + CC + BOP') || (!partType && OverheadApplicability === 'RM + CC + BOP')) {
+              profitCombinedCost = checkForNull(RM_CC_BOP) + checkForNull(NetSurfaceTreatmentCost)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
 
-            setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setProfitObj({
-              ...profitObj,
-              ProfitCombinedCost: profitCombinedCost,
-              ProfitCombinedTotalCost: profitTotalCost,
-            })
+              setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setProfitObj({
+                ...profitObj,
+                ProfitCombinedCost: profitCombinedCost,
+                ProfitCombinedTotalCost: profitTotalCost,
+              })
+            }
             break;
 
           case 'RM + CC':
           case 'Part Cost + CC':
 
-
-            profitCombinedCost = checkForNull(RM_CC) + checkForNull(NetSurfaceTreatmentCost)
-            profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
-            setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setProfitObj({
-              ...profitObj,
-              ProfitCombinedCost: profitCombinedCost,
-              ProfitCombinedTotalCost: profitTotalCost,
-            })
+            if ((partType && OverheadApplicability === 'Part Cost + CC') || (!partType && OverheadApplicability === 'RM + CC')) {
+              profitCombinedCost = checkForNull(RM_CC) + checkForNull(NetSurfaceTreatmentCost)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
+              setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setProfitObj({
+                ...profitObj,
+                ProfitCombinedCost: profitCombinedCost,
+                ProfitCombinedTotalCost: profitTotalCost,
+              })
+            }
             break;
 
           case 'BOP + CC':
@@ -1106,19 +1150,20 @@ function OverheadProfit(props) {
           case 'RM + BOP':
           case 'Part Cost + BOP':
 
-            profitCombinedCost = checkForNull(RM_BOP)
-            profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
+            if ((partType && OverheadApplicability === 'Part Cost + BOP') || (!partType && OverheadApplicability === 'RM + BOP')) {
+              profitCombinedCost = checkForNull(RM_BOP)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
 
-            setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setProfitObj({
-              ...profitObj,
-              ProfitCombinedCost: profitCombinedCost,
-              ProfitCombinedTotalCost: profitTotalCost,
-            })
+              setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setProfitObj({
+                ...profitObj,
+                ProfitCombinedCost: profitCombinedCost,
+                ProfitCombinedTotalCost: profitTotalCost,
+              })
+            }
             break;
-
           default:
             break;
         }
@@ -1129,34 +1174,38 @@ function OverheadProfit(props) {
           case 'RM + CC + BOP':
           case 'Part Cost + CC + BOP':
 
-            profitCombinedCost = checkForNull(RM_CC_BOP)
-            profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
-            setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setIsSurfaceTreatmentAdded(false)
-            setProfitObj({
-              ...profitObj,
-              ProfitCombinedCost: profitCombinedCost,
-              ProfitCombinedTotalCost: profitTotalCost
-            })
+            if ((partType && OverheadApplicability === 'Part Cost + CC + BOP') || (!partType && OverheadApplicability === 'RM + CC + BOP')) {
+              profitCombinedCost = checkForNull(RM_CC_BOP)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
+              setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setIsSurfaceTreatmentAdded(false)
+              setProfitObj({
+                ...profitObj,
+                ProfitCombinedCost: profitCombinedCost,
+                ProfitCombinedTotalCost: profitTotalCost
+              })
+            }
             break;
 
           case 'RM + CC':
           case 'Part Cost + CC':
 
-            profitCombinedCost = checkForNull(RM_CC)
-            profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
+            if ((partType && OverheadApplicability === 'Part Cost + CC') || (!partType && OverheadApplicability === 'RM + CC')) {
+              profitCombinedCost = checkForNull(RM_CC)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
 
-            setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setIsSurfaceTreatmentAdded(false)
-            setProfitObj({
-              ...profitObj,
-              ProfitCombinedCost: profitCombinedCost,
-              ProfitCombinedTotalCost: profitTotalCost,
-            })
+              setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setIsSurfaceTreatmentAdded(false)
+              setProfitObj({
+                ...profitObj,
+                ProfitCombinedCost: profitCombinedCost,
+                ProfitCombinedTotalCost: profitTotalCost,
+              })
+            }
             break;
 
           case 'BOP + CC':
@@ -1178,16 +1227,18 @@ function OverheadProfit(props) {
           case 'RM + BOP':
           case 'Part Cost + BOP':
 
-            profitCombinedCost = checkForNull(RM_BOP)
-            profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
-            setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
-            setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
-            setProfitObj({
-              ...profitObj,
-              ProfitCombinedCost: profitCombinedCost,
-              ProfitCombinedTotalCost: profitTotalCost,
-            })
+            if ((partType && OverheadApplicability === 'Part Cost + BOP') || (!partType && OverheadApplicability === 'RM + BOP')) {
+              profitCombinedCost = checkForNull(RM_BOP)
+              profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
+              setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedCost', checkForDecimalAndNull(profitCombinedCost, initialConfiguration.NoOfDecimalForPrice))
+              setValue('ProfitCombinedTotalCost', checkForDecimalAndNull(profitTotalCost, initialConfiguration.NoOfDecimalForPrice))
+              setProfitObj({
+                ...profitObj,
+                ProfitCombinedCost: profitCombinedCost,
+                ProfitCombinedTotalCost: profitTotalCost,
+              })
+            }
             break;
 
           default:
@@ -1213,9 +1264,7 @@ function OverheadProfit(props) {
       counter = 0
       dispatch(setOverheadProfitErrors({}))
     }
-
   })
-
 
   /**
   * @method onSubmit
@@ -1234,6 +1283,90 @@ function OverheadProfit(props) {
     let value = checkForDecimalAndNull(checkForNull(data?.CostingPartDetails?.OverheadCost) + checkForNull(data?.CostingPartDetails?.ProfitCost), initialConfiguration.NoOfDecimalForPrice);
     return value === 0 ? '' : value;
   }
+
+  const onCRMHeadChangeOverhead = (e) => {
+    if (e) {
+      setOverheadObj({
+        ...overheadObj,
+        OverheadCRMHead: e?.label
+      })
+    }
+  }
+
+  const onCRMHeadChangeProfit = (e) => {
+    if (e) {
+      setProfitObj({
+        ...profitObj,
+        ProfitCRMHead: e?.label
+      })
+    }
+  }
+
+  const onRemarkPopUpClickOverHead = () => {
+
+    if (errors.overHeadRemark !== undefined) {
+      return false
+    }
+
+    setOverheadObj({
+      ...overheadObj,
+      Remark: getValues('overHeadRemark')
+    })
+
+    if (getValues(`overHeadRemark`)) {
+      Toaster.success('Remark saved successfully')
+    }
+    var button = document.getElementById(`popUpTriggerOverHead`)
+    button.click()
+  }
+
+  const onRemarkPopUpCloseOverHead = () => {
+    let button = document.getElementById(`popUpTriggerOverHead`)
+    setValue(`overHeadRemark`, overheadObj.Remark)
+    if (errors.overHeadRemark) {
+      delete errors.overHeadRemark;
+    }
+    button.click()
+  }
+
+  const onRemarkPopUpClickProfit = () => {
+
+    if (errors.profitRemark !== undefined) {
+      return false
+    }
+    setProfitObj({
+      ...profitObj,
+      Remark: getValues('profitRemark')
+    })
+
+    if (getValues(`profitRemark`)) {
+      Toaster.success('Remark saved successfully')
+    }
+    var button = document.getElementById(`popUpTriggerProfit`)
+    button.click()
+  }
+
+  const renderText = (type, RMValue) => {
+    let text = '';
+    switch (type) {
+      case 'OverheadCombinedCost':
+        let checkValid = (overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true)
+        text = checkValid ? `RM cut-off price ${RMValue} applied` : ''
+        break;
+      default:
+        break;
+    }
+  }
+
+  const onRemarkPopUpCloseProfit = () => {
+    let button = document.getElementById(`popUpTriggerProfit`)
+    setValue(`profitRemark`, profitObj.Remark)
+    if (errors.profitRemark) {
+      delete errors.profitRemark;
+    }
+    button.click()
+  }
+
   return (
     <>
       <div className="user-page p-0">
@@ -1296,7 +1429,29 @@ function OverheadProfit(props) {
                 </div>
               </Col>
 
-              <Col md="12">
+              {initialConfiguration.IsShowCRMHead && <Col md="3">
+                <SearchableSelectHookForm
+                  name={`crmHeadOverhead`}
+                  type="text"
+                  label="CRM Head"
+                  errors={errors.crmHeadOverhead}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  rules={{
+                    required: false,
+                  }}
+                  placeholder={'Select'}
+                  options={CRMHeads}
+                  required={false}
+                  handleChange={onCRMHeadChangeOverhead}
+                  disabled={CostingViewMode}
+                />
+              </Col>}
+
+
+              <Col md={overheadObj?.OverheadApplicability ? "11" : "12"} className='first-section'>
                 <Row className="costing-border-inner-section m-0">
                   <Col md="3">
                     <span className="head-text">
@@ -1423,9 +1578,9 @@ function OverheadProfit(props) {
                             customClassName={'withBorder'}
                             errors={errors.OverheadCombinedCost}
                             disabled={true}
-                          /> {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                            <TooltipCustom id="OverheadCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />
-                          }
+                          />
+                          {(overheadObj && overheadObj?.OverheadApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) && <TooltipCustom id="OverheadCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+
                         </div>
                       </Col>
                       <Col md="3">
@@ -1633,14 +1788,69 @@ function OverheadProfit(props) {
                   }
                 </Row>
               </Col>
+              {
+                overheadObj && overheadObj.OverheadApplicability &&
+                <Col md="1" className='second-section'>
+                  <div className='costing-border-inner-section'>
+                    <Col md="12" className='text-center'>Remark</Col>
+                    <Col md="12"> <Popup trigger={<button id={`popUpTriggerOverHead`} title="Remark" className="Comment-box" type={'button'} />}
+                      position="top center">
+                      <TextAreaHookForm
+                        label="Remark:"
+                        name={`overHeadRemark`}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          maxLength: REMARKMAXLENGTH
+                        }}
+                        handleChange={() => { }}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.overHeadRemark}
+                        disabled={CostingViewMode}
+                        hidden={false}
+                      />
+                      <Row>
+                        <Col md="12" className='remark-btn-container'>
+                          <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickOverHead()} > <div className='save-icon'></div> </button>
+                          <button className='reset' onClick={() => onRemarkPopUpCloseOverHead()} > <div className='cancel-icon'></div></button>
+                        </Col>
+                      </Row>
+                    </Popup></Col>
+                  </div>
+                </Col>
+              }
+
 
               {/* new section from below with heasing */}
-              <Col md="12" className="pt-3">
+              <Col md={"12"} className="pt-3">
                 <div className="left-border">
                   {`Profits ${profitObj && profitObj.ProfitApplicability ? '(' + profitObj.ProfitApplicability + ')' : '-'}`}
                 </div>
               </Col>
-              <Col md="12">
+              {initialConfiguration.IsShowCRMHead && <Col md="3">
+                <SearchableSelectHookForm
+                  name={`crmHeadProfit`}
+                  type="text"
+                  label="CRM Head"
+                  errors={errors.crmHeadProfit}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  rules={{
+                    required: false,
+                  }}
+                  placeholder={'Select'}
+                  options={CRMHeads}
+                  required={false}
+                  handleChange={onCRMHeadChangeProfit}
+                  disabled={CostingViewMode}
+                />
+              </Col>}
+              <Col md={profitObj?.ProfitApplicability ? "11" : "12"} className='first-section'>
                 <Row className="costing-border-inner-section m-0">
                   <Col md="3">
                     <span className="head-text">
@@ -1769,8 +1979,8 @@ function OverheadProfit(props) {
                             disabled={true}
                           />
                           {(profitObj && profitObj?.ProfitApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                            <TooltipCustom id="ProfitCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />
-                          }</div>
+                            <TooltipCustom id="ProfitCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+                        </div>
                       </Col>
                       <Col md="3">
                         <TextFieldHookForm
@@ -1833,8 +2043,8 @@ function OverheadProfit(props) {
                             disabled={true}
                           />
                           {(CostingDataList && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                            <TooltipCustom id="ProfitRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />
-                          }</div>
+                            <TooltipCustom id="ProfitRMCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+                        </div>
                       </Col>
                       <Col md="3">
                         <TextFieldHookForm
@@ -1974,6 +2184,41 @@ function OverheadProfit(props) {
                   }
                 </Row>
               </Col>
+              {
+                profitObj && profitObj.ProfitApplicability &&
+                <Col md="1" className='second-section'>
+                  <div className='costing-border-inner-section'>
+                    <Col md="12" className='text-center'>Remark</Col>
+                    <Col md="12"> <Popup trigger={<button id={`popUpTriggerProfit`} title="Remark" className="Comment-box" type={'button'} />}
+                      position="top center">
+                      <TextAreaHookForm
+                        label="Remark:"
+                        name={`profitRemark`}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          maxLength: REMARKMAXLENGTH
+                        }}
+                        handleChange={() => { }}
+                        className=""
+                        customClassName={"withBorder"}
+                        errors={errors.profitRemark}
+                        disabled={CostingViewMode}
+                        hidden={false}
+                      />
+                      <Row>
+                        <Col md="12" className='remark-btn-container'>
+                          <button className='submit-button mr-2' disabled={(CostingViewMode) ? true : false} onClick={() => onRemarkPopUpClickProfit()} > <div className='save-icon'></div> </button>
+                          <button className='reset' onClick={() => onRemarkPopUpCloseProfit()} > <div className='cancel-icon'></div></button>
+                        </Col>
+                      </Row>
+                    </Popup></Col>
+                  </div>
+                </Col>
+              }
+
             </Row>
 
             {/* THIS IS REJECTION SECTION */}

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import {
-    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial, getGradeSelectList,
+    getRMSpecificationDataList, deleteRMSpecificationAPI, getRMGradeSelectListByRawMaterial,
     getRawMaterialFilterSelectList, getGradeFilterByRawMaterialSelectList, getRawMaterialFilterByGradeSelectList,
 } from '../actions/Material';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
@@ -22,8 +22,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { searchNocontentFilter } from '../../../helper';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -134,7 +133,8 @@ class SpecificationListing extends Component {
     * @description confirm delete RM Specification
     */
     confirmDelete = (ID) => {
-        this.props.deleteRMSpecificationAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteRMSpecificationAPI(ID, loggedInUser, (res) => {
             if (res.status === 417 && res.data.Result === false) {
                 //Toaster.warning(res.data.Message)
                 Toaster.error('The specification is associated in the system. Please remove the association to delete')
@@ -201,7 +201,9 @@ class SpecificationListing extends Component {
     * @description Filter data when user type in searching input
     */
     onFloatingFilterChanged = (value) => {
-        this.props.rmSpecificationList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.rmSpecificationList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
 
     /**
@@ -425,7 +427,7 @@ class SpecificationListing extends Component {
                                     <AgGridColumn field="RMGrade" headerName='Grade'></AgGridColumn>
                                     <AgGridColumn field="RMSpec" headerName='Spec'></AgGridColumn>
                                     <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                    <AgGridColumn field="SpecificationId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="SpecificationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>
@@ -476,7 +478,6 @@ export default connect(mapStateToProps, {
     getRMSpecificationDataList,
     deleteRMSpecificationAPI,
     getRMGradeSelectListByRawMaterial,
-    getGradeSelectList,
     getRawMaterialFilterSelectList,
     getGradeFilterByRawMaterialSelectList,
     getRawMaterialFilterByGradeSelectList,

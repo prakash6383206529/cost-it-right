@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, decimalLengthFour, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, positiveAndDecimalNumber } from "../../../helper/validation";
+import { required, decimalLengthFour, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, positiveAndDecimalNumber, hashValidation } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../actions/Material';
 import Toaster from '../../common/Toaster';
@@ -173,7 +173,7 @@ class AddMaterialType extends Component {
                       name={"MaterialType"}
                       type="text"
                       placeholder={""}
-                      validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter]}
+                      validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation]}
                       component={renderText}
                       required={true}
                       className=" "

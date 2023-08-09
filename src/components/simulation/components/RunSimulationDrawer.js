@@ -5,13 +5,13 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedCombinedProcessCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import DayTime from '../../common/DayTimeWrapper'
 import { EXCHNAGERATE, COMBINED_PROCESS, RMDOMESTIC, RMIMPORT, OPERATIONS, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT, SIMULATION } from '../../../config/constants';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
 import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
-import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../helper/validation";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
@@ -68,6 +68,7 @@ function RunSimulationDrawer(props) {
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
     const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -340,9 +341,15 @@ function RunSimulationDrawer(props) {
                     }))
                     break;
                 case Number(BOPDOMESTIC):
-                    dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
-                        checkForResponse(res)
-                    }))
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                            checkForResponse(res)
+                        }))
+                    } else {
+                        dispatch(runSimulationOnSelectedBoughtOutPart({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                            checkForResponse(res)
+                        }))
+                    }
                     break;
                 case Number(BOPIMPORT):
                     dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
@@ -422,7 +429,9 @@ function RunSimulationDrawer(props) {
         if (label === 'Applicability') {
             costingHead && costingHead.map(item => {
                 if (item.Value === '0' || item.Value === '8') return false;
-                temp.push({ label: item.Text, value: item.Value })
+                if (!item.Text.includes('Part')) {
+                    temp.push({ label: item.Text, value: item.Value })
+                }
                 return null;
             });
             return temp;
@@ -592,8 +601,10 @@ function RunSimulationDrawer(props) {
                                                                                         name={"OtherCost"}
                                                                                         Controller={Controller}
                                                                                         rules={
-                                                                                            { required: true }
-
+                                                                                            {
+                                                                                                required: true,
+                                                                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                                                            }
                                                                                         }
                                                                                         control={control}
                                                                                         register={register}
@@ -692,6 +703,7 @@ function RunSimulationDrawer(props) {
                                                                                                     value: /^\d*\.?\d*$/,
                                                                                                     message: 'Invalid Number.'
                                                                                                 },
+                                                                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                                             }}
                                                                                             handleChange={() => { }}
                                                                                             defaultValue={""}
@@ -819,7 +831,7 @@ function RunSimulationDrawer(props) {
                                                                                         value: /^\d*\.?\d*$/,
                                                                                         message: 'Invalid Number.'
                                                                                     },
-
+                                                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                                 }}
                                                                                 handleChange={() => { }}
                                                                                 defaultValue={""}
@@ -939,6 +951,7 @@ function RunSimulationDrawer(props) {
                                                                                         value: /^\d*\.?\d*$/,
                                                                                         message: 'Invalid Number.'
                                                                                     },
+                                                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                                 }}
                                                                                 handleChange={() => { }}
                                                                                 defaultValue={""}
@@ -1063,6 +1076,7 @@ function RunSimulationDrawer(props) {
                                                                                         value: /^\d*\.?\d*$/,
                                                                                         message: 'Invalid Number.'
                                                                                     },
+                                                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                                 }}
                                                                                 handleChange={() => { }}
                                                                                 defaultValue={""}
@@ -1160,6 +1174,7 @@ function RunSimulationDrawer(props) {
                                                         dateFormat="dd/MM/yyyy"
                                                         showMonthDropdown
                                                         showYearDropdown
+                                                        dropdownMode='select'
                                                         readonly="readonly"
                                                         onBlur={() => null}
                                                         autoComplete={'off'}

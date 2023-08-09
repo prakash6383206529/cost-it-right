@@ -23,6 +23,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { loggedInUserId } from '../../../helper';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -148,7 +149,8 @@ class ClientListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteClient(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteClient(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_CLIENT_SUCCESS);
                 this.setState({ dataCount: 0 })
@@ -253,7 +255,9 @@ class ClientListing extends Component {
    * @description Filter data when user type in searching input
    */
     onFloatingFilterChanged = (value) => {
-        this.props.clientDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.clientDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
     /**
     * @name onSubmit
@@ -350,7 +354,7 @@ class ClientListing extends Component {
                 {this.state.isLoader && <LoaderCustom />}
                 < div className="container-fluid" >
                     <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                        <Row className="pt-4 no-filter-row">
+                        <Row className="no-filter-row">
                             <Col md="10" className="filter-block"></Col>
                             <Col md="2" className="search-user-block">
                                 <div className="d-flex justify-content-end bd-highlight">
@@ -426,7 +430,7 @@ class ClientListing extends Component {
                                 <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                                 <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                                <AgGridColumn field="ClientId" headerName="Action" cellClass={"actions-wrapper"} type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                <AgGridColumn field="ClientId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             </AgGridReact>
                             {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                         </div>

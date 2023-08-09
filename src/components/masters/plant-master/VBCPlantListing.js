@@ -87,7 +87,8 @@ class VBCPlantListing extends Component {
     * @description confirm delete user item
     */
     confirmDeleteItem = (Id) => {
-        this.props.deletePlantAPI(Id, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deletePlantAPI(Id, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
                 // this.getTableListData();
@@ -524,7 +525,7 @@ class VBCPlantListing extends Component {
                             <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                             <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
                             <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" headerName="Action" type="rightAligned" width={"150px"} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                            <AgGridColumn field="PlantId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" width={"150px"} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                         </AgGridReact>
                         {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                     </div>

@@ -2,13 +2,12 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { getBOPDrawerDataList, getBOPDrawerVBCDataList } from '../../actions/Costing';
+import { getBOPDrawerDataList } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { CBCTypeId, defaultPageSize, EMPTY_GUID, NCC, NCCTypeId, NFRTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { EMPTY_DATA } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
-import { getBOPCategorySelectList } from '../../../masters/actions/BoughtOutParts';
 import { checkForDecimalAndNull, getConfigurationKey, searchNocontentFilter } from '../../../../helper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -44,7 +43,6 @@ function AddBOP(props) {
   };
 
   useEffect(() => {
-    dispatch(getBOPCategorySelectList(res => { }))
     getDataList()
 
   }, []);
@@ -156,9 +154,11 @@ function AddBOP(props) {
 
   };
   const onFloatingFilterChanged = (value) => {
-    if (bopDrawerList.length !== 0) {
-      setNoData(searchNocontentFilter(value, noData))
-    }
+    setTimeout(() => {
+      if (bopDrawerList.length !== 0) {
+        setNoData(searchNocontentFilter(value, noData))
+      }
+    }, 500);
   }
   const onPageSizeChanged = (newPageSize) => {
     gridApi.paginationSetPageSize(Number(newPageSize));
@@ -208,7 +208,7 @@ function AddBOP(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{'ADD BOP:'}</h3>
+                    <h3>{'Add BOP:'}</h3>
                   </div>
                   <div
                     onClick={cancel}

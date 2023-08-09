@@ -81,7 +81,9 @@ class RMListing extends Component {
        * @description Filter data when user type in searching input
        */
     onFloatingFilterChanged = (value) => {
-        this.props.rawMaterialTypeDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        setTimeout(() => {
+            this.props.rawMaterialTypeDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+        }, 500);
     }
 
     /**
@@ -390,7 +392,7 @@ class RMListing extends Component {
                                     <AgGridColumn field="Density"></AgGridColumn>
                                     <AgGridColumn field="RMName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                    <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                 </AgGridReact>
                                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                             </div>

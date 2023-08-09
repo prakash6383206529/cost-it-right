@@ -2,20 +2,25 @@ import React, { useState, useEffect } from 'react'
 import { Row, Col, } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import { EMPTY_DATA } from '../../../../config/constants'
+import { CUSTOMER_POAM_SUMMARY_REPORT, EMPTY_DATA } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getPoamSummaryReport } from '../../actions/ReportListing';
 import NoContentFound from '../../../common/NoContentFound';
 import LoaderCustom from '../../../common/LoaderCustom';
 import CustomerPoamImpact from './CustomerPoamImpact';
-
+import ReactExport from 'react-export-excel';
+import { CUSTOMER_POAM_EXCEL_TEMPLATE } from '../../ExcelTemplate';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 function CustomerPoamListing(props) {
 
     const dispatch = useDispatch()
     const [showList, setShowList] = useState(false)
     const [gridData, setGridData] = useState([])
     const [gridApi, setGridApi] = useState(null);
+    const [gridColumnApi, setgridColumnApi] = useState(null);
     const [noRecordFound, setNoRecordFound] = useState(false);
     const [isLoader, setIsLoader] = useState(false);
     const [endIndexArray, setEndIndexArray] = useState([]);
@@ -200,6 +205,7 @@ function CustomerPoamListing(props) {
         params.api.paginationGoToPage(0);
         setGridApi(params.api)
         params.api.sizeColumnsToFit();
+        setgridColumnApi(params.columnApi);
     };
 
     const closeDrawerr = () => {
@@ -207,17 +213,38 @@ function CustomerPoamListing(props) {
         setCustomerPoamImpact(false)
 
     }
+    const renderColumn = () => {
+        return returnExcelColumn(CUSTOMER_POAM_EXCEL_TEMPLATE, gridData)
+    }
 
+    const returnExcelColumn = (data = [], TempData) => {
+        return (<ExcelSheet data={TempData} name={CUSTOMER_POAM_SUMMARY_REPORT}>
+            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+        </ExcelSheet>);
+    }
+    const resetState = () => {
+        gridOptions?.columnApi?.resetColumnState();
+        gridOptions?.api?.setFilterModel(null);
+    }
     return (
         <>
             {!customerPoamImpact && <div className={"container-fluid"}>
                 <form noValidate className="form">
-                    <div className='analytics-drawer justify-content-between'>
+                    <div className='d-flex justify-content-between align-items-center'>
                         <div className='d-flex'>
-                            <div>From: <span className=''> {DayTime(startDate).format('DD/MM/YYYY')}</span>  </div>
-                            <div className='ml-2'> To: <span className=''> {DayTime(endDate).format('DD/MM/YYYY')}</span>  </div>
+                            <div className='d-flex align-items-center'>From:  <input value={DayTime(startDate).format('DD/MM/YYYY')} className='form-control ml-1' disabled={true} /> </div>
+                            <div className='ml-2 d-flex align-items-center'> To:  <input value={DayTime(endDate).format('DD/MM/YYYY')} className='form-control ml-1' disabled={true} /> </div>
                         </div>
-                        <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        <div>
+
+                            <ExcelFile filename={CUSTOMER_POAM_SUMMARY_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                {renderColumn()}
+                            </ExcelFile>
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
+                            </button>
+                            <button type="button" className={"apply mr-2"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
+                        </div>
                     </div>
                     {showList &&
                         <Row>
@@ -263,7 +290,7 @@ function CustomerPoamListing(props) {
                                                 {<AgGridColumn field="TotalAmendmentAwaitedQuantity" headerName="Amendmend Awaited Quantity (No.)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="TotalImpact" headerName="Impact Cost (INR)" width="130" floatingFilter={true} cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                 {<AgGridColumn field="Remark" headerName="Remark" width="130" floatingFilter={true}></AgGridColumn>}
-                                                <AgGridColumn width={160} field="TotalImpact" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                                                <AgGridColumn width={160} field="TotalImpact" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
                                         </div>

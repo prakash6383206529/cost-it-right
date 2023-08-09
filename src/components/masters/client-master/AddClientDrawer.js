@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector } from "redux-form";
 import { Container, Row, Col, Table, } from 'reactstrap';
-import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5, maxLength6, number, checkForNull, positiveAndDecimalNumber, maxLength10 } from "../../../helper/validation";
+import { required, email, minLength7, maxLength70, acceptAllExceptSingleSpecialCharacter, maxLength12, minLength10, maxLength80, checkWhiteSpaces, maxLength20, postiveNumber, maxLength5, maxLength6, number, checkForNull, positiveAndDecimalNumber, maxLength10, hashValidation } from "../../../helper/validation";
 import { renderText, renderEmailInputField, searchableSelect, renderTextInputField } from "../../layout/FormInputs";
 import { createClient, updateClient, getClientData, checkAndGetCustomerCode, getPoamStatusSelectList } from '../actions/Client';
 import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getCityByCountry, } from '../../../actions/Common';
@@ -486,7 +486,7 @@ class AddClientDrawer extends Component {
                                             name={"CompanyName"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : "Enter"}
-                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces]}
+                                            validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength80, checkWhiteSpaces, hashValidation]}
                                             component={renderText}
                                             onBlur={this.checkUniqCodeByName}
                                             required={true}
@@ -517,7 +517,7 @@ class AddClientDrawer extends Component {
                                             name={"ClientName"}
                                             type="text"
                                             placeholder={isViewMode ? '-' : "Enter"}
-                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, hashValidation]}
                                             component={renderText}
                                             required={false}
                                             className=""
@@ -779,13 +779,13 @@ class AddClientDrawer extends Component {
                                             >
                                                 <div className={'cancel-icon'}></div> {'Cancel'}
                                             </button>
-                                            <button
+                                            {!isViewMode && <button
                                                 type="submit"
                                                 disabled={isViewMode || setDisable}
                                                 className="user-btn save-btn" >
                                                 <div className={"save-icon"}></div>
                                                 {this.props.isEditFlag ? 'Update' : 'Save'}
-                                            </button>
+                                            </button>}
                                         </div>
                                     </div>
                                 </Row>

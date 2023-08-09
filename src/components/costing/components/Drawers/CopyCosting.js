@@ -102,9 +102,7 @@ function CopyCosting(props) {
     let uniqueArray = _.uniqBy(VbcTemp, "value")
     setVendorName(uniqueArray)
 
-    if (type === ZBCTypeId) {
-      getCostingDropDown(copyCostingData.PlantId, ZBCTypeId)
-    } else if (type === NCCTypeId) {
+    if (type === NCCTypeId) {
       let tempPlant = []
       let tempVendor = []
       nccGrid && nccGrid.map((item) => {
@@ -170,36 +168,6 @@ function CopyCosting(props) {
       setIsFromZbc(false)
     }
   }
-
-  /**
-   * @method getCostingDropDown
-   * @description getting dropdown of costing id
-   */
-  function getCostingDropDown(value, costingFor) {
-    const temp = []
-    dispatch(
-      getCostingSummaryByplantIdPartNo(partNo.value, value, (res) => {
-        res.data.Data.CostingOptions &&
-          res.data.Data.CostingOptions.map((costing) => {
-            temp.push({
-              label: costing.DisplayCostingNumber,
-              value: costing.CostingId,
-
-            })
-            return null
-          })
-
-        if (costingFor === ZBCTypeId) {
-          setCostingId(temp)
-        } else {
-          setVendorCostingId(temp)
-        }
-
-        //  setValue('costings', '')
-      }),
-    )
-  }
-
   /**
    * @method filterCostingDropDown
    * @description fliter costing dropdown for vendor
@@ -264,7 +232,6 @@ function CopyCosting(props) {
    */
   const handlePlantChange = (value) => {
     setValue('fromcostingId', '')
-    getCostingDropDown(value.value, ZBCTypeId)
   }
   /**
    * @method handleFromVendorName
@@ -349,6 +316,7 @@ function CopyCosting(props) {
       obj.ToVendorPlantId = '00000000-0000-0000-0000-000000000000'
       obj.ToVendorId = '00000000-0000-0000-0000-000000000000'
     }
+    const toPlantCode = value?.toDestinationPlant && value?.toDestinationPlant.label?.split('(')
     //COPY FROM VBC
     if (isFromVbc || isFromNcc) {
       const plantCode = value.fromVendorPlant && value.fromVendorPlant.label?.split('(')
@@ -360,13 +328,14 @@ function CopyCosting(props) {
       obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
       obj.FromVendorPlantCode = plantCode && plantCode[1] && plantCode[1]?.split(')')[0]
       obj.FromPlantCode = ''
+      obj.ToPlantCode = toPlantCode[1].split(')')[0]
       obj.FromPlantId = '00000000-0000-0000-0000-000000000000'
     }
     //COPY TO VBC
     if (isToVbc || isToNcc) {
 
-      obj.ToVendorId = type === VBCTypeId ? value.toVendorName && value.toVendorName.value : value.nccToVendorName.value
-      obj.ToVendorname = type === VBCTypeId ? value.toVendorName && value.toVendorName.label : value.nccToVendorName.label
+      obj.ToVendorId = type === VBCTypeId ? value.toVendorName && value.toVendorName.value : value?.nccToVendorName?.value
+      obj.ToVendorname = type === VBCTypeId ? value.toVendorName && value.toVendorName.label : value?.nccToVendorName?.label
       obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1]?.split(')')[0]
       obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
       obj.ToPlantId = '00000000-0000-0000-0000-000000000000'
@@ -390,11 +359,10 @@ function CopyCosting(props) {
     }
 
 
-    obj.ToDestinationPlantId = type === VBCTypeId ? value.toDestinationPlant && value.toDestinationPlant.value : value.nccToPlant.value
-    obj.ToDestinationPlantName = type === VBCTypeId ? value.toDestinationPlant && value.toDestinationPlant.label : value.nccToPlant.label
-    obj.ToDestinationPlantCode = type === VBCTypeId ? value.toDestinationPlant && value.toDestinationPlant.destinationPlantCode : value.nccToPlant.destinationPlantCode
+    obj.ToDestinationPlantId = type === VBCTypeId ? value?.toDestinationPlant && value?.toDestinationPlant?.value : value?.nccToPlant?.value
+    obj.ToDestinationPlantName = type === VBCTypeId ? value?.toDestinationPlant && value?.toDestinationPlant?.label : value?.nccToPlant?.label
+    obj.ToDestinationPlantCode = type === VBCTypeId ? value?.toDestinationPlant && toPlantCode[1].split(')')[0] : value?.nccToPlant?.destinationPlantCode
     obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-    // obj.
 
     dispatch(checkDataForCopyCosting(obj, (res) => {
       setIsDisable(false)
@@ -757,6 +725,7 @@ function CopyCosting(props) {
                         onChange={handleEffectiveDateChange}
                         showMonthDropdown
                         showYearDropdown
+                        dropdownMode="select"
                         dateFormat="dd/MM/yyyy"
                         //maxDate={new Date()}
                         minDate={new Date(minDate)}

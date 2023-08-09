@@ -5,13 +5,13 @@ import { Row, Col, Label, Tooltip } from 'reactstrap'
 import { required } from '../../../helper/validation'
 import { searchableSelect } from '../../layout/FormInputs'
 import { createVolume, updateVolume, getVolumeData, getFinancialYearSelectList, getPartSelectListWtihRevNo, } from '../actions/Volume'
-import { getPlantSelectListByType, getPlantBySupplier, getVendorWithVendorCodeSelectList } from '../../../actions/Common'
+import { getPlantSelectListByType, getPlantBySupplier, getVendorNameByVendorSelectList } from '../../../actions/Common'
 import { getPartSelectList } from '../actions/Part'
 import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { CBCTypeId, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants'
+import { CBCTypeId, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,7 +24,7 @@ import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
-
+import { getSelectListPartType } from '../actions/Part'
 const gridOptions = {};
 
 // const initialTableData = [
@@ -130,7 +130,9 @@ class AddVolume extends Component {
       vendorFilter: [],
       viewTooltipBudgeted: false,
       showTooltip: false,
-      viewTooltipActual: false
+      viewTooltipActual: false,
+      partType: [],
+      partTypeList: [],
     }
   }
 
@@ -151,6 +153,9 @@ class AddVolume extends Component {
         this.props.getPlantSelectListByType(ZBC, () => { })
       }
     }, 300);
+    this.props.getSelectListPartType((res) => {
+      this.setState({ partTypeList: res?.data?.SelectList })
+    })
     this.getDetail()
   }
 
@@ -171,6 +176,7 @@ class AddVolume extends Component {
    */
   renderListing = (label) => {
     const { plantSelectList, filterPlantList, financialYearSelectList, clientSelectList } = this.props
+    const { partTypeList } = this.state
     const temp = []
     if (label === 'plant') {
       plantSelectList && plantSelectList.map((item) => {
@@ -205,6 +211,15 @@ class AddVolume extends Component {
         return null;
       });
       return temp;
+    }
+    if (label === 'PartType') {
+      partTypeList && partTypeList.map((item) => {
+        if (item.Value === '0') return false
+        if (item.Value === PRODUCT_ID) return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
     }
   }
   /**
@@ -283,7 +298,7 @@ class AddVolume extends Component {
   async closeVendorDrawer(e = '', formData = {}, type) {
     if (type === 'submit') {
       this.setState({ isOpenVendor: false })
-      const res = await getVendorWithVendorCodeSelectList(this.state.vendorName)
+      const res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, this.state.vendorName)
       let vendorDataAPI = res?.data?.SelectList
       reactLocalStorage?.setObject('vendorData', vendorDataAPI)
       if (Object.keys(formData).length > 0) {
@@ -317,6 +332,17 @@ class AddVolume extends Component {
       this.setState({ client: [] })
     }
   };
+  handlePartTypeChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ partType: newValue })
+      this.props.change('PartNumber', '')
+      this.setState({ part: [] })
+    } else {
+      this.setState({ partType: [] })
+    }
+    this.setState({ partName: [] })
+    reactLocalStorage.setObject('PartData', [])
+  }
   setStartDate = (date) => {
     this.setState({ year: date })
   }
@@ -431,7 +457,7 @@ class AddVolume extends Component {
           let plantArray = []
           if (Data && Data.Plant.length !== 0) {
             plantArray.push({
-              label: `${Data.Plant[0].PlantName}.(${Data.Plant[0].PlantCode})`,
+              label: `${Data.Plant[0].PlantName} (${Data.Plant[0].PlantCode})`,
               value: Data.Plant[0].PlantId,
             })
           }
@@ -474,6 +500,7 @@ class AddVolume extends Component {
               destinationPlant: Data.DestinationPlant !== undefined ? { label: Data.DestinationPlant, value: Data.DestinationPlantId } : [],
               tableData: tableArray.sort((a, b) => a.Sequence - b.Sequence),
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
+              partType: Data?.PartType !== undefined ? { label: Data?.PartType, value: Data?.PartTypeId } : [],
             }, () => this.setState({ isLoader: false }))
           }, 500)
         }
@@ -516,7 +543,11 @@ class AddVolume extends Component {
     )
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.props.data.isViewFlag) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -551,16 +582,30 @@ class AddVolume extends Component {
       return false
     }
     this.setState({ isVendorNameNotSelected: false, isPartNumberNotSelected: false })
-    // CONDITION TO CHECK WHETHER TABLE DATA ONLY CONTAIN 0 VALUE
-    const filteredArray = tableData.filter(item => Number(item.BudgetedQuantity) === 0 && Number(item.ApprovedQuantity) === 0)
-    if (filteredArray.length === 12) {
-      Toaster.warning("Please fill atleast one entry")
-      return false
+    const filteredArray = tableData.filter(item => {
+      const budgetedQuantity = Number(item.BudgetedQuantity);
+      const approvedQuantity = Number(item.ApprovedQuantity);
+
+      // Check for valid numbers and non-negative values
+      return (isNaN(budgetedQuantity) || isNaN(approvedQuantity)) || (budgetedQuantity === 0 && approvedQuantity === 0);
+    });
+
+    if (filteredArray.length === tableData.length) {
+      Toaster.warning("Please fill at least one entry");
+      return false;
     }
-    //CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND ACTUAL QUANTITY
-    const filteredArrayForNegativeVlaue = tableData.filter(item => (Number(item.BudgetedQuantity) < 0) || (Number(item.ApprovedQuantity) < 0))
-    if (filteredArrayForNegativeVlaue.length !== 0) {
-      return false
+
+    // CONDITION FOR NEGATIVE VALUE CHECK IN BUDGETED AND APPROVED QUANTITY
+    const filteredArrayForNegativeValue = tableData.filter(item => {
+      const budgetedQuantity = Number(item.BudgetedQuantity);
+      const approvedQuantity = Number(item.ApprovedQuantity);
+
+      // Check for valid numbers and non-negative values
+      return isNaN(budgetedQuantity) || isNaN(approvedQuantity) || budgetedQuantity < 0 || approvedQuantity < 0;
+    });
+
+    if (filteredArrayForNegativeValue.length !== 0) {
+      return false;
     }
     let budgetArray = []
     tableData && tableData.map((item) => {
@@ -711,7 +756,7 @@ class AddVolume extends Component {
       if (inputValue?.length >= searchCount && vendorFilter !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ inputLoader: false })
         this.setState({ vendorFilter: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -738,7 +783,7 @@ class AddVolume extends Component {
       const { partName } = this.state
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && partName !== resultInput) {
-        const res = await getPartSelectListWtihRevNo(resultInput)
+        const res = await getPartSelectListWtihRevNo(resultInput, null, null, this.state.partType?.value)
 
         this.setState({ partName: resultInput })
         let partDataAPI = res?.data?.DataList
@@ -959,6 +1004,27 @@ class AddVolume extends Component {
                               </Col>
                             )}
                             <Col md="3">
+                              <Field
+                                name="PartType"
+                                type="text"
+                                label="Part Type"
+                                component={searchableSelect}
+                                placeholder={isEditFlag ? '-' : "Select"}
+                                options={this.renderListing("PartType")}
+                                //onKeyUp={(e) => this.changeItemDesc(e)}
+                                validate={
+                                  this.state.partType == null ||
+                                    this.state.partType.length === 0
+                                    ? [required]
+                                    : []
+                                }
+                                required={true}
+                                handleChangeDescription={this.handlePartTypeChange}
+                                valueDescription={this.state.partType}
+                                disabled={isEditFlag ? true : false}
+                              />
+                            </Col>
+                            <Col md="3">
                               <label>{"Part No. (Revision No.)"}<span className="asterisk-required">*</span></label>
                               <div className="d-flex justify-space-between align-items-center async-select">
                                 <div className="fullinput-icon p-relative">
@@ -973,7 +1039,7 @@ class AddVolume extends Component {
                                     onKeyDown={(onKeyDown) => {
                                       if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                     }}
-                                    isDisabled={isEditFlag ? true : false}
+                                    isDisabled={(isEditFlag || this.state.partType.length === 0) ? true : false}
                                     onBlur={() => this.setState({ showErrorOnFocusPart: true })}
                                   />
                                   {((this.state.showErrorOnFocusPart && this.state.part.length === 0) || this.state.isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
@@ -1026,8 +1092,8 @@ class AddVolume extends Component {
                             <Col>
                               <div className={`ag-grid-wrapper add-volume-table  ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`} style={{ width: '100%', height: '100%' }}>
                                 {/* <Col md="12"> */}
-                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipBudgeted} toggle={tooltipToggleBudgeted} target={"budgeted-tooltip"} >{"To add budgeted quantity please double click on the field."}</Tooltip>}
-                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipActual} toggle={tooltipToggleActual} target={"actual-tooltip"} >{"To add actual quantity please double click on the field."}</Tooltip>}
+                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipBudgeted} toggle={tooltipToggleBudgeted} target={"budgeted-tooltip"} >{"To edit budgeted quantity please double click on the field."}</Tooltip>}
+                                {this.state.showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={this.state.viewTooltipActual} toggle={tooltipToggleActual} target={"actual-tooltip"} >{"To edit actual quantity please double click on the field."}</Tooltip>}
                                 <div
                                   className="ag-theme-material"
                                 >
@@ -1054,7 +1120,7 @@ class AddVolume extends Component {
                                     <AgGridColumn field="Month" headerName="Month" editable='false'></AgGridColumn>
                                     <AgGridColumn field="BudgetedQuantity" cellRenderer='budgetedQuantity' headerName="Budgeted Quantity" headerComponent={'budgetedHeader'}></AgGridColumn>
                                     <AgGridColumn field="ApprovedQuantity" cellRenderer='actualQuantity' headerName="Actual Quantity" headerComponent={'actualHeader'}></AgGridColumn>
-                                    <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' headerName="Action" type="rightAligned" ></AgGridColumn>
+                                    <AgGridColumn field="VolumeApprovedDetailId" editable='false' cellRenderer='buttonFormatter' cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" ></AgGridColumn>
                                     <AgGridColumn field="VolumeApprovedDetailId" hide></AgGridColumn>
                                     <AgGridColumn field="VolumeBudgetedDetailId" hide></AgGridColumn>
                                   </AgGridReact>
@@ -1155,8 +1221,8 @@ export default connect(mapStateToProps, {
   getVolumeData,
   getFinancialYearSelectList,
   getPartSelectList,
-  getVendorWithVendorCodeSelectList,
-  getClientSelectList
+  getClientSelectList,
+  getSelectListPartType
 })(
   reduxForm({
     form: 'AddVolume',

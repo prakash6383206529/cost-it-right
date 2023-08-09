@@ -8,7 +8,7 @@ import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import { DRAFT, EMPTY_GUID, APPROVED, PUSHED, ERROR, WAITING_FOR_APPROVAL, REJECTED, POUPDATED } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation } from '../actions/Simulation'
+import { getSimulationApprovalList, setMasterForSimulation, deleteDraftSimulation, setSelectedRowForPagination, setTechnologyForSimulation, setIsMasterAssociatedWithCosting } from '../actions/Simulation'
 import { Redirect, } from 'react-router-dom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -42,6 +42,7 @@ function SimulationApprovalListing(props) {
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false);
     const [isPendingForApproval, setIsPendingForApproval] = useState(false);
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
+    const [isSuperAdmin, setIsSuperAdmin] = useState(false)
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
@@ -131,6 +132,9 @@ function SimulationApprovalListing(props) {
         minValidYear: 2000,
     };
 
+    useEffect(() => {
+        setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
+    }, [])
 
     useEffect(() => {
         if (props.activeTab === '2' || isDashboard) {
@@ -235,8 +239,9 @@ function SimulationApprovalListing(props) {
 
 
     const onFloatingFilterChanged = (value) => {
-        if (simualtionApprovalList?.length !== 0 || simualtionApprovalListDraft?.length !== 0) setNoData(searchNocontentFilter(value, noData))
-
+        setTimeout(() => {
+            if (simualtionApprovalList?.length !== 0 || simualtionApprovalListDraft?.length !== 0) setNoData(searchNocontentFilter(value, noData))
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -438,6 +443,7 @@ function SimulationApprovalListing(props) {
     }
 
     const viewDetails = (rowObj) => {
+        dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
         setApprovalData({ approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
         dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
@@ -709,7 +715,7 @@ function SimulationApprovalListing(props) {
                                             onClick={sendForApproval}
                                             // disabled={selectedRowData && selectedRowData.length === 0 ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
-                                            disabled={(isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) ? true : false}
+                                            disabled={((isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) || isSuperAdmin) ? true : false}
                                         >
                                             <div className="send-for-approval"></div>
                                         </button>}

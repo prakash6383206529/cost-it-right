@@ -2,10 +2,10 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength512, checkSpacesInString, hashValidation } from "../../../helper/validation";
 import { loggedInUserId } from "../../../helper/auth";
 import { renderDatePicker, renderText, renderTextAreaField, } from "../../layout/FormInputs";
-import { createProduct, updateProduct, getProductData, fileUploadProduct, fileDeletePart, } from '../actions/Part';
+import { createProduct, updateProduct, getProductData, fileUploadProduct, } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
@@ -209,18 +209,13 @@ class AddIndivisualProduct extends Component {
 
     deleteFile = (FileId, OriginalFileName) => {
         if (FileId != null) {
-            let deleteData = {
-                Id: FileId,
-                DeletedBy: loggedInUserId(),
-            }
-            this.props.fileDeletePart(deleteData, (res) => {
-                Toaster.success('File deleted successfully.')
-                let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-                this.setState({ files: tempArr })
-            })
+            let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
+            this.setState({ files: tempArr })
         }
         if (FileId == null) {
-            let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+            let tempArr = this.state.files.filter(
+                (item) => item.FileName !== OriginalFileName,
+            )
             this.setState({ files: tempArr })
         }
 
@@ -254,7 +249,11 @@ class AddIndivisualProduct extends Component {
         this.props.hideForm(type)
     }
     cancelHandler = () => {
-        this.setState({ showPopup: true })
+        if (this.state.isViewMode) {
+            this.cancel('cancel')
+        } else {
+            this.setState({ showPopup: true })
+        }
     }
     onPopupConfirm = () => {
         this.cancel('cancel')
@@ -390,7 +389,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"ProductName"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80]}
+                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, hashValidation]}
                                                             component={renderText}
                                                             required={true}
                                                             className=""
@@ -404,7 +403,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"ProductNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
+                                                            validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, hashValidation]}
                                                             component={renderText}
                                                             required={true}
                                                             className=""
@@ -419,7 +418,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"Description"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[maxLength80, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
                                                             component={renderText}
                                                             required={false}
                                                             className=""
@@ -436,7 +435,7 @@ class AddIndivisualProduct extends Component {
                                                                     name={"ProductGroupCode"}
                                                                     type="text"
                                                                     placeholder={isViewMode ? '-' : "Enter"}
-                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
+                                                                    validate={[checkWhiteSpaces, alphaNumeric, maxLength20, hashValidation]}
                                                                     component={renderText}
                                                                     onChange={
                                                                         this.ProductGroupCodeUpdate
@@ -455,7 +454,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"ECNNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, hashValidation]}
                                                             component={renderText}
                                                             //required={true}
                                                             className=""
@@ -469,7 +468,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"RevisionNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, hashValidation]}
                                                             component={renderText}
                                                             //required={true}
                                                             className=""
@@ -483,7 +482,7 @@ class AddIndivisualProduct extends Component {
                                                             name={"DrawingNumber"}
                                                             type="text"
                                                             placeholder={isEditFlag ? '-' : "Enter"}
-                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces]}
+                                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, hashValidation]}
                                                             component={renderText}
                                                             //required={true}
                                                             className=""
@@ -559,7 +558,7 @@ class AddIndivisualProduct extends Component {
                                                             placeholder={isViewMode ? "-" : "Type here..."}
                                                             className=""
                                                             customClassName=" textAreaWithBorder"
-                                                            validate={[maxLength512, checkWhiteSpaces]}
+                                                            validate={[maxLength512, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter]}
                                                             //required={true}
                                                             component={renderTextAreaField}
                                                             maxLength="5000"
@@ -660,14 +659,17 @@ class AddIndivisualProduct extends Component {
                                                         <div className={"cancel-icon"}></div>
                                                         {"Cancel"}
                                                     </button>
-                                                    <button
-                                                        type="submit"
-                                                        className="user-btn mr5 save-btn"
-                                                        disabled={isViewMode || setDisable}
-                                                    >
-                                                        <div className={"save-icon"}></div>
-                                                        {isEditFlag ? "Update" : "Save"}
-                                                    </button>
+                                                    {!isViewMode &&
+                                                        <button
+                                                            type="submit"
+                                                            className="user-btn mr5 save-btn"
+                                                            disabled={isViewMode || setDisable}
+                                                        >
+                                                            <div className={"save-icon"}></div>
+                                                            {isEditFlag ? "Update" : "Save"}
+                                                        </button>
+                                                    }
+
                                                 </div>
                                             </Row>
                                         </form>
@@ -724,7 +726,6 @@ export default connect(mapStateToProps, {
     updateProduct,
     getProductData,
     fileUploadProduct,
-    fileDeletePart,
 })(reduxForm({
     form: 'AddIndivisualPart',
     enableReinitialize: true,

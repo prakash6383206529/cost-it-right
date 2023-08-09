@@ -106,15 +106,14 @@ function RemarkHistoryDrawer(props) {
 
                             </Col>
                         </Row>
-                        <ChatFeed
+                        {messages.length === 0 ? <NoContentFound title={"Remark history not found"} /> : <ChatFeed
                             messages={messages} // Array: list of message objects
                             // isTyping={true} // Boolean: is the recipient typing
                             hasInputField={false} // Boolean: use our input, or use your own
                             showSenderName={true} // show the name of the user who sent the message
                             bubblesCentered={false} //Boolean should the bubbles be centered in the feed?
                             chatBubble={false}
-                            sendorName={"ashok"}
-                        />
+                        />}
                     </div>
                 </Container >
             </Drawer >

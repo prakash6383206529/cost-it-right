@@ -10,8 +10,9 @@ import { gridDataAdded, saveAssemblyCostingRMCCTab } from '../../actions/Costing
 import { useContext } from 'react';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import { useEffect } from 'react';
-import { ViewCostingContext } from '../CostingDetails';
+import { IsPartType, ViewCostingContext } from '../CostingDetails';
 import { useRef } from 'react';
+import { PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 
 function AddAssemblyProcess(props) {
   const { item } = props;
@@ -23,6 +24,7 @@ function AddAssemblyProcess(props) {
   const { ToolTabData, ToolsDataList, ComponentItemDiscountData, RMCCTabData, SurfaceTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
   const drawerRef = useRef();
+  const isPartType = useContext(IsPartType);
 
   // useEffect(() => {
   //   let obj = {
@@ -62,7 +64,6 @@ function AddAssemblyProcess(props) {
     const tabData = RMCCTabData && RMCCTabData[0]
     const surfaceTabData = SurfaceTabData && SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
-    const discountAndOtherTabData = DiscountCostData && DiscountCostData[0]
     const packageAndFreightTabData = PackageAndFreightTabData && PackageAndFreightTabData[0]
     const toolTabData = ToolTabData && ToolTabData[0]
 
@@ -111,6 +112,17 @@ function AddAssemblyProcess(props) {
     dispatch(updateMultiTechnologyTopAndWorkingRowCalculation(request, res => { }))
     dispatch(gridDataAdded(true))
 
+    let basicRate = 0
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+      basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    } else {
+      basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    }
+
     let requestData = {
       "CostingId": item.CostingId,
       "CostingNumber": item.CostingNumber,
@@ -145,6 +157,7 @@ function AddAssemblyProcess(props) {
       "IsSubAssemblyComponentPart": costData.IsAssemblyPart,
       "NetOperationCostPerAssembly": item?.CostingPartDetails?.TotalOperationCostPerAssembly,
       "NetToolCostPerAssembly": item?.CostingPartDetails?.TotalToolCostPerAssembly,
+      "BasicRate": basicRate,
       "CostingPartDetails": {
         "CostingId": item.CostingId,
         "CostingNumber": item.CostingNumber,

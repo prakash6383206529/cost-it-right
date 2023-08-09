@@ -10,6 +10,7 @@ import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
 import StandardRub from './rubber/StandardRub'
 import CorrugatedBoxCalculator from './corrugatedBox/index'
+import RubberCalciTab from './rubber'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
@@ -54,7 +55,7 @@ function OpenWeightCalculator(props) {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return
     }
-    props.closeDrawer('', weightData, originalWeight)
+    props.closeDrawer(event, weightData, originalWeight)
   }
 
   /**
@@ -100,7 +101,7 @@ function OpenWeightCalculator(props) {
           />
         )
       case RUBBER:
-        return (<StandardRub
+        return (<RubberCalciTab
           rmRowData={props.rmRowData}
           inputDiameter={props.inputDiameter}
           isEditFlag={props.isEditFlag}

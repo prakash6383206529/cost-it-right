@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Row, Col } from 'reactstrap'
 import NoContentFound from '../../common/NoContentFound'
-import { AgGridReact } from 'ag-grid-react';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
@@ -443,7 +443,19 @@ function SimulationInsights(props) {
               rowSelection={'multiple'}
               onFilterModified={onFloatingFilterChanged}
             >
-
+              {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.</AgGridColumn> */}
+              <AgGridColumn field="TokenNumber" headerName="Token No"></AgGridColumn>
+              <AgGridColumn field="CostingHead" headerName="Costing Head"></AgGridColumn>
+              <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+              <AgGridColumn field="VendorName" headerName="Simulated By"></AgGridColumn>
+              <AgGridColumn field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
+              <AgGridColumn field="ImpactParts" headerName="Impacted Parts "></AgGridColumn>
+              <AgGridColumn field="SimulatedBy" headerName="Simulated By"></AgGridColumn>
+              <AgGridColumn field="SimulatedOn" headerName="Simulated On"></AgGridColumn>
+              <AgGridColumn field="ApprovedBy" headerName="Approved By"></AgGridColumn>
+              <AgGridColumn field="ApprovedOn" headerName="Approved On"></AgGridColumn>
+              <AgGridColumn field="CostingStatus" headerName="Status"></AgGridColumn>
+              <AgGridColumn field="SimulationId" cellClass="ag-grid-action-container" headerName="Actions"></AgGridColumn>
             </AgGridReact>
 
             <div className='button-wrapper'>

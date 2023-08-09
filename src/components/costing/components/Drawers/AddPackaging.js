@@ -4,7 +4,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import { costingInfoContext, netHeadCostContext } from '../CostingDetailStepTwo';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPfromApplicability, } from '../../../../helper';
 import { useSelector } from 'react-redux';
 import WarningMessage from '../../../common/WarningMessage';
 import { number, percentageLimitValidation, checkWhiteSpaces, hashValidation, decimalNumberLimit6, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage, isNumber } from "../../../../helper/validation";
@@ -12,6 +12,7 @@ import { LOGISTICS, STRINGMAXLENGTH } from '../../../../config/masterData';
 import _ from 'lodash';
 import { MESSAGES } from '../../../../config/message';
 import TooltipCustom from '../../../common/Tooltip';
+import { CRMHeads } from '../../../../config/constants';
 
 function IsolateReRender(control) {
   const values = useWatch({
@@ -33,6 +34,7 @@ function AddPackaging(props) {
     Applicability: rowObjData && rowObjData.Applicability !== undefined ? { label: rowObjData.Applicability, value: rowObjData.Applicability } : [],
     PackagingCost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : '',
     Cost: rowObjData && rowObjData.PackagingCost !== undefined ? checkForDecimalAndNull(rowObjData.PackagingCost, getConfigurationKey().NoOfDecimalForPrice) : 0,
+    crmHeadPackaging: rowObjData && rowObjData.PackagingCRMHead !== undefined ? { label: rowObjData.PackagingCRMHead, value: 1 } : [],
   }
 
   const { register, handleSubmit, control, setValue, getValues, reset, formState: { errors } } = useForm({
@@ -41,6 +43,7 @@ function AddPackaging(props) {
     defaultValues: isEditFlag ? defaultValues : {},
   });
 
+  const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const headCostData = useContext(netHeadCostContext)
   const costData = useContext(costingInfoContext);
 
@@ -51,7 +54,7 @@ function AddPackaging(props) {
   const [PackageType, setPackageType] = useState(true);
   const [packagingCost, setPackagingCost] = useState(0)
   const costingHead = useSelector(state => state.comman.costingHead)
-  const { CostingDataList } = useSelector(state => state.costing)
+  const { CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const [showCostError, setShowCostError] = useState(false)
   const [packagingCostDataFixed, setPackagingCostDataFixed] = useState(getValues('PackagingCost') ? getValues('PackagingCost') : '')
   const [errorMessage, setErrorMessage] = useState('')
@@ -96,6 +99,7 @@ function AddPackaging(props) {
   const renderListing = (label) => {
 
     const temp = [];
+    let tempList = [];
 
     if (label === 'Applicability') {
       costingHead && costingHead.map(item => {
@@ -103,7 +107,12 @@ function AddPackaging(props) {
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
-      return temp;
+      if (isBreakupBoughtOutPartCostingFromAPI) {
+        tempList = removeBOPfromApplicability([...temp])
+      } else {
+        tempList = [...temp]
+      }
+      return tempList;
     }
     if (label === 'FrieghtType') {
       freightType && freightType.map(item => {
@@ -113,7 +122,8 @@ function AddPackaging(props) {
         return null;
       });
       isEditFlag && temp.push({ label: rowObjData.PackagingDescription, value: rowObjData.PackagingDescription })
-      return temp;
+      tempList = [...temp]
+      return tempList;
     }
 
   }
@@ -319,6 +329,7 @@ function AddPackaging(props) {
         PackagingCostPercentage: 0,
         PackagingCost: getValues('Cost'),
         Applicability: 'Fixed',
+        PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : ''
       }
     } else {
       formData = {
@@ -329,6 +340,7 @@ function AddPackaging(props) {
         PackagingCostPercentage: PackageType ? data.PackagingCostPercentage : 0,
         PackagingCost: applicability.label === 'Fixed' ? getValues('PackagingCost') : packagingCost,
         Applicability: applicability ? data.Applicability.label : '',
+        PackagingCRMHead: getValues('crmHeadPackaging') ? getValues('crmHeadPackaging').label : ''
       }
     }
 
@@ -542,6 +554,28 @@ function AddPackaging(props) {
                       disabled={applicability.label === 'Fixed' ? false : true}
                     />
                     {applicability.label === 'Fixed' && (showCostError) && <WarningMessage dClass={"error-message"} textClass={"pl-0"} message={errorMessage} />}
+                  </Col>
+                  }
+
+                  {initialConfiguration.IsShowCRMHead && <Col md="12">
+                    <SearchableSelectHookForm
+                      name={`crmHeadPackaging`}
+                      type="text"
+                      label="CRM Head"
+                      errors={`${errors.crmHeadPackaging}`}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={false}
+                      rules={{
+                        required: false,
+                      }}
+                      placeholder={'Select'}
+                      options={CRMHeads}
+                      required={false}
+                      handleChange={() => { }}
+                      disabled={false}
+                    />
                   </Col>
                   }
                 </Row>

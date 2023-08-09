@@ -3,12 +3,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import {
   getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
-  saveDiscountOtherCostTab, setComponentDiscountOtherItemData, isOverheadProfitDataChange
+  saveDiscountOtherCostTab, isOverheadProfitDataChange
 } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
 import Toaster from '../../../../common/Toaster';
 import { MESSAGES } from '../../../../../config/message';
+import { IsPartType } from '../../CostingDetails';
+import { PART_TYPE_ASSEMBLY } from '../../../../../config/masterData';
 
 function PartOverheadProfit(props) {
 
@@ -18,10 +20,13 @@ function PartOverheadProfit(props) {
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
-  const { ComponentItemDiscountData, CostingEffectiveDate, checkIsOverheadProfitChange } = useSelector(state => state.costing)
+  const { ComponentItemDiscountData, CostingEffectiveDate, checkIsOverheadProfitChange, OverheadProfitTabData } = useSelector(state => state.costing)
+  const { DiscountCostData, RMCCTabData, SurfaceTabData, PackageAndFreightTabData, ToolTabData } = useSelector(state => state.costing)
+
 
   const costData = useContext(costingInfoContext);
   const netPOPrice = useContext(NetPOPriceContext);
+  const isPartType = useContext(IsPartType);
 
   const toggle = (BOMLevel, PartNumber) => {
     const Params = {
@@ -64,6 +69,9 @@ function PartOverheadProfit(props) {
   */
   const saveCosting = (values) => {
     if (checkIsOverheadProfitChange) {
+      let basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
       let reqData = {
         "CostingId": item.CostingId,
         "LoggedInUserId": loggedInUserId(),
@@ -73,7 +81,9 @@ function PartOverheadProfit(props) {
         "IsIncludeSurfaceTreatmentWithOverheadAndProfit": props.IsIncludeSurfaceTreatment,
         "IsIncludeSurfaceTreatmentWithRejection": props.IsIncludedSurfaceInRejection,
         "IsIncludeToolCostWithOverheadAndProfit": props.IsIncludeToolCost,
+        "IsIncludeOverheadAndProfitInICC": props.IncludeOverheadProfitInIcc,
         "NetOverheadAndProfitCost": checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
+        "BasicRate": basicRate,
         "CostingPartDetails": {
           ...item?.CostingPartDetails,
           NetOverheadAndProfitCost: checkForNull(item?.CostingPartDetails?.OverheadCost) + checkForNull(item?.CostingPartDetails?.RejectionCost) + checkForNull(item?.CostingPartDetails?.ProfitCost) + checkForNull(item?.CostingPartDetails?.ICCCost) + checkForNull(item?.CostingPartDetails?.PaymentTermCost),
@@ -93,7 +103,18 @@ function PartOverheadProfit(props) {
   }
 
   const InjectDiscountAPICall = () => {
-    dispatch(saveDiscountOtherCostTab(ComponentItemDiscountData, res => { }))
+    let basicRate = 0
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+      basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    } else {
+      basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+        checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    }
+
+    dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, BasicRate: basicRate }, res => { }))
   }
 
   useEffect(() => {

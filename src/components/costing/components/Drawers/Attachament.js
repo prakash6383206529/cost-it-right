@@ -40,8 +40,8 @@ function Attachament(props) {
             <Row className="mx-0">
               {gridListing ? <Col md="12">
 
-                {Data.Attachments &&
-                  Data.Attachments.map((f) => {
+                {(Data.Attachments || Data.Attachements) &&
+                  (Data.Attachments || Data.Attachements).map((f) => {
                     const withOutTild = f.FileURL
                       ? f.FileURL.replace('~', '')
                       : ''
@@ -57,8 +57,8 @@ function Attachament(props) {
 
               </Col> :
                 <Col md="12">
-                  {Data.attachment &&
-                    Data.attachment.map((f) => {
+                  {(Data.attachment || Data.Attachements) &&
+                    (Data.attachment || Data.Attachements).map((f) => {
                       const withOutTild = f.FileURL
                         ? f.FileURL.replace('~', '')
                         : ''

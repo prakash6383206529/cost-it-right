@@ -14,14 +14,12 @@ import {
     GET_CED_OTHER_OPERATION_DATA_SUCCESS,
     GET_CED_OTHER_OPERATION_FAILURE,
     GET_CED_OTHER_OPERATION_BY_SUPPLIER_SUCCESS,
-    GET_OPERATION_SELECTLIST_SUCCESS,
-    GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-    GET_INITIAL_TECHNOLOGY_SELECTLIST,
     config,
     GET_OPERATION_COMBINED_DATA_LIST,
     GET_ALL_OPERATION_COMBINED_DATA_LIST,
     GET_OPERATION_APPROVAL_LIST,
     SET_OPERATION_DATA,
+    GET_OPERATION_SELECTLIST,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import { MESSAGES } from '../../../config/message';
@@ -365,10 +363,11 @@ export function updateOperationAPI(requestData, callback) {
  * @method deleteOperationAPI
  * @description delete operation
  */
-export function deleteOperationAPI(OperationId, callback) {
+export function deleteOperationAPI(OperationId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteOperationAPI}/${OperationId}`, config())
+        const queryParams = `OperationId=${OperationId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteOperationAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -402,7 +401,7 @@ export function fileUploadOperation(data, callback) {
  */
 export function checkAndGetOperationCode(code, name, callback) {
     return (dispatch) => {
-        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code ? code : null}&operationName=${name}`, '', config());
+        const request = axios.post(`${API.checkAndGetOperationCode}?operationCode=${code}&operationName=${name}`, '', config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -414,22 +413,6 @@ export function checkAndGetOperationCode(code, name, callback) {
     };
 }
 
-/**
- * @method fileDeleteOperation
- * @description delete Operation file API
- */
-export function fileDeleteOperation(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteOperation}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
 
 /**
  * @method getCostSummaryOtherOperation
@@ -456,207 +439,14 @@ export function getCEDOtherOperationBySupplierID(supplierId, callback) {
     };
 }
 
-/**
- * @method getOperationSelectList
- * @description get all operation list
- */
-export function getOperationSelectList(callback) {
-    return (dispatch) => {
-        //dispatch({ type: API_REQUEST });
-        axios.get(API.getOperationSelectList, config())
-            .then((response) => {
-                if (response.data.Result === true) {
-                    dispatch({
-                        type: GET_OPERATION_SELECTLIST_SUCCESS,
-                        payload: response.data.SelectList,
-                    });
-                    callback(response);
-                }
-            }).catch((error) => {
-                dispatch({ type: GET_CED_OTHER_OPERATION_FAILURE });
-                callback(error);
-                apiErrors(error);
-            });
-    };
-}
 
 /**
- * @method getVendorWithVendorCodeSelectList
- * @description GET VENDOR WITH VENDOR CODE SELECTLIST
- */
-export function getVendorWithVendorCodeSelectList(vendorName, callback) {
-    return axios.get(`${API.getVendorWithVendorCodeSelectList}?vendorName=${vendorName}`, config());
-
-}
-
-/**
-* @method getTechnologySelectList
-* @description OPERATION FILTER TECHNOLOGY SELECTLIST INITIAL
-*/
-export function getTechnologySelectList(callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTechnologySelectList}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_INITIAL_TECHNOLOGY_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getVendorListByTechnology
- * @description get Vendor list by Technology
- */
-export function getVendorListByTechnology(ID, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getVendorListByTechnology}/${ID}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getOperationListByTechnology
- * @description get Vendor list by Technology
- */
-export function getOperationListByTechnology(ID, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getOperationListByTechnology}/${ID}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_OPERATION_SELECTLIST_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getTechnologyListByOperation
- * @description get Vendor list by Operation
- */
-export function getTechnologyListByOperation(ID, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getTechnologyListByOperation}/${ID}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_INITIAL_TECHNOLOGY_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getVendorListByOperation
- * @description get Vendor list by Operation
- */
-export function getVendorListByOperation(ID, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getVendorListByOperation}/${ID}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getTechnologyListByVendor
- * @description get Technology list by Vendor
- */
-export function getTechnologyListByVendor(ID, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getTechnologyListByVendor}/${ID}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_INITIAL_TECHNOLOGY_SELECTLIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getOperationListByVendor
- * @description get Operation list by Vendor
- */
-export function getOperationListByVendor(ID, callback) {
-    return (dispatch) => {
-        const request = axios.get(`${API.getOperationListByVendor}/${ID}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_OPERATION_SELECTLIST_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method operationZBCBulkUpload
+ * @method operationBulkUpload
  * @description create ZBC Opration by Bulk Upload
  */
-export function operationZBCBulkUpload(data, callback) {
+export function operationBulkUpload(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.operationZBCBulkUpload, data, config());
+        const request = axios.post(API.operationBulkUpload, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -665,98 +455,6 @@ export function operationZBCBulkUpload(data, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
             callback(error);
-        });
-    };
-}
-
-/**
- * @method operationVBCBulkUpload
- * @description create VBC Opration by Bulk Upload
- */
-export function operationVBCBulkUpload(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.operationVBCBulkUpload, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method operationCBCBulkUpload
- * @description create CBC Opration by Bulk Upload
- */
-export function operationCBCBulkUpload(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.operationCBCBulkUpload, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method masterApprovalRequestBySenderOperation
- * @description When sending Operation for approval for the first time
- * 
- */
-export function masterApprovalRequestBySenderOperation(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.masterSendToApproverOperation, data, config())
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response)
-            } else {
-                dispatch({ type: API_FAILURE })
-                if (response.data.Message) {
-                    Toaster.error(response.data.Message)
-                }
-            }
-        }).catch((error) => {
-            callback(error)
-            dispatch({ type: API_FAILURE })
-            apiErrors(error)
-        })
-    }
-}
-
-
-/*
-@method getOperationApprovalList
-
-**/
-export function getOperationApprovalList(callback) {
-
-    return (dispatch) => {
-
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getOperationApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=3`, config());
-        request.then((response) => {
-            if (response.data.Result || response.status === 204) {
-                //
-                dispatch({
-                    type: GET_OPERATION_APPROVAL_LIST,
-                    payload: response.status === 204 ? [] : response.data.DataList
-                    // payload: JSON.data.DataList
-                })
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            callback(error);
-            apiErrors(error)
         });
     };
 }
@@ -772,5 +470,24 @@ export function setOperationList(data) {
             type: SET_OPERATION_DATA,
             payload: data
         })
+    };
+}
+
+export function getOperationPartSelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getOperationPartSelectList}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_OPERATION_SELECTLIST,
+                    payload: response.data.SelectList,
+                });
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE, });
+            callback(error);
+            apiErrors(error);
+        });
     };
 }

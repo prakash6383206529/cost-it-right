@@ -23,6 +23,7 @@ import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { hideColumnFromExcel } from '../../../common/CommonFunctions';
 
 const gridOptions = {
 
@@ -40,27 +41,25 @@ function BDSimulation(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [showMainSimulation, setShowMainSimulation] = useState(false)
-    const [isDisable, setIsDisable] = useState(false)
     const gridRef = useRef();
+    const [isDisable, setIsDisable] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
-    const [maxDate, setMaxDate] = useState('');
     const [titleObj, setTitleObj] = useState({})
+    const [maxDate, setMaxDate] = useState('');
     const [noData, setNoData] = useState(false);
     const [showTooltip, setShowTooltip] = useState(false)
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
-
+    const [textFilterSearch, setTextFilterSearch] = useState('')
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
 
-
-
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     useEffect(() => {
         if (isbulkUpload) {
@@ -111,8 +110,8 @@ function BDSimulation(props) {
         obj.SimulationTechnologyId = selectedMasterForSimulation?.value
         obj.SimulationTypeId = list[0].CostingTypeId
         obj.LoggedInUserId = loggedInUserId()
-        obj.TechnologyId = selectedTechnologyForSimulation.value
-        obj.TechnologyName = selectedTechnologyForSimulation.label
+        obj.TechnologyId = selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null
+        obj.TechnologyName = selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null
         obj.EffectiveDate = effectiveDate
         // if (filteredRMData.plantId && filteredRMData.plantId.value) {
         //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
@@ -124,8 +123,8 @@ function BDSimulation(props) {
                 tempObj.BoughtOutPartId = item.BoughtOutPartId
                 tempObj.OldBOPRate = item.BasicRate
                 tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate)
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
                 tempArr.push(tempObj)
             }
             return null;
@@ -135,6 +134,7 @@ function BDSimulation(props) {
         obj.SimulationBoughtOutPart = tempArr
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         obj.SimulationHeadId = list[0].CostingTypeId
+        obj.IsSimulationWithOutCosting = !isMasterAssociatedWithCosting
 
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
             setIsDisable(false)
@@ -252,26 +252,27 @@ function BDSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.data;
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         if (isImpactedMaster) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
             if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate)
-            const NewBasicRate = Number(row.NewBasicRate)
+            const BasicRate = Number(row.BasicRate) / NumberOfPieces
+            const NewBasicRate = Number(row.NewBasicRate) / NumberOfPieces
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         }
     }
 
     const OldcostFormatter = (props) => {
         const row = props?.data;
+        const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
         if (isImpactedMaster) {
             return row.OldNetBoughtOutPartCost ? row.OldNetBoughtOutPartCost : '-'
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
 
-            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate), getConfigurationKey().NoOfDecimalForPrice) : ''
+            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice) : ''
 
         }
     }
@@ -313,9 +314,11 @@ function BDSimulation(props) {
         }, 100);
     };
     const onFloatingFilterChanged = (value) => {
-        if (list.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (list.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
@@ -323,6 +326,7 @@ function BDSimulation(props) {
 
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
+        setTextFilterSearch(e?.target?.value)
     }
 
     const cellChange = (props) => {
@@ -330,6 +334,7 @@ function BDSimulation(props) {
     }
     const resetState = () => {
         gridApi?.setQuickFilter('');
+        setTextFilterSearch('')
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
         if (!isImpactedMaster) {
@@ -358,8 +363,9 @@ function BDSimulation(props) {
         oldBasicRateFormatter: oldBasicRateFormatter,
         vendorFormatter: vendorFormatter,
         plantFormatter: plantFormatter,
-        revisedBasicRateHeader: revisedBasicRateHeader,
         customerFormatter: customerFormatter,
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        nullHandler: props.nullHandler && props.nullHandler
     };
 
     const basicRatetooltipToggle = () => {
@@ -371,16 +377,20 @@ function BDSimulation(props) {
     };
 
     const returnExcelColumn = (data = [], TempData) => {
-
+        let tempData = []
         let temp = []
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
             temp.push(item)
         })
-
+        if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
+            tempData = hideColumnFromExcel(data, 'Quantity')
+        } else {
+            tempData = data
+        }
         return (
             <ExcelSheet data={temp} name={'BOP Data'}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -391,74 +401,73 @@ function BDSimulation(props) {
                 {
                     (!showverifyPage && !showMainSimulation) &&
                     <Fragment>
-                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To add revised basic rate please double click on the field."}</Tooltip>}
+                        {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         <Row>
                             <Col className={`add-min-height mb-3 sm-edit-page  ${(list && list?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                 <div className="ag-grid-wrapper height-width-wrapper">
                                     <div className="ag-grid-header d-flex align-items-center justify-content-between">
                                         <div className='d-flex align-items-center'>
-                                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                            <input type="text" className="form-control table-search" id="filter-text-box" value={textFilterSearch} placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right mr-2" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
-                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                            <ExcelFile filename={`${props.lastRevision ? 'Last Revision Data' : 'Impacted Master Data'}`} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
                                             </ExcelFile>
                                         </div>
-                                        {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
-                                            {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                <label className='mr-1'>Vendor (Code):</label>
-                                                <p title={list[0].Vendor}>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                        <div className='d-flex justify-content-end bulk-upload-row pr-0 zindex-2'>
+                                            {
+                                                isbulkUpload && <>
+                                                    <div className="d-flex align-items-center">
+                                                        <label>Rows with changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfCorrectRow'}
+                                                            Controller={Controller}
+                                                            title={titleObj.rowWithChanges}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfCorrectRow}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                    <div className="d-flex align-items-center">
+                                                        <label>Rows without changes:</label>
+                                                        <TextFieldHookForm
+                                                            label=""
+                                                            name={'NoOfRowsWithoutChange'}
+                                                            title={titleObj.rowWithoutChanges}
+                                                            Controller={Controller}
+                                                            control={control}
+                                                            register={register}
+                                                            rules={{ required: false }}
+                                                            mandatory={false}
+                                                            handleChange={() => { }}
+                                                            defaultValue={''}
+                                                            className=""
+                                                            customClassName={'withBorder mn-height-auto hide-label mb-0'}
+                                                            errors={errors.NoOfRowsWithoutChange}
+                                                            disabled={true}
+                                                        />
+                                                    </div>
+                                                </>
+                                            }
+                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                    <label className='mr-1'>Vendor (Code):</label>
+                                                    <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                                </div>}
+                                                <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                             </div>}
-                                            <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
-                                        </div>}
-
+                                        </div>
                                     </div>
-                                    {
-                                        isbulkUpload && <>
-                                            <div className='d-flex justify-content-end bulk-upload-row'>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows with changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfCorrectRow'}
-                                                        Controller={Controller}
-                                                        title={titleObj.rowWithChanges}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfCorrectRow}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                                <div className="d-flex align-items-center">
-                                                    <label>Rows without changes:</label>
-                                                    <TextFieldHookForm
-                                                        label=""
-                                                        name={'NoOfRowsWithoutChange'}
-                                                        title={titleObj.rowWithoutChanges}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        rules={{ required: false }}
-                                                        mandatory={false}
-                                                        handleChange={() => { }}
-                                                        defaultValue={''}
-                                                        className=""
-                                                        customClassName={'withBorder mn-height-auto hide-label mb-0'}
-                                                        errors={errors.NoOfRowsWithoutChange}
-                                                        disabled={true}
-                                                    />
-                                                </div>
-                                            </div>
-                                        </>
-                                    }
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         {list && <AgGridReact
@@ -490,7 +499,7 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
-
+                                            {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" editable='false' headerName="Min Order Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
@@ -501,7 +510,7 @@ function BDSimulation(props) {
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
-
+                                            {props.children}
                                             <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
@@ -525,6 +534,7 @@ function BDSimulation(props) {
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
                                             showYearDropdown
+                                            dropdownMode='select'
                                             dateFormat="dd/MM/yyyy"
                                             minDate={new Date(maxDate)}
                                             placeholderText="Select effective date"

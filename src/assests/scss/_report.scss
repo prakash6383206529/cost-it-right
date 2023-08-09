@@ -1,0 +1,247 @@
+@import './abstracts/variable.scss';
+
+// THIS IS FOR COST RATIO REPORT LISTING UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
+.costing-ratio-report {
+
+    //TAKE MIN HEIGHT IF DATA IS NOT FOUND
+    .report-height {
+        min-height: calc(100vh - 284px);
+    }
+
+    table {
+        position: relative;
+
+        th,
+        td {
+            padding: 0 !important;
+            border-bottom: 0px solid transparent !important;
+            min-width: 225px;
+
+            .column-data {
+                height: 43px;
+                border-bottom: 1px solid $excelGridBorder;
+                border-right: 1px solid $excelGridBorder;
+                padding: 1px 10px;
+                line-height: 1;
+                display: flex;
+                align-items: center;
+                font-size: 15px;
+
+                // OVERFLOW FOR THE PLANT AND VENDOR NAME
+                .code-specific {
+                    max-width: 480px;
+                    display: flex;
+                    grid-gap: 3px;
+
+                    .name {
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                    }
+
+                    @media screen and (max-width: $middleDesktop) {
+                        max-width: 380px;
+                    }
+
+                    &.max-height-reduce {
+                        max-width: 210px;
+                    }
+                }
+            }
+
+            //ALTERNATIVE COLOR ON THE COLUMN
+            &:nth-child(odd) {
+                background-color: #ffffef;
+            }
+
+            //FIRST HEADER FREEZE IF DATA IS OVERFLOW E.I. FIRST COLUMN
+            &:first-child {
+                max-width: 80px;
+                min-width: 180px;
+                position: sticky;
+                left: -1px;
+                background-color: #eef3f8;
+                z-index: 1;
+                box-shadow: 0px 3px 8px rgb(0, 0, 0 / 8%) !important;
+
+
+                .column-data {
+                    border-left: 1px solid $excelGridBorder;
+                    padding-left: 15px;
+                    font-weight: bold;
+                }
+            }
+
+            &:nth-child(2) {
+
+                // FIRST PIE CHART FLOATING RIGHT DUE TO LESS SPACE IN LEFT SIDE
+                .view-pie-button .tooltiptext.graph-tooltip {
+                    right: unset !important;
+                    left: 107% !important;
+                }
+            }
+        }
+
+
+    }
+}
+
+// THIS IS FOR COST RATIO REPORT FIRST PAGE UI, ALSO WE WILL USE SAME UI FOR OTHER REPORT AS NEED AND CODE USABLITY
+.cost-ratio-report {
+    min-height: calc(100vh - 315px);
+
+    .react-datepicker-popper {
+        @extend .zindex-12;
+    }
+}
+
+.supplier-contribution {
+    .react-datepicker-popper {
+        @extend .zindex-12;
+    }
+}
+
+.h-298 {
+    min-height: calc(100vh - 298px);
+}
+
+//THIS IS USED FOR DOUGHNUT GRAPH 
+.doughnut-graph-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+
+    @media screen and (min-width: $middleDesktop) {
+        height: calc(100vh - 190px);
+    }
+
+}
+
+.report-btn-back {
+    margin-right: 50px;
+}
+
+.goat-given {
+    td {
+        width: 33% !important;
+
+
+        .master-movement-report {
+            min-height: calc(100vh - 268px);
+        }
+
+        .padding-top {
+            padding-top: 8px;
+        }
+
+
+        .report-btn-reset {
+            position: absolute !important;
+            top: 0;
+            right: 6.7%;
+        }
+
+        .doughnut-graph {
+            canvas {
+                transform: scale(0.9);
+            }
+
+            @media screen and (max-width: $middleDesktop) {
+                margin-top: -5px;
+            }
+        }
+
+        .supplier-back-btn {
+            position: relative;
+            text-align: right;
+            z-index: 2;
+
+            button {
+                position: absolute;
+                right: 0;
+            }
+        }
+
+        .goat-given {
+            td {
+                width: 33% !important;
+
+                span {
+                    font-size: 14px;
+                }
+            }
+        }
+
+        .got-given-container-listing {
+            display: grid;
+            grid-template-columns: 43% 42% 15%;
+
+            .ag-paging-panel {
+                display: none;
+            }
+
+            .given-report {
+                // border-right: 1px solid $agGridBorder;
+                border-left: 1px solid $agGridBorder;
+            }
+
+            .got-report {
+                border-left: 1px solid $agGridBorder;
+            }
+
+            .got-given-header {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                font-weight: 500;
+                min-height: 45px;
+                font-size: 14px;
+                border: 1px solid $agGridBorder;
+                border-bottom: none;
+            }
+        }
+
+        .got-given-summary-container {
+            display: grid;
+            grid-template-columns: 51% 160px 39.5%;
+
+            @media screen and (max-width:$middleDesktop) {
+                grid-template-columns: 46.2% 160px 39.5%;
+            }
+
+            .ag-paging-panel {
+                display: none;
+            }
+
+        }
+
+        .pipd-report-grid {
+            .ag-theme-material {
+                @for $i from 1 through 7 {
+
+                    [row-id~="#{($i * 3) - 1}"] {
+                        [col-id="Name"] {
+                            border-bottom: 1px solid $agGridBorder !important;
+                        }
+                    }
+                }
+            }
+        }
+
+        .highlight-row {
+            font-weight: 600 !important;
+        }
+
+        .product-rollout-container {
+
+            // background-color: $primaryBackground;
+            .seprate-box {
+                background-color: $primaryBackground;
+                box-shadow: 0 3px 5px rgba(55, 0, 0, 0.15), 0 0px 0px rgba(0, 0, 0, 0.02);
+                padding: 10px;
+                margin-bottom: 20px;
+            }
+        }
+    }
+}

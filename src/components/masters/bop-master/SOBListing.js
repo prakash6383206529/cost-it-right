@@ -99,7 +99,9 @@ class SOBListing extends Component {
    * @description Filter data when user type in searching input
    */
   onFloatingFilterChanged = (value) => {
-    this.props.bopSobList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.bopSobList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
 
 
@@ -422,7 +424,7 @@ class SOBListing extends Component {
                   <AgGridColumn field="ShareOfBusinessPercentage" headerName="Total SOB (%)"></AgGridColumn>
                   <AgGridColumn width={205} field="WeightedNetLandedCost" headerName="Weighted Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter"></AgGridColumn>
-                  <AgGridColumn field="BoughtOutPartNumber" width={120} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                  <AgGridColumn field="BoughtOutPartNumber" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>

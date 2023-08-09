@@ -7,7 +7,6 @@ import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getMenu,
   getTopAndLeftMenuData
 } from '../../actions/auth/AuthActions';
-import "./NavBar.scss";
 import { Loader } from "../common/Loader";
 import masterImage from '../../assests/images/list.svg'
 import masterActive from '../../assests/images/masters-active.svg'
@@ -220,6 +219,8 @@ class SideBar extends Component {
         return this.renderUser(module, LandingPageURL);
       case "Audit":
         return this.renderAudit(module, LandingPageURL);
+      case "NFR":
+        return this.renderNFR(module, LandingPageURL);
       case "RFQ":
         if (getConfigurationKey().IsRFQConfigured) {
           return this.renderRFQ(module, LandingPageURL);
@@ -290,6 +291,14 @@ class SideBar extends Component {
     );
   };
 
+  getSpecificIdForElement = (data) => {
+    let id = '';
+    if (data) {
+      id = data.NavigationURL && data.NavigationURL.replace('/', '');
+    }
+    return id;
+  }
+
   /**
    * @method renderMaster
    * @description Render master menu.
@@ -351,6 +360,7 @@ class SideBar extends Component {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
+                              id={this.getSpecificIdForElement(item)}
                               onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
@@ -446,6 +456,7 @@ class SideBar extends Component {
                           <li key={i} className={`mb5`}>
                             <Link
                               onClick={() => this.setLeftMenu(el.ModuleId)}
+                              id={this.getSpecificIdForElement(item)}
                               to={{
                                 pathname: item.NavigationURL,
                                 state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
@@ -521,6 +532,7 @@ class SideBar extends Component {
                         <li key={i} className={`mb5`}>
                           <Link
                             onClick={() => this.setLeftMenu(el.ModuleId)}
+                            id={this.getSpecificIdForElement(item)}
                             to={{
                               pathname: item.NavigationURL,
                               state: { ModuleId: reactLocalStorage.get("MenuModuleId"), PageName: item.PageName, PageURL: item.NavigationURL }
@@ -581,6 +593,8 @@ class SideBar extends Component {
                         return (
                           <li key={i} className={`mb5`}>
                             <Link
+
+                              id={this.getSpecificIdForElement(item)}
                               onClick={() => this.setLeftMenu(el.ModuleId)}
                               to={{
                                 pathname: item.NavigationURL,
@@ -659,6 +673,7 @@ class SideBar extends Component {
                         <li key={i} className={`mb5`}>
                           <Link
                             onClick={() => this.setLeftMenu(el.ModuleId)}
+                            id={this.getSpecificIdForElement(item)}
                             to={{
                               pathname: item.NavigationURL,
                               state: { ModuleId: localStorage.getItem('ModuleId'), PageName: item.PageName, PageURL: item.NavigationURL }
@@ -721,6 +736,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
+                id={this.getSpecificIdForElement(el)}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
@@ -761,6 +777,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
+                id={this.getSpecificIdForElement(el)}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
@@ -798,6 +815,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
+                id={this.getSpecificIdForElement(el)}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
@@ -834,6 +852,7 @@ class SideBar extends Component {
             <li>
               <Link
                 key={i}
+                id={this.getSpecificIdForElement(el)}
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === 'NFR' ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu('NFR')}
                 to={{
@@ -940,7 +959,7 @@ class SideBar extends Component {
 
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
-                  {this.renderNFR('RFQ')}
+                  {/* {this.renderNFR('RFQ')} */}
                 </ul>
               </nav>
             </div>
@@ -949,7 +968,7 @@ class SideBar extends Component {
         </div>
 
         {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure do you want to logout?`} />
+          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to log out?`} />
         }
 
       </nav >

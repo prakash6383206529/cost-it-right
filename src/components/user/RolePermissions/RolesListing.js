@@ -279,7 +279,11 @@ class RolesListing extends Component {
                     onGridReady={this.onGridReady}
                     gridOptions={gridOptions}
                     noRowsOverlayComponent={'customNoRowsOverlay'}
-                    onFilterModified={(e) => { this.setState({ noData: searchNocontentFilter(e) }) }}
+                    onFilterModified={(e) => {
+                      setTimeout(() => {
+                        this.setState({ noData: searchNocontentFilter(e) });
+                      }, 500);
+                    }}
                     noRowsOverlayComponentParams={{
                       title: EMPTY_DATA,
                       imagClass: 'imagClass'
@@ -289,7 +293,7 @@ class RolesListing extends Component {
                     {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                     <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
                     <AgGridColumn pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                    <AgGridColumn field="RoleId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                    <AgGridColumn field="RoleId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                   </AgGridReact>
                   {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                 </div>

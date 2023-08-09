@@ -154,6 +154,7 @@ function AttachmentSec(props) {
         if (status === 'rejected_file_type') {
             setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+            setIsDisable(false)
         } else if (status === 'error_file_size') {
             setDisableFalseFunctionAttachmentFiles(IMPACT_SHEET)
             dropzoneImpactSheet.current?.files.pop()
@@ -202,7 +203,9 @@ function AttachmentSec(props) {
         }
 
         if (status === 'rejected_file_type') {
+            setDisableFalseFunctionAttachmentFiles(SUPPLIER_CONFRIM)
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+            setIsDisable(false)
         } else if (status === 'error_file_size') {
             setDisableFalseFunctionAttachmentFiles(SUPPLIER_CONFRIM)
             dropzoneSupplierConfirm.current?.files.pop()
@@ -249,7 +252,9 @@ function AttachmentSec(props) {
         }
 
         if (status === 'rejected_file_type') {
+            setDisableFalseFunctionAttachmentFiles(INVOICE_BACKUP)
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+            setIsDisable(false)
         } else if (status === 'error_file_size') {
             setDisableFalseFunctionAttachmentFiles(INVOICE_BACKUP)
             dropzoneInvoiceBackup.current?.files.pop()
@@ -297,7 +302,9 @@ function AttachmentSec(props) {
         }
 
         if (status === 'rejected_file_type') {
+            setDisableFalseFunctionAttachmentFiles(OTHER)
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+            setIsDisable(false)
         } else if (status === 'error_file_size') {
             setDisableFalseFunctionAttachmentFiles(OTHER)
             dropzoneOthers.current?.files.pop()
@@ -345,7 +352,9 @@ function AttachmentSec(props) {
         }
 
         if (status === 'rejected_file_type') {
+            setDisableFalseFunctionAttachmentFiles(ATTACHMENTS)
             Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+            setIsDisable(false)
         } else if (status === 'error_file_size') {
             setDisableFalseFunctionAttachmentFiles(ATTACHMENTS)
             dropzoneAttachments.current?.files.pop()

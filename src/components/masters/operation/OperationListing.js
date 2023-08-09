@@ -5,13 +5,9 @@ import { Row, Col, } from 'reactstrap';
 import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
+import { EMPTY_DATA, OPERATIONS, SURFACETREATMENT, defaultPageSize, APPROVED_STATUS, FILE_URL } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import {
-    getOperationsDataList, deleteOperationAPI, getOperationSelectList, getVendorWithVendorCodeSelectList, getTechnologySelectList,
-    getVendorListByTechnology, getOperationListByTechnology, getTechnologyListByOperation, getVendorListByOperation,
-    getTechnologyListByVendor, getOperationListByVendor, setOperationList
-} from '../actions/OtherOperation';
+import { getOperationsDataList, deleteOperationAPI, setOperationList } from '../actions/OtherOperation';
 import AddOperation from './AddOperation';
 import { onFloatingFilterChanged, onSearch, resetState, onBtPrevious, onBtNext, onPageSizeChanged, PaginationWrapper } from '../../common/commonPagination'
 import BulkUpload from '../../massUpload/BulkUpload';
@@ -35,6 +31,7 @@ import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -72,7 +69,7 @@ class OperationListing extends Component {
             selectedRowDataAnalytics: [],
             inRangeDate: [],
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: '' },
+            floatingFilterData: { CostingHead: "", Technology: "", OperationName: "", OperationCode: "", Plants: "", VendorName: "", UnitOfMeasurement: "", Rate: "", EffectiveDate: "", DepartmentName: this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: '' },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -83,7 +80,9 @@ class OperationListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            attachment: false,
+            viewAttachment: []
         }
     }
     componentDidMount() {
@@ -167,7 +166,7 @@ class OperationListing extends Component {
 
         const { isMasterSummaryDrawer } = this.props
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         let filterData = {
             operation_for: operation_for,
@@ -259,9 +258,11 @@ class OperationListing extends Component {
     }
 
     onFloatingFilterChanged = (value) => {
-        if (this.state.tableData?.length !== 0) {
-            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }
+        setTimeout(() => {
+            if (this.state.tableData?.length !== 0) {
+                this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+            }
+        }, 500);
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -293,45 +294,6 @@ class OperationListing extends Component {
         onPageSizeChanged(this, newPageSize, "Operation", this.state.currentRowIndex)    // COMMON PAGINATION FUNCTION
     };
 
-    /**
-    * @method renderListing
-    * @description Used show listing of unit of measurement
-    */
-    renderListing = (label) => {
-        const { filterOperation } = this.props;
-        const temp = [];
-
-        if (label === 'technology') {
-            filterOperation && filterOperation.technology && filterOperation.technology.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'costingHead') {
-            return costingHeadObjs;
-        }
-
-        if (label === 'OperationNameList') {
-            filterOperation && filterOperation.operations && filterOperation.operations.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-        if (label === 'VendorList') {
-            filterOperation && filterOperation.vendors && filterOperation.vendors.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-    }
 
     /**
     * @method viewOrEditItemDetails
@@ -362,7 +324,8 @@ class OperationListing extends Component {
     * @description confirm delete item
     */
     confirmDeleteItem = (ID) => {
-        this.props.deleteOperationAPI(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteOperationAPI(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_OPERATION_SUCCESS);
                 this.resetState()
@@ -422,84 +385,6 @@ class OperationListing extends Component {
     };
 
     /**
-    * @method handleHeadChange
-    * @description called
-    */
-    handleHeadChange = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ costingHead: newValue, });
-        } else {
-            this.setState({ costingHead: [], })
-        }
-    };
-
-    /**
-    * @method handleTechnology
-    * @description called
-    */
-    handleTechnology = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ selectedTechnology: newValue, }, () => {
-                const { selectedTechnology } = this.state;
-                this.props.getVendorListByTechnology(selectedTechnology.value, () => { })
-                this.props.getOperationListByTechnology(selectedTechnology.value, () => { })
-            });
-        } else {
-            this.setState({ selectedTechnology: [], })
-            this.props.getOperationSelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-        }
-    };
-
-    /**
-    * @method handleOperationName
-    * @description called
-    */
-    handleOperationName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ operationName: newValue }, () => {
-                const { operationName } = this.state;
-                this.props.getTechnologyListByOperation(operationName.value, () => { })
-                this.props.getVendorListByOperation(operationName.value, () => { })
-            });
-        } else {
-            this.setState({ operationName: [] })
-            this.props.getTechnologySelectList(() => { })
-            this.props.getVendorWithVendorCodeSelectList()
-        }
-    };
-
-    /**
-    * @method handleVendorName
-    * @description called
-    */
-    handleVendorName = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorName: newValue }, () => {
-                const { vendorName } = this.state;
-                this.props.getTechnologyListByVendor(vendorName.value, () => { })
-                this.props.getOperationListByVendor(vendorName.value, () => { })
-            });
-        } else {
-            this.setState({ vendorName: [] })
-            this.props.getTechnologySelectList(() => { })
-            this.props.getOperationSelectList(() => { })
-        }
-    };
-
-    /**
-    * @method handleVendorType
-    * @description Used to handle vendor type
-    */
-    handleVendorType = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ vendorType: newValue, vendorName: [], });
-        } else {
-            this.setState({ vendorType: [], vendorName: [] })
-        }
-    };
-
-    /**
     * @method hyphenFormatter
     */
     hyphenFormatter = (props) => {
@@ -550,7 +435,42 @@ class OperationListing extends Component {
 
         return (data !== ' ' ? data : '-');
     }
+    viewAttachmentData = (index) => {
+        this.setState({ viewAttachment: index, attachment: true })
+    }
+    closeAttachmentDrawer = (e = '') => {
+        this.setState({ attachment: false })
+    }
+    attachmentFormatter = (props) => {
+        const row = props?.data;
+        let files = row?.Attachements
+        if (files && files?.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => this.viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
 
     formToggle = () => {
 
@@ -785,7 +705,8 @@ class OperationListing extends Component {
             renderPlantFormatter: this.renderPlantFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             hyphenFormatter: this.hyphenFormatter,
-            commonCostFormatter: this.commonCostFormatter
+            commonCostFormatter: this.commonCostFormatter,
+            attachmentFormatter: this.attachmentFormatter,
         };
         return (
             <div className={`${isSimulation ? 'simulation-height' : this.props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
@@ -904,9 +825,11 @@ class OperationListing extends Component {
                                 {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                <AgGridColumn field="Rate" headerName="Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="OperationId" cellClass={"actions-wrapper ag-grid-action-container"} width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                             </AgGridReact>
                             <div className='button-wrapper'>
                                 {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
@@ -948,7 +871,17 @@ class OperationListing extends Component {
                             rowData={this.state.selectedRowDataAnalytics}
                         />
                     }
-
+                    {
+                        this.state.attachment && (
+                            <Attachament
+                                isOpen={this.state.attachment}
+                                index={this.state.viewAttachment}
+                                closeDrawer={this.closeAttachmentDrawer}
+                                anchor={'right'}
+                                gridListing={true}
+                            />
+                        )
+                    }
 
                 </div>
                 {
@@ -965,10 +898,10 @@ class OperationListing extends Component {
 * @param {*} state
                 */
 function mapStateToProps({ otherOperation, auth, simulation }) {
-    const { loading, filterOperation, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
+    const { loading, operationList, allOperationList, operationSurfaceTreatmentList, operationIndividualList, setOperationData, operationDataHold } = otherOperation;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
     const { selectedRowForPagination } = simulation;
-    return { loading, filterOperation, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedRowForPagination, setOperationData, operationDataHold };
+    return { loading, leftMenuData, operationList, allOperationList, initialConfiguration, topAndLeftMenuData, operationSurfaceTreatmentList, operationIndividualList, selectedRowForPagination, setOperationData, operationDataHold };
 }
 
 /**
@@ -978,17 +911,8 @@ function mapStateToProps({ otherOperation, auth, simulation }) {
                 * @param {function} mapDispatchToProps
                 */
 export default connect(mapStateToProps, {
-    getTechnologySelectList,
     getOperationsDataList,
     deleteOperationAPI,
-    getVendorWithVendorCodeSelectList,
-    getOperationSelectList,
-    getVendorListByTechnology,
-    getOperationListByTechnology,
-    getTechnologyListByOperation,
-    getVendorListByOperation,
-    getTechnologyListByVendor,
-    getOperationListByVendor,
     getListingForSimulationCombined,
     setSelectedRowForPagination,
     setOperationList,

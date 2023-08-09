@@ -18,7 +18,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { searchNocontentFilter } from '../../../helper';
+import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
@@ -112,7 +112,8 @@ class FreightListing extends Component {
   * @description confirm delete Raw Material details
   */
   confirmDelete = (ID) => {
-    this.props.deleteFright(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteFright(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
         this.setState({ dataCount: 0 })
@@ -133,7 +134,9 @@ class FreightListing extends Component {
      * @description Filter data when user type in searching input
      */
   onFloatingFilterChanged = (value) => {
-    this.props.freightDetail.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.freightDetail.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
   /**
   * @method renderPaginationShowsTotal
@@ -375,7 +378,7 @@ class FreightListing extends Component {
                   {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn width='200px' field="FreightId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
+                  <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
                 </AgGridReact>
                 {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>

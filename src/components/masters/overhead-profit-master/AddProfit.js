@@ -2,12 +2,11 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
-import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType } from '../../../actions/Common';
-import { getVendorWithVendorCodeSelectList } from '../actions/Supplier';
+import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
-  createProfit, updateProfit, getProfitData, fileUploadProfit, fileDeleteProfit,
+  createProfit, updateProfit, getProfitData, fileUploadProfit,
 } from '../actions/OverheadProfit';
 import { getClientSelectList, } from '../actions/Client';
 import Toaster from '../../common/Toaster';
@@ -15,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
@@ -25,6 +24,7 @@ import { onFocus, showDataOnHover } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 
 const selector = formValueSelector('AddProfit');
 
@@ -73,7 +73,9 @@ class AddProfit extends Component {
       showErrorOnFocus: false,
       showPopup: false,
       showPartCost: false,
-      vendorFilterList: []
+      vendorFilterList: [],
+      RawMaterial: [],
+      RMGrade: [],
     }
   }
 
@@ -83,6 +85,9 @@ class AddProfit extends Component {
    * @description Called after rendering the component   
    */
   componentDidMount() {
+    if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
+      this.props.getRawMaterialNameChild(() => { })
+    }
     this.props.getPlantSelectListByType(ZBC, () => { })
     this.props.fetchCostingHeadsAPI('master', res => { });
     if (!this.state.isViewMode) {
@@ -108,6 +113,8 @@ class AddProfit extends Component {
       'ProfitRMPercentage',
       'ProfitMachiningCCPercentage',
       'ProfitBOPPercentage',
+      'RawMaterialGradeId',
+      'RawMaterialId',
     ];
     fieldsToClear.forEach(fieldName => {
       this.props.dispatch(clearFields('AddProfit', false, false, fieldName));
@@ -132,10 +139,10 @@ class AddProfit extends Component {
       this.setState({ ModelType: [], })
     }
     if (this.state.ModelType.value === Number(newValue.value)) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+      this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false, })
     }
     else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+      this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
 
@@ -182,6 +189,7 @@ class AddProfit extends Component {
             // }
 
             this.setState({
+              IsFinancialDataChanged: false,
               isEditFlag: true,
               // isLoader: false,
               costingTypeId: Data.CostingTypeId,
@@ -195,6 +203,8 @@ class AddProfit extends Component {
               vendorCode: (Data.VendorCode && Data.VendorCode !== undefined) ? Data.VendorCode : "",
               selectedPlants: Data && Data.Plants[0] && Data.Plants[0].PlantId ? [{ Text: Data.Plants[0].PlantName, Value: Data.Plants[0].PlantId }] : [],
               singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
+              RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
+              RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
             }, () => {
               this.checkProfitFields()
               this.setState({ isLoader: false })
@@ -225,9 +235,25 @@ class AddProfit extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { modelTypes, costingHead, clientSelectList, plantSelectList } = this.props;
+    const { modelTypes, costingHead, clientSelectList, plantSelectList, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
+    if (label === 'material') {
+      rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
 
+    if (label === 'grade') {
+      gradeSelectList && gradeSelectList.map((item) => {
+        if (item.Value === '0') return false
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
     if (label === 'ModelType') {
       modelTypes && modelTypes.map(item => {
         if (item.Value === '0') return false;
@@ -363,11 +389,11 @@ class AddProfit extends Component {
         isHideRM: false,
       })
     }
-    if (this.state.profitAppli.value === newValue.value) {
-      this.setState({ isDataChanged: true, DropdownNotChanged: true })
+    if (this.state.isEditFlag && this.state.profitAppli.value === newValue.value) {
+      this.setState({ DropdownNotChanged: true, IsFinancialDataChanged: false })
     }
-    else {
-      this.setState({ isDataChanged: false, DropdownNotChanged: false })
+    else if (this.state.isEditFlag) {
+      this.setState({ DropdownNotChanged: false, IsFinancialDataChanged: true })
     }
   };
 
@@ -380,9 +406,9 @@ class AddProfit extends Component {
       if (String(newValue) === String(this.state.DataToChange.ProfitPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState({ IsFinancialDataChanged: true })
 
       }
 
@@ -398,9 +424,9 @@ class AddProfit extends Component {
       if (String(newValue) === String(this.state.DataToChange.ProfitRMPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState({ IsFinancialDataChanged: true })
 
       }
 
@@ -416,9 +442,9 @@ class AddProfit extends Component {
       if (String(newValue) === String(this.state.DataToChange.ProfitMachiningCCPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState({ IsFinancialDataChanged: true })
 
       }
 
@@ -434,15 +460,48 @@ class AddProfit extends Component {
       if (String(newValue) === String(this.state.DataToChange.ProfitBOPPercentage) &&
         String(this.state.profitAppli.label) === String(this.state.DataToChange.ProfitApplicabilityType) &&
         String(this.state.ModelType.label) === String(this.state.DataToChange.ModelType)) {
-        this.setState({ isDataChanged: true })
+        this.setState({ IsFinancialDataChanged: false })
       } else {
-        this.setState({ isDataChanged: false })
+        this.setState({ IsFinancialDataChanged: true })
 
       }
 
     }
   };
+  /**
+    * @method handleRMChange
+    * @description  used to handle row material selection
+    */
+  handleRMChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
+        const { RawMaterial } = this.state
+        this.props.getRMGradeSelectListByRawMaterial(
+          RawMaterial.value,
+          false,
+          (res) => { },
+        )
+      })
+    } else {
+      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
+      this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
+      this.props.fetchSpecificationDataAPI(0, () => { })
+    }
+  }
 
+  /**
+   * @method handleGradeChange
+   * @description  used to handle row material grade selection
+   */
+  handleGradeChange = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ RMGrade: newValue })
+    } else {
+      this.setState({
+        RMGrade: [],
+      })
+    }
+  }
   handlePercent = (e) => {
     if (e.target.value > 100) {
       Toaster.warning('Profit Percent can not be greater than 100.')
@@ -631,20 +690,16 @@ class AddProfit extends Component {
 
   deleteFile = (FileId, OriginalFileName) => {
     if (FileId != null) {
-      let deleteData = {
-        Id: FileId,
-        DeletedBy: loggedInUserId(),
-      }
-      this.props.fileDeleteProfit(deleteData, (res) => {
-        Toaster.success('File deleted successfully.')
-        let tempArr = this.state.files.filter(item => item.FileId !== FileId)
-        this.setState({ files: tempArr })
-      })
-    }
-    if (FileId == null) {
-      let tempArr = this.state.files.filter(item => item.FileName !== OriginalFileName)
+      let tempArr = this.state.files.filter((item) => item.FileId !== FileId)
       this.setState({ files: tempArr })
     }
+    if (FileId == null) {
+      let tempArr = this.state.files.filter(
+        (item) => item.FileName !== OriginalFileName,
+      )
+      this.setState({ files: tempArr })
+    }
+
     // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
     if (this.dropzone?.current !== null) {
       this.dropzone.current.files.pop()
@@ -678,7 +733,11 @@ class AddProfit extends Component {
     this.props.hideForm(type)
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.state.isViewMode) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')
@@ -693,7 +752,7 @@ class AddProfit extends Component {
   */
   onSubmit = debounce((values) => {
     const { ModelType, costingTypeId, vendorName, client, selectedPlants, profitAppli, remarks, ProfitID,
-      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements } = this.state;
+      isRM, isCC, isBOP, isProfitPercent, isEditFlag, files, singlePlantSelected, effectiveDate, DataToChange, DropdownNotChanged, uploadAttachements, RawMaterial, RMGrade, IsFinancialDataChanged } = this.state;
     const userDetailsProfit = JSON.parse(localStorage.getItem('userDetail'))
     let plantArray = []
     if (costingTypeId === VBCTypeId) {
@@ -740,7 +799,7 @@ class AddProfit extends Component {
       }
 
       if (
-        DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
+        (JSON.stringify(files) === JSON.stringify(DataToChange.Attachements)) && DropdownNotChanged && Number(DataToChange.ProfitBOPPercentage) === Number(values.ProfitBOPPercentage) && Number(DataToChange.ProfitMachiningCCPercentage) === Number(values.ProfitMachiningCCPercentage)
         && Number(DataToChange.ProfitPercentage) === Number(values.ProfitPercentage) && Number(DataToChange.ProfitRMPercentage) === Number(values.ProfitRMPercentage)
         && String(DataToChange.Remark) === String(values.Remark) && uploadAttachements) {
 
@@ -776,23 +835,27 @@ class AddProfit extends Component {
         Attachements: updatedFiles,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
         IsForcefulUpdated: true,
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: IsFinancialDataChanged
       }
-      if (isEditFlag) {
+      if (isEditFlag && IsFinancialDataChanged) {
         if (DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss') === DayTime(DataToChange?.EffectiveDate).format('YYYY-MM-DD HH:mm:ss')) {
           Toaster.warning('Please update the effective date')
           this.setState({ setDisable: false })
           return false
         }
-        this.props.updateProfit(requestData, (res) => {
-          this.setState({ setDisable: false })
-          if (res?.data?.Result) {
-            Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
-            this.cancel('submit')
-          }
-        });
       }
-
+      this.props.updateProfit(requestData, (res) => {
+        this.setState({ setDisable: false })
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.PROFIT_UPDATE_SUCCESS);
+          this.cancel('submit')
+        }
+      });
 
     } else {
       this.setState({ setDisable: true })
@@ -814,7 +877,12 @@ class AddProfit extends Component {
         CreatedBy: loggedInUserId(),
         Attachements: files,
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
+        Plants: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
+        RawMaterialChildId: RawMaterial?.value,
+        RawMaterialName: RawMaterial?.label,
+        RawMaterialGradeId: RMGrade?.value,
+        RawMaterialGrade: RMGrade?.label,
+        IsFinancialDataChanged: IsFinancialDataChanged
       }
 
       this.props.createProfit(formData, (res) => {
@@ -840,14 +908,14 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
-      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, isDataChanged } = this.state;
+      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
       if (inputValue?.length >= searchCount && vendorFilterList !== resultInput) {
         this.setState({ inputLoader: true })
         let res
-        res = await getVendorWithVendorCodeSelectList(resultInput)
+        res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
         this.setState({ inputLoader: false })
         this.setState({ vendorFilterList: resultInput })
         let vendorDataAPI = res?.data?.SelectList
@@ -937,6 +1005,46 @@ class AddProfit extends Component {
                         </Col >
                       </Row >
                       <Row>
+                        {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC &&
+                          <>                        <Col md="3">
+                            <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                              <div className="fullinput-icon">
+                                <Field
+                                  name="RawMaterialId"
+                                  type="text"
+                                  label="Raw Material Name"
+                                  component={searchableSelect}
+                                  placeholder={"Select"}
+                                  options={this.renderListing("material")}
+                                  required={false}
+                                  handleChangeDescription={this.handleRMChange}
+                                  valueDescription={this.state.RawMaterial}
+                                  className="fullinput-icon"
+                                  disabled={isEditFlag || isViewMode}
+                                />
+                              </div>
+                            </div>
+                          </Col>
+                            <Col md="3">
+                              <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                <div className="fullinput-icon">
+                                  <Field
+                                    name="RawMaterialGradeId"
+                                    type="text"
+                                    label="Raw Material Grade"
+                                    component={searchableSelect}
+                                    placeholder={"Select"}
+                                    options={this.renderListing("grade")}
+                                    required={false}
+                                    handleChangeDescription={this.handleGradeChange}
+                                    valueDescription={this.state.RMGrade}
+                                    disabled={isEditFlag || isViewMode}
+                                  />
+                                </div>
+                              </div>
+                            </Col>
+                          </>
+                        }
                         <Col md="3" >
                           <Field
                             name="ModelType"
@@ -1164,8 +1272,8 @@ class AddProfit extends Component {
                               }}
                               component={renderDatePicker}
                               className="form-control"
-                              disabled={isViewMode || isDataChanged}
-                              placeholder={isViewMode || isDataChanged ? '-' : 'Enter'}
+                              disabled={isViewMode || !IsFinancialDataChanged}
+                              placeholder={isViewMode || !IsFinancialDataChanged ? '-' : "Select Date"}
                             />
                           </div>
                         </Col>
@@ -1186,7 +1294,7 @@ class AddProfit extends Component {
                             className=""
                             customClassName=" textAreaWithBorder"
                             onChange={this.handleMessageChange}
-                            validate={[maxLength512]}
+                            validate={[maxLength512, acceptAllExceptSingleSpecialCharacter]}
                             //required={true}
                             component={renderTextAreaField}
                             maxLength="512"
@@ -1288,14 +1396,14 @@ class AddProfit extends Component {
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
-                        <button
+                        {!isViewMode && <button
                           type="submit"
                           className="user-btn mr5 save-btn"
                           disabled={isViewMode || setDisable}
                         >
                           <div className={"save-icon"}></div>
                           {isEditFlag ? "Update" : "Save"}
-                        </button>
+                        </button>}
                       </div>
                     </Row>
                   </form >
@@ -1318,7 +1426,7 @@ class AddProfit extends Component {
 * @param {*} state
 */
 function mapStateToProps(state) {
-  const { comman, supplier, overheadProfit, client, } = state;
+  const { comman, supplier, overheadProfit, client, material } = state;
   const filedObj = selector(state, 'ProfitPercentage', 'ProfitRMPercentage', 'ProfitMachiningCCPercentage',
     'ProfitBOPPercentage')
 
@@ -1326,6 +1434,7 @@ function mapStateToProps(state) {
   const { overheadProfitData, } = overheadProfit;
   const { clientSelectList } = client;
   const { vendorWithVendorCodeSelectList } = supplier;
+  const { rawMaterialNameSelectList, gradeSelectList } = material
 
   let initialValues = {};
   if (overheadProfitData && overheadProfitData !== undefined) {
@@ -1340,7 +1449,7 @@ function mapStateToProps(state) {
 
   return {
     modelTypes, costingHead, vendorWithVendorCodeSelectList, overheadProfitData, clientSelectList,
-    filedObj, initialValues, plantSelectList
+    filedObj, initialValues, plantSelectList, rawMaterialNameSelectList, gradeSelectList
   }
 
 }
@@ -1354,14 +1463,15 @@ function mapStateToProps(state) {
 export default connect(mapStateToProps, {
   fetchModelTypeAPI,
   fetchCostingHeadsAPI,
-  getVendorWithVendorCodeSelectList,
   getClientSelectList,
   createProfit,
   getPlantSelectListByType,
   updateProfit,
   getProfitData,
   fileUploadProfit,
-  fileDeleteProfit,
+  getVendorNameByVendorSelectList,
+  getRawMaterialNameChild,
+  getRMGradeSelectListByRawMaterial
 })(reduxForm({
   form: 'AddProfit',
   enableReinitialize: true,

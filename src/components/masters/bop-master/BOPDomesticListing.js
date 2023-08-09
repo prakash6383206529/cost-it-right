@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, APPROVED_STATUS } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../config/constants';
 import {
-    getBOPDomesticDataList, deleteBOP, getAllVendorSelectList, getPlantSelectListByVendor,
+    getBOPDataList, deleteBOP, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -14,7 +14,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, searchNocontentFilter, userDepartmetList } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -28,7 +28,8 @@ import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { hideColumnFromExcel, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
+import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -63,7 +64,7 @@ class BOPDomesticListing extends Component {
             analyticsDrawer: false,
             selectedRowData: [],
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation ? userDepartmetList() : "", CustomerName: "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -74,7 +75,9 @@ class BOPDomesticListing extends Component {
             pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
             globalTake: defaultPageSize,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            attachment: false,
+            viewAttachment: []
         }
     }
 
@@ -115,7 +118,7 @@ class BOPDomesticListing extends Component {
         }
 
         // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
-        let statusString = [APPROVED_STATUS].join(",")
+        let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
             bop_for: bopFor,
@@ -123,7 +126,8 @@ class BOPDomesticListing extends Component {
             vendor_id: vendorId,
             plant_id: plantId,
             ListFor: this.props.ListFor,
-            StatusId: statusString
+            StatusId: statusString,
+            IsBOPAssociated: this.props?.isBOPAssociated
         }
         const { isMasterSummaryDrawer } = this.props
 
@@ -143,7 +147,8 @@ class BOPDomesticListing extends Component {
 
                 let constantFilterData = this.state.filterModel
                 let obj = { ...this.state.floatingFilterData }
-                this.props.getBOPDomesticDataList(filterData, skip, take, isPagination, dataObj, (res) => {
+                dataObj.EntryType = ENTRY_TYPE_DOMESTIC
+                this.props.getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
                     this.setState({ isLoader: false })
                     this.setState({ noData: false })
                     if (this.props.isSimulation) {
@@ -213,10 +218,11 @@ class BOPDomesticListing extends Component {
 
 
     onFloatingFilterChanged = (value) => {
-
-        if (this.props.bopDomesticList?.length !== 0) {
-            this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }
+        setTimeout(() => {
+            if (this.props.bopDomesticList?.length !== 0) {
+                this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+            }
+        }, 500);
         this.setState({ disableFilter: false })
         onFloatingFilterChanged(value, gridOptions, this)   // COMMON FUNCTION
     }
@@ -255,6 +261,9 @@ class BOPDomesticListing extends Component {
 
             }
         }
+        if (this.props.isSimulation) {
+            this.props.callBackLoader(this.state.isLoader)
+        }
     }
 
     /**
@@ -287,7 +296,8 @@ class BOPDomesticListing extends Component {
     * @description confirm delete Raw Material details
     */
     confirmDelete = (ID) => {
-        this.props.deleteBOP(ID, (res) => {
+        const loggedInUser = loggedInUserId()
+        this.props.deleteBOP(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
                 this.resetState()
@@ -382,6 +392,15 @@ class BOPDomesticListing extends Component {
     }
 
     /**
+    * @method bopCostingFormatter
+    * @description bopCostingFormatter
+    */
+    bopCostingFormatter = (props) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return rowData?.IsBreakupBoughtOutPart != null ? (rowData?.IsBreakupBoughtOutPart ? 'Yes' : 'No') : '-';
+    }
+
+    /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
@@ -407,7 +426,42 @@ class BOPDomesticListing extends Component {
         }
 
     }
+    viewAttachmentData = (index) => {
+        this.setState({ viewAttachment: index, attachment: true })
+    }
+    closeAttachmentDrawer = (e = '') => {
+        this.setState({ attachment: false })
+    }
+    attachmentFormatter = (props) => {
+        const row = props?.data;
+        let files = row?.Attachements
+        if (files && files?.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => this.viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
     formToggle = () => {
         this.props.displayForm()
     }
@@ -467,7 +521,20 @@ class BOPDomesticListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured) {
+            excelData = hideMultipleColumnFromExcel(excelData, ["IsBreakupBoughtOutPart", "TechnologyName"])
+        }
         let temp = []
+        let tempData = [...data]
+        if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
+            tempData = hideColumnFromExcel(tempData, 'Quantity')
+        }
+        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+            tempData = hideColumnFromExcel(tempData, 'CustomerName')
+        }
+        else {
+            tempData = data
+        }
         temp = TempData && TempData.map((item) => {
             if (item.Plants === '-') {
                 item.Plants = ' '
@@ -484,7 +551,7 @@ class BOPDomesticListing extends Component {
 
         return (
             <ExcelSheet data={temp} name={BopDomestic}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -499,7 +566,7 @@ class BOPDomesticListing extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = this.props;
+        const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
         const { isBulkUpload, noData } = this.state;
 
         var filterParams = {
@@ -590,7 +657,9 @@ class BOPDomesticListing extends Component {
             costingHeadFormatter: this.costingHeadFormatter,
             effectiveDateFormatter: this.effectiveDateFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
-            commonCostFormatter: this.commonCostFormatter
+            commonCostFormatter: this.commonCostFormatter,
+            attachmentFormatter: this.attachmentFormatter,
+            bopCostingFormatter: this.bopCostingFormatter
         };
 
         const closeAnalyticsDrawer = () => {
@@ -729,7 +798,7 @@ class BOPDomesticListing extends Component {
                     <Col>
 
                         <div className={`ag-grid-wrapper ${this.props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(this.props.bopDomesticList && this.props.bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
-                            <div className={`ag-theme-material ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                            <div className={`ag-theme-material p-relative ${(this.state.isLoader && !this.props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
                                 <AgGridReact
                                     defaultColDef={defaultColDef}
@@ -751,6 +820,7 @@ class BOPDomesticListing extends Component {
                                     onRowSelected={onRowSelect}
                                     onFilterModified={this.onFloatingFilterChanged}
                                     suppressRowClickSelection={true}
+                                    enableBrowserTooltips={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
@@ -764,10 +834,15 @@ class BOPDomesticListing extends Component {
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     {this.props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}
                                     {/* {this.props?.isMasterSummaryDrawer && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>} */}
+                                    {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart " headerName="Detailed BOP" cellRenderer={'bopCostingFormatter'} ></AgGridColumn>}
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                                    {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                    {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className={`button-wrapper ${this.props?.isMasterSummaryDrawer ? 'mb-5' : ''}`}>
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
@@ -795,6 +870,7 @@ class BOPDomesticListing extends Component {
                         messageLabel={'BOP Domestic'}
                         anchor={'right'}
                         masterId={BOP_MASTER_ID}
+                        typeOfEntryId={ENTRY_TYPE_DOMESTIC}
                     />
                 }
 
@@ -812,12 +888,23 @@ class BOPDomesticListing extends Component {
                         rowData={this.state.selectedRowData}
                     />
                 }
-
+                {
+                    this.state.attachment && (
+                        <Attachament
+                            isOpen={this.state.attachment}
+                            index={this.state.viewAttachment}
+                            closeDrawer={this.closeAttachmentDrawer}
+                            anchor={'right'}
+                            gridListing={true}
+                        />
+                    )
+                }
 
 
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                 }
+                {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
             </div >
         );
     }
@@ -844,9 +931,8 @@ function mapStateToProps({ boughtOutparts, supplier, auth, material, simulation,
 * @param {function} mapDispatchToProps
 */
 export default connect(mapStateToProps, {
-    getBOPDomesticDataList,
+    getBOPDataList,
     deleteBOP,
-    getAllVendorSelectList,
     getPlantSelectListByVendor,
     getListingForSimulationCombined,
     setSelectedRowForPagination,

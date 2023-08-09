@@ -1,387 +1,390 @@
-@import "./cssVariable.scss";
+@import "./abstracts/variable";
+@import "./abstracts/mixin";
 
-@mixin icons($path, $width: 26px, $height: 26px, $background-size: contain, $shadowColor: transparent, $borderColor: transparent) {
-    background: transparent url($path) 0% 0% no-repeat padding-box;
-    width: $width;
-    height: $height;
-    opacity: 1;
-    background-size: $background-size;
-    border: none;
 
-    &:focus {
-        box-shadow: 0 0 5px $shadowColor !important;
-        border: 1px solid $borderColor !important;
-        ;
-    }
-}
+// @mixin icons($path, $width: 26px, $height: 26px, $background-size: contain, $shadowColor: transparent, $borderColor: transparent) {
+//     background: transparent url($path) 0% 0% no-repeat padding-box;
+//     width: $width;
+//     height: $height;
+//     opacity: 1;
+//     background-size: $background-size;
+//     border: none;
 
-@mixin extra-icon-styles {
-    margin: 0 auto;
-    color: #3d4465;
-    font-size: 14px;
-    margin-bottom: 5px;
-}
+//     &:focus {
+//         box-shadow: 0 0 5px $shadowColor !important;
+//         border: 1px solid $borderColor !important;
+
+//     }
+// }
 
 .Add {
-    @include icons("../../assests/images/Group 8861.svg");
+    @include icons("../../images/Group 8861.svg");
     @include extra-icon-styles;
 }
 
 .Edit {
-    @include icons("../../assests/images/Group 8860.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
+    @include icons("../../images/Group 8860.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
     @include extra-icon-styles;
 }
 
 .right-hand-arrow {
-    @include icons("../../assests/images/right-hand-arrow.svg", 24px, 24px);
+    @include icons("../../images/right-hand-arrow.svg", 24px, 24px);
 }
 
 .Balance {
-    @include icons("../../assests/images/balance.svg");
+    @include icons("../../images/balance.svg");
 }
 
 .edit-details-btn {
-    @include icons("../../assests/images/pencil-icon.svg", 25px, 13px);
+    @include icons("../../images/pencil-icon.svg", 25px, 13px);
 }
 
 .edit_pencil_icon {
-    @include icons("../../assests/images/WhitePencil-Icon.svg", 12px, 12px);
+    @include icons("../../images/WhitePencil-Icon.svg", 12px, 12px);
 }
 
 .Delete {
-    @include icons("../../assests/images/Group-8857.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
+    @include icons("../../images/Group-8857.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
     @include extra-icon-styles;
 }
 
 .Comment-box {
-    @include icons("../../assests/images/Comment-box.svg", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
+    @include icons("../../images/Comment-box.svg", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
 }
 
 .View {
-    @include icons("../../assests/images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
-    @include extra-icon-styles;
+    @include icons("../../images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+
 }
 
 .cost-movement {
-    @include icons("../../assests/images/cost-movement.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    @include icons("../../images/cost-movement.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     @include extra-icon-styles;
+
+}
+
+.Comment-box {
+    @include icons("../../images/Comment-box.svg", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
 }
 
 .pie-chart {
-    @include icons("../../assests/images/pie-chart.svg");
+    @include icons("../../images/pie-chart.svg");
+}
+
+.View {
+    @include icons("../../images/Group-8858.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     @include extra-icon-styles;
 }
 
-.add-process {
-    @include icons("../../assests/images/process-add.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+.additional-add {
+    @include icons("../../images/process-add.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     border-radius: 4px;
-
 }
 
 .hirarchy-btn {
-    @include icons("../../assests/images/hirarchy-btn.svg", $background-size: none, $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    @include icons("../../images/hirarchy-btn.svg", $background-size: none, $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     background-color: #cef2fb;
     margin-left: 5px;
     border-radius: 4px;
 }
 
 .Download {
-    @include icons("../../assests/images/Group 8859.svg");
+    @include icons("../../images/Group 8859.svg");
     @include extra-icon-styles;
 }
 
 .SaveIcon {
-    @include icons("../../assests/images/RightTick.svg");
+    @include icons("../../images/RightTick.svg");
     @include extra-icon-styles;
 }
 
 .CancelIcon {
-    @include icons("../../assests/images/Cross-icon.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
+    @include icons("../../images/Cross-icon.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
     @include extra-icon-styles;
 }
 
 .CalculatorIcon {
-    @include icons("../../assests/images/tool.svg", $shadowColor: #256bd1, $borderColor: #256bd1);
+    @include icons("../../images/tool.svg", $shadowColor: #256bd1, $borderColor: #256bd1);
     background-color: #ffffff;
     @include extra-icon-styles;
 }
 
 .edit-icon {
-    @include icons("../../assests/images/Union 1.svg", 14px, 14px);
+    @include icons("../../images/Union 1.svg", 14px, 14px);
     float: left;
     position: $positio-relative;
     margin-right: 5px;
 }
 
 .plus-icon-square {
-    @include icons("../../assests/images/add-icons.png", 43px, 35px, none);
+    @include icons("../../images/add-icons.png", 43px, 35px, none);
     margin-top: 5px;
     background-position: center right;
     cursor: pointer;
 }
 
 .calculate-icon {
-    @include icons("../../assests/images/tool.svg", 43px, 35px);
+    @include icons("../../images/tool.svg", 43px, 35px);
     margin-top: 8px;
     background-position: center right;
 }
 
 .plus-icon {
-    @include icons("../../assests/images/Group 10491.svg", 22px, 22px);
+    @include icons("../../images/Group 10491.svg", 22px, 22px);
 }
 
 .plus {
-    @include icons("../../assests/images/Path 15286.svg", 12px, 12px);
+    @include icons("../../images/Path 15286.svg", 12px, 12px);
 }
 
 .swap {
-    @include icons("../../assests/images/swap.svg", 18px, 18px);
+    @include icons("../../images/swap.svg", 18px, 18px);
 }
 
 .swap-hover {
-    @include icons("../../assests/images/swap-hover.svg", 18px, 18px);
+    @include icons("../../images/swap-hover.svg", 18px, 18px);
 }
 
 .go-to-top {
-    @include icons("../../assests/images/go-to-top.svg", 22px, 22px);
+    @include icons("../../images/go-to-top.svg", 22px, 22px);
 }
 
 .minus-icon {
-    @include icons("../../assests/images/Group 10490.svg", 22px, 22px);
+    @include icons("../../images/Group 10490.svg", 22px, 22px);
 }
 
 .Add-icon {
-    @include icons("../../assests/images/Group 10401.svg", 72px, 20px);
+    @include icons("../../images/Group 10401.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .Edit-icon {
-    @include icons("../../assests/images/Group 10396.svg", 72px, 20px);
+    @include icons("../../images/Group 10396.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .Delete-icon {
-    @include icons("../../assests/images/Group 10398.svg", 72px, 20px);
+    @include icons("../../images/Group 10398.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .View-icon {
-    @include icons("../../assests/images/Group 10399.svg", 72px, 20px);
+    @include icons("../../images/Group 10399.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .Download-icon {
-    @include icons("../../assests/images/Group 10400.svg", 72px, 20px);
+    @include icons("../../images/Group 10400.svg", 72px, 20px);
 }
 
 // nowhere use this icon
 
 .pdf-detail {
-    @include icons("../../assests/images/pdf-detail.svg");
+    @include icons("../../images/pdf-detail.svg");
 }
 
 .backspace {
-    @include icons("../../assests/images/backspace.svg");
+    @include icons("../../images/backspace.svg");
 }
 
 .upload {
-    @include icons("../../assests/images/upload.png", 14px, 14px);
+    @include icons("../../images/upload.png", 14px, 14px);
 }
 
 .refresh-icon {
-    @include icons("../../assests/images/refresh_icon.svg");
+    @include icons("../../images/refresh_icon.svg");
 }
 
 .blurPlus-icon-square {
-    @include icons("../../assests/images/bluradd.png", 43px, 35px, none);
+    @include icons("../../images/bluradd.png", 43px, 35px, none);
     margin-top: 8px;
     background-position: center right;
     pointer-events: none;
 }
 
 .download {
-    @include icons("../../assests/images/download.png", 14px, 14px);
+    @include icons("../../images/download.png", 14px, 14px);
     // margin-right: 5px;
 }
 
 .cancel-icon-white {
-    @include icons("../../assests/images/times.png", 14px, 14px);
+    @include icons("../../images/times.png", 14px, 14px);
     filter: brightness(100);
 }
 
 .cancel-icon {
-    @include icons("../../assests/images/times.png", 11px, 11px);
+    @include icons("../../images/times.png", 11px, 11px);
     margin-right: 5px;
 }
 
 .next-icon {
-    @include icons("../../assests/images/right-arrow-white.svg", 16px, 11px);
+    @include icons("../../images/right-arrow-white.svg", 16px, 11px);
     margin-left: 5px;
 }
 
 .back-icon {
-    @include icons("../../assests/images/back.png", 8px, 13px);
+    @include icons("../../images/back.png", 8px, 13px);
     margin-right: 5px;
 }
 
 .add-rounded {
-    @include icons("../../assests/images/add-bom.svg", 30px, 30px);
+    @include icons("../../images/add-bom.svg", 30px, 30px);
 }
 
 .send-for-approval {
-    @include icons("../../assests/images/send-for-approval.svg", 13px, 16px);
+    @include icons("../../images/send-for-approval.svg", 13px, 16px);
     margin-right: 5px;
 }
 
 .compare-arrows {
-    @include icons("../../assests/images/compare.svg", 20px, 14px);
+    @include icons("../../images/compare.svg", 20px, 14px);
     margin-right: 5px;
 }
 
 .hirarchy-icon {
-    @include icons("../../assests/images/hirarchy-icon.svg", 18px, 12px);
+    @include icons("../../images/hirarchy-icon.svg", 18px, 12px);
     // margin-right: 5px;
 }
 
 .group-process {
-    @include icons("../../assests/images/group-process.svg");
+    @include icons("../../images/group-process.svg");
     margin-right: 5px;
     border-radius: 4px
 }
 
 .trashred-icon {
-    @include icons("../../assests/images/trash-red.svg", 11px, 14px);
+    @include icons("../../images/trash-red.svg", 11px, 14px);
     margin-right: 5px;
 }
 
 .save-icon {
-    @include icons("../../assests/images/check.png", 18px, 12px);
+    @include icons("../../images/check.png", 18px, 12px);
     margin-right: 5px;
 }
 
 .approve-save-tick {
-    @include icons("../../assests/images/check-green.svg", 13px, 11px);
+    @include icons("../../images/check-green.svg", 13px, 11px);
     margin: auto;
 
 }
 
 .filter {
-    @include icons("../../assests/images/filter.png", 12px, 12px);
+    @include icons("../../images/filter.png", 12px, 12px);
 }
 
 .refresh {
-    @include icons("../../assests/images/refresh-icon.svg", 14px, 14px);
+    @include icons("../../images/refresh-icon.svg", 14px, 14px);
 }
 
 .cross-light {
-    @include icons("../../assests/images/cross_light.svg", 14px, 14px);
+    @include icons("../../images/cross_light.svg", 14px, 14px);
 }
 
 .Bulk {
-    @include icons("../../assests/images/Upload.svg");
+    @include icons("../../images/Upload.svg");
     @include extra-icon-styles;
 }
 
 .Activate {
-    @include icons("../../assests/images/Activate.svg");
+    @include icons("../../images/Activate.svg");
     @include extra-icon-styles;
 }
 
 .Copy.All {
-    @include icons("../../assests/images/Copy.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
+    @include icons("../../images/Copy.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
     @include extra-icon-styles;
 
 }
 
 .Create {
-    @include icons("../../assests/images/Create.svg");
+    @include icons("../../images/Create.svg");
     @include extra-icon-styles;
 }
 
 .Approve {
-    @include icons("../../assests/images/Approve.svg");
+    @include icons("../../images/Approve.svg");
     @include extra-icon-styles;
 }
 
 .SOB {
-    @include icons("../../assests/images/sob-icon.svg");
+    @include icons("../../images/sob-icon.svg");
     @include extra-icon-styles;
 }
 
 .Run {
-    @include icons("../../assests/images/Run.svg");
+    @include icons("../../images/Run.svg");
     @include extra-icon-styles;
 }
 
 .Run-icon {
-    @include icons("../../assests/images/run-icon.svg", 30px, 30px);
+    @include icons("../../images/run-icon.svg", 30px, 30px);
     filter: brightness(100);
 }
 
 .Save {
-    @include icons("../../assests/images/Save.svg");
+    @include icons("../../images/Save.svg");
     @include extra-icon-styles;
 }
 
 .Add-file {
-    @include icons("../../assests/images/add-file4.svg", $shadowColor: #7959f6, $borderColor: #e4defd);
+    @include icons("../../images/add-file4.svg", $shadowColor: #7959f6, $borderColor: #e4defd);
     @include extra-icon-styles;
 }
 
 .create-rfq {
-    @include icons("../../assests/images/create-rfq.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
+    @include icons("../../images/create-rfq.svg", $shadowColor: #f8a000, $borderColor: #feeccc);
     @include extra-icon-styles;
 }
 
 .lock_icon {
-    @include icons("../../assests/images/lock.svg", 17px, 17px);
+    @include icons("../../images/lock.svg", 17px, 17px);
     cursor: pointer;
     background-position: center;
     display: inline-block;
 }
 
 .send-for-approval-form-drawer {
-    @include icons("../../assests/images/send-for-approval-with-bg.svg", 16px, 20px);
+    @include icons("../../images/send-for-approval-with-bg.svg", 16px, 20px);
     margin: auto;
 }
 
 .reminder {
-    @include icons("../../assests/images/reminder.svg", 16px, 16px);
+    @include icons("../../images/reminder.svg", 16px, 16px);
     margin: auto;
 }
 
 .zoom-in-hover {
-    @include icons("../../assests/images/Path 15286.svg", 10px, 10px)
+    @include icons("../../images/Path 15286.svg", 10px, 10px)
 }
 
 .zoom-in {
-    @include icons("../../assests/images/zoom-in.svg", 10px, 10px)
+    @include icons("../../images/zoom-in.svg", 10px, 10px)
 }
 
 .zoom-out {
-    @include icons("../../assests/images/zoom-out.svg", 14px, 14px)
+    @include icons("../../images/zoom-out.svg", 14px, 14px)
 }
 
 .zoom-out-hover {
-    @include icons("../../assests/images/zoom-out-hover.svg", 16px, 16px)
+    @include icons("../../images/zoom-out-hover.svg", 16px, 16px)
 }
 
 .history-remark {
-    @include icons("../../assests/images/history-remark.svg", 22px, 22px);
+    @include icons("../../images/history-remark.svg", 22px, 22px);
     margin: auto;
     background-color: #cef2fb;
 }
 
 .link-icon {
-    @include icons("../../assests/images/link.svg", 20px, 20px)
+    @include icons("../../images/link.svg", 20px, 20px)
 }
 
 .pinned {
-    @include icons("../../assests/images/pinned.svg", 20px, 20px);
+    @include icons("../../images/pinned.svg", 20px, 20px);
 
     &:focus {
         box-shadow: none;
@@ -390,7 +393,7 @@
 }
 
 .broken-link-icon {
-    @include icons("../../assests/images/broken-link.svg", 18px, 18px)
+    @include icons("../../images/broken-link.svg", 18px, 18px)
 }
 
 .excel-btn.user-btn {

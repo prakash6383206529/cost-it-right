@@ -1,0 +1,115 @@
+@import "./variable";
+
+
+@function calculatePixels($iterate, $value) {
+    $cal : $iterate * $value !important;
+    @return $cal;
+}
+
+@for $i from 0 through 12 {
+
+    .mr-#{$i} {
+        margin-right: calculatePixels($i, 0.25rem);
+    }
+
+    .ml-#{$i} {
+        margin-left: calculatePixels($i, 0.25rem);
+    }
+
+    .ml-n#{$i} {
+        margin-left: calculatePixels($i, -0.25rem)
+    }
+
+    .mr-n#{$i} {
+        margin-right: calculatePixels($i, -0.25rem)
+    }
+
+    .pr-#{$i} {
+        padding-right: calculatePixels($i, 0.25rem);
+    }
+
+    .pl-#{$i} {
+        padding-left: calculatePixels($i, 0.25rem);
+    }
+
+    .col-md-#{$i} {
+        flex: 0 0 calculatePixels($i, 8.33%);
+        width: calculatePixels($i, 8.33%);
+    }
+
+    .mt#{$i} {
+        margin-top: #{$i}px !important;
+    }
+
+    .mr#{$i} {
+        margin-right: #{$i}px !important;
+    }
+}
+
+
+//GENERATE THE WIDTH FOR LAYOUT AND CUSTOM ELEMENTS
+$base: 20px;
+$max: 150;
+
+@for $i from 0 through $max {
+    $width: $i * $base !important;
+    $customWidth: $i * 2px !important;
+
+    .layout-width-#{$width} {
+        width: $width;
+    }
+
+    .layout-max-width-#{$width} {
+        max-width: $width;
+    }
+
+    .layout-min-width-#{$width} {
+        min-width: $width;
+    }
+
+    .layout-min-height-#{$width} {
+        min-height: $width;
+    }
+
+    .custom-width-#{$customWidth} {
+        width: $customWidth;
+    }
+
+    .custom-max-width-#{$customWidth} {
+        max-width: $customWidth;
+    }
+
+    .custom-min-width-#{$customWidth} {
+        min-width: $customWidth;
+    }
+
+    .custom-min-height-#{$customWidth} {
+        min-height: $customWidth;
+    }
+
+    .font-size-#{$i} {
+        font-size: $i * 1px;
+    }
+}
+
+.colorWhite {
+    background-color: #fff;
+}
+
+.rfq-part-list {
+    @function calculateRowId($i) {
+        @return ($i * 5) - 1;
+    }
+
+    @for $i from 1 through 50 {
+        [row-id~="#{calculateRowId($i)}"] {
+            @for $j from 0 through 11 {
+
+                [col-id="PartNumber"],
+                [aria-colindex="#{$j}"] {
+                    border-bottom: 1px solid $agGridBorder !important;
+                }
+            }
+        }
+    }
+}

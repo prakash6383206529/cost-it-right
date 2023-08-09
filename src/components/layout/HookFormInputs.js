@@ -4,7 +4,7 @@ import "./formInputs.scss";
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
-import DatePicker from 'react-datepicker'
+import DatePicker, { ReactDatePicker } from 'react-datepicker'
 
 export const TextFieldHooks = (input) => {
 
@@ -58,7 +58,7 @@ export const TextFieldHookForm = (field) => {
   const isDisabled = field.disabled === true ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let loaderClass = isLoading && isLoading?.isLoader ? isLoading?.loaderClass !== undefined ? isLoading?.loaderClass : '' : '';
-
+  let containerId = `${name}_container`;
   return (
     <>
       <div className={className}>
@@ -69,7 +69,7 @@ export const TextFieldHookForm = (field) => {
             {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
           </label>
         }
-        <div id={id}>
+        <div id={id ? id : containerId}>
           <Controller
             name={name}
             control={control}
@@ -83,7 +83,9 @@ export const TextFieldHookForm = (field) => {
                 <div className={`${isLoader ? "p-relative" : ''}`}>
                   <input
                     {...field}
+                    id={name}
                     {...register}
+                    title={isDisabled ? value : ''}
                     name={name}
                     className={InputClassName}
                     disabled={isDisabled}
@@ -226,7 +228,7 @@ export const NumberFieldHookForm = (field) => {
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
-
+  let containerId = `${name}_container`;
   return (
     <>
       <div className={className} >
@@ -234,7 +236,7 @@ export const NumberFieldHookForm = (field) => {
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
-        <div id={id}>
+        <div id={id ? id : containerId}>
           <Controller
             name={name}
             control={control}
@@ -245,7 +247,9 @@ export const NumberFieldHookForm = (field) => {
               return (
                 <input
                   {...field}
+                  id={name}
                   {...register}
+                  title={isDisabled ? value : ''}
                   type={'number'}
                   name={name}
                   className={InputClassName}
@@ -279,6 +283,7 @@ export const SearchableSelectHookForm = (field) => {
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
   const className = `${isLoader ? 'p-relative' : ''} ${buttonCross ? 'cross-btn-container' : ''}`
+  let containerId = `${name}_container`;
   let temp = 300;
   if (dropdownHeight < 6) {
     if (dropdownHeight === 0) {
@@ -312,7 +317,7 @@ export const SearchableSelectHookForm = (field) => {
     stringify: option => `${option.label}`,
   };
   return (
-    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`} id={containerId}>
       <label className={label === false ? 'd-none' : ''}>
         {label}
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
@@ -325,15 +330,17 @@ export const SearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name, } }) => {
           return (
-            <div className={className} title={title}>
+            <div className={className} title={title ? title : isDisable ? value?.label : ''}>
               <Select
                 {...field}
+                id={name}
                 {...register}
                 name={name}
                 placeholder={placeholder ? placeholder : isDisable ? '-' : 'Select'}
                 isDisabled={isDisable}
                 onChange={(e, action) => {
                   handleChange(e, action);
+                  document.activeElement.blur();
                   onChange(e)
 
                 }}
@@ -398,9 +405,10 @@ export const TextAreaHookForm = (field) => {
   const InputClassName = `form-control text-area ${field.className ? field.className : ""}`;
   const isDisabled = field.disabled === true ? true : false;
   let minHeight = rowHeight ? rowHeight : 4
+  let containerId = `${name}_container`;
   return (
     <>
-      <div className={className}>
+      <div className={className} id={containerId}>
         <label>
           {label}
           {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
@@ -416,6 +424,8 @@ export const TextAreaHookForm = (field) => {
               <textarea
                 {...field}
                 {...register}
+                title={isDisabled ? value : ''}
+                id={name}
                 name={name}
                 className={InputClassName}
                 disabled={isDisabled}
@@ -444,58 +454,68 @@ export const TextAreaHookForm = (field) => {
 */
 export const DatePickerHookForm = (field) => {
   const {
-    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange } = field
+    label, Controller, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, buttonCross } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''} ${buttonCross ? 'cross-btn-container' : ''}`
   const isDisabled = field.disabled === true ? true : false
+  let containerId = `${name}_container`;
   return (
     <React.Fragment>
-      <div className={className}>
+      <div className={className} id={containerId}>
         <label>
           {label} {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          {...register}
-          defaultValue={defaultValue}
-          render={({ field: { onChange, onBlur, value, name } }) => (
+        <div className="p-relative pr-0">
+          <Controller
+            name={name}
+            control={control}
+            rules={rules}
+            {...register}
+            defaultValue={defaultValue}
+            render={({ field: { onChange, onBlur, value, name } }) => (
 
-            // return (
-            <DatePicker
-              {...field}
-              {...register}
-              name={name}
-              value={value}
-              dateFormat="dd/MM/yyyy"
-              placeholderText={placeholder}
-              //maxDate={new Date()}
-              //minDate={new Date()}
-              showMonthDropdown
-              showYearDropdown
-              readonly="readonly"
-              onBlur={() => null}
-              selected={value}
-              className={field.className}
-              onChange={(e) => {
-                onChange(e)
-                handleChange(e)
-                // onselect(e)
-              }}
-              autoComplete={field.autoComplete}
-              disabledKeyboardNavigation
-              disabled={isDisabled}
-            />
-            // )
-          )}
-        />
-        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+              // return (
+              <DatePicker
+                {...field}
+
+                {...register}
+                name={name}
+                id={name}
+                value={value}
+                dateFormat="dd/MM/yyyy"
+                placeholderText={placeholder}
+                //maxDate={new Date()}
+                //minDate={new Date()}
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                readonly="readonly"
+                onBlur={() => null}
+                selected={value}
+                className={field.className}
+                onChange={(e) => {
+                  onChange(e)
+                  handleChange(e)
+                  // onselect(e)
+                }}
+                autoComplete={field.autoComplete}
+                disabledKeyboardNavigation
+                disabled={isDisabled}
+              />
+              // )
+            )}
+          />
+          {buttonCross && <button type="button" className={'btn-cross'} disabled={isDisabled} onClick={buttonCross}>
+            <div className='cross-light'></div>
+          </button>}
+          {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+            : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+        </div>
       </div>
     </React.Fragment>
   )
 }
+
 
 /**
 * @method:RadioHookForm
@@ -511,8 +531,9 @@ export const RadioHookForm = (field) => {
   };
   const flexContainer = {
   };
+  let containerId = `${name}_container`;
   return (
-    <div className={`te-radio-button ${className}`}>
+    <div className={`te-radio-button ${className}`} id={containerId}>
       <div>
         {dataArray && dataArray.length !== 0 && (
           <ul style={flexContainer} className={"radio-button-list d-flex"}>
@@ -524,6 +545,7 @@ export const RadioHookForm = (field) => {
                       {...field}
                       {...register}
                       name={name}
+                      id={name}
                       type="radio"
                       value={data[optionsValue]}
                       defaultValue={defaultValue}
@@ -599,13 +621,13 @@ export const RadioHookForm = (field) => {
 
 export const AsyncSearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, asyncOptions, NoOptionMessage } = field;
+    control, errors, register, isLoading, customClassName, asyncOptions, NoOptionMessage, isMulti, buttonCross } = field;
 
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isLoaderClass = isLoading && isLoading?.isLoader ? isLoading?.isLoaderClass !== undefined ? isLoading?.isLoaderClass : '' : '';
-
+  let containerId = `${name}_container`;
   return (
-    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`}>
+    <div className={`w-100 mb-15 form-group-searchable-select ${customClassName}`} id={containerId}>
       <label>
         {label}
         {mandatory && mandatory === true ? <span className="asterisk-required">*</span> : ''}
@@ -619,11 +641,12 @@ export const AsyncSearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name } }) => {
           return (
-            <div className={`${isLoader ? "p-relative" : ''}`}>
+            <div className={`${isLoader ? "p-relative" : ''} ${buttonCross ? 'cross-btn-container' : ''}`} title={disabled ? value?.label : ''}>
               <AsyncSelect
                 {...field}
                 {...register}
                 name={name}
+                id={name}
                 placeholder={placeholder}
                 isDisabled={disabled}
                 onChange={(e) => {
@@ -642,6 +665,9 @@ export const AsyncSearchableSelectHookForm = (field) => {
                 }}
               />
               {isLoader && <LoaderCustom customClass={`input-loader ${isLoaderClass}`} />}
+              {buttonCross && <button type="button" className={'btn-cross'} disabled={disabled} onClick={buttonCross}>
+                <div className='cross-light'></div>
+              </button>}
             </div>
           )
 
@@ -669,9 +695,10 @@ export const DateTimePickerHookForm = (field) => {
   const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
   const InputClassName = `form-control ${field.className ? field.className : ''}`
   const isDisabled = field.disabled === true ? true : false
+  let containerId = `${name}_container`;
   return (
     <React.Fragment>
-      <div className={className}>
+      <div className={className} id={containerId}>
         <label>
           {label} {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
@@ -686,6 +713,7 @@ export const DateTimePickerHookForm = (field) => {
             // return (
             <DatePicker
               {...field}
+              id={name}
               name={name}
               value={value}
               dateFormat={"dd/MM/yyyy HH:mm"}
@@ -695,6 +723,7 @@ export const DateTimePickerHookForm = (field) => {
               //minDate={new Date()}
               showMonthDropdown
               showYearDropdown
+              dropdownMode="select"
               readonly="readonly"
               onBlur={() => null}
               selected={selected}

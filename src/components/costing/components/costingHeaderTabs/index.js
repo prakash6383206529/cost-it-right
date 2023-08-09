@@ -17,8 +17,8 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, setCostingEffectiveDate, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, saveAssemblyOverheadProfitTab, isToolDataChange, isOverheadProfitDataChange,
 } from '../../actions/Costing';
 import { checkForNull, CheckIsCostingDateSelected, loggedInUserId } from '../../../../helper';
-import { LEVEL1 } from '../../../../config/constants';
-import { EditCostingContext, ViewCostingContext, CostingStatusContext } from '../CostingDetails';
+import { LEVEL1, WACTypeId } from '../../../../config/constants';
+import { EditCostingContext, ViewCostingContext, CostingStatusContext, IsPartType } from '../CostingDetails';
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import DayTime from '../../../common/DayTimeWrapper'
@@ -52,7 +52,8 @@ function CostingHeaderTabs(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
   const CostingEditMode = useContext(EditCostingContext);
-  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
+  const isPartType = useContext(IsPartType);
 
   const costingApprovalStatus = useContext(CostingStatusContext);
 
@@ -125,6 +126,7 @@ function CostingHeaderTabs(props) {
 
     // USED FOR OVERHEAD AND PROFIT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemOverheadData).length > 0 && ComponentItemOverheadData.IsOpen !== false && activeTab !== '3' & checkIsOverheadProfitChange) {
+      const discountAndOtherTabData = DiscountCostData
 
       let reqData = {
         "CostingId": ComponentItemOverheadData.CostingId,
@@ -150,6 +152,7 @@ function CostingHeaderTabs(props) {
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.ICCCost) +
             checkForNull(ComponentItemOverheadData?.CostingPartDetails?.PaymentTermCost),
         },
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       if (ComponentItemOverheadData.IsAssemblyPart) {
         dispatch(saveAssemblyOverheadProfitTab(reqData, res => {
@@ -168,6 +171,7 @@ function CostingHeaderTabs(props) {
 
 
     }
+    const discountAndOtherTabData = DiscountCostData
 
     // USED FOR PACKAGE AND FREIGHT WHEN CLICKED ON OTHER TABS WITHOUT SAVING
     if (!CostingViewMode && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && activeTab !== '4' && Object.keys(ComponentItemPackageFreightData).length > 0 && ComponentItemPackageFreightData.IsChanged === true && checkIsFreightPackageChange) {
@@ -183,6 +187,7 @@ function CostingHeaderTabs(props) {
         "CostingNumber": costData.CostingNumber,
         //"NetPackagingAndFreight": ComponentItemPackageFreightData.NetPackagingAndFreight,
         "CostingPartDetails": ComponentItemPackageFreightData?.CostingPartDetails,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       dispatch(saveCostingPackageFreightTab(data, res => {
         callAssemblyAPi(4)
@@ -205,6 +210,7 @@ function CostingHeaderTabs(props) {
         "CostingPartDetails": ComponentItemToolData?.CostingPartDetails,
         "EffectiveDate": CostingEffectiveDate,
         "TotalCost": netPOPrice,
+        "BasicRate": discountAndOtherTabData?.BasicRateINR,
       }
       dispatch(saveToolTab(data, res => {
         callAssemblyAPi(5)
@@ -235,7 +241,7 @@ function CostingHeaderTabs(props) {
       const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
       if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
 
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
 
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
@@ -243,7 +249,7 @@ function CostingHeaderTabs(props) {
       const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
       const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
       if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate)
+        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType)
         dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
       }
     }
@@ -259,7 +265,7 @@ function CostingHeaderTabs(props) {
       const overHeadAndProfitTabData = OverheadProfitTabData && OverheadProfitTabData[0]
       const discountAndOtherTabData = DiscountCostData
 
-      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate)
+      let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, netPOPrice, getAssemBOPCharge, tabId, CostingEffectiveDate, '', '', isPartType)
       dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
     }
   }
@@ -340,6 +346,16 @@ function CostingHeaderTabs(props) {
     dispatch(setCostingEffectiveDate(DayTime(date).format('YYYY-MM-DD')))
   }
 
+  /**
+   * @method dateFunction
+   * @description date Function
+   */
+  const dateFunction = () => {
+    let arr = [costData.LastApproveEffectiveDate, costData.PartEffectiveDate]
+    const largestDate = new Date(Math.max(...arr.filter(Boolean).map(date => Date.parse(date))));
+    return new Date(largestDate)
+  }
+
   useEffect(() => {
     dispatch(setCostingEffectiveDate(DayTime(effectiveDate).format('YYYY-MM-DD')))
   }, [effectiveDate])
@@ -369,10 +385,11 @@ function CostingHeaderTabs(props) {
                   onChange={handleEffectiveDateChange}
                   showMonthDropdown
                   showYearDropdown
+                  dropdownMode="select"
                   dateFormat="dd/MM/yyyy"
                   //maxDate={new Date()}
                   // USER SHOULD NOT BE ABLE TO SELECT EFFECTIVE DATE, OF BEFORE THE PART WAS CREATED
-                  minDate={costData.LastApproveEffectiveDate !== null ? (costData.PartEffectiveDate < costData.LastApproveEffectiveDate ? new Date(costData.LastApproveEffectiveDate) : new Date(costData.PartEffectiveDate)) : new Date(costData.PartEffectiveDate)}
+                  minDate={dateFunction()}
                   placeholderText="Select date"
                   className="withBorder"
                   autoComplete={"off"}
@@ -439,7 +456,7 @@ function CostingHeaderTabs(props) {
           </Nav>
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
-              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) ? <TabAssemblyTechnology
+              {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
                 setHeaderCost={props.setHeaderCost}
                 backBtn={props.backBtn}
                 activeTab={activeTab}

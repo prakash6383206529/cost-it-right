@@ -17,7 +17,8 @@ import {
     config,
     SET_PROCESS_GROUP_FOR_API,
     SET_PROCESS_GROUP_LIST,
-    STORE_PROCESS_LIST
+    STORE_PROCESS_LIST,
+    EMPTY_GUID
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -182,8 +183,8 @@ export function copyMachine(MachineId, callback) {
 export function getMachineDataList(data, skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const queryParams = `technology_id=${data.technology_id}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=`
-        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technologies !== undefined ? obj.Technologies : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&TechnologyId=${obj.TechnologyId !== undefined ? obj.TechnologyId : ""}`
+        const queryParams = `VendorId=${obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID}&PlantId=${obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID}&CustomerId=${obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID}&technology_id=${data.technology_id}&StatusId=${data.StatusId ? data.StatusId : ''}&DepartmentCode=`
+        const queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.Technology !== undefined ? obj.Technology : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineName=${obj.MachineName !== undefined ? obj.MachineName : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&Tonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&ProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&MachineRate=${obj.MachineRate !== undefined ? obj.MachineRate : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&FromDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[0] : ""}&ToDate=${(obj.dateArray && obj.dateArray.length > 1) ? obj.dateArray[1] : ""}&TechnologyId=${obj.TechnologyId !== undefined ? obj.TechnologyId : ""}`
         axios.get(`${API.getMachineDataList}?${queryParams}&${queryParamsSecond}`, config())
             .then((response) => {
                 let value = []
@@ -277,10 +278,11 @@ export function getMachineDetailsData(ID, callback) {
  * @method deleteMachine
  * @description delete Machine
  */
-export function deleteMachine(Id, callback) {
+export function deleteMachine(machineId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteMachine}/${Id}`, config())
+        const queryParams = `machineId=${machineId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteMachine}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -400,23 +402,6 @@ export function fileUploadMachine(data, callback) {
     };
 }
 
-/**
- * @method fileDeleteMachine
- * @description delete Machine file
- */
-export function fileDeleteMachine(data, callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        axios.delete(`${API.fileDeleteMachine}/${data.Id}/${data.DeletedBy}`, config())
-            .then((response) => {
-                dispatch({ type: CREATE_SUCCESS, });
-                callback(response);
-            }).catch((error) => {
-                apiErrors(error);
-                dispatch({ type: API_FAILURE });
-            });
-    };
-}
 
 /**
  * @method checkAndGetMachineNumber
@@ -482,10 +467,10 @@ export function getLabourCost(data, date, callback) {
  * @method getPowerCostUnit
  * @description GET POWER COST UNIT
  */
-export function getPowerCostUnit(plantId, date, callback) {
+export function getPowerCostUnit(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        axios.get(`${API.getPowerCostUnit}?PlantId=${plantId}&EffectiveDate=${DayTime(date).format('YYYY-MM-DDTHH:mm:ss')}`, config())
+        axios.get(`${API.getPowerCostUnit}?plantId=${obj.plantId}&effectiveDate=${DayTime(obj.effectiveDate).format('YYYY-MM-DDTHH:mm:ss')}&costingTypeId=${obj.costingTypeId}&vendorId=${obj.vendorId}&customerId=${obj.customerId}`, config())
             .then((response) => {
                 if (response.data.Result === true) {
                     callback(response);
@@ -536,12 +521,12 @@ export function updateMachineDetails(requestData, callback) {
 }
 
 /**
- * @method bulkUploadMachineZBC
+ * @method bulkUploadMachine
  * @description upload bulk MACHINE ZBC
  */
-export function bulkUploadMachineZBC(data, callback) {
+export function bulkUploadMachine(data, callback) {
     return (dispatch) => {
-        const request = axios.post(API.bulkUploadMachineZBC, data, config());
+        const request = axios.post(API.bulkUploadMachine, data, config());
         request.then((response) => {
             if (response.status === 200) {
                 callback(response);
@@ -554,43 +539,6 @@ export function bulkUploadMachineZBC(data, callback) {
     };
 }
 
-/**
- * @method bulkUploadMachineVBC
- * @description upload bulk MACHINE VBC
- */
-export function bulkUploadMachineVBC(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.bulkUploadMachineVBC, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
-
-/**
- * @method bulkUploadMachineCBC
- * @description upload bulk MACHINE CBC
- */
-export function bulkUploadMachineCBC(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.bulkUploadMachineCBC, data, config());
-        request.then((response) => {
-            if (response.status === 200) {
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-            callback(error);
-        });
-    };
-}
 /**
  * @method bulkUploadMachineMoreZBC
  * @description upload bulk MACHINE MORE ZBC
@@ -609,35 +557,6 @@ export function bulkUploadMachineMoreZBC(data, callback) {
         });
     };
 }
-
-
-
-/*
-@method  masterApprovalRequestBySenderMachine
-**/
-
-export function masterApprovalRequestBySenderMachine(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.masterSendToApproverMachine, data, config())
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response)
-            } else {
-                dispatch({ type: API_FAILURE })
-                if (response.data.Message) {
-                    Toaster.error(response.data.Message)
-                }
-            }
-        }).catch((error) => {
-            callback(error)
-            dispatch({ type: API_FAILURE })
-            apiErrors(error)
-        })
-    }
-}
-
-
-
 
 export function getMachineApprovalList(callback) {
 

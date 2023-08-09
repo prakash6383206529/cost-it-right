@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, maxLength80, required } from "../../../helper/validation";
+import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, hashValidation, maxLength80, required } from "../../../helper/validation";
 import { renderText, focusOnError } from "../../layout/FormInputs";
 import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../actions/ReasonMaster';
 import Toaster from '../../common/Toaster';
@@ -194,7 +194,7 @@ class AddReason extends Component {
                       name={"Reason"}
                       type="text"
                       placeholder={this.state.isEditFlag ? '-' : "Enter"}
-                      validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString]}
+                      validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, hashValidation]}
                       component={renderText}
                       required={true}
                       className=" "

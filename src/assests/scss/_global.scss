@@ -1,94 +1,5 @@
-@import "./cssVariable.scss";
-@import "./style.scss";
-@import "./drawers.scss";
-@import "./masters.scss";
-@import "./costing.scss";
-@import "./rfq.scss";
-@import "./report.scss";
+@import './abstracts/variable.scss';
 
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
-@import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
-@import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
-
-@for $i from 0 through 12 {
-  .mr-#{$i} {
-    margin-right: $i * 0.25rem;
-  }
-
-  .ml-#{$i} {
-    margin-left: $i * 0.25rem;
-  }
-
-  .ml-n#{$i} {
-    margin-left: $i * -0.25rem;
-  }
-
-  .mr-n#{$i} {
-    margin-right: $i * -0.25rem;
-  }
-
-  .pr-#{$i} {
-    padding-right: $i * 0.25rem;
-  }
-
-  .pl-#{$i} {
-    padding-left: $i * 0.25rem;
-  }
-
-  .col-md-#{$i} {
-    flex: 0 0 $i * 8.33%;
-    width: $i * 8.33%;
-  }
-
-  .mt#{$i} {
-    margin-top: #{$i}px;
-  }
-
-  .mr#{$i} {
-    margin-right: #{$i}px;
-  }
-}
-
-//GENERATE THE WIDTH FOR LAYOUT AND CUSTOM ELEMENTS
-$base: 20px;
-$max: 150;
-
-@for $i from 0 through $max {
-  $width: $i * $base;
-  $customWidth: $i * 2px;
-
-  .layout-width-#{$width} {
-    width: $width;
-  }
-
-  .layout-max-width-#{$width} {
-    max-width: $width;
-  }
-
-  .layout-min-width-#{$width} {
-    min-width: $width;
-  }
-
-  .layout-min-height-#{$width} {
-    min-height: $width;
-  }
-
-  .custom-width-#{$customWidth} {
-    width: $customWidth;
-  }
-
-  .custom-max-width-#{$customWidth} {
-    max-width: $customWidth;
-  }
-
-  .custom-min-width-#{$customWidth} {
-    min-width: $customWidth;
-  }
-
-  .custom-min-height-#{$customWidth} {
-    min-height: $customWidth;
-  }
-}
 
 .float-right {
   float: right;
@@ -184,10 +95,10 @@ body a:hover {
   }
 
   .nav-link.active {
-    color: $highlightcolor;
-    background-color: transparent;
+    color: $highlightcolor !important;
+    background-color: transparent !important;
     border: none;
-    border-bottom: $highlightcolor 2px solid;
+    border-bottom: $highlightcolor 2px solid !important;
     font-weight: 400;
   }
 }
@@ -288,6 +199,15 @@ a:hover {
   opacity: 0.5;
   cursor: default;
 }
+
+.ag-react-container .disabled {
+  @extend .disabled;
+  background-color: $disabledBackground;
+  color: $disabledFont;
+  opacity: 1;
+  border: 1px solid $disabledBorder;
+}
+
 
 .zindex-2 {
   z-index: 2;
@@ -2590,7 +2510,7 @@ ul.bread-list.d-inline-flex {
 // Added on 16-09-2020
 .drawer-1500px {
   width: 100%;
-  max-width: calc(100vw - 430px);
+  max-width: calc(100vw - 230px);
   min-width: 994px;
 }
 
@@ -2647,6 +2567,7 @@ input:disabled,
 .blue-box {
   position: initial;
   z-index: 1;
+  padding-top: 15px;
 }
 
 .reset-btn {
@@ -3338,6 +3259,10 @@ body {
 .Toastify__toast--error {
   color: #fe002d;
   background-color: #fcf8f9;
+
+  .Toastify__toast-body>div:last-child {
+    word-break: break-word;
+  }
 }
 
 .Toastify__progress-bar--error {
@@ -3503,10 +3428,10 @@ input:focus,
 .other-costing-simulation {
   .ag-grid-react {
     .ag-grid-wrapper {
-      min-height: calc(100vh - 385px) !important;
+      min-height: calc(100vh - 332px) !important;
 
       @media screen and (min-width: $middleDesktop) {
-        min-height: calc(100vh - 385px) !important;
+        min-height: calc(100vh - 341px) !important;
       }
 
       &.assembly-simulaiton {

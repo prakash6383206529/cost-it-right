@@ -78,7 +78,15 @@ class AddAssemblyForm extends Component {
         if (newValue && newValue !== '') {
             this.setState({ assemblyPart: newValue, issubAssembyNoNotSelected: false }, () => {
                 const { assemblyPart } = this.state;
-                this.props.getDrawerAssemblyPartDetail(assemblyPart.value, res => { })
+                this.props.getDrawerAssemblyPartDetail(assemblyPart.value, res => {
+                    let Data = res.data.Data
+                    this.props.change("ECNNumber", Data.ECNNumber)
+                    this.props.change('DrawingNumber', Data.DrawingNumber)
+                    this.props.change('RevisionNumber', Data.RevisionNumber)
+                    this.props.change('AssemblyPartName', Data.AssemblyPartName)
+                    this.props.change('PartDescription', Data.Description)
+                    this.props.change('GroupCode', Data.GroupCodeList ? (Data.GroupCodeList.length > 0 ? (Data.GroupCodeList[0].GroupCode ? Data.GroupCodeList[0].GroupCode : "") : "") : "")
+                })
             });
         } else {
             this.setState({ assemblyPart: [], });
@@ -399,20 +407,7 @@ class AddAssemblyForm extends Component {
 */
 function mapStateToProps({ part }) {
     const { assemblyPartSelectList, DrawerPartData } = part;
-
-    let initialValues = {};
-    if (DrawerPartData && DrawerPartData !== undefined) {
-        initialValues = {
-            AssemblyPartName: DrawerPartData.AssemblyPartName,
-            Description: DrawerPartData.Description,
-            ECNNumber: DrawerPartData.ECNNumber,
-            RevisionNumber: DrawerPartData.RevisionNumber,
-            DrawingNumber: DrawerPartData.DrawingNumber,
-            GroupCode: DrawerPartData.GroupCode,
-        }
-    }
-
-    return { assemblyPartSelectList, DrawerPartData, initialValues, }
+    return { assemblyPartSelectList, DrawerPartData, }
 }
 
 /**

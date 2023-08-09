@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, TabContent, Nav, Container } from 'reactstrap'
 import { MESSAGES } from '../../../config/message'
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
+import { defaultPageSize, EMPTY_DATA, FILE_URL } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
 import { getBudgetDataList, getPartCostingHead, } from '../actions/Budget'
 import { BUDGET_DOWNLOAD_EXCEl } from '../../../config/masterData'
@@ -22,7 +22,7 @@ import _ from 'lodash'
 import { disabledClass } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { Drawer } from '@material-ui/core'
-import AddBudget from './AddBudget'
+import Attachament from '../../costing/components/Drawers/Attachament'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -59,9 +59,11 @@ function BudgetListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', CustomerName: '' })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', CustomerName: '', PartType: '' })
     const [disableDownload, setDisableDownload] = useState(false)
     const [noData, setNoData] = useState(false)
+    const [attachment, setAttachment] = useState(false);
+    const [viewAttachment, setViewAttachment] = useState([])
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
@@ -198,7 +200,43 @@ function BudgetListing(props) {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
+    const viewAttachmentData = (index) => {
+        setAttachment(true)
+        setViewAttachment(index)
+    }
+    const closeAttachmentDrawer = (e = '') => {
+        setAttachment(false)
+    }
+    const attachmentFormatter = (props) => {
+        const row = props?.data;
+        let files = row?.Attachements
+        if (files && files?.length === 0) {
+            return '-'
+        }
+        return (
+            <>
+                <div className={"attachment images"}>
+                    {files && files.length === 1 ?
+                        files.map((f) => {
+                            const withOutTild = f.FileURL?.replace("~", "");
+                            const fileURL = `${FILE_URL}${withOutTild}`;
+                            return (
+                                <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                </a>
+                            )
 
+                        }) : <button
+                            type='button'
+                            title='View Attachment'
+                            className='btn-a pl-0'
+                            onClick={() => viewAttachmentData(row)}
+                        >View Attachment</button>}
+                </div>
+            </>
+        )
+
+    }
 
     const formToggle = () => {
         setShowBudgetForm(true)
@@ -357,9 +395,11 @@ function BudgetListing(props) {
     }
 
     const onFloatingFilterChanged = (value) => {
-        if (volumeDataList?.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (volumeDataList?.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
         setDisableFilter(false)
         const model = gridOptions?.api?.getFilterModel();
         setFilterModel(model)
@@ -406,6 +446,7 @@ function BudgetListing(props) {
     }
 
     const resetState = () => {
+        setNoData(false)
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
         if (props.isMasterSummaryDrawer === false) {
@@ -482,6 +523,7 @@ function BudgetListing(props) {
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
+        attachmentFormatter: attachmentFormatter,
     };
 
     if (showBudgetForm) {
@@ -594,17 +636,21 @@ function BudgetListing(props) {
                                     onFilterModified={onFloatingFilterChanged}
                                     onRowSelected={onRowSelect}
                                     suppressRowClickSelection={true}
+                                    enableBrowserTooltips={true}
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
-                                    <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
-                                    <AgGridColumn field="NetPoPrice" headerName="Net Po Price"></AgGridColumn>
-                                    <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Po Price" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
-                                    <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
-                                    {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
                                     <AgGridColumn field="vendorNameWithCode" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
+                                    <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
+                                    <AgGridColumn field="FinancialYear" headerName="Financial Year"></AgGridColumn>
+                                    <AgGridColumn field="NetPoPrice" headerName="Net Cost"></AgGridColumn>
+                                    <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
+                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
+                                    {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
@@ -655,7 +701,17 @@ function BudgetListing(props) {
                     </Container>
 
                 </Drawer>}
-
+                {
+                    attachment && (
+                        <Attachament
+                            isOpen={attachment}
+                            index={viewAttachment}
+                            closeDrawer={closeAttachmentDrawer}
+                            anchor={'right'}
+                            gridListing={true}
+                        />
+                    )
+                }
             </div>
         </>
     )

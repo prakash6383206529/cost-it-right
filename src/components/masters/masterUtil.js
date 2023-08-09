@@ -7,8 +7,8 @@ import Toaster from '../common/Toaster';
 import { useDispatch, useSelector } from 'react-redux';
 import { setGroupProcessList, setProcessList } from './actions/MachineMaster';
 import NoContentFound from '../common/NoContentFound';
-import { EMPTY_DATA } from '../../config/constants';
-
+import { APPROVED, CANCELLED, DRAFT, EMPTY_DATA, EXTERNAL_REJECT, RECEIVED, SENT, UNDER_REVISION, EMPTY_GUID } from '../../config/constants';
+import { hashValidation } from '../../helper';
 export const ProcessGroup = (props) => {
     const { isEditFlag, isViewFlag } = props
 
@@ -226,7 +226,10 @@ export const ProcessGroup = (props) => {
                             placeholder={props.isViewFlag ? '-' : "Enter"}
                             control={control}
                             register={register}
-                            rules={{ required: false }}
+                            rules={{
+                                required: false,
+                                validate: { hashValidation }
+                            }}
                             mandatory={true}
                             handleChange={(e) => { setGroupNameText(e.target.value) }}
                             defaultValue={""}
@@ -340,14 +343,13 @@ export const ProcessGroup = (props) => {
 
 export const rmQueryParms = (isPagination, skip, take, obj) => {
 
-    let queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecs=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    let queryParamsSecond = `VendorId=${obj.VendorId !== undefined ? obj.VendorId : EMPTY_GUID}&PlantId=${obj.PlantId !== undefined ? obj.PlantId : EMPTY_GUID}&RMChildId=${obj.RMChildId !== undefined ? obj.RMChildId : EMPTY_GUID}&GradeId=${obj.GradeId !== undefined ? obj.GradeId : EMPTY_GUID}&CustomerId=${obj.CustomerId !== undefined ? obj.CustomerId : EMPTY_GUID}&RawMaterialEntryType=${obj.RawMaterialEntryType}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&RMName=${obj.RawMaterialName !== undefined ? obj.RawMaterialName : ""}&RMGrade=${obj.RawMaterialGradeName !== undefined ? obj.RawMaterialGradeName : ""}&RMSpecs=${obj.RawMaterialSpecificationName !== undefined ? obj.RawMaterialSpecificationName : ""}&RMCode=${obj.RawMaterialCode !== undefined ? obj.RawMaterialCode : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&Plant=${obj.DestinationPlantName !== undefined ? obj.DestinationPlantName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&UOM=${obj.UnitOfMeasurementName !== undefined ? obj.UnitOfMeasurementName : ""}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&BasicRate=${obj.BasicRatePerUOM !== undefined ? obj.BasicRatePerUOM : ""}&ScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&FreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&ShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.EffectiveDate) : ""}&MaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
     return queryParamsSecond
 
 }
 
 export const bopQueryParms = (isPagination, skip, take, obj) => {
-
-    let queryParamsSecond = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+    let queryParamsSecond = `EntryType=${obj.EntryType !== undefined ? obj.EntryType : EMPTY_GUID}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&Specification=${obj.Specification !== undefined ? obj.Specification : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.Vendor !== undefined ? obj.Vendor : ""}&Currency=${obj.Currency !== undefined ? obj.Currency : ""}&NetCostCurrency=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&EffectiveDate=${obj.newDate !== undefined ? (obj.dateArray && obj.dateArray.length > 1 ? "" : obj.newDate) : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&NumberOfPieces=${obj.NumberOfPieces !== undefined ? obj.NumberOfPieces : ""}`
     return queryParamsSecond
 
 }
@@ -355,4 +357,40 @@ export const bopQueryParms = (isPagination, skip, take, obj) => {
 export const hyphenFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null && cellValue !== '' && cellValue !== undefined ? cellValue : '-'
+}
+
+export const StatusTooltip = (APIData) => {
+    let temp = []
+    APIData && APIData.map((item) => {
+
+        item.tooltipText = ''
+        switch (item.Status) {
+            case APPROVED:
+                item.tooltipText = 'Total no. of parts for which costing has been approved from that quotation / Total no. of parts exist in that quotation'
+                break;
+            case RECEIVED:
+                item.tooltipText = 'Total no. of costing received / Total no. of expected costing in that quotation'
+                break;
+            case UNDER_REVISION:
+                item.tooltipText = 'Total no. of costing under revision / Total no. of expected costing in that quotation'
+                break;
+            case DRAFT:
+                item.tooltipText = 'The token is pending to send for approval from your side.'
+                break;
+            case CANCELLED:
+                item.tooltipText = 'Quotation has been cancelled.'
+                break;
+            case SENT:
+                item.tooltipText = 'Costing under the quotation has been sent.'
+                break;
+            case EXTERNAL_REJECT:
+                item.tooltipText = 'The SAP team has rejected the token'
+                break;
+            default:
+                break;
+        }
+        temp.push(item)
+        return null
+    })
+    return temp;
 }

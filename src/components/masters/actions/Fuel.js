@@ -16,7 +16,8 @@ import {
     GET_ZBC_POWER_DATA_SUCCESS,
     config,
     GET_POWER_DATA_LIST,
-    GET_POWER_VENDOR_DATA_LIST
+    GET_POWER_VENDOR_DATA_LIST,
+    EMPTY_GUID
 } from '../../../config/constants';
 import { userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
@@ -195,10 +196,11 @@ export function getFuelDetailData(fuelId, callback) {
  * @method deleteFuelDetailsAPI
  * @description delete FUEL DETAIL 
  */
-export function deleteFuelDetailAPI(Id, callback) {
+export function deleteFuelDetailAPI(fuelDetailId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteFuelDetailAPI}/${Id}`, config())
+        const queryParams = `fuelDetailId=${fuelDetailId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteFuelDetailAPI}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -229,10 +231,10 @@ export function deleteFuelTypeAPI(index, Id, callback) {
  * @method getFuelByPlant
  * @description USED TO GET FUEL COMBO DATA
  */
-export function getFuelByPlant(plantId = '', callback) {
+export function getFuelByPlant(obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getFuelByPlant}?plantId=${plantId}`, config());
+        const request = axios.get(`${API.getFuelByPlant}?plantId=${obj.plantId ? obj.plantId : EMPTY_GUID}&vendorId=${obj.vendorId ? obj.vendorId : EMPTY_GUID}&customerId=${obj.customerId ? obj.customerId : EMPTY_GUID}&cityId=${obj.cityId ? obj.cityId : EMPTY_GUID}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -473,7 +475,7 @@ export function getPlantListByState(ID, callback) {
  */
 export function getDieselRateByStateAndUOM(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getDieselRateByStateAndUOM}/${data.StateID}/${data.UOMID}`, config());
+        const request = axios.get(`${API.getDieselRateByStateAndUOM}?stateId=${Number(data.StateID)}&uomId=${data.UOMID}&plantId=${data.plantId ? data.plantId : ''}&vendorId=${data.vendorId ? data.vendorId : null}&customerId=${data.customerId ? data.customerId : null}&effectiveDate=${data.effectiveDate ? data.effectiveDate : ''}&fuelId=${data.fuelId ? data.fuelId : 0}&cityId=${data.cityId ? data.cityId : 0}`, config());
         request.then((response) => {
             if (response && response.status === 200) {
                 callback(response);
@@ -606,10 +608,11 @@ export function deletePowerDetail(Id, callback) {
  * @method deleteVendorPowerDetail
  * @description DELETE VENDOR POWER DETAIL
  */
-export function deleteVendorPowerDetail(Id, callback) {
+export function deleteVendorPowerDetail(powerId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteVendorPowerDetail}/${Id}`, config())
+        const queryParams = `powerId=${powerId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteVendorPowerDetail}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

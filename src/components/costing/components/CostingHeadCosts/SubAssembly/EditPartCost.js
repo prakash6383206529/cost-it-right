@@ -15,7 +15,8 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
-import { EMPTY_DATA } from '../../../../../config/constants';
+import { EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function EditPartCost(props) {
 
@@ -25,7 +26,7 @@ function EditPartCost(props) {
     const [costingNumberData, setCostingNumberData] = useState({})
     const [isOpen, setIsOpen] = useState(false)
     const CostingViewMode = useContext(ViewCostingContext);
-
+    const viewCosting = reactLocalStorage.getObject("viewCostingData")
     const dispatch = useDispatch()
 
     const PartCostFields = 'PartCostFields';
@@ -107,7 +108,8 @@ function EditPartCost(props) {
         let obj = {
             partId: props?.tabAssemblyIndividualPartDetail?.PartId,
             plantId: costData?.DestinationPlantId,
-            costingTypeId: costData?.CostingTypeId
+            isRequestForWAC: (costData?.CostingTypeId === WACTypeId) ? true : false,
+            costingTypeId: (costData?.CostingTypeId === WACTypeId) ? null : costData?.CostingTypeId
         }
 
         !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
@@ -141,7 +143,7 @@ function EditPartCost(props) {
         props.closeDrawer('')
     };
 
-    const netCostCalculator = (gridIndex) => {
+    const netCostCalculator = (gridIndex, currentGrid = []) => {
 
         // TAKING OBJECT FROM WHOLE ARRAY LIST USING INDEX ON WHICH USER IS EDITING
         let editedObject = gridData[gridIndex]
@@ -149,30 +151,35 @@ function EditPartCost(props) {
         let netCost = 0
 
         // GET RUN TIME EDITED VALUES FROM INPUT FIELD
-        editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
-        editedObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
-        editedObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
+        if (costData?.CostingTypeId === WACTypeId) {
+            editedObject = currentGrid[gridIndex]
+            editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
+        } else {
+            editedObject.SOBPercentage = getValues(`${PartCostFields}.${gridIndex}.SOBPercentage`)
+            editedObject.DeltaValue = getValues(`${PartCostFields}.${gridIndex}.DeltaValue`)
+            editedObject.DeltaSign = getValues(`${PartCostFields}.${gridIndex}.DeltaSign`)
+            let arr = Object.assign([...gridData], { [gridIndex]: editedObject })
+            let sum = calcTotalSOBPercent(arr)
+            if (sum > 100) {
+                Toaster.warning('Total SOB Percent should not be greater than 100');
+                setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
+                editedObject.SOBPercentage = 0
+            }
 
-        let arr = Object.assign([...gridData], { [gridIndex]: editedObject })
-        let sum = calcTotalSOBPercent(arr)
-        if (sum > 100) {
-            Toaster.warning('Total SOB Percent should not be greater than 100');
-            setValue(`${PartCostFields}.${gridIndex}.SOBPercentage`, 0)
-            editedObject.SOBPercentage = 0
-        }
+            // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
+            if (editedObject.DeltaSign?.label === '+') {
+                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCost
+                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+            } if (editedObject.DeltaSign?.label === '-') {
+                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCost
+                setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
+            } if (editedObject.DeltaSign === undefined) {
+                netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
+                editedObject.NetCost = netCost
+            }
 
-        // RESPECTIVE CALCULATION FOR + and - DELTA SIGN
-        if (editedObject.DeltaSign?.label === '+') {
-            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) + checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-            editedObject.NetCost = netCost
-            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
-        } if (editedObject.DeltaSign?.label === '-') {
-            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice) - checkForNull(editedObject.DeltaValue), checkForNull(editedObject.SOBPercentage))
-            editedObject.NetCost = netCost
-            setValue(`${PartCostFields}.${gridIndex}.NetCost`, checkForDecimalAndNull(netCost, initialConfiguration.NoOfDecimalForPrice))
-        } if (editedObject.DeltaSign === undefined) {
-            netCost = percentageOfNumber(checkForNull(editedObject.SettledPrice), checkForNull(editedObject.SOBPercentage))
-            editedObject.NetCost = netCost
         }
 
         // ASSIGN THE MANIPULAED OBJECT TO THE SAME INDEX IN THE ARRAY LIST
@@ -300,6 +307,7 @@ function EditPartCost(props) {
     const addGrid = () => {
         if (Object.keys(costingNumberData).length > 0) {
             setGridData([...gridData, costingNumberData])
+            let currentGrid = [...gridData, costingNumberData]
             setValue('CostingNumber', {})
             setCostingNumberData({})
             let indexForUpdate = _.findIndex([...gridData, costingNumberData], costingNumberData);
@@ -308,6 +316,18 @@ function EditPartCost(props) {
             setValue(`${PartCostFields}.${indexForUpdate}.DeltaSign`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, 0)
             setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, 0)
+
+            if (costData?.CostingTypeId === WACTypeId) {
+                currentGrid[indexForUpdate].NetCost = checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100)
+                setGridData(currentGrid)
+                setTimeout(() => {
+                    setValue(`${PartCostFields}.${indexForUpdate}.SOBPercentage`, currentGrid[indexForUpdate].SOBPercentage)
+                    setValue(`${PartCostFields}.${indexForUpdate}.NetCost`, checkForDecimalAndNull(checkForNull(currentGrid[indexForUpdate].SettledPrice) * checkForNull(currentGrid[indexForUpdate].SOBPercentage / 100), initialConfiguration.NoOfDecimalForPrice))
+                    setTimeout(() => {
+                        netCostCalculator(indexForUpdate, currentGrid)
+                    }, 300);
+                }, 300);
+            }
         } else {
             Toaster.warning('Please select Costing Number')
             return false
@@ -322,7 +342,7 @@ function EditPartCost(props) {
                 if (item?.Value === '0' || final.includes(item?.CostingNumber)) return false;
                 temp.push({
                     label: item?.CostingNumber, value: item?.BaseCostingIdRef,
-                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName
+                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName, SOBPercentage: (item?.SOBPercentage) ? item.SOBPercentage : 0
                 })
                 return null;
             });
@@ -470,7 +490,7 @@ function EditPartCost(props) {
                                             <th>Costing Number</th>
                                             <th>Settled Price</th>
                                             <th>SOB%</th>
-                                            <th>Delta</th>
+                                            {costData?.CostingTypeId !== WACTypeId && <th>Delta</th>}
                                             <th>Net Cost</th>
                                             <th>Action</th>
                                         </tr>
@@ -505,10 +525,11 @@ function EditPartCost(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
-                                                                disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                disabled={(CostingViewMode || props.costingSummary || costData?.CostingTypeId === WACTypeId) ? true : false}
                                                             />
                                                         </td>
-                                                        <td >
+
+                                                        {costData?.CostingTypeId !== WACTypeId && <td >
                                                             <div className='delta-warpper'>
                                                                 <SearchableSelectHookForm
                                                                     name={`${PartCostFields}.${index}.DeltaSign`}
@@ -544,7 +565,7 @@ function EditPartCost(props) {
                                                                     disabled={CostingViewMode || props.costingSummary ? true : false}
                                                                 />
                                                             </div>
-                                                        </td>
+                                                        </td>}
                                                         <td >
                                                             <NumberFieldHookForm
                                                                 name={`${PartCostFields}.${index}.NetCost`}

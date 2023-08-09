@@ -27,8 +27,9 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -162,7 +163,8 @@ class LabourListing extends Component {
    * @description confirm delete item
    */
   confirmDeleteItem = (ID) => {
-    this.props.deleteLabour(ID, (res) => {
+    const loggedInUser = loggedInUserId()
+    this.props.deleteLabour(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
         this.setState({ dataCount: 0 })
@@ -244,6 +246,12 @@ class LabourListing extends Component {
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
+  customerFormatter = (props) => {
+    const cellValue = props?.value;
+    const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? `${cellValue} (${row.CustomerCode})` : '-';
+  }
+
   /**
    * @method dashFormatter
    * @description Renders Costing head
@@ -293,7 +301,9 @@ class LabourListing extends Component {
    * @description Filter data when user type in searching input
    */
   onFloatingFilterChanged = (value) => {
-    this.props.labourDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    setTimeout(() => {
+      this.props.labourDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+    }, 500);
   }
   /**
    * @method hideForm
@@ -435,7 +445,8 @@ class LabourListing extends Component {
       costingHeadFormatter: this.costingHeadFormatter,
       effectiveDateRenderer: this.effectiveDateFormatter,
       hyphenFormatter: this.hyphenFormatter,
-      commonCostFormatter: this.commonCostFormatter
+      commonCostFormatter: this.commonCostFormatter,
+      customerFormatter: this.customerFormatter
     };
 
     return (
@@ -536,13 +547,14 @@ class LabourListing extends Component {
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                {reactLocalStorage.getObject('cbcCostingPermission') && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
                 <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
                 <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn field="LabourId" width={150} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
               </AgGridReact>
               {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
             </div>
@@ -554,7 +566,7 @@ class LabourListing extends Component {
               closeDrawer={this.closeBulkUploadDrawer}
               isEditFlag={false}
               fileName={'Labour'}
-              isZBCVBCTemplate={false}
+              isZBCVBCTemplate={true}
               messageLabel={'Labour'}
               anchor={'right'}
             />
@@ -562,7 +574,7 @@ class LabourListing extends Component {
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LABOUR_DELETE_ALERT}`} />
           }
-        </div>
+        </div >
       </>
     )
   }

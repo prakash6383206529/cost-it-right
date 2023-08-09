@@ -448,3 +448,6 @@ export const timeValidation = value =>
     value && !/^([0-9]*):([0-5]?[0-9])$/.test(value)
         ? 'Input should not contain #.' : undefined;
 
+export const decimalNumberLimit8 = value =>
+    value && !/^\d{0,8}(\.\d{0,6})?$/.test(value)
+        ? 'Maximum length for integer is 8 and for decimal is 6' : undefined;

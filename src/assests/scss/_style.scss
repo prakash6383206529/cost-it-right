@@ -1,15 +1,4 @@
-@import "./cssVariable.scss";
-@import "./icons.scss";
-
-@font-face {
-  font-family: "icomoon";
-  src: url("fonts/icomoon.eot?mx6nlh");
-  src: url("fonts/icomoon.eot?mx6nlh#iefix") format("embedded-opentype"),
-    url("fonts/icomoon.ttf?mx6nlh") format("truetype"), url("fonts/icomoon.woff?mx6nlh") format("woff"),
-    url("fonts/icomoon.svg?mx6nlh#icomoon") format("svg");
-  font-weight: normal;
-  font-style: normal;
-}
+@import "./abstracts/variable.scss";
 
 [class^="icon-"],
 [class*=" icon-"] {
@@ -785,7 +774,7 @@ input.form-control {
 }
 
 .blue-box {
-  padding: 0 15px 30px;
+  padding: 20px 15px 30px;
   background-color: #EDF0F5;
 }
 
@@ -1148,8 +1137,8 @@ button.user-btn.pull-right {
 .content-page .cr-subtabs-head.nav-tabs .nav-link:hover {
   border-top: #d62c8c 2px solid;
   border-radius: 0;
-  border-bottom: 0;
-  background-color: #fff;
+  border-bottom: 0 !important;
+  background-color: #fff !important;
 }
 
 //  START Forging costing calculator
@@ -2290,13 +2279,7 @@ html {
   }
 }
 
-.costing-table-next {
-  .w-100px {
-    .form-control {
-      width: 55px;
-    }
-  }
-}
+
 
 .react-datepicker__input-container {
   input {
@@ -2394,7 +2377,11 @@ input:disabled {
 }
 
 .add-min-height {
-  min-height: calc(100vh - 263px);
+  min-height: calc(100vh - 303px);
+
+  @media screen and (max-width: $middleDesktop) {
+    min-height: calc(100vh - 253px);
+  }
 
   &.mb-3.sm-edit-page {
     min-height: calc(100vh - 374px);
@@ -3852,7 +3839,7 @@ body {
             min-height: unset;
 
             .text-help {
-              display: none;
+              position: absolute;
             }
           }
         }
@@ -4520,12 +4507,6 @@ body {
     height: 32px;
     padding: 6px !important;
     min-width: 50px;
-  }
-
-  margin: -43px 110px 10px 0;
-
-  @media screen and (max-width: $max1367) {
-    margin: -43px 80px 10px 0;
   }
 
   &.rm-row {
@@ -6960,8 +6941,7 @@ body {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
-        min-width: 214px;
-        max-width: 214px;
+        max-width: 200px;
         width: auto;
       }
     }
@@ -7210,7 +7190,7 @@ body {
 
     td,
     th {
-      padding: 0.71rem 5px !important;
+      padding: 1.1rem 5px !important;
 
       &:first-child {
         padding-left: 10px !important;
@@ -7495,6 +7475,7 @@ body {
   .reset-btn,
   .pdf-detail,
   .rfq-summary-discard,
+  .bottom-disabled-date:disabled,
   .reset {
     font-size: calc(14px * 80 / 100) !important;
     padding-left: calc(15px * 80 / 100) !important;
@@ -7506,6 +7487,10 @@ body {
     &.pull-right.w-100 {
       width: 100% !important;
     }
+  }
+
+  .bottom-disabled-date:disabled {
+    max-width: 5.2rem !important;
   }
 
   .edit-icon,
@@ -7691,7 +7676,7 @@ body {
   right: -15px;
 
   .loaderinner {
-    position: fixed;
+    position: fixed !important;
     top: 40%;
   }
 }
@@ -7876,7 +7861,7 @@ body {
 
 // <-------END Calculator css--------->
 .simulation-height {
-  min-height: calc(100vh - 404px) !important;
+  min-height: calc(100vh - 365px) !important;
 
   .min-height {
     min-height: auto !important;
@@ -8090,8 +8075,6 @@ body {
   z-index: 1301 !important;
 
   .drawer-wrapper {
-    width: 1100px;
-
     table {
       th {
         vertical-align: middle;
@@ -8219,6 +8202,44 @@ body {
           background-color: #FEDCE2 !important;
         }
       }
+    }
+  }
+}
+
+.simple-pdf {
+  .table-responsive {
+    min-width: 100% !important;
+    overflow: unset !important;
+
+    .table-responsive {
+      overflow: unset !important;
+    }
+
+    table {
+      min-width: 100%;
+    }
+
+    .approval-summary-headers,
+    .header-name,
+    .header-name-left {
+      background-color: #ececec !important;
+    }
+  }
+
+  .background-light-blue {
+    background: #9fcffc !important;
+
+    th {
+      word-spacing: 1px;
+
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
+    }
+
+    td {
+      padding-right: 20px;
+      print-color-adjust: exact;
+      -webkit-print-color-adjust: exact;
     }
   }
 }
@@ -8896,8 +8917,12 @@ table.group-process-table {
   z-index: 1;
 }
 
+.report-grid .ag-pinned-left-header {
+  z-index: 2;
+  background-color: #fff;
+}
+
 .report-grid .ag-focus-managed,
-.report-grid .ag-column-hover,
 .report-grid .ag-header-viewport,
 .report-grid .ag-header-row.ag-header-row-floating-filter {
   overflow: visible !important;
@@ -9022,19 +9047,6 @@ table.group-process-table {
   background-color: #fff;
 }
 
-@for $i from 1 through 1000 {
-  [row-id~="#{($i * 5) - 1}"] {
-    @for $j from 0 through 11 {
-
-      [col-id="PartNumber"],
-      [aria-colindex="#{$j}"] {
-        border-bottom: 1px solid $agGridBorder !important;
-      }
-    }
-
-  }
-}
-
 .right-tooltip {
   .tooltip {
     margin-right: 15px;
@@ -9061,6 +9073,7 @@ table.group-process-table {
 
 .table-footer {
   background-color: $tableFooterBackground;
+  font-weight: 500 !important;
 }
 
 div[col-id="ApprovalNumber"] {
@@ -9073,4 +9086,43 @@ div[col-id="ApprovalNumber"] {
 
 .dashboard-loader {
   min-height: 400px;
+}
+
+.run-simulation {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+
+  .bottom-disabled-date:disabled {
+    height: 32px;
+    max-width: 6rem;
+    border-color: #b9b9b980 !important;
+    margin-right: 10px;
+  }
+}
+
+
+#association-tooltip {
+  top: 7px;
+  left: 20px;
+}
+
+.ag-grid-action-container {
+  .ag-cell-wrapper {
+    justify-content: flex-end;
+
+    .ag-react-container {
+      padding-right: 0 !important;
+
+      button {
+        &:last-child {
+          margin-right: 0 !important;
+        }
+      }
+    }
+  }
+
+  .ag-react-container {
+    text-align: right;
+  }
 }

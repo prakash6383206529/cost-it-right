@@ -1298,3 +1298,76 @@ export function setFerrousCalculatorReset(data) {
     })
   }
 }
+
+
+export function getSimulationRmFerrousCastingCalculation(simulationId, costingId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}`
+    const request = axios.get(`${API.getSimulationRmFerrousCastingCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+export function getSimulationRmRubberCalculation(simulationId, costingId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `simulationId=${simulationId}&costingId=${costingId ? costingId : "0"}`
+    const request = axios.get(`${API.getSimulationRmRubberCalculation}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+
+export function saveRawMaterialCalculationForRubberCompound(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForRubberCompound, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
+
+
+export function wiringHarnessBulkUploadCosting(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.uploadWiringHarnessCosting, data, config());
+    request.then((response) => {
+      if (response.status === 200) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      if (error?.response?.status === 400) {
+        callback(error.response)
+      }
+      apiErrors(error);
+    });
+  };
+}

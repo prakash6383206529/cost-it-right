@@ -6,7 +6,6 @@ import {
     GET_PROCESS_LIST_SUCCESS,
     GET_PROCESS_UNIT_DATA_SUCCESS,
     GET_INITIAL_PLANT_SELECTLIST_SUCCESS,
-    GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
     GET_INITIAL_MACHINE_TYPE_SELECTLIST,
     GET_INITIAL_PROCESSES_LIST_SUCCESS,
     GET_INITIAL_MACHINE_LIST_SUCCESS,
@@ -68,7 +67,7 @@ export function getProcessCode(obj, callback) {
  */
 export function getProcessDataList(data, callback) {
     return (dispatch) => {
-        const request = axios.get(`${API.getProcessDataList}?plant_id=${data.plant_id}&machine_id=${data.machine_id}`, config());
+        const request = axios.get(`${API.getProcessDataList}?ProcessName=${data.ProcessName}&ProcessCode=${data.ProcessCode}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({
@@ -88,10 +87,11 @@ export function getProcessDataList(data, callback) {
  * @method deleteProcess
  * @description DELETE PROCESS
  */
-export function deleteProcess(Id, callback) {
+export function deleteProcess(processId, loggedInUserId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        axios.delete(`${API.deleteProcess}/${Id}`, config())
+        const queryParams = `processId=${processId}&loggedInUserId=${loggedInUserId}`
+        axios.delete(`${API.deleteProcess}?${queryParams}`, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {
@@ -148,48 +148,6 @@ export function updateProcess(request, callback) {
                 dispatch({ type: API_FAILURE });
                 callback(error)
             });
-    };
-}
-
-/**
-* @method getInitialPlantSelectList
-* @description GET INITIAL ALL PLANTS IN SELECTLIST
-*/
-export function getInitialPlantSelectList(callback) {
-    return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getPlantSelectList}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_INITIAL_PLANT_SELECTLIST_SUCCESS,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            apiErrors(error);
-        });
-    };
-}
-
-/**
- * @method getInitialVendorWithVendorCodeSelectList
- * @description GET VENDOR WITH VENDOR CODE SELECTLIST
- */
-export function getInitialVendorWithVendorCodeSelectList() {
-    return (dispatch) => {
-        const request = axios.get(API.getVendorWithVendorCodeSelectList, config());
-        request.then((response) => {
-            dispatch({
-                type: GET_INITIAL_VENDOR_WITH_VENDOR_CODE_SELECTLIST,
-                payload: response.data.SelectList,
-            });
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
     };
 }
 

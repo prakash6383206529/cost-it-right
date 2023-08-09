@@ -19,6 +19,9 @@ import AddRfq from './AddRfq';
 import { checkPermission, searchNocontentFilter, userDetails } from '../../helper';
 import DayTime from '../common/DayTimeWrapper';
 import Attachament from '../costing/components/Drawers/Attachament';
+import { useRef } from 'react';
+import SingleDropdownFloationFilter from '../masters/material-master/SingleDropdownFloationFilter';
+import { agGridStatus, getGridHeight, isResetClick, showQuotationDetails } from '../../actions/Common';
 const gridOptions = {};
 
 
@@ -42,12 +45,39 @@ function RfqListing(props) {
     const [viewAttachment, setViewAttachment] = useState([])
     const [deleteId, setDeleteId] = useState('');
     const { topAndLeftMenuData } = useSelector(state => state.auth);
+    const agGridRef = useRef(null);
+    const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const handleFilterChange = () => {
+        if (agGridRef.current) {
+            setTimeout(() => {
+                if (!agGridRef.current.rowRenderer.allRowCons.length) {
+                    setNoData(true)
+                    dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+                } else {
+                    setNoData(false)
+                }
+            }, 100);
 
+        }
+    };
+    const floatingFilterRFQ = {
+        maxValue: 11,
+        suppressFilterButton: true,
+        component: "RFQ",
+        onFilterChange: handleFilterChange,
+        notPagination: true
+    }
     useEffect(() => {
         setloader(true)
         getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
+
+    useEffect(() => {
+        if (statusColumnData) {
+            gridApi?.setQuickFilter(statusColumnData?.data);
+        }
+    }, [statusColumnData])
     /**
       * @method applyPermission
       * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -112,6 +142,9 @@ function RfqListing(props) {
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
         gridApi.deselectAll()
+        dispatch(agGridStatus("", ""))
+        dispatch(isResetClick(true, "status"))
+        setNoData(false)
     }
 
 
@@ -165,8 +198,8 @@ function RfqListing(props) {
         return (
             <>
                 {viewAccessibility && <button title='View' className="View mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {((status !== CANCELLED) && editAccessibility) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED && status !== RECEIVED) && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
+                {((status !== APPROVED && status !== CANCELLED) && editAccessibility) && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {(status !== APPROVED && status !== UNDER_APPROVAL && status !== CANCELLED && status !== RECEIVED) && rowData?.IsShowCancelIcon && <button title='Cancel' className="CancelIcon mr-1" type={'button'} onClick={() => cancelItem(cellValue)} />}
             </>
         )
     };
@@ -174,11 +207,9 @@ function RfqListing(props) {
 
     const formToggle = () => {
         setAddRfq(true)
-
         let data = {
             isAddFlag: true,
         }
-
         setAddRfqData(data)
     }
 
@@ -198,6 +229,7 @@ function RfqListing(props) {
 
 
     const onGridReady = (params) => {
+        agGridRef.current = params.api;
         setgridApi(params.api);
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
@@ -256,6 +288,7 @@ function RfqListing(props) {
         }
     }
     const statusFormatter = (props) => {
+        dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'RFQ' }))
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
@@ -267,11 +300,18 @@ function RfqListing(props) {
         return <div className={cell}>{tempStatus}</div>
     }
 
+    const viewAttachmentData = (index) => {
+        setAttachment(true)
+        setViewAttachment(index)
+    }
+
+    const closeAttachmentDrawer = (e = '') => {
+        setAttachment(false)
+    }
     const dashFormatter = (props) => {
         const cellValue = props?.value;
         return cellValue ? cellValue : '-';
     }
-
     const dateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
@@ -281,17 +321,10 @@ function RfqListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY  hh:mm') : '-';
     }
-
-    const viewAttachmentData = (index) => {
-        setAttachment(true)
-        setViewAttachment(index)
-    }
-
-    const closeAttachmentDrawer = (e = '') => {
-        setAttachment(false)
-    }
     const onFloatingFilterChanged = (value) => {
-        rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+        setTimeout(() => {
+            rowData.length !== 0 && setNoData(searchNocontentFilter(value, noData))
+        }, 500);
     }
 
     const dateFormater = (props) => {
@@ -327,7 +360,10 @@ function RfqListing(props) {
         )
 
     }
-
+    const raisedOnFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-'
+    }
 
     const viewDetails = (rowData) => {
 
@@ -352,19 +388,21 @@ function RfqListing(props) {
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
+        customNoRowsOverlay: NoContentFound,
         quotationReceiveFormatter: quotationReceiveFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
         dateFormatter: dateFormatter,
         dashFormatter: dashFormatter,
-        dateTimeFormatter: dateTimeFormatter
+        dateTimeFormatter: dateTimeFormatter,
+        valuesFloatingFilter: SingleDropdownFloationFilter,
     }
 
 
     return (
         <>
             {!addRfq &&
-                <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+                <div className={`ag-grid-react report-grid p-relative  ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "" : ""} ${true ? "show-table-btn" : ""} ${false ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
                     {(loader ? <LoaderCustom customClass="simulation-Loader" /> : !viewRfq && (
                         <>
                             <Row className={`filter-row-large pt-2 ${props?.isSimulation ? 'zindex-0 ' : ''}`}>
@@ -409,6 +447,7 @@ function RfqListing(props) {
                                                 style={{ height: '100%', width: '100%' }}
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
+                                                ref={agGridRef}
                                                 domLayout='autoHeight'
                                                 rowData={rowData}
                                                 pagination={true}
@@ -427,8 +466,9 @@ function RfqListing(props) {
                                                 enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn>
+                                                {/* <AgGridColumn field="NfrId" headerName='NFR Id' width={150}></AgGridColumn> */}
                                                 <AgGridColumn field="PartNumber" tooltipField="PartNumber" headerName="Part No." width={150}></AgGridColumn>
-                                                <AgGridColumn field="CostingReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="NoOfQuotationReceived" headerName='No. of Quotation Received' maxWidth={150} cellRenderer={'quotationReceiveFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                                 <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
                                                 <AgGridColumn field="TechnologyName" width={"160px"} headerName='Technology'></AgGridColumn>
@@ -440,8 +480,8 @@ function RfqListing(props) {
                                                 <AgGridColumn field="VisibilityDuration" width={"150px"} headerName='Visibility Duration' cellRenderer='dashFormatter'></AgGridColumn>
                                                 <AgGridColumn field="LastSubmissionDate" width={"160px"} headerName='Last Submission Date' cellRenderer='dateFormatter'></AgGridColumn>
                                                 <AgGridColumn field="QuotationNumber" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>
-                                                <AgGridColumn field="Status" headerName="Status" tooltipField="tooltipText" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                                                {<AgGridColumn field="QuotationId" width={180} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterRFQ}></AgGridColumn>
+                                                {<AgGridColumn field="QuotationId" width={180} cellClass="ag-grid-action-container rfq-listing-action" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
 
                                             </AgGridReact>
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />

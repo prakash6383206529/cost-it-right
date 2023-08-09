@@ -229,7 +229,7 @@ export function renderPasswordInputField(field) {
 export function renderMultiSelectField(field) {
   const {
     input,
-    meta: { touched, error, active },
+    meta: { touched, error, active, form },
   } = field;
   //const inputbox = `inputbox ${active ? "active" : ""}`;
   const inputbox = ` ${active ? "active" : ""}`;
@@ -242,8 +242,10 @@ export function renderMultiSelectField(field) {
   const filterConfig = {
     stringify: option => `${option.label}`,
   };
+  const specificIdContainer = `${form}_${input.name}_container`;
+  const specificId = `${form}_${input.name}`;
   return (
-    <div className={className}>
+    <div className={className} id={specificIdContainer}>
       <label>
         {field.label}
         {field.mendatory && field.mendatory === true ? (
@@ -252,9 +254,10 @@ export function renderMultiSelectField(field) {
           ""
         )}
       </label>
-      <div className={inputbox} onClick={field.onTouched} title={field && field?.title}>
+      <div className={inputbox} onClick={field.onTouched} title={field && field?.title ? field.title : field.disabled ? field.selection?.label : ''}>
         <Select
           {...input}
+          id={specificId}
           className={InputClassName}
           getOptionLabel={optionLabel}
           getOptionValue={optionValue}
@@ -345,15 +348,15 @@ export function renderEmailInputField(field) {
 export function renderTextInputField(field) {
   const {
     input,
-    meta: { touched, error, active },
+    meta: { touched, error, active, form },
     ...others
   } = field;
   const inputbox = `${active ? "active" : ""}`;
   const className = `form-group inputbox  withBorder ${touched && error ? "has-danger" : ""}`;
   const inputStyle = field.inputStyle ? field.inputStyle : "";
   const inputIconStyle = field.inputIconStyle ? field.inputIconStyle : "";
-  const InputClassName = `form-control ${field.className ? field.className : ""
-    }`;
+  const InputClassName = `form-control ${field.className ? field.className : ""}`;
+  const specificId = `${form}_${input.name}`;
   return (
     <div className={`${className} ${inputStyle}`}>
       <label>
@@ -367,6 +370,8 @@ export function renderTextInputField(field) {
       </label>
       <div className={inputbox} id={field.id}>
         <input
+          title={field.disabled ? field.input?.value : ''}
+          id={specificId}
           maxLength={field.maxLength}
           {...others}
           type="text"
@@ -491,11 +496,12 @@ export function renderTextAreaField(field) {
   const {
     input,
     disabled,
-    meta: { touched, error },
+    meta: { touched, error, form },
   } = field;
   const customClass = `${field.customClassName ? field.customClassName : ""}`;
   const disabledLabel = disabled ? true : false;
   const placeholder = field.placeholder ? field.placeholder : "";
+  const specificId = `${form}_${input.name}`;
   return (
     <div className={`form-group ${customClass}`}>
       <label>
@@ -508,10 +514,12 @@ export function renderTextAreaField(field) {
       </label>
       <div className="inputbox ">
         <textarea
+          title={field.disabled ? field.input?.value : ''}
           maxLength={field.maxLength}
           value={field.value}
           className="form-control withoutBorder"
           {...input}
+          id={specificId}
           placeholder={placeholder}
           disabled={disabledLabel}
         />
@@ -565,7 +573,7 @@ export function renderText(field) {
   const {
     input,
 
-    meta: { touched, error },
+    meta: { touched, error, form },
     ...others
   } = field;
 
@@ -573,6 +581,7 @@ export function renderText(field) {
     } ${touched && error ? "has-danger" : ""}`;
   const InputClassName = `form-control ${field.className ? field.className : ""
     }`;
+  const specificId = `${form}_${input.name}`;
   return (
     <div className={className}>
       <label>
@@ -584,9 +593,10 @@ export function renderText(field) {
           ""
         )}{" "}
       </label>
-      <div id={field.id}>
+      <div id={field.id ? field.id : ''}>
         <input
-          id={field.id}
+          title={field.disabled ? field.input?.value : ''}
+          id={field.id ? field.id : specificId}
           maxLength={field.maxLength}
           {...input}
           {...others}
@@ -609,11 +619,13 @@ export function InputHiddenField(field) {
 }
 
 export function renderDatePicker(field) {
-  const { input, placeholder, disabled, meta: { touched, error }, minDate } = field;
+  const { input, placeholder, disabled, meta: { touched, error, form }, minDate } = field;
+  const specificId = `${form}_${input.name}`;
   return (
     <div className={"react-picker-box"}>
       <label>{field.label}{field.required && field.required === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}      </label>
       <DatePicker
+        id={specificId}
         {...input}
         dateFormat="dd/MM/yyyy"
         placeholderText={placeholder}
@@ -621,6 +633,7 @@ export function renderDatePicker(field) {
         minDate={minDate ? new Date(minDate) : null}
         showMonthDropdown
         showYearDropdown
+        dropdownMode="select"
         readonly="readonly"
         onBlur={field.selected ? () => null : input.onBlur}
         selected={input.value ? new Date(input.value) : null}
@@ -661,6 +674,7 @@ export function renderDatePickerOneDayAgo(field) {
         minDate={d.setDate(d.getDate() + 1)}
         showMonthDropdown
         showYearDropdown
+        dropdownMode="select"
         readonly="readonly"
         onBlur={() => null}
         selected={input.value ? new Date(input.value) : null}
@@ -682,7 +696,7 @@ export const searchableSelect = ({
   placeholder,
   menuPlacement,
   isClearable,
-  meta: { touched, error, dirty, visited },
+  meta: { touched, error, dirty, visited, form },
   multi,
   className,
   children,
@@ -693,9 +707,10 @@ export const searchableSelect = ({
   const filterConfig = {
     stringify: option => `${option.label}`,
   };
-
+  const specificIdContainer = `${form}_${input.name}_container`;
+  const specificId = `${form}_${input.name}`;
   return (
-    <div className="w-100 form-group-searchable-select">
+    <div className="w-100 form-group-searchable-select" id={specificIdContainer}>
       {label && (
         <label>
           {label}
@@ -706,21 +721,25 @@ export const searchableSelect = ({
           )}
         </label>
       )}
-      <Select
-        {...input}
-        isClearable={false}
-        options={options}
-        onChange={handleChangeDescription}
-        value={valueDescription}
-        isDisabled={isDisable}
-        placeholder={placeholder}
-        menuPlacement={menuPlacement}
-        className={"searchable multidropdown-container"}
-        onKeyDown={(onKeyDown) => {
-          if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-        }}
-        filterOption={createFilter(filterConfig)}
-      />
+      <div title={isDisable ? valueDescription?.label : ''}
+      >
+        <Select
+          {...input}
+          id={specificId}
+          isClearable={false}
+          options={options}
+          onChange={handleChangeDescription}
+          value={valueDescription}
+          isDisabled={isDisable}
+          placeholder={placeholder}
+          menuPlacement={menuPlacement}
+          className={"searchable multidropdown-container"}
+          onKeyDown={(onKeyDown) => {
+            if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+          }}
+          filterOption={createFilter(filterConfig)}
+        />
+      </div>
       {children}
       <div className="text-help mb-2 mb-2">{touched && error ? error : ""}</div>
     </div>
@@ -892,6 +911,7 @@ export function renderYearPicker(field) {
         showMonthDropdown
         showYearDropdown
         showYearPicker
+        dropdownMode="select"
         readonly="readonly"
         onBlur={() => null}
         selected={input.value ? new Date(input.value) : null}

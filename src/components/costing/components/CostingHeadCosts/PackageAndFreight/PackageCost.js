@@ -108,6 +108,7 @@ function PackageCost(props) {
                       {costingData.TechnologyId !== LOGISTICS && <th>{`Criteria/Applicability`}</th>}
                       {costingData.TechnologyId !== LOGISTICS && <th>{`Packaging Type/Percentage`}</th>}
                       <th>{`Cost`}</th>
+                      {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                       {!CostingViewMode && <th style={{ textAlign: "right" }} className="costing-border-right"  >{`Action`}</th>}
                     </tr>
                   </thead>
@@ -120,6 +121,7 @@ function PackageCost(props) {
                             {costingData.TechnologyId !== LOGISTICS && <td>{item.Applicability ? item.Applicability : '-'}</td>}
                             {costingData.TechnologyId !== LOGISTICS && <td>{item.IsPackagingCostFixed === false ? 'Fixed' : item.PackagingCostPercentage}</td>}
                             <td>{checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice)}</td>
+                            {initialConfiguration.IsShowCRMHead && <td>{item?.PackagingCRMHead}</td>}
                             {!CostingViewMode && <td style={{ textAlign: "right" }}>
                               <button title='Edit' className="Edit mt15 mr5" type={'button'} onClick={() => editItem(index)} />
                               <button title='Delete' className="Delete mt15" type={'button'} onClick={() => deleteItem(index)} />

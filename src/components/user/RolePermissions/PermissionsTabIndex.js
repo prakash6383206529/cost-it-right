@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { connect } from "react-redux";
-import "../UserRegistration.scss";
 import {
     getActionHeadsSelectList, getModuleActionInit, getModuleActionInitNew
 } from "../../../actions/auth/AuthActions";
@@ -120,9 +119,7 @@ class PermissionsTabIndex extends Component {
         let usersObj = Data && Data.filter(el => el.ModuleName === USERS)
         let auditObj = Data && Data.filter(el => el.ModuleName === AUDIT)
         let rfqObj = Data && Data.filter(el => el.ModuleName === RFQ)
-        console.log('rfqObj: ', rfqObj);
         let nfrObj = Data && Data.filter(el => el.ModuleName === NFR)
-        console.log('nfrObj: ', nfrObj,);
 
         this.setState({
             actionData: Data,

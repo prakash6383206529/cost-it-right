@@ -80,7 +80,16 @@ class AddComponentForm extends Component {
     if (newValue && newValue !== '') {
       this.setState({ part: newValue, isPartNoNotSelected: false }, () => {
         const { part } = this.state;
-        this.props.getDrawerComponentPartData(part.value, res => { })
+        this.props.getDrawerComponentPartData(part.value, res => {
+          let Data = res.data.Data
+          this.props.change("ECNNumber", Data.ECNNumber)
+          this.props.change('DrawingNumber', Data.DrawingNumber)
+          this.props.change('RevisionNumber', Data.RevisionNumber)
+          this.props.change('PartName', Data.PartName)
+          this.props.change('PartDescription', Data.Description)
+          this.props.change('GroupCode', Data.GroupCodeList ? (Data.GroupCodeList.length > 0 ? (Data.GroupCodeList[0].GroupCode ? Data.GroupCodeList[0].GroupCode : "") : "") : "")
+        })
+
       });
     } else {
       this.setState({ part: [], });
@@ -406,12 +415,6 @@ function mapStateToProps({ part }) {
   let initialValues = {};
   if (DrawerPartData && DrawerPartData !== undefined) {
     initialValues = {
-      PartName: DrawerPartData.PartName,
-      PartDescription: DrawerPartData.Description,
-      ECNNumber: DrawerPartData.ECNNumber,
-      RevisionNumber: DrawerPartData.RevisionNumber,
-      DrawingNumber: DrawerPartData.DrawingNumber,
-      GroupCode: DrawerPartData.GroupCodeList ? (DrawerPartData.GroupCodeList.length > 0 ? (DrawerPartData.GroupCodeList[0].GroupCode ? DrawerPartData.GroupCodeList[0].GroupCode : "") : "") : "",
       BOMNumber: DrawerPartData.BOMNumber,
     }
 

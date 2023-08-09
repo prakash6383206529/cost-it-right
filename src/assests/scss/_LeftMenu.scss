@@ -1,14 +1,10 @@
-@import "../commonCss/cssVariable.scss";
-@import "../commonCss/global.scss";
+@import "./abstracts/variable.scss";
 
 .left-side-menu {
 	width: 230px;
 	// bottom: 30px;
 	padding: 0;
-	// position: fixed;
-	//transition: all 0.1s ease-out;
-	// top: 139px;
-	// overflow-y: auto;
+
 	.menuitem-active {
 		position: relative;
 		flex-direction: column;
@@ -18,6 +14,7 @@
 		align-items: flex-start;
 		background-color: $colorPrimary;
 		padding: 10px 0 0 6px;
+
 		a {
 			padding-right: 16px;
 		}
@@ -26,19 +23,23 @@
 	.h-100 {
 		height: 95.2%;
 	}
+
 	.mb5 {
 		margin-bottom: 5px;
 	}
+
 	ul {
 		li {
 			padding: 9px 8px;
 			border-radius: 10px 0px 0px 10px;
+
 			a {
 				padding: 0;
 				position: $positio-relative;
 				color: $white;
 				display: block;
 				font-size: $font-15;
+
 				&::after {
 					content: url(../../assests/images/add.svg);
 					font: normal normal normal 14px/1 FontAwesome !important;
@@ -47,19 +48,25 @@
 					top: 3px;
 				}
 			}
+
 			&:hover {
 				background-color: $white;
+
 				a {
 					color: $colorPrimary !important;
+
 					&::after {
 						content: url(../../assests/images/add-blue.svg);
 					}
 				}
 			}
-			&.active{
+
+			&.active {
 				background-color: $white;
+
 				a {
 					color: $colorPrimary !important;
+
 					&::after {
 						content: url(../../assests/images/add-blue.svg);
 					}

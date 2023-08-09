@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, FORGING, CBCTypeId } from '../../../config/constants';
-import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting } from '../actions/Simulation';
+import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting, getAllSimulatedBoughtOutPart } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
 import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from '../../../helper';
@@ -20,7 +20,7 @@ import {
     COMBINEDPROCESSSIMULATION,
     CostingSimulationDownloadAssemblyTechnology,
     CostingSimulationDownloadBOP, CostingSimulationDownloadMR, CostingSimulationDownloadOperation, CostingSimulationDownloadRM, CostingSimulationDownloadST
-    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, STGridForToken
+    , CPGridForToken, ERGridForToken, EXCHANGESIMULATIONDOWNLOAD, IdForMultiTechnology, InitialGridForToken, LastGridForToken, MRGridForToken, OperationGridForToken, RMGridForToken, SimulationDownloadBOP, STGridForToken
 } from '../../../config/masterData'
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -48,6 +48,7 @@ function CostingSimulation(props) {
     const { simulationId, isFromApprovalListing, master, statusForLinkedToken } = props
 
     const getShowSimulationPage = useSelector((state) => state.simulation.getShowSimulationPage)
+    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [tokenNo, setTokenNo] = useState('')
@@ -68,6 +69,7 @@ function CostingSimulation(props) {
     const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [tableData, setTableData] = useState([])
     const [status, setStatus] = useState('')
+    const [isSimulationWithCosting, setIsSimulationWithCosting] = useState(isMasterAssociatedWithCosting)
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: true,
         hideProfit: true,
@@ -102,6 +104,8 @@ function CostingSimulation(props) {
     const [isFinalLevelApprover, setIsFinalLevelApprover] = useState(false);
     const [count, setCount] = useState(0);
     const [storeTechnology, setStoreTechnology] = useState(0)
+    const [isBreakupBoughtOutPart, setIsBreakupBoughtOutPart] = useState(false)
+    const [disableSendForApproval, setDisableSendForApproval] = useState(false);
 
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
@@ -150,27 +154,21 @@ function CostingSimulation(props) {
 
     useEffect(() => {
         if (SimulationTechnologyIdState && count === 0 && amendmentDetails.SimulationHeadId) {
-            let levelDetailsTemp
-            dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
-                if (res?.data?.Data) {
-                    levelDetailsTemp = userTechnologyLevelDetails(amendmentDetails.SimulationHeadId, res?.data?.Data?.TechnologyLevels)
-                    // setLevelDetails(levelDetailsTemp)
-                    if (levelDetailsTemp?.length !== 0) {
-                        let obj = {
-                            DepartmentId: userData.DepartmentId,
-                            UserId: loggedInUserId(),
-                            TechnologyId: SimulationTechnologyIdState,
-                            Mode: 'simulation',
-                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
-                        }
-                        dispatch(checkFinalUser(obj, res => {
-                            if (res && res.data && res.data.Result) {
-                                setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                                let countTemp = count + 1
-                                setCount(countTemp)
-                            }
-                        }))
+            let obj = {
+                DepartmentId: userData.DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: SimulationTechnologyIdState,
+                Mode: 'simulation',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+            }
+            dispatch(checkFinalUser(obj, res => {
+                if (res && res.data && res.data.Result) {
+                    setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                    if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                        setDisableSendForApproval(true)
                     }
+                    let countTemp = count + 1
+                    setCount(countTemp)
                 }
             }))
         }
@@ -272,8 +270,18 @@ function CostingSimulation(props) {
             setVendorIdState(vendorId)
             setSimulationTechnologyIdState(SimulationTechnologyId)
             setSimulationTypeState(SimulationType)
-            let tempArrayCosting = Data.SimulatedCostingList
-
+            setIsSimulationWithCosting(!Data.IsSimulationWithOutCosting)
+            let tempArrayCosting
+            if (isMasterAssociatedWithCosting) {
+                setIsBreakupBoughtOutPart(res.data?.Data?.IsBreakupBoughtOutPart)
+                if (res.data?.Data?.IsBreakupBoughtOutPart === true && res.data?.DataList?.length > 0) {
+                    tempArrayCosting = [...Data.SimulatedCostingList, ...res.data?.DataList]
+                } else {
+                    tempArrayCosting = Data.SimulatedCostingList
+                }
+            } else {
+                tempArrayCosting = Data.SimulationBoughtOutPart
+            }
             tempArrayCosting && tempArrayCosting.map(item => {
                 item.Variance = (item.OldPOPrice - item.NewPOPrice).toFixed(getConfigurationKey().NoOfDecimalForPrice)
                 //  ********** ADDED NEW FIELDS FOR ADDING THE OLD AND NEW RM COST / PC BUT NOT GETTING THE AS SUM IN DOWNLOAD **********
@@ -291,6 +299,8 @@ function CostingSimulation(props) {
                     checkForNull(item.NewMachineRate).toFixed(TOFIXEDVALUE))
                 item.CPVariance = (checkForNull(item.OldNetCC).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewNetCC).toFixed(TOFIXEDVALUE))
+                item.BOPNONVariance = (checkForNull(item.OldBOPRate).toFixed(TOFIXEDVALUE) -
+                    checkForNull(item.NewBOPRate).toFixed(TOFIXEDVALUE))
                 switch (String(master)) {
                     case EXCHNAGERATE:
                         item.POVariance = (checkForNull(item.OldNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE) -
@@ -307,14 +317,18 @@ function CostingSimulation(props) {
             })
 
             let uniqeArray = []
-            const map = new Map();
-            for (const item of tempArrayCosting) {
-                if (!map.has(item.CostingNumber)) {                          // ENTERS "IF", IF MAP DO NOT HAVE COSTING NUMBER IN IT 
-                    map.set(item.CostingNumber, true);                       // SET COSTING (NUMBER, TRUE) IN MAP 
-                    uniqeArray.push(item);                                   //  ALSO PUSH ITEM IN ARRAY WHICH BECOMES UNIQUE FROM COSTING NUMBER
+            if (isMasterAssociatedWithCosting) {
+                const map = new Map();
+                for (const item of tempArrayCosting) {
+                    if (!map.has(item.CostingNumber)) {                          // ENTERS "IF", IF MAP DO NOT HAVE COSTING NUMBER IN IT 
+                        map.set(item.CostingNumber, true);                       // SET COSTING (NUMBER, TRUE) IN MAP 
+                        uniqeArray.push(item);                                   //  ALSO PUSH ITEM IN ARRAY WHICH BECOMES UNIQUE FROM COSTING NUMBER
+                    }
                 }
+            } else {
+                uniqeArray = [...Data.SimulationBoughtOutPart]
             }
-
+            let simulationList = isMasterAssociatedWithCosting ? Data?.SimulatedCostingList : Data?.SimulationBoughtOutPart
             setTokenNo(tokenNo)
             setAPIData(tempArrayCosting)
             setCostingArr(tempArrayCosting)
@@ -322,14 +336,14 @@ function CostingSimulation(props) {
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
-            tempObj.CostingHead = Data?.SimulatedCostingList[0]?.CostingHead
+            tempObj.CostingHead = simulationList[0]?.CostingHead
             tempObj.SimulationHeadId = Data.SimulationHeadId
             tempObj.SimulationAppliedOn = Data.SimulationAppliedOn
-            tempObj.Technology = Data.SimulatedCostingList[0].Technology
-            tempObj.Vendor = Data.SimulatedCostingList[0].VendorName
+            tempObj.Technology = simulationList[0].Technology
+            tempObj.Vendor = simulationList[0].VendorName
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
-            tempObj.CustomerName = Data.SimulatedCostingList[0].CustomerName
-            tempObj.BudgetedPriceImpactPerQuarter = Data?.SimulatedCostingList[0]?.BudgetedPriceImpactPerQuarter
+            tempObj.CustomerName = simulationList[0].CustomerName
+            tempObj.BudgetedPriceImpactPerQuarter = simulationList[0]?.BudgetedPriceImpactPerQuarter
             setAmendmentDetails(tempObj)
 
             //LISTING
@@ -338,7 +352,7 @@ function CostingSimulation(props) {
             setTableData(list)
 
             //DOWNLOAD
-            let downloadList = getListMultipleAndAssembly(Data.SimulatedCostingList, false)
+            let downloadList = getListMultipleAndAssembly(simulationList, false)
             setDownloadList(downloadList)
 
         }
@@ -374,9 +388,15 @@ function CostingSimulation(props) {
                     break;
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
-                    dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
-                        setCommonStateForList(res)
-                    }))
+                    if (isMasterAssociatedWithCosting) {
+                        dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
+                            setCommonStateForList(res)
+                        }))
+                    } else {
+                        dispatch(getAllSimulatedBoughtOutPart(simulationId, (res) => {
+                            setCommonStateForList(res)
+                        }))
+                    }
                     break;
                 case Number(EXCHNAGERATE):
                     dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
@@ -469,7 +489,7 @@ function CostingSimulation(props) {
             gridApi.deselectAll()
             Toaster.warning(<div>{approvalLockArray}</div>)
             setTimeout(() => {
-                document.getElementsByClassName('custom-toaster')[0].classList.add('custom-class')
+                document?.getElementsByClassName('custom-toaster')[0]?.classList?.add('custom-class')
             }, 200);
             return false
         }
@@ -488,9 +508,11 @@ function CostingSimulation(props) {
         setGridSelection(isSelected, e.node)
     }
     const onFloatingFilterChanged = (value) => {
-        if (tableData.length !== 0) {
-            setNoData(searchNocontentFilter(value, noData))
-        }
+        setTimeout(() => {
+            if (tableData.length !== 0) {
+                setNoData(searchNocontentFilter(value, noData))
+            }
+        }, 500);
     }
     /**
     * @method setGridSelection
@@ -499,7 +521,13 @@ function CostingSimulation(props) {
     const setGridSelection = (isSelected, clickedElement) => {
         var selectedRows = gridApi.getSelectedRows();
         let sendInAPI = sendInAPIState ? sendInAPIState : []
+        let index
 
+        if (clickedElement?.data?.BreakupBoughtOutPartId) {
+            if (tableData?.findIndex(element => element?.BoughtOutPartId === clickedElement?.data?.BreakupBoughtOutPartId) !== -1) {
+                index = tableData?.findIndex(element => element?.BoughtOutPartId === clickedElement?.data?.BreakupBoughtOutPartId)
+            }
+        }
         // WHEN ROW IS SELECTED "isSelected" COMES TRUE | "IF" WILL GET EXECUTED || WHEN DEELECTED "ELSE" WILL GET EXECUTED
         if (isSelected) {
             // PUSH IN ARRAY | IF PlantCost, PartNo, VendorName of SELECTED ROW MATCHES WITH ANY RECORD OF REJECTED LIST'S PlantCost, PartNo, VendorName 
@@ -534,6 +562,9 @@ function CostingSimulation(props) {
                     node.data.PartNo === PartNo) {
                     node.setSelected(isSelected);
                 }
+            }
+            if (index === node.rowIndex) {
+                node.setSelected(isSelected);
             }
         });
         setSelectedRowData(selectedRows)
@@ -753,6 +784,18 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const temp = row.IsMultiProcess === true ? 'Multiple Process' : cell
         return cell != null ? temp : '-';
+    }
+
+    const varianceFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        let value = row?.OldBOPRate - row?.NewBOPRate
+        return cell != null ? checkForDecimalAndNull(value, getConfigurationKey().NoOfDecimalForPrice) : '-';
+    }
+
+    const partTypeFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (cell != null && cell.length !== 0) ? cell : '-'
     }
 
     const oldSTFormatter = (props) => {
@@ -1118,6 +1161,9 @@ function CostingSimulation(props) {
             arrayOFCorrectObjIndividual = arrayOFCorrectObjIndividual.concat(temp);
             return null
         })
+        if (!isMasterAssociatedWithCosting) {
+            arrayOFCorrectObjIndividual = [...selectedRowData]
+        }
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true || showCombinedProcessColumn === true) {
@@ -1172,7 +1218,7 @@ function CostingSimulation(props) {
                     return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadBOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? CostingSimulationDownloadBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(EXCHNAGERATE):
                     return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 case Number(MACHINERATE):
@@ -1215,8 +1261,11 @@ function CostingSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
-
-        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        if (!isMasterAssociatedWithCosting && isBOPDomesticOrImport) {
+            params.api.sizeColumnsToFit();
+        } else {
+            window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        }
 
     };
 
@@ -1233,7 +1282,11 @@ function CostingSimulation(props) {
         gridOptions?.api?.setFilterModel(null);
         gridApi?.setQuickFilter(null);
         document.getElementById("filter-text-box").value = "";
-        window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        if (!isMasterAssociatedWithCosting) {
+            gridRef.current.api.sizeColumnsToFit();
+        } else {
+            window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
+        }
     }
     const errorBoxClass = () => {
         let temp
@@ -1297,7 +1350,9 @@ function CostingSimulation(props) {
         hyphenFormatter: hyphenFormatter,
         processCostFormatter: processCostFormatter,
         processFormatter: processFormatter,
-        processVarianceFormatter: processVarianceFormatter
+        processVarianceFormatter: processVarianceFormatter,
+        varianceFormatter: varianceFormatter,
+        partTypeFormatter: partTypeFormatter
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
@@ -1391,34 +1446,32 @@ function CostingSimulation(props) {
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                 <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn> */}
 
-                                                        <AgGridColumn width={150} field="CostingNumber" headerName='Costing Id'></AgGridColumn>
+                                                        {isSimulationWithCosting && <AgGridColumn width={150} field="CostingNumber" headerName='Costing Id'></AgGridColumn>}
                                                         <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                        <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
-                                                        <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>
-                                                        <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
+                                                        {isSimulationWithCosting && <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={120} field="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
+
                                                         {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
                                                         {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
                                                         {amendmentDetails.SimulationHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
                                                         {amendmentDetails.SimulationHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
-                                                        <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                        {isSimulationWithCosting && <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
 
                                                         {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={110} field="RMName" hide ></AgGridColumn>}
-                                                        {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={120} field="RMGrade" hide ></AgGridColumn>}
-                                                        {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialFinishWeight" hide headerName='Finish Weight'></AgGridColumn>}
-                                                        {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn field="RawMaterialGrossWeight" hide headerName='Gross Weight'></AgGridColumn>}
-
                                                         {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="OldNetCC" headerName='Old Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
                                                         {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="NewNetCC" headerName='New Net CC' cellRenderer='netCCFormatter'></AgGridColumn>}
-                                                        {(isCombinedProcess || showCombinedProcessColumn) && <AgGridColumn width={140} field="CPVariance" headerName='Variance' cellRenderer='CPvarianceFormatter'></AgGridColumn>}
 
-                                                        {!(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" headerName='Existing PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>}
-                                                        {!(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="NewPOPrice" headerName='Revised PO Price' cellRenderer='newPOFormatter'></AgGridColumn>}
-                                                        {!(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="Variance" headerName='Variance (w.r.t. Existing)' cellRenderer='variancePOFormatter' ></AgGridColumn>}
-                                                        {!(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+
+                                                        {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithCosting && <AgGridColumn width={140} field="OldPOPrice" headerName='Existing PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>}
+                                                        {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithCosting && <AgGridColumn width={140} field="NewPOPrice" headerName='Revised PO Price' cellRenderer='newPOFormatter'></AgGridColumn>}
+                                                        {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithCosting && <AgGridColumn width={140} field="Variance" headerName='Variance (w.r.t. Existing)' cellRenderer='variancePOFormatter' ></AgGridColumn>}
+                                                        {!(isExchangeRate || showExchangeRateColumn) && isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
                                                         {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={140} field="OldNetRawMaterialsCost" headerName='Existing RM Cost/Pc' cellRenderer='oldRMCFormatter'></AgGridColumn>}
                                                         {(isRMDomesticOrRMImport || showRMColumn) && <AgGridColumn width={140} field="NewNetRawMaterialsCost" headerName='Revised RM Cost/Pc' cellRenderer='newRMCFormatter'></AgGridColumn>}
@@ -1447,12 +1500,13 @@ function CostingSimulation(props) {
                                                         {(isOperation || showOperationColumn) && <AgGridColumn width={140} field="OperationCostVariance" headerName='Variance (Oper. Cost)' cellRenderer="operVarianceFormatter" ></AgGridColumn>}
 
 
-                                                        {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
+                                                        {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && isSimulationWithCosting && <AgGridColumn width={140} field="BoughtOutPartQuantity" headerName='BOP Quantity' cellRenderer='BOPQuantityFormatter' ></AgGridColumn>}
                                                         {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="OldBOPRate" headerName='Existing BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
                                                         {((isBOPDomesticOrImport || showBOPColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="NewBOPRate" headerName='Revised BOP Rate' cellRenderer={BOPQuantityFormatter} ></AgGridColumn>}
-                                                        {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Existing Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
-                                                        {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='Revised Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
-                                                        {(isBOPDomesticOrImport || showBOPColumn) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
+                                                        {!isSimulationWithCosting && <AgGridColumn width={140} field="Variance" headerName='Variance' cellRenderer='varianceFormatter' ></AgGridColumn>}
+                                                        {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName='Existing Net BOP Cost' cellRenderer='netBOPPartCostFormatter' ></AgGridColumn>}
+                                                        {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName='Revised Net BOP Cost' cellRenderer='netBOPPartCostFormatter'></AgGridColumn>}
+                                                        {(isBOPDomesticOrImport || showBOPColumn || isBreakupBoughtOutPart) && isSimulationWithCosting && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
                                                         {(isMachineRate || showMachineRateColumn) && <AgGridColumn width={140} field="OldNetProcessCost" headerName='Existing Net Process Cost' cellRenderer='processCostFormatter' ></AgGridColumn>}
@@ -1461,14 +1515,14 @@ function CostingSimulation(props) {
 
 
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>}
-                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" headerName='PO Price' cellRenderer='oldPOFormatter'></AgGridColumn>}
+                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" headerName='Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>}
 
 
-                                                        {/* <AgGridColumn width={140} field="NewPOPrice" headerName='PO Price New' cellRenderer='newPOFormatter'></AgGridColumn> */}
+                                                        {/* <AgGridColumn width={140} field="NewPOPrice" headerName='Net Cost New' cellRenderer='newPOFormatter'></AgGridColumn> */}
 
 
-                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='Existing PO Price(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
-                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='Revised PO Price (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
+                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="OldNetPOPriceOtherCurrency" headerName='Existing Net Cost(in Currency)' cellRenderer='oldPOCurrencyFormatter'></AgGridColumn>}
+                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={220} field="NewNetPOPriceOtherCurrency" headerName='Revised Net Cost (in Currency)' cellRenderer='newPOCurrencyFormatter'></AgGridColumn>}
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="POVariance" headerName='Variance (w.r.t. Existing)' cellRenderer={decimalFormatter}></AgGridColumn>}
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={170} field="OldExchangeRate" headerName='Existing Exchange Rate' cellRenderer='oldExchangeFormatter'></AgGridColumn>}
@@ -1483,48 +1537,48 @@ function CostingSimulation(props) {
                                                         {(isMultiTechnology && hideDataColumn.showBoughtOutPartCost) && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName='Variance (BOP Cost)' cellRenderer='BOPVarianceFormatter' ></AgGridColumn>}
 
 
-                                                        <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Existing)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
-                                                        <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>
+                                                        {isSimulationWithCosting && <AgGridColumn width={140} field="ImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Existing)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Existing Overhead'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Revised Overhead'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter' headerName='Existing Profit'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter' headerName='Revised Profit'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter' headerName='Existing Rejection'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter' headerName='Revised Rejection'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter' headerName='Existing ICC'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter' headerName='Revised ICC'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter' headerName='Existing Payment Terms'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter' headerName='Revised Payment Terms'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='Existing Other Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='Revised Other Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Existing Discount'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Revised Discount'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewNetToolCost" hide={hideDataColumn.hideToolCost} cellRenderer='toolCostFormatter' headerName='Revised Tool Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetToolCost" hide={hideDataColumn.hideToolCost} cellRenderer='toolCostFormatter' headerName='Existing Tool Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewNetFreightCost" hide={hideDataColumn.hideFrieghtCost} cellRenderer='freightCostFormatter' headerName='Revised Freight Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetFreightCost" hide={hideDataColumn.hideFrieghtCost} cellRenderer='freightCostFormatter' headerName='Existing Freight Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewNetPackagingCost" hide={hideDataColumn.hidePackagingCost} cellRenderer='packagingCostFormatter' headerName='Revised Packaging Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetPackagingCost" hide={hideDataColumn.hidePackagingCost} cellRenderer='packagingCostFormatter' headerName='Existing Packaging Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="NewNetFreightPackagingCost" hide={hideDataColumn.hideFreightPackagingCost} cellRenderer='freightPackagingCostFormatter' headerName='Revised Freight & Packaging Cost'></AgGridColumn>}
-                                                        {!(isExchangeRate) && <AgGridColumn width={140} field="OldNetFreightPackagingCost" hide={hideDataColumn.hideFreightPackagingCost} cellRenderer='freightPackagingCostFormatter' headerName='Existing Freight & Packaging Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Existing Overhead'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewOverheadCost" hide={hideDataColumn.hideOverhead} cellRenderer='overheadFormatter' headerName='Revised Overhead'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter' headerName='Existing Profit'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewProfitCost" hide={hideDataColumn.hideProfit} cellRenderer='profitFormatter' headerName='Revised Profit'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter' headerName='Existing Rejection'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewRejectionCost" hide={hideDataColumn.hideRejection} cellRenderer='rejectionFormatter' headerName='Revised Rejection'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter' headerName='Existing ICC'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewICCCost" hide={hideDataColumn.hideICC} cellRenderer='costICCFormatter' headerName='Revised ICC'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter' headerName='Existing Payment Terms'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewPaymentTermsCost" hide={hideDataColumn.hidePayment} cellRenderer='paymentTermFormatter' headerName='Revised Payment Terms'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='Existing Other Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewOtherCost" hide={hideDataColumn.hideOtherCost} cellRenderer='otherCostFormatter' headerName='Revised Other Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Existing Discount'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewDiscountCost" hide={hideDataColumn.hideDiscount} cellRenderer='discountCostFormatter' headerName='Revised Discount'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetToolCost" hide={hideDataColumn.hideToolCost} cellRenderer='toolCostFormatter' headerName='Revised Tool Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetToolCost" hide={hideDataColumn.hideToolCost} cellRenderer='toolCostFormatter' headerName='Existing Tool Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetFreightCost" hide={hideDataColumn.hideFrieghtCost} cellRenderer='freightCostFormatter' headerName='Revised Freight Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetFreightCost" hide={hideDataColumn.hideFrieghtCost} cellRenderer='freightCostFormatter' headerName='Existing Freight Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetPackagingCost" hide={hideDataColumn.hidePackagingCost} cellRenderer='packagingCostFormatter' headerName='Revised Packaging Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetPackagingCost" hide={hideDataColumn.hidePackagingCost} cellRenderer='packagingCostFormatter' headerName='Existing Packaging Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="NewNetFreightPackagingCost" hide={hideDataColumn.hideFreightPackagingCost} cellRenderer='freightPackagingCostFormatter' headerName='Revised Freight & Packaging Cost'></AgGridColumn>}
+                                                        {!(isExchangeRate) && isSimulationWithCosting && <AgGridColumn width={140} field="OldNetFreightPackagingCost" hide={hideDataColumn.hideFreightPackagingCost} cellRenderer='freightPackagingCostFormatter' headerName='Existing Freight & Packaging Cost'></AgGridColumn>}
 
-                                                        <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>
+                                                        {isSimulationWithCosting && <AgGridColumn width={120} field="CostingId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter' pinned="right"></AgGridColumn>}
                                                     </AgGridReact>}
                                                     {storeTechnology === FORGING && <WarningMessage dClass="float-right" textClass="mt2" message="If RMC is calculated through RM weight calculator then change in scrap rate won't affect the RMC." />}
-                                                    {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                                                    {amendmentDetails.SimulationHeadId && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                                 </div >
                                             </div >
                                         </Col >
                                     </Row >
                                 </div >
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
-                                    <div className="col-sm-12 text-right bluefooter-butn">
-
+                                    <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
+                                        {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={() => { setIsApprovalDrawer(true) }}
-                                            disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover) ? true : disableApproveButton ? true : false}
+                                            disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover || disableSendForApproval) ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
                                         >
                                             <div className="send-for-approval"></div>
@@ -1545,6 +1599,9 @@ function CostingSimulation(props) {
                                             {"Verify Impact"}
                                         </button>
 
+                                        <div>
+                                            {disableApproveButton && <WarningMessage message={'Super Admin cannot send simulation for approval'} />}
+                                        </div>
                                     </div>
                                 </Row>
                             </div >
@@ -1589,7 +1646,7 @@ function CostingSimulation(props) {
                                     dataForAssemblyImpactInVerifyImpact={tableData}
                                     assemblyImpactButtonTrue={assemblyImpactButtonTrue}
                                     CostingTypeId={amendmentDetails.SimulationHeadId}
-
+                                    isSimulationWithCosting={isSimulationWithCosting}
                                 />
                             }
                         </div >

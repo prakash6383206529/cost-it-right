@@ -157,8 +157,8 @@ function Ferrous(props) {
         const finishedWeight = checkForNull(getValues('finishedWeight'))
         const NetRMRate = checkForNull(dataToSend.NetRMRate)
         const NetScrapRate = checkForNull(dataToSend.NetScrapRate)
-        if (finishedWeight > grossWeight) {
-            Toaster.warning('Finish Weight should not be greater than gross weight')
+        if (finishedWeight > castingWeight) {
+            Toaster.warning('Finish Weight should not be greater than casting weight')
             setValue('finishedWeight', 0)
             return false
         }
@@ -197,7 +197,7 @@ function Ferrous(props) {
     const onSubmit = debounce(handleSubmit((values) => {
 
         if (totalPercentageValue() !== 100) {
-            Toaster.warning('Percentage value should be equal to 100')
+            Toaster.warning('Total percentage must be 100% to save the values')
             return false
         }
         let obj = {}
@@ -235,13 +235,13 @@ function Ferrous(props) {
             if (res.data.Result) {
                 obj.WeightCalculationId = res.data.Identity
                 Toaster.success("Calculation saved successfully")
-                props.toggleDrawer('', obj)
+                props.toggleDrawer('ferrous', obj)
             }
         }))
     }), 500);
 
     const onCancel = () => {
-        props.toggleDrawer('')
+        props.toggleDrawer('cancel')
     }
 
     const handleKeyDown = function (e) {

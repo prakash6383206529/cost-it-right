@@ -100,7 +100,7 @@ export function getVolumeData(VolumeId, callback) {
 export function getVolumeDataList(skip, take, isPagination, obj, callback) {
   return (dispatch) => {
     //dispatch({ type: API_REQUEST });    
-    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}`
+    const QueryParams = `CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Year=${obj.Year !== undefined ? obj.Year : ""}&Month=${obj.Month !== undefined ? obj.Month : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&Plant=${obj.Plant !== undefined ? obj.Plant : ""}&PartNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&PartName=${obj.PartName !== undefined ? obj.PartName : ""}&BudgetedQuantity=${obj.BudgetedQuantity !== undefined ? obj.BudgetedQuantity : ""}&ApprovedQuantity=${obj.ApprovedQuantity !== undefined ? obj.ApprovedQuantity : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&partType=${obj?.PartType !== undefined ? obj?.PartType : ""}`
     axios.get(`${API.getVolumeDataList}?${QueryParams}`, config())
       .then((response) => {
         if (response.data.Result || response.status === 204) {
@@ -172,12 +172,12 @@ export function getFinancialYearSelectList(callback) {
 }
 
 /**
- * @method bulkUploadVolumeActualZBC
+ * @method volumeBulkUpload
  * @description BULK UPLOAD FOR ACTUAL VOLUME ZBC
  */
-export function bulkUploadVolumeActualZBC(data, callback) {
+export function volumeBulkUpload(data, callback) {
   return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeActualZBC, data, config())
+    const request = axios.post(API.volumeBulkUpload, data, config())
     request
       .then((response) => {
         if (response.status === 200) {
@@ -192,103 +192,6 @@ export function bulkUploadVolumeActualZBC(data, callback) {
   }
 }
 
-/**
- * @method bulkUploadVolumeActualVBC
- * @description BULK UPLOAD FOR ACTUAL VOLUME VBC
- */
-export function bulkUploadVolumeActualVBC(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeActualVBC, data, config())
-    request
-      .then((response) => {
-        if (response.status === 200) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-        callback(error);
-      })
-  }
-}
-/**
- * @method bulkUploadVolumeActualCBC
- * @description BULK UPLOAD FOR ACTUAL VOLUME CBC
- */
-export function bulkUploadVolumeActualCBC(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeActualCBC, data, config())
-    request
-      .then((response) => {
-        if (response.status === 200) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-        callback(error);
-      })
-  }
-}
-/**
- * @method bulkUploadVolumeBudgetedZBC
- * @description BULK UPLOAD FOR BUDGETED VOLUME ZBC
- */
-export function bulkUploadVolumeBudgetedZBC(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeBudgetedZBC, data, config())
-    request
-      .then((response) => {
-        if (response.status === 200) {
-          callback(response)
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE })
-        apiErrors(error)
-        callback(error);
-      })
-  }
-}
-
-/**
- * @method bulkUploadVolumeBudgetedVBC
- * @description BULK UPLOAD FOR BUDGETED VOLUME VBC
- */
-export function bulkUploadVolumeBudgetedVBC(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeBudgetedVBC, data, config());
-    request.then((response) => {
-      if (response.status === 200) {
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-      callback(error);
-    });
-  };
-}
-/**
- * @method bulkUploadVolumeBudgetedCBC
- * @description BULK UPLOAD FOR BUDGETED VOLUME CBC
- */
-export function bulkUploadVolumeBudgetedCBC(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.bulkUploadVolumeBudgetedCBC, data, config());
-    request.then((response) => {
-      if (response.status === 200) {
-        callback(response);
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE });
-      apiErrors(error);
-      callback(error);
-    });
-  };
-}
 /**
  * @method getVolumeDataByPartAndYear
  * @description Get Volume Data by part and year
@@ -397,8 +300,8 @@ export function checkRegularizationLimit(obj, callback) {
       });
   };
 }
-export function getPartSelectListWtihRevNo(partNumber, technologyId, callback) {
-  return axios.get(`${API.getPartSelectListWtihRevNo}?${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}`, config()).catch(error => {
+export function getPartSelectListWtihRevNo(partNumber, technologyId, nfrId, partTypeId, callback) {
+  return axios.get(`${API.getPartSelectListWtihRevNo}?${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}${nfrId ? `&nfrId=${nfrId}` : ''}${partTypeId ? `&partTypeId=${partTypeId}` : ''}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)
