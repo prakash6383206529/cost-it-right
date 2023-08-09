@@ -553,10 +553,9 @@ function NonFerrous(props) {
                             type="button"
                             onClick={onSubmit}
                             disabled={props.CostingViewMode || isDisable ? true : false}
-                            className="btn-primary save-btn"
+                            className="submit-button save-btn"
                         >
-                            <div className={'check-icon'}>
-                                <i class="fa fa-check" aria-hidden="true"></i>
+                            <div className={'save-icon'}>
                             </div>
                             {'SAVE'}
                         </button>
