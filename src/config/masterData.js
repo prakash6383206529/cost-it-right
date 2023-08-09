@@ -5563,6 +5563,12 @@ export const RM_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Revised Scrap Rate", value: "NewScrapRate", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Previous Min.", value: "PreviousMinimum", },
+    { label: "Previous Max.", value: "PreviousMaximum", },
+    { label: "Previous Avg.", value: "PreviousAverage", },
+    { label: "Current Min.", value: "Minimum", },
+    { label: "Current Max.", value: "Maximum", },
+    { label: "Current Avg.", value: "Average", },
     { label: "Current Effective date", value: "EffectiveDate", },
 ]
 
@@ -5574,6 +5580,12 @@ export const BOP_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Minimum Order Quantity", value: "Quantity", },
     { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
     { label: "Revised Net Cost", value: "NewNetBoughtOutPartCost", },
+    { label: "Previous Min.", value: "PreviousMinimum", },
+    { label: "Previous Max.", value: "PreviousMaximum", },
+    { label: "Previous Avg.", value: "PreviousAverage", },
+    { label: "Current Min.", value: "Minimum", },
+    { label: "Current Max.", value: "Maximum", },
+    { label: "Current Avg.", value: "Average", },
     { label: "Current Effective date", value: "EffectiveDate", },
 ]
 
@@ -5583,6 +5595,12 @@ export const MACHINE_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Process Name", value: "ProcessName", },
     { label: "Existing Machine Rate", value: "OldMachineRate", },
     { label: "Revised Machine Rate", value: "NewMachineRate", },
+    { label: "Previous Min.", value: "PreviousMinimum", },
+    { label: "Previous Max.", value: "PreviousMaximum", },
+    { label: "Previous Avg.", value: "PreviousAverage", },
+    { label: "Current Min.", value: "Minimum", },
+    { label: "Current Max.", value: "Maximum", },
+    { label: "Current Avg.", value: "Average", },
     { label: "Current Effective date", value: "EffectiveDate", },
 ]
 
@@ -5591,6 +5609,12 @@ export const OPERATION_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Operation Code", value: "OperationCode", },
     { label: "Existing Net Rate", value: "OldOperationRate", },
     { label: "Revised Net Rate", value: "NewOperationRate", },
+    { label: "Previous Min.", value: "PreviousMinimum", },
+    { label: "Previous Max.", value: "PreviousMaximum", },
+    { label: "Previous Avg.", value: "PreviousAverage", },
+    { label: "Current Min.", value: "Minimum", },
+    { label: "Current Max.", value: "Maximum", },
+    { label: "Current Avg.", value: "Average", },
     { label: "Current Effective date", value: "EffectiveDate", },
 ]
 
@@ -5601,6 +5625,12 @@ export const EXCHANGE_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Custom Rate(INR)", value: "CustomRate", },
     { label: "Existing Exchange Rate(INR)", value: "OldExchangeRate", },
     { label: "Revised Exchange Rate(INR)", value: "NewExchangeRate", },
+    { label: "Previous Min.", value: "PreviousMinimum", },
+    { label: "Previous Max.", value: "PreviousMaximum", },
+    { label: "Previous Avg.", value: "PreviousAverage", },
+    { label: "Current Min.", value: "Minimum", },
+    { label: "Current Max.", value: "Maximum", },
+    { label: "Current Avg.", value: "Average", },
     { label: "Current Effective date", value: "EffectiveDate", },
 ]
 
