@@ -122,6 +122,7 @@ function SimulationApprovalSummary(props) {
 
     // const partType = IdForMultiTechnology.includes(String(SimulationTechnologyIdState))
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
+    const { initialConfiguration } = useSelector(state => state.auth)
 
     const dispatch = useDispatch()
 
@@ -463,6 +464,8 @@ function SimulationApprovalSummary(props) {
         if (isMultiTechnology) {
             return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, downloadGrid.length > 0 ? downloadGrid : [])
         } else {
+            console.log('SimulationTechnologyId: ', SimulationTechnologyId);
+            console.log('BOPDOMESTIC: ', BOPDOMESTIC);
             switch (String(SimulationTechnologyId)) {
                 case RMDOMESTIC:
                 case RMIMPORT:
