@@ -267,6 +267,13 @@ class AddVendorDrawer extends Component {
             this.props.getSupplierByIdAPI(ID, isEditFlag, (res) => {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
+                    let technologyList = []
+                    Data?.VendorTechnologies && Data?.VendorTechnologies?.map(item => {
+                        let obj = {}
+                        obj.Text = item?.TechnologyName
+                        obj.Value = item?.TechnologyId
+                        technologyList.push(obj)
+                    })
                     let tempArr = [];
                     this.setState({ DataToCheck: Data })
                     Data && Data.VendorTypes.map((item) => {
@@ -282,7 +289,7 @@ class AddVendorDrawer extends Component {
                             country: Data.Country !== undefined ? { label: Data.Country, value: Data.CountryId } : [],
                             state: Data.State !== undefined ? { label: Data.State, value: Data.StateId } : [],
                             city: Data.City !== undefined ? { label: Data.City, value: Data.CityId } : [],
-                            Technology: Data.VendorTechnologies ? Data.VendorTechnologies : [],
+                            Technology: technologyList ? technologyList : [],
                             isCriticalVendor: Data.IsCriticalVendor ? Data.IsCriticalVendor : false,
                         }, () => this.setState({ isLoader: false }))
                     }, 1000)
@@ -706,7 +713,7 @@ class AddVendorDrawer extends Component {
                                             <input
                                                 type="checkbox"
                                                 checked={isCriticalVendor}
-                                                disabled={isViewMode || isEditFlag ? true : false}
+                                                disabled={isViewMode ? true : false}
                                             />
                                             <span
                                                 className=" before-box"
@@ -729,7 +736,7 @@ class AddVendorDrawer extends Component {
                                             optionLabel={(option) => option.Text}
                                             component={renderMultiSelectField}
                                             mendatory={true}
-                                            disabled={isEditFlag}
+                                            disabled={isViewMode ? true : false}
                                             className="multiselect-with-border"
                                         />
                                     </Col>}

@@ -334,6 +334,14 @@ class VendorListing extends Component {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
 
+    /**
+    * @method isCriticalVendor
+    */
+    isCriticalVendor = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? "Yes" : "No"
+    }
+
 
     checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -631,6 +639,7 @@ class VendorListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
             valuesFloatingFilter: MultiDropdownFloatingFilter,
+            isCriticalVendor: this.isCriticalVendor
         };
 
         return (
@@ -725,6 +734,8 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="IsCriticalVendor" headerName="IsCriticalVendor" ></AgGridColumn>
+                            <AgGridColumn field="VendorTechnology" headerName="VendorTechnology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
