@@ -16,7 +16,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
 import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
-import { loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { VENDOR_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -734,8 +734,8 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="IsCriticalVendor" headerName="IsCriticalVendor" ></AgGridColumn>
-                            <AgGridColumn field="VendorTechnology" headerName="VendorTechnology" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="IsCriticalVendor" headerName="IsCriticalVendor" ></AgGridColumn>}
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorTechnology" headerName="VendorTechnology" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
