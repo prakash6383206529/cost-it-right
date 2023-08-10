@@ -676,7 +676,7 @@ class AddVendorDrawer extends Component {
                                             //  required={true}
                                             maxLength={26}
                                             className=" "
-                                            customClassName=" withBorder"
+                                            customClassName="mb-0 withBorder"
                                             disabled={isViewMode}
                                         />
                                     </Col>
@@ -691,13 +691,13 @@ class AddVendorDrawer extends Component {
                                             //required={true}
                                             maxLength={26}
                                             className=" "
-                                            customClassName=" withBorder"
+                                            customClassName="mb-0 withBorder"
                                             disabled={isViewMode}
                                         />
                                     </Col>
                                 </Row>
                                 {initialConfiguration?.IsCriticalVendorConfigured && <Row className="pl-3">
-                                    <Col md="6">
+                                    <Col md="6" className='mt-4'>
                                         <label
                                             className={`custom-checkbox`}
                                             onChange={this.criticalityHandleChange}
