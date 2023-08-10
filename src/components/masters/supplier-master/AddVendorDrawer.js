@@ -18,6 +18,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -39,7 +40,10 @@ class AddVendorDrawer extends Component {
             DropdownChanged: true,
             isViewMode: this.props?.isViewMode ? true : false,
             setDisable: false,
-            showPopup: false
+            showPopup: false,
+            isCriticalVendor: false,
+            Technology: [],
+            technologyList: []
         }
     }
 
@@ -48,8 +52,15 @@ class AddVendorDrawer extends Component {
     * @description called before render the component
     */
     UNSAFE_componentWillMount() {
+        const { initialConfiguration } = this.props
         if (!this.props.isViewMode) {
             this.props.getVendorTypesSelectList(() => { })
+            if (initialConfiguration?.IsCriticalVendorConfigured) {
+                this.props.getCostingSpecificTechnology(loggedInUserId(), (res) => {
+                    let list = res?.data?.SelectList?.filter(element => element?.Value !== '0')
+                    this.setState({ technologyList: list })
+                })
+            }
         }
         if (!(this.props.isEditFlag || this.props.isViewMode)) {
             this.props.getVendorPlantSelectList(() => { })
@@ -167,7 +178,7 @@ class AddVendorDrawer extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList, IsVendor } = this.props;
+        const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList, IsVendor, costingSpecifiTechnology } = this.props;
         const temp = [];
         if (label === 'country') {
             countryList && countryList.map(item => {
@@ -225,6 +236,18 @@ class AddVendorDrawer extends Component {
             });
             return temp;
         }
+        if (label === 'technology') {
+            costingSpecifiTechnology &&
+                costingSpecifiTechnology.map((item) => {
+                    if (item.Value === '0') {
+                        temp.push({ Text: "Select All", Value: item.Value })
+                    } else {
+                        temp.push({ Text: item.Text, Value: item.Value })
+                    }
+                    return null
+                })
+            return temp
+        }
     }
 
     /**
@@ -259,6 +282,8 @@ class AddVendorDrawer extends Component {
                             country: Data.Country !== undefined ? { label: Data.Country, value: Data.CountryId } : [],
                             state: Data.State !== undefined ? { label: Data.State, value: Data.StateId } : [],
                             city: Data.City !== undefined ? { label: Data.City, value: Data.CityId } : [],
+                            Technology: Data.VendorTechnologies ? Data.VendorTechnologies : [],
+                            isCriticalVendor: Data.IsCriticalVendor ? Data.IsCriticalVendor : false,
                         }, () => this.setState({ isLoader: false }))
                     }, 1000)
 
@@ -309,7 +334,7 @@ class AddVendorDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck } = this.state;
+        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck, isCriticalVendor, Technology } = this.state;
         const { supplierData } = this.props;
 
 
@@ -332,7 +357,13 @@ class AddVendorDrawer extends Component {
             SelectedVendorPlantIds.push(item.Value)
             return null;
         })
-
+        let technologyList = []
+        Technology && Technology?.map(item => {
+            let obj = {}
+            obj.TechnologyName = item.Text
+            obj.TechnologyId = item.Value
+            technologyList.push(obj)
+        })
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
 
@@ -358,6 +389,8 @@ class AddVendorDrawer extends Component {
                 Extension: values.Extension,
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
+                IsCriticalVendor: isCriticalVendor,
+                VendorTechnologies: technologyList
             }
             this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
@@ -385,6 +418,8 @@ class AddVendorDrawer extends Component {
                 Extension: values.Extension,
                 CityId: city.value,
                 VendorId: VendorId,
+                IsCriticalVendor: isCriticalVendor,
+                VendorTechnologies: technologyList
             }
             this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
@@ -398,6 +433,18 @@ class AddVendorDrawer extends Component {
         }
     }, 500)
 
+    criticalityHandleChange = () => {
+        this.setState({ isCriticalVendor: !this.state.isCriticalVendor })
+    }
+
+    handleTechnologyChange = (newValue) => {
+        const { technologyList } = this.state
+        if (newValue?.filter(element => element?.Value === '0')?.length > 0) {
+            this.setState({ Technology: technologyList })
+        } else {
+            this.setState({ Technology: newValue })
+        }
+    }
 
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
@@ -409,8 +456,8 @@ class AddVendorDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
-        const { country, isOpenVendorPlant, isViewMode, setDisable } = this.state;
+        const { handleSubmit, isEditFlag, initialConfiguration } = this.props;
+        const { country, isOpenVendorPlant, isViewMode, setDisable, isCriticalVendor } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -649,7 +696,44 @@ class AddVendorDrawer extends Component {
                                         />
                                     </Col>
                                 </Row>
-
+                                {initialConfiguration?.IsCriticalVendorConfigured && <Row className="pl-3">
+                                    <Col md="6">
+                                        <label
+                                            className={`custom-checkbox`}
+                                            onChange={this.criticalityHandleChange}
+                                        >
+                                            Criticality
+                                            <input
+                                                type="checkbox"
+                                                checked={isCriticalVendor}
+                                                disabled={isViewMode || isEditFlag ? true : false}
+                                            />
+                                            <span
+                                                className=" before-box"
+                                                checked={isCriticalVendor}
+                                                onChange={this.criticalityHandleChange}
+                                            />
+                                        </label>
+                                    </Col>
+                                    {isCriticalVendor && <Col md="6">
+                                        <Field
+                                            label="Technology"
+                                            name="Technology"
+                                            placeholder={"Select"}
+                                            selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
+                                            options={this.renderListing("technology")}
+                                            validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                            required={true}
+                                            selectionChanged={this.handleTechnologyChange}
+                                            optionValue={(option) => option.Value}
+                                            optionLabel={(option) => option.Text}
+                                            component={renderMultiSelectField}
+                                            mendatory={true}
+                                            disabled={isEditFlag}
+                                            className="multiselect-with-border"
+                                        />
+                                    </Col>}
+                                </Row>}
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
                                     <div className="col-sm-12 text-right px-3">
@@ -695,9 +779,11 @@ class AddVendorDrawer extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ comman, supplier }) {
+function mapStateToProps({ comman, supplier, costing, auth }) {
     const { countryList, stateList, cityList, plantList, vendorPlantSelectList, } = comman;
     const { supplierData, vendorTypeList } = supplier;
+    const { costingSpecifiTechnology } = costing
+    const { initialConfiguration } = auth;
     let initialValues = {};
     if (supplierData && supplierData !== undefined) {
         initialValues = {
@@ -714,7 +800,7 @@ function mapStateToProps({ comman, supplier }) {
     }
     return {
         countryList, stateList, cityList, plantList, initialValues, supplierData, vendorTypeList,
-        vendorPlantSelectList,
+        vendorPlantSelectList, costingSpecifiTechnology, initialConfiguration
     }
 }
 
@@ -736,6 +822,7 @@ export default connect(mapStateToProps, {
     getCityByCountry,
     getVendorTypesSelectList,
     getVendorPlantSelectList,
+    getCostingSpecificTechnology
 })(reduxForm({
     form: 'AddVendorDrawer',
     enableReinitialize: true,
