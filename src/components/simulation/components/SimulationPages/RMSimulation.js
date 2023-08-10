@@ -36,7 +36,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMSimulation(props) {
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
-    console.log('list: ', list);
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -600,11 +599,11 @@ function RMSimulation(props) {
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >
-                                                <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field="BasicRate" editable='false' headerName="Existing" colId="BasicRate"></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' editable={!isImpactedMaster} headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
-                                                <AgGridColumn width={120} field="ScrapRate" editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId="ScrapRate" ></AgGridColumn>
+                                                <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "BasicRatePerUOM"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "BasicRatePerUOM"} ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" editable='false' cellRenderer={'freightCostFormatter'} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Freight Cost (Currency)" : "Freight Cost (INR)"}></AgGridColumn>
