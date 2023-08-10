@@ -43,6 +43,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage';
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -1401,10 +1402,12 @@ class AddRMDomestic extends Component {
                                 />
                               </div>
                               {(!isEditFlag) && (
-                                <div
+                                <Button
+                                  id="addRMDomestic_RMToggle"
                                   onClick={this.rmToggler}
-                                  className={"plus-icon-square  right"}
-                                ></div>
+                                  className={"right"}
+                                  variant="plus-icon-square"
+                                />
                               )}
                             </div>
                           </Col>
@@ -1593,10 +1596,14 @@ class AddRMDomestic extends Component {
                                     />
                                   </div>
                                   {!isEditFlag && (
-                                    <div
+
+                                    <Button
+                                      id="addRMDomestic_vendorToggle"
                                       onClick={this.vendorToggler}
-                                      className={"plus-icon-square  right"}
-                                    ></div>
+                                      className={"right"}
+                                      variant="plus-icon-square"
+                                    />
+
                                   )}
                                 </div>
                                 {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
@@ -1962,34 +1969,38 @@ class AddRMDomestic extends Component {
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                          <button
-                            type={"button"}
-                            className="mr15 cancel-btn"
-                            onClick={this.cancelHandler}
+                          <Button
+                            id="addRMDomestic_cancel"
+                            className="mr-2"
+                            variant={"cancel-btn"}
                             disabled={setDisable}
-                          >
-                            <div className={"cancel-icon"}></div>
-                            {"Cancel"}
-                          </button>
+                            onClick={this.cancelHandler}
+                            icon={"cancel-icon"}
+                            buttonName={"Cancel"}
+                          />
                           {!isViewFlag && <>
                             {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                              <button type="submit"
-                                class="user-btn approval-btn save-btn mr5"
-                                onClick={() => scroll.scrollToTop()}
-                                disabled={isViewFlag || setDisable || disableSendForApproval}
-                              >
-                                <div className="send-for-approval"></div>
-                                {'Send For Approval'}
-                              </button>
-                              :
-                              <button
+
+
+
+                              <Button
+                                id="addRMDomestic_sendForApproval"
                                 type="submit"
-                                className="user-btn mr5 save-btn"
+                                className="approval-btn mr5"
                                 disabled={isViewFlag || setDisable || disableSendForApproval}
-                              >
-                                <div className={"save-icon"}></div>
-                                {isEditFlag ? "Update" : "Save"}
-                              </button>
+                                onClick={() => scroll.scrollToTop()}
+                                icon={"send-for-approval"}
+                                buttonName={"Send For Approval"}
+                              />
+                              :
+                              <Button
+                                id="addRMDomestic_updateSave"
+                                type="submit"
+                                className="mr5"
+                                disabled={isViewFlag || setDisable || disableSendForApproval}
+                                icon={"save-icon"}
+                                buttonName={isEditFlag ? "Update" : "Save"}
+                              />
                             }
                           </>}
                         </div>
