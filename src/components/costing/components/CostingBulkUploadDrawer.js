@@ -7,8 +7,8 @@ import Toaster from '../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import Dropzone from 'react-dropzone-uploader'
 import { bulkUploadCosting, plasticBulkUploadCosting, machiningBulkUploadCosting, corrugatedBoxBulkUploadCosting, assemblyBulkUploadCosting, wiringHarnessBulkUploadCosting } from '../actions/CostWorking'
-import { TechnologyDropdownBulkUpload } from '../../../config/masterData'
-import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS } from '../../../config/constants';
+import { CostingBulkUploadTechnologyDropdown, TechnologyDropdownBulkUpload } from '../../../config/masterData'
+import { ASSEMBLY, CORRUGATED_BOX, MACHINING_GROUP_BULKUPLOAD, PLASTIC_GROUP_BULKUPLOAD, SHEETMETAL_GROUP_BULKUPLOAD, FILE_URL, WIRINGHARNESS, SHEET_METAL, SHEETMETAL } from '../../../config/constants';
 import { getCostingTechnologySelectList, } from '../actions/Costing'
 import { searchableSelect } from '../../layout/FormInputs';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -26,7 +26,7 @@ class CostingBulkUploadDrawer extends Component {
             fileName: '',
             Technology: [],
             attachmentLoader: false,
-            costingVersion: 'OLD'
+            costingVersion: 'V1'
         }
     }
 
@@ -170,6 +170,7 @@ class CostingBulkUploadDrawer extends Component {
 
         switch (Number(this.state.Technology.value)) {
             case SHEETMETAL_GROUP_BULKUPLOAD:
+            case SHEETMETAL:
                 this.props.bulkUploadCosting(data, this.state.costingVersion, (res) => {
                     if (res.status === 400) {
                         let Data = res.data.Data
@@ -268,7 +269,7 @@ class CostingBulkUploadDrawer extends Component {
 
     setCostingVersion = (value) => {
 
-        this.setState({ costingVersion: value })
+        this.setState({ costingVersion: value, Technology: [] })
     }
 
     render() {
@@ -330,24 +331,34 @@ class CostingBulkUploadDrawer extends Component {
                                                     name="costingHead"
                                                     defaultChecked={true}
                                                     onClick={() =>
-                                                        this.setCostingVersion("OLD")
+                                                        this.setCostingVersion("V1")
                                                     }
                                                     disabled={false}
                                                 />{" "}
-                                                <span>Old Version</span>
+                                                <span>Version 1</span>
                                             </Label>
                                             <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
                                                     onClick={() =>
-                                                        this.setCostingVersion("NEW")
+                                                        this.setCostingVersion("V2")
                                                     }
                                                     disabled={false}
                                                 />{" "}
-                                                <span>New Version</span>
+                                                <span>Version 2</span>
                                             </Label>
-
+                                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                                                <input
+                                                    type="radio"
+                                                    name="costingHead"
+                                                    onClick={() =>
+                                                        this.setCostingVersion("V3")
+                                                    }
+                                                    disabled={false}
+                                                />{" "}
+                                                <span>Version 3</span>
+                                            </Label>
                                         </Col>
                                     </Row>
 
@@ -359,7 +370,7 @@ class CostingBulkUploadDrawer extends Component {
                                             label="Technology"
                                             component={searchableSelect}
                                             placeholder={"Select"}
-                                            options={this.renderListing("TechnologyMixed")}
+                                            options={this.state.costingVersion === 'V3' ? CostingBulkUploadTechnologyDropdown : this.renderListing("TechnologyMixed")}
                                             handleChangeDescription={this.handleTechnologyChange}
                                             valueDescription={this.state.Technology}
                                         />

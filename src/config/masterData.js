@@ -7246,3 +7246,6 @@ export const statusDropdownforNfr = [
     { label: 'UnderApproval', value: 21 },
     { label: 'ExternalReject', value: 27 },
 ];
+export const CostingBulkUploadTechnologyDropdown = [
+    { label: "Sheet Metal", value: "7" },
+]
