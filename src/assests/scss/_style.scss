@@ -2377,14 +2377,10 @@ input:disabled {
 }
 
 .add-min-height {
-  min-height: calc(100vh - 303px);
-
-  @media screen and (max-width: $middleDesktop) {
-    min-height: calc(100vh - 253px);
-  }
+  min-height: calc(100vh - 263px);
 
   &.mb-3.sm-edit-page {
-    min-height: calc(100vh - 374px);
+    min-height: calc(100vh - 332px);
   }
 }
 
@@ -3288,7 +3284,7 @@ button:disabled,
   thead {
     th {
       color: #3D4465;
-      font-weight: normal;
+      font-weight: 500;
     }
   }
 }
@@ -6221,7 +6217,6 @@ body {
       .Error,
       .Pushed,
       .POUpdated,
-      .PO.Updated,
       .Draft,
       .Cancelled,
       .Under.Approval,
@@ -6937,7 +6932,7 @@ body {
   }
 }
 
-@media (max-width:$middleDesktop ) {
+@media (max-width:$miniDesktop) {
   .simulation-main {
     .filter-block {
       .flex-fills:last-child {
@@ -7671,9 +7666,10 @@ body {
 //END Radio hook custom css//
 
 .pdf-loader {
-  top: 0;
-  left: -28px;
-  right: -15px;
+  top: 0 !important;
+  left: -28px !important;
+  right: -15px !important;
+  background-color: #ffffff !important;
 
   .loaderinner {
     position: fixed !important;
@@ -8204,42 +8200,14 @@ body {
       }
     }
   }
-}
 
-.simple-pdf {
-  .table-responsive {
-    min-width: 100% !important;
-    overflow: unset !important;
-
-    .table-responsive {
-      overflow: unset !important;
-    }
-
-    table {
-      min-width: 100%;
-    }
-
-    .approval-summary-headers,
-    .header-name,
-    .header-name-left {
-      background-color: #ececec !important;
-    }
-  }
-
-  .background-light-blue {
-    background: #9fcffc !important;
-
-    th {
-      word-spacing: 1px;
-
-      print-color-adjust: exact;
-      -webkit-print-color-adjust: exact;
-    }
-
+  .forging-cal-table {
     td {
-      padding-right: 20px;
-      print-color-adjust: exact;
-      -webkit-print-color-adjust: exact;
+      font-weight: normal;
+    }
+
+    .table-footer td {
+      background-color: #E0E9F5 !important;
     }
   }
 }
@@ -8374,15 +8342,18 @@ body {
 // <-------END simulation token dropdown css------>
 
 .simulation-labels {
-  display: flex;
-  align-items: center;
-
   .flex-fills.label {
     min-width: fit-content !important;
   }
+
+  .w-72 {
+    .flex-fills.label {
+      min-width: 72px !important;
+    }
+  }
 }
 
-@media screen and (min-width:$miniDesktop) {
+@media screen and (min-width:$middleDesktop) {
   .freight-drawer {
     width: 485px !important;
   }
