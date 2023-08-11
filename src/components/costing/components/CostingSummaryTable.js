@@ -1042,7 +1042,7 @@ const CostingSummaryTable = (props) => {
         case 'Part Cost + CC':
           return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage}`;
         case 'BOP + CC':
-          return `${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}`;
+          return `${data?.profitOn.profitBOPPercentage} + ${data?.profitOn.profitCCPercentage}`;
         case 'RM + BOP':
         case 'Part Cost + BOP':
           return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitBOPPercentage}`;
