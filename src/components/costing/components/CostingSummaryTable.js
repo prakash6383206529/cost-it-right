@@ -124,7 +124,6 @@ const CostingSummaryTable = (props) => {
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [viewBomPartId, setViewBomPartId] = useState("");
   const [dataSelected, setDataSelected] = useState([]);
-  const [DownloadAccessibility, setDownloadAccessibility] = useState(false);
   const [IsNccCosting, setIsNccCosting] = useState(false);
   const [isLogisticsTechnology, setIsLogisticsTechnology] = useState(false);
   const [openNpvDrawer, setNpvDrawer] = useState(false);
@@ -1487,15 +1486,12 @@ const CostingSummaryTable = (props) => {
 
             {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end'>
-                {
-                  DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
-                    <div className='d-flex justify-content-end'>
-                      <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
-                        {onBtExport()}
-                      </ExcelFile>
-                      {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
-                    </div>
-                }
+                <div className='d-flex justify-content-end'>
+                  <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                    {onBtExport()}
+                  </ExcelFile>
+                  {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                </div>
                 {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
