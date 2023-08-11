@@ -2561,7 +2561,7 @@ function UserRegistration(props) {
                                         onAction: onActionSimulation,
                                       }}
                                     >
-                                      <AgGridColumn field="Technology" headerName="Technology" />
+                                      <AgGridColumn field="Technology" headerName="Head" />
                                       <AgGridColumn field="ApprovalType" headerName="Approval Type" />
                                       <AgGridColumn field="Level" headerName="Level" />
                                       <AgGridColumn field="Technology" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
