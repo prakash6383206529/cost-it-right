@@ -15,7 +15,7 @@ import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddVendorPlantDrawer from './AddVendorPlantDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { debounce } from 'lodash';
+import _, { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
@@ -178,6 +178,7 @@ class AddVendorDrawer extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
+        const { Technology } = this.state
         const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList, IsVendor, costingSpecifiTechnology } = this.props;
         const temp = [];
         if (label === 'country') {
@@ -239,10 +240,11 @@ class AddVendorDrawer extends Component {
         if (label === 'technology') {
             costingSpecifiTechnology &&
                 costingSpecifiTechnology.map((item) => {
-                    if (item.Value === '0') {
-                        temp.push({ Text: "Select All", Value: item.Value })
+                    if (item?.Value === '0') {
+                        temp.push({ Text: "Select All", Value: item?.Value })
+                    } else if (Technology?.some(item1 => item1?.Text === item?.Text && Number(item1?.Value) === Number(item?.Value))) {
                     } else {
-                        temp.push({ Text: item.Text, Value: item.Value })
+                        temp.push({ Text: item?.Text, Value: item?.Value })
                     }
                     return null
                 })
@@ -289,8 +291,8 @@ class AddVendorDrawer extends Component {
                             country: Data.Country !== undefined ? { label: Data.Country, value: Data.CountryId } : [],
                             state: Data.State !== undefined ? { label: Data.State, value: Data.StateId } : [],
                             city: Data.City !== undefined ? { label: Data.City, value: Data.CityId } : [],
-                            Technology: technologyList ? technologyList : [],
-                            isCriticalVendor: Data.IsCriticalVendor ? Data.IsCriticalVendor : false,
+                            Technology: technologyList,
+                            isCriticalVendor: Data.IsCriticalVendor,
                         }, () => this.setState({ isLoader: false }))
                     }, 1000)
 
@@ -377,7 +379,7 @@ class AddVendorDrawer extends Component {
             if (DropdownChanged && DataToCheck.Email === values.Email && DataToCheck.PhoneNumber === values.PhoneNumber &&
                 DataToCheck.Extension === values.Extension && DataToCheck.MobileNumber === values.MobileNumber &&
                 DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
-                DataToCheck.AddressLine2 === values.AddressLine2) {
+                DataToCheck.AddressLine2 === values.AddressLine2 && DataToCheck.IsCriticalVendor === isCriticalVendor) {
 
                 this.toggleDrawer('', '', 'cancel')
                 return false
@@ -397,7 +399,7 @@ class AddVendorDrawer extends Component {
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
                 IsCriticalVendor: isCriticalVendor,
-                VendorTechnologies: technologyList
+                VendorTechnologies: isCriticalVendor ? technologyList : []
             }
             this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
@@ -446,6 +448,7 @@ class AddVendorDrawer extends Component {
 
     handleTechnologyChange = (newValue) => {
         const { technologyList } = this.state
+        this.setState({ DropdownChanged: false })
         if (newValue?.filter(element => element?.Value === '0')?.length > 0) {
             this.setState({ Technology: technologyList })
         } else {
