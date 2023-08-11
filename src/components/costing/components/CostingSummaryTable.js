@@ -1009,6 +1009,8 @@ const CostingSummaryTable = (props) => {
         case 'RM + BOP':
         case 'Part Cost + BOP':
           return `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadBOPPercentage}`;
+        case 'BOP + CC':
+          return `${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}`;
         case 'RM + CC + BOP':
         case 'Part Cost + CC + BOP':
           if (data?.overheadOn.overheadRMPercentage !== '-') {
@@ -1039,6 +1041,8 @@ const CostingSummaryTable = (props) => {
         case 'RM + CC':
         case 'Part Cost + CC':
           return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage}`;
+        case 'BOP + CC':
+          return `${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}`;
         case 'RM + BOP':
         case 'Part Cost + BOP':
           return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitBOPPercentage}`;
