@@ -68,7 +68,15 @@ export const BOP_IMPORT_TEMPLATE = [
     { label: 'Net Landed Total (INR)', value: 'NetLandedCostCurrency', },
     { label: 'Effective Date', value: 'EffectiveDate', }
 ]
-export const MACHINE_OPERATION_TEMPLATE = [
+export const MACHINE_TEMPLATE = [
+    { label: 'Machine No', value: 'MasterCode', },
+    { label: 'Process Name', value: 'ProcessName', },
+    { label: 'UOM', value: 'UnitOfMeasurement', },
+    { label: 'Net Landed (Total)', value: 'NetLandedCost', },
+    { label: 'Effective Date', value: 'EffectiveDate', }
+]
+export const OPERATION_TEMPLATE = [
+    { label: 'Operation Code', value: 'MasterCode', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
     { label: 'Net Landed (Total)', value: 'NetLandedCost', },
     { label: 'Effective Date', value: 'EffectiveDate', }
