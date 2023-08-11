@@ -7666,9 +7666,10 @@ body {
 //END Radio hook custom css//
 
 .pdf-loader {
-  top: 0;
-  left: -28px;
-  right: -15px;
+  top: 0 !important;
+  left: -28px !important;
+  right: -15px !important;
+  background-color: #ffffff !important;
 
   .loaderinner {
     position: fixed !important;
