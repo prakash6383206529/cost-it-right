@@ -2293,7 +2293,7 @@ function CostingDetails(props) {
                                                   message: "Percentage should not be greater then 100"
                                                 }
                                               }}
-                                              defaultValue={item.ShareOfBusinessPercent}
+                                              defaultValue={item.ShareOfBusinessPercent ?? 0}
                                               className=""
                                               customClassName={"withBorder"}
                                               handleChange={(e) => {
