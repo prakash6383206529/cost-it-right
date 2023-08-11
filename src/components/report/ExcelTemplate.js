@@ -74,6 +74,7 @@ export const BOP_IMPORT_TEMPLATE = [
 ]
 export const MACHINE_TEMPLATE = [
     { label: 'Machine No', value: 'MasterCode', },
+    { label: 'Process Name', value: 'ProcessName', },
     { label: 'UOM', value: 'UnitOfMeasurement', },
     { label: 'Net Landed (Total)', value: 'NetLandedCost', },
     { label: 'Effective Date', value: 'EffectiveDate', }
