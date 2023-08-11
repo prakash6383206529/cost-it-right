@@ -322,6 +322,7 @@ function AnalyticsDrawer(props) {
                                                             cellClassRules={{
                                                                 'cell-span': "true",
                                                             }}></AgGridColumn>} */}
+                                                            {ModeId === 4 && <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {(ModeId === 1 || ModeId === 2) && <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}
