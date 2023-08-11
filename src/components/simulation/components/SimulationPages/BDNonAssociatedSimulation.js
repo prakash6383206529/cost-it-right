@@ -104,7 +104,6 @@ function BDNonAssociatedSimulation(props) {
         // }
 
         let tempArr = []
-        console.log('list: ', list);
         list && list.map(item => {
             if ((item?.Percentage !== '') && (checkForNull(item?.Percentage) !== 0)) {
                 let tempObj = {}
@@ -224,18 +223,21 @@ function BDNonAssociatedSimulation(props) {
     }
 
     const oldBasicRateFormatter = (props) => {
-
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
         return (
             <>
-                {
-                    <span>{cell && Number(row.BasicRate)} </span>
-                }
+                {<span>{cell && Number(row.BasicRate)} </span>}
 
+            </>
+        )
+    }
+    const newBasicRateFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {<span>{cell && Number(row.NewBasicRate)} </span>}
             </>
         )
     }
@@ -277,7 +279,6 @@ function BDNonAssociatedSimulation(props) {
     * @description CHECK FOR ENTER NUMBER IN CELL
     */
     const beforeSaveCell = (props, index = '', type = '', basicRate = '') => {
-        console.log('props: ', props);
         const cellValue = props
         if (Number.isInteger(Number(cellValue)) && /^\+?(0|[1-9]\d*)$/.test(cellValue) && cellValue.toString().replace(/\s/g, '').length) {
             if (cellValue.length > 8) {
@@ -286,7 +287,6 @@ function BDNonAssociatedSimulation(props) {
                     list[index].Percentage = 0
                 } else if (type === 'BasicRate') {
                     list[index].NewBasicRate = basicRate
-
                 }
                 return false
             }
@@ -297,7 +297,6 @@ function BDNonAssociatedSimulation(props) {
                 list[index].Percentage = 0
             } else if (type === 'BasicRate') {
                 list[index].NewBasicRate = basicRate
-
             }
             return false
         }
@@ -312,12 +311,8 @@ function BDNonAssociatedSimulation(props) {
         let returnValue = ''
         if (!value) {
             returnValue = checkForDecimalAndNull(row.OldNetLandedCost)
-            console.log('returnValue: ', returnValue);
-
         } else {
-
             if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-
                 returnValue = checkForDecimalAndNull((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice);
             } else {
                 returnValue = checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)
@@ -478,7 +473,8 @@ function BDNonAssociatedSimulation(props) {
         revisedBasicRateHeader: revisedBasicRateHeader,
         percentageFormatter: percentageFormatter,
         ageValueGetter: ageValueGetter,
-        ageValueGetterPer: ageValueGetterPer
+        ageValueGetterPer: ageValueGetterPer,
+        newBasicRateFormatter: newBasicRateFormatter
     };
 
     const basicRatetooltipToggle = () => {
