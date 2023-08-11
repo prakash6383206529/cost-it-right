@@ -58,7 +58,7 @@ function AddToComparisonDrawer(props) {
   const [vendor, setVendor] = useState([]);
   const [plant, setPlant] = useState([]);
   const [customer, setCustomer] = useState([]);
-
+  const [sameCostingNumber, setSameCostingNumber] = useState([]);
   /* For vendor dropdown */
   const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
@@ -300,6 +300,10 @@ function AddToComparisonDrawer(props) {
    * @description Handling form submisson seting value
    */
   const onSubmit = (values) => {
+    if (isEditFlag && (CostingNumber === sameCostingNumber || viewCostingData.some(data => data.costingName === sameCostingNumber))) {
+      Toaster.warning('This costing is already present for comparison.')
+      return false
+    }
     setCostingDropdown([])
     partNo.isChanged = true
     dispatch(storePartNumber(partNo))
@@ -686,7 +690,9 @@ function AddToComparisonDrawer(props) {
     }),
     )
   }
-
+  const handleCostingVersionChange = (value) => {
+    setSameCostingNumber(value.label)
+  }
 
   /**
    * @method renderListing
@@ -1001,7 +1007,7 @@ function AddToComparisonDrawer(props) {
                     }
                     options={renderListing('costing')}
                     mandatory={true}
-                    handleChange={() => { }}
+                    handleChange={handleCostingVersionChange}
                     errors={errors.costings}
                     disabled={Object.keys(plant).length === 0 ? true : false}
                   />
