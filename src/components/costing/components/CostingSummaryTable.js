@@ -1805,7 +1805,7 @@ const CostingSummaryTable = (props) => {
                                 storeSummary={props?.storeSummary ? true : false}
                               /></th></tr>}
 
-                          <tr className={highlighter("netRM", "highlighter")}>
+                          <tr className={highlighter("netRM", "main-row")}>
                             <th>Cost/Assembly {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
