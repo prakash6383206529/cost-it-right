@@ -1055,8 +1055,10 @@ export function bulkUploadCosting(data, costingVersion, callback) {
 
   return (dispatch) => {
     let request;
-    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+    if (costingVersion === 'V2') {  // BULK UPLOAD NEW COSTING
       request = axios.post(API.uploadCosting, data, config());
+    } else if (costingVersion === 'V3') { //  BULK UPLOAD COSTING FOR SHEET METAL
+      request = axios.post(API.uploadSheetMetal, data, config());
     } else {  // BULK UPLOAD OLD COSTING
       request = axios.post(API.uploadOldCosting, data, config());
     }
@@ -1208,7 +1210,7 @@ export function plasticBulkUploadCosting(data, costingVersion, callback) {
   return (dispatch) => {
 
     let request;
-    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+    if (costingVersion === 'V2') {  // BULK UPLOAD NEW COSTING
       request = axios.post(API.uploadPlasticCosting, data, config());
     } else {  // BULK UPLOAD OLD COSTING
       request = axios.post(API.uploadPlasticOldCosting, data, config());
@@ -1232,7 +1234,7 @@ export function machiningBulkUploadCosting(data, costingVersion, callback) {
   return (dispatch) => {
 
     let request;
-    if (costingVersion === 'NEW') {  // BULK UPLOAD NEW COSTING
+    if (costingVersion === 'V2') {  // BULK UPLOAD NEW COSTING
       request = axios.post(API.uploadMachiningCosting, data, config());
     } else {  // BULK UPLOAD OLD COSTING
       request = axios.post(API.uploadMachiningOldCosting, data, config());
