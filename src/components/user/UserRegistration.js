@@ -1496,7 +1496,7 @@ function UserRegistration(props) {
       const isDepartmentUpdate = (registerUserData?.Departments[0]?.DepartmentId !== department[0]?.value) ? true : false;
       const isRoleUpdate = (registerUserData.RoleId !== role.value) ? true : false;
       let isPermissionUpdate = false;
-      let isTechnologyUpdate = false;
+      let isUpdateApiCall = false;
 
 
       if (JSON.stringify(Modules) === JSON.stringify(oldModules)) {
@@ -1505,21 +1505,17 @@ function UserRegistration(props) {
         isPermissionUpdate = true;
       }
 
-      if (JSON.stringify(TechnologyLevelGrid) === JSON.stringify(oldTechnologyLevelGrid)) {
-        isTechnologyUpdate = false;
+      if (JSON.stringify(masterLevelGrid) !== JSON.stringify(oldMasterLevelGrid) || JSON.stringify(HeadLevelGrid) !== JSON.stringify(oldHeadLevelGrid) || JSON.stringify(TechnologyLevelGrid) !== JSON.stringify(oldTechnologyLevelGrid)) {
+        isUpdateApiCall = true;
       } else {
-        isTechnologyUpdate = true;
+        isUpdateApiCall = false;
       }
 
-      //
-
-      if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isTechnologyUpdate) {
+      if (isDepartmentUpdate || isRoleUpdate || isPermissionUpdate || isUpdateApiCall) {
         setShowPopup(true)
         setUpdatedObj(updatedData)
 
       } else {
-
-
         if (props?.RFQUser || isRfqUser) {
           reset();
           dispatch(updateRfqUser(updatedData, (res) => {
@@ -2561,7 +2557,7 @@ function UserRegistration(props) {
                                         onAction: onActionSimulation,
                                       }}
                                     >
-                                      <AgGridColumn field="Technology" headerName="Technology" />
+                                      <AgGridColumn field="Technology" headerName="Head" />
                                       <AgGridColumn field="ApprovalType" headerName="Approval Type" />
                                       <AgGridColumn field="Level" headerName="Level" />
                                       <AgGridColumn field="Technology" headerName='Actions' type="rightAligned" cellRenderer={'onAction'} ></AgGridColumn>
