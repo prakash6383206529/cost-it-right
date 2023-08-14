@@ -188,17 +188,6 @@ function BDNonAssociatedSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
     }
-    const newBasicRateFormatter = (props) => {
-        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let returnValue = ''
-        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
-            returnValue = row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)
-        } else {
-            returnValue = row.NewBasicRate
-        }
-        return returnValue
-
-    }
 
     const percentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -464,7 +453,6 @@ function BDNonAssociatedSimulation(props) {
         OldcostFormatter: OldcostFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
-        newBasicRateFormatter: newBasicRateFormatter,
         cellChange: cellChange,
         oldBasicRateFormatter: oldBasicRateFormatter,
         vendorFormatter: vendorFormatter,
