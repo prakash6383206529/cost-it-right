@@ -14,7 +14,7 @@ import HeaderTitle from '../../common/HeaderTitle';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { getConfigurationKey, getCurrencySymbol } from '../../../helper';
 import ReactExport from 'react-export-excel';
-import { BOP_DOMESTIC_TEMPLATE, BOP_IMPORT_TEMPLATE, MACHINE_OPERATION_TEMPLATE, RM_DOMESTIC_TEMPLATE, RM_IMPORT_TEMPLATE } from '../../report/ExcelTemplate';
+import { BOP_DOMESTIC_TEMPLATE, BOP_IMPORT_TEMPLATE, MACHINE_OPERATION_TEMPLATE, MACHINE_TEMPLATE, OPERATION_TEMPLATE, RM_DOMESTIC_TEMPLATE, RM_IMPORT_TEMPLATE } from '../../report/ExcelTemplate';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -220,8 +220,9 @@ function AnalyticsDrawer(props) {
             case 2:
                 return returnExcelColumn(importEntry ? BOP_IMPORT_TEMPLATE : BOP_DOMESTIC_TEMPLATE, gridData)
             case 3:
+                return returnExcelColumn(OPERATION_TEMPLATE, gridData)
             case 4:
-                return returnExcelColumn(MACHINE_OPERATION_TEMPLATE, gridData)
+                return returnExcelColumn(MACHINE_TEMPLATE, gridData)
             default:
                 return null
         }
@@ -321,6 +322,7 @@ function AnalyticsDrawer(props) {
                                                             cellClassRules={{
                                                                 'cell-span': "true",
                                                             }}></AgGridColumn>} */}
+                                                            {ModeId === 4 && <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={hyphenFormatter} ></AgGridColumn>}
                                                             {(ModeId === 1 || ModeId === 2) && <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {ModeId === 1 && <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer={hyphenFormatter}></AgGridColumn>}
                                                             {ModeId === 1 && <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer={hyphenFormatter} ></AgGridColumn>}

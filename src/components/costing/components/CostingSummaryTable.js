@@ -124,7 +124,6 @@ const CostingSummaryTable = (props) => {
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
   const [viewBomPartId, setViewBomPartId] = useState("");
   const [dataSelected, setDataSelected] = useState([]);
-  const [DownloadAccessibility, setDownloadAccessibility] = useState(false);
   const [IsNccCosting, setIsNccCosting] = useState(false);
   const [isLogisticsTechnology, setIsLogisticsTechnology] = useState(false);
   const [openNpvDrawer, setNpvDrawer] = useState(false);
@@ -992,7 +991,76 @@ const CostingSummaryTable = (props) => {
     }
   }
 
-
+  const getOverheadPercentage = (data) => {
+    if (data?.bestCost === true) {
+      return ' ';
+    } else if (data?.CostingHeading !== VARIANCE) {
+      const overheadTitle = data?.overheadOn.overheadTitle;
+      switch (overheadTitle) {
+        case 'RM':
+          return data?.overheadOn.overheadRMPercentage;
+        case 'BOP':
+          return data?.overheadOn.overheadBOPPercentage;
+        case 'CC':
+          return data?.overheadOn.overheadCCPercentage;
+        case 'RM + CC':
+        case 'Part Cost + CC':
+          return `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage}`;
+        case 'RM + BOP':
+        case 'Part Cost + BOP':
+          return `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadBOPPercentage}`;
+        case 'BOP + CC':
+          return `${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}`;
+        case 'RM + CC + BOP':
+        case 'Part Cost + CC + BOP':
+          if (data?.overheadOn.overheadRMPercentage !== '-') {
+            return `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage} + ${data?.overheadOn.overheadBOPPercentage}`;
+          } else {
+            return data?.overheadOn.overheadPercentage;
+          }
+        default:
+          return data?.overheadOn.overheadPercentage;
+      }
+    }
+    else {
+      return ' ';
+    }
+  };
+  const getProfitPercentage = (data) => {
+    if (data?.bestCost === true) {
+      return ' ';
+    } else if (data?.CostingHeading !== VARIANCE) {
+      const profitTitle = data?.profitOn.profitTitle;
+      switch (profitTitle) {
+        case 'RM':
+          return data?.profitOn.profitRMPercentage;
+        case 'BOP':
+          return data?.profitOn.profitBOPPercentage;
+        case 'CC':
+          return data?.profitOn.profitCCPercentage;
+        case 'RM + CC':
+        case 'Part Cost + CC':
+          return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage}`;
+        case 'BOP + CC':
+          return `${data?.profitOn.profitBOPPercentage} + ${data?.profitOn.profitCCPercentage}`;
+        case 'RM + BOP':
+        case 'Part Cost + BOP':
+          return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitBOPPercentage}`;
+        case 'RM + CC + BOP':
+        case 'Part Cost + CC + BOP':
+          if (data?.profitOn.profitRMPercentage !== '-') {
+            return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage} + ${data?.profitOn.profitBOPPercentage}`;
+          } else {
+            return data?.profitOn.profitPercentage;
+          }
+        default:
+          return data?.profitOn.profitPercentage;
+      }
+    }
+    else {
+      return ' ';
+    }
+  };
   const onBtExport = () => {
     function checkAssembly(obj) {
       if (obj.IsAssemblyCosting) {
@@ -1070,8 +1138,8 @@ const CostingSummaryTable = (props) => {
       item.otherDiscountValuePercent = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].Value : ''
       item.otherDiscountCost = Array.isArray(item?.CostingPartDetails?.DiscountCostDetails) && item?.CostingPartDetails?.DiscountCostDetails?.length > 0 ? item?.CostingPartDetails?.DiscountCostDetails[0].NetCost : ''
       item.currencyTitle = item.currency && item?.currency?.currencyTitle
-      item.overHeadPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? (item?.overheadOn.overheadTitle === 'RM' ? item?.overheadOn.overheadRMPercentage : item?.overheadOn.overheadTitle === 'BOP' ? item?.overheadOn.overheadBOPPercentage : item?.overheadOn.overheadTitle === 'CC' ? item?.overheadOn.overheadCCPercentage : item?.overheadOn.overheadTitle === 'RM + CC + BOP' && item?.overheadOn.overheadRMPercentage !== "-" ? `${item?.overheadOn.overheadRMPercentage} + ${item?.overheadOn.overheadCCPercentage} + ${item?.overheadOn.overheadBOPPercentage}` : item?.overheadOn.overheadPercentage) : " "
-      item.profitPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? (item?.profitOn.profitTitle === 'RM' ? item?.profitOn.profitRMPercentage : item?.profitOn.profitTitle === 'BOP' ? item?.profitOn.profitBOPPercentage : item?.profitOn.profitTitle === 'CC' ? item?.profitOn.profitCCPercentage : item?.profitOn.profitTitle === 'RM + CC + BOP' && item?.profitOn.profitRMPercentage !== "-" ? `${item?.profitOn.profitRMPercentage} + ${item?.profitOn.profitCCPercentage} + ${item?.profitOn.profitBOPPercentage}` : item?.profitOn.profitPercentage) : " "
+      item.overHeadPercent = getOverheadPercentage(item)
+      item.profitPercent = getProfitPercentage(item)
       item.rejectionPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.rejectionOn.rejectionTitle === 'Fixed' ? '-' : item?.rejectionOn.rejectionPercentage : '')
       item.iccPercent = (item?.bestCost === true) ? ' ' : (item?.CostingHeading !== VARIANCE ? item?.iccOn.iccTitle === 'Fixed' ? '-' : item?.iccOn.iccPercentage : '')
       item.paymentPercent = (item?.bestCost === true) ? ' ' : item?.CostingHeading !== VARIANCE ? item?.paymentTerms.paymentTitle === 'Fixed' ? '-' : item?.paymentTerms.paymentPercentage : ''
@@ -1422,15 +1490,12 @@ const CostingSummaryTable = (props) => {
 
             {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end'>
-                {
-                  DownloadAccessibility ? <LoaderCustom customClass="pdf-loader" /> :
-                    <div className='d-flex justify-content-end'>
-                      <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
-                        {onBtExport()}
-                      </ExcelFile>
-                      {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
-                    </div>
-                }
+                <div className='d-flex justify-content-end'>
+                  <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                    {onBtExport()}
+                  </ExcelFile>
+                  {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
+                </div>
                 {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
@@ -1744,7 +1809,7 @@ const CostingSummaryTable = (props) => {
                                 storeSummary={props?.storeSummary ? true : false}
                               /></th></tr>}
 
-                          <tr className={highlighter("netRM", "highlighter")}>
+                          <tr className={highlighter("netRM", "main-row")}>
                             <th>Cost/Assembly {simulationDrawer && (Number(master) === Number(RMDOMESTIC) || Number(master) === Number(RMIMPORT)) && '(Old)'}</th>
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
@@ -2064,7 +2129,7 @@ const CostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.overheadOn.overheadTitle : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
-                                        {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? (data?.overheadOn.overheadTitle === 'RM' ? data?.overheadOn.overheadRMPercentage : data?.overheadOn.overheadTitle === 'BOP' ? data?.overheadOn.overheadBOPPercentage : data?.overheadOn.overheadTitle === 'CC' ? data?.overheadOn.overheadCCPercentage : data?.overheadOn.overheadTitle === 'RM + CC + BOP' && data?.overheadOn.overheadRMPercentage !== "-" ? `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage} + ${data?.overheadOn.overheadBOPPercentage}` : data?.overheadOn.overheadPercentage) : " "}
+                                        {getOverheadPercentage(data)}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.overheadOn.overheadValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}
@@ -2075,7 +2140,7 @@ const CostingSummaryTable = (props) => {
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.profitOn.profitTitle : '')}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
-                                        {(data?.bestCost === true) ? ' ' : data?.CostingHeading !== VARIANCE ? (data?.profitOn.profitTitle === 'RM' ? data?.profitOn.profitRMPercentage : data?.profitOn.profitTitle === 'BOP' ? data?.profitOn.profitBOPPercentage : data?.profitOn.profitTitle === 'CC' ? data?.profitOn.profitCCPercentage : data?.profitOn.profitTitle === 'RM + CC + BOP' && data?.profitOn.profitRMPercentage !== "-" ? `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage} + ${data?.profitOn.profitBOPPercentage}` : data?.profitOn.profitPercentage) : " "}
+                                        {getProfitPercentage(data)}
                                       </span>{' '}
                                       <span className="d-inline-block w-50 small-grey-text">
                                         {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? <span title={checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.profitOn.profitValue, initialConfiguration.NoOfDecimalForPrice)}</span> : '')}

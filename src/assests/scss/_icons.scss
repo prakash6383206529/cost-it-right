@@ -121,7 +121,45 @@
     margin-top: 5px;
     background-position: center right;
     cursor: pointer;
+
+    &:is(button) {
+        @include icons("../../images/add-icons.png", 24px, 22px, none);
+        margin-left: 10px;
+
+        &:focus {
+            box-shadow: none !important;
+            border: none !important;
+        }
+    }
+
+    &:is(div) {
+        margin-left: 0;
+    }
 }
+
+.blurPlus-icon-square {
+    @extend .plus-icon-square;
+    @include icons("../../images/bluradd.png", 43px, 35px, none);
+    margin-top: 8px;
+
+    &:is(button) {
+        @include icons("../../images/bluradd.png", 26px, 24px, none);
+        margin-left: 10px;
+
+        &:focus {
+            box-shadow: none !important;
+            border: none !important;
+        }
+    }
+
+    &:is(div) {
+        margin-left: 0;
+    }
+
+    background-position: center right;
+    pointer-events: none;
+}
+
 
 .calculate-icon {
     @include icons("../../images/tool.svg", 43px, 35px);
@@ -197,13 +235,6 @@
 
 .refresh-icon {
     @include icons("../../images/refresh_icon.svg");
-}
-
-.blurPlus-icon-square {
-    @include icons("../../images/bluradd.png", 43px, 35px, none);
-    margin-top: 8px;
-    background-position: center right;
-    pointer-events: none;
 }
 
 .download {

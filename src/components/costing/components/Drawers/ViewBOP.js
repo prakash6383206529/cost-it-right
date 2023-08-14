@@ -104,7 +104,7 @@ function ViewBOP(props) {
                 bopPHandlingCharges ?
                   <tr>
                     <td>{bopHandlingChargeType}</td>
-                    <td>{bopHandlingPercentage ? bopHandlingPercentage : 0}</td>
+                    <td>{bopHandlingChargeType === 'Fixed' ? '-' : bopHandlingPercentage ?? 0}</td>
                     <td>{checkForDecimalAndNull(bopPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
                   </tr> :
 
@@ -146,7 +146,7 @@ function ViewBOP(props) {
                       <tr key={index}>
                         {IsAssemblyCosting && <td>{item.PartNumber !== null || item.PartNumber !== "" ? item.PartNumber : ""}</td>}
                         <td>{item.BOPHandlingChargeType}</td>
-                        <td>{checkForDecimalAndNull(item.BOPHandlingPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
+                        <td>{checkForDecimalAndNull(item?.BOPHandlingChargeType === 'Fixed' ? '-' : item?.BOPHandlingPercentage, initialConfiguration.NoOfDecimalForPrice)}</td>
                         <td>{checkForDecimalAndNull(item.BOPHandlingCharges, initialConfiguration.NoOfDecimalForPrice)}</td>
                       </tr>
                     )
