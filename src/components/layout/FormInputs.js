@@ -245,7 +245,7 @@ export function renderMultiSelectField(field) {
   const specificIdContainer = `${form}_${input.name}_container`;
   const specificId = `${form}_${input.name}`;
   return (
-    <div className={className} id={specificIdContainer}>
+    <div className={className}>
       <label>
         {field.label}
         {field.mendatory && field.mendatory === true ? (
@@ -257,7 +257,8 @@ export function renderMultiSelectField(field) {
       <div className={inputbox} onClick={field.onTouched} title={field && field?.title ? field.title : field.disabled ? field.selection?.label : ''}>
         <Select
           {...input}
-          id={specificId}
+          id={specificIdContainer}
+          inputId={specificId}
           className={InputClassName}
           getOptionLabel={optionLabel}
           getOptionValue={optionValue}
@@ -710,7 +711,7 @@ export const searchableSelect = ({
   const specificIdContainer = `${form}_${input.name}_container`;
   const specificId = `${form}_${input.name}`;
   return (
-    <div className="w-100 form-group-searchable-select" id={specificIdContainer}>
+    <div className="w-100 form-group-searchable-select">
       {label && (
         <label>
           {label}
@@ -725,7 +726,8 @@ export const searchableSelect = ({
       >
         <Select
           {...input}
-          id={specificId}
+          id={specificIdContainer}
+          inputId={specificId}
           isClearable={false}
           options={options}
           onChange={handleChangeDescription}
