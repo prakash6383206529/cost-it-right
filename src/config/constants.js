@@ -2439,6 +2439,10 @@ export const SUPPLIER_CONFRIM = 'Supplier Confirmation'
 export const INVOICE_BACKUP = 'Invoice Backups'
 export const OTHER = 'Others'
 export const ATTACHMENTS = 'Attachments'
+export const ATTACHMENT = 'Attachment'
+export const FEASIBILITY = 'Feasibility'
+export const CAPACITY = 'Capacity'
+export const TIMELINE = 'Timeline'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1

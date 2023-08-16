@@ -2854,6 +2854,7 @@ const CostingSummaryTable = (props) => {
             index={viewAtttachments}
             closeDrawer={closeAttachmentDrawer}
             anchor={'right'}
+            isRfqCosting={props?.isRfqCosting}
           />
         )
       }
