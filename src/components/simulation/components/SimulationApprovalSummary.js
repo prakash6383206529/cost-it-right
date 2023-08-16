@@ -1160,7 +1160,7 @@ function SimulationApprovalSummary(props) {
                         </Row >
 
                         {/* FG wise Impact section start */}
-                        {isMasterAssociatedWithCosting && <>
+                        <>
                             <Row className='mt-2'>
                                 <Col md="10">
                                     <div className="left-border">{'FG wise Impact:'}</div>
@@ -1187,7 +1187,7 @@ function SimulationApprovalSummary(props) {
                                     fgWiseAccDisable={fgWiseAccDisable}
                                 />
                             }
-                        </>}
+                        </>
 
                         {/* FG wise Impact section end */}
 
