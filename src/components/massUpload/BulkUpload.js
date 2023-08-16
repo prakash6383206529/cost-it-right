@@ -6,7 +6,7 @@ import { checkForNull, getJsDateFromExcel, isDateFormatter } from "../../helper/
 import {
     bulkUploadRM, bulkfileUploadRM, bulkUploadRMSpecification,
 } from '../masters/actions/Material';
-import { bulkUploadMachineMoreZBC } from '../masters/actions/MachineMaster';
+import { bulkUploadMachine, bulkUploadMachineMoreZBC } from '../masters/actions/MachineMaster';
 import { fuelBulkUpload } from '../masters/actions/Fuel';
 import { labourBulkUpload } from '../masters/actions/Labour';
 import { vendorBulkUpload } from '../masters/actions/Supplier';
@@ -970,6 +970,7 @@ export default connect(mapStateToProps, {
     operationBulkUpload,
     labourBulkUpload,
     bulkUploadMachineMoreZBC,
+    bulkUploadMachine,
     partComponentBulkUpload,
     productComponentBulkUpload,
     bulkUploadBOP,
