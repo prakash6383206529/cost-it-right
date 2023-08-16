@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList } from './actions/rfq';
+import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -26,7 +26,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _, { debounce } from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
+import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, nfrDropdown, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
@@ -116,8 +116,9 @@ function AddRfq(props) {
         const { vbcVendorGrid } = props;
         dispatch(getPlantSelectListByType(ZBC, () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
-        dispatch(getNfrSelectList(() => { }))
-
+        if (initialConfiguration.IsNFRConfigured) {
+            dispatch(getNfrSelectList(() => { }))
+        }
         let tempArr = [];
         vbcVendorGrid && vbcVendorGrid.map(el => {
             tempArr.push(el.VendorId)
@@ -135,7 +136,7 @@ function AddRfq(props) {
 
     useEffect(() => {
         const filteredArray = selectedparts.filter((obj) => {
-            return obj.value !== deleteToggle?.rowData.PartId;
+            return obj.value !== deleteToggle?.rowData?.PartId;
         });
         setSelectedParts(filteredArray)
     }, [deleteToggle])
@@ -288,7 +289,6 @@ function AddRfq(props) {
                 setApiCallCounter(prevCounter => prevCounter - 1);
 
                 // Check if this is the last API call
-                console.log('apiCallCounter: ', apiCallCounter);
                 if (apiCallCounter === 0) {
                     setAttachmentLoader(false)
                     setIsDisable(false)
@@ -395,25 +395,6 @@ function AddRfq(props) {
             })
             return temp
         }
-
-        // if (label === 'partNo') {
-        //     partSelectListByTechnology && partSelectListByTechnology.map((item) => {
-        //         let isExist = false
-        //         if (item.Value === '0') { return false }
-        //         if (partList.length > 0) {            // EXISTING PART IN TABLE SHOULD NOT APPEAR IN DROPDOWN
-        //             partList.map((element) => {
-        //                 if (element.PartId === item.Value) {
-        //                     isExist = true
-        //                 }
-        //             })
-        //         }
-        //         if (!isExist) {
-        //             temp.push({ label: item.Text, value: item.Value })
-        //         }
-        //         return null
-        //     })
-        //     return temp
-        // }
 
         if (label === 'reporter') {
 
@@ -682,71 +663,122 @@ function AddRfq(props) {
 
 
     const addRowPartNoTable = () => {
+        let objTemp = {};
+        let arrTemp = [];
+
         if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
-            Toaster.warning("Please select part number and SOP date")
-            return false
+            Toaster.warning("Please select part number and SOP date");
+            return false;
         } else {
+
+            const mockResponse = {  // Hardcoded response for testing purposes
+                Identity: null,
+                Result: true,
+                Message: "",
+                Data: {
+                    NfrId: "8252386b-e671-45ab-a2f5-04e5aa144538",
+                    partId: "a0c226f7-c58f-4344-ab08-b505ad87235d",
+                    FirstYear: "2023",
+                    FirstYearQuantity: 10,
+                    SecondYear: "2024",
+                    SecondYearQuantity: 10,
+                    ThirdYear: "2025",
+                    ThirdYearQuantity: 10
+                },
+                DataList: [],
+                SelectList: [],
+                DynamicData: null
+            };
+            if (nfrId) {
+                dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
+
+                }, mockResponse));
+            }
+
+            // Retrieve the quantities from mockResponse.Data
+            let { FirstYearQuantity, SecondYearQuantity, ThirdYearQuantity } = mockResponse.Data;
+            let { FirstYear, SecondYear, ThirdYear } = mockResponse.Data;;
             let dataObj = {
                 "PartIdList": [
                     getValues('partNumber')?.value
                 ],
                 "PlantId": getValues('plant')?.value,
                 "VendorId": null
-            }
-            let vendorList = []
-            let vendorListFinal = []
+            };
+
+            let vendorList = [];
+            let vendorListFinal = [];
+
             dispatch(checkExistCosting(dataObj, (res) => {
                 if (res?.data?.Result) {
-                    vendorList = [...res?.data?.DataList]
+                    vendorList = [...res?.data?.DataList];
                     vendorList && vendorList?.map((item) => {
-                        vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`)
-                    })
+                        vendorListFinal.push(`${item?.VendorName} (${item?.VendorCode})`);
+                    });
                 }
 
-                let tempArrayparts = [...selectedparts, getValues('partNumber')]
-                setSelectedParts(tempArrayparts)
-                let arrTemp = []
-                let partNumber = getValues('partNumber')
+                let tempArrayparts = [...selectedparts, getValues('partNumber')];
+                setSelectedParts(tempArrayparts);
+
+                let partNumber = getValues('partNumber');
 
                 sopObjectTemp && sopObjectTemp.map((item, index) => {
-                    let objTemp = {}
-                    objTemp.YearName = fiveyearList[index]
-                    objTemp.PartNo = partNumber?.label
-                    objTemp.PartId = getValues('partNumber')?.value
+                    console.log('index: ', index);
+                    let newObjTemp = { ...objTemp }; // Create a new object in each iteration
+
+                    newObjTemp.PartNo = partNumber?.label;
+                    newObjTemp.PartId = getValues('partNumber')?.value;
+
                     if (index === 2) {
-                        objTemp.PartNumber = partNumber?.label
-                        objTemp.VendorListExisting = vendorListFinal.join(',') ? vendorListFinal.join(',') : '-'
-                        objTemp.RMName = rmName?.label ? rmName?.label : '-'
-                        objTemp.RMNameId = rmName?.value ? rmName?.value : '-'
-                        objTemp.RMGrade = rmgrade?.label ? rmgrade?.label : '-'
-                        objTemp.RMGradeId = rmgrade?.value ? rmgrade?.value : '-'
-                        objTemp.RMSpecification = rmspecification?.label ? rmspecification?.label : '-'
-                        objTemp.RMSpecificationId = rmspecification?.value ? rmspecification?.value : '-'
+                        newObjTemp.PartNumber = partNumber?.label;
+                        newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
+                        newObjTemp.RMName = rmName?.label ?? '-';
+                        newObjTemp.RMNameId = rmName?.value ?? '-';
+                        newObjTemp.RMGrade = rmgrade?.label ?? '-';
+                        newObjTemp.RMGradeId = rmgrade?.value ?? '-';
+                        newObjTemp.RMSpecification = rmspecification?.label ?? '-';
+                        newObjTemp.RMSpecificationId = rmspecification?.value ?? '-';
                     }
-                    objTemp.Quantity = 0
 
-                    arrTemp.push(objTemp)
-                    return null
-                })
-                let arr = [...partList, ...arrTemp]
+                    if (index === 0) {
+                        newObjTemp.Quantity = FirstYearQuantity;
+                        newObjTemp.YearName = FirstYear
+                    } else if (index === 1) {
+                        newObjTemp.Quantity = SecondYearQuantity;
+                        newObjTemp.YearName = SecondYear
+                    } else if (index === 2) {
+                        newObjTemp.Quantity = ThirdYearQuantity;
+                        newObjTemp.YearName = ThirdYear
+                    } else if (index === 3) {
+                        newObjTemp.Quantity = 0;
+                        newObjTemp.YearName = parseInt(ThirdYear) + 1
+                    } else if (index === 4) {
+                        newObjTemp.Quantity = 0;
+                        newObjTemp.YearName = parseInt(ThirdYear) + 2
+                    }
 
-                setPartList(arr)
-                setValue('partNumber', "")
-                setSOPDate('')
-                setValue('SOPDate', "")
-                setValue('RMName', "")
-                setValue('RMGrade', "")
-                setValue('RMSpecification', "")
-                // setValue('technology', "")
-                setUpdateButtonPartNoTable(false)
-                setRMName('')
-                setRMGrade('')
-                setRMSpecification('')
-                dispatch(clearGradeSelectList([]))
-                dispatch(clearSpecificationSelectList([]))
-            }))
+                    arrTemp.push(newObjTemp);
+                    return null;
+                });
+
+                let arr = [...partList, ...arrTemp];
+
+                setPartList(arr);
+                setValue('partNumber', "");
+                setSOPDate('');
+                setValue('SOPDate', "");
+                setValue('RMName', "");
+                setValue('RMGrade', "");
+                setValue('RMSpecification', "");
+                setUpdateButtonPartNoTable(false);
+                setRMName('');
+                setRMGrade('');
+                setRMSpecification('');
+                dispatch(clearGradeSelectList([]));
+                dispatch(clearSpecificationSelectList([]));
+            }));
         }
-    }
+    };
 
     const onResetPartNoTable = () => {
         setUpdateButtonPartNoTable(false)
@@ -856,7 +888,7 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, null)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -1048,7 +1080,7 @@ function AddRfq(props) {
     }
 
     const EditableCallback = (props) => {
-        let value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+        let value = dataProps?.isAddFlag && props.data.Quantity === 0 ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
         return value
     }
 
@@ -1122,7 +1154,7 @@ function AddRfq(props) {
                                             // isLoading={VendorLoaderObj}
                                             />
                                         </Col> */}
-                                        {/* <Col md="3">
+                                        {initialConfiguration.IsNFRConfigured && <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"NFR No."}
                                                 name={"nfrId"}
@@ -1132,7 +1164,7 @@ function AddRfq(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing("nfrId")}
+                                                options={nfrDropdown}
                                                 mandatory={false}
                                                 handleChange={handleNfrChnage}
                                                 errors={errors.nfrId}
@@ -1140,7 +1172,7 @@ function AddRfq(props) {
                                                     || (partList?.length !== 0)}
                                             // isLoading={VendorLoaderObj}
                                             />
-                                        </Col> */}
+                                        </Col>}
                                         <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"NFR No."}

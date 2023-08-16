@@ -1039,6 +1039,9 @@ export const API = {
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
+  // NFR
+  getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
+  getNfrAnnualForecastQuantity: `${BASE_URL}/rfq-quotation/get-nfr-annual-forecast-quantity`,
 }
 
 //Api constants
