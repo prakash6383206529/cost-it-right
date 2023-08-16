@@ -2,11 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useForm, Controller } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Tooltip, } from 'reactstrap';
-import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '.././layout/HookFormInputs'
-import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, getVendorWithVendorCodeSelectList, fetchPlantDataAPI, fetchSpecificationDataAPI } from '../.././actions/Common';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '.././layout/HookFormInputs'
+import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, loggedInUserId } from '../.././helper';
-import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
+import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -24,9 +24,9 @@ import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/CommonFunctions';
 import BulkUpload from '../massUpload/BulkUpload';
-import _, { debounce } from 'lodash';
+import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, nfrDropdown, visibilityModeDropdownArray } from '../../config/masterData';
+import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
@@ -106,11 +106,13 @@ function AddRfq(props) {
     const [fiveyearList, setFiveyearList] = useState([])
     const [selectedparts, setSelectedParts] = useState([])
     const [nfrId, setNfrId] = useState('')
+    const [storeNfrId, setStoreNfrId] = useState('')
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
     const [state, setState] = useState(true)
     const [rmspecification, setRMSpecification] = useState([])
     const [deleteToggle, setDeleteToggle] = useState(false)
+    const [plant, setPlant] = useState({})
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
@@ -662,42 +664,21 @@ function AddRfq(props) {
 
     }
 
+
     const addRowPartNoTable = () => {
         let objTemp = {};
         let arrTemp = [];
+        let Data = {}
 
         if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
             Toaster.warning("Please select part number and SOP date");
             return false;
         } else {
-
-            const mockResponse = {  // Hardcoded response for testing purposes
-                Identity: null,
-                Result: true,
-                Message: "",
-                Data: {
-                    NfrId: "8252386b-e671-45ab-a2f5-04e5aa144538",
-                    partId: "a0c226f7-c58f-4344-ab08-b505ad87235d",
-                    FirstYear: "2023",
-                    FirstYearQuantity: 10,
-                    SecondYear: "2024",
-                    SecondYearQuantity: 10,
-                    ThirdYear: "2025",
-                    ThirdYearQuantity: 10
-                },
-                DataList: [],
-                SelectList: [],
-                DynamicData: null
-            };
             if (nfrId) {
                 dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
-
-                }, mockResponse));
+                    Data = res.data.Data
+                }));
             }
-
-            // Retrieve the quantities from mockResponse.Data
-            let { FirstYearQuantity, SecondYearQuantity, ThirdYearQuantity } = mockResponse.Data;
-            let { FirstYear, SecondYear, ThirdYear } = mockResponse.Data;;
             let dataObj = {
                 "PartIdList": [
                     getValues('partNumber')?.value
@@ -740,20 +721,22 @@ function AddRfq(props) {
                     }
                     if (nfrId) {
                         if (index === 0) {
-                            newObjTemp.Quantity = FirstYearQuantity;
-                            newObjTemp.YearName = FirstYear
+                            newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                            newObjTemp.YearName = Data.FirstYear
                         } else if (index === 1) {
-                            newObjTemp.Quantity = SecondYearQuantity;
-                            newObjTemp.YearName = SecondYear
+                            newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                            newObjTemp.YearName = Data.SecondYear
                         } else if (index === 2) {
-                            newObjTemp.Quantity = ThirdYearQuantity;
-                            newObjTemp.YearName = ThirdYear
+                            newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                            newObjTemp.YearName = Data.ThirdYear
                         } else if (index === 3) {
                             newObjTemp.Quantity = 0;
-                            newObjTemp.YearName = parseInt(ThirdYear) + 1
+                            newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
+                            newObjTemp.isEdit = true
                         } else if (index === 4) {
                             newObjTemp.Quantity = 0;
-                            newObjTemp.YearName = parseInt(ThirdYear) + 2
+                            newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
+                            newObjTemp.isEdit = true
                         }
                     } else {
                         newObjTemp.Quantity = 0
@@ -818,7 +801,11 @@ function AddRfq(props) {
             setPartNoDisable(false)
             setValue('partNumber', "")
             setTechnology(newValue)
+        } else {
+            setPartNoDisable(true)
         }
+        setVendor('')
+        setValue("vendor", "")
         setPartName('')
         setState(false)
         setShowTooltip(false)
@@ -831,6 +818,15 @@ function AddRfq(props) {
         reactLocalStorage.setObject('PartData', [])
 
     }
+    const handlePlant = (newValue) => {
+        if (newValue && newValue !== '') {
+            setPlant(newValue)
+        } else {
+            setPlant('')
+        }
+        setVendor('')
+        setValue("vendor", "")
+    }
     const handleNfrChnage = (newValue) => {
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
@@ -838,21 +834,25 @@ function AddRfq(props) {
             setPartName('')
             reactLocalStorage.setObject('PartData', [])
             setNfrId(newValue)
+        } else {
+            setNfrId(null)
         }
     }
 
     const handleVendorChange = (data) => {
-
         dispatch(getContactPerson(data.value, (res) => {
             setGetReporterListDropDown(res?.data?.SelectList)
             setValue('contactPerson', "")
         }))
     }
     const vendorFilterList = async (inputValue) => {
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput, technology.value, plant.value)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -886,9 +886,11 @@ function AddRfq(props) {
     const partFilterList = async (inputValue) => {
 
         const resultInput = inputValue.slice(0, searchCount)
-        if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, null)
+        const nfrChange = nfrId?.value;
+        if (inputValue?.length >= searchCount && (partName !== resultInput || nfrChange !== storeNfrId)) {
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
+            setStoreNfrId(nfrId?.value)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
                 let temp = [...autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)]
@@ -925,13 +927,13 @@ function AddRfq(props) {
     * @description CHECK FOR ENTER NUMBER IN CELL
     */
     const beforeSaveCell = (props) => {
-        const cellValue = props
+        let cellValue = props
         if (cellValue === undefined) {
             return true
         }
-        if (cellValue && !/^[0-9]+$/.test(cellValue)) {
-            Toaster.warning('Please enter a valid positive numbers.')
-            return false
+        if (cellValue && !/^[0-9]+(\.[0-9]+)?$/.test(cellValue)) {
+            Toaster.warning('Please enter a valid positive number.');
+            return false;
         }
         return true
     }
@@ -1084,7 +1086,12 @@ function AddRfq(props) {
     }
 
     const EditableCallback = (props) => {
-        let value = dataProps?.isAddFlag && props.data.Quantity === 0 ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+        let value
+        if (getValues('nfrId')) {
+            value = dataProps?.isAddFlag && props.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props.data.isEdit ? true : false
+        } else {
+            value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+        }
         return value
     }
 
@@ -1129,20 +1136,20 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                defaultValue={Object.keys(technology).length !== 0 ? technology : ""}
                                                 options={renderListing("technology")}
                                                 mandatory={true}
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.technology}
                                                 disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
-                                                    || (partList?.length !== 0)}
-                                                isLoading={VendorLoaderObj}
+                                                    || (partList?.length !== 0 || vendorList?.length !== 0)}
                                             />
                                         </Col>
-                                        {/* <Col md="3">
+                                        {initialConfiguration.IsNFRConfigured && <Col md="3">
                                             <SearchableSelectHookForm
-                                                label={"NFR Id"}
+                                                label={"NFR No."}
                                                 name={"nfrId"}
+                                                isClearable={true}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
                                                 control={control}
@@ -1150,25 +1157,6 @@ function AddRfq(props) {
                                                 register={register}
                                                 defaultValue={nfrId?.length !== 0 ? nfrId : ""}
                                                 options={renderListing("nfrId")}
-                                                mandatory={false}
-                                                handleChange={handleNfrChnage}
-                                                errors={errors.nfrId}
-                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
-                                                    || (partList?.length !== 0)}
-                                            // isLoading={VendorLoaderObj}
-                                            />
-                                        </Col> */}
-                                        {initialConfiguration.IsNFRConfigured && <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label={"NFR No."}
-                                                name={"nfrId"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={nfrDropdown}
                                                 mandatory={false}
                                                 handleChange={handleNfrChnage}
                                                 errors={errors.nfrId}
@@ -1186,14 +1174,12 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                defaultValue={Object.keys(plant).length !== 0 ? plant : ""}
                                                 options={renderListing("plant")}
                                                 mandatory={true}
-                                                // handleChange={handleVendorChange}
-                                                handleChange={() => { }}
+                                                handleChange={handlePlant}
                                                 errors={errors.plant}
-                                                isLoading={VendorLoaderObj}
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                disabled={(vendorList?.length !== 0 || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)))}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -1457,7 +1443,14 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                disabled={
+                                                    initialConfiguration.IsCriticalVendorConfigured &&
+                                                        (Object.keys(technology).length === 0 || Object.keys(plant).length === 0)
+                                                        ? true
+                                                        : dataProps?.isAddFlag
+                                                            ? false
+                                                            : (isViewFlag || !isEditAll)
+                                                }
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
