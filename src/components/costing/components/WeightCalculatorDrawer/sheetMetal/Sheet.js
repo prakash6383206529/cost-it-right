@@ -191,7 +191,7 @@ function Sheet(props) {
 
     const setNoOfComponent = () => {
         const stripNo = getValues('StripsNumber')
-        const componentPerStrip = getValues('ComponentPerStrip')
+        const componentPerStrip = (checkForNull(getValues('SheetWidth')) / checkForNull(getValues('BlankSize')))
         const cavity = getValues('Cavity')
         const noOfComponent = stripNo * componentPerStrip * cavity
         setValue('NoOfComponent', checkForNull(noOfComponent))
