@@ -368,3 +368,22 @@ export function rfqGetBestCostingDetails(bestCostId, callback) {
         });
     };
 }
+export function getNfrAnnualForecastQuantity(nfrId, partId, sopDate, callback, mockResponse) {
+    return (dispatch) => {
+        if (mockResponse) {
+            // Use mocked response instead of making an API request
+            callback(mockResponse);
+        } else {
+            const request = axios.get(`${API.getNfrAnnualForecastQuantity}?nfrId=${nfrId}&partId=${partId}&sopDate=${sopDate}`, config());
+            request.then((response) => {
+                if (response?.data?.Result) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                apiErrors(error);
+                callback(error)
+            });
+        };
+    }
+}
