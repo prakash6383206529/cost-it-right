@@ -1,153 +1,132 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
-import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, hashValidation, maxLength80, required } from "../../../helper/validation";
-import { renderText, focusOnError } from "../../layout/FormInputs";
-import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../actions/ReasonMaster';
-import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message'
-import { loggedInUserId } from '../../../helper/auth';
-import Drawer from '@material-ui/core/Drawer';
-import LoaderCustom from '../../common/LoaderCustom';
+import React, { useState, useRef, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Field, reduxForm, getFormValues } from 'redux-form';
+import { Container, Row, Col } from 'reactstrap';
 import { debounce } from 'lodash';
+import Drawer from '@material-ui/core/Drawer';
+import { createReasonAPI, getReasonAPI, updateReasonAPI, setEmptyReason } from '../actions/ReasonMaster';
+import { MESSAGES } from '../../../config/message';
+import { loggedInUserId } from '../../../helper/auth';
+import LoaderCustom from '../../common/LoaderCustom';
+import Toaster from '../../common/Toaster';
+import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, hashValidation, maxLength80, required } from '../../../helper/validation';
+import { renderText, focusOnError } from '../../layout/FormInputs';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import { TextFieldHookForm } from '../../layout/HookFormInputs';
+import { useForm, Controller, useWatch } from "react-hook-form";
 
-class AddReason extends Component {
-  constructor(props) {
-    super(props);
-    this.child = React.createRef();
-    this.state = {
-      IsActive: true,
-      ReasonId: '',
-      DataToCheck: [],
-      setDisable: false,
-      showPopup: false
-    }
-  }
+const AddReason = (props) => {
+  const { isEditFlag, ID, reset, isOpen } = props;
+  console.log('isEditFlag: ', isEditFlag);
+  const dispatch = useDispatch();
+  const [isActive, setIsActive] = useState(true);
+  const [reasonId, setReasonId] = useState('');
+  const [dataToCheck, setDataToCheck] = useState([]);
+  const [setDisable, setSetDisable] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [isLoader, setIsLoader] = useState(false);
 
-  /**
-  * @method componentDidMount
-  * @description called after render the component
-  */
-  componentDidMount() {
-    this.getDetail()
-  }
+  useEffect(() => {
+    getDetail();
+  }, []);
+  const { register, handleSubmit, formState: { errors }, control, setValue } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
 
-  /**
-  * @method activeHandler
-  * @description Used to for status
-  */
-  activeHandler = () => {
-    this.setState({ IsActive: !this.state.IsActive })
-  }
-
-  /**
-  * @method getDetail
-  * @description used to get Reason detail
-  */
-  getDetail = () => {
-    const { isEditFlag, ID } = this.props;
+  const getDetail = () => {
     if (isEditFlag) {
-      this.setState({
-        isLoader: true,
-        ReasonId: ID,
-      })
+      setIsLoader(true);
+      setReasonId(ID);
       setTimeout(() => {
-        this.props.getReasonAPI(ID, res => {
-          if (res && res.data && res.data.Data) {
-            const Data = res.data.Data;
-            this.setState({ DataToCheck: Data })
-            this.setState({ IsActive: Data.IsActive })
+        dispatch(getReasonAPI(ID, (res) => {
+          if (res?.data?.Data) {
+            const data = res.data.Data;
+            console.log('data: ', data);
+            setDataToCheck(data);
+            setIsActive(data.IsActive);
+            setValue('Reason', data.Reason);
           }
-        })
-        this.setState({ isLoader: false })
+        }));
+        setIsLoader(false);
       }, 300);
     }
-  }
+  };
 
-  toggleDrawer = (event, type) => {
+  const toggleDrawer = (event, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-
-    this.props.closeDrawer('', type)
+    props.closeDrawer('', type);
   };
 
   /**
   * @method cancel
   * @description used to Reset form
   */
-  cancel = (type) => {
-    const { reset } = this.props;
-    reset();
-    this.setState({
-      IsActive: true,
-      isEditFlag: false,
-    })
-    this.props.setEmptyReason();
-    this.toggleDrawer('', type)
-  }
-  cancelHandler = () => {
-    // this.setState({ showPopup: true })
-    this.cancel('cancel')
-  }
-  onPopupConfirm = () => {
-    this.cancel('cancel')
-    this.setState({ showPopup: false })
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
+  const cancel = (type) => {
+    setIsActive(true);
+    setSetDisable(false);
+    toggleDrawer('', type);
+    setEmptyReason()
+  };
+
+  const cancelHandler = () => {
+    cancel('cancel');
+  };
+
+  const onPopupConfirm = () => {
+    cancel('cancel');
+    setShowPopup(false);
+  };
+
+  const closePopUp = () => {
+    setShowPopup(false);
+  };
   /**
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = debounce((values) => {
-    const { ReasonId, DataToCheck } = this.state;
-    const { isEditFlag } = this.props;
+  const onSubmit = debounce((values) => {
+    const { isEditFlag } = props;
 
-    /** Update detail of the existing UOM  */
     if (isEditFlag) {
-      if (DataToCheck.Reason === values.Reason) {
-
-        this.toggleDrawer('', 'cancel')
-        return false
+      if (dataToCheck.Reason === values?.Reason) {
+        toggleDrawer('', 'cancel');
+        return false;
       }
-      this.setState({ setDisable: true })
-      let formData = {
-        ReasonId: ReasonId,
-        Reason: values.Reason,
-        IsActive: this.state.IsActive,
+      setSetDisable(true);
+      const formData = {
+        ReasonId: reasonId,
+        Reason: values?.Reason,
+        IsActive: isActive,
         LoggedInUserId: loggedInUserId(),
-      }
-      this.props.updateReasonAPI(formData, (res) => {
-        this.setState({ setDisable: false })
+      };
+      dispatch(updateReasonAPI(formData, (res) => {
+        setSetDisable(false);
         if (res?.Result === true) {
           Toaster.success(MESSAGES.UPDATE_REASON_SUCESS);
         }
-        this.cancel('submit')
-      });
+        cancel('submit');
+      }));
     } else {
-
-      this.setState({ setDisable: true })
-      /** Add detail for creating new UOM  */
-      //values.IsActive = this.state.IsActive;
-      values.IsActive = true;
-      values.LoggedInUserId = loggedInUserId();
-
-      this.props.createReasonAPI(values, (res) => {
-        this.setState({ setDisable: false })
+      setSetDisable(true);
+      const formData = {
+        Reason: values?.Reason,
+        IsActive: true,
+        LoggedInUserId: loggedInUserId(),
+      };
+      dispatch(createReasonAPI(formData, (res) => {
+        setSetDisable(false);
         if (res?.data?.Result === true) {
           Toaster.success(MESSAGES.REASON_ADD_SUCCESS);
-          this.cancel('submit')
+          cancel('submit');
         }
-      });
+      }));
     }
+  }, 500);
 
-  }, 500)
-
-  handleKeyDown = function (e) {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
     }
@@ -157,138 +136,99 @@ class AddReason extends Component {
   * @method render
   * @description Renders the component
   */
-  render() {
-    const { handleSubmit, isEditFlag, } = this.props;
-    const { setDisable } = this.state
-    return (
-      <>
-        <Drawer
-          anchor={this.props.anchor}
-          open={this.props.isOpen}
-        // onClose={(e) => this.toggleDrawer(e)}
-        >
-          {this.state.isLoader && <LoaderCustom />}
-          <Container>
-            <div className={"drawer-wrapper"}>
-              <form
-                noValidate
-                className="form"
-                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-              >
-                <Row className="drawer-heading">
-                  <Col>
-                    <div className={"header-wrapper left"}>
-                      <h3>{isEditFlag ? "Update Reason" : "Add Reason"}</h3>
-                    </div>
-                    <div
-                      onClick={this.cancel}
-                      className={"close-button right"}
-                    ></div>
-                  </Col>
-                </Row>
-                <Row className="pl-3">
-                  <Col md="12">
-                    <Field
-                      label={`Reason`}
-                      name={"Reason"}
-                      type="text"
-                      placeholder={this.state.isEditFlag ? '-' : "Enter"}
-                      validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, hashValidation]}
-                      component={renderText}
-                      required={true}
-                      className=" "
-                      customClassName=" withBorder"
-                      disabled={this.state.isEditFlag ? true : false}
-                    />
-                  </Col>
-                  {/* <Col md="6">
-                                    <Col className={'pull-right'}>
-                                        <label
-                                            className="custom-checkbox pull-right"
-                                            onChange={this.activeHandler}
-                                        >
-                                            Status
-                                                <input
-                                                type="checkbox"
-                                                checked={this.state.IsActive}
-                                                disabled={isEditFlag ? true : false}
-                                            />
-                                            <span
-                                                className=" before-box"
-                                                checked={this.state.IsActive}
-                                                onChange={this.activeHandler}
-                                            />
-                                        </label>
-                                    </Col>
-                                </Col> */}
-                </Row>
 
-                <Row className="sf-btn-footer no-gutters justify-content-between px-3">
-                  <div className="col-sm-12 text-right px-3">
-                    <button
-                      type={"button"}
-                      className=" mr15 cancel-btn"
-                      onClick={this.cancelHandler}
-                      disabled={setDisable}
-                    >
-                      <div className={"cancel-icon"}></div>
-                      {"Cancel"}
-                    </button>
-                    <button
-                      type="submit"
-                      className="user-btn save-btn"
-                      disabled={setDisable}
-                    >
-                      <div className={"save-icon"}></div>
-                      {isEditFlag ? "Update" : "Save"}
-                    </button>
+  return (
+    <>
+      <Drawer
+        anchor={props.anchor}
+        open={props.isOpen}
+      // onClose={(e) => toggleDrawer(e)}
+      >
+        {isLoader && <LoaderCustom />}
+        <Container>
+          <div className={"drawer-wrapper"}>
+            <form
+              onSubmit={handleSubmit(onSubmit)}
+            >
+              <Row className="drawer-heading">
+                <Col>
+                  <div className={"header-wrapper left"}>
+                    <h3>{isEditFlag ? "Update Reason" : "Add Reason"}</h3>
                   </div>
-                </Row>
-              </form>
-            </div>
-          </Container>
-        </Drawer>
-        {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-        }
-      </>
-    );
-  }
+                  <div
+                    onClick={cancel}
+                    className={"close-button right"}
+                  ></div>
+                </Col>
+              </Row>
+              <Row className="pl-3">
+                {/* <Col md="12">
+                  <Field
+                    label={`Reason`}
+                    name={"Reason"}
+                    type="text"
+                    placeholder={state.isEditFlag ? '-' : "Enter"}
+                    validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, hashValidation]}
+                    component={renderText}
+                    required={true}
+                    className=" "
+                    customClassName=" withBorder"
+                    disabled={state.isEditFlag ? true : false}
+                  />
+                </Col> */}
+                <Col md="12">
+                  <TextFieldHookForm
+                    label={`Reason`}
+                    name={"Reason"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    rules={{
+                      required: true,
+                      validate: { required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, hashValidation }
+                    }}
+                    mandatory={true}
+                    handleChange={() => { }}
+                    defaultValue={''}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.Reason}
+                    disabled={false}
+                    placeholder={isEditFlag ? '-' : "Enter"}
+                  />
+                </Col>
+              </Row>
+
+              <Row className="sf-btn-footer no-gutters justify-content-between px-3">
+                <div className="col-sm-12 text-right px-3">
+                  <button
+                    type={"button"}
+                    className=" mr15 cancel-btn"
+                    onClick={cancelHandler}
+                    disabled={setDisable}
+                  >
+                    <div className={"cancel-icon"}></div>
+                    {"Cancel"}
+                  </button>
+                  <button
+                    type="submit"
+                    className="user-btn save-btn"
+                    disabled={setDisable}
+                  >
+                    <div className={"save-icon"}></div>
+                    {isEditFlag ? "Update" : "Save"}
+                  </button>
+                </div>
+              </Row>
+            </form>
+          </div>
+        </Container>
+      </Drawer>
+      {
+        showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+      }
+    </>
+  );
 }
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ reason }) {
-  const { reasonData } = reason;
-  let initialValues = {};
-  if (reasonData && reasonData !== undefined) {
-    initialValues = {
-      Reason: reasonData.Reason,
-    }
-  }
-  return { reasonData, initialValues };
-}
-
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-  createReasonAPI,
-  getReasonAPI,
-  updateReasonAPI,
-  setEmptyReason,
-})(reduxForm({
-  form: 'AddReason',
-  touchOnChange: true,
-  onSubmitFail: errors => {
-    focusOnError(errors);
-  },
-  enableReinitialize: true,
-})(AddReason));
+export default AddReason

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
@@ -24,6 +24,8 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { displayUOM } from '../../../helper/util';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { useState } from 'react';
+import { useEffect } from 'react';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -31,79 +33,78 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-class UOMMaster extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOpen: false,
-      isEditFlag: false,
-      uomId: '',
-      dataList: [],
-      ViewAccessibility: false,
-      AddAccessibility: false,
-      EditAccessibility: false,
-      DeleteAccessibility: false,
-      DownloadAccessibility: false,
-      gridApi: null,
-      gridColumnApi: null,
-      rowData: null,
-      sideBar: { toolPanels: ['columns'] },
-      showData: false,
-      showPopup: false,
-      deletedId: '',
-      isLoader: false,
-      selectedRowData: false,
-      noData: false,
-      dataCount: 0
-    }
-  }
-
+const UOMMaster = (props) => {
+  const [isOpen, setIsOpen] = useState(false);
+  const [isEditFlag, setIsEditFlag] = useState(false);
+  const [uomId, setUomId] = useState('');
+  const [dataList, setDataList] = useState([]);
+  const [ViewAccessibility, setViewAccessibility] = useState(false);
+  const [AddAccessibility, setAddAccessibility] = useState(false);
+  const [EditAccessibility, setEditAccessibility] = useState(false);
+  const [DeleteAccessibility, setDeleteAccessibility] = useState(false);
+  const [DownloadAccessibility, setDownloadAccessibility] = useState(false);
+  const [gridApi, setGridApi] = useState(null);
+  const [gridColumnApi, setGridColumnApi] = useState(null);
+  const [rowData, setRowData] = useState(null);
+  const [sideBar] = useState({ toolPanels: ['columns'] });
+  const [showData, setShowData] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
+  const [deletedId, setDeletedId] = useState('');
+  const [isLoader, setIsLoader] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState(false);
+  const [noData, setNoData] = useState(false);
+  const [dataCount, setDataCount] = useState(0);
+  const dispatch = useDispatch();
+  const { topAndLeftMenuData } = useSelector(state => state.auth);
+  const unitOfMeasurementList = useSelector(state => state.unitOfMeasrement.unitOfMeasurementList);
   /**
    * @method componentDidMount
    * @description  called before rendering the component
    */
-  componentDidMount() {
-    this.applyPermission(this.props.topAndLeftMenuData)
-    this.getUOMDataList()
-  }
 
-  getUOMDataList = () => {
-    this.setState({ isLoader: true })
-    this.props.getUnitOfMeasurementAPI(res => {
-      this.setState({ isLoader: false })
-      if (res && res.data && res.data.DataList) {
-        let Data = res.data.DataList;
-        this.setState({ dataList: Data })
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData);
+    getUOMDataList();
+  }, [topAndLeftMenuData]);
+
+
+  const getUOMDataList = () => {
+    setIsLoader(true);
+    dispatch(getUnitOfMeasurementAPI(response => {
+      setIsLoader(false);
+      if (response && response.data && response.data.DataList) {
+        const data = response.data.DataList;
+        setDataList(data);
       }
-    });
+    }));
   }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-      this.applyPermission(nextProps.topAndLeftMenuData)
-    }
-  }
-
+  // UNSAFE_componentWillReceiveProps(nextProps) {
+  //   if (props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+  //     applyPermission(nextProps.topAndLeftMenuData)
+  //   }
+  // }
+  // useEffect((nextProps) => {
+  //   if (props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
+  //     applyPermission(nextProps.topAndLeftMenuData);
+  //   }
+  // }, [props.topAndLeftMenuData, nextProps.topAndLeftMenuData]);
   /**
   * @method applyPermission
   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
   */
-  applyPermission = (topAndLeftMenuData) => {
+  const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
-      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
-      const accessData = Data && Data.Pages.find(el => el.PageName === UOM)
-      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+      const data = topAndLeftMenuData && topAndLeftMenuData?.find(el => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData = data && data.Pages.find(el => el.PageName === UOM)
+      const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
 
-      if (permmisionData !== undefined) {
-        this.setState({
-          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-        })
+      if (permissionData !== undefined) {
+        setViewAccessibility(permissionData && permissionData.View ? permissionData.View : false);
+        setAddAccessibility(permissionData && permissionData.Add ? permissionData.Add : false);
+        setEditAccessibility(permissionData && permissionData.Edit ? permissionData.Edit : false);
+        setDeleteAccessibility(permissionData && permissionData.Delete ? permissionData.Delete : false);
+        setDownloadAccessibility(permissionData && permissionData.Download ? permissionData.Download : false);
       }
-
     }
   }
 
@@ -111,80 +112,77 @@ class UOMMaster extends Component {
    * @method openModel
    * @description  used to open filter form 
    */
-  openModel = () => {
-    this.setState({
-      isOpen: true,
-      isEditFlag: false
-    })
+  const openModel = () => {
+    setIsOpen(true);
+    setIsEditFlag(false);
   }
 
   /**
    * @method closeDrawer
    * @description  used to cancel filter form
    */
-  closeDrawer = (e = '') => {
-    this.setState({ isOpen: false }, () => {
-      this.getUOMDataList()
-    })
+  const closeDrawer = (e = '') => {
+    setIsOpen(false);
+    getUOMDataList();
   }
+
 
   /**
   * @method editItemDetails
   * @description confirm delete UOM
   */
-  editItemDetails = (Id) => {
-    this.setState({
-      isEditFlag: true,
-      isOpen: true,
-      uomId: Id,
-    })
+  const editItemDetails = (Id) => {
+    setIsEditFlag(true);
+    setIsOpen(true);
+    setUomId(Id);
   }
 
   /**
    * @method onFloatingFilterChanged
    * @description Filter data when user type in searching input
    */
-  onFloatingFilterChanged = (value) => {
+  const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      this.state.dataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+      dataList.length !== 0 && setNoData(searchNocontentFilter(value, noData))
     }, 500);
   }
   /**
   * @method deleteItem
   * @description confirm delete UOM
   */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
+  const deleteItem = (Id) => {
+    setShowPopup(true);
+    setDeletedId(Id)
   }
-  onPopupConfirm = () => {
-    this.confirmDeleteUOM(this.state.deletedId);
+  const onPopupConfirm = () => {
+    confirmDeleteUOM(deletedId);
   }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
+  const closePopUp = () => {
+    setShowPopup(false);
   }
   /**
    * @method confirmDeleteUOM
    * @description confirm delete unit of measurement
    */
-  confirmDeleteUOM = (Id) => {
-    this.props.deleteUnitOfMeasurementAPI(Id, (res) => {
+  const confirmDeleteUOM = (Id) => {
+    dispatch(deleteUnitOfMeasurementAPI(Id, (res) => {
       if (res.data.Result) {
         Toaster.success(MESSAGES.DELETE_UOM_SUCCESS);
-        this.getUOMDataList()
+        getUOMDataList()
       }
-    });
-    this.setState({ showPopup: false })
+    }));
+    setShowPopup(false);
   }
 
-  renderPaginationShowsTotal(start, to, total) {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
+  const PaginationShowsTotal = ({ start, to, total }) => {
+    return <GridTotalFormate start={start} to={to} total={total} />;
+  };
 
   /**
   * @method applySuperScriptFormatter
   * @description Renders buttons
   */
-  applySuperScriptFormatter = (cell, row, enumObject, rowIndex) => {
+  const applySuperScriptFormatter = (cell, row, enumObject, rowIndex) => {
     if (cell && cell.indexOf('^') !== -1) {
       return applySuperScript(cell)
     } else {
@@ -196,19 +194,17 @@ class UOMMaster extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (props) => {
-    const { EditAccessibility } = this.state;
+  const buttonFormatter = (props) => {
     const cellValue = props?.value;
-
     return (
       <>
-        {EditAccessibility && <button title='Edit' className="Edit mr5" type={'button'} onClick={() => this.editItemDetails(cellValue)} />}
-        {/* <button className="Delete" type={'button'} onClick={() => this.deleteItem(cell)} /> */}
+        {EditAccessibility && <button title='Edit' className="Edit mr5" type={'button'} onClick={() => editItemDetails(cellValue)} />}
+        {/* <button className="Delete" type={'button'} onClick={() => deleteItem(cell)} /> */}
       </>
     )
   }
 
-  unitSymbol = (props) => {
+  const unitSymbol = (props) => {
     const cellValue = props?.value;
     return (
       <div>{displayUOM(cellValue)}
@@ -219,7 +215,7 @@ class UOMMaster extends Component {
   * @method statusButtonFormatter
   * @description Renders buttons
   */
-  statusButtonFormatter = (props) => {
+  const statusButtonFormatter = (props) => {
     const cellValue = props?.value;
     const rowData = props?.data;
 
@@ -229,7 +225,7 @@ class UOMMaster extends Component {
           {/* <span>Switch with default style</span> */}
           <Switch
             onChange={() =>
-              this.handleChange(cellValue, rowData, '', '')
+              handleChange(cellValue, rowData, '', '')
             }
             checked={cellValue}
             background="#ff6600"
@@ -244,206 +240,186 @@ class UOMMaster extends Component {
     );
   }
 
-  handleChange = (cell, row, enumObject, rowIndex) => {
+  const handleChange = (cell, row, enumObject, rowIndex) => {
     let data = {
       Id: row.Id,
       LoggedInUserId: loggedInUserId(),
       IsActive: !cell, //Status of the UOM.
     }
-    this.props.activeInactiveUOM(data, res => {
+    dispatch(activeInactiveUOM(data, res => {
       if (res && res.data && res.data.Result) {
         if (cell === true) {
           Toaster.success(MESSAGES.UOM_INACTIVE_SUCCESSFULLY)
         } else {
           Toaster.success(MESSAGES.UOM_ACTIVE_SUCCESSFULLY)
         }
-        this.getUOMDataList()
+        getUOMDataList()
       }
-    })
+    }))
   }
 
-  onGridReady = (params) => {
-    this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
-    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+  const onGridReady = (params) => {
+    params.api.sizeColumnsToFit();
+    setGridApi(params.api)
+    setGridColumnApi(params.columnApi)
     params.api.paginationGoToPage(0);
   };
 
-  onPageSizeChanged = (newPageSize) => {
-    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
+  const onPageSizeChanged = (newPageSize) => {
+    gridApi.paginationSetPageSize(Number(newPageSize));
   };
-  onRowSelect = () => {
-    const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
+  const onRowSelect = () => {
+    const selectedRows = gridApi.getSelectedRows();
+    setSelectedRowData(selectedRows)
+    setDataCount(selectedRows.length)
   }
-  onBtExport = () => {
+  const onBtExport = () => {
     let tempArr = []
-    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.unitOfMeasurementList ? this.props.unitOfMeasurementList : [])
-    return this.returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
+    tempArr = gridApi && gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (unitOfMeasurementList ? unitOfMeasurementList : [])
+    return returnExcelColumn(UOM_DOWNLOAD_EXCEl, tempArr)
   };
 
-  returnExcelColumn = (data = [], TempData) => {
-
+  const returnExcelColumn = (data = [], TempData) => {
     return (
-
       <ExcelSheet data={TempData} name={UomMaster}>
         {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
       </ExcelSheet>);
   }
 
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
+  const onFilterTextBoxChanged = (e) => {
+    gridApi.setQuickFilter(e.target.value);
   }
 
-  resetState() {
-    this.state.gridApi.deselectAll()
-    gridOptions.columnApi.resetColumnState();
-    gridOptions.api.setFilterModel(null);
+  const resetState = () => {
+    gridOptions?.columnApi?.resetColumnState(null);
+    gridOptions?.api?.setFilterModel(null);
+    gridApi.sizeColumnsToFit();
+    gridApi.deselectAll()
   }
+
 
   /**
   * @method render
   * @description Renders the component
   */
-  render() {
-    const { isOpen, isEditFlag, uomId, AddAccessibility, DownloadAccessibility, noData, dataCount } = this.state;
+  const isFirstColumn = (params) => {
 
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
 
-    const isFirstColumn = (params) => {
+  }
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn
+  };
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    customNoRowsOverlay: NoContentFound,
+    unitSymbol: unitSymbol
+  };
 
-      var displayedColumns = params.columnApi.getAllDisplayedColumns();
-      var thisIsFirstColumn = displayedColumns[0] === params.column;
-      return thisIsFirstColumn;
-
-    }
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: false,
-      headerCheckboxSelectionFilteredOnly: true,
-      checkboxSelection: isFirstColumn
-    };
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      customNoRowsOverlay: NoContentFound,
-      unitSymbol: this.unitSymbol
-    };
-
-    return (
-      <>
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-          {this.state.isLoader && <LoaderCustom customClass={"loader-center"} />}
-          <ScrollToTop pointProp="go-to-top" />
-          <Row className="no-filter-row">
-            {AddAccessibility && (
-              <>
-                <Col md={6} className="text-right filter-block mr5"></Col>
-                {/* <Col md={6} className="text-right search-user-block pr-0">
+  return (
+    <>
+      <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+        {isLoader && <LoaderCustom customClass={"loader-center"} />}
+        <ScrollToTop pointProp="go-to-top" />
+        <Row className="no-filter-row">
+          {AddAccessibility && (
+            <>
+              <Col md={6} className="text-right filter-block mr5"></Col>
+              {/* <Col md={6} className="text-right search-user-block pr-0">
                   <button
                     type={"button"}
                     className={"user-btn"}
-                    onClick={this.openModel}
+                    onClick={openModel}
                   >
                     <div className={"plus"}></div>
                     {`ADD`}
                   </button>
                 </Col> */}
-              </>
-            )}
-            <Col md={6} className="text-right search-user-block pr-0">
-              {
-                DownloadAccessibility &&
-                <>
-                  <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
-                    <div title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} className="download mr-1" ></div>
-                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
-                    {this.onBtExport()}
-                  </ExcelFile>
-                </>
-                //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-              }
-
-              <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                <div className="refresh mr-0"></div>
-              </button>
-            </Col>
-          </Row>
-
-          <Row>
-            <Col>
-
-              <div className={`ag-grid-wrapper height-width-wrapper  ${(this.state.dataList && this.state.dataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                </div>
-                <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                  <AgGridReact
-                    defaultColDef={defaultColDef}
-                    floatingFilter={true}
-                    domLayout='autoHeight'
-                    // columnDefs={c}
-                    rowData={this.state.dataList}
-                    pagination={true}
-                    paginationPageSize={defaultPageSize}
-                    onGridReady={this.onGridReady}
-                    gridOptions={gridOptions}
-                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                    onFilterModified={this.onFloatingFilterChanged}
-                    noRowsOverlayComponentParams={{
-                      title: EMPTY_DATA,
-                    }}
-                    rowSelection={'multiple'}
-                    onSelectionChanged={this.onRowSelect}
-                    frameworkComponents={frameworkComponents}
-                    suppressRowClickSelection={true}
-                  >
-                    <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
-                    <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>
-                    <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
-                  </AgGridReact>
-                  {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-                </div>
-              </div>
-
-
-            </Col>
-          </Row>
-          {isOpen && (
-            <AddUOM
-              isOpen={isOpen}
-              closeDrawer={this.closeDrawer}
-              isEditFlag={isEditFlag}
-              ID={uomId}
-              anchor={"right"}
-            />
+            </>
           )}
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to delete UOM?`} />
-          }
-        </div>
-      </>
-    );
-  }
+          {console.log('DownloadAccessibility: ', DownloadAccessibility)}
+          <Col md={6} className="text-right search-user-block pr-0">
+            {
+              DownloadAccessibility &&
+              <>
+                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
+                  <div title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} className="download mr-1" ></div>
+                  {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}</button>}>
+                  {onBtExport()}
+                </ExcelFile>
+              </>
+              //   <button type="button" className={"user-btn mr5"} onClick={onBtExport}><div className={"download"} ></div>Download</button>
+            }
+
+            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+              <div className="refresh mr-0"></div>
+            </button>
+          </Col>
+        </Row>
+
+        <Row>
+          <Col>
+
+            <div className={`ag-grid-wrapper height-width-wrapper  ${(dataList && dataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+              <div className="ag-grid-header">
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+              </div>
+              <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout='autoHeight'
+                  // columnDefs={c}
+                  rowData={dataList}
+                  pagination={true}
+                  paginationPageSize={defaultPageSize}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  onFilterModified={onFloatingFilterChanged}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                  }}
+                  rowSelection={'multiple'}
+                  onSelectionChanged={onRowSelect}
+                  frameworkComponents={frameworkComponents}
+                  suppressRowClickSelection={true}
+                >
+                  <AgGridColumn field="Unit" headerName="Unit"></AgGridColumn>
+                  <AgGridColumn field="UnitSymbol" headerName="Unit Symbol" cellRenderer={"unitSymbol"}></AgGridColumn>
+                  <AgGridColumn field="UnitType" headerName="Unit Type"></AgGridColumn>
+                </AgGridReact>
+                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+              </div>
+            </div>
+
+
+          </Col>
+        </Row>
+        {isOpen && (
+          <AddUOM
+            isOpen={isOpen}
+            closeDrawer={closeDrawer}
+            isEditFlag={isEditFlag}
+            ID={uomId}
+            anchor={"right"}
+          />
+        )}
+        {
+          showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Are you sure you want to delete UOM?`} />
+        }
+      </div>
+    </>
+  );
 }
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ unitOfMeasrement, auth }) {
-  const { unitOfMeasurementList, loading, } = unitOfMeasrement;
-  const { leftMenuData, topAndLeftMenuData } = auth;
-  return { unitOfMeasurementList, leftMenuData, loading, topAndLeftMenuData }
-}
 
-export default connect(
-  mapStateToProps, {
-  getUnitOfMeasurementAPI,
-  deleteUnitOfMeasurementAPI,
-  activeInactiveUOM,
-}
-)(UOMMaster);
-
+export default UOMMaster
