@@ -723,7 +723,6 @@ function AddRfq(props) {
                 let partNumber = getValues('partNumber');
 
                 sopObjectTemp && sopObjectTemp.map((item, index) => {
-                    console.log('index: ', index);
                     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
 
                     newObjTemp.PartNo = partNumber?.label;
@@ -739,24 +738,27 @@ function AddRfq(props) {
                         newObjTemp.RMSpecification = rmspecification?.label ?? '-';
                         newObjTemp.RMSpecificationId = rmspecification?.value ?? '-';
                     }
-
-                    if (index === 0) {
-                        newObjTemp.Quantity = FirstYearQuantity;
-                        newObjTemp.YearName = FirstYear
-                    } else if (index === 1) {
-                        newObjTemp.Quantity = SecondYearQuantity;
-                        newObjTemp.YearName = SecondYear
-                    } else if (index === 2) {
-                        newObjTemp.Quantity = ThirdYearQuantity;
-                        newObjTemp.YearName = ThirdYear
-                    } else if (index === 3) {
-                        newObjTemp.Quantity = 0;
-                        newObjTemp.YearName = parseInt(ThirdYear) + 1
-                    } else if (index === 4) {
-                        newObjTemp.Quantity = 0;
-                        newObjTemp.YearName = parseInt(ThirdYear) + 2
+                    if (nfrId) {
+                        if (index === 0) {
+                            newObjTemp.Quantity = FirstYearQuantity;
+                            newObjTemp.YearName = FirstYear
+                        } else if (index === 1) {
+                            newObjTemp.Quantity = SecondYearQuantity;
+                            newObjTemp.YearName = SecondYear
+                        } else if (index === 2) {
+                            newObjTemp.Quantity = ThirdYearQuantity;
+                            newObjTemp.YearName = ThirdYear
+                        } else if (index === 3) {
+                            newObjTemp.Quantity = 0;
+                            newObjTemp.YearName = parseInt(ThirdYear) + 1
+                        } else if (index === 4) {
+                            newObjTemp.Quantity = 0;
+                            newObjTemp.YearName = parseInt(ThirdYear) + 2
+                        }
+                    } else {
+                        newObjTemp.Quantity = 0
+                        newObjTemp.YearName = fiveyearList[index]
                     }
-
                     arrTemp.push(newObjTemp);
                     return null;
                 });
