@@ -12,7 +12,7 @@ import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUser
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { EMPTY_DATA, CRMHeads, FILE_URL, NFRTypeId, VBCTypeId } from '../../../../config/constants';
+import { EMPTY_DATA, FILE_URL, NFRTypeId, VBCTypeId, CRMHeads, WACTypeId, TIMELINE, CAPACITY, FEASIBILITY, ATTACHMENT } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import { MESSAGES } from '../../../../config/message';
 import DayTime from '../../../common/DayTimeWrapper'
@@ -39,6 +39,9 @@ let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
+  const dropzoneTimeline = useRef(null);
+  const dropzoneCapacity = useRef(null);
+  const dropzoneFeasibility = useRef(null);
   const { register, handleSubmit, setValue, getValues, formState: { errors }, control } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -86,6 +89,29 @@ function TabDiscountOther(props) {
   const [openCloseOtherCost, setOpenCloseOtherCost] = useState(false)
   const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
   const { otherCostData } = useSelector(state => state.costing)
+  const [capacityFiles, setCapacityFiles] = useState([]);
+  const [timelineFiles, setTimelineFiles] = useState([]);
+  const [initialFiles, setInitialFiles] = useState([]);
+  const [feasibilityFiles, setFeasibilityFiles] = useState([]);
+  const [IsOpenTimeline, setIsOpenTimeline] = useState(false);
+  const [IsOpenCapacity, setIsOpenCapacity] = useState(false);
+  const [IsOpenFeasibility, setIsOpenFeasibility] = useState(false);
+  const [apiCallCounterFeasibility, setApiCallCounterFeasibility] = useState(0);
+  const [apiCallCounterCapacity, setApiCallCounterCapacity] = useState(0);
+  const [apiCallCounterTimeline, setApiCallCounterTimeline] = useState(0);
+  const [countFeasibility, setCountFeasibility] = useState(0);
+  const [countCapacity, setCountCapacity] = useState(0);
+  const [countTimeline, setCountTimeline] = useState(0);
+  const [apiCallCounter, setApiCallCounter] = useState(0)
+  const [attachmentAcc, setAttachmentAcc] = useState(false)
+  const [isRfqAttachment, setIsRfqAttachement] = useState(false)
+  const [attachmentLoaderObj, setAttachmentLoaderObj] = useState({
+    loaderAttachment: false,
+    loaderFeasibility: false,
+    loaderCapacity: false,
+    loaderTimeline: false,
+  })
+
   const [otherCostArray, setOtherCostArray] = useState([])
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
@@ -195,8 +221,11 @@ function TabDiscountOther(props) {
 
     dispatch(setComponentDiscountOtherItemData({}, () => { }))
     // setTimeout(() => {
-
-    let updatedFiles = files.map((file) => {
+    let tempFiles = [...feasibilityFiles, ...capacityFiles, ...timelineFiles]
+    let updatedFiles = tempFiles.map((file) => {
+      return { ...file, ContextId: costData.CostingId }
+    })
+    let updatedFilesAttachment = files.map((file) => {
       return { ...file, ContextId: costData.CostingId }
     })
 
@@ -270,7 +299,10 @@ function TabDiscountOther(props) {
     dispatch(setComponentDiscountOtherItemData(data, () => { }))
     // }, 1000)
   }, [DiscountCostData, fieldValues])
-
+  const filterAttachments = (list, value) => {
+    let filteredList = list?.filter(element => element.AttachementCategory === value)
+    return filteredList
+  }
   useEffect(() => {
     if (Object.keys(costData).length > 0) {
       const data = {
@@ -283,12 +315,19 @@ function TabDiscountOther(props) {
           let Data = res.data.Data;
           if (Data && Data?.CostingPartDetails && Data?.CostingPartDetails?.GrandTotalCost !== null) {
             let costDetail = Data?.CostingPartDetails
-
+            let attachmentList = filterAttachments(Data.Attachements, null)
+            let attachmentFeasibility = filterAttachments(Data.Attachements, FEASIBILITY)
+            let attachmentCapacity = filterAttachments(Data.Attachements, CAPACITY)
+            let attachmentTimeline = filterAttachments(Data.Attachements, TIMELINE)
+            setIsRfqAttachement(Data.Attachements.length !== attachmentList.length)
             setDiscountObj({ ...Data, ...Data?.CostingPartDetails, totalConditionCost: costDetail?.NetConditionCost, totalNpvCost: costDetail?.NetNpvCost, AnyOtherCost: costDetail.NetOtherCost !== null ? checkForNull(costDetail.NetOtherCost) : '', })
 
             setIsCurrencyChange(Data.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(Data.CurrencyExchangeRate)
-            setFiles(Data.Attachements ? Data.Attachements : [])
+            setFiles(attachmentList ? attachmentList : [])
+            setFeasibilityFiles(attachmentFeasibility ? attachmentFeasibility : [])
+            setCapacityFiles(attachmentCapacity ? attachmentCapacity : [])
+            setTimelineFiles(attachmentTimeline ? attachmentTimeline : [])
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             setCurrency(Data.Currency !== null ? { label: Data.Currency, value: Data.CurrencyId } : [])
             setValue('HundiOrDiscountPercentage', costDetail.DiscountCostDetails[0].Value !== null ? costDetail.DiscountCostDetails[0].Value : '')
@@ -675,6 +714,38 @@ function TabDiscountOther(props) {
       setIsDisable(false)
     }
   }
+  /**
+  * @method setDisableFalseFunctionFeasibility
+  * @description setDisableFalseFunctionFeasibility
+  */
+  const setDisableFalseFunctionFeasibility = () => {
+    const loop = Number(dropzoneCapacity?.current?.files?.length) - Number(capacityFiles?.length)
+    if (Number(loop) === 1 || Number(dropzoneCapacity?.current?.capacityFiles?.length) === Number(capacityFiles?.length)) {
+      setIsDisable(false)
+    }
+  }
+
+  /**
+  * @method setDisableFalseFunctionCapacity
+  * @description setDisableFalseFunctionCapacity
+  */
+  const setDisableFalseFunctionCapacity = () => {
+    const loop = Number(dropzoneCapacity?.current?.files?.length) - Number(capacityFiles?.length)
+    if (Number(loop) === 1 || Number(dropzoneCapacity?.current?.capacityFiles?.length) === Number(capacityFiles?.length)) {
+      setIsDisable(false)
+    }
+  }
+
+  /**
+  * @method setDisableFalseFunctionTimeline
+  * @description setDisableFalseFunctionTimeline
+  */
+  const setDisableFalseFunctionTimeline = () => {
+    const loop = Number(dropzoneTimeline?.current?.files?.length) - Number(timelineFiles?.length)
+    if (Number(loop) === 1 || Number(dropzoneTimeline?.current?.capacityFiles?.length) === Number(timelineFiles?.length)) {
+      setIsDisable(false)
+    }
+  }
 
   // called every time a file's `status` changes
   const handleChangeStatus = ({ meta, file }, status) => {
@@ -1050,24 +1121,6 @@ function TabDiscountOther(props) {
     }
   }
 
-  const handleOtherCostdrawer = () => {
-    setOpenCloseOtherCost(true)
-  }
-
-  const closeOtherCostDrawer = (type, otherCost, otherCostArr) => {
-    if (type === 'submit') {
-      setDiscountObj({
-        ...discountObj,
-        AnyOtherCost: otherCost
-      })
-      setValue('AnyOtherCost', checkForDecimalAndNull(otherCost, initialConfiguration.NoOfDecimalForPrice))
-      dispatch(isDiscountDataChange(true))
-      setOtherCostArray(otherCostArr)
-      setOpenCloseOtherCost(false)
-    } else {
-      setOpenCloseOtherCost(false)
-    }
-  }
 
   if (nfrListing === true) {
 
@@ -1165,6 +1218,265 @@ function TabDiscountOther(props) {
       obj.NpvDetails = finalList
       dispatch(saveCostingDetailNpv(obj, () => { }))
     }
+  }
+  const handleOtherCostdrawer = () => {
+    setOpenCloseOtherCost(true)
+  }
+
+  const closeOtherCostDrawer = (type, otherCost, otherCostArr) => {
+    if (type === 'submit') {
+      setDiscountObj({
+        ...discountObj,
+        AnyOtherCost: otherCost
+      })
+      setValue('AnyOtherCost', checkForDecimalAndNull(otherCost, initialConfiguration.NoOfDecimalForPrice))
+      dispatch(isDiscountDataChange(true))
+      setOtherCostArray(otherCostArr)
+      setOpenCloseOtherCost(false)
+    } else {
+      setOpenCloseOtherCost(false)
+    }
+  }
+  const setDisableFalseFunctionAttachmentFiles = (value) => {
+    switch (value) {
+      case ATTACHMENT:
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderAttachment: false }))
+        break;
+      case FEASIBILITY:
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderFeasibility: false }))
+        break;
+      case CAPACITY:
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderCapacity: false }))
+        break;
+      case TIMELINE:
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderTimeline: false }))
+        break;
+      default:
+        break;
+    }
+  }
+
+  const handleChangeFeasibility = ({ meta, file }, status) => {
+
+    setAttachmentLoaderObj(prevState => ({ ...prevState, loaderFeasibility: true }))
+    setIsDisable(true)
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = feasibilityFiles && feasibilityFiles.filter(item => item.OriginalFileName !== removedFileName)
+      setFeasibilityFiles(tempArr)
+      setIsOpenFeasibility(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData();
+      data.append('file', file);
+      setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
+      dispatch(fileUploadCosting(data, (res) => {
+        setDisableFalseFunctionFeasibility();
+        if ('response' in res) {
+          status = res && res?.response?.status;
+          dropzoneFeasibility?.current?.files?.pop();
+        } else {
+          let Data = res.data[0];
+          Data.AttachementCategory = 'Feasibility'
+          setFeasibilityFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+        }
+        setApiCallCounterFeasibility(prevCounter => prevCounter - 1);
+
+        // Check if this is the last API call
+        setDisableFalseFunctionAttachmentFiles(FEASIBILITY)
+        setIsDisable(false)
+        if (apiCallCounterFeasibility === 0) {
+          setTimeout(() => {
+            setIsOpenFeasibility(!IsOpenFeasibility);
+          }, 500);
+        }
+      }));
+    }
+
+    if (status === 'rejected_file_type') {
+      setDisableFalseFunctionAttachmentFiles(FEASIBILITY)
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunctionAttachmentFiles(FEASIBILITY)
+      dropzoneCapacity.current?.files.pop()
+      Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunctionAttachmentFiles(FEASIBILITY)
+      dropzoneCapacity.current?.files.pop()
+      Toaster.warning("Something went wrong")
+    }
+  }
+
+  const handleChangeCapacity = ({ meta, file }, status) => {
+
+    setAttachmentLoaderObj(prevState => ({ ...prevState, loaderCapacity: true }))
+    setIsDisable(true)
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = capacityFiles && capacityFiles.filter(item => item.OriginalFileName !== removedFileName)
+      setCapacityFiles(tempArr)
+      setIsOpenCapacity(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData();
+      data.append('file', file);
+      setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
+      dispatch(fileUploadCosting(data, (res) => {
+        setDisableFalseFunctionCapacity();
+        if ('response' in res) {
+          status = res && res?.response?.status;
+          dropzoneCapacity?.current?.files?.pop();
+        } else {
+          let Data = res.data[0];
+          Data.AttachementCategory = 'Capacity'
+          setCapacityFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+        }
+        setApiCallCounterCapacity(prevCounter => prevCounter - 1);
+
+        setDisableFalseFunctionAttachmentFiles(CAPACITY)
+        setIsDisable(false)
+        // Check if this is the last API call
+        if (apiCallCounterCapacity === 0) {
+          setTimeout(() => {
+            setIsOpenCapacity(!IsOpenCapacity);
+          }, 500);
+        }
+      }));
+    }
+
+    if (status === 'rejected_file_type') {
+      setDisableFalseFunctionAttachmentFiles(CAPACITY)
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunctionAttachmentFiles(CAPACITY)
+      dropzoneCapacity.current?.files.pop()
+      Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunctionAttachmentFiles(CAPACITY)
+      dropzoneCapacity.current?.files.pop()
+      Toaster.warning("Something went wrong")
+    }
+  }
+
+  const handleChangeTimeline = ({ meta, file }, status) => {
+
+    setIsDisable(true)
+    setAttachmentLoaderObj(prevState => ({ ...prevState, loaderTimeline: true }))
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = timelineFiles && timelineFiles.filter(item => item.OriginalFileName !== removedFileName)
+      setTimelineFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData();
+      data.append('AttachementCategory', 'Timeline');
+      data.append('file', file);
+      setApiCallCounterTimeline(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
+      dispatch(fileUploadCosting(data, (res) => {
+        setDisableFalseFunctionTimeline();
+        if ('response' in res) {
+          status = res && res?.response?.status;
+          dropzoneTimeline?.current?.files?.pop();
+        } else {
+          let Data = res.data[0];
+          Data.AttachementCategory = 'Timeline'
+          setTimelineFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+        }
+        setApiCallCounterTimeline(prevCounter => prevCounter - 1);
+
+        setDisableFalseFunctionAttachmentFiles(TIMELINE)
+        setIsDisable(false)
+        // Check if this is the last API call
+        if (apiCallCounterTimeline === 0) {
+          setTimeout(() => {
+            setIsOpenTimeline(!IsOpenTimeline);
+          }, 500);
+        }
+      }));
+
+    }
+
+    if (status === 'rejected_file_type') {
+      setDisableFalseFunctionAttachmentFiles(TIMELINE)
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunctionAttachmentFiles(TIMELINE)
+      dropzoneTimeline.current?.files.pop()
+      Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunctionAttachmentFiles(TIMELINE)
+      dropzoneTimeline.current?.files.pop()
+      Toaster.warning("Something went wrong")
+    }
+  }
+  const deleteFileFeasibility = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let tempArr = feasibilityFiles && feasibilityFiles.filter(item => item.FileId !== FileId)
+      setFeasibilityFiles(tempArr)
+    }
+    if (FileId == null) {
+      let tempArr = feasibilityFiles && feasibilityFiles.filter(item => item.FileName !== OriginalFileName)
+      setFeasibilityFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (dropzoneFeasibility?.current !== null) {
+      setCountFeasibility(countFeasibility - 1)
+      dropzoneFeasibility.current?.files.pop()
+    }
+  }
+
+  const deleteFileCapacity = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let tempArr = capacityFiles && capacityFiles.filter(item => item.FileId !== FileId)
+      setCapacityFiles(tempArr)
+    }
+    if (FileId == null) {
+      let tempArr = capacityFiles && capacityFiles.filter(item => item.FileName !== OriginalFileName)
+      setCapacityFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (dropzoneCapacity?.current !== null) {
+      setCountCapacity(countCapacity - 1)
+      dropzoneCapacity.current?.files.pop()
+    }
+  }
+
+  const deleteFileTimeline = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let tempArr = timelineFiles && timelineFiles.filter(item => item.FileId !== FileId)
+      setTimelineFiles(tempArr)
+    }
+    if (FileId == null) {
+      let tempArr = timelineFiles && timelineFiles.filter(item => item.FileName !== OriginalFileName)
+      setTimelineFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (dropzoneTimeline?.current !== null) {
+      setCountTimeline(countTimeline - 1)
+      dropzoneTimeline.current?.files.pop()
+    }
+  }
+
+  if (nfrListing === true) {
+
+    return <Redirect
+      to={{
+        pathname: "/nfr",
+        state: {
+        }
+
+      }}
+    />
   }
 
   return (
@@ -1527,13 +1839,13 @@ function TabDiscountOther(props) {
                   <Row>
                     <Col md="10">
                       <div className="left-border mt-3">
-                        {'Remarks & Attachments:'}
+                        Remarks{isRfqAttachment ? "" : ' & Attachments'}:
                       </div>
                     </Col>
 
                     <Col md="6">
                       <TextAreaHookForm
-                        label="Remarks & Attachments:"
+                        label={`Remarks${isRfqAttachment ? "" : ' & Attachments'}:`}
                         name={"Remarks"}
                         Controller={Controller}
                         control={control}
@@ -1556,76 +1868,392 @@ function TabDiscountOther(props) {
                       />
                     </Col>
 
-                    <Col md="3" className="height152-label">
-                      <label>Upload Attachment (upload up to 4 files)</label>
-                      <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
-                        Maximum file upload limit reached.
-                      </div>
-                      <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
-                        <Dropzone
-                          ref={dropzone}
-                          onChangeStatus={handleChangeStatus}
-                          PreviewComponent={Preview}
-                          //onSubmit={this.handleSubmit}
-                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                          initialFiles={[]}
-                          maxFiles={4}
-                          maxSizeBytes={20000000}
-                          inputContent={(files, extra) =>
-                            extra.reject ? (
-                              "Image, audio and video files only"
-                            ) : (
-                              <div className="text-center">
-                                <i className="text-primary fa fa-cloud-upload"></i>
-                                <span className="d-block">
-                                  Drag and Drop or{" "}
-                                  <span className="text-primary">Browse</span>
-                                  <br />
-                                  file to upload
-                                </span>
-                              </div>
-                            )
-                          }
-                          styles={{
-                            dropzoneReject: {
-                              borderColor: "red",
-                              backgroundColor: "#DAA",
-                            },
-                            inputLabel: (files, extra) =>
-                              extra.reject ? { color: "red" } : {},
-                          }}
-                          classNames="draper-drop"
-                          disabled={CostingViewMode ? true : false}
-                        />
-                      </div>
-                    </Col>
-                    <Col md="3">
-                      <div className={"attachment-wrapper"}>
-                        {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                        {files &&
-                          files.map((f) => {
-                            const withOutTild = f.FileURL.replace("~", "");
-                            const fileURL = `${FILE_URL}${withOutTild}`;
-                            return (
-                              <div className={"attachment images"}>
-                                <a href={fileURL} target="_blank">
-                                  {f.OriginalFileName}
-                                </a>
-                                {
-                                  !CostingViewMode &&
-                                  <img
-                                    alt={""}
-                                    className="float-right"
-                                    onClick={() => deleteFile(f.FileId, f.FileName)}
-                                    src={redcrossImg}
-                                  ></img>
-                                }
-                              </div>
-                            );
-                          })}
-                      </div>
-                    </Col>
-                  </Row>
+                    {!isRfqAttachment ? <>
+                      <Col md="3" className="height152-label">
+                        <label>Upload Attachment (upload up to 4 files)</label>
+                        <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
+                          Maximum file upload limit reached.
+                        </div>
+                        <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
+                          <Dropzone
+                            ref={dropzone}
+                            onChangeStatus={handleChangeStatus}
+                            PreviewComponent={Preview}
+                            //onSubmit={this.handleSubmit}
+                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                            initialFiles={[]}
+                            maxFiles={4}
+                            maxSizeBytes={20000000}
+                            inputContent={(files, extra) =>
+                              extra.reject ? (
+                                "Image, audio and video files only"
+                              ) : (
+                                <div className="text-center">
+                                  <i className="text-primary fa fa-cloud-upload"></i>
+                                  <span className="d-block">
+                                    Drag and Drop or{" "}
+                                    <span className="text-primary">Browse</span>
+                                    <br />
+                                    file to upload
+                                  </span>
+                                </div>
+                              )
+                            }
+                            styles={{
+                              dropzoneReject: {
+                                borderColor: "red",
+                                backgroundColor: "#DAA",
+                              },
+                              inputLabel: (files, extra) =>
+                                extra.reject ? { color: "red" } : {},
+                            }}
+                            classNames="draper-drop"
+                            disabled={CostingViewMode ? true : false}
+                          />
+                        </div>
+                      </Col>
+                      <Col md="3">
+                        <div className={"attachment-wrapper"}>
+                          {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                          {files &&
+                            files.map((f) => {
+                              const withOutTild = f.FileURL.replace("~", "");
+                              const fileURL = `${FILE_URL}${withOutTild}`;
+                              return (
+                                <div className={"attachment images"}>
+                                  <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                  </a>
+                                  {
+                                    !CostingViewMode &&
+                                    <img
+                                      alt={""}
+                                      className="float-right"
+                                      onClick={() => deleteFile(f.FileId, f.FileName)}
+                                      src={redcrossImg}
+                                    ></img>
+                                  }
+                                </div>
+                              );
+                            })}
+                        </div>
+                      </Col>
+
+                    </> : <>
+                      <Col md="10"><div className="left-border mt-1">Attachements:</div></Col>
+                      <Col md="2" className="text-right">
+                        <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setAttachmentAcc(!attachmentAcc) }}>
+                          {attachmentAcc ? (
+                            <i className="fa fa-minus" ></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </Col>
+                      {attachmentAcc && <Col md="12">
+                        <Row className='mx-0 border'>
+                          <Col md="12" className='height152-label'>
+                            <h6 className="mt-3">Feasibility</h6>
+                            <Row className='border-bottom pb-2'>
+                              <Col md="6">
+                                <label>Upload Attachment (upload up to 4 files)</label>
+                                <div className={`alert alert-danger mt-2 ${feasibilityFiles.length === 4 ? '' : 'd-none'}`} role="alert">
+                                  Maximum file upload limit has been reached.
+                                </div>
+                                <div className={`${feasibilityFiles.length >= 4 ? 'd-none' : ''}`}>
+                                  <Dropzone
+                                    ref={dropzoneFeasibility}
+                                    onChangeStatus={handleChangeFeasibility}
+                                    PreviewComponent={Preview}
+                                    //onSubmit={this.handleSubmit}
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                    initialFiles={initialFiles}
+                                    maxFiles={4}
+                                    maxSizeBytes={5000000}
+                                    inputContent={(files, extra) =>
+                                      extra.reject ? (
+                                        "Image, audio and video files only"
+                                      ) : (
+                                        <div className="text-center">
+                                          <i className="text-primary fa fa-cloud-upload"></i>
+                                          <span className="d-block">
+                                            Drag and Drop or{" "}
+                                            <span className="text-primary">Browse</span>
+                                            <br />
+                                            file to upload
+                                          </span>
+                                        </div>
+                                      )
+                                    }
+                                    styles={{
+                                      dropzoneReject: {
+                                        borderColor: "red",
+                                        backgroundColor: "#DAA",
+                                      },
+                                      inputLabel: (files, extra) =>
+                                        extra.reject ? { color: "red" } : {},
+                                    }}
+                                    className="draper-drop"
+                                    disabled={CostingViewMode ? true : false}
+                                  />
+                                </div>
+                              </Col>
+                              <Col md="6">
+                                <div className={"attachment-wrapper mb-3"}>
+                                  {attachmentLoaderObj?.loaderFeasibility && <LoaderCustom customClass="attachment-sec-loader" />}
+                                  {feasibilityFiles &&
+                                    feasibilityFiles.map((f) => {
+                                      const withOutTild = f?.FileURL.replace("~", "");
+                                      const fileURL = `${FILE_URL}${withOutTild}`;
+                                      return (
+                                        <div className={"attachment images"}>
+                                          <a href={fileURL} target="_blank" rel="noreferrer">
+                                            {f?.OriginalFileName}
+                                          </a>
+                                          {!CostingViewMode && <img
+                                            alt={""}
+                                            className="float-right"
+                                            onClick={() => deleteFileFeasibility(f?.FileId, f?.FileName)}
+                                            src={redcrossImg}
+                                          ></img>
+                                          }
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </Col>
+                            </Row>
+                          </Col>
+                          <Col md="12" className='height152-label'>
+                            <h6 className="mt-3">Capacity</h6>
+                            <Row className='border-bottom pb-2'>
+                              <Col md="6">
+                                <label>Upload Attachment (upload up to 4 files)</label>
+                                <div className={`alert alert-danger mt-2 ${capacityFiles.length === 4 ? '' : 'd-none'}`} role="alert">
+                                  Maximum file upload limit has been reached.
+                                </div>
+                                <div className={`${capacityFiles.length >= 4 ? 'd-none' : ''}`}>
+                                  <Dropzone
+                                    ref={dropzoneCapacity}
+                                    onChangeStatus={handleChangeCapacity}
+                                    PreviewComponent={Preview}
+                                    //onSubmit={this.handleSubmit}
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                    initialFiles={initialFiles}
+                                    maxFiles={4}
+                                    maxSizeBytes={5000000}
+                                    inputContent={(files, extra) =>
+                                      extra.reject ? (
+                                        "Image, audio and video files only"
+                                      ) : (
+                                        <div className="text-center">
+                                          <i className="text-primary fa fa-cloud-upload"></i>
+                                          <span className="d-block">
+                                            Drag and Drop or{" "}
+                                            <span className="text-primary">Browse</span>
+                                            <br />
+                                            file to upload
+                                          </span>
+                                        </div>
+                                      )
+                                    }
+                                    styles={{
+                                      dropzoneReject: {
+                                        borderColor: "red",
+                                        backgroundColor: "#DAA",
+                                      },
+                                      inputLabel: (files, extra) =>
+                                        extra.reject ? { color: "red" } : {},
+                                    }}
+                                    className="draper-drop"
+                                    disabled={CostingViewMode ? true : false}
+                                  />
+                                </div>
+                              </Col>
+                              <Col md="6">
+                                <div className={"attachment-wrapper mb-3"}>
+                                  {attachmentLoaderObj?.loaderCapacity && <LoaderCustom customClass="attachment-sec-loader" />}
+                                  {capacityFiles &&
+                                    capacityFiles.map((f) => {
+                                      const withOutTild = f?.FileURL.replace("~", "");
+                                      const fileURL = `${FILE_URL}${withOutTild}`;
+                                      return (
+                                        <div className={"attachment images"}>
+                                          <a href={fileURL} target="_blank" rel="noreferrer">
+                                            {f?.OriginalFileName}
+                                          </a>
+                                          {!CostingViewMode && <img
+                                            alt={""}
+                                            className="float-right"
+                                            onClick={() => deleteFileCapacity(f?.FileId, f?.FileName)}
+                                            src={redcrossImg}
+                                          ></img>
+                                          }
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </Col>
+                            </Row>
+
+                          </Col>
+                          <Col md="12" className='height152-label'>
+                            <h6 className="mt-3">Timeline</h6>
+                            <Row className='border-bottom pb-2'>
+                              <Col md="6">
+                                <label>Upload Attachment (upload up to 4 files)</label>
+                                <div className={`alert alert-danger mt-2 ${timelineFiles.length === 4 ? '' : 'd-none'}`} role="alert">
+                                  Maximum file upload limit has been reached.
+                                </div>
+                                <div className={`${timelineFiles.length >= 4 ? 'd-none' : ''}`}>
+                                  <Dropzone
+                                    ref={dropzoneTimeline}
+                                    onChangeStatus={handleChangeTimeline}
+                                    PreviewComponent={Preview}
+                                    //onSubmit={this.handleSubmit}
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                    initialFiles={initialFiles}
+                                    maxFiles={4}
+                                    maxSizeBytes={5000000}
+                                    inputContent={(files, extra) =>
+                                      extra.reject ? (
+                                        "Image, audio and video files only"
+                                      ) : (
+                                        <div className="text-center">
+                                          <i className="text-primary fa fa-cloud-upload"></i>
+                                          <span className="d-block">
+                                            Drag and Drop or{" "}
+                                            <span className="text-primary">Browse</span>
+                                            <br />
+                                            file to upload
+                                          </span>
+                                        </div>
+                                      )
+                                    }
+                                    styles={{
+                                      dropzoneReject: {
+                                        borderColor: "red",
+                                        backgroundColor: "#DAA",
+                                      },
+                                      inputLabel: (files, extra) =>
+                                        extra.reject ? { color: "red" } : {},
+                                    }}
+                                    className="draper-drop"
+                                    disabled={CostingViewMode ? true : false}
+                                  />
+                                </div>
+                              </Col>
+                              <Col md="6">
+                                <div className={"attachment-wrapper mb-3"}>
+                                  {attachmentLoaderObj?.loaderTimeline && <LoaderCustom customClass="attachment-sec-loader" />}
+                                  {timelineFiles &&
+                                    timelineFiles.map((f) => {
+                                      const withOutTild = f?.FileURL.replace("~", "");
+                                      const fileURL = `${FILE_URL}${withOutTild}`;
+                                      return (
+                                        <div className={"attachment images"}>
+                                          <a href={fileURL} target="_blank" rel="noreferrer">
+                                            {f?.OriginalFileName}
+                                          </a>
+                                          {!CostingViewMode && <img
+                                            alt={""}
+                                            className="float-right"
+                                            onClick={() => deleteFileTimeline(f?.FileId, f?.FileName)}
+                                            src={redcrossImg}
+                                          ></img>
+                                          }
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </Col>
+                            </Row>
+                          </Col>
+                          <Col md="12" className='height152-label'>
+                            <h6 className="mt-3">Others</h6>
+                            <Row className='pb-2'>
+                              <Col md="6">
+                                <label>Upload Attachment (upload up to 4 files)</label>
+                                <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
+                                  Maximum file upload limit reached.
+                                </div>
+                                <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
+                                  <Dropzone
+                                    ref={dropzone}
+                                    onChangeStatus={handleChangeStatus}
+                                    PreviewComponent={Preview}
+                                    //onSubmit={this.handleSubmit}
+                                    accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                    initialFiles={[]}
+                                    maxFiles={4}
+                                    maxSizeBytes={20000000}
+                                    inputContent={(files, extra) =>
+                                      extra.reject ? (
+                                        "Image, audio and video files only"
+                                      ) : (
+                                        <div className="text-center">
+                                          <i className="text-primary fa fa-cloud-upload"></i>
+                                          <span className="d-block">
+                                            Drag and Drop or{" "}
+                                            <span className="text-primary">Browse</span>
+                                            <br />
+                                            file to upload
+                                          </span>
+                                        </div>
+                                      )
+                                    }
+                                    styles={{
+                                      dropzoneReject: {
+                                        borderColor: "red",
+                                        backgroundColor: "#DAA",
+                                      },
+                                      inputLabel: (files, extra) =>
+                                        extra.reject ? { color: "red" } : {},
+                                    }}
+                                    classNames="draper-drop"
+                                    disabled={CostingViewMode ? true : false}
+                                  />
+                                </div>
+                              </Col>
+                              <Col md="6">
+                                <div className={"attachment-wrapper mb-3"}>
+                                  {attachmentLoaderObj?.loaderAttachment && <LoaderCustom customClass="attachment-loader" />}
+                                  {files &&
+                                    files.map((f) => {
+                                      const withOutTild = f.FileURL.replace("~", "");
+                                      const fileURL = `${FILE_URL}${withOutTild}`;
+                                      return (
+                                        <div className={"attachment images"}>
+                                          <a href={fileURL} target="_blank" rel="noreferrer">
+                                            {f.OriginalFileName}
+                                          </a>
+                                          {
+                                            !CostingViewMode &&
+                                            <img
+                                              alt={""}
+                                              className="float-right"
+                                              onClick={() => deleteFile(f.FileId, f.FileName)}
+                                              src={redcrossImg}
+                                            ></img>
+                                          }
+                                        </div>
+                                      );
+                                    })}
+                                </div>
+                              </Col>
+                            </Row>
+                          </Col>
+                        </Row>
+                      </Col>}
+                    </>}
+
+
+
+
+
+
+
+                  </Row >
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
@@ -1652,11 +2280,11 @@ function TabDiscountOther(props) {
                     </div>
                   </Row>
 
-                </form>
-              </div>
-            </Col>
-          </Row>
-        </div>
+                </form >
+              </div >
+            </Col >
+          </Row >
+        </div >
       </div >}
       {
         openCloseOtherCost &&

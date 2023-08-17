@@ -10,12 +10,14 @@ function Attachament(props) {
   const Data = gridListing ? index : viewCostingData[index]
   const [files, setFiles] = useState([]);
   const [filesFeasibility, setFilesFeasibility] = useState([]);
+  const [isRfqAttachments, setIsRfqAttachments] = useState(false)
   const [filesCapacity, setFilesCapacity] = useState([]);
   const [filesTimeline, setFilesTimeline] = useState([]);
 
   useEffect(() => {
     let list = (Data.attachment || Data.Attachements)
     let attachmentList = filterAttachments(list, null)
+    setIsRfqAttachments(list.length !== attachmentList.length)
     setFiles(attachmentList)
     let attachmentFeasibility = filterAttachments(list, FEASIBILITY)
     setFilesFeasibility(attachmentFeasibility)
@@ -81,7 +83,7 @@ function Attachament(props) {
 
               </Col> :
                 <>
-                  {props?.isRfqCosting ? <>
+                  {isRfqAttachments ? <>
 
                     <Col md="12"> <div className="left-border mb-0">Feasibility</div>
                       {filesFeasibility && filesFeasibility.map((f) => {
