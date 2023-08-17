@@ -2209,14 +2209,7 @@ function TabDiscountOther(props) {
                         </Row>
                       </Col>}
                     </>}
-
-
-
-
-
-
-
-                  </Row >
+                  </Row>
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
