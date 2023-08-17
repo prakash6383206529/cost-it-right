@@ -610,6 +610,7 @@ export const API = {
   uploadCorrugatedBoxCosting: `${BASE_URL}/bulk-costing/save-costing-corrugated-box`,
   uploadAssemblyCosting: `${BASE_URL}/bulk-costing/save-costing-assembly`,
   uploadWiringHarnessCosting: `${BASE_URL}/bulk-costing/save-costing-wiring-harness`,
+  uploadSheetMetal: `${BASE_URL}/bulk-costing/save-costing-sheet-metal-in-mhr-process`,
 
 
   //COST SUMMARY
@@ -2342,6 +2343,7 @@ export const MACHINING_GROUP_BULKUPLOAD = 3
 export const CORRUGATED_BOX = 4
 export const ASSEMBLY = 5
 export const WIRINGHARNESS = 6
+export const SHEETMETAL = 7
 
 
 export const REASON_ID = 2
@@ -2398,6 +2400,12 @@ export const SPACEBAR = 32
 // MASTER PAGES NAME END
 
 export const VARIANCE = 'Variance'
+
+//ATTACHMENT CATAGORY
+export const ATTACHMENT = 'Attachment'
+export const FEASIBILITY = 'Feasibility'
+export const CAPACITY = 'Capacity'
+export const TIMELINE = 'Timeline'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
