@@ -2493,6 +2493,10 @@ body {
   align-items: center;
   justify-content: space-between;
   padding: 10px 0;
+
+  a {
+    color: $colorPrimary;
+  }
 }
 
 ul.bread-list.d-inline-flex {
