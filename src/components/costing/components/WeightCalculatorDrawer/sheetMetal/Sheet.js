@@ -77,7 +77,8 @@ function Sheet(props) {
     )
     const [dataToSend, setDataToSend] = useState({
         GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
-        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : ''
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '',
+        ComponentsPerStrip: WeightCalculatorRequest && WeightCalculatorRequest.ComponentsPerStrip !== null ? WeightCalculatorRequest.ComponentsPerStrip : '',
     })
     const [isChangeApplies, setIsChangeApplied] = useState(true)
     const tempOldObj = WeightCalculatorRequest
@@ -186,12 +187,14 @@ function Sheet(props) {
         const blankSize = getValues('BlankSize')
         const componentPerStrip = parseInt(checkForNull(getValues('SheetWidth')) / blankSize)
         setValue('ComponentPerStrip', checkForNull(componentPerStrip))
-
+        const updatedValue = dataToSend
+        updatedValue.ComponentsPerStrip = checkForNull(getValues('SheetWidth')) / blankSize
+        setDataToSend(updatedValue)
     }
 
     const setNoOfComponent = () => {
         const stripNo = getValues('StripsNumber')
-        const componentPerStrip = getValues('ComponentPerStrip')
+        const componentPerStrip = dataToSend.ComponentsPerStrip
         const cavity = getValues('Cavity')
         const noOfComponent = stripNo * componentPerStrip * cavity
         setValue('NoOfComponent', checkForNull(noOfComponent))
@@ -293,7 +296,7 @@ function Sheet(props) {
             StripWidth: values.StripWidth,
             NumberOfStrips: values.StripsNumber,
             BlankSize: values.BlankSize,
-            ComponentsPerStrip: values.ComponentPerStrip,
+            ComponentsPerStrip: dataToSend.ComponentsPerStrip,
             NumberOfPartsPerSheet: values.NoOfComponent, //TOTAL COMPONENT PER SHEET
             UOMId: rmRowData.UOMId,
             UOM: rmRowData.UOM,
