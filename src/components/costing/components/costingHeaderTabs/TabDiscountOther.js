@@ -1538,6 +1538,235 @@ function TabDiscountOther(props) {
       dropzoneTimeline.current?.files.pop()
     }
   }
+  const setDisableFalseFunctionAttachmentFiles = (value) => {
+    switch (value) {
+      case ATTACHMENT:
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderAttachment: false }))
+        break;
+      case FEASIBILITY:
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderFeasibility: false }))
+        break;
+      case CAPACITY:
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderCapacity: false }))
+        break;
+      case TIMELINE:
+        setAttachmentLoaderObj(prevState => ({ ...prevState, loaderTimeline: false }))
+        break;
+      default:
+        break;
+    }
+  }
+
+  const handleChangeFeasibility = ({ meta, file }, status) => {
+
+    setAttachmentLoaderObj(prevState => ({ ...prevState, loaderFeasibility: true }))
+    setIsDisable(true)
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = feasibilityFiles && feasibilityFiles.filter(item => item.OriginalFileName !== removedFileName)
+      setFeasibilityFiles(tempArr)
+      setIsOpenFeasibility(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData();
+      data.append('file', file);
+      setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
+      dispatch(fileUploadCosting(data, (res) => {
+        setDisableFalseFunctionFeasibility();
+        if ('response' in res) {
+          status = res && res?.response?.status;
+          dropzoneFeasibility?.current?.files?.pop();
+        } else {
+          let Data = res.data[0];
+          Data.AttachementCategory = 'Feasibility'
+          setFeasibilityFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+        }
+        setApiCallCounterFeasibility(prevCounter => prevCounter - 1);
+
+        // Check if this is the last API call
+        setDisableFalseFunctionAttachmentFiles(FEASIBILITY)
+        setIsDisable(false)
+        if (apiCallCounterFeasibility === 0) {
+          setTimeout(() => {
+            setIsOpenFeasibility(!IsOpenFeasibility);
+          }, 500);
+        }
+      }));
+    }
+
+    if (status === 'rejected_file_type') {
+      setDisableFalseFunctionAttachmentFiles(FEASIBILITY)
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunctionAttachmentFiles(FEASIBILITY)
+      dropzoneCapacity.current?.files.pop()
+      Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunctionAttachmentFiles(FEASIBILITY)
+      dropzoneCapacity.current?.files.pop()
+      Toaster.warning("Something went wrong")
+    }
+  }
+
+  const handleChangeCapacity = ({ meta, file }, status) => {
+
+    setAttachmentLoaderObj(prevState => ({ ...prevState, loaderCapacity: true }))
+    setIsDisable(true)
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = capacityFiles && capacityFiles.filter(item => item.OriginalFileName !== removedFileName)
+      setCapacityFiles(tempArr)
+      setIsOpenCapacity(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData();
+      data.append('file', file);
+      setApiCallCounter(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
+      dispatch(fileUploadCosting(data, (res) => {
+        setDisableFalseFunctionCapacity();
+        if ('response' in res) {
+          status = res && res?.response?.status;
+          dropzoneCapacity?.current?.files?.pop();
+        } else {
+          let Data = res.data[0];
+          Data.AttachementCategory = 'Capacity'
+          setCapacityFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+        }
+        setApiCallCounterCapacity(prevCounter => prevCounter - 1);
+
+        setDisableFalseFunctionAttachmentFiles(CAPACITY)
+        setIsDisable(false)
+        // Check if this is the last API call
+        if (apiCallCounterCapacity === 0) {
+          setTimeout(() => {
+            setIsOpenCapacity(!IsOpenCapacity);
+          }, 500);
+        }
+      }));
+    }
+
+    if (status === 'rejected_file_type') {
+      setDisableFalseFunctionAttachmentFiles(CAPACITY)
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunctionAttachmentFiles(CAPACITY)
+      dropzoneCapacity.current?.files.pop()
+      Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunctionAttachmentFiles(CAPACITY)
+      dropzoneCapacity.current?.files.pop()
+      Toaster.warning("Something went wrong")
+    }
+  }
+
+  const handleChangeTimeline = ({ meta, file }, status) => {
+
+    setIsDisable(true)
+    setAttachmentLoaderObj(prevState => ({ ...prevState, loaderTimeline: true }))
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = timelineFiles && timelineFiles.filter(item => item.OriginalFileName !== removedFileName)
+      setTimelineFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+
+    if (status === 'done') {
+      let data = new FormData();
+      data.append('AttachementCategory', 'Timeline');
+      data.append('file', file);
+      setApiCallCounterTimeline(prevCounter => prevCounter + 1);  // Increment the API call counter for loader showing
+      dispatch(fileUploadCosting(data, (res) => {
+        setDisableFalseFunctionTimeline();
+        if ('response' in res) {
+          status = res && res?.response?.status;
+          dropzoneTimeline?.current?.files?.pop();
+        } else {
+          let Data = res.data[0];
+          Data.AttachementCategory = 'Timeline'
+          setTimelineFiles(prevFiles => [...prevFiles, Data]); // Update the state using the callback function
+        }
+        setApiCallCounterTimeline(prevCounter => prevCounter - 1);
+
+        setDisableFalseFunctionAttachmentFiles(TIMELINE)
+        setIsDisable(false)
+        // Check if this is the last API call
+        if (apiCallCounterTimeline === 0) {
+          setTimeout(() => {
+            setIsOpenTimeline(!IsOpenTimeline);
+          }, 500);
+        }
+      }));
+
+    }
+
+    if (status === 'rejected_file_type') {
+      setDisableFalseFunctionAttachmentFiles(TIMELINE)
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunctionAttachmentFiles(TIMELINE)
+      dropzoneTimeline.current?.files.pop()
+      Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunctionAttachmentFiles(TIMELINE)
+      dropzoneTimeline.current?.files.pop()
+      Toaster.warning("Something went wrong")
+    }
+  }
+  const deleteFileFeasibility = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let tempArr = feasibilityFiles && feasibilityFiles.filter(item => item.FileId !== FileId)
+      setFeasibilityFiles(tempArr)
+    }
+    if (FileId == null) {
+      let tempArr = feasibilityFiles && feasibilityFiles.filter(item => item.FileName !== OriginalFileName)
+      setFeasibilityFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (dropzoneFeasibility?.current !== null) {
+      setCountFeasibility(countFeasibility - 1)
+      dropzoneFeasibility.current?.files.pop()
+    }
+  }
+
+  const deleteFileCapacity = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let tempArr = capacityFiles && capacityFiles.filter(item => item.FileId !== FileId)
+      setCapacityFiles(tempArr)
+    }
+    if (FileId == null) {
+      let tempArr = capacityFiles && capacityFiles.filter(item => item.FileName !== OriginalFileName)
+      setCapacityFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (dropzoneCapacity?.current !== null) {
+      setCountCapacity(countCapacity - 1)
+      dropzoneCapacity.current?.files.pop()
+    }
+  }
+
+  const deleteFileTimeline = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let tempArr = timelineFiles && timelineFiles.filter(item => item.FileId !== FileId)
+      setTimelineFiles(tempArr)
+    }
+    if (FileId == null) {
+      let tempArr = timelineFiles && timelineFiles.filter(item => item.FileName !== OriginalFileName)
+      setTimelineFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (dropzoneTimeline?.current !== null) {
+      setCountTimeline(countTimeline - 1)
+      dropzoneTimeline.current?.files.pop()
+    }
+  }
 
   if (nfrListing === true) {
 
