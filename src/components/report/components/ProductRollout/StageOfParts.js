@@ -8,24 +8,29 @@ const StageOfParts = () => {
         datasets: [
             {
                 label: 'Approved',
-                data: [10],
-                backgroundColor: colorArray[0],
+                data: [5],
+                backgroundColor: colorArray[2],
             },
             {
                 label: 'Draft',
-                data: [5],
+                data: [3],
                 backgroundColor: colorArray[1],
             },
             {
                 label: 'Rejected',
                 data: [2],
-                backgroundColor: colorArray[2],
+                backgroundColor: colorArray[3],
             },
             {
                 label: 'Pending',
                 data: [3],
-                backgroundColor: colorArray[3],
+                backgroundColor: colorArray[0],
             },
+            {
+                label: 'Cost Not Done',
+                data: [1],
+                backgroundColor: colorArray[4],
+            }
         ],
     };
     const options = {
