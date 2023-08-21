@@ -3192,6 +3192,10 @@ button:disabled,
       height: 152px;
     }
   }
+
+  .attachment-wrapper {
+    max-height: max-content;
+  }
 }
 
 // ========error page =============

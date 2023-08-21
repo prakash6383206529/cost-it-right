@@ -333,7 +333,8 @@ export const SearchableSelectHookForm = (field) => {
             <div className={className} title={title ? title : isDisable ? value?.label : ''}>
               <Select
                 {...field}
-                id={name}
+                id={containerId}
+                inputId={name}
                 {...register}
                 name={name}
                 placeholder={placeholder ? placeholder : isDisable ? '-' : 'Select'}
@@ -646,7 +647,8 @@ export const AsyncSearchableSelectHookForm = (field) => {
                 {...field}
                 {...register}
                 name={name}
-                id={name}
+                id={containerId}
+                inputId={name}
                 placeholder={placeholder}
                 isDisabled={disabled}
                 onChange={(e) => {

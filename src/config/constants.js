@@ -1047,6 +1047,9 @@ export const API = {
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
+  // NFR
+  getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
+  getNfrAnnualForecastQuantity: `${BASE_URL}/rfq-quotation/get-nfr-annual-forecast-quantity`,
 }
 
 //Api constants
@@ -2439,6 +2442,10 @@ export const SUPPLIER_CONFRIM = 'Supplier Confirmation'
 export const INVOICE_BACKUP = 'Invoice Backups'
 export const OTHER = 'Others'
 export const ATTACHMENTS = 'Attachments'
+export const ATTACHMENT = 'Attachment'
+export const FEASIBILITY = 'Feasibility'
+export const CAPACITY = 'Capacity'
+export const TIMELINE = 'Timeline'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
@@ -2655,4 +2662,4 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.233.2";
+export const VERSION = "V2.1.234.1";
