@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Field, reduxForm, getFormValues } from 'redux-form';
+import React, { useState, useEffect } from 'react';
+import { useForm, Controller } from "react-hook-form";
+import { useDispatch } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
 import { debounce } from 'lodash';
 import Drawer from '@material-ui/core/Drawer';
@@ -10,14 +10,11 @@ import { loggedInUserId } from '../../../helper/auth';
 import LoaderCustom from '../../common/LoaderCustom';
 import Toaster from '../../common/Toaster';
 import { acceptAllExceptSingleSpecialCharacter, checkSpacesInString, checkWhiteSpaces, hashValidation, maxLength80, required } from '../../../helper/validation';
-import { renderText, focusOnError } from '../../layout/FormInputs';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
-import { useForm, Controller, useWatch } from "react-hook-form";
 
 const AddReason = (props) => {
-  const { isEditFlag, ID, reset, isOpen } = props;
-  console.log('isEditFlag: ', isEditFlag);
+  const { isEditFlag, ID } = props;
   const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(true);
   const [reasonId, setReasonId] = useState('');
@@ -42,7 +39,6 @@ const AddReason = (props) => {
         dispatch(getReasonAPI(ID, (res) => {
           if (res?.data?.Data) {
             const data = res.data.Data;
-            console.log('data: ', data);
             setDataToCheck(data);
             setIsActive(data.IsActive);
             setValue('Reason', data.Reason);
@@ -126,12 +122,6 @@ const AddReason = (props) => {
     }
   }, 500);
 
-  const handleKeyDown = (e) => {
-    if (e.key === 'Enter' && e.shiftKey === false) {
-      e.preventDefault();
-    }
-  };
-
   /**
   * @method render
   * @description Renders the component
@@ -162,20 +152,6 @@ const AddReason = (props) => {
                 </Col>
               </Row>
               <Row className="pl-3">
-                {/* <Col md="12">
-                  <Field
-                    label={`Reason`}
-                    name={"Reason"}
-                    type="text"
-                    placeholder={state.isEditFlag ? '-' : "Enter"}
-                    validate={[required, checkWhiteSpaces, maxLength80, acceptAllExceptSingleSpecialCharacter, checkSpacesInString, hashValidation]}
-                    component={renderText}
-                    required={true}
-                    className=" "
-                    customClassName=" withBorder"
-                    disabled={state.isEditFlag ? true : false}
-                  />
-                </Col> */}
                 <Col md="12">
                   <TextFieldHookForm
                     label={`Reason`}
