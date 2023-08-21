@@ -660,7 +660,7 @@ export function formViewData(costingSummary, header = '') {
 
   obj.toolApplicability = { applicability: 'Applicability', value: 'Value', }
   obj.toolApplicabilityValue = {
-    toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0,
+    toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : "-",
     toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
   }
 
