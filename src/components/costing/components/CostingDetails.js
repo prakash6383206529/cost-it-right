@@ -67,6 +67,7 @@ function CostingDetails(props) {
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
   const [partType, setPartType] = useState([]);
+
   const [effectiveDate, setEffectiveDate] = useState('');
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
   const [isZBCSOBEnabled, setZBCEnableSOBField] = useState(true);
@@ -519,8 +520,7 @@ function CostingDetails(props) {
       //   }
       // })))
 
-      reactLocalStorage.setObject('costingArray', [])
-      reactLocalStorage.setObject('surfaceCostingArray', [])
+
       setIsOpenVendorSOBDetails(true)
 
     } else {
