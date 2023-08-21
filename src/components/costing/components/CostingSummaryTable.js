@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail, setCostingMode
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -97,6 +97,7 @@ const CostingSummaryTable = (props) => {
 
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
+  const [ViewAccessibility, setViewAccessibility] = useState(true)
   const [iccPaymentData, setIccPaymentData] = useState("")
   const { initialConfiguration, topAndLeftMenuData } = useSelector(state => state.auth)
 
@@ -333,6 +334,7 @@ const CostingSummaryTable = (props) => {
       if (permmisionData !== undefined) {
         setAddAccessibility(permmisionData?.Add ? permmisionData?.Add : false)
         setEditAccessibility(permmisionData?.Edit ? permmisionData?.Edit : false)
+        setViewAccessibility(permmisionData?.View ? permmisionData?.View : false)
       }
     }
   }
@@ -583,7 +585,7 @@ const CostingSummaryTable = (props) => {
       if (res.data?.Result) {
         dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
           setPartInfo(res.data?.Data)
-
+          dispatch(setCostingMode({ editMode: false, viewMode: false }))
           showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
           history.push('/costing')
         }))
@@ -607,6 +609,7 @@ const CostingSummaryTable = (props) => {
       dispatch(getBriefCostingById(tempData?.costingId, (res) => {
         history.push('/costing')
         showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+        dispatch(setCostingMode({ editMode: true, viewMode: false }))
       }))
     }
     if (type === VBC) {
@@ -615,6 +618,38 @@ const CostingSummaryTable = (props) => {
         if (res?.data?.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+          dispatch(setCostingMode({ editMode: true, viewMode: false }))
+        }
+
+      }))
+    }
+  }
+
+  /**
+ * @method viewCostingDetail
+ * @description VIEW COSTING DETAIL (WILL GO TO COSTING DETAIL PAGE)
+ */
+  const viewCostingDetail = (index) => {
+    partNumber.isChanged = false
+    dispatch(storePartNumber(partNumber))
+
+    let tempData = viewCostingData[index]
+    props?.setcostingOptionsSelectFromSummary(viewCostingData && viewCostingData[index])
+    const type = viewCostingData[index]?.zbc === 0 ? 'ZBC' : 'VBC'
+    if (type === ZBC) {
+      dispatch(getBriefCostingById(tempData?.costingId, (res) => {
+        history.push('/costing')
+        showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+        dispatch(setCostingMode({ editMode: false, viewMode: true }))
+      }))
+    }
+    if (type === VBC) {
+      dispatch(getBriefCostingById(tempData?.costingId, (res) => {
+
+        if (res?.data?.Result) {
+          history.push('/costing')
+          showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+          dispatch(setCostingMode({ editMode: false, viewMode: true }))
         }
 
       }))
@@ -1657,6 +1692,7 @@ const CostingSummaryTable = (props) => {
                                   <div className="action  text-right">
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
+                                    {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                     {!isApproval && (data?.bestCost === true ? false : ((!viewMode || props.isRfqCosting || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
                                   </div>

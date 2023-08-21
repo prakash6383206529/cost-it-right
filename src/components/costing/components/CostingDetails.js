@@ -108,8 +108,7 @@ function CostingDetails(props) {
   const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
-  const [partDropdown, setPartDropdown] = useState([])
-
+  const costingMode = useSelector(state => state.costing.costingMode);
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
@@ -169,6 +168,20 @@ function CostingDetails(props) {
       reactLocalStorage.setObject('PartData', [])
     }
   }, [])
+
+  useEffect(() => {
+    if (costingMode?.editMode === true && costingMode?.viewMode === false) {
+      setIsCostingEditMode(true)
+      setIsCostingViewMode(false)
+    } else if (costingMode?.editMode === false && costingMode?.viewMode === true) {
+      setIsCostingViewMode(true)
+      setIsCostingEditMode(false)
+    } else if (costingMode?.editMode === false && costingMode?.viewMode === false) {
+      setIsCostingViewMode(false)
+      setIsCostingEditMode(false)
+    }
+
+  }, [costingMode])
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, technology.label)
