@@ -1687,7 +1687,7 @@ const CostingSummaryTable = (props) => {
                           <tr className={`${drawerDetailPDF ? "pdf-print" : ""}`} >
                             <td>
                               <span className="d-block">Costing Version</span>
-                              <span className="d-block mt-2">Net Cost (Effective from)</span>
+                              <span className={`d-block mt-${props.isRfqCosting ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
@@ -1748,38 +1748,35 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data.costingTypeId === ZBCTypeId ? `${data?.plantName}` : `${data?.destinationPlantName}`)}</span>
-                                    {props.isRfqCosting && <div>
-                                      {data?.editSOBPercentage ?
-                                        <div className="w-100px cr-select-height costing-error-container">
-                                          <TextFieldHookForm
-                                            label=""
-                                            name={`ShareOfBusinessPercent.${index}`}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={false}
-                                            rules={{
-                                              required: true,
-                                              validate: { number, percentageLimitValidation, decimalNumberLimit6 },
-                                              max: {
-                                                value: 100,
-                                                message: "Percentage should not be greater then 100"
-                                              }
-                                            }}
-                                            defaultValue={data.shareOfBusinessPercent ?? 0}
-                                            className=""
-                                            customClassName={"withBorder"}
-                                            handleChange={(e) => {
-                                              e.preventDefault();
-                                              handleVBCSOBChange(e, index, data);
-                                            }}
-                                            errors={errors && errors.ShareOfBusinessPercent}
-                                          // disabled={isVBCSOBEnabled ? true : false}
-                                          />
-                                        </div>
-                                        :
-                                        <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.shareOfBusinessPercent}</span>}
-                                      {data?.bestCost !== true && <button className="edit-details-btn" type={"button"} onClick={() => editValue(data, index)} />}
+                                    {props.isRfqCosting && data?.bestCost !== true && <div className='d-flex align-items-center'>
+                                      <div className="w-100px costing-error-container">
+                                        <TextFieldHookForm
+                                          label={false}
+                                          name={`ShareOfBusinessPercent.${index}`}
+                                          Controller={Controller}
+                                          control={control}
+                                          register={register}
+                                          mandatory={false}
+                                          rules={{
+                                            required: true,
+                                            validate: { number, percentageLimitValidation, decimalNumberLimit6 },
+                                            max: {
+                                              value: 100,
+                                              message: "Percentage should not be greater then 100"
+                                            }
+                                          }}
+                                          defaultValue={data.shareOfBusinessPercent ?? 0}
+                                          className="custom-height-28px"
+                                          customClassName={"withBorder mb-0"}
+                                          handleChange={(e) => {
+                                            e.preventDefault();
+                                            handleVBCSOBChange(e, index, data);
+                                          }}
+                                          errors={errors && errors.ShareOfBusinessPercent}
+                                          disabled={data?.editSOBPercentage ? false : true}
+                                        />
+                                      </div>
+                                      {data?.bestCost !== true && <button title={data?.editSOBPercentage ? 'Save' : 'Edit'} className={`${data?.editSOBPercentage ? 'SaveIcon' : 'Edit'} mb-0 ml-2`} type={"button"} onClick={() => editValue(data, index)} />}
                                     </div>
                                     }
                                   </td>
