@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import BoughtOutPart from '../BOP';
 import PartCompoment from '../Part';
-import { getCostingLabourDetails, getRMCCTabData, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setRMCCData } from '../../../actions/Costing';
+import { getCostingLabourDetails, getRMCCTabData, saveAssemblyBOPHandlingCharge, saveAssemblyPartRowCostingCalculation, saveCostingLabourDetails, setIsBreakupBoughtOutPartCostingFromAPI, setRMCCData } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, loggedInUserId, } from '../../../../../helper';
 import AddAssemblyOperation from '../../Drawers/AddAssemblyOperation';
 import { CostingStatusContext, IsPartType, IsNFR, ViewCostingContext } from '../../CostingDetails';
@@ -67,6 +67,7 @@ function AssemblyPart(props) {
       dispatch(getRMCCTabData(data, false, (res) => {
         if (res && res.data && res.data.Result) {
           let Data = res.data.DataList[0];
+          dispatch(setIsBreakupBoughtOutPartCostingFromAPI(res?.data?.DataList[0]?.IsBreakupBoughtOutPart))
           if (Data?.CostingPartDetails?.IsApplyBOPHandlingCharges) {
             let obj = {
               IsApplyBOPHandlingCharges: Data?.CostingPartDetails?.IsApplyBOPHandlingCharges,
