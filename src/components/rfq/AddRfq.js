@@ -26,7 +26,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _, { debounce } from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, nfrDropdown, visibilityModeDropdownArray } from '../../config/masterData';
+import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
