@@ -451,3 +451,11 @@ export const isDateFormatter = value =>
 export const decimalNumberLimit8 = value =>
     value && !/^\d{0,8}(\.\d{0,6})?$/.test(value)
         ? 'Maximum length for integer is 8 and for decimal is 6' : undefined;
+
+//ACCEPT ALPHABET,NUMBER,SPECIAL CHARACTER
+export const alphaneumericSpecialAccept = value => {
+    let pattern = /[a-zA-Z0-9!@#$%^&*()\-+=?<>,|]/;
+    return value && !pattern.test(value)
+        ? 'Invalid field' : undefined;
+}
+

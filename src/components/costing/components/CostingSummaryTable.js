@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -14,9 +14,9 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -36,13 +36,13 @@ import { Costratiograph } from '../../dashboard/CostRatioGraph'
 import { colorArray } from '../../dashboard/ChartsDashboard'
 import { LOGISTICS, FORGING } from '../../../config/masterData'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
-import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
-import CrossIcon from '../../../assests/images/red-cross.png'
 import { getMultipleCostingDetails } from '../../rfq/actions/rfq'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
 import ViewOtherCostDrawer from './ViewOtherCostDrawer'
+import { TextFieldHookForm } from '../../layout/HookFormInputs'
+import { Controller, useForm } from 'react-hook-form'
+import { number, percentageLimitValidation, decimalNumberLimit6 } from '../../../helper/validation'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -134,6 +134,10 @@ const CostingSummaryTable = (props) => {
     operation: false
   })
   const partType = IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  const { register, control, formState: { errors } } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -1474,6 +1478,39 @@ const CostingSummaryTable = (props) => {
     return highlighClass; // Return the class basis on the condition
   }
 
+  const editValue = (obj, index) => {
+
+    if (obj.editSOBPercentage === true) {
+      let tempArr = []
+      let data = {}
+      data = {
+        PlantId: obj.plantId ? obj.plantId : obj.destinationPlantId,
+        PartId: obj.partId,
+        ShareOfBusinessPercentage: obj.shareOfBusinessPercent,
+        LoggedInUserId: loggedInUserId(),
+        VendorId: obj.vendorId,
+        VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? obj.VendorPlantId : EMPTY_GUID,
+        CostingTypeId: VBCTypeId
+      }
+      tempArr.push(data)
+
+      dispatch(updateSOBDetail(tempArr, (res) => {
+        obj.editSOBPercentage = false
+        let tempList = Object.assign([...viewCostingData], { [index]: obj })
+        dispatch(setCostingViewData(tempList))
+      }))
+    } else {
+      obj.editSOBPercentage = true
+      let tempList = Object.assign([...viewCostingData], { [index]: obj })
+      dispatch(setCostingViewData(tempList))
+    }
+  }
+
+  const handleVBCSOBChange = (e, index, obj) => {
+    obj.shareOfBusinessPercent = e.target.value
+    let tempList = Object.assign([...viewCostingData], { [index]: obj })
+    dispatch(setCostingViewData(tempList))
+  }
 
   return (
     <Fragment>
@@ -1650,12 +1687,13 @@ const CostingSummaryTable = (props) => {
                           <tr className={`${drawerDetailPDF ? "pdf-print" : ""}`} >
                             <td>
                               <span className="d-block">Costing Version</span>
-                              <span className="d-block mt-2">Net Cost (Effective from)</span>
+                              <span className={`d-block mt-${props.isRfqCosting ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
                               <span className="d-block">Plant (Code)</span>
+                              {props.isRfqCosting && <span className="d-block">SOB</span>}
 
                             </td>
                             {viewCostingData &&
@@ -1710,6 +1748,37 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data.costingTypeId === ZBCTypeId ? `${data?.plantName}` : `${data?.destinationPlantName}`)}</span>
+                                    {props.isRfqCosting && data?.bestCost !== true && <div className='d-flex align-items-center'>
+                                      <div className="w-100px costing-error-container">
+                                        <TextFieldHookForm
+                                          label={false}
+                                          name={`ShareOfBusinessPercent.${index}`}
+                                          Controller={Controller}
+                                          control={control}
+                                          register={register}
+                                          mandatory={false}
+                                          rules={{
+                                            required: true,
+                                            validate: { number, percentageLimitValidation, decimalNumberLimit6 },
+                                            max: {
+                                              value: 100,
+                                              message: "Percentage should not be greater then 100"
+                                            }
+                                          }}
+                                          defaultValue={data.shareOfBusinessPercent ?? 0}
+                                          className="custom-height-28px"
+                                          customClassName={"withBorder mb-0"}
+                                          handleChange={(e) => {
+                                            e.preventDefault();
+                                            handleVBCSOBChange(e, index, data);
+                                          }}
+                                          errors={errors && errors.ShareOfBusinessPercent}
+                                          disabled={data?.editSOBPercentage ? false : true}
+                                        />
+                                      </div>
+                                      {data?.bestCost !== true && <button title={data?.editSOBPercentage ? 'Save' : 'Edit'} className={`${data?.editSOBPercentage ? 'SaveIcon' : 'Edit'} mb-0 ml-2`} type={"button"} onClick={() => editValue(data, index)} />}
+                                    </div>
+                                    }
                                   </td>
                                 )
                               })}
