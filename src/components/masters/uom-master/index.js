@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import AddUOM from './AddUOM';
 import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
@@ -24,9 +24,6 @@ import ScrollToTop from '../../common/ScrollToTop';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { displayUOM } from '../../../helper/util';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
-import { useState } from 'react';
-import { useEffect } from 'react';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -46,9 +43,6 @@ const UOMMaster = (props) => {
   const [DownloadAccessibility, setDownloadAccessibility] = useState(false);
   const [gridApi, setGridApi] = useState(null);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [rowData, setRowData] = useState(null);
-  const [sideBar] = useState({ toolPanels: ['columns'] });
-  const [showData, setShowData] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [deletedId, setDeletedId] = useState('');
   const [isLoader, setIsLoader] = useState(false);
@@ -79,16 +73,6 @@ const UOMMaster = (props) => {
       }
     }));
   }
-  // UNSAFE_componentWillReceiveProps(nextProps) {
-  //   if (props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-  //     applyPermission(nextProps.topAndLeftMenuData)
-  //   }
-  // }
-  // useEffect((nextProps) => {
-  //   if (props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-  //     applyPermission(nextProps.topAndLeftMenuData);
-  //   }
-  // }, [props.topAndLeftMenuData, nextProps.topAndLeftMenuData]);
   /**
   * @method applyPermission
   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
@@ -107,15 +91,6 @@ const UOMMaster = (props) => {
         setDownloadAccessibility(permissionData && permissionData.Download ? permissionData.Download : false);
       }
     }
-  }
-
-  /**
-   * @method openModel
-   * @description  used to open filter form 
-   */
-  const openModel = () => {
-    setIsOpen(true);
-    setIsEditFlag(false);
   }
 
   /**
@@ -147,14 +122,7 @@ const UOMMaster = (props) => {
       dataList.length !== 0 && setNoData(searchNocontentFilter(value, noData))
     }, 500);
   }
-  /**
-  * @method deleteItem
-  * @description confirm delete UOM
-  */
-  const deleteItem = (Id) => {
-    setShowPopup(true);
-    setDeletedId(Id)
-  }
+
   const onPopupConfirm = () => {
     confirmDeleteUOM(deletedId);
   }
@@ -173,22 +141,6 @@ const UOMMaster = (props) => {
       }
     }));
     setShowPopup(false);
-  }
-
-  const PaginationShowsTotal = ({ start, to, total }) => {
-    return <GridTotalFormate start={start} to={to} total={total} />;
-  };
-
-  /**
-  * @method applySuperScriptFormatter
-  * @description Renders buttons
-  */
-  const applySuperScriptFormatter = (cell, row, enumObject, rowIndex) => {
-    if (cell && cell.indexOf('^') !== -1) {
-      return applySuperScript(cell)
-    } else {
-      return cell;
-    }
   }
 
   /**
@@ -211,52 +163,6 @@ const UOMMaster = (props) => {
       <div>{displayUOM(cellValue)}
       </div>
     )
-  }
-  /**
-  * @method statusButtonFormatter
-  * @description Renders buttons
-  */
-  const statusButtonFormatter = (props) => {
-    const cellValue = props?.value;
-    const rowData = props?.data;
-
-    return (
-      <>
-        <label htmlFor="normal-switch" className="normal-switch">
-          {/* <span>Switch with default style</span> */}
-          <Switch
-            onChange={() =>
-              handleChange(cellValue, rowData, '', '')
-            }
-            checked={cellValue}
-            background="#ff6600"
-            onColor="#4DC771"
-            offColor="#FC5774"
-            onHandleColor="#ffffff"
-            id="normal-switch"
-            height={24}
-          />
-        </label>
-      </>
-    );
-  }
-
-  const handleChange = (cell, row, enumObject, rowIndex) => {
-    let data = {
-      Id: row.Id,
-      LoggedInUserId: loggedInUserId(),
-      IsActive: !cell, //Status of the UOM.
-    }
-    dispatch(activeInactiveUOM(data, res => {
-      if (res && res.data && res.data.Result) {
-        if (cell === true) {
-          Toaster.success(MESSAGES.UOM_INACTIVE_SUCCESSFULLY)
-        } else {
-          Toaster.success(MESSAGES.UOM_ACTIVE_SUCCESSFULLY)
-        }
-        getUOMDataList()
-      }
-    }))
   }
 
   const onGridReady = (params) => {
