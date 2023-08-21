@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
-import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number, maxLength4 } from "../../../helper/validation";
+import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number, maxLength4, hashValidation, alphaneumericSpecialAccept, maxLength25 } from "../../../helper/validation";
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
@@ -383,7 +383,7 @@ class AddZBCPlant extends Component {
                       name={"PlantCode"}
                       type="text"
                       placeholder={isEditFlag ? '-' : "Enter"}
-                      validate={[required, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4]}
+                      validate={this.props.initialConfiguration.IsPlantCodeInteger ? [required, hashValidation, checkWhiteSpaces, checkSpacesInString, postiveNumberForPlantCode, maxLength4] : [required, hashValidation, acceptAllExceptSingleSpecialCharacter, alphaneumericSpecialAccept, maxLength25, checkWhiteSpaces, checkSpacesInString]}
                       component={renderText}
                       required={true}
                       className=""
