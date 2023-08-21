@@ -7259,13 +7259,3 @@ export const statusDropdownforNfr = [
 export const CostingBulkUploadTechnologyDropdown = [
     { label: "Sheet Metal", value: "7" },
 ]
-
-export const nfrDropdown = [
-    { label: "00000563", value: "160e1194-ae06-4ab8-a1ca-98acc064a017" },
-    { label: "00000570", value: "da6d8995-14a7-46d9-9383-9eace3e6df29" },
-    { label: "00000571", value: "4123a4d5-1226-486e-8973-8af4111b3b7f" },
-    { label: "00000572", value: "beac508c-27f3-4d99-8b76-88b53e449f24" },
-    { label: "00000574", value: "c393ead1-4698-402e-9b67-fc2e8964105a" },
-    { label: "00000575", value: "18ba3689-ee0e-4afe-907a-373df9a62446" },
-    { label: "00000579", value: "5e8c78e6-ecc6-4034-b1fd-47c72d2efdc0" },
-]
