@@ -10,6 +10,7 @@ import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import Button from '../../layout/Button';
 
 class Association extends Component {
     constructor(props) {
@@ -241,22 +242,25 @@ class Association extends Component {
                                     <Row className="sf-btn-footer no-gutters justify-content-between">
                                         <div className="col-md-12 pr-3">
                                             <div className="text-right ">
-                                                <button
-                                                    type={"button"}
-                                                    className=" mr15 cancel-btn"
+
+                                                <Button
+                                                    id="rmAssociation_cancel"
+                                                    className="mr-2 mt-0"
+                                                    variant={"cancel-btn"}
                                                     onClick={this.cancel}
-                                                    disabled={setDisable}
-                                                >
-                                                    <div className={'cancel-icon'}></div>
-                                                    {"Cancel"}
-                                                </button>
-                                                <button
+                                                    icon={"cancel-icon"}
+                                                    buttonName={"Cancel"}
+                                                />
+
+                                                <Button
+                                                    id="rmAssociation_Save"
                                                     type="submit"
-                                                    className="user-btn save-btn"
+                                                    className="mr5"
                                                     disabled={setDisable}
-                                                ><div className={"save-icon"}></div>
-                                                    {"Save"}
-                                                </button>
+                                                    icon={"save-icon"}
+                                                    buttonName={"Save"}
+                                                />
+
                                             </div>
                                         </div>
                                     </Row>

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT, FILE_URL } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT, FILE_URL, DRAFTID } from '../../../config/constants';
 import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -268,6 +268,7 @@ class BOPImportListing extends Component {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
             costingTypeId: rowData.CostingTypeId,
+            showPriceFields: rowData.StatusId !== DRAFTID,
         }
         this.props.getDetails(data, rowData?.IsBOPAssociated);
     }
@@ -836,7 +837,7 @@ class BOPImportListing extends Component {
                         {
                             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                         }
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
                     </Col>
                 </Row>
                 {

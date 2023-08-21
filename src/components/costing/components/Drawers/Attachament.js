@@ -10,12 +10,14 @@ function Attachament(props) {
   const Data = gridListing ? index : viewCostingData[index]
   const [files, setFiles] = useState([]);
   const [filesFeasibility, setFilesFeasibility] = useState([]);
+  const [isRfqAttachments, setIsRfqAttachments] = useState(false)
   const [filesCapacity, setFilesCapacity] = useState([]);
   const [filesTimeline, setFilesTimeline] = useState([]);
 
   useEffect(() => {
     let list = (Data.attachment || Data.Attachements)
     let attachmentList = filterAttachments(list, null)
+    setIsRfqAttachments(list.length !== attachmentList.length)
     setFiles(attachmentList)
     let attachmentFeasibility = filterAttachments(list, FEASIBILITY)
     setFilesFeasibility(attachmentFeasibility)
@@ -81,26 +83,9 @@ function Attachament(props) {
 
               </Col> :
                 <>
-                  {props?.isRfqCosting ? <>
-                    <Col md="12"> Attachament
-                      {files && files.map((f) => {
-                        const withOutTild = f.FileURL
-                          ? f.FileURL.replace('~', '')
-                          : ''
-                        const fileURL = `${FILE_URL}${withOutTild}`
-                        return (
-                          <div className={"attachment-row"}>
-                            <a href={fileURL} target="_blank" rel="noreferrer">
-                              {f.OriginalFileName}
-                            </a>
-                          </div>
-                        )
-                      })}
+                  {isRfqAttachments ? <>
 
-                    </Col>
-
-
-                    <Col md="12"> Feasibility
+                    <Col md="12"> <div className="left-border mb-0">Feasibility</div>
                       {filesFeasibility && filesFeasibility.map((f) => {
                         const withOutTild = f.FileURL
                           ? f.FileURL.replace('~', '')
@@ -119,7 +104,7 @@ function Attachament(props) {
 
 
 
-                    <Col md="12"> Capacity
+                    <Col md="12"> <div className="left-border mt-3 mb-0">Capacity</div>
                       {filesCapacity && filesCapacity.map((f) => {
                         const withOutTild = f.FileURL
                           ? f.FileURL.replace('~', '')
@@ -138,8 +123,24 @@ function Attachament(props) {
 
 
 
-                    <Col md="12"> Timeline
+                    <Col md="12"> <div className="left-border mt-3 mb-0">Timeline</div>
                       {filesTimeline && filesTimeline.map((f) => {
+                        const withOutTild = f.FileURL
+                          ? f.FileURL.replace('~', '')
+                          : ''
+                        const fileURL = `${FILE_URL}${withOutTild}`
+                        return (
+                          <div className={"attachment-row"}>
+                            <a href={fileURL} target="_blank" rel="noreferrer">
+                              {f.OriginalFileName}
+                            </a>
+                          </div>
+                        )
+                      })}
+
+                    </Col>
+                    <Col md="12"> <div className="left-border mt-3 mb-0">Others</div>
+                      {files && files.map((f) => {
                         const withOutTild = f.FileURL
                           ? f.FileURL.replace('~', '')
                           : ''

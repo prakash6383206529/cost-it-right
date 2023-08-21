@@ -541,7 +541,7 @@ class AddSpecification extends Component {
                           : AddAccessibilityRMANDGRADE && (
                             <Button
                               id="RawMaterialName-add"
-                              className="mt30 right"
+                              className="mt40 right"
                               variant="plus-icon-square"
                               onClick={() => this.rawMaterialToggler("")}
                             />
@@ -582,7 +582,7 @@ class AddSpecification extends Component {
                           <Button
                             id="GradeId-add"
                             className="mt-2"
-                            variant={`plus-icon-square ${this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? "blurPlus-icon-square" : ""}`}
+                            variant={`${this.state.RawMaterial == null || this.state.RawMaterial.length === 0 ? "blurPlus-icon-square" : "plus-icon-square"}`}
                             onClick={() => this.gradeToggler("")}
                           />
                         }
