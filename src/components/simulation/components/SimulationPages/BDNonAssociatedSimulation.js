@@ -224,9 +224,13 @@ function BDNonAssociatedSimulation(props) {
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        const value = beforeSaveCell(cell, props.rowIndex, 'BasicRate', row.BasicRate)
+
+
         return (
             <>
-                {<span>{cell && Number(row.NewBasicRate)} </span>}
+                {<span>{cell && value ? Number(row.NewBasicRate) : Number(row.BasicRate)} </span>}
             </>
         )
     }
@@ -300,6 +304,7 @@ function BDNonAssociatedSimulation(props) {
         let returnValue = ''
         if (!value) {
             returnValue = checkForDecimalAndNull(row.OldNetLandedCost)
+
         } else {
             if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
                 returnValue = checkForDecimalAndNull((row?.BasicRate + (row?.BasicRate * row?.Percentage / 100)) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice);
