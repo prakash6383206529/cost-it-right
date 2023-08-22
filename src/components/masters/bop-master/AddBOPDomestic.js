@@ -528,8 +528,7 @@ class AddBOPDomestic extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
 
-    if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
-
+    if (this.state.isEditFlag && (Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) && (this.state.sourceLocation === this.state.DataToCheck?.SourceLocation) && (this.state.source === this.state.DataToCheck?.Source)) {
       this.setState({ IsFinancialDataChanged: false })
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true })
