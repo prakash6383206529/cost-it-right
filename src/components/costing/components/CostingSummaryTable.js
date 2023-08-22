@@ -93,7 +93,6 @@ const CostingSummaryTable = (props) => {
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [index, setIndex] = useState('')
-  const [excelArray, setExcelArray] = useState([])
 
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
@@ -1119,7 +1118,6 @@ const CostingSummaryTable = (props) => {
 
     let costingSummary = []
     let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? { ...VIEW_COSTING_DATA_LOGISTICS } : { ...VIEW_COSTING_DATA }
-
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
@@ -1133,6 +1131,7 @@ const CostingSummaryTable = (props) => {
     }
     if (!(reactLocalStorage.getObject('cbcCostingPermission'))) {
       templateObj.costingHeadCheck = 'VBC/ZBC/NCC'
+      delete templateObj.customer
     }
     if ((viewCostingData && viewCostingData[0]?.technologyId && viewCostingData[0]?.technologyId !== DIE_CASTING)) {
       delete templateObj.castingWeightExcel
@@ -1710,6 +1709,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isRfqCosting ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
+                              {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
@@ -1764,7 +1764,8 @@ const CostingSummaryTable = (props) => {
                                       </span>
                                     )}
                                     {/* USE PART NUMBER KEY HERE */}
-                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? `${data?.vendorName} (${data?.vendorCode})` : ''}</span>
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
+                                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
