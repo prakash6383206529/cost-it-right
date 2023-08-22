@@ -365,22 +365,31 @@ class AddRMImport extends Component {
    * @description called
    */
   handleSourceSupplierCity = (newValue, actionMeta) => {
+    const { isEditFlag, DataToChange } = this.state
     if (newValue && newValue !== '') {
-
       this.setState({ sourceLocation: newValue, isSourceChange: true })
-
     } else {
       this.setState({ sourceLocation: [] })
+    }
+    if (isEditFlag && (DataToChange.SourceLocation !== newValue.value)) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
+    else if (isEditFlag) {
+      this.setState({ IsFinancialDataChanged: false })
     }
 
   }
 
   handleSource = (newValue, actionMeta) => {
-
+    const { isEditFlag, DataToChange } = this.state
     if (newValue && newValue !== '') {
-
       this.setState({ source: newValue, isSourceChange: true })
-
+    }
+    if (isEditFlag && (DataToChange.Source !== newValue)) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
+    else if (isEditFlag) {
+      this.setState({ IsFinancialDataChanged: false })
     }
   }
 
