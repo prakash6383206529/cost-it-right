@@ -58,13 +58,15 @@ function Costing(props) {
   const showDetail = (partInfo, costingInfo) => {
     setPartInfo(partInfo)
     setCostingData(costingInfo)
-    setTimeout(() => {
-      if (costingInfo && Object.keys(costingInfo).length > 0) {
+    if (costingInfo && Object.keys(costingInfo).length > 0) {
+      history.push('/costing')
+      setTimeout(() => {
 
         toggle("1");
-      }
+      }, 200);
+    }
 
-    }, 500);
+
   }
 
 

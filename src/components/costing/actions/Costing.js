@@ -52,6 +52,7 @@ import {
   SET_CALL_ST_API,
   SET_BREAKUP_BOP,
   SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
+  SET_COSTING_MODE,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2656,6 +2657,19 @@ export function setIsBreakupBoughtOutPartCostingFromAPI(value) {
   return (dispatch) => {
     dispatch({
       type: SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
+      payload: value,
+    });
+  }
+};
+
+/**
+ * @method setCostingMode
+ * @description setCostingMode
+ */
+export function setCostingMode(value) {
+  return (dispatch) => {
+    dispatch({
+      type: SET_COSTING_MODE,
       payload: value,
     });
   }

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail, setCostingMode
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -93,10 +93,10 @@ const CostingSummaryTable = (props) => {
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [index, setIndex] = useState('')
-  const [excelArray, setExcelArray] = useState([])
 
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
+  const [ViewAccessibility, setViewAccessibility] = useState(true)
   const [iccPaymentData, setIccPaymentData] = useState("")
 
   const [warningMsg, setShowWarningMsg] = useState(false)
@@ -343,6 +343,7 @@ const CostingSummaryTable = (props) => {
       if (permmisionData !== undefined) {
         setAddAccessibility(permmisionData?.Add ? permmisionData?.Add : false)
         setEditAccessibility(permmisionData?.Edit ? permmisionData?.Edit : false)
+        setViewAccessibility(permmisionData?.View ? permmisionData?.View : false)
       }
     }
   }
@@ -593,7 +594,7 @@ const CostingSummaryTable = (props) => {
       if (res.data?.Result) {
         dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
           setPartInfo(res.data?.Data)
-
+          dispatch(setCostingMode({ editMode: false, viewMode: false }))
           showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
           history.push('/costing')
         }))
@@ -617,6 +618,7 @@ const CostingSummaryTable = (props) => {
       dispatch(getBriefCostingById(tempData?.costingId, (res) => {
         history.push('/costing')
         showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+        dispatch(setCostingMode({ editMode: true, viewMode: false }))
       }))
     }
     if (type === VBC) {
@@ -625,6 +627,38 @@ const CostingSummaryTable = (props) => {
         if (res?.data?.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+          dispatch(setCostingMode({ editMode: true, viewMode: false }))
+        }
+
+      }))
+    }
+  }
+
+  /**
+ * @method viewCostingDetail
+ * @description VIEW COSTING DETAIL (WILL GO TO COSTING DETAIL PAGE)
+ */
+  const viewCostingDetail = (index) => {
+    partNumber.isChanged = false
+    dispatch(storePartNumber(partNumber))
+
+    let tempData = viewCostingData[index]
+    props?.setcostingOptionsSelectFromSummary(viewCostingData && viewCostingData[index])
+    const type = viewCostingData[index]?.zbc === 0 ? 'ZBC' : 'VBC'
+    if (type === ZBC) {
+      dispatch(getBriefCostingById(tempData?.costingId, (res) => {
+        history.push('/costing')
+        showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+        dispatch(setCostingMode({ editMode: false, viewMode: true }))
+      }))
+    }
+    if (type === VBC) {
+      dispatch(getBriefCostingById(tempData?.costingId, (res) => {
+
+        if (res?.data?.Result) {
+          history.push('/costing')
+          showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+          dispatch(setCostingMode({ editMode: false, viewMode: true }))
         }
 
       }))
@@ -1094,7 +1128,6 @@ const CostingSummaryTable = (props) => {
 
     let costingSummary = []
     let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? { ...VIEW_COSTING_DATA_LOGISTICS } : { ...VIEW_COSTING_DATA }
-
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
@@ -1112,6 +1145,7 @@ const CostingSummaryTable = (props) => {
     }
     if (!(reactLocalStorage.getObject('cbcCostingPermission'))) {
       templateObj.costingHeadCheck = 'VBC/ZBC/NCC'
+      delete templateObj.customer
     }
     if ((viewCostingData && viewCostingData[0]?.technologyId && viewCostingData[0]?.technologyId !== DIE_CASTING)) {
       delete templateObj.castingWeightExcel
@@ -1672,6 +1706,7 @@ const CostingSummaryTable = (props) => {
                                   <div className="action  text-right">
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
+                                    {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                     {!isApproval && (data?.bestCost === true ? false : ((!viewMode || props.isRfqCosting || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
                                   </div>
@@ -1689,6 +1724,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isRfqCosting ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
+                              {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
@@ -1743,7 +1779,8 @@ const CostingSummaryTable = (props) => {
                                       </span>
                                     )}
                                     {/* USE PART NUMBER KEY HERE */}
-                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? `${data?.vendorName} (${data?.vendorCode})` : ''}</span>
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
+                                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
