@@ -669,7 +669,7 @@ class AddBOPImport extends Component {
       this.state.isEditFlag &&
       Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) &&
       this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value &&
-      this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value
+      this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value && (this.state.sourceLocation === this.state.DataToCheck?.SourceLocation) && (this.state.source === this.state.DataToCheck?.Source)
     ) {
       this.setState({ IsFinancialDataChanged: false });
     } else if (this.state.isEditFlag) {
@@ -1494,7 +1494,7 @@ class AddBOPImport extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && isBOPAssociated)}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged}
                                 placeholder={isEditFlag ? '-' : "Select Date"}
                               />
                             </div>
