@@ -1,32 +1,27 @@
-import React, { Component, useEffect, useRef, useState } from "react";
-import { Field, reduxForm, formValueSelector } from "redux-form";
-import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, TextFieldHookForm, PasswordFieldHookForm, AsyncSearchableSelectHookForm } from '../../components/layout/HookFormInputs'
+import React, { useEffect, useState } from "react";
+import { SearchableSelectHookForm, TextFieldHookForm, PasswordFieldHookForm, AsyncSearchableSelectHookForm } from '../../components/layout/HookFormInputs'
 import { useForm, Controller } from "react-hook-form";
 import { langs } from "../../config/localization";
 import Toaster from "../common/Toaster";
-import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import {
   minLength3, minLength6, minLength10, maxLength11, maxLength12, required, email, minLength7, maxLength18,
-  maxLength6, checkWhiteSpaces, maxLength15, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50
+  maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50
 } from "../../helper/validation";
-import { renderPasswordInputField, focusOnError, renderEmailInputField, renderText, searchableSelect, renderMultiSelectField, renderNumberInputField, } from "../layout/FormInputs";
 import {
-  registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, getAllUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, setUserAdditionalPermission, setUserTechnologyLevelForCosting, updateUserTechnologyLevelForCosting,
-  getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
+  registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
+  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
 } from "../../actions/auth/AuthActions";
-import { getAllCities, getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
+import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
-import { Table, Button, Row, Col } from 'reactstrap';
+import { Button, Row, Col } from 'reactstrap';
 import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, VBC_VENDOR_TYPE, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
 import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { showDataOnHover } from "../../helper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
 import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
@@ -35,7 +30,6 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
 
 var CryptoJS = require('crypto-js')
-const selector = formValueSelector('UserRegistration');
 const gridOptionsTechnology = {}
 const gridOptionsSimulation = {}
 const gridOptionsMaster = {}
@@ -228,14 +222,6 @@ function UserRegistration(props) {
     }
   }, [])
 
-
-  /**
-  * @name Capitalize
-  * @desc Capitallize the first letter of the string
-  */
-  const Capitalize = (str) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  }
   /**
     * @name emptyLevelDropdown
     * @desc To empty level dropdown reducer
@@ -245,31 +231,6 @@ function UserRegistration(props) {
     dispatch(getSimualationLevelByTechnology(false, '', '', () => { }))
     dispatch(getMasterLevelByMasterId(false, '', '', () => { }))
   }
-  /**
-  * @name hanldePhoneNumber
-  * @param e
-  * @desc Validate phone number
-  */
-  const hanldePhoneNumber = (e) => {
-    const value = e.target.value;
-    var number = value.split("");
-
-    if (number[0] === "6" && number[1] === "1") {
-      if (number.length === 11) {
-        setMaxLength(maxLength12)
-        setCountryCode(true)
-      }
-    }
-
-    if (number[0] === "0") {
-      if (number.length === 10) {
-        setMaxLength(maxLength11)
-        setCountryCode(false)
-      }
-    }
-  };
-
-
 
   /**
   * @name passwordPatternHandler
@@ -1294,13 +1255,6 @@ function UserRegistration(props) {
     setIsShowAdditionalPermission(false)
     setTechnologyLevelGrid([])
     setPrimaryContact(false)
-
-    let data = {
-      logged_in_user: loggedInUserId(),
-      DepartmentId: '',
-      RoleId: '',
-    }
-    // dispatch(getAllUserDataAPI(data, res => { }))
     props.hideForm()
   }
 
@@ -1340,10 +1294,6 @@ function UserRegistration(props) {
 
   }
 
-  const formToggle = () => {
-
-    setIsShowForm(!isShowForm)
-  }
   /**
    * @name onSubmit
    * @param values
@@ -1492,8 +1442,10 @@ function UserRegistration(props) {
         updatedData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
+      let isDepartmentUpdate = registerUserData?.Departments?.every(
+        (item) => department?.some((deptValue) => item?.DepartmentId !== deptValue?.value)
+      ) && department?.length !== registerUserData?.Departments.length;
 
-      const isDepartmentUpdate = (registerUserData.DepartmentId !== department.value) ? true : false;
       const isRoleUpdate = (registerUserData.RoleId !== role.value) ? true : false;
       let isPermissionUpdate = false;
       let isUpdateApiCall = false;
@@ -1517,7 +1469,6 @@ function UserRegistration(props) {
 
       } else {
         if (props?.RFQUser || isRfqUser) {
-          reset();
           dispatch(updateRfqUser(updatedData, (res) => {
             if (res.data.Result) {
               Toaster.success(MESSAGES.UPDATE_USER_SUCCESSFULLY)
@@ -1884,7 +1835,6 @@ function UserRegistration(props) {
                                 required: true,
                               }}
                               disabled={isEditFlag ? true : false}
-                              //component={searchableSelect}
                               placeholder={'Select Vendor'}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
                               validate={(role == null || role.length === 0) ? [required] : []}
@@ -1910,7 +1860,6 @@ function UserRegistration(props) {
                               rules={{
                                 required: true,
                               }}
-                              component={searchableSelect}
                               placeholder={'Select Reporter'}
                               options={searchableSelectType('reporter')}
                               //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -2168,7 +2117,6 @@ function UserRegistration(props) {
                             rules={{
                               required: true,
                             }}
-                            //component={searchableSelect}
                             placeholder={'Select role'}
                             options={searchableSelectType('role')}
                             //onKeyUp={(e) => this.changeItemDesc(e)}
@@ -2225,7 +2173,6 @@ function UserRegistration(props) {
                                   required: true,
                                 }}
 
-                                component={searchableSelect}
                                 placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                                 // placeholder={'Select company'}
                                 options={searchableSelectType('department')}
@@ -2312,7 +2259,6 @@ function UserRegistration(props) {
                                 mandatory={true}
 
 
-                                //component={searchableSelect}
                                 options={searchableSelectType('technology')}
                                 handleChange={technologyHandler}
                                 defaultValue={technology}
@@ -2344,9 +2290,6 @@ function UserRegistration(props) {
                                 control={control}
                                 register={register}
                                 mandatory={true}
-
-
-                                //component={searchableSelect}
                                 options={searchableSelectType('level')}
                                 handleChange={levelHandler}
                                 defaultValue={level}
@@ -2461,8 +2404,6 @@ function UserRegistration(props) {
                                 control={control}
                                 register={register}
                                 mandatory={true}
-
-                                //component={searchableSelect}
                                 options={searchableSelectType('heads')}
                                 handleChange={headHandler}
                                 valueDescription={simulationHeads}
@@ -2496,9 +2437,6 @@ function UserRegistration(props) {
                                 register={register}
                                 mandatory={true}
                                 handleChange={simualtionLevelHandler}
-
-
-                                //component={searchableSelect}
                                 options={searchableSelectType('simualtionLevel')}
 
                                 valueDescription={simualtionLevel}
@@ -2606,9 +2544,6 @@ function UserRegistration(props) {
                                     register={register}
                                     mandatory={true}
                                     handleChange={masterHandler}
-
-
-                                    //component={searchableSelect}
                                     options={searchableSelectType('masters')}
 
                                     valueDescription={master}
@@ -2643,8 +2578,6 @@ function UserRegistration(props) {
                                     register={register}
                                     mandatory={true}
                                     handleChange={masterLevelHandler}
-
-                                    //component={searchableSelect}
                                     options={searchableSelectType('masterLevel')}
 
                                     valueDescription={masterLevel}
@@ -2763,28 +2696,6 @@ function UserRegistration(props) {
       }
     </div >
   );
-}
-
-/**
- * Form validations
- * @param values
- * @returns {{}}
- */
-function validate(values) {
-  let errors = {};
-
-  if (values.passwordConfirm !== values.Password) {
-    errors.passwordConfirm =
-      langs.validation_messages.password_confirm_password;
-  }
-  if (!values.passwordConfirm) {
-    errors.passwordConfirm =
-      langs.validation_messages.confirm_password_required;
-  }
-  if (!values.agree && values.agree !== true) {
-    errors.agree = langs.validation_messages.agree_to_terms;
-  }
-  return errors;
 }
 
 export default UserRegistration
