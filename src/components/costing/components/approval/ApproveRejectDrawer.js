@@ -98,6 +98,7 @@ function ApproveRejectDrawer(props) {
                 return false
               } else {
                 setShowWarningMessage(false)
+                setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
               }
               tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
               return null
