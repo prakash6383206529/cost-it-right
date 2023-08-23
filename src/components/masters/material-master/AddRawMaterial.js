@@ -9,6 +9,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import Button from '../../layout/Button';
 
 class AddRawMaterial extends Component {
   constructor(props) {
@@ -146,23 +147,20 @@ class AddRawMaterial extends Component {
                 <Row className="sf-btn-footer no-gutters justify-content-between">
                   <div className="col-md-12 pl-3 pr-3">
                     <div className="text-right ">
-                      <button
-                        onClick={() => { this.cancel('cancel') }}
+                      <Button
+                        id="AddRawMaterial_cancel"
+                        onClick={(e) => { this.toggleDrawer(e, '', 'cancel') }}
+                        variant="mr15 cancel-btn"
+                        icon={"cancel-icon"}
+                        buttonName={"Cancel"}
+                      />
+                      <Button
+                        id="AddRawMaterial_submit"
                         type="submit"
-                        value="CANCEL"
-                        className=" mr15 cancel-btn"
-                      >
-                        <div className={"cancel-icon"}></div>
-                        CANCEL
-                      </button>
-                      <button
-                        type="submit"
-                        // disabled={isSubmitted ? true : false}
-                        className="user-btn save-btn"
-                      >
-                        <div className={"save-icon"}></div>
-                        {this.props.isEditFlag ? "UPDATE" : "SAVE"}
-                      </button>
+                        className="save-btn"
+                        icon={"save-icon"}
+                        buttonName={this.props.isEditFlag ? "Update" : "Save"}
+                      />
                     </div>
                   </div>
                 </Row>
