@@ -1457,7 +1457,7 @@ function RawMaterialCost(props) {
                                     required: true,
                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
-                                  defaultValue={item.GrossWeight}
+                                  defaultValue={checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {
@@ -1482,7 +1482,7 @@ function RawMaterialCost(props) {
                                     required: true,
                                     validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                   }}
-                                  defaultValue={item.FinishWeight}
+                                  defaultValue={checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput)}
                                   className=""
                                   customClassName={'withBorder'}
                                   handleChange={(e) => {
