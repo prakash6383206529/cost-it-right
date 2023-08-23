@@ -92,7 +92,13 @@ function ApproveRejectDrawer(props) {
             const Data = res.data.DataList[1] ? res.data.DataList[1] : []
             setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
             setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-
+            let tempDropdownList = []
+            res.data.DataList && res.data.DataList.map((item) => {
+              if (item.Value === '0') return false;
+              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+              return null
+            })
+            setApprovalDropDown(tempDropdownList)
             // setApprover(Data.Text)
             // setSelectedApprover(Data.Value)
             // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
