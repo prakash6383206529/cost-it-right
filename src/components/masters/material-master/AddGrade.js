@@ -10,6 +10,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import Button from '../../layout/Button';
 
 class AddGrade extends Component {
   constructor(props) {
@@ -146,26 +147,23 @@ class AddGrade extends Component {
                 </Col>
 
 
-                <Row className="sf-btn-footer no-gutters justify-content-between m-0">
-                  <div className="text-right w-100">
-                    <button
+                <Row className="sf-btn-footer no-gutters justify-content-between">
+                  <div className="text-right w-100 p-0">
+                    <Button
+                      id="AddRMGrade_cancel"
+                      variant="mr15 cancel-btn"
+                      buttonName="CANCEL"
+                      icon="cancel-icon"
                       onClick={() => { this.cancel('cancel') }}
+
+                    />
+                    <Button
+                      id="AddRMGrade_save"
                       type="submit"
-                      value="CANCEL"
-                      className="reset mr15 cancel-btn"
-                    >
-                      <div className={"cancel-icon"}></div>
-                      CANCEL
-                    </button>
-                    <button
-                      type="submit"
-                      // disabled={isSubmitted ? true : false}
-                      className="user-btn save-btn"
-                    >
-                      {" "}
-                      <div className={"save-icon"}></div>
-                      {this.props.isEditFlag ? "UPDATE" : "SAVE"}
-                    </button>
+                      className="save-btn"
+                      icon="save-icon"
+                      buttonName={this.props.isEditFlag ? "UPDATE" : "SAVE"}
+                    />
                   </div>
                 </Row>
 

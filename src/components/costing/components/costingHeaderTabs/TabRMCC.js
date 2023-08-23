@@ -1473,7 +1473,7 @@ function TabRMCC(props) {
 
       dispatch(saveComponentCostingRMCCTab(requestData, res => {
         if (res.data.Result) {
-          Toaster.success(MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
+          Toaster.success(isBreakupBoughtOutPartCostingFromAPI ? MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS_IS_BOP_BREAKUP : MESSAGES.RMCC_TAB_COSTING_SAVE_SUCCESS);
           dispatch(savePartNumber(''))
           dispatch(saveBOMLevel(''))
           dispatch(CloseOpenAccordion())
