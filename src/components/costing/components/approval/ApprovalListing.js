@@ -1056,6 +1056,7 @@ function ApprovalListing(props) {
           anchor={'right'}
           IsFinalLevel={!showFinalLevelButtons}
           costingTypeId={selectedRowData[0]?.CostingTypeId}
+          TechnologyId={selectedRowData[0]?.TechnologyId}
         />
       )}
       {
