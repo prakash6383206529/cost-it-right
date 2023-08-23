@@ -43,6 +43,7 @@ import ViewOtherCostDrawer from './ViewOtherCostDrawer'
 import { TextFieldHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { number, percentageLimitValidation, decimalNumberLimit6 } from '../../../helper/validation'
+import Button from '../../layout/Button'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -134,7 +135,7 @@ const CostingSummaryTable = (props) => {
     operation: false
   })
   const partType = IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
-  const { register, control, formState: { errors } } = useForm({
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
@@ -1500,37 +1501,72 @@ const CostingSummaryTable = (props) => {
   }
 
   const editValue = (obj, index) => {
+    obj.editSOBPercentage = true
+    let tempList = Object.assign([...viewCostingData], { [index]: obj })
 
-    if (obj.editSOBPercentage === true) {
-      let tempArr = []
-      let data = {}
-      data = {
-        PlantId: obj.plantId ? obj.plantId : obj.destinationPlantId,
-        PartId: obj.partId,
-        ShareOfBusinessPercentage: obj.shareOfBusinessPercent,
-        LoggedInUserId: loggedInUserId(),
-        VendorId: obj.vendorId,
-        VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? obj.VendorPlantId : EMPTY_GUID,
-        CostingTypeId: VBCTypeId
+    dispatch(setCostingViewData(tempList))
+
+  }
+
+  const handleSOBSave = (obj, index) => {
+    const lastvlue = viewCostingData[index]?.shareOfBusinessPercent
+    let totalSObP = [];
+    for (let i = 0; i < viewCostingData.length; i++) {
+      if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index) {
+        totalSObP.push(viewCostingData[i].shareOfBusinessPercent)
       }
-      tempArr.push(data)
+    }
+    const sum = totalSObP.reduce((accumulator, currentValue) => accumulator + currentValue, 0) + Number(getValues(`ShareOfBusinessPercent.${index}`));
+    if (sum > 100) {
+      Toaster.warning("Total SOB percentage cannot be more than 100%")
+      setValue(`ShareOfBusinessPercent.${index}`, lastvlue)
+      return false;
+    } else if (getValues(`ShareOfBusinessPercent.${index}`) === '') {
+      setValue(`ShareOfBusinessPercent.${index}`, 0)
+    }
+    let tempArr = []
+    let data = {}
+    obj.shareOfBusinessPercent = Number(getValues(`ShareOfBusinessPercent.${index}`))
+    data = {
+      PlantId: obj.plantId ? obj.plantId : obj.destinationPlantId,
+      PartId: obj.partId,
+      ShareOfBusinessPercentage: obj.shareOfBusinessPercent,
+      LoggedInUserId: loggedInUserId(),
+      VendorId: obj.vendorId,
+      VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? obj.VendorPlantId : EMPTY_GUID,
+      CostingTypeId: VBCTypeId
+    }
+    tempArr.push(data)
 
-      dispatch(updateSOBDetail(tempArr, (res) => {
-        obj.editSOBPercentage = false
-        let tempList = Object.assign([...viewCostingData], { [index]: obj })
-        dispatch(setCostingViewData(tempList))
-      }))
-    } else {
-      obj.editSOBPercentage = true
+
+    dispatch(updateSOBDetail(tempArr, (res) => {
+      obj.editSOBPercentage = false
       let tempList = Object.assign([...viewCostingData], { [index]: obj })
       dispatch(setCostingViewData(tempList))
-    }
+    }))
+  }
+  const handleSOBDiscard = (obj, index) => {
+    obj.editSOBPercentage = false
+    setValue(`ShareOfBusinessPercent.${index}`, obj.shareOfBusinessPercent)
+    let tempList = Object.assign([...viewCostingData], { [index]: obj })
+    dispatch(setCostingViewData(tempList))
   }
 
   const handleVBCSOBChange = (e, index, obj) => {
-    obj.shareOfBusinessPercent = e.target.value
-    let tempList = Object.assign([...viewCostingData], { [index]: obj })
-    dispatch(setCostingViewData(tempList))
+    let value = Number(e.target.value);
+    if (!value && value !== 0) {
+      setTimeout(() => {
+        Toaster.warning("Value should be in number")
+        setValue(`ShareOfBusinessPercent.${index}`, '')
+      }, 100);
+      return false;
+    } else if (e.target.value > 100) {
+      setTimeout(() => {
+        Toaster.warning("SOB percentage cannot be more than 100%")
+        setValue(`ShareOfBusinessPercent.${index}`, '')
+      }, 100);
+      return false;
+    }
   }
 
   return (
@@ -1707,7 +1743,7 @@ const CostingSummaryTable = (props) => {
                           <tr className={`${drawerDetailPDF ? "pdf-print" : ""}`} >
                             <td>
                               <span className="d-block">Costing Version</span>
-                              <span className={`d-block mt-${props.isRfqCosting ? 4 : 2}`}>Net Cost (Effective from)</span>
+                              <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
                               {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Part Number</span>
@@ -1748,7 +1784,7 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : ` (${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
                                         </span>
                                         {(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && (
-                                          <span className={`pie-chart-wrapper mt-3`}>
+                                          <span className={`pie-chart-wrapper`}>
                                             {isPieChartVisible ? (
                                               <button type="button" className="CancelIcon" title="Discard" onClick={() => pieChartCloseHandler(index)}></button>
                                             ) : (
@@ -1770,7 +1806,7 @@ const CostingSummaryTable = (props) => {
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data.costingTypeId === ZBCTypeId ? `${data?.plantName}` : `${data?.destinationPlantName}`)}</span>
-                                    {props.isRfqCosting && data?.bestCost !== true && <div className='d-flex align-items-center'>
+                                    {props.isFromViewRFQ && data?.bestCost !== true ? <div className='d-flex align-items-center'>
                                       <div className="w-100px costing-error-container">
                                         <TextFieldHookForm
                                           label={false}
@@ -1798,8 +1834,28 @@ const CostingSummaryTable = (props) => {
                                           disabled={data?.editSOBPercentage ? false : true}
                                         />
                                       </div>
-                                      {data?.bestCost !== true && <button title={data?.editSOBPercentage ? 'Save' : 'Edit'} className={`${data?.editSOBPercentage ? 'SaveIcon' : 'Edit'} mb-0 ml-2`} type={"button"} onClick={() => editValue(data, index)} />}
-                                    </div>
+                                      {data?.bestCost !== true && <>
+                                        {data?.editSOBPercentage ?
+                                          <>
+                                            <Button
+                                              id="CostingSummary_SOB_Save"
+                                              variant="SaveIcon mb-0 ml-2 mr-0"
+                                              title="Save"
+                                              onClick={() => handleSOBSave(data, index)}
+                                            />
+                                            <Button
+                                              id="CostingSummary_SOB_Discard"
+                                              variant="CancelIcon mb-0 ml-2"
+                                              title="Discard"
+                                              onClick={() => handleSOBDiscard(data, index)} />
+                                          </>
+                                          : <Button
+                                            id="CostingSummary_SOB_Edit"
+                                            variant="Edit mb-0 ml-2"
+                                            title="Edit"
+                                            onClick={() => editValue(data, index)} />}
+                                      </>}
+                                    </div> : props.isRfqCosting && <span className="d-block">{data?.shareOfBusinessPercent ?? '0'}</span>
                                     }
                                   </td>
                                 )
