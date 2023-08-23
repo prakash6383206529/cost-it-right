@@ -17,7 +17,7 @@ function Attachament(props) {
   useEffect(() => {
     let list = (Data.attachment || Data.Attachements)
     let attachmentList = filterAttachments(list, null)
-    setIsRfqAttachments(list.length !== attachmentList.length)
+    setIsRfqAttachments(list?.length !== attachmentList?.length)
     setFiles(attachmentList)
     let attachmentFeasibility = filterAttachments(list, FEASIBILITY)
     setFilesFeasibility(attachmentFeasibility)
