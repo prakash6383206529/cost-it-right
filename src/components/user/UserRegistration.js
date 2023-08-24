@@ -1478,7 +1478,7 @@ function UserRegistration(props) {
         }
         else {
           props.hideForm()
-          let temp = ['FirstName', 'FullName', 'Mobile', 'PhoneNumber', 'AddressLine1', 'AddressLine2', 'CityName', 'ZipCode']
+          let temp = ['FirstName', 'FullName', 'Mobile', 'PhoneNumber', 'AddressLine1', 'AddressLine2', 'CityName', 'ZipCode', "Password"]
           let isDataChanged = false
 
           temp.map((item) => {
