@@ -140,7 +140,7 @@ function BDNonAssociatedSimulation(props) {
             if (checkForNull(item?.OldNetLandedCost) !== checkForNull(item?.NewNetLandedCost)) {
                 check = check + 1
             }
-            if (item?.PercentageChange >= 100) {
+            if (item?.PercentageChange > 100) {
                 percentageCheck = percentageCheck + 1
             }
         })
@@ -192,7 +192,7 @@ function BDNonAssociatedSimulation(props) {
     const percentageFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         let cellValue = cell
-        if (cell && cell >= 100) {
+        if (cell && cell > 100) {
             Toaster.warning("Percentage should be less than or equal to 100")
             list[props.rowIndex].Percentage = 0
             cellValue = 0
