@@ -22,6 +22,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import { getUsersSimulationTechnologyLevelAPI, getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
+import WarningMessage from '../../../common/WarningMessage'
 
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -49,6 +50,7 @@ function ApproveRejectDrawer(props) {
   const [isDisable, setIsDisable] = useState(false)
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [levelDetails, setLevelDetails] = useState({})
+  const [showWarningMessage, setShowWarningMessage] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
@@ -88,6 +90,12 @@ function ApproveRejectDrawer(props) {
             let tempDropdownList = []
             res.data.DataList && res.data.DataList.map((item) => {
               if (item.Value === '0') return false;
+              if (item.Value === EMPTY_GUID) {
+                setShowWarningMessage(true)
+                return false
+              } else {
+                setShowWarningMessage(false)
+              }
               tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
               return null
             })
@@ -217,10 +225,11 @@ function ApproveRejectDrawer(props) {
             setApprovalDropDown(listForDropdown)
             count = count + 1;
             if ((listForDropdown[0]?.value === EMPTY_GUID || listForDropdown.length === 0) && count === values.length) {
-
-              Toaster.warning('User does not exist on next level for selected simulation.')
+              setShowWarningMessage(true)
               setApprovalDropDown([])
               return false
+            } else {
+              setShowWarningMessage(false)
             }
           }))
           return null;
@@ -257,12 +266,13 @@ function ApproveRejectDrawer(props) {
           })
           setApprovalDropDown(tempDropdownList)
           if ((tempDropdownList[0]?.value === EMPTY_GUID || tempDropdownList.length === 0) && type !== 'Reject' && !IsFinalLevel) {
-
-            Toaster.warning('User does not exist on next level for selected simulation.')
+            setShowWarningMessage(true)
             setApprovalDropDown([])
             setValue('dept', { label: departmentName, value: departObj })
             setValue('approver', '')
             return false
+          } else {
+            setShowWarningMessage(false)
           }
         }))
       }
@@ -588,7 +598,15 @@ function ApproveRejectDrawer(props) {
     if (!isSimulation) {
       dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
         res.data.DataList && res.data.DataList.map((item) => {
+          const Data = res.data.DataList[1] ? res.data.DataList[1] : []
           if (item.Value === '0') return false;
+          if (item.Value === EMPTY_GUID) {
+            setShowWarningMessage(true)
+            return false
+          } else {
+            setShowWarningMessage(false)
+            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+          }
           tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
           return null
         })
@@ -754,6 +772,7 @@ function ApproveRejectDrawer(props) {
                         errors={errors.dept}
                         disabled={false}
                       />
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
@@ -780,7 +799,7 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={"Department"}
+                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                         name={"dept"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -794,6 +813,7 @@ function ApproveRejectDrawer(props) {
                         errors={errors.dept}
                         disabled={false}
                       />
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
