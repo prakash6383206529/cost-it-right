@@ -702,7 +702,7 @@ function SimulationApprovalSummary(props) {
     const plantFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const temp = `${row.PlantName}`
-        return temp
+        return <span title={temp}>{temp}</span>
     }
 
     const percentageFormatter = (props) => {
@@ -879,7 +879,7 @@ function SimulationApprovalSummary(props) {
         } if (row.IsMultipleOperation === true) {
             temp = 'Multiple Operation'
         }
-        return cell != null ? temp : '-';
+        return cell != null ? <span title={temp}>{temp}</span> : '-';
     }
     const tooltipToggle = (costingId) => {
         setTooltipStates((prevTooltipStates) => ({
@@ -1274,6 +1274,7 @@ function SimulationApprovalSummary(props) {
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                                 onFilterModified={onFloatingFilterChanged}
+                                                                enableBrowserTooltips={true}
                                                             >
                                                                 <AgGridColumn width={140} field="SimulationCostingId" hide='true'></AgGridColumn>
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={160} field="CostingNumber" headerName="Costing Id"></AgGridColumn>}
@@ -1284,18 +1285,18 @@ function SimulationApprovalSummary(props) {
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={192} field="RMSpecs" headerName="Spec" cellRenderer='rawMaterailCodeSpecFormatter'></AgGridColumn>}
 
 
-                                                                <AgGridColumn width={136} field="PartNo" headerName="Part No." cellRenderer='partFormatter'></AgGridColumn>
-                                                                <AgGridColumn width={160} field="PartName" headerName='Part Name'></AgGridColumn>
-                                                                <AgGridColumn width={160} field="PartType" headerName='Part Type'></AgGridColumn>
+                                                                <AgGridColumn width={136} field="PartNo" tooltipField='PartNo' headerName="Part No." cellRenderer='partFormatter'></AgGridColumn>
+                                                                <AgGridColumn width={160} field="PartName" tooltipField='PartName' headerName='Part Name'></AgGridColumn>
+                                                                <AgGridColumn width={160} field="PartType" tooltipField='PartType' headerName='Part Type'></AgGridColumn>
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
-                                                                {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}
-                                                                {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                                                {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName="Vendor (Code)"></AgGridColumn>}
+                                                                {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName="Customer (Code)"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
-                                                                {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationName" headerName="Operation Name" cellRenderer='operationNameFormatter'></AgGridColumn>}
-                                                                {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCode" headerName="Operation Code" cellRenderer='operationCodeFormatter'></AgGridColumn>}
+                                                                {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationName" tooltipField='OperationName' headerName="Operation Name" cellRenderer='operationNameFormatter'></AgGridColumn>}
+                                                                {(isOperation || isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCode" tooltipField='OperationCode' headerName="Operation Code" cellRenderer='operationCodeFormatter'></AgGridColumn>}
 
                                                                 {(isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation) && <AgGridColumn width={140} field="OldNetSurfaceTreatmentCost" headerName="Existing ST Cost" cellRenderer='oldSTFormatter'></AgGridColumn>}
                                                                 {(isSurfaceTreatment || keysForDownloadSummary.IsSurfaceTreatmentSimulation) && <AgGridColumn width={140} field="NewNetSurfaceTreatmentCost" headerName="Revised ST Cost" cellRenderer='newSTFormatter'></AgGridColumn>}
