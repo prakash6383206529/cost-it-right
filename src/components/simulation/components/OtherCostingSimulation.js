@@ -687,13 +687,14 @@ function OtherCostingSimulation(props) {
                                                     onSelectionChanged={onRowSelect}
                                                     isRowSelectable={isRowSelectable}
                                                     onFilterModified={onFloatingFilterChanged}
+                                                    enableBrowserTooltips={true}
                                                 >
                                                     <AgGridColumn width={150} field="CostingNumber" headerName='Costing Id'></AgGridColumn>
-                                                    <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
-                                                    <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
+                                                    <AgGridColumn width={110} field="PartNo" tooltipField='PartNo' headerName='Part No.'></AgGridColumn>
+                                                    <AgGridColumn width={120} field="PartName" tooltipField='PartName' headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
-                                                    <AgGridColumn width={140} field="VendorName" cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
+                                                    <AgGridColumn width={140} field="VendorName" tooltipField='VendorName' cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
                                                     <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
                                                     <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>
                                                     {(String(master) === EXCHNAGERATE || showExchangeRateColumn) &&

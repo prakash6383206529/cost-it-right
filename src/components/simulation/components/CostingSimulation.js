@@ -1362,6 +1362,7 @@ function CostingSimulation(props) {
                                                         isRowSelectable={isRowSelectable}
                                                         onRowSelected={onRowSelected}
                                                         onFilterModified={onFloatingFilterChanged}
+                                                        enableBrowserTooltips={true}
                                                     >
                                                         {/* <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
@@ -1372,8 +1373,8 @@ function CostingSimulation(props) {
 
                                                         {isSimulationWithOutCosting && <AgGridColumn width={150} field="CostingNumber" headerName='Costing Id'></AgGridColumn>}
                                                         <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                        {isSimulationWithOutCosting && <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>}
-                                                        {isSimulationWithOutCosting && <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
+                                                        {isSimulationWithOutCosting && <AgGridColumn width={110} field="PartNo" tooltipField='PartNo' headerName='Part No.'></AgGridColumn>}
+                                                        {isSimulationWithOutCosting && <AgGridColumn width={120} field="PartName" tooltipField='PartName' headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
@@ -1382,9 +1383,9 @@ function CostingSimulation(props) {
 
                                                         {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
                                                         {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
-                                                        {amendmentDetails.SimulationHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
+                                                        {amendmentDetails.SimulationHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField='VendorName' headerName='Vendor (Code)'></AgGridColumn>}
                                                         {amendmentDetails.SimulationHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
-                                                        {isSimulationWithOutCosting && <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
+                                                        {isSimulationWithOutCosting && <AgGridColumn width={120} field="PlantName" tooltipField='PlantName' cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
                                                         {isSimulationWithOutCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
 
