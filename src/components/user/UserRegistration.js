@@ -1311,7 +1311,6 @@ function UserRegistration(props) {
         setIsForcefulUpdate(false)
       }
     }
-    const { reset } = props;
     const userDetails = JSON.parse(localStorage.getItem('userDetail'))
     var key;
     var iv;
@@ -1475,7 +1474,6 @@ function UserRegistration(props) {
           }))
         }
         else {
-          props.hideForm()
           let temp = ['FirstName', 'FullName', 'Mobile', 'PhoneNumber', 'AddressLine1', 'AddressLine2', 'CityName', 'ZipCode', "Password"]
           let isDataChanged = false
 
