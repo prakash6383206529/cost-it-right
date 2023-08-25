@@ -342,6 +342,16 @@ function Tool(props) {
     } else {
       setApplicability([])
       setValueOfToolCost('')
+      setToolObj({})
+      setValue('MaintananceCostApplicability', 0)
+      setValue('ToolMaintenanceCost', 0)
+      setValue('maintanencePercentage', 0)
+      setValue('toolCostType', '')
+      setValue('ToolCost', 0)
+      setValue('Life', 0)
+      setValue('ToolAmortizationCost', 0)
+      setValue('NetToolCost', 0)
+      setValue('crmHeadTool', '')
     }
     setValue('maintanencePercentage', 0)
     setValue('maintanenceToolCost', 0)
@@ -664,7 +674,7 @@ function Tool(props) {
                       Controller={Controller}
                       control={control}
                       rules={{ required: false }}
-                      buttonCross={resetData}
+                      isClearable={true}
                       register={register}
                       defaultValue={applicability.length !== 0 ? applicability : ""}
                       options={renderListing("Applicability")}

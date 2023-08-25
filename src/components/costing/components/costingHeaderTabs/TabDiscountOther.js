@@ -1043,6 +1043,7 @@ function TabDiscountOther(props) {
 
     if (!CostingViewMode) {
       if (value && value !== '') {
+        console.log('value: if', value);
         dispatch(isDiscountDataChange(true))
         setHundiDiscountType(value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value)
         setValue('HundiOrDiscountValue', 0)
@@ -1050,23 +1051,32 @@ function TabDiscountOther(props) {
         setValue('HundiDiscountType', value.value)
         errors.HundiOrDiscountValue = {}
         errors.HundiOrDiscountPercentage = {}
+        setDiscountCostApplicability(value)
         setDiscountObj({
           ...discountObj,
-          DiscountCostType: value.value !== 'Fixed' ? 'Percentage' : value.value
+          DiscountCostType: value.value !== 'Fixed' ? 'Percentage' : value.value,
+          DiscountApplicability: value.label,
+          HundiOrDiscountPercentage: 0,
         })
       } else {
+        console.log("value else", value);
         setHundiDiscountType([])
+        setValue('DiscountCostApplicability', '')
+        setValue('HundiOrDiscountPercentage', '')
+        setValue('HundiOrDiscountValue', '')
+        setDiscountCostApplicability([])
+        dispatch(isDiscountDataChange(true))
+        setDiscountObj({
+          ...discountObj,
+          HundiOrDiscountPercentage: 0,
+          HundiOrDiscountValue: 0,
+          DiscountApplicability: '',
+          DiscountCostType: ''
+        })
       }
       errors.HundiOrDiscountPercentage = {}
     }
 
-
-    dispatch(isDiscountDataChange(true))
-    setDiscountCostApplicability(value)
-    setDiscountObj({
-      ...discountObj,
-      DiscountApplicability: value.label
-    })
   }
   const isLoaderObj = { isLoader: isInputLoader, loaderClass: "align-items-center" }
 
@@ -1078,47 +1088,6 @@ function TabDiscountOther(props) {
     dispatch(setDiscountErrors({}))
   }
 
-  const resetData = (type) => {
-    switch (type) {
-      case 'other':
-        return function resetField() {
-          setValue('OtherCostApplicability', '')
-          setValue('PercentageOtherCost', '')
-          setValue('OtherCostDescription', '')
-          setValue('AnyOtherCost', '')
-          setOtherCostApplicability([])
-          dispatch(isDiscountDataChange(true))
-          setDiscountObj({
-            ...discountObj,
-            AnyOtherCost: 0,
-            OtherCostPercentage: 0,
-            OtherCostType: '',
-            OtherCostApplicability: '',
-          })
-        }
-
-      case 'discount':
-        return function resetField() {
-          setValue('DiscountCostApplicability', '')
-          setValue('HundiOrDiscountPercentage', '')
-          setValue('HundiOrDiscountValue', '')
-          setDiscountCostApplicability([])
-          dispatch(isDiscountDataChange(true))
-          setDiscountObj({
-            ...discountObj,
-            HundiOrDiscountPercentage: 0,
-            HundiOrDiscountValue: 0,
-            DiscountApplicability: '',
-            DiscountCostType: ''
-          })
-
-
-        }
-
-      default:
-        break;
-    }
-  }
 
   const setUpdatednetPoPrice = (data) => {
     dispatch(setNPVData([]))
