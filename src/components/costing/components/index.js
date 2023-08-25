@@ -59,7 +59,7 @@ function Costing(props) {
     setPartInfo(partInfo)
     setCostingData(costingInfo)
     if (costingInfo && Object.keys(costingInfo).length > 0) {
-      history.push('/costing')
+      // history.push('/costing')
       setTimeout(() => {
 
         toggle("1");
