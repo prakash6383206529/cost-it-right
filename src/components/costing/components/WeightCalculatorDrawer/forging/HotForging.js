@@ -781,25 +781,6 @@ function HotForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = (Forging Scrap Weight * Forging Scrap Recovery (%)) / 100'} />
-                <NumberFieldHookForm
-                  label={`Forging Scrap Cost`}
-                  name={'forgingScrapCost'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  id={'forging-scrapCost'}
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.forgingScrapCost}
-                  disabled={true}
-                />
-              </Col>
-
-              <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = (Machining Scrap Weight * Forging Scrap Recovery (%)) / 100'} />
                 <NumberFieldHookForm
                   label={`Machining Scrap Cost`}

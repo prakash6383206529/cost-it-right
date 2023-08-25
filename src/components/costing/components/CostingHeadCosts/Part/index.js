@@ -14,6 +14,7 @@ import {
   setProcessGroupGrid,
   saveBOMLevel,
   saveAssemblyNumber,
+  setIsBreakupBoughtOutPartCostingFromAPI,
 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
@@ -84,6 +85,7 @@ function PartCompoment(props) {
         dispatch(getRMCCTabData(data, false, (res) => {
           if (res && res.data && res.data.Result) {
             let Data = res.data.DataList[0]?.CostingPartDetails;
+            dispatch(setIsBreakupBoughtOutPartCostingFromAPI(res?.data?.DataList[0]?.IsBreakupBoughtOutPart))
             dispatch(setProcessGroupGrid(Data.CostingConversionCost.CostingProcessCostResponse))
             // dispatch(setAllCostingInArray(Data))
             props.setPartDetails(BOMLevel, PartNumber, Data, item)

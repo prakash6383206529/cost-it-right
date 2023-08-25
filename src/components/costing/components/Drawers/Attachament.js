@@ -1,13 +1,39 @@
-import React, { Fragment } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 import { Container, Row, Col } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useSelector } from 'react-redux'
-import { FILE_URL } from '../../../../config/constants'
+import { CAPACITY, FEASIBILITY, FILE_URL, TIMELINE } from '../../../../config/constants'
 
 function Attachament(props) {
   const { index, gridListing } = props
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const Data = gridListing ? index : viewCostingData[index]
+  const [files, setFiles] = useState([]);
+  const [filesFeasibility, setFilesFeasibility] = useState([]);
+  const [isRfqAttachments, setIsRfqAttachments] = useState(false)
+  const [filesCapacity, setFilesCapacity] = useState([]);
+  const [filesTimeline, setFilesTimeline] = useState([]);
+
+  useEffect(() => {
+    let list = (Data.attachment || Data.Attachements)
+    let attachmentList = filterAttachments(list, null)
+    setIsRfqAttachments(list?.length !== attachmentList?.length)
+    setFiles(attachmentList)
+    let attachmentFeasibility = filterAttachments(list, FEASIBILITY)
+    setFilesFeasibility(attachmentFeasibility)
+    let attachmentCapacity = filterAttachments(list, CAPACITY)
+    setFilesCapacity(attachmentCapacity)
+    let attachmentTimeline = filterAttachments(list, TIMELINE)
+    setFilesTimeline(attachmentTimeline)
+
+  }, [Data])
+
+  const filterAttachments = (list, value) => {
+    let filteredList = list?.filter(element => element.AttachementCategory === value)
+    return filteredList
+  }
+
+
   /*
    * @method toggleDrawer
    * @description closing drawer
@@ -56,23 +82,98 @@ function Attachament(props) {
                   })}
 
               </Col> :
-                <Col md="12">
-                  {(Data.attachment || Data.Attachements) &&
-                    (Data.attachment || Data.Attachements).map((f) => {
-                      const withOutTild = f.FileURL
-                        ? f.FileURL.replace('~', '')
-                        : ''
-                      const fileURL = `${FILE_URL}${withOutTild}`
-                      return (
-                        <div className={"attachment-row"}>
-                          <a href={fileURL} target="_blank" rel="noreferrer">
-                            {f.OriginalFileName}
-                          </a>
-                        </div>
-                      )
-                    })}
+                <>
+                  {isRfqAttachments ? <>
 
-                </Col>}
+                    <Col md="12"> <div className="left-border mb-0">Feasibility</div>
+                      {filesFeasibility && filesFeasibility.map((f) => {
+                        const withOutTild = f.FileURL
+                          ? f.FileURL.replace('~', '')
+                          : ''
+                        const fileURL = `${FILE_URL}${withOutTild}`
+                        return (
+                          <div className={"attachment-row"}>
+                            <a href={fileURL} target="_blank" rel="noreferrer">
+                              {f.OriginalFileName}
+                            </a>
+                          </div>
+                        )
+                      })}
+
+                    </Col>
+
+
+
+                    <Col md="12"> <div className="left-border mt-3 mb-0">Capacity</div>
+                      {filesCapacity && filesCapacity.map((f) => {
+                        const withOutTild = f.FileURL
+                          ? f.FileURL.replace('~', '')
+                          : ''
+                        const fileURL = `${FILE_URL}${withOutTild}`
+                        return (
+                          <div className={"attachment-row"}>
+                            <a href={fileURL} target="_blank" rel="noreferrer">
+                              {f.OriginalFileName}
+                            </a>
+                          </div>
+                        )
+                      })}
+
+                    </Col>
+
+
+
+                    <Col md="12"> <div className="left-border mt-3 mb-0">Timeline</div>
+                      {filesTimeline && filesTimeline.map((f) => {
+                        const withOutTild = f.FileURL
+                          ? f.FileURL.replace('~', '')
+                          : ''
+                        const fileURL = `${FILE_URL}${withOutTild}`
+                        return (
+                          <div className={"attachment-row"}>
+                            <a href={fileURL} target="_blank" rel="noreferrer">
+                              {f.OriginalFileName}
+                            </a>
+                          </div>
+                        )
+                      })}
+
+                    </Col>
+                    <Col md="12"> <div className="left-border mt-3 mb-0">Others</div>
+                      {files && files.map((f) => {
+                        const withOutTild = f.FileURL
+                          ? f.FileURL.replace('~', '')
+                          : ''
+                        const fileURL = `${FILE_URL}${withOutTild}`
+                        return (
+                          <div className={"attachment-row"}>
+                            <a href={fileURL} target="_blank" rel="noreferrer">
+                              {f.OriginalFileName}
+                            </a>
+                          </div>
+                        )
+                      })}
+
+                    </Col>
+                  </>
+                    : <Col md="12">
+                      {(Data.attachment || Data.Attachements) &&
+                        (Data.attachment || Data.Attachements).map((f) => {
+                          const withOutTild = f.FileURL
+                            ? f.FileURL.replace('~', '')
+                            : ''
+                          const fileURL = `${FILE_URL}${withOutTild}`
+                          return (
+                            <div className={"attachment-row"}>
+                              <a href={fileURL} target="_blank" rel="noreferrer">
+                                {f.OriginalFileName}
+                              </a>
+                            </div>
+                          )
+                        })}
+
+                    </Col>}
+                </>}
             </Row>
           </div>
         </Container>

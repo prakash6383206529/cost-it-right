@@ -28,7 +28,10 @@ function OtherCostDrawer(props) {
     }
 
 
-    const { register, handleSubmit, formState: { errors }, control, getValues, setValue } = useForm();
+    const { register, handleSubmit, formState: { errors }, control, getValues, setValue } = useForm({
+        mode: 'onChange',
+        reValidateMode: 'onChange',
+    });
     const dispatch = useDispatch()
     const { otherCostData } = useSelector(state => state.costing)
 
@@ -382,7 +385,7 @@ function OtherCostDrawer(props) {
                                         rules={{
                                             required: true,
                                             validate: { checkWhiteSpaces, hashValidation },
-                                            maxLength: STRINGMAXLENGTH
+                                            maxLength: 80
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={""}

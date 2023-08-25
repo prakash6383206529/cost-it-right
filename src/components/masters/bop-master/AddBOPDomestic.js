@@ -48,7 +48,7 @@ class AddBOPDomestic extends Component {
     this.dropzone = React.createRef();
     this.state = {
       BOPID: EMPTY_GUID,
-      isEditFlag: false,
+      isEditFlag: this.props?.data?.isEditFlag ? true : false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
       BOPCategory: [],
@@ -249,7 +249,6 @@ class AddBOPDomestic extends Component {
     const { data } = this.props;
     if (data && data.isEditFlag) {
       this.setState({
-        isEditFlag: false,
         isLoader: true,
         BOPID: data.Id,
       })
@@ -269,7 +268,6 @@ class AddBOPDomestic extends Component {
             }
             this.setState({
               IsFinancialDataChanged: false,
-              isEditFlag: true,
               costingTypeId: Data.CostingTypeId,
               BOPCategory: Data.CategoryName !== undefined ? { label: Data.CategoryName, value: Data.CategoryId } : [],
               selectedPlants: plantObj,
@@ -531,8 +529,7 @@ class AddBOPDomestic extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
     const NetLandedCost = checkForNull((BasicRate / NoOfPieces)) // THIS CALCULATION IS FOR BASE
 
-    if (this.state.isEditFlag && Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) {
-
+    if (this.state.isEditFlag && (Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) && (this.state.sourceLocation === this.state.DataToCheck?.SourceLocation) && (this.state.source === this.state.DataToCheck?.Source)) {
       this.setState({ IsFinancialDataChanged: false })
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true })
@@ -886,6 +883,15 @@ class AddBOPDomestic extends Component {
       this.setState({ Technology: newValue })
     }
     // this.setState({ isDropDownChanged: true })
+  }
+
+  showBasicRate = () => {
+    const { isEditFlag } = this.state
+    let value = false
+    if (isEditFlag) {
+      value = this.props?.data?.showPriceFields ? true : false
+    }
+    return value
   }
 
   /**
@@ -1307,7 +1313,7 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsMinimumOrderQuantityVisible && < Col md="3">
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && !isTechnologyVisible && this.props?.data?.showPriceFields && < Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
@@ -1321,7 +1327,7 @@ class AddBOPDomestic extends Component {
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>}
-                          {!isTechnologyVisible && <> <Col md="3">
+                          {(!isTechnologyVisible || this.showBasicRate()) && <> <Col md="3">
                             <Field
                               label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
                               name={"BasicRate"}

@@ -67,6 +67,7 @@ function CostingDetails(props) {
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
   const [partType, setPartType] = useState([]);
+
   const [effectiveDate, setEffectiveDate] = useState('');
   const [IsOpenVendorSOBDetails, setIsOpenVendorSOBDetails] = useState(false);
   const [isZBCSOBEnabled, setZBCEnableSOBField] = useState(true);
@@ -108,7 +109,7 @@ function CostingDetails(props) {
   const [DeleteAccessibility, setDeleteAccessibility] = useState(true)
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
-
+  const costingMode = useSelector(state => state.costing.costingMode);
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
@@ -169,6 +170,20 @@ function CostingDetails(props) {
       reactLocalStorage.setObject('PartData', [])
     }
   }, [])
+
+  useEffect(() => {
+    if (costingMode?.editMode === true && costingMode?.viewMode === false) {
+      setIsCostingEditMode(true)
+      setIsCostingViewMode(false)
+    } else if (costingMode?.editMode === false && costingMode?.viewMode === true) {
+      setIsCostingViewMode(true)
+      setIsCostingEditMode(false)
+    } else if (costingMode?.editMode === false && costingMode?.viewMode === false) {
+      setIsCostingViewMode(false)
+      setIsCostingEditMode(false)
+    }
+
+  }, [costingMode])
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData, technology.label)
@@ -381,7 +396,8 @@ function CostingDetails(props) {
           if (response.data.Result) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
-
+              reactLocalStorage.setObject('costingArray', [])
+              reactLocalStorage.setObject('surfaceCostingArray', [])
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
@@ -519,8 +535,8 @@ function CostingDetails(props) {
       //   }
       // })))
 
-      reactLocalStorage.setObject('costingArray', [])
-      reactLocalStorage.setObject('surfaceCostingArray', [])
+      // reactLocalStorage.setObject('costingArray', [])
+      // reactLocalStorage.setObject('surfaceCostingArray', [])
       setIsOpenVendorSOBDetails(true)
 
     } else {

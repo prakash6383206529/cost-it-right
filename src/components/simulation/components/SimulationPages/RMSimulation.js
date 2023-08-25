@@ -237,16 +237,16 @@ function RMSimulation(props) {
         return cell ? cell : '-';
     }
     const vendorFormatter = (props) => {
-        return (isbulkUpload ? props?.value : props?.data.VendorName);
+        return (<span title={isbulkUpload ? props?.value : props?.data.VendorName}>{isbulkUpload ? props?.value : props?.data.VendorName}</span>);
     }
 
     const customerFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return (isbulkUpload ? row['Customer (Code)'] : row.CustomerName);
+        return (<span title={isbulkUpload ? row['Customer (Code)'] : row.CustomerName}>{isbulkUpload ? row['Customer (Code)'] : row.CustomerName}</span>);
     }
 
     const plantFormatter = (props) => {
-        return (isbulkUpload ? props?.value : props?.data.DestinationPlantName);
+        return (<span title={isbulkUpload ? props?.value : props?.data.DestinationPlantName}>{isbulkUpload ? props?.value : props?.data.DestinationPlantName}</span>);
     }
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -579,20 +579,21 @@ function RMSimulation(props) {
                                             stopEditingWhenCellsLoseFocus={true}
                                             onCellValueChanged={onCellValueChanged}
                                             onFilterModified={onFloatingFilterChanged}
+                                            enableBrowserTooltips={true}
                                         >
                                             {
                                                 !isImpactedMaster &&
                                                 <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                                             }
-                                            <AgGridColumn width={140} field="RawMaterialName" editable='false' headerName="Raw Material"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RawMaterialGradeName" editable='false' headerName="Grade" ></AgGridColumn>
-                                            <AgGridColumn width={115} field="RawMaterialSpecificationName" editable='false' headerName="Spec"></AgGridColumn>
-                                            <AgGridColumn width={115} field="RawMaterialCode" editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn width={110} field="Category" editable='false' headerName="Category"></AgGridColumn>}
+                                            <AgGridColumn width={140} field="RawMaterialName" tooltipField='RawMaterialName' editable='false' headerName="Raw Material"></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialGradeName" tooltipField='RawMaterialGradeName' editable='false' headerName="Grade" ></AgGridColumn>
+                                            <AgGridColumn width={115} field="RawMaterialSpecificationName" tooltipField='RawMaterialSpecificationName' editable='false' headerName="Spec"></AgGridColumn>
+                                            <AgGridColumn width={135} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn width={110} field="Category" tooltipField='Category' editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" editable='false' headerName="Technology" ></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn width={100} field="Vendor (Code)" editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn width={100} field="Plant (Code)" editable='false' headerName="Plant (Code)" cellRenderer='plantFormatter' ></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn width={160} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={160} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn width={160} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
                                             <AgGridColumn width={100} field="UnitOfMeasurementName" editable='false' headerName="UOM"></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}

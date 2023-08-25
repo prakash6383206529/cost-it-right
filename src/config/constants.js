@@ -1047,6 +1047,9 @@ export const API = {
   checkExistCosting: `${BASE_URL}/rfq-quotation/rfq-check-exist-costing`,
   rfqSaveBestCosting: `${BASE_URL}/rfq-costing/rfq-save-best-costing`,
 
+  // NFR
+  getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
+  getNfrAnnualForecastQuantity: `${BASE_URL}/rfq-quotation/get-nfr-annual-forecast-quantity`,
 }
 
 //Api constants
@@ -1429,6 +1432,7 @@ export const SAVE_BOM_LEVEL_STOP_API_CALL = 'SAVE_BOM_LEVEL_STOP_API_CALL'
 export const SAVE_ASSEMBLY_NUMBER_STOP_API_CALL = 'SAVE_ASSEMBLY_NUMBER_STOP_API_CALL'
 export const SET_BREAKUP_BOP = 'SET_BREAKUP_BOP'
 export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API'
+export const SET_COSTING_MODE = 'SET_COSTING_MODE'
 
 //WEIGHT CALCULATION COSTING
 
@@ -2439,6 +2443,10 @@ export const SUPPLIER_CONFRIM = 'Supplier Confirmation'
 export const INVOICE_BACKUP = 'Invoice Backups'
 export const OTHER = 'Others'
 export const ATTACHMENTS = 'Attachments'
+export const ATTACHMENT = 'Attachment'
+export const FEASIBILITY = 'Feasibility'
+export const CAPACITY = 'Capacity'
+export const TIMELINE = 'Timeline'
 
 export const APPROVAL_ID = 3
 export const RM_MASTER_ID = 1
@@ -2655,4 +2663,4 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.233.1";
+export const VERSION = "V2.1.241";

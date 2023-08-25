@@ -50,7 +50,7 @@ class AddBOPImport extends Component {
     // ********* INITIALIZE REF FOR DROPZONE ********
     this.dropzone = React.createRef();
     this.state = {
-      isEditFlag: false,
+      isEditFlag: this.props?.data?.isEditFlag ? true : false,
       IsVendor: false,
       isViewMode: this.props?.data?.isViewMode ? true : false,
 
@@ -296,7 +296,6 @@ class AddBOPImport extends Component {
     const { data } = this.props;
     if (data && data.isEditFlag) {
       this.setState({
-        isEditFlag: false,
         isLoader: true,
         BOPID: data.Id,
         isCallCalculation: true
@@ -326,7 +325,6 @@ class AddBOPImport extends Component {
             const { costingTypeId, vendorName, client } = this.state
 
             this.setState({
-              isEditFlag: true,
               IsFinancialDataChanged: false,
               costingTypeId: Data.CostingTypeId,
               client: Data.CustomerName !== undefined ? { label: Data.CustomerName, value: Data.CustomerId } : [],
@@ -634,7 +632,7 @@ class AddBOPImport extends Component {
       this.state.isEditFlag &&
       Number(checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice)) === Number(checkForDecimalAndNull(this.state.DataToChange?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)) &&
       this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value &&
-      this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value
+      this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value && (this.state.sourceLocation === this.state.DataToCheck?.SourceLocation) && (this.state.source === this.state.DataToCheck?.Source)
     ) {
       this.setState({ IsFinancialDataChanged: false });
     } else if (this.state.isEditFlag) {
@@ -1005,6 +1003,15 @@ class AddBOPImport extends Component {
     // this.setState({ isDropDownChanged: true })
   }
 
+
+  showBasicRate = () => {
+    const { isEditFlag } = this.state
+    let value = false
+    if (isEditFlag) {
+      value = this.props?.data?.showPriceFields ? true : false
+    }
+    return value
+  }
 
   /**
   * @method render
@@ -1450,12 +1457,12 @@ class AddBOPImport extends Component {
                                 }}
                                 component={renderDatePicker}
                                 className="form-control"
-                                disabled={isViewMode || !this.state.IsFinancialDataChanged || (isEditFlag && isBOPAssociated)}
+                                disabled={isViewMode || !this.state.IsFinancialDataChanged}
                                 placeholder={isEditFlag ? '-' : "Select Date"}
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsMinimumOrderQuantityVisible && < Col md="3">
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && !isTechnologyVisible && this.props?.data?.showPriceFields && < Col md="3">
                             <Field
                               label={`Minimum Order Quantity`}
                               name={"NumberOfPieces"}
@@ -1469,21 +1476,20 @@ class AddBOPImport extends Component {
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>}
-                          {!isTechnologyVisible && <>
-                            <Col md="3">
-                              <Field
-                                label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                name={"BasicRate"}
-                                type="text"
-                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={true}
-                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
-                                className=" "
-                                customClassName=" withBorder"
-                              />
-                            </Col>
+                          {(!isTechnologyVisible || this.showBasicRate()) && <> <Col md="3">
+                            <Field
+                              label={`Basic Rate (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                              name={"BasicRate"}
+                              type="text"
+                              placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                              validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                              component={renderTextInputField}
+                              required={true}
+                              disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
                             <Col md="3">
                               <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                               <Field

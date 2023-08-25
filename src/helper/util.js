@@ -10,9 +10,10 @@ import {
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
+import TooltipCustom from '../components/common/Tooltip';
 
 /**
  * @method  apiErrors
@@ -659,7 +660,7 @@ export function formViewData(costingSummary, header = '') {
 
   obj.toolApplicability = { applicability: 'Applicability', value: 'Value', }
   obj.toolApplicabilityValue = {
-    toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : 0,
+    toolTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolCostType : "-",
     toolValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolApplicabilityCost : 0,
   }
 
@@ -1203,4 +1204,18 @@ export function compareObjects(obj1, obj2) {
 export function removeBOPfromApplicability(list) {
   let tempList = list?.filter(item => !item?.label?.includes('BOP'))
   return tempList
+}
+
+export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalForPrice) => {
+  let applyValue = checkForDecimalAndNull(arr && arr[0]?.RawMaterialCostWithCutOff, NoOfDecimalForPrice)
+  let text = ""
+
+  if (id.includes("RM")) {
+    text = <>{arr && arr[0]?.IsRMCutOffApplicable && <p>{`RM cut-off price ${applyValue} applied`}</p>}{conditon && <p>BOP cost is not included for BOP part type</p>}</>;
+    return (arr && arr[0]?.IsRMCutOffApplicable) || conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
+
+  } else if (id.includes("Combined")) {
+    text = <>{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('RM') && arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{conditon && <p>BOP cost is not included for BOP part type</p>}</>;
+    return (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('RM') && arr[0]?.IsRMCutOffApplicable === true) || conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
+  }
 }

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import AddToComparisonDrawer from './AddToComparisonDrawer'
 import {
   setCostingViewData, setCostingApprovalData, getBriefCostingById,
-  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData
+  storePartNumber, getSingleCostingDetails, createCosting, checkFinalUser, getCostingByVendorAndVendorPlant, setRejectedCostingViewData, updateSOBDetail, setCostingMode
 } from '../actions/Costing'
 import ViewBOP from './Drawers/ViewBOP'
 import ViewConversionCost from './Drawers/ViewConversionCost'
@@ -14,9 +14,9 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
 import Attachament from './Drawers/Attachament'
-import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, CBC, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, APPROVED, PENDING, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
+import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
 import WarningMessage from '../../common/WarningMessage'
 import DayTime from '../../common/DayTimeWrapper'
@@ -36,13 +36,14 @@ import { Costratiograph } from '../../dashboard/CostRatioGraph'
 import { colorArray } from '../../dashboard/ChartsDashboard'
 import { LOGISTICS, FORGING } from '../../../config/masterData'
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
-import AddNpvCost from './CostingHeadCosts/AdditionalOtherCost/AddNpvCost'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions'
-import CrossIcon from '../../../assests/images/red-cross.png'
 import { getMultipleCostingDetails } from '../../rfq/actions/rfq'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
 import ViewOtherCostDrawer from './ViewOtherCostDrawer'
+import { TextFieldHookForm } from '../../layout/HookFormInputs'
+import { Controller, useForm } from 'react-hook-form'
+import { number, percentageLimitValidation, decimalNumberLimit6 } from '../../../helper/validation'
+import Button from '../../layout/Button'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -93,10 +94,10 @@ const CostingSummaryTable = (props) => {
   /*CONSTANT FOR  CREATING AND EDITING COSTING*/
   const [partInfoStepTwo, setPartInfo] = useState({});
   const [index, setIndex] = useState('')
-  const [excelArray, setExcelArray] = useState([])
 
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
+  const [ViewAccessibility, setViewAccessibility] = useState(true)
   const [iccPaymentData, setIccPaymentData] = useState("")
 
   const [warningMsg, setShowWarningMsg] = useState(false)
@@ -134,6 +135,10 @@ const CostingSummaryTable = (props) => {
     operation: false
   })
   const partType = IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  const { register, control, formState: { errors }, setValue, getValues } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
 
   const componentRef = useRef();
   const onBeforeContentResolve = useRef(null)
@@ -339,6 +344,7 @@ const CostingSummaryTable = (props) => {
       if (permmisionData !== undefined) {
         setAddAccessibility(permmisionData?.Add ? permmisionData?.Add : false)
         setEditAccessibility(permmisionData?.Edit ? permmisionData?.Edit : false)
+        setViewAccessibility(permmisionData?.View ? permmisionData?.View : false)
       }
     }
   }
@@ -589,7 +595,7 @@ const CostingSummaryTable = (props) => {
       if (res.data?.Result) {
         dispatch(getBriefCostingById(res.data?.Data?.CostingId, () => {
           setPartInfo(res.data?.Data)
-
+          dispatch(setCostingMode({ editMode: false, viewMode: false }))
           showDetail(res.data?.Data, { costingId: res.data?.Data?.CostingId, type })
           history.push('/costing')
         }))
@@ -613,6 +619,7 @@ const CostingSummaryTable = (props) => {
       dispatch(getBriefCostingById(tempData?.costingId, (res) => {
         history.push('/costing')
         showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+        dispatch(setCostingMode({ editMode: true, viewMode: false }))
       }))
     }
     if (type === VBC) {
@@ -621,6 +628,38 @@ const CostingSummaryTable = (props) => {
         if (res?.data?.Result) {
           history.push('/costing')
           showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+          dispatch(setCostingMode({ editMode: true, viewMode: false }))
+        }
+
+      }))
+    }
+  }
+
+  /**
+ * @method viewCostingDetail
+ * @description VIEW COSTING DETAIL (WILL GO TO COSTING DETAIL PAGE)
+ */
+  const viewCostingDetail = (index) => {
+    partNumber.isChanged = false
+    dispatch(storePartNumber(partNumber))
+
+    let tempData = viewCostingData[index]
+    props?.setcostingOptionsSelectFromSummary(viewCostingData && viewCostingData[index])
+    const type = viewCostingData[index]?.zbc === 0 ? 'ZBC' : 'VBC'
+    if (type === ZBC) {
+      dispatch(getBriefCostingById(tempData?.costingId, (res) => {
+        history.push('/costing')
+        showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+        dispatch(setCostingMode({ editMode: false, viewMode: true }))
+      }))
+    }
+    if (type === VBC) {
+      dispatch(getBriefCostingById(tempData?.costingId, (res) => {
+
+        if (res?.data?.Result) {
+          history.push('/costing')
+          showDetail(partInfoStepTwo, { costingId: tempData?.costingId, type })
+          dispatch(setCostingMode({ editMode: false, viewMode: true }))
         }
 
       }))
@@ -1090,7 +1129,6 @@ const CostingSummaryTable = (props) => {
 
     let costingSummary = []
     let templateObj = viewCostingData[0]?.technologyId === LOGISTICS ? { ...VIEW_COSTING_DATA_LOGISTICS } : { ...VIEW_COSTING_DATA }
-
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
@@ -1108,6 +1146,7 @@ const CostingSummaryTable = (props) => {
     }
     if (!(reactLocalStorage.getObject('cbcCostingPermission'))) {
       templateObj.costingHeadCheck = 'VBC/ZBC/NCC'
+      delete templateObj.customer
     }
     if ((viewCostingData && viewCostingData[0]?.technologyId && viewCostingData[0]?.technologyId !== DIE_CASTING)) {
       delete templateObj.castingWeightExcel
@@ -1474,6 +1513,74 @@ const CostingSummaryTable = (props) => {
     return highlighClass; // Return the class basis on the condition
   }
 
+  const editValue = (obj, index) => {
+    obj.editSOBPercentage = true
+    let tempList = Object.assign([...viewCostingData], { [index]: obj })
+
+    dispatch(setCostingViewData(tempList))
+
+  }
+
+  const handleSOBSave = (obj, index) => {
+    const lastvlue = viewCostingData[index]?.shareOfBusinessPercent
+    let totalSObP = [];
+    for (let i = 0; i < viewCostingData.length; i++) {
+      if (typeof viewCostingData[i].shareOfBusinessPercent === 'number' && i !== index) {
+        totalSObP.push(viewCostingData[i].shareOfBusinessPercent)
+      }
+    }
+    const sum = totalSObP.reduce((accumulator, currentValue) => accumulator + currentValue, 0) + Number(getValues(`ShareOfBusinessPercent.${index}`));
+    if (sum > 100) {
+      Toaster.warning("Total SOB percentage cannot be more than 100%")
+      setValue(`ShareOfBusinessPercent.${index}`, lastvlue)
+      return false;
+    } else if (getValues(`ShareOfBusinessPercent.${index}`) === '') {
+      setValue(`ShareOfBusinessPercent.${index}`, 0)
+    }
+    let tempArr = []
+    let data = {}
+    obj.shareOfBusinessPercent = Number(getValues(`ShareOfBusinessPercent.${index}`))
+    data = {
+      PlantId: obj.plantId ? obj.plantId : obj.destinationPlantId,
+      PartId: obj.partId,
+      ShareOfBusinessPercentage: obj.shareOfBusinessPercent,
+      LoggedInUserId: loggedInUserId(),
+      VendorId: obj.vendorId,
+      VendorPlantId: initialConfiguration && initialConfiguration.IsVendorPlantConfigurable ? obj.VendorPlantId : EMPTY_GUID,
+      CostingTypeId: VBCTypeId
+    }
+    tempArr.push(data)
+
+
+    dispatch(updateSOBDetail(tempArr, (res) => {
+      obj.editSOBPercentage = false
+      let tempList = Object.assign([...viewCostingData], { [index]: obj })
+      dispatch(setCostingViewData(tempList))
+    }))
+  }
+  const handleSOBDiscard = (obj, index) => {
+    obj.editSOBPercentage = false
+    setValue(`ShareOfBusinessPercent.${index}`, obj.shareOfBusinessPercent)
+    let tempList = Object.assign([...viewCostingData], { [index]: obj })
+    dispatch(setCostingViewData(tempList))
+  }
+
+  const handleVBCSOBChange = (e, index, obj) => {
+    let value = Number(e.target.value);
+    if (!value && value !== 0) {
+      setTimeout(() => {
+        Toaster.warning("Value should be in number")
+        setValue(`ShareOfBusinessPercent.${index}`, '')
+      }, 100);
+      return false;
+    } else if (e.target.value > 100) {
+      setTimeout(() => {
+        Toaster.warning("SOB percentage cannot be more than 100%")
+        setValue(`ShareOfBusinessPercent.${index}`, '')
+      }, 100);
+      return false;
+    }
+  }
 
   return (
     <Fragment>
@@ -1635,6 +1742,7 @@ const CostingSummaryTable = (props) => {
                                   <div className="action  text-right">
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && EditAccessibility) && (data?.status === DRAFT) && <button className="Edit mr-1 mb-0 align-middle" type={"button"} title={"Edit Costing"} onClick={() => editCostingDetail(index)} />}
+                                    {((!viewMode && (!pdfHead && !drawerDetailPDF)) && ViewAccessibility) && (data?.status === DRAFT) && <button className="View mr-1 mb-0 align-middle" type={"button"} title={"View Costing"} onClick={() => viewCostingDetail(index)} />}
                                     {((!viewMode && (!pdfHead && !drawerDetailPDF)) && AddAccessibility) && <button className="Add-file mr-1 mb-0 align-middle" type={"button"} title={"Add Costing"} onClick={() => addNewCosting(index)} />}
                                     {!isApproval && (data?.bestCost === true ? false : ((!viewMode || props.isRfqCosting || (approvalMode && data?.CostingHeading === '-')) && (!pdfHead && !drawerDetailPDF)) && <button type="button" className="CancelIcon mb-0 align-middle" title='Discard' onClick={() => deleteCostingFromView(index)}></button>)}
                                   </div>
@@ -1650,12 +1758,14 @@ const CostingSummaryTable = (props) => {
                           <tr className={`${drawerDetailPDF ? "pdf-print" : ""}`} >
                             <td>
                               <span className="d-block">Costing Version</span>
-                              <span className="d-block mt-2">Net Cost (Effective from)</span>
+                              <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
+                              {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
                               <span className="d-block">Plant (Code)</span>
+                              {props.isRfqCosting && <span className="d-block">SOB</span>}
 
                             </td>
                             {viewCostingData &&
@@ -1689,7 +1799,7 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : ` (${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
                                         </span>
                                         {(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && (
-                                          <span className={`pie-chart-wrapper mt-3`}>
+                                          <span className={`pie-chart-wrapper`}>
                                             {isPieChartVisible ? (
                                               <button type="button" className="CancelIcon" title="Discard" onClick={() => pieChartCloseHandler(index)}></button>
                                             ) : (
@@ -1705,11 +1815,63 @@ const CostingSummaryTable = (props) => {
                                       </span>
                                     )}
                                     {/* USE PART NUMBER KEY HERE */}
-                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? `${data?.vendorName} (${data?.vendorCode})` : ''}</span>
+                                    <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
+                                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data.costingTypeId === ZBCTypeId ? `${data?.plantName}` : `${data?.destinationPlantName}`)}</span>
+                                    {props.isFromViewRFQ && data?.bestCost !== true ? <div className='d-flex align-items-center'>
+                                      <div className="w-100px costing-error-container">
+                                        <TextFieldHookForm
+                                          label={false}
+                                          name={`ShareOfBusinessPercent.${index}`}
+                                          Controller={Controller}
+                                          control={control}
+                                          register={register}
+                                          mandatory={false}
+                                          rules={{
+                                            required: true,
+                                            validate: { number, percentageLimitValidation, decimalNumberLimit6 },
+                                            max: {
+                                              value: 100,
+                                              message: "Percentage should not be greater then 100"
+                                            }
+                                          }}
+                                          defaultValue={data.shareOfBusinessPercent ?? 0}
+                                          className="custom-height-28px"
+                                          customClassName={"withBorder mb-0"}
+                                          handleChange={(e) => {
+                                            e.preventDefault();
+                                            handleVBCSOBChange(e, index, data);
+                                          }}
+                                          errors={errors && errors.ShareOfBusinessPercent}
+                                          disabled={data?.editSOBPercentage ? false : true}
+                                        />
+                                      </div>
+                                      {data?.bestCost !== true && <>
+                                        {data?.editSOBPercentage ?
+                                          <>
+                                            <Button
+                                              id="CostingSummary_SOB_Save"
+                                              variant="SaveIcon mb-0 ml-2 mr-0"
+                                              title="Save"
+                                              onClick={() => handleSOBSave(data, index)}
+                                            />
+                                            <Button
+                                              id="CostingSummary_SOB_Discard"
+                                              variant="CancelIcon mb-0 ml-2"
+                                              title="Discard"
+                                              onClick={() => handleSOBDiscard(data, index)} />
+                                          </>
+                                          : <Button
+                                            id="CostingSummary_SOB_Edit"
+                                            variant="Edit mb-0 ml-2"
+                                            title="Edit"
+                                            onClick={() => editValue(data, index)} />}
+                                      </>}
+                                    </div> : props.isRfqCosting && <span className="d-block">{data?.shareOfBusinessPercent ?? '0'}</span>
+                                    }
                                   </td>
                                 )
                               })}
@@ -2854,6 +3016,7 @@ const CostingSummaryTable = (props) => {
             index={viewAtttachments}
             closeDrawer={closeAttachmentDrawer}
             anchor={'right'}
+            isRfqCosting={props?.isRfqCosting}
           />
         )
       }

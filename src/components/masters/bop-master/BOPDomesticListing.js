@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID } from '../../../config/constants';
 import {
     getBOPDataList, deleteBOP, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
@@ -277,6 +277,7 @@ class BOPDomesticListing extends Component {
             IsVendor: rowData.CostingHead,
             isViewMode: isViewMode,
             costingTypeId: rowData.CostingTypeId,
+            showPriceFields: rowData.StatusId !== DRAFTID,
         }
         this.props.getDetails(data, rowData?.IsBOPAssociated);
     }

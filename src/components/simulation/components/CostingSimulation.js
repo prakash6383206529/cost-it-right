@@ -1438,6 +1438,7 @@ function CostingSimulation(props) {
                                                         isRowSelectable={isRowSelectable}
                                                         onRowSelected={onRowSelected}
                                                         onFilterModified={onFloatingFilterChanged}
+                                                        enableBrowserTooltips={true}
                                                     >
                                                         {/* <AgGridColumn width={150} field="CostingNumber" headerName='Costing ID'></AgGridColumn>
                                                     <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>
@@ -1448,18 +1449,18 @@ function CostingSimulation(props) {
 
                                                         {isSimulationWithCosting && <AgGridColumn width={150} field="CostingNumber" headerName='Costing Id'></AgGridColumn>}
                                                         <AgGridColumn width={140} field="CostingHead" headerName='Costing Head'></AgGridColumn>
-                                                        {isSimulationWithCosting && <AgGridColumn width={110} field="PartNo" headerName='Part No.'></AgGridColumn>}
-                                                        {isSimulationWithCosting && <AgGridColumn width={120} field="PartName" headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
-                                                        {isSimulationWithCosting && <AgGridColumn width={120} field="PartType" cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={130} field="PartNo" tooltipField='PartNo' headerName='Part No.'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={130} field="PartName" tooltipField='PartName' headerName='Part Name' cellRenderer='descriptionFormatter'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={120} field="PartType" tooltipField='PartType' cellRenderer='partTypeFormatter' headerName="Part Type"></AgGridColumn>}
                                                         {isSimulationWithCosting && <AgGridColumn width={130} field="Technology" headerName='Technology'></AgGridColumn>}
                                                         {isSimulationWithCosting && <AgGridColumn width={110} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                         {isSimulationWithCosting && <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
 
-                                                        {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
-                                                        {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
-                                                        {amendmentDetails.SimulationHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
-                                                        {amendmentDetails.SimulationHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" headerName='Customer (Code)'></AgGridColumn>}
-                                                        {isSimulationWithCosting && <AgGridColumn width={120} field="PlantName" cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
+                                                        {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" tooltipField='ProcessName' headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
+                                                        {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" tooltipField='ProcessCode' headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}
+                                                        {amendmentDetails.SimulationHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName='Vendor (Code)'></AgGridColumn>}
+                                                        {amendmentDetails.SimulationHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName='Customer (Code)'></AgGridColumn>}
+                                                        {isSimulationWithCosting && <AgGridColumn width={150} field="PlantName" tooltipField='PlantName' cellRenderer='plantFormatter' headerName='Plant (Code)'></AgGridColumn>}
                                                         {isSimulationWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
 
 

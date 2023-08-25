@@ -3131,6 +3131,10 @@ button:disabled,
 
   .CancelIcon,
   .pie-chart {
+    position: absolute;
+    right: 0;
+    top: -5px;
+
     &:focus {
       box-shadow: none !important;
       border: none !important;
@@ -3191,6 +3195,10 @@ button:disabled,
     label {
       height: 152px;
     }
+  }
+
+  .attachment-wrapper {
+    max-height: max-content;
   }
 }
 
