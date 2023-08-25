@@ -794,10 +794,13 @@ function AddRfq(props) {
     * @description  USED TO HANDLE TECHNOLOGY CHANGE
     */
     const handleTechnologyChange = (newValue) => {
-        if (newValue && newValue !== '') {
+        console.log('newValue: ', newValue);
+        if (newValue) {
             setPartNoDisable(false)
             setValue('partNumber', "")
             setTechnology(newValue)
+        } else {
+            setPartNoDisable(true)
         }
         setVendor('')
         setValue("vendor", "")
@@ -1141,6 +1144,7 @@ function AddRfq(props) {
                                             <SearchableSelectHookForm
                                                 label={"NFR No."}
                                                 name={"nfrId"}
+                                                isClearable={true}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
                                                 control={control}
