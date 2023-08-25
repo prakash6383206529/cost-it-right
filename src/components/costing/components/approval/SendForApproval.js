@@ -203,8 +203,10 @@ const SendForApproval = (props) => {
         TechnologyId: props.technologyId,
         ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
       }
+      let Data = []
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         res.data.DataList && res.data.DataList.map((item) => {
+          Data = res.data.DataList[1] ? res.data.DataList[1] : []
           if (item.Value === '0') return false;
           if (item.Value === EMPTY_GUID) return false;
           tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
@@ -212,6 +214,8 @@ const SendForApproval = (props) => {
         })
         if (tempDropdownList?.length === 0) {
           setShowValidation(true)
+        } else {
+          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
         }
         setApprovalDropDown(tempDropdownList)
       }))
@@ -974,7 +978,7 @@ const SendForApproval = (props) => {
                         />
                       </Col>
                       {
-                        showValidation && <span className="warning-top"><WarningMessage dClass="mt-2" message={'There is no approver added in this department'} /></span>
+                        showValidation && <span className="warning-top"><WarningMessage dClass="mt-2" message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} /></span>
                       }
 
                       {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
