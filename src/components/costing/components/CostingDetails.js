@@ -397,6 +397,7 @@ function CostingDetails(props) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
               reactLocalStorage.setObject('costingArray', [])
+              reactLocalStorage.setObject('surfaceCostingArray', [])
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
@@ -535,7 +536,7 @@ function CostingDetails(props) {
       // })))
 
       // reactLocalStorage.setObject('costingArray', [])
-      reactLocalStorage.setObject('surfaceCostingArray', [])
+      // reactLocalStorage.setObject('surfaceCostingArray', [])
       setIsOpenVendorSOBDetails(true)
 
     } else {
