@@ -925,9 +925,15 @@ function AddRfq(props) {
         const value = beforeSaveCell(cell)
 
         setPartList(final)
+        let isEnable
+        if (getValues('nfrId')) {
+            isEnable = dataProps?.isAddFlag && props.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props.data.isEdit ? true : false
+        } else {
+            isEnable = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+        }
         return (
             <>
-                {<span className='form-control height33' >{value ? Number(cell) : 0}</span>}
+                {<span className={`form-control custom-max-width-110px  ${isEnable ? '' : 'disabled'}`} >{value ? Number(cell) : 0}</span>}
             </>
         )
     }
@@ -1091,7 +1097,7 @@ function AddRfq(props) {
     */
     return (
         <div className="container-fluid">
-            <div className="login-container signup-form">
+            <div className="signup-form">
                 <div className="row">
                     <div className="col-md-12">
                         <div className="shadow-lgg login-formg">
