@@ -253,14 +253,16 @@ function BDSimulation(props) {
     const NewcostFormatter = (props) => {
         const row = props?.data;
         const NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? Number(row?.NumberOfPieces) : 1
+
         if (isImpactedMaster) {
             return row.NewNetBoughtOutPartCost ? row.NewNetBoughtOutPartCost : '-'
         } else {
-            if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-            const BasicRate = Number(row.BasicRate) / NumberOfPieces
-            const NewBasicRate = Number(row.NewBasicRate) / NumberOfPieces
+            // if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
+            const BasicRate = checkForNull((row.BasicRate) / NumberOfPieces)
+
+            const NewBasicRate = checkForNull((row.NewBasicRate) / NumberOfPieces)
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(Number(row.NewBasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull((row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : checkForDecimalAndNull(row.BasicRate, getConfigurationKey().NoOfDecimalForPrice)
         }
     }
 
@@ -283,6 +285,22 @@ function BDSimulation(props) {
             </div>
         );
     };
+    const quantityFormatter = (props) => {
+
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        checkForDecimalAndNull(row.Quantity, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span >{Number(row.NumberOfPieces)} </span>
+                }
+
+            </>
+        )
+
+    }
     const cancel = () => {
         list && list.map((item) => {
             item.NewBasicRate = undefined
@@ -365,7 +383,8 @@ function BDSimulation(props) {
         plantFormatter: plantFormatter,
         customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
-        nullHandler: props.nullHandler && props.nullHandler
+        nullHandler: props.nullHandler && props.nullHandler,
+        quantityFormatter: quantityFormatter
     };
 
     const basicRatetooltipToggle = () => {
@@ -491,14 +510,15 @@ function BDSimulation(props) {
                                             suppressColumnVirtualisation={true}
                                             stopEditingWhenCellsLoseFocus={true}
                                             onFilterModified={onFloatingFilterChanged}
+                                            enableBrowserTooltips={true}
                                         >
                                             {/* <AgGridColumn field="Technologies" editable='false' headerName="Technology" minWidth={190}></AgGridColumn> */}
-                                            <AgGridColumn field="BoughtOutPartNumber" editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartName" editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
+                                            <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
+                                            <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
                                             {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" editable='false' headerName="Min Order Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate"></AgGridColumn>

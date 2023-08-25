@@ -6,7 +6,7 @@ import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextAreaHookFo
 import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByType, fetchSpecificationDataAPI } from '../.././actions/Common';
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, loggedInUserId } from '../.././helper';
-import { postiveNumber, maxLength10, nonZero, checkForNull } from '../.././helper/validation'
+import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
 import { EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -26,7 +26,7 @@ import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/Common
 import BulkUpload from '../massUpload/BulkUpload';
 import _, { debounce } from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
-import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, nfrDropdown, visibilityModeDropdownArray } from '../../config/masterData';
+import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
@@ -665,39 +665,17 @@ function AddRfq(props) {
     const addRowPartNoTable = () => {
         let objTemp = {};
         let arrTemp = [];
+        let Data = {}
 
         if (!getValues('partNumber') || getValues('partNumber') === '' || !sopdate || sopdate === '') {
             Toaster.warning("Please select part number and SOP date");
             return false;
         } else {
-
-            const mockResponse = {  // Hardcoded response for testing purposes
-                Identity: null,
-                Result: true,
-                Message: "",
-                Data: {
-                    NfrId: "8252386b-e671-45ab-a2f5-04e5aa144538",
-                    partId: "a0c226f7-c58f-4344-ab08-b505ad87235d",
-                    FirstYear: "2023",
-                    FirstYearQuantity: 10,
-                    SecondYear: "2024",
-                    SecondYearQuantity: 10,
-                    ThirdYear: "2025",
-                    ThirdYearQuantity: 10
-                },
-                DataList: [],
-                SelectList: [],
-                DynamicData: null
-            };
             if (nfrId) {
                 dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
-
-                }, mockResponse));
+                    Data = res.data.Data
+                }));
             }
-
-            // Retrieve the quantities from mockResponse.Data
-            let { FirstYearQuantity, SecondYearQuantity, ThirdYearQuantity } = mockResponse.Data;
-            let { FirstYear, SecondYear, ThirdYear } = mockResponse.Data;;
             let dataObj = {
                 "PartIdList": [
                     getValues('partNumber')?.value
@@ -723,7 +701,6 @@ function AddRfq(props) {
                 let partNumber = getValues('partNumber');
 
                 sopObjectTemp && sopObjectTemp.map((item, index) => {
-                    console.log('index: ', index);
                     let newObjTemp = { ...objTemp }; // Create a new object in each iteration
 
                     newObjTemp.PartNo = partNumber?.label;
@@ -739,24 +716,29 @@ function AddRfq(props) {
                         newObjTemp.RMSpecification = rmspecification?.label ?? '-';
                         newObjTemp.RMSpecificationId = rmspecification?.value ?? '-';
                     }
-
-                    if (index === 0) {
-                        newObjTemp.Quantity = FirstYearQuantity;
-                        newObjTemp.YearName = FirstYear
-                    } else if (index === 1) {
-                        newObjTemp.Quantity = SecondYearQuantity;
-                        newObjTemp.YearName = SecondYear
-                    } else if (index === 2) {
-                        newObjTemp.Quantity = ThirdYearQuantity;
-                        newObjTemp.YearName = ThirdYear
-                    } else if (index === 3) {
-                        newObjTemp.Quantity = 0;
-                        newObjTemp.YearName = parseInt(ThirdYear) + 1
-                    } else if (index === 4) {
-                        newObjTemp.Quantity = 0;
-                        newObjTemp.YearName = parseInt(ThirdYear) + 2
+                    if (nfrId) {
+                        if (index === 0) {
+                            newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                            newObjTemp.YearName = Data.FirstYear
+                        } else if (index === 1) {
+                            newObjTemp.Quantity = checkForDecimalAndNull(Data.SecondYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                            newObjTemp.YearName = Data.SecondYear
+                        } else if (index === 2) {
+                            newObjTemp.Quantity = checkForDecimalAndNull(Data.ThirdYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
+                            newObjTemp.YearName = Data.ThirdYear
+                        } else if (index === 3) {
+                            newObjTemp.Quantity = 0;
+                            newObjTemp.YearName = parseInt(Data.ThirdYear) + 1
+                            newObjTemp.isEdit = true
+                        } else if (index === 4) {
+                            newObjTemp.Quantity = 0;
+                            newObjTemp.YearName = parseInt(Data.ThirdYear) + 2
+                            newObjTemp.isEdit = true
+                        }
+                    } else {
+                        newObjTemp.Quantity = 0
+                        newObjTemp.YearName = fiveyearList[index]
                     }
-
                     arrTemp.push(newObjTemp);
                     return null;
                 });
@@ -926,13 +908,13 @@ function AddRfq(props) {
     * @description CHECK FOR ENTER NUMBER IN CELL
     */
     const beforeSaveCell = (props) => {
-        const cellValue = props
+        let cellValue = props
         if (cellValue === undefined) {
             return true
         }
-        if (cellValue && !/^[0-9]+$/.test(cellValue)) {
-            Toaster.warning('Please enter a valid positive numbers.')
-            return false
+        if (cellValue && !/^[0-9]+(\.[0-9]+)?$/.test(cellValue)) {
+            Toaster.warning('Please enter a valid positive number.');
+            return false;
         }
         return true
     }
@@ -943,9 +925,15 @@ function AddRfq(props) {
         const value = beforeSaveCell(cell)
 
         setPartList(final)
+        let isEnable
+        if (getValues('nfrId')) {
+            isEnable = dataProps?.isAddFlag && props.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props.data.isEdit ? true : false
+        } else {
+            isEnable = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+        }
         return (
             <>
-                {<span className='form-control height33' >{value ? Number(cell) : 0}</span>}
+                {<span className={`form-control custom-max-width-110px  ${isEnable ? '' : 'disabled'}`} >{value ? Number(cell) : 0}</span>}
             </>
         )
     }
@@ -1080,7 +1068,12 @@ function AddRfq(props) {
     }
 
     const EditableCallback = (props) => {
-        let value = dataProps?.isAddFlag && props.data.Quantity === 0 ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+        let value
+        if (getValues('nfrId')) {
+            value = dataProps?.isAddFlag && props.data.isEdit ? true : dataProps?.isViewFlag ? false : isEditAll && props.data.isEdit ? true : false
+        } else {
+            value = dataProps?.isAddFlag ? true : dataProps?.isViewFlag ? false : isEditAll ? true : false
+        }
         return value
     }
 
@@ -1104,7 +1097,7 @@ function AddRfq(props) {
     */
     return (
         <div className="container-fluid">
-            <div className="login-container signup-form">
+            <div className="signup-form">
                 <div className="row">
                     <div className="col-md-12">
                         <div className="shadow-lgg login-formg">
@@ -1135,25 +1128,6 @@ function AddRfq(props) {
                                                 isLoading={VendorLoaderObj}
                                             />
                                         </Col>
-                                        {/* <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label={"NFR Id"}
-                                                name={"nfrId"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing("nfrId")}
-                                                mandatory={false}
-                                                handleChange={handleNfrChnage}
-                                                errors={errors.nfrId}
-                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
-                                                    || (partList?.length !== 0)}
-                                            // isLoading={VendorLoaderObj}
-                                            />
-                                        </Col> */}
                                         {initialConfiguration.IsNFRConfigured && <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"NFR No."}
@@ -1164,7 +1138,7 @@ function AddRfq(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={nfrDropdown}
+                                                options={renderListing("nfrId")}
                                                 mandatory={false}
                                                 handleChange={handleNfrChnage}
                                                 errors={errors.nfrId}
