@@ -2577,7 +2577,7 @@ const CostingSummaryTable = (props) => {
                               })}
                           </tr>
                         }
-                        {
+                        {/* {
                           initialConfiguration?.IsShowNpvCost && <tr>
                             <td>
                               <span className={`d-block small-grey-text`}>Net NPV Cost</span>
@@ -2594,7 +2594,7 @@ const CostingSummaryTable = (props) => {
                                 )
                               })}
                           </tr>
-                        }
+                        } */}
                         {
                           initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
                             <td>
