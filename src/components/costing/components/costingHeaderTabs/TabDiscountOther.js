@@ -1055,7 +1055,6 @@ function TabDiscountOther(props) {
 
     if (!CostingViewMode) {
       if (value && value !== '') {
-        console.log('value: if', value);
         dispatch(isDiscountDataChange(true))
         setHundiDiscountType(value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value)
         setValue('HundiOrDiscountValue', 0)
@@ -1071,7 +1070,6 @@ function TabDiscountOther(props) {
           HundiOrDiscountPercentage: 0,
         })
       } else {
-        console.log("value else", value);
         setHundiDiscountType([])
         setValue('DiscountCostApplicability', '')
         setValue('HundiOrDiscountPercentage', '')
