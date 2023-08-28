@@ -34,6 +34,7 @@ import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionC
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDrawer'
+import OtherCostTable from '../CostingHeadCosts/AdditionalOtherCost/OtherCostTable';
 import Button from '../../../layout/Button';
 import { useMemo } from 'react';
 let counter = 0;
@@ -1043,7 +1044,6 @@ function TabDiscountOther(props) {
 
     if (!CostingViewMode) {
       if (value && value !== '') {
-        console.log('value: if', value);
         dispatch(isDiscountDataChange(true))
         setHundiDiscountType(value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value)
         setValue('HundiOrDiscountValue', 0)
@@ -1059,7 +1059,6 @@ function TabDiscountOther(props) {
           HundiOrDiscountPercentage: 0,
         })
       } else {
-        console.log("value else", value);
         setHundiDiscountType([])
         setValue('DiscountCostApplicability', '')
         setValue('HundiOrDiscountPercentage', '')
@@ -1619,7 +1618,7 @@ function TabDiscountOther(props) {
                     <Col md="3">
                       <TooltipCustom disabledIcon={true} width="280px" id="otherCost" tooltipText={"Other Cost = Sum of other cost added in other cost drawer"} />
                       {otherCostUI}
-                    </Col>
+                    </Col >
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <Col md="3">
                       <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
                       <TextFieldHookForm
@@ -1639,17 +1638,19 @@ function TabDiscountOther(props) {
                         disabled={true}
                         hidden={initialConfiguration?.IsBasicRateAndCostingConditionVisible ? false : true}
                       />
-                    </Col>}
+                    </Col >}
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
-                    {isConditionCostingOpen && <AddConditionCosting
-                      isOpen={isConditionCostingOpen}
-                      tableData={conditionTableData}
-                      CostingViewMode={CostingViewMode}
-                      closeDrawer={openAndCloseAddConditionCosting}
-                      anchor={'right'}
-                      netPOPrice={netPOPrice}
-                      basicRate={getValues('BasicRateINR')}
-                    />}
+                    {
+                      isConditionCostingOpen && <AddConditionCosting
+                        isOpen={isConditionCostingOpen}
+                        tableData={conditionTableData}
+                        CostingViewMode={CostingViewMode}
+                        closeDrawer={openAndCloseAddConditionCosting}
+                        anchor={'right'}
+                        netPOPrice={netPOPrice}
+                        basicRate={getValues('BasicRateINR')}
+                      />
+                    }
                     {/* {initialConfiguration?.IsShowNpvCost && <Row>
                     <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
                     <Col md="4" className="text-right">
@@ -1751,7 +1752,7 @@ function TabDiscountOther(props) {
                         disabled={true}
                       />
                     </Col>
-                  </Row>
+                  </Row >
                   <Row className="mt-2">
                     <Col md="3" className={`mt20 pt-3`}>
                       <label
