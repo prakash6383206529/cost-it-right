@@ -1534,7 +1534,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="3">
-                      <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate = (Total Cost + Total Other Cost) - Hundi/Discount Value"} />
+                      <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
                       <TextFieldHookForm
                         label="Basic Price (INR)"
                         name={'BasicRateINR'}
