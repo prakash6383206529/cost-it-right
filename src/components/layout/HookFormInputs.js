@@ -329,6 +329,16 @@ export const SearchableSelectHookForm = (field) => {
         {...register}
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name, } }) => {
+          let updatedValue = value
+          if (value) {
+            if ((Object.values(value).length === 0 || value.length === 0)) {
+              updatedValue = ''
+            } else if (value.label === null) {
+              updatedValue = ''
+            }
+          } else if (value === null) {
+            updatedValue = ''
+          }
           return (
             <div className={className} title={title ? title : isDisable ? value?.label : ''}>
               <Select
@@ -353,7 +363,7 @@ export const SearchableSelectHookForm = (field) => {
                 options={options}
                 onBlur={onBlur}
                 selected={value}
-                value={value}
+                value={updatedValue}
                 isLoading={isLoader}
                 isMulti={isMultiple}
                 onKeyDown={(onKeyDown) => {
