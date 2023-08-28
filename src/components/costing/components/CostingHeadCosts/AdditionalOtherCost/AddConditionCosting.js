@@ -327,6 +327,7 @@ function AddConditionCosting(props) {
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}
                                             onClick={addData}
+                                            disabled={props?.CostingViewMode}
                                         >
                                             <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
                                         </button>
@@ -340,7 +341,7 @@ function AddConditionCosting(props) {
                                     </Col>
                                 </Row>
                                 {/* <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} /> */}
-                                {<ConditionCosting tableData={tableData} hideAction={false} editData={editData} />}
+                                {<ConditionCosting tableData={tableData} hideAction={props.CostingViewMode} editData={editData} />}
                             </div>
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
@@ -353,7 +354,8 @@ function AddConditionCosting(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        onClick={() => { props.closeDrawer('save', tableData) }} >
+                                        onClick={() => { props.closeDrawer('save', tableData) }}
+                                        disabled={props.CostingViewMode} >
                                         <div className={"save-icon"}></div>
                                         {'Save'}
                                     </button>

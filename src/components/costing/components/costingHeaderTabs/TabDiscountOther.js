@@ -35,6 +35,8 @@ import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddCond
 import { reactLocalStorage } from 'reactjs-localstorage';
 import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDrawer'
 import OtherCostTable from '../CostingHeadCosts/AdditionalOtherCost/OtherCostTable';
+import Button from '../../../layout/Button';
+import { useMemo } from 'react';
 let counter = 0;
 function TabDiscountOther(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -146,6 +148,78 @@ function TabDiscountOther(props) {
       }
     }
   }, [netPOPrice])
+
+  const viewAddButtonIcon = (data) => {
+    let className = ''
+    if (data.length !== 0 || CostingViewMode) {
+      className = 'fa fa-eye view'
+    } else {
+      className = 'plus-icon-square'
+    }
+    return className
+  }
+
+  const otherCostUI = useMemo(() => {
+    let otherCost = otherCostData.otherCostTotal
+    console.log('otherCostData: ', otherCostData);
+    const butonIcon = CostingViewMode || otherCostData.length !== 0 ? 'fa fa-eye ' : 'plus-icon-square'
+    setValue('OtherCost', checkForDecimalAndNull(otherCost, initialConfiguration.NoOfDecimalForPrice))
+    return <div className='d-flex align-items-center'>
+      <TextFieldHookForm
+        label="Other Cost"
+        name={'OtherCost'}
+        Controller={Controller}
+        id="otherCost"
+        control={control}
+        register={register}
+        mandatory={false}
+        rules={{}}
+        handleChange={() => { }}
+        defaultValue={otherCost}
+        className=""
+        customClassName={'withBorder w-100'}
+        errors={errors.OtherCost}
+        disabled={true}
+      />
+      <Button
+        id="tabDiscount_otherCost"
+        onClick={() => handleOtherCostdrawer()}
+        className={"right"}
+        variant={viewAddButtonIcon(otherCostData.gridData)}
+      />
+    </div>
+  }, [otherCostData])
+
+  const costingConditionUI = useMemo(() => {
+    const sum = conditionTableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+    setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+    return <div className='d-flex align-items-center'>
+      <TextFieldHookForm
+        label="Condition"
+        name={'ConditionCosting'}
+        Controller={Controller}
+        id="costingCondition"
+        control={control}
+        register={register}
+        mandatory={false}
+        rules={{}}
+        handleChange={() => { }}
+        defaultValue={sum}
+        className=""
+        customClassName={'withBorder w-100'}
+        errors={errors.ConditionCosting}
+        disabled={true}
+      />
+      <Button
+        id="tabDiscount_condition"
+        onClick={() => openAndCloseAddConditionCosting('Open')}
+        className={"right mt-2"}
+        variant={viewAddButtonIcon(conditionTableData)}
+      />
+    </div>
+  }, [conditionTableData])
+
+
 
   useEffect(() => {
     dispatch(getCurrencySelectList(() => { }))
@@ -973,7 +1047,6 @@ function TabDiscountOther(props) {
 
     if (!CostingViewMode) {
       if (value && value !== '') {
-        console.log('value: if', value);
         dispatch(isDiscountDataChange(true))
         setHundiDiscountType(value.label !== 'Fixed' ? { label: 'Percentage', value: 'Percentage' } : value)
         setValue('HundiOrDiscountValue', 0)
@@ -989,7 +1062,6 @@ function TabDiscountOther(props) {
           HundiOrDiscountPercentage: 0,
         })
       } else {
-        console.log("value else", value);
         setHundiDiscountType([])
         setValue('DiscountCostApplicability', '')
         setValue('HundiOrDiscountPercentage', '')
@@ -1564,6 +1636,10 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="3">
+                      <TooltipCustom disabledIcon={true} width="280px" id="otherCost" tooltipText={"Other Cost = Sum of drawer cost"} />
+                      {otherCostUI}
+                    </Col>
+                    <Col md="3">
                       <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
                       <TextFieldHookForm
                         label="Basic Price (INR)"
@@ -1583,110 +1659,20 @@ function TabDiscountOther(props) {
                         hidden={initialConfiguration?.IsBasicRateAndCostingConditionVisible ? false : true}
                       />
                     </Col>
-                    <Col md="2">
-                      <TextFieldHookForm
-                        label="SA Number"
-                        name={'SANumber'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{
-                          validate: { maxLength20 }
-                        }}
-                        handleChange={() => { }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.SANumber}
-                        disabled={CostingViewMode ? true : false}
-                      />
+                    <Col md="3">
+                      <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Costing Condition = Sum of drawer cost"} />
+                      {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
+                      {isConditionCostingOpen && <AddConditionCosting
+                        isOpen={isConditionCostingOpen}
+                        tableData={conditionTableData}
+                        CostingViewMode={CostingViewMode}
+                        closeDrawer={openAndCloseAddConditionCosting}
+                        anchor={'right'}
+                        netPOPrice={netPOPrice}
+                        basicRate={getValues('BasicRateINR')}
+                      />}
                     </Col>
-                    <Col md="2">
-                      <TextFieldHookForm
-                        label="Line Number"
-                        name={'LineNumber'}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        rules={{ validate: { maxLength20 } }}
-                        handleChange={() => { }}
-                        defaultValue={""}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.LineNumber}
-                        disabled={CostingViewMode ? true : false}
-                      />
-                    </Col>
-                  </Row>
-
-                  <Row>
-                    <Col md="8"><div className="left-border mt-1">Other Cost:</div></Col>
-                    <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setOtherCotAcc(!otherCostAcc) }}>
-                        {otherCostAcc ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </Row>
-                  {otherCostAcc &&
-                    <Row>
-                      {!CostingViewMode && <Col md="12">
-                        <div className='d-flex justify-content-end mb-2'>
-                          <button
-                            type="button"
-                            className={"user-btn"}
-                            onClick={() => handleOtherCostdrawer()}
-                            title="Add"
-                          >
-                            <div className={"plus mr-1"}></div> Add
-                          </button>
-                        </div>
-                      </Col>}
-                      <OtherCostTable tableData={{ gridData: otherCostData.gridData, otherCostTotal: otherCostData.otherCostTotal }} />
-                    </Row>}
-                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <Row>
-                    <Col md="8"><div className="left-border mt-1">Costing Condition:</div></Col>
-                    <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
-                        {conditionAcc ? (
-                          <i className="fa fa-minus" ></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </Col>
-                  </Row>}
-                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible && conditionAcc && <div className='mb-2'><Row>
-                    {!CostingViewMode && <Col md="12">
-                      <div className='d-flex justify-content-end mb-2'>
-                        <button
-                          type="button"
-                          className={"user-btn"}
-                          onClick={() => openAndCloseAddConditionCosting('Open')}
-                          title="Add"
-                        >
-                          <div className={"plus mr-1"}></div> Add
-                        </button>
-                      </div>
-                    </Col>}
-                  </Row>
-                    <ConditionCosting hideAction={true} tableData={conditionTableData} /></div>}
-                  {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
-                    isConditionCostingOpen && <AddConditionCosting
-                      isOpen={isConditionCostingOpen}
-                      tableData={conditionTableData}
-                      closeDrawer={openAndCloseAddConditionCosting}
-                      anchor={'right'}
-                      netPOPrice={netPOPrice}
-                      basicRate={getValues('BasicRateINR')}
-                    />
-                  }
-                  {initialConfiguration?.IsShowNpvCost && <Row>
+                    {/* {initialConfiguration?.IsShowNpvCost && <Row>
                     <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setNpvAcc(!npvAcc) }}>
@@ -1707,7 +1693,6 @@ function TabDiscountOther(props) {
                             className={"user-btn"}
                             onClick={() => openAndCloseAddNpvDrawer('Open')}
                             title="Add"
-                          // disabled={isDisable}
                           >
                             <div className={"plus mr-1"}></div> Add
                           </button>
@@ -1724,9 +1709,8 @@ function TabDiscountOther(props) {
                     anchor={'right'}
                     netPOPrice={netPOPrice - totalNpvCost}
                   />
-                  }
-                  <Row className="mt-2">
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net Cost = Basic Rate + Total Costing Condition Cost + Total NPV Cost"} />
+                  } */}
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net Cost = Basic Rate + Total Costing Condition Cost"} />
                     <Col md="3">
                       <TextFieldHookForm
                         label="Net Cost (INR)"
@@ -1745,7 +1729,9 @@ function TabDiscountOther(props) {
                         disabled={true}
                       />
                     </Col>
-                    <Col md="2" className={`mt20 pt-3`}>
+                  </Row>
+                  <Row className="mt-2">
+                    <Col md="3" className={`mt20 pt-3`}>
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}

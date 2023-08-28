@@ -2571,39 +2571,41 @@ const CostingSummaryTable = (props) => {
                               })}
                           </tr>
                         }
-                        {initialConfiguration?.IsShowNpvCost && <tr>
-                          <td>
-                            <span className={`d-block small-grey-text`}>Net NPV Cost</span>
-                          </td>
-                          {viewCostingData &&
-                            viewCostingData?.map((data) => {
-                              return (
-                                <td className={tableDataClass(data)}>
-                                  <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
-                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                  </span>
+                        {/* {
+                          initialConfiguration?.IsShowNpvCost && <tr>
+                            <td>
+                              <span className={`d-block small-grey-text`}>Net NPV Cost</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span title={data?.netNpvCost} className={`d-block small-grey-text w-fit `}>
+                                      {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netNpvCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                    </span>
 
-                                </td>
-                              )
-                            })}
-                        </tr>
-                        }
-                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
-                          <td>
-                            <span className={`d-block small-grey-text`}>Net Condition Cost</span>
-                          </td>
-                          {viewCostingData &&
-                            viewCostingData?.map((data) => {
-                              return (
-                                <td className={tableDataClass(data)}>
-                                  <span title={data?.netConditionCost} className={`d-block small-grey-text w-fit `}>
-                                    {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                  </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>
+                        } */}
+                        {
+                          initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
+                            <td>
+                              <span className={`d-block small-grey-text`}>Net Condition Cost</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span title={data?.netConditionCost} className={`d-block small-grey-text w-fit `}>
+                                      {data?.CostingHeading !== VARIANCE ? checkForDecimalAndNull(data?.netConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                    </span>
 
-                                </td>
-                              )
-                            })}
-                        </tr>
+                                  </td>
+                                )
+                              })}
+                          </tr>
                         }
                         {
                           initialConfiguration?.IsShowNpvCost && drawerDetailPDF && <tr><th colSpan={2}>
