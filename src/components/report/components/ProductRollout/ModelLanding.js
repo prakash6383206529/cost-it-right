@@ -97,7 +97,7 @@ const ModelLanding = (props) => {
                         <div className="inputbox date-section h-auto">
                             <DatePickerHookForm
                                 name={`EffectiveDate`}
-                                label={'Effective Date'}
+                                label={'Part Effective Date'}
                                 handleChange={(date) => {
 
                                 }}
