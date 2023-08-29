@@ -10,7 +10,19 @@ import HeaderTitle from '../common/HeaderTitle';
 import { loggedInUserId, getConfigurationKey } from '../../helper/auth';
 import LoaderCustom from '../common/LoaderCustom';
 import { COSTING, SIMULATION, MASTERS } from '../../config/constants'
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import { PaginationWrapper } from '../common/commonPagination';
 
+
+const gridOptionsTechnology = {}
+const gridOptionsSimulation = {}
+const gridOptionsMaster = {}
+
+const gridOptions = {
+  gridOptionsTechnology: gridOptionsTechnology,
+  gridOptionsSimulation: gridOptionsSimulation,
+  gridOptionsMaster: gridOptionsMaster
+};
 class ViewUserDetails extends Component {
   constructor(props) {
     super(props);
@@ -25,7 +37,13 @@ class ViewUserDetails extends Component {
       isSimulationOpen: false,
       isMasterOpen: false,
       SimulationLevelGrid: [],
-      MasterLevelGrid: []
+      MasterLevelGrid: [],
+      gridApiTechnology: null,
+      gridColumnApiTechnology: null,
+      gridApiSimulation: null,
+      gridColumnApiSimulation: null,
+      gridApiMaster: null,
+      gridColumnApiMaster: null,
     }
   }
 
@@ -209,15 +227,54 @@ class ViewUserDetails extends Component {
   }
 
 
+  resetState = (gridOption) => {
+    const options = gridOptions[gridOption];
+    options.columnApi?.resetColumnState(null);
+    options.api?.setFilterModel(null);
+  }
+
+  onGridReady = (params, module) => {
+    this.gridApi = params.api;
+    this.gridApi.sizeColumnsToFit();
+    switch (module) {
+      case 'technology':
+        this.setState({ gridApiTechnology: params.api, gridColumnApiTechnology: params.columnApi })
+        break;
+      case "simulation":
+        this.setState({ gridApiSimulation: params.api, gridColumnApiSimulation: params.columnApi })
+        break;
+      case "master":
+        this.setState({ gridApiMaster: params.api, gridColumnApiMaster: params.columnApi })
+        break;
+      default:
+        break;
+    }
+    params.api.paginationGoToPage(0);
+  };
+  onPageSizeChanged = (gridApi, newPageSize) => {
+    gridApi.paginationSetPageSize(Number(newPageSize));
+  };
   /**
   * @method render
   * @description Renders the component
   */
   render() {
     const { UserId, registerUserData, EditAccessibility, IsLoginEmailConfigure } = this.props;
-    const { isTechnologyOpen, department, isMasterOpen, isSimulationOpen } = this.state;
+    const { isTechnologyOpen, department, isMasterOpen, isSimulationOpen, SimulationLevelGrid, MasterLevelGrid, gridApiTechnology, gridApiSimulation, gridApiMaster } = this.state;
 
     const departmentName = department ? department.join(", ") : '-';
+    const defaultColDef = {
+      resizable: true,
+      filter: true,
+      sortable: false,
+
+    };
+    const frameworkComponents = {
+      totalValueRenderer: this.buttonFormatter,
+      // customLoadingOverlay: LoaderCustom,
+      customNoRowsOverlay: NoContentFound,
+      hyphenFormatter: this.hyphenFormatter
+    };
     return (
       <>
         {(this.props.loading) && <Loader />}
@@ -361,31 +418,52 @@ class ViewUserDetails extends Component {
                       </Col>
                       {isTechnologyOpen &&
                         <Col md="12">
-                          <Table className="table border table table-sm" size="sm" >
-                            <thead>
-                              <tr>
-                                <th className="text-left" >{`Technology`}</th>
-                                <th className="text-left">{`Approval Type`}</th>
-                                <th className="text-left">{`Level`}</th>
-                              </tr>
-                            </thead>
-                            <tbody >
-                              {
-                                this.state.TechnologyLevelGrid &&
-                                this.state.TechnologyLevelGrid.map((item, index) => {
-                                  return (
-                                    <tr key={index}>
-                                      <td>{item.Technology}</td>
-                                      <td>{item?.ApprovalType}</td>
-                                      <td>{item.Level}</td>
-                                    </tr>
-                                  )
-                                })
-                              }
-                            </tbody>
-                          </Table>
-                          {this.state.TechnologyLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
-                        </Col>}
+                          <div className="row mb-0">
+                            <Col md="12" className="mb-2">
+                              <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState('gridOptionsTechnology')}>
+                                <div className="refresh mr-0"></div>
+                              </button>
+                            </Col>
+                            <div className="col-md-12">
+                              <div className="ag-grid-react">
+                                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${this.state.TechnologyLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
+                                  <div className="ag-theme-material">
+                                    <AgGridReact
+                                      defaultColDef={defaultColDef}
+                                      floatingFilter={true}
+                                      pagination={true}
+                                      paginationPageSize={10}
+                                      onGridReady={params => this.onGridReady(params, 'technology')}
+                                      domLayout='autoHeight'
+                                      noRowsOverlayComponent={'customNoRowsOverlay'}
+                                      gridOptions={gridOptionsTechnology}
+                                      noRowsOverlayComponentParams={{
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
+                                      }}
+                                      rowData={this.state.TechnologyLevelGrid}
+                                      frameworkComponents={{
+                                        ...frameworkComponents,
+                                      }}
+                                      // onFilterModified={onFloatingFilterChanged}
+                                      enableBrowserTooltips={true}
+                                    >
+                                      <AgGridColumn field="Technology" headerName="Technology" />
+                                      <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                      <AgGridColumn field="Level" headerName="Level" />
+                                    </AgGridReact>
+                                    <PaginationWrapper
+                                      gridApi={gridApiTechnology}
+                                      setPage={newPageSize => this.onPageSizeChanged(gridApiTechnology, newPageSize)}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+                          </div>
+                        </Col>
+                      }
 
                     </Row>
                     <Row className="pt-3 ">
@@ -406,30 +484,48 @@ class ViewUserDetails extends Component {
                         </Row>
                       </Col>
                       {isSimulationOpen && <Col md="12">
-                        <Table className="table border table table-sm" size="sm" >
-                          <thead>
-                            <tr>
-                              <th className="text-left" >{`Technology`}</th>
-                              <th className="text-left">{`Approval Type`}</th>
-                              <th className="text-left">{`Level`}</th>
-                            </tr>
-                          </thead>
-                          <tbody >
-                            {
-                              this.state.SimulationLevelGrid &&
-                              this.state.SimulationLevelGrid.map((item, index) => {
-                                return (
-                                  <tr key={index}>
-                                    <td>{item.Technology}</td>
-                                    <td>{item?.ApprovalType}</td>
-                                    <td>{item.Level}</td>
-                                  </tr>
-                                )
-                              })
-                            }
-                          </tbody>
-                        </Table>
-                        {this.state.SimulationLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+                        <Row>
+                          <Col md="12" className="mb-2">
+                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState('gridOptionsSimulation')}>
+                              <div className="refresh mr-0"></div>
+                            </button>
+                          </Col>
+                          <Col md="12">
+
+                            <div className="ag-grid-react">
+                              <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${SimulationLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
+                                <div className="ag-theme-material">
+                                  <AgGridReact
+                                    defaultColDef={defaultColDef}
+                                    floatingFilter={true}
+                                    pagination={true}
+                                    paginationPageSize={10}
+                                    domLayout='autoHeight'
+                                    onGridReady={params => this.onGridReady(params, "simulation")}
+                                    gridOptions={gridOptionsSimulation}
+                                    noRowsOverlayComponent="customNoRowsOverlay"
+                                    noRowsOverlayComponentParams={{
+                                      title: EMPTY_DATA,
+                                      imagClass: 'imagClass'
+                                    }}
+                                    rowData={SimulationLevelGrid}
+                                    frameworkComponents={{
+                                      ...frameworkComponents,
+                                    }}
+                                  >
+                                    <AgGridColumn field="Technology" headerName="Head" />
+                                    <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                    <AgGridColumn field="Level" headerName="Level" />
+                                  </AgGridReact>
+                                  <PaginationWrapper
+                                    gridApi={gridApiSimulation}
+                                    setPage={newPageSize => this.onPageSizeChanged(gridApiSimulation, newPageSize)}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </Col>
+                        </Row>
                       </Col>}
 
                     </Row>
@@ -448,37 +544,52 @@ class ViewUserDetails extends Component {
                               ) : (
                                 <i className="fa fa-plus"></i>
                               )}</button>
-                              {/* <a
-                          onClick={() => this.technologyToggle("Master")}
-                          className={`${isSimulationOpen ? 'minus-icon' : 'plus-icon'} pull-right`}></a> */}
                             </Col>
                           </Row>
                         </Col>
                         {isMasterOpen && <Col md="12">
-                          <Table className="table border table table-sm" size="sm" >
-                            <thead>
-                              <tr>
-                                <th className="text-left" >{`Technology`}</th>
-                                <th className="text-left">{`Approval Type`}</th>
-                                <th className="text-left">{`Level`}</th>
-                              </tr>
-                            </thead>
-                            <tbody >
-                              {
-                                this.state.MasterLevelGrid &&
-                                this.state.MasterLevelGrid.map((item, index) => {
-                                  return (
-                                    <tr key={index}>
-                                      <td>{item.Master}</td>
-                                      <td>{item?.ApprovalType}</td>
-                                      <td>{item.Level}</td>
-                                    </tr>
-                                  )
-                                })
-                              }
-                            </tbody>
-                          </Table>
-                          {this.state.MasterLevelGrid.length === 0 && <NoContentFound title={EMPTY_DATA} />}
+
+                          <Row>
+                            <Col md="12" className="mb-2">
+                              <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState('gridOptionsMaster')}>
+                                <div className="refresh mr-0"></div>
+                              </button>
+                            </Col>
+                            <Col md="12">
+                              <div className="ag-grid-react">
+                                <div className={`ag-grid-wrapper height-width-wrapper min-height-auto p-relative ${MasterLevelGrid.length <= 0 ? 'overlay-contain' : ''}`}>
+                                  <div className="ag-theme-material">
+                                    <AgGridReact
+                                      defaultColDef={defaultColDef}
+                                      floatingFilter={true}
+                                      pagination={true}
+                                      paginationPageSize={10}
+                                      domLayout='autoHeight'
+                                      onGridReady={params => this.onGridReady(params, "master")}
+                                      gridOptions={gridOptionsMaster}
+                                      noRowsOverlayComponent="customNoRowsOverlay"
+                                      noRowsOverlayComponentParams={{
+                                        title: EMPTY_DATA,
+                                        imagClass: 'imagClass'
+                                      }}
+                                      rowData={MasterLevelGrid}
+                                      frameworkComponents={{
+                                        ...frameworkComponents,
+                                      }}
+                                    >
+                                      <AgGridColumn field="Master" headerName="Master" />
+                                      <AgGridColumn field="ApprovalType" headerName="Approval Type" />
+                                      <AgGridColumn field="Level" headerName="Level" />
+                                    </AgGridReact>
+                                    <PaginationWrapper
+                                      gridApi={gridApiMaster}
+                                      setPage={newPageSize => this.onPageSizeChanged(gridApiMaster, newPageSize)}
+                                    />
+                                  </div>
+                                </div>
+                              </div>
+                            </Col>
+                          </Row>
                         </Col>}
 
                       </Row>}
