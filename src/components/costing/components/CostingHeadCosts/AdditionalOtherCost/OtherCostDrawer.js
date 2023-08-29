@@ -509,7 +509,7 @@ function OtherCostDrawer(props) {
                                     )}
                                 </Col>
                             </Row>
-                            <OtherCostTable editItemDetails={editItemDetails} deleteItem={deleteItem} tableData={{ gridData: gridData, otherCostTotal: otherCostTotal }} actionButton={true} />
+                            <OtherCostTable editItemDetails={editItemDetails} deleteItem={deleteItem} tableData={{ gridData: gridData, otherCostTotal: otherCostTotal }} />
                             <Row className="pr-0">
                                 <div className="col-sm-12 text-right">
                                     <button
