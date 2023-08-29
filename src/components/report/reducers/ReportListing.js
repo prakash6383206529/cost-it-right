@@ -43,7 +43,7 @@
 
 
 import {
-    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST, GET_BENCHMARK_MASTER_LIST, GET_COST_RATIO_REPORT, GET_REPORT_FORM_GRID_DATA,
+    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST, GET_BENCHMARK_MASTER_LIST, GET_COST_RATIO_REPORT, GET_REPORT_FORM_GRID_DATA, GET_PRODUCT_LIST, GET_PRODUCT_PART_DATA_LIST, GET_STAGE_OF_PART_DETAILS,
 } from '../../../config/constants';
 import { userDetails } from '../../../helper';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
@@ -51,7 +51,10 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 const initialState = {
     reportListing: [],
     allReportListing: [],
-    costReportFormGridData: {}
+    costReportFormGridData: {},
+    stageOfPartDetails: [],
+    productList: [],
+    productPartDataList: [],
 };
 
 export default function ReportListingReducers(state = initialState, action) {
@@ -158,6 +161,24 @@ export default function ReportListingReducers(state = initialState, action) {
             return {
                 loading: false,
                 costReportFormGridData: action.payload
+            }
+        case GET_PRODUCT_LIST:
+            return {
+                ...state,
+                loading: false,
+                productList: action.payload
+            }
+        case GET_PRODUCT_PART_DATA_LIST:
+            return {
+                ...state,
+                loading: false,
+                productPartDataList: action.payload
+            }
+        case GET_STAGE_OF_PART_DETAILS:
+            return {
+                ...state,
+                loading: false,
+                stageOfPartDetails: action.payload
             }
 
         default:
