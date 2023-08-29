@@ -83,7 +83,7 @@ function OtherCostDrawer(props) {
                 return null;
             });
             if (isBreakupBoughtOutPartCostingFromAPI) {
-                tempList = removeBOPfromApplicability([...temp])
+                // tempList = removeBOPfromApplicability([...temp])
             } else {
                 tempList = [...temp]
             }

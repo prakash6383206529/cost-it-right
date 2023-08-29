@@ -224,6 +224,7 @@ const CostingSummaryTable = (props) => {
         }
         return acc;
       }, []);
+      console.log('labelArray: ', labelArray);
 
       labelArray.forEach(item => {
         switch (item) {
