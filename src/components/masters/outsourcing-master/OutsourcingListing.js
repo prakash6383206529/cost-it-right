@@ -40,7 +40,7 @@ const OutsourcingListing = (props) => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [isViewMode, setIsViewMode] = useState(false);
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
-    const [ID, setID] = useState('');
+    const [outsourcingId, setOutsourcingId] = useState('');
     const [ViewAccessibility, setViewAccessibility] = useState(false);
     const [AddAccessibility, setAddAccessibility] = useState(false);
     const [EditAccessibility, setEditAccessibility] = useState(false);
@@ -168,7 +168,7 @@ const OutsourcingListing = (props) => {
         else {
             setIsEditMode(!isViewMode);
             setIsOpenDrawer(true);
-            setID(rowData.OutSourcingId);
+            setOutsourcingId(rowData.OutSourcingId);
             setIsViewMode(isViewMode);
         }
     }
@@ -189,8 +189,20 @@ const OutsourcingListing = (props) => {
 
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+                {ViewAccessibility && <Button
+                    id={`outsourcingListing_view${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="View"
+                    onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
+                    title={"View"}
+                />}
+                {EditAccessibility && <Button
+                    id={`outsourcingListing_edit${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="Edit"
+                    onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
+                    title={"Edit"}
+                />}
             </>
         )
     };
@@ -250,7 +262,6 @@ const OutsourcingListing = (props) => {
     const statusButtonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (rowData.UserId === loggedInUserId()) return null;
         showTitleForActiveToggle(props?.rowIndex)
         return (
             <>
@@ -307,7 +318,7 @@ const OutsourcingListing = (props) => {
         setIsOpenDrawer(false)
         setIsEditMode(false)
         setIsViewMode(false)
-        setID('')
+        setOutsourcingId('')
         if (type === 'submit') {
             getTableListData(0, defaultPageSize, true)
         }
@@ -528,19 +539,24 @@ const OutsourcingListing = (props) => {
                             <div className="d-flex justify-content-end bd-highlight w100">
                                 <div className="warning-message d-flex align-items-center">
                                     {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                    <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                    <Button
+                                        id="outsourcingListing_filter"
+                                        className={"mr5"}
+                                        onClick={() => onSearch()}
+                                        title={"Filtered data"}
+                                        icon={"filter"}
+                                        disabled={disableFilter}
+                                    />
                                 </div>
 
                                 {AddAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5"}
+                                    <Button
+                                        id="outsourcingListing_add"
+                                        className={"mr5"}
                                         onClick={formToggle}
-                                        title="Add"
-                                    >
-                                        <div className={"plus mr-0"}></div>
-                                        {/* ADD */}
-                                    </button>
+                                        title={"Add"}
+                                        icon={"plus"}
+                                    />
                                 )}
                                 {
                                     DownloadAccessibility &&
@@ -561,11 +577,12 @@ const OutsourcingListing = (props) => {
                                         </ExcelFile>
                                     </>
                                 }
-
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={resetState}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
-
+                                <Button
+                                    id={"outsourceListing_refresh"}
+                                    onClick={() => resetState()}
+                                    title={"Reset Grid"}
+                                    icon={"refresh"}
+                                />
                             </div>
                         </Col>
                     </Row>
@@ -606,11 +623,11 @@ const OutsourcingListing = (props) => {
                             {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                             {
                                 <div className="d-flex pagination-button-container">
-                                    <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                    <p><Button id="outsourcingListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
                                     {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
                                     {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
                                     {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                    <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                    <p><Button id="outsourcingListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
                                 </div>
                             }
                         </div>
@@ -625,7 +642,7 @@ const OutsourcingListing = (props) => {
                     closeDrawer={closeDrawer}
                     isEditMode={isEditMode}
                     isViewMode={isViewMode}
-                    ID={ID}
+                    outsourcing_Id={outsourcingId}
                     anchor={'right'}
                 />
             )

@@ -1,8 +1,6 @@
 import {
     API_REQUEST,
     API_FAILURE,
-    CREATE_SUCCESS,
-    CREATE_FAILURE,
     GET_ALL_OUTSOURCING_DATA,
     GET_OUTSOURCING_DATA,
     GET_OUTSOURCING_DATA_FOR_DOWNLOAD
@@ -25,19 +23,6 @@ export default function OutsourcingReducer(state = initialState, action) {
             return {
                 ...state,
                 loading: false
-            };
-        case CREATE_SUCCESS: {
-            return {
-                ...state,
-                loading: false,
-                error: false
-            };
-        }
-        case CREATE_FAILURE:
-            return {
-                ...state,
-                loading: false,
-                error: true
             };
         case GET_ALL_OUTSOURCING_DATA:
             let arr = []
