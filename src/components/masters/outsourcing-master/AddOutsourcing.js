@@ -12,8 +12,9 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { TextFieldHookForm } from '../../layout/HookFormInputs';
 import { useForm, Controller } from "react-hook-form";
 import { createOutsourcing, getOutsourcing, updateOutsourcing } from '../actions/Outsourcing';
+import Button from '../../layout/Button';
 const AddOutsourcing = (props) => {
-    const { isEditMode, ID, isViewMode } = props;
+    const { isEditMode, outsourcing_Id, isViewMode } = props;
     const dispatch = useDispatch();
     const [outsourcingId, setOutsourcingId] = useState('');
     const [dataToCheck, setDataToCheck] = useState([]);
@@ -24,7 +25,7 @@ const AddOutsourcing = (props) => {
     useEffect(() => {
         getDetail();
     }, []);
-    const { register, handleSubmit, formState: { errors }, control, setValue, getValues } = useForm({
+    const { register, handleSubmit, formState: { errors }, control, setValue } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     });
@@ -32,9 +33,9 @@ const AddOutsourcing = (props) => {
     const getDetail = () => {
         if (isEditMode || isViewMode) {
             setIsLoader(true);
-            setOutsourcingId(ID);
+            setOutsourcingId(outsourcing_Id);
             setTimeout(() => {
-                dispatch(getOutsourcing(ID, (res) => {
+                dispatch(getOutsourcing(outsourcing_Id, (res) => {
                     if (res?.data?.Data) {
                         const data = res.data.Data;
                         setDataToCheck(data);
@@ -192,26 +193,25 @@ const AddOutsourcing = (props) => {
 
                             <Row className="sf-btn-footer no-gutters justify-content-between px-3">
                                 <div className="col-sm-12 text-right px-3">
-                                    <button
-                                        type={"button"}
-                                        className=" mr15 cancel-btn"
-                                        onClick={cancelHandler}
+                                    <Button
+                                        id="addOutsourcing_cancel"
+                                        className=" mr15 cancel-btn mt-0"
+                                        variant={"cancel-btn"}
                                         disabled={setDisable}
-                                    >
-                                        <div className={"cancel-icon"}></div>
-                                        {"Cancel"}
-                                    </button>
-                                    <button
+                                        onClick={cancelHandler}
+                                        icon={"cancel-icon"}
+                                        buttonName={"Cancel"}
+                                    />
+                                    <Button
+                                        id="addOutsourcing_updateSave"
                                         type="submit"
-                                        className="user-btn save-btn"
+                                        className="mr5"
                                         disabled={setDisable || isViewMode}
-                                    >
-                                        <div className={"save-icon"}></div>
-                                        {isEditMode ? "Update" : "Save"}
-                                    </button>
+                                        icon={"save-icon"}
+                                        buttonName={isEditMode ? "Update" : "Save"}
+                                    />
                                 </div>
                             </Row>
-                            {console.log('showPopup: ', showPopup)}
                             {
                                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
                             }

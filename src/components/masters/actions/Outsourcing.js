@@ -3,8 +3,6 @@ import {
     API,
     API_REQUEST,
     API_FAILURE,
-    CREATE_SUCCESS,
-    CREATE_FAILURE,
     config,
     GET_OUTSOURCING_DATA,
     GET_ALL_OUTSOURCING_DATA,
@@ -12,7 +10,6 @@ import {
     API_SUCCESS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import Toaster from '../../common/Toaster';
 
 
 /**
@@ -24,18 +21,12 @@ export function createOutsourcing(data, callback) {
         dispatch({ type: API_REQUEST });
         const request = axios.post(API.createOutsourcing, data, config());
         request.then((response) => {
-            if (response.data.Result === true) {
-                dispatch({ type: CREATE_SUCCESS, });
+            if (response.data.Result) {
                 callback(response);
-            } else {
-                dispatch({ type: CREATE_FAILURE });
-                if (response.data.Message) {
-                    Toaster.error(response.data.Message);
-                }
             }
         }).catch((error) => {
-            dispatch({ type: API_FAILURE });
             apiErrors(error);
+            dispatch({ type: API_FAILURE });
             callback(error);
         });
     };
@@ -93,15 +84,12 @@ export function getAllOutsourcing(obj, isPagination, skip, take, callback) {
         axios.get(`${API.getAllOutsourcing}?${QueryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
-                    console.log('isPagination: ', isPagination);
                     if (isPagination) {
                         dispatch({
                             type: GET_ALL_OUTSOURCING_DATA,
                             payload: response.status === 204 ? [] : response.data.DataList
                         })
                     } else {
-                        console.log('download: ');
-                        console.log('response: ', response);
                         dispatch({
                             type: GET_OUTSOURCING_DATA_FOR_DOWNLOAD,
                             payload: response.status === 204 ? [] : response.data.DataList
