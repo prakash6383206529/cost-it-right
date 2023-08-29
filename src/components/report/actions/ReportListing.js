@@ -8,7 +8,10 @@ import {
     GET_BENCHMARK_RM_LIST,
     GET_BENCHMARK_MASTER_LIST,
     GET_COST_RATIO_REPORT,
-    GET_REPORT_FORM_GRID_DATA
+    GET_REPORT_FORM_GRID_DATA,
+    GET_PRODUCT_LIST,
+    GET_PRODUCT_PART_DATA_LIST,
+    GET_STAGE_OF_PART_DETAILS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper';
 
@@ -426,6 +429,54 @@ export function getPlantWiseGotAndGivenDetails(data, callback) {
             if (response) {
                 callback(response)
             }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getProductlist(callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductlist}`, config(),)
+        request.then((response) => {
+            dispatch({
+                type: GET_PRODUCT_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getProductPartDataList(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductPartDataList}?productId=${productId}`, config(),)
+        request.then((response) => {
+            dispatch({
+                type: GET_PRODUCT_PART_DATA_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.DataList
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getStageOfPartDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getStageOfPartDetails}?productId=${productId}`, config(),)
+        request.then((response) => {
+            dispatch({
+                type: GET_STAGE_OF_PART_DETAILS,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
