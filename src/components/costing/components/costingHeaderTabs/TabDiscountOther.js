@@ -149,20 +149,26 @@ function TabDiscountOther(props) {
     }
   }, [netPOPrice])
 
-  const viewAddButtonIcon = (data) => {
+  const viewAddButtonIcon = (data, type) => {
+
     let className = ''
+    let title = ''
     if (data.length !== 0 || CostingViewMode) {
-      className = 'fa fa-eye view'
+      className = 'view-icon-primary'
+      title = 'View'
     } else {
       className = 'plus-icon-square'
+      title = 'Add'
     }
-    return className
+    if (type === "className") {
+      return className
+    } else if (type === "title") {
+      return title
+    }
   }
 
   const otherCostUI = useMemo(() => {
     let otherCost = otherCostData.otherCostTotal
-    console.log('otherCostData: ', otherCostData);
-    const butonIcon = CostingViewMode || otherCostData.length !== 0 ? 'fa fa-eye ' : 'plus-icon-square'
     setValue('OtherCost', checkForDecimalAndNull(otherCost, initialConfiguration.NoOfDecimalForPrice))
     return <div className='d-flex align-items-center'>
       <TextFieldHookForm
@@ -185,7 +191,8 @@ function TabDiscountOther(props) {
         id="tabDiscount_otherCost"
         onClick={() => handleOtherCostdrawer()}
         className={"right"}
-        variant={viewAddButtonIcon(otherCostData.gridData)}
+        variant={viewAddButtonIcon(otherCostData.gridData, "className")}
+        title={viewAddButtonIcon(otherCostData.gridData, "title")}
       />
     </div>
   }, [otherCostData])
@@ -214,7 +221,8 @@ function TabDiscountOther(props) {
         id="tabDiscount_condition"
         onClick={() => openAndCloseAddConditionCosting('Open')}
         className={"right mt-2"}
-        variant={viewAddButtonIcon(conditionTableData)}
+        variant={viewAddButtonIcon(conditionTableData, "className")}
+        title={viewAddButtonIcon(conditionTableData, "title")}
       />
     </div>
   }, [conditionTableData])

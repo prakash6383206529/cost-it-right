@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1017,6 +1017,7 @@ function CostingDetails(props) {
       if (res && res?.data?.Result) {
         const userDetail = userDetails()
         setCostingOptionsSelectedObject({})
+
         setCostingType(type)
 
         if (CheckIsSOBChangedSaved()) {
@@ -1025,7 +1026,10 @@ function CostingDetails(props) {
         }
 
         dispatch(getBriefCostingById('', (res) => { }))
+
+
         if (checkSOBTotal()) {
+          dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
 
           const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
           const data = {
@@ -1567,6 +1571,7 @@ function CostingDetails(props) {
       reactLocalStorage.setObject('costingArray', [])
       reactLocalStorage.setObject('surfaceCostingArray', [])
       dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+      dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
       dispatch(setComponentItemData({}, () => { }))
 
       dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
