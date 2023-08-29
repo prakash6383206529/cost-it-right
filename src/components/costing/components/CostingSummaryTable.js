@@ -197,14 +197,15 @@ const CostingSummaryTable = (props) => {
 
       let temp = []
       let tempObj = viewCostingData[index]
-      let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST', 'CONDITION COST', 'NPV COST']
+      console.log('tempObj: ', tempObj);
+      let labels = [partType ? 'COST/ASSEMBLY' : 'RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST', 'CONDITION COST', 'NPV COST']
       let dataArray = [];
       let tempColorArray = [];
 
       temp = [
-        checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(partType ? tempObj.nTotalRMBOPCC : tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(partType ? 0 : tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
@@ -221,11 +222,12 @@ const CostingSummaryTable = (props) => {
         }
         return acc;
       }, []);
+      console.log('labelArray: ', labelArray);
 
       labelArray.forEach(item => {
         switch (item) {
-          case 'RM':
-            dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+          case partType ? 'COST/ASSEMBLY' : 'RM':
+            dataArray.push(checkForDecimalAndNull(partType ? tempObj.nTotalRMBOPCC : tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[0])
             break;
           case 'BOP':
@@ -263,6 +265,8 @@ const CostingSummaryTable = (props) => {
           case 'CONDITION COST':
             dataArray.push(checkForDecimalAndNull(tempObj.CostingPartDetails.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[9])
+            console.log('dataArray: ', dataArray);
+
             break;
           case 'NPV COST':
             dataArray.push(checkForDecimalAndNull(tempObj.CostingPartDetails.NetNpvCost, initialConfiguration.NoOfDecimalForPrice))
