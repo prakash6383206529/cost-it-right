@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -70,6 +70,8 @@ import BudgetMaster from './masters/budget-master'
 import GotGivenReport from './report/components/GotGivenReport/GotGivenReport'
 import PipdReport from './report/components/PIPDReport/PipdReport'
 import PlantWiseCostingGotGiven from './report/components/PlantWiseCostingGotGiven/PlantWiseCostingGotGiven'
+import ProductRollout from './report/components/ProductRollout'
+import OutsourcingListing from './masters/outsourcing-master/OutsourcingListing'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -373,6 +375,7 @@ class Main extends Component {
                     <Route path="/nfr" component={AuthMiddleware(NfrTabs, NFR)} />
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
                     <Route path="/got-given-summary-details-report" component={GotGivenReport} />
+                    <Route path="/out-sourcing-master" component={AuthMiddleware(OutsourcingListing, OUTSOURCING)} />
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}

@@ -907,6 +907,13 @@ export const API = {
   getComapanySelectList: `${BASE_URL}/company/get-company-select-list`,
   updateCompany: `${BASE_URL}/company/update`,
 
+  //OUTSOURCING
+  activeInactiveOutsourcingStatus: `${BASE_URL}/masters-outsourcing/active`,
+  createOutsourcing: `${BASE_URL}/masters-outsourcing/create`,
+  updateOutsourcing: `${BASE_URL}/masters-outsourcing/update`,
+  getAllOutsourcing: `${BASE_URL}/masters-outsourcing/get-all`,
+  getOutsourcing: `${BASE_URL}/masters-outsourcing/get`,
+
   //SIMULATION
   getSimulationHistory: `${BASE_URL}/simulation/get-simulation-history`,
   getSelectListOfSimulationMaster: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master`,
@@ -1668,6 +1675,11 @@ export const GET_TAX_DETAILS_DATA = 'GET_TAX_DETAILS_DATA'
 //COMPANY
 export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 
+//OUTSOURCING
+export const GET_OUTSOURCING_DATA = 'GET_OUTSOURCING_DATA'
+export const GET_ALL_OUTSOURCING_DATA = 'GET_ALL_OUTSOURCING_DATA'
+export const GET_OUTSOURCING_DATA_FOR_DOWNLOAD = 'GET_OUTSOURCING_DATA_FOR_DOWNLOAD'
+
 //SIMULATION
 export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
@@ -1856,6 +1868,7 @@ export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
 export const GOT_GIVEN_REPORT = "Got Given Report"
 export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
+export const OUTSOURCING = "Outsourcing"
 
 
 //export const SIMULATION_HISTORY = 'Simulation History'

@@ -153,3 +153,9 @@ export const GOT_GIVEN_EXCEL_TEMPLATE_SUMMARY = [
     { label: 'Variance', value: 'NetPOPriceDelta' },
     { label: 'Variance (%)', value: 'NetPOPriceDeltaPercentage' },
 ]
+// Excel download template for outsourcing
+export const OUTSOURCING_EXCEL_DOWNLOAD = [
+    { label: 'Outsourcing Name', value: 'OutSourcingName' },
+    { label: 'Outsourcing Short Name', value: 'OutSourcingShortName' },
+    { label: "Status", value: "status", }
+]
