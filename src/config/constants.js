@@ -128,6 +128,7 @@ export const API = {
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
   getPartDescription: `${BASE_URL}/masters-part/get-info-name-by-part-number-and-type`,
 
+
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
   getAssemblyPartDataList: `${BASE_URL}/masters-part/get-all-assembly-part`,
@@ -996,6 +997,9 @@ export const API = {
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
   getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
   getPlantWiseGotAndGivenDetails: `${BASE_URL}/reports/get-plant-head-wise-details`,
+  getProductlist: `${BASE_URL}/reports/get-product-list`,
+  getProductPartDataList: `${BASE_URL}/reports/get-product-parts-list`,
+  getStageOfPartDetails: `${BASE_URL}/reports/get-stage-of-parts-details`,
 
 
   //SUB ASSEMBLY
@@ -1685,6 +1689,9 @@ export const GET_BENCHMARK_MASTER_LIST = 'GET_BENCHMARK_MASTER_LIST'
 export const GET_COST_RATIO_REPORT = 'GET_COST_RATIO_REPORT'
 export const GET_REPORT_FORM_GRID_DATA = 'GET_REPORT_FORM_GRID_DATA'
 export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
+export const GET_PRODUCT_LIST = 'GET_PRODUCT_LIST'
+export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
+export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'

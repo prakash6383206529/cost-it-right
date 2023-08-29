@@ -9,8 +9,8 @@ import MasterUserage from "./MasterUsage";
 
 const ProductRollout = () => {
     const [showData, setShowData] = useState(false)
-    const fetchData = () => {
-        setShowData(true)
+    const fetchData = (value) => {
+        setShowData(value)
     }
     return (
         <div className="product-rollout-container">
