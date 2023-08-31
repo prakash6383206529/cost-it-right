@@ -41,6 +41,7 @@ import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -1224,10 +1225,12 @@ class AddBOPImport extends Component {
                                 />
                               </div>
                               {!isEditFlag &&
-                                <div
+                                <Button
+                                  id="addBOPImport_categoryToggle"
                                   onClick={this.categoryToggler}
-                                  className={"plus-icon-square right"}
-                                ></div>}
+                                  className={"right"}
+                                  variant="plus-icon-square"
+                                />}
                             </div>
                           </Col>
                           <Col md="3">
@@ -1339,10 +1342,12 @@ class AddBOPImport extends Component {
                                     />
                                   </div>
                                   {!isEditFlag && (
-                                    <div
+                                    <Button
+                                      id="addBOPDomestic_vendorToggle"
                                       onClick={this.vendorToggler}
-                                      className={"plus-icon-square  right"}
-                                    ></div>
+                                      className={"right"}
+                                      variant="plus-icon-square"
+                                    />
                                   )}
                                 </div>
                                 {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
@@ -1692,34 +1697,35 @@ class AddBOPImport extends Component {
                         <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
                           {this.state.showWarning && <WarningMessage dClass="mr-2" message={`Net conversion cost is 0, Do you wish to continue.`} />}
-                          <button
-                            type={"button"}
-                            className=" mr15 cancel-btn"
+                          <Button
+                            id="addBOPIMport_cancel"
+                            className="mr15"
                             onClick={this.cancelHandler}
                             disabled={setDisable}
-                          >
-                            <div className={"cancel-icon"}></div>
-                            {"Cancel"}
-                          </button>
+                            variant="cancel-btn"
+                            icon="cancel-icon"
+                            buttonName="Cancel"
+                          />
 
                           {!isViewMode && <>
                             {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
-                              <button type="submit"
-                                class="user-btn approval-btn save-btn mr5"
-                                disabled={isViewMode || setDisable || disableSendForApproval}
-                              >
-                                <div className="send-for-approval"></div>
-                                {'Send For Approval'}
-                              </button>
-                              :
-                              <button
+                              <Button
+                                id="addBOPIMport_sendForApproval"
                                 type="submit"
-                                className="user-btn mr5 save-btn"
+                                className="mr5"
                                 disabled={isViewMode || setDisable || disableSendForApproval}
-                              >
-                                <div className={"save-icon"}></div>
-                                {isEditFlag ? "Update" : "Save"}
-                              </button>
+                                icon="send-for-approval"
+                                buttonName="Send For Approval"
+                              />
+                              :
+                              <Button
+                                id="addBOPIMport_save"
+                                type="submit"
+                                className="mr5"
+                                disabled={isViewMode || setDisable}
+                                icon="save-icon"
+                                buttonName={isEditFlag ? "Update" : "Save"}
+                              />
                             }
                           </>}
                         </div>

@@ -39,6 +39,7 @@ import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import TooltipCustom from '../../common/Tooltip';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import WarningMessage from '../../common/WarningMessage';
+import Button from '../../layout/Button';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -1073,10 +1074,12 @@ class AddBOPDomestic extends Component {
                                 />
                               </div>
                               {!isEditFlag &&
-                                <div
+                                <Button
+                                  id="addBOPDomestic_categoryToggle"
                                   onClick={this.categoryToggler}
-                                  className={"plus-icon-square right"}
-                                ></div>
+                                  className={"right"}
+                                  variant="plus-icon-square"
+                                />
                               }
                             </div>
                           </Col>
@@ -1207,10 +1210,12 @@ class AddBOPDomestic extends Component {
                                       />
                                     </div>
                                     {!isEditFlag && (
-                                      <div
+                                      <Button
+                                        id="addBOPDomestic_vendorToggle"
                                         onClick={this.vendorToggler}
-                                        className={"plus-icon-square  right"}
-                                      ></div>
+                                        className={"right"}
+                                        variant="plus-icon-square"
+                                      />
                                     )}
                                   </div>
                                   {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
@@ -1508,34 +1513,36 @@ class AddBOPDomestic extends Component {
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                          <button
-                            type={"button"}
-                            className="mr15 cancel-btn"
+                          <Button
+                            id="AddBOPDomestic_cancel"
                             onClick={this.cancelHandler}
                             disabled={setDisable}
-                          >
-                            <div className={"cancel-icon"}></div>
-                            {"Cancel"}
-                          </button>
+                            className="mr15"
+                            variant="cancel-btn"
+                            icon="cancel-icon"
+                            buttonName="Cancel"
+                          />
                           {!isViewMode && <>
                             {((!isViewMode && (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission && !isTechnologyVisible)) && !isTechnologyVisible ?
-                              <button type="submit"
-                                class="user-btn approval-btn save-btn mr5"
-                                disabled={isViewMode || setDisable || disableSendForApproval}
-                              >
-                                <div className="send-for-approval"></div>
-                                {'Send For Approval'}
-                              </button>
-                              :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
-
-                              <button
+                              <Button
+                                id="AddBOPDomestic_sendForApproval"
                                 type="submit"
-                                className="user-btn mr5 save-btn"
+                                className="mr5"
                                 disabled={isViewMode || setDisable || disableSendForApproval}
-                              >
-                                <div className={"save-icon"}></div>
-                                {isEditFlag ? "Update" : "Save"}
-                              </button>
+                                icon="send-for-approval"
+                                buttonName="Send For Approval"
+
+                              />
+                              :                                                                // BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+                              <Button
+                                id="AddBOPDomestic_updateSave"
+                                type="submit"
+                                className="mr5"
+                                disabled={isViewMode || setDisable || disableSendForApproval}
+                                icon="save-icon"
+                                buttonName={isEditFlag ? "Update" : "Save"}
+
+                              />
                             }
                           </>}
                         </div>
