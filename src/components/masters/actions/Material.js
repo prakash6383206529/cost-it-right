@@ -40,11 +40,11 @@ import {
     GET_RM_DOMESTIC_LIST,
     GET_ALL_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, EMPTY_GUID, BUDGET_ID, GET_VOLUME_DATA_LIST, GET_SPECIFICATION_SELECTLIST_SUCCESS, GET_RM_SPECIFICATION_LIST_SUCCESS
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, EMPTY_GUID, BUDGET_ID, GET_VOLUME_DATA_LIST, GET_SPECIFICATION_SELECTLIST_SUCCESS, GET_RM_SPECIFICATION_LIST_SUCCESS, GET_BOP_IMPORT_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
-import { loggedInUserId, userDetails } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
 import { rmQueryParms } from '../masterUtil';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -1621,10 +1621,17 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                         callback(response)
                     }
                     else if (Number(masterId) === BOP_MASTER_ID) {
-                        dispatch({
-                            type: GET_BOP_DOMESTIC_DATA_LIST,
-                            payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
-                        })
+                        if (response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                            dispatch({
+                                type: GET_BOP_DOMESTIC_DATA_LIST,
+                                payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
+                            })
+                        } else {
+                            dispatch({
+                                type: GET_BOP_IMPORT_DATA_LIST,
+                                payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
+                            })
+                        }
                         callback(response)
                     } else if (Number(masterId) === OPERATIONS_ID) {
                         dispatch({
