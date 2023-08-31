@@ -5104,8 +5104,17 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: "Customer (Code)", value: "CustomerName", },
+
+
+
+
     { label: "Basic Rate", value: "BasicRate", },
-    { label: "Net Cost", value: "NetLandedCost", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
+    { label: "Net Landed Cost", value: "NetLandedCost", },
+
+
+
     { label: "Effective Date", value: "EffectiveDate", }
 ]
 
@@ -5124,9 +5133,18 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     // { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" }, // FOR MINDA ONLY
-    { label: "Basic Rate", value: "BasicRate" },
-    { label: "Net Cost (Currency)", value: "NetLandedCost" },
-    { label: "Net Cost (INR)", value: "NetLandedCostConversion" },
+
+
+    { label: "Basic Rate", value: "BasicRate", },
+    { label: "Basic Rate Conversion", value: "BasicRateConversion", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
+    { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
+    { label: "Net Landed Cost", value: "NetLandedCost", },
+    { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
+
+
     { label: "Effective Date", value: "EffectiveDate" },
 ]
 
