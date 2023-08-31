@@ -190,7 +190,7 @@ function TabDiscountOther(props) {
       <Button
         id="tabDiscount_otherCost"
         onClick={() => handleOtherCostdrawer()}
-        className={"right"}
+        className={"right mt15"}
         variant={viewAddButtonIcon(otherCostData.gridData, "className")}
         title={viewAddButtonIcon(otherCostData.gridData, "title")}
       />
@@ -220,7 +220,7 @@ function TabDiscountOther(props) {
       <Button
         id="tabDiscount_condition"
         onClick={() => openAndCloseAddConditionCosting('Open')}
-        className={"right mt-2"}
+        className={"right mt15"}
         variant={viewAddButtonIcon(conditionTableData, "className")}
         title={viewAddButtonIcon(conditionTableData, "title")}
       />
