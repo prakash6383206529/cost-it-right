@@ -5,7 +5,7 @@ import { Row, Col, } from 'reactstrap';
 import { required, positiveAndDecimalNumber, postiveNumber, decimalNumberLimit } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
 import { getBoughtOutPartSelectList, getDrawerBOPData } from '../actions/Part';
-import { BOUGHTOUTPART, BOUGHTOUTPARTSPACING, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
+import { BOUGHTOUTPARTSPACING, DIMENSIONLESS, SPACEBAR } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PartEffectiveDate } from './AddAssemblyPart';
 import AsyncSelect from 'react-select/async';
@@ -21,7 +21,6 @@ class AddBOPForm extends Component {
       parentPart: [],
       BOPPart: [],
       isAddMore: false,
-      selectedParts: [],
       titleObj: {},
       isLoader: false,
       updateAsyncDropdown: false,
@@ -37,21 +36,10 @@ class AddBOPForm extends Component {
  * @description called after render the component
  */
   componentDidMount() {
-    const { BOMViewerData } = this.props;
-    let tempArr = [];
     this.setState({ isLoader: true })
     const date = this.context
     this.props.getBoughtOutPartSelectList(date, () => { this.setState({ isLoader: false }) })
 
-
-    BOMViewerData && BOMViewerData.map(el => {
-      if (el.PartType === BOUGHTOUTPART) {
-        tempArr.push(el.PartId)
-      }
-      return null;
-    })
-
-    this.setState({ selectedParts: tempArr })
   }
 
   checkRadio = (radioType) => {
@@ -98,7 +86,6 @@ class AddBOPForm extends Component {
   */
   renderListing = (label) => {
     const { boughtOutPartSelectList } = this.props;
-    const { selectedParts } = this.state;
     const temp = [];
     const { BOMViewerData } = this.props;                    //UPDATING BOMVIEWER DATA ON EVERY RENDERING OF DROPDOWN
     let tempArr = [];
@@ -113,7 +100,7 @@ class AddBOPForm extends Component {
 
     if (label === 'BOPPart') {
       boughtOutPartSelectList && boughtOutPartSelectList.map(item => {
-        if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+        if (item.Value === '0' || tempArr.includes(item.Value)) return false;
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
