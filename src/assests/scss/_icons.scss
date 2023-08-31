@@ -139,6 +139,7 @@
 .plus-icon-square {
     @include icons("../../images/add-icons.png", 43px, 35px, none);
     margin-top: 5px;
+    border-radius: 3px;
     background-position: center right;
     cursor: pointer;
 
@@ -793,7 +794,7 @@
     background-color: $colorPrimary;
     height: 23px;
     width: 26px;
-    border-radius: 5px;
+    border-radius: 3px;
     margin-left: 8px;
     margin-top: 10px;
     position: relative;
@@ -801,10 +802,10 @@
     @extend .fa;
 
     &::before {
-        font-size: 13px;
+        font-size: 11px;
         position: absolute;
-        top: 4px;
-        left: 4px;
+        top: 5px;
+        left: 5px;
 
     }
 }
