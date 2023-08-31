@@ -40,21 +40,11 @@ import {
     GET_RM_DOMESTIC_LIST,
     GET_ALL_RM_DOMESTIC_LIST,
     GET_RM_IMPORT_LIST,
-    GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT,
-    GET_MANAGE_SPECIFICATION,
-    GET_UNASSOCIATED_RM_NAME_SELECTLIST,
-    SET_FILTERED_RM_DATA,
-    GET_RM_APPROVAL_LIST,
-    GET_ALL_MASTER_APPROVAL_DEPARTMENT,
-    EMPTY_GUID,
-    BUDGET_ID,
-    GET_VOLUME_DATA_LIST,
-    GET_SPECIFICATION_SELECTLIST_SUCCESS,
-    GET_RM_SPECIFICATION_LIST_SUCCESS
+    GET_MANAGE_SPECIFICATION, GET_UNASSOCIATED_RM_NAME_SELECTLIST, SET_FILTERED_RM_DATA, GET_RM_APPROVAL_LIST, GET_ALL_MASTER_APPROVAL_DEPARTMENT, GET_ALL_MASTER_APPROVAL_USERS_BY_DEPARTMENT, EMPTY_GUID, BUDGET_ID, GET_VOLUME_DATA_LIST, GET_SPECIFICATION_SELECTLIST_SUCCESS, GET_RM_SPECIFICATION_LIST_SUCCESS, GET_BOP_IMPORT_DATA_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
-import { loggedInUserId, userDetails } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
 import { MESSAGES } from '../../../config/message';
 import { rmQueryParms } from '../masterUtil';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -1354,7 +1344,7 @@ export function getRMApprovalList(masterId, skip, take, isPagination, obj, callb
     return (dispatch) => {
 
         dispatch({ type: API_REQUEST });
-        const queryParams = `applyPagination=${isPagination}&skip=${skip}&take=${take}&Token=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&CreatedBy=${obj.CreatedByName !== undefined ? obj.CreatedByName : ""}&LastApprovedBy=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&Status=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&BasicRate=${obj.BasicRatePerUOM !== undefined ? obj.BasicRatePerUOM : ""}&NetLandedCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecification=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&RMMaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&RMScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&RMFreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&RMShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&BOPSpecification=${obj.Specification !== undefined ? obj.Specification : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&MachineTonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&MachineProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm !== undefined ? obj.IncoTermDescriptionAndInfoTerm : ""}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm !== undefined ? obj.PaymentTermDescriptionAndPaymentTerm : ""}&Currency=${obj.Currency ? obj.Currency : ''}&partId=${obj.partId ? obj.partId : ''}&FinancialYear=${obj.FinancialYear ? obj.FinancialYear : ''}&IsBreakupBoughtOutPart=${obj?.IsBreakupBoughtOutPart?.toLowerCase() === 'yes' ? true : false}`
+        const queryParams = `applyPagination=${isPagination}&skip=${skip}&take=${take}&Token=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&UOM=${obj.UOM !== undefined ? obj.UOM : ""}&EffectiveDate=${obj.EffectiveDate !== undefined ? obj.EffectiveDate : ""}&InitiatedBy=${obj.RequestedBy !== undefined ? obj.RequestedBy : ""}&CreatedBy=${obj.CreatedByName !== undefined ? obj.CreatedByName : ""}&LastApprovedBy=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&Status=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&BasicRate=${obj.BasicRate !== undefined ? obj.BasicRate : ""}&BasicRateConversion=${obj.BasicRateConversion !== undefined ? obj.BasicRateConversion : ""}&NetCostWithoutConditionCost=${obj.NetCostWithoutConditionCost !== undefined ? obj.NetCostWithoutConditionCost : ""}&NetCostWithoutConditionCostConversion=${obj.NetCostWithoutConditionCostConversion !== undefined ? obj.NetCostWithoutConditionCostConversion : ""}&NetConditionCost=${obj.NetConditionCost !== undefined ? obj.NetConditionCost : ""}&NetConditionCostConversion=${obj.NetConditionCostConversion !== undefined ? obj.NetConditionCostConversion : ""}&NetLandedCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""}&NetLandedCostConversion=${obj.NetLandedCostConversion !== undefined ? obj.NetLandedCostConversion : ""}&Plant=${obj.Plants !== undefined ? obj.Plants : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&RMName=${obj.RawMaterial !== undefined ? obj.RawMaterial : ""}&RMGrade=${obj.RMGrade !== undefined ? obj.RMGrade : ""}&RMSpecification=${obj.RMSpec !== undefined ? obj.RMSpec : ""}&RMCategory=${obj.Category !== undefined ? obj.Category : ""}&RMMaterialType=${obj.MaterialType !== undefined ? obj.MaterialType : ""}&RMScrapRate=${obj.ScrapRate !== undefined ? obj.ScrapRate : ""}&RMFreightCost=${obj.RMFreightCost !== undefined ? obj.RMFreightCost : ""}&RMShearingCost=${obj.RMShearingCost !== undefined ? obj.RMShearingCost : ""}&BOPPartNumber=${obj.BoughtOutPartNumber !== undefined ? obj.BoughtOutPartNumber : ""}&BOPPartName=${obj.BoughtOutPartName !== undefined ? obj.BoughtOutPartName : ""}&BOPCategory=${obj.BoughtOutPartCategory !== undefined ? obj.BoughtOutPartCategory : ""}&BOPSpecification=${obj.Specification !== undefined ? obj.Specification : ""}&OperationName=${obj.OperationName !== undefined ? obj.OperationName : ""}&OperationCode=${obj.OperationCode !== undefined ? obj.OperationCode : ""}&MachineNumber=${obj.MachineNumber !== undefined ? obj.MachineNumber : ""}&MachineType=${obj.MachineTypeName !== undefined ? obj.MachineTypeName : ""}&MachineTonnage=${obj.MachineTonnage !== undefined ? obj.MachineTonnage : ""}&MachineProcessName=${obj.ProcessName !== undefined ? obj.ProcessName : ""}&IsCustomerDataShow=${obj?.IsCustomerDataShow !== undefined ? obj?.IsCustomerDataShow : false}&IncoTerm=${obj.IncoTermDescriptionAndInfoTerm !== undefined ? obj.IncoTermDescriptionAndInfoTerm : ""}&PaymentTerm=${obj.PaymentTermDescriptionAndPaymentTerm !== undefined ? obj.PaymentTermDescriptionAndPaymentTerm : ""}&Currency=${obj.Currency ? obj.Currency : ''}&partId=${obj.partId ? obj.partId : ''}&FinancialYear=${obj.FinancialYear ? obj.FinancialYear : ''}&IsBreakupBoughtOutPart=${obj.IsBreakupBoughtOutPart?.toLowerCase() === 'yes' ? true : false}`
         const request = axios.get(`${API.getRMApprovalList}?logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInMasterLevelId}&masterId=${masterId}&${queryParams}`, config());
         request.then((response) => {
             let data;
@@ -1538,10 +1528,17 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                         callback(response)
                     }
                     else if (Number(masterId) === BOP_MASTER_ID) {
-                        dispatch({
-                            type: GET_BOP_DOMESTIC_DATA_LIST,
-                            payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
-                        })
+                        if (response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                            dispatch({
+                                type: GET_BOP_DOMESTIC_DATA_LIST,
+                                payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
+                            })
+                        } else {
+                            dispatch({
+                                type: GET_BOP_IMPORT_DATA_LIST,
+                                payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
+                            })
+                        }
                         callback(response)
                     } else if (Number(masterId) === OPERATIONS_ID) {
                         dispatch({

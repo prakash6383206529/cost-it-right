@@ -483,3 +483,68 @@ export function getStageOfPartDetails(productId, callback) {
         })
     }
 }
+export function getTotalPartsDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getTotalPartsDetails}?partId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+export function getProductRolloutCostMovement(partId, partNumber, partType, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductRolloutCostMovement}?partId=${partId}&partNumber=${partNumber}&partType=${partType}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+export function getProductRolloutCostRatio(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductRolloutCostRatio}?partId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+export function getUsageRmDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getUsageRmDetails}?partId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+export function getSupplierContributionDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getSupplierContributionDetails}?partId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}

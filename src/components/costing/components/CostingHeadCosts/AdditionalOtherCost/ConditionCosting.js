@@ -6,15 +6,20 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../help
 import { useSelector } from 'react-redux'
 
 function ConditionCosting(props) {
-    const [totalCost, setTotalCost] = useState(0)
+    const { isFromImport, currency } = props
+    const [totalCostBase, setTotalCostBase] = useState(0)
+    const [totalCostCurrency, setTotalCostCurrency] = useState(0)
     const editDeleteData = (indexValue, operation) => {
         props.editData(indexValue, operation)
     }
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
-        const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-        setTotalCost(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+        const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCostConversion), 0);
+        setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
+
+        const sumCurrency = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+        setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     }, [props?.tableData])
 
     return (
@@ -27,8 +32,9 @@ function ConditionCosting(props) {
                                 <th>{`Condition`}</th>
                                 {<th>{`Type`}</th>}
                                 {<th>{`Percentage (%)`}</th>}
-                                {<th>{`Fixed`}</th>}
-                                {<th>{`Cost`}</th>}
+                                {/* {<th>{`Fixed`}</th>} */}
+                                {isFromImport && <th>{`Cost (${currency?.label})`}</th>}
+                                {<th>{`Cost (${initialConfiguration?.BaseCurrency})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
@@ -37,13 +43,15 @@ function ConditionCosting(props) {
                                     return (
                                         <Fragment>
                                             <tr key={index}>
-                                                <td>{item.condition} </td>
+                                                <td>{`${item.Description}`} </td>
                                                 {<td>{item.ConditionType}</td>}
-                                                {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
-                                                {<td>{item.Percentage ? '-' : checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {<td>{item.ConditionPercentage ? checkForDecimalAndNull(item?.ConditionPercentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {/* {<td>{item.Percentage ? '-' : checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>} */}
                                                 {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
-                                                {!props.hideAction && <td><div className='text-right'><button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} />
-                                                    <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} />
+                                                {isFromImport && <td>{checkForDecimalAndNull(item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {!props.hideAction && <td><div className='text-right'>
+                                                    <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
+                                                    <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} disabled={props.ViewMode} />
                                                 </div>
                                                 </td>}
                                             </tr>
@@ -58,8 +66,12 @@ function ConditionCosting(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
-                                <td colSpan={"4"} className="text-right">{'Total Cost:'}</td>
-                                <td colSpan={"2"}>{totalCost}</td>
+                                {isFromImport && <>
+                                    <td colSpan={"2"} className="text-right">{`Total Cost (${initialConfiguration?.BaseCurrency}) :`}</td>
+                                    <td colSpan={"1"}>{totalCostBase}</td>
+                                </>}
+                                <td colSpan={"2"} className="text-right">{`Total Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) :`}</td>
+                                <td colSpan={"1"}>{totalCostCurrency}</td>
                             </tr>
                         </tbody>
                     </Table>

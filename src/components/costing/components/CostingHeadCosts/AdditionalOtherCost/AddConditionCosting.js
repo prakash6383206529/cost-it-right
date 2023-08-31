@@ -13,6 +13,7 @@ import Toaster from '../../../../common/Toaster'
 import TooltipCustom from '../../../../common/Tooltip'
 
 function AddConditionCosting(props) {
+    const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, } = props
     const [tableData, setTableData] = useState(props?.tableData)
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -21,8 +22,11 @@ function AddConditionCosting(props) {
     const [isEditMode, setIsEditMode] = useState(false)
     const [conditionDropdown, setConditionDropdown] = useState([])
     const [type, setType] = useState('')
-    const [totalCost, setTotalCost] = useState('')
+    const [totalCostCurrency, setTotalCostCurrency] = useState('')
+    const [totalCostBase, setTotalCostBase] = useState('')
     const [percentageType, setPercentageType] = useState('')
+    const [disableBase, setDisableBase] = useState(false)
+    const [disableCurrency, setDisableCurrency] = useState(false)
 
 
     const { register, control, setValue, getValues, formState: { errors }, } = useForm({
@@ -65,6 +69,8 @@ function AddConditionCosting(props) {
             setType(e?.label)
             if (e?.label === 'Fixed') {
                 setDisableTotalCost(false)
+                setDisableCurrency(false)
+                setDisableBase(false)
                 setDisableAllFields(true)
                 setPercentageType(false)
                 setValue('Percentage', '')
@@ -73,24 +79,58 @@ function AddConditionCosting(props) {
                 setDisableTotalCost(true)
                 setPercentageType(true)
                 setValue('Cost', '')
-                setTotalCost('')
+                setTotalCostCurrency('')
+                setTotalCostBase('')
             }
         }
     }
 
 
-    const handleCostChange = (e) => {
+    const handleCostChangeCurrency = (e) => {
         if (e?.target?.value) {
-            setTotalCost(e.target.value)
+            const costBase = checkForNull(e.target.value) * checkForNull(currencyValue)
+            setValue("CostBase", checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
+            setDisableBase(true)
+            setTotalCostCurrency(e.target.value)
+            setTotalCostBase(costBase)
+        } else {
+            setValue("CostBase", '')
+            setDisableBase(false)
+            setTotalCostCurrency('')
+            setTotalCostBase('')
+        }
+    }
+
+    const handleCostChangeBase = (e) => {
+        if (e?.target?.value) {
+            const costCurrency = checkForNull(e.target.value) / checkForNull(currencyValue)
+            setValue("CostCurrency", checkForDecimalAndNull(costCurrency, initialConfiguration.NoOfDecimalForPrice))
+            setDisableCurrency(true)
+            setTotalCostBase(e.target.value)
+            setTotalCostCurrency(costCurrency)
+        } else {
+            setValue("CostCurrency", '')
+            setDisableCurrency(false)
+            setTotalCostCurrency('')
+            setTotalCostBase('')
         }
     }
 
 
     const onPercentChange = (e) => {
         if (e?.target?.value) {
-            let cost = checkForNull((e.target.value) / 100) * checkForNull(props.basicRate)
-            setValue('Cost', checkForDecimalAndNull(cost, initialConfiguration.NoOfDecimalForPrice))
-            setTotalCost(cost)
+            let costCurrency = checkForNull((e.target.value) / 100) * checkForNull(basicRateCurrency)
+            let costBase = checkForNull((e.target.value) / 100) * checkForNull(basicRateBase)
+            // let cost = checkForNull((e.target.value) / 100) * checkForNull(props.basicRate)
+            setValue('CostBase', checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
+            setValue('CostCurrency', checkForDecimalAndNull(costCurrency, initialConfiguration.NoOfDecimalForPrice))
+            setTotalCostCurrency(costCurrency)
+            setTotalCostBase(costBase)
+        } else {
+            setValue('CostBase', '')
+            setValue('CostCurrency', '')
+            setTotalCostCurrency('')
+            setTotalCostBase('')
         }
     }
 
@@ -128,14 +168,15 @@ function AddConditionCosting(props) {
         }
 
         // If all mandatory fields are filled out, create a new object with the data and add it to the table.
-        if (getValues('Condition') && getValues('Type') && getValues('Cost')) {
+        if (getValues('Condition') && getValues('Type') && (getValues('CostCurrency') || getValues('CostBase'))) {
             let obj = {}
             obj.CostingConditionMasterId = getValues('Condition') ? getValues('Condition').CostingConditionMasterId : ''
-            obj.CostingConditionNumber = getValues('Condition') ? getValues('Condition').CostingConditionNumber : ''
-            obj.condition = getValues('Condition') ? getValues('Condition').label : ''
+            obj.ConditionNumber = getValues('Condition') ? getValues('Condition').CostingConditionNumber : ''
+            obj.Description = getValues('Condition') ? getValues('Condition').label : ''
             obj.ConditionType = getValues('Type') ? getValues('Type').label : ''
-            obj.Percentage = getValues('Percentage') ? getValues('Percentage') : ''
-            obj.ConditionCost = totalCost ? totalCost : ''
+            obj.ConditionPercentage = getValues('Percentage') ? getValues('Percentage') : ''
+            obj.ConditionCost = totalCostCurrency ? totalCostCurrency : ''
+            obj.ConditionCostConversion = totalCostBase ? totalCostBase : ''
 
             // If we're in edit mode, update the existing row with the new data.
             // Otherwise, add the new row to the end of the table.
@@ -162,11 +203,14 @@ function AddConditionCosting(props) {
         setValue('Condition', '')
         setValue('Type', '')
         setValue('Percentage', '')
-        setValue('Cost', '')
+        setValue('CostCurrency', '')
+        setValue('CostBase', '')
         setDisableAllFields(true)
         setDisableTotalCost(true)
-        setTotalCost('')
+        setTotalCostCurrency('')
+        setTotalCostBase('')
         setPercentageType(false)
+        setIsEditMode(false)
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -193,19 +237,25 @@ function AddConditionCosting(props) {
             let Data = tableData[indexValue]
             setDisableAllFields(false)
             setValue('Condition', {
-                label: Data.condition, value: Data.CostingConditionNumber,
-                CostingConditionMasterId: Data.CostingConditionMasterId, CostingConditionNumber: Data.CostingConditionNumber
+                label: Data.Description, value: Data.ConditionNumber,
+                CostingConditionMasterId: Data.CostingConditionMasterId, CostingConditionNumber: Data.ConditionNumber
             })
             setValue('Type', { label: Data.ConditionType, value: Data.ConditionType })
-            setValue('Percentage', Data.Percentage)
-            setValue('Cost', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration.NoOfDecimalForPrice))
-            setTotalCost(Data.ConditionCost)
+            setValue('Percentage', checkForDecimalAndNull(Data.ConditionPercentage, initialConfiguration.NoOfDecimalForPrice))
+            setValue('CostCurrency', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration.NoOfDecimalForPrice))
+            setValue('CostBase', checkForDecimalAndNull(Data.ConditionCostConversion, initialConfiguration.NoOfDecimalForPrice))
+            setTotalCostCurrency(Data?.ConditionCost)
+            setTotalCostBase(Data?.ConditionCostConversion)
             if (Data.ConditionType === 'Fixed') {
                 setDisableTotalCost(false)
+                setDisableCurrency(false)
+                setDisableBase(false)
                 setDisableAllFields(true)
                 setPercentageType(false)
             } else {
                 setDisableAllFields(false)
+                setDisableCurrency(true)
+                setDisableBase(true)
                 setDisableTotalCost(true)
                 setPercentageType(true)
             }
@@ -251,7 +301,7 @@ function AddConditionCosting(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Condition}
-                                            disabled={props.CostingViewMode}
+                                            disabled={props.ViewMode}
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
@@ -269,7 +319,7 @@ function AddConditionCosting(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.LossOfType}
-                                            disabled={props.CostingViewMode}
+                                            disabled={props.ViewMode}
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
@@ -295,14 +345,14 @@ function AddConditionCosting(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Percentage}
-                                            disabled={props.CostingViewMode || disableAllFields}
+                                            disabled={props.ViewMode || disableAllFields}
                                         />
                                     </Col>
                                     <Col md="2" className='px-1'>
                                         {type !== 'Fixed' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
                                         <NumberFieldHookForm
-                                            label={`Cost`}
-                                            name={'Cost'}
+                                            label={`Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
+                                            name={'CostCurrency'}
                                             id={'cost-by-percent'}
                                             Controller={Controller}
                                             control={control}
@@ -312,21 +362,48 @@ function AddConditionCosting(props) {
                                                 required: true,
                                                 validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
-                                            handleChange={handleCostChange}
+                                            handleChange={handleCostChangeCurrency}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Cost}
-                                            disabled={props.CostingViewMode || disableTotalCost}
+                                            disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                         />
                                     </Col>
+                                    {isFromImport && <Col md="2" className='px-1'>
+                                        {type !== 'Fixed' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
+                                        <NumberFieldHookForm
+                                            label={`Cost (${initialConfiguration?.BaseCurrency})`}
+                                            name={'CostBase'}
+                                            id={'cost-by-percent'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                            }}
+                                            handleChange={handleCostChangeBase}
+                                            defaultValue={''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.Cost}
+                                            disabled={props.ViewMode || disableTotalCost || disableBase}
+                                        />
+                                    </Col>}
+
+
+
+
+
                                     <Col md="3" className="mt-4 pt-1">
 
                                         <button
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}
                                             onClick={addData}
-                                            disabled={props?.CostingViewMode}
+                                            disabled={props.ViewMode}
                                         >
                                             {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}
                                         </button>
@@ -334,13 +411,14 @@ function AddConditionCosting(props) {
                                             type="button"
                                             className={"reset-btn pull-left mt-1 ml5"}
                                             onClick={resetData}
+                                            disabled={props.ViewMode}
                                         >
                                             Reset
                                         </button>
                                     </Col>
                                 </Row>
                                 {/* <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} /> */}
-                                {<ConditionCosting tableData={tableData} hideAction={props.CostingViewMode} editData={editData} />}
+                                {<ConditionCosting tableData={tableData} hideAction={false} editData={editData} ViewMode={props.ViewMode} isFromImport={isFromImport} currency={currency} />}
                             </div>
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
@@ -354,7 +432,8 @@ function AddConditionCosting(props) {
                                         type={'button'}
                                         className="submit-button save-btn"
                                         onClick={() => { props.closeDrawer('save', tableData) }}
-                                        disabled={props.CostingViewMode} >
+                                        disabled={props.ViewMode}
+                                    >
                                         <div className={"save-icon"}></div>
                                         {'Save'}
                                     </button>

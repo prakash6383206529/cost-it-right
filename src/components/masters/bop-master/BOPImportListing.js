@@ -109,6 +109,8 @@ class BOPImportListing extends Component {
                 else {
                     this.getDataList("", 0, "", "", 0, defaultPageSize, true, this.state.floatingFilterData)
                 }
+            } else {
+                this.setState({ isLoader: false })
             }
         }, 300);
         if (this.props.isSimulation) {
@@ -510,19 +512,18 @@ class BOPImportListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        let excelData = hideCustomerFromExcel(data, "CustomerName")
-        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured) {
-            excelData = hideMultipleColumnFromExcel(excelData, ["IsBreakupBoughtOutPart", "TechnologyName"])
-        }
         let temp = []
         let tempData = [...data]
+        tempData = hideCustomerFromExcel(tempData, "CustomerName")
         if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
             tempData = hideColumnFromExcel(tempData, 'Quantity')
-        }
-        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        } else if (!getConfigurationKey().IsBoughtOutPartCostingConfigured) {
+            tempData = hideMultipleColumnFromExcel(tempData, ["IsBreakupBoughtOutPart", "TechnologyName"])
+        } else if (!getConfigurationKey().IsBasicRateAndCostingConditionVisible) {
+            tempData = hideMultipleColumnFromExcel(tempData, ["NetCostWithoutConditionCost", "NetCostWithoutConditionCostConversion", "NetConditionCost", "NetConditionCostConversion"])
+        } else if (!reactLocalStorage.getObject('cbcCostingPermission')) {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
-        }
-        else {
+        } else {
             tempData = data
         }
         temp = TempData && TempData.map((item) => {
@@ -557,6 +558,7 @@ class BOPImportListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
         const { isBulkUpload, noData } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
+        const netCostHeader = `Net Cost (${initialConfiguration?.BaseCurrency})`
 
         var filterParams = {
             date: "",
@@ -803,11 +805,21 @@ class BOPImportListing extends Component {
                                     {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP" cellRenderer={'bopCostingFormatter'} ></AgGridColumn>}
                                     {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                     <AgGridColumn field="Currency"></AgGridColumn>
+
+                                    <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BasicRateConversion" headerName="Basic Rate Conversion" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName="Basic Price Conversion" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetConditionCostConversion" headerName="Net Condition Cost Conversion" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
-                                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     {!this.props.isSimulation && <AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}

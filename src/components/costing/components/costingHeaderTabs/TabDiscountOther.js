@@ -1689,6 +1689,7 @@ function TabDiscountOther(props) {
                       anchor={'right'}
                       netPOPrice={netPOPrice}
                       basicRate={getValues('BasicRateINR')}
+                      ViewMode={CostingViewMode}
                     />
                   }
                   {

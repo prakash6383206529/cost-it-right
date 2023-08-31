@@ -1031,6 +1031,11 @@ export const API = {
   getProductlist: `${BASE_URL}/reports/get-product-list`,
   getProductPartDataList: `${BASE_URL}/reports/get-product-parts-list`,
   getStageOfPartDetails: `${BASE_URL}/reports/get-stage-of-parts-details`,
+  getProductRolloutCostMovement: `${BASE_URL}/reports/get-cost-movement-details`,
+  getTotalPartsDetails: `${BASE_URL}/reports/get-parts-details`,
+  getProductRolloutCostRatio: `${BASE_URL}/reports/get-cost-ratio-details`,
+  getUsageRmDetails: `${BASE_URL}/reports/get-usage-rm-details`,
+  getSupplierContributionDetails: `${BASE_URL}/reports/get-supplier-contribution-details`,
 
 
   //SUB ASSEMBLY
