@@ -1511,10 +1511,17 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                 if (response.data.Result) {
 
                     if (Number(masterId) === RM_MASTER_ID) {
-                        dispatch({
-                            type: GET_RM_DOMESTIC_LIST,
-                            payload: response.data.Data.ImpactedMasterDataList.RawMaterialListResponse,
-                        })
+                        if (response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                            dispatch({
+                                type: GET_RM_DOMESTIC_LIST,
+                                payload: response.data.Data.ImpactedMasterDataList.RawMaterialListResponse,
+                            })
+                        } else {
+                            dispatch({
+                                type: GET_RM_IMPORT_LIST,
+                                payload: response.data.Data.ImpactedMasterDataList.RawMaterialListResponse,
+                            })
+                        }
                         callback(response)
                     }
                     else if (Number(masterId) === BOP_MASTER_ID) {
