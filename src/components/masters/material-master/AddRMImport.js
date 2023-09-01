@@ -577,11 +577,13 @@ class AddRMImport extends Component {
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice));
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice));
 
-    if (fieldsObj?.cutOffPrice === DataToChange?.CutOffPrice && fieldsObj?.BasicRateCurrency === DataToChange?.BasicRatePerUOM && fieldsObj?.ScrapRateCurrency === DataToChange?.ScrapRate
-      && fieldsObj?.ForgingScrap === DataToChange?.ScrapRate && fieldsObj?.MachiningScrap === DataToChange?.MachiningScrapRate && fieldsObj?.CircleScrapCost === DataToChange?.JaliScrapCost
-      && fieldsObj?.JaliScrapCost === DataToChange?.ScrapRate && fieldsObj?.FreightCharge === DataToChange?.RMFreightCost && fieldsObj?.ShearingCost === DataToChange?.RMShearingCost
-      && basicPriceCurrency === DataToChange?.NetCostWithoutConditionCost && netLandedCostCurrency === DataToChange?.NetLandedCost && FinalConditionCostCurrency === DataToChange?.NetConditionCost) {
-
+    if (checkForNull(fieldsObj?.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice) && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
+      && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
+      && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
+      && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
+      this.setState({ IsFinancialDataChanged: false })
+    } else {
+      this.setState({ IsFinancialDataChanged: true })
     }
 
     this.setState({
@@ -2796,6 +2798,8 @@ class AddRMImport extends Component {
                 UOM={this.state.UOM}
                 costingTypeId={this.state.costingTypeId}
                 levelDetails={this.state.levelDetails}
+                showForgingMachiningScrapCost={this.state.showForgingMachiningScrapCost}
+                showExtraCost={this.state.showExtraCost}
               />
             )
           }
