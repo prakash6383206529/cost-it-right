@@ -18,6 +18,7 @@ import { checkFinalUser } from '../costing/actions/Costing';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import BudgetListing from './budget-master/BudgetListing';
+import RMImportListing from './material-master/RMImportListing';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -70,6 +71,11 @@ function SummaryDrawer(props) {
                 CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                if (Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                    setShowImport(false)
+                } else {
+                    setShowImport(true)
+                }
             } else if (Number(props.masterId) === BOP_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.BOPDomesticListResponse[0].Attachements)
@@ -165,8 +171,13 @@ function SummaryDrawer(props) {
                                 <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} />
 
 
-                                {isRMApproval &&
-                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
+                                {isRMApproval && <>
+                                    {showImport ?
+                                        <RMImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} />
+                                        :
+                                        <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} />
+                                    }
+                                </>}
                                 {isBOPApproval && <>
                                     {showImport ?
                                         <BOPImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />

@@ -17,6 +17,7 @@ import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { REMARKMAXLENGTH } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { masterApprovalAPI, masterApprovalRequestBySenderBudget } from './actions/Budget';
+import TooltipCustom from '../common/Tooltip';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
@@ -557,7 +558,7 @@ function MasterSendForApproval(props) {
                         register={register}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.netCost}
+                        errors={errors.NetLandedCost}
                         disabled={true}
                         defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                     />
@@ -573,7 +574,7 @@ function MasterSendForApproval(props) {
                         register={register}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.netCostBase}
+                        errors={errors.NetLandedCostConversion}
                         disabled={true}
                         defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
                     />
@@ -586,142 +587,435 @@ function MasterSendForApproval(props) {
     const showPriceKeysCommonRM = () => {
         return (
             <>
-                <div className="input-group form-group col-md-6">
+                <Col md="3">
                     <TextFieldHookForm
-                        label={`Basic Rate/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                        name={'basicRate'}
+                        label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                        name={"cutOffPrice"}
+                        type="text"
                         Controller={Controller}
                         control={control}
                         placeholder={'-'}
                         register={register}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.basicRate}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        errors={errors.CutOffPrice}
+                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.CutOffPrice, initialConfiguration.NoOfDecimalForPrice) : ''}
                         disabled={true}
                     />
+                </Col>
 
-                </div>
-                {props?.IsImportEntery && <div className="input-group form-group col-md-6">
+                {props?.IsImportEntery && <Col md="3">
                     <TextFieldHookForm
-                        label={`Basic Rate/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                        name={'basicRateBase'}
+                        label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                        name={"cutOffPriceBase"}
+                        type="text"
                         Controller={Controller}
                         control={control}
                         placeholder={'-'}
                         register={register}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.basicRateBase}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRateConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        errors={errors.CutOffPriceInINR}
+                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.CutOffPriceInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
                         disabled={true}
                     />
+                </Col>}
 
-                </div>}
 
-                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && props.costingTypeId === ZBCTypeId &&
+
+
+                <Col md="3">
+                    <TextFieldHookForm
+                        label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                        name={"BasicRateCurrency"}
+                        type="text"
+                        Controller={Controller}
+                        control={control}
+                        placeholder={'-'}
+                        register={register}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.BasicRatePerUOM}
+                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        disabled={true}
+                    />
+                </Col>
+                {props?.IsImportEntery && <Col md="3">
+                    <TextFieldHookForm
+                        label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                        name={"BasicRateBase"}
+                        type="text"
+                        Controller={Controller}
+                        control={control}
+                        placeholder={'-'}
+                        register={register}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.BasicRatePerUOMConversion}
+                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRatePerUOMConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        disabled={true}
+                    />
+                </Col>}
+
+
+
+
+                {/* {(!this.state.showForgingMachiningScrapCost && !this.state.showExtraCost) && */}
+                {!props?.showForgingMachiningScrapCost && !props?.showExtraCost &&
                     <>
-                        <div className="input-group form-group col-md-6">
+                        <Col md="3">
                             <TextFieldHookForm
-                                label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                                name={'BasicPrice'}
+                                label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                name={"ScrapRateCurrency"}
+                                type="text"
                                 Controller={Controller}
                                 control={control}
                                 placeholder={'-'}
                                 register={register}
                                 className=""
                                 customClassName={'withBorder'}
-                                errors={errors.BasicPrice}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                errors={errors.ScrapRate}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 disabled={true}
                             />
-
-                        </div>
-                        {props?.IsImportEntery && <div className="input-group form-group col-md-6">
+                        </Col>
+                        {props?.IsImportEntery && <Col md="3">
                             <TextFieldHookForm
-                                label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                name={'BasicPriceBase'}
+                                label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                name={"ScrapRateBase"}
+                                type="text"
                                 Controller={Controller}
                                 control={control}
                                 placeholder={'-'}
                                 register={register}
                                 className=""
                                 customClassName={'withBorder'}
-                                errors={errors.BasicPriceBase}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                errors={errors.ScrapRateInINR}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 disabled={true}
                             />
-
-                        </div>}
-
-
-                        <div className="input-group form-group col-md-6">
+                        </Col>}
+                    </>}
+                {
+                    (props?.showForgingMachiningScrapCost) &&
+                    <>
+                        <Col md="3">
                             <TextFieldHookForm
-                                label={`Total Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                                name={'ConditionCost'}
+                                label={labelWithUOMAndCurrency("Forging Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                name={"ForgingScrap"}
+                                type="text"
                                 Controller={Controller}
                                 control={control}
                                 placeholder={'-'}
                                 register={register}
                                 className=""
                                 customClassName={'withBorder'}
-                                errors={errors.ConditionCost}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                errors={errors.ScrapRate}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 disabled={true}
                             />
-
-                        </div>
-                        {props?.IsImportEntery && <div className="input-group form-group col-md-6">
+                        </Col>
+                        {props?.IsImportEntery && <Col md="3">
                             <TextFieldHookForm
-                                label={`Total Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                name={'ConditionCostBase'}
+                                label={labelWithUOMAndCurrency("Forging Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                name={"ForgingScrapBase"}
+                                type="text"
                                 Controller={Controller}
                                 control={control}
                                 placeholder={'-'}
                                 register={register}
                                 className=""
                                 customClassName={'withBorder'}
-                                errors={errors.ConditionCostBase}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                errors={errors.ScrapRateInINR}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
                                 disabled={true}
                             />
+                        </Col>}
 
-                        </div>}
+
+
+                        <Col md="3">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Machining Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                name={"MachiningScrap"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.MachiningScrapRate}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.MachiningScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>
+                        {props?.IsImportEntery && <Col md="3">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Machining Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                name={"MachiningScrapBase"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.MachiningScrapRateInINR}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.MachiningScrapRateInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>}
+                    </>
+                }
+                {
+                    (props?.showExtraCost) &&
+                    <>
+                        <Col md="3">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Circle Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                name={"CircleScrapCost"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.JaliScrapCost}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.JaliScrapCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>
+                        {props?.IsImportEntery && <Col md="3">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Circle Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                name={"CircleScrapCostBase"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.JaliScrapCostConversion}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.JaliScrapCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>}
+
+
+
+                        <Col md="3">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Jali Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                name={"JaliScrapCost"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.ScrapRate}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>
+                        {props?.IsImportEntery && <Col md="3">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Jali Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                name={"JaliScrapCostBase"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.ScrapRateInINR}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>}
                     </>
                 }
 
-                <div className="input-group form-group col-md-6">
+
+                <Col md="3">
                     <TextFieldHookForm
-                        label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                        name={'netCost'}
+                        label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                        name={"FreightChargeCuurency"}
+                        type="text"
                         Controller={Controller}
                         control={control}
                         placeholder={'-'}
                         register={register}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.netCost}
+                        errors={errors.RMFreightCost}
+                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMFreightCost, initialConfiguration.NoOfDecimalForPrice) : ''}
                         disabled={true}
+                    />
+                </Col>
+                {props?.IsImportEntery && <Col md="3">
+                    <TextFieldHookForm
+                        label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                        name={"FreightChargeBase"}
+                        type="text"
+                        Controller={Controller}
+                        control={control}
+                        placeholder={'-'}
+                        register={register}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.RawMaterialFreightCostConversion}
+                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RawMaterialFreightCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        disabled={true}
+                    />
+                </Col>}
+
+
+
+                <Col md="3">
+                    <TextFieldHookForm
+                        label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                        name={"ShearingCost"}
+                        type="text"
+                        Controller={Controller}
+                        control={control}
+                        placeholder={'-'}
+                        register={register}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.RMShearingCost}
+                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMShearingCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        disabled={true}
+                    />
+                </Col>
+                {props?.IsImportEntery && <Col md="3">
+                    <TextFieldHookForm
+                        label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                        name={"ShearingCostBase"}
+                        type="text"
+                        Controller={Controller}
+                        control={control}
+                        placeholder={'-'}
+                        register={register}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.RawMaterialShearingCostConversion}
+                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RawMaterialShearingCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        disabled={true}
+                    />
+                </Col>}
+
+                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && props.costingTypeId === ZBCTypeId && <>
+                    <Col md="3">
+                        <TextFieldHookForm
+                            label={`Basic Price (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
+                            name={"BasicPriceCurrency"}
+                            type="text"
+                            Controller={Controller}
+                            control={control}
+                            placeholder={'-'}
+                            register={register}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.NetCostWithoutConditionCost}
+                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                            disabled={true}
+                        />
+                    </Col>
+                    {props?.IsImportEntery && <Col md="3">
+                        <TextFieldHookForm
+                            label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
+                            name={"BasicPriceBase"}
+                            type="text"
+                            Controller={Controller}
+                            control={control}
+                            placeholder={'-'}
+                            register={register}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.NetCostWithoutConditionCostConversion}
+                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                            disabled={true}
+                        />
+                    </Col>}
+
+
+                    <Col md="3">
+                        <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                        <TextFieldHookForm
+                            label={`Condition Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
+                            name={"FinalConditionCostCurrency"}
+                            type="text"
+                            Controller={Controller}
+                            control={control}
+                            placeholder={'-'}
+                            register={register}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.NetConditionCost}
+                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                            disabled={true}
+                        />
+                    </Col>
+
+                    {props?.IsImportEntery && <Col md="3">
+                        <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                        <TextFieldHookForm
+                            label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
+                            name={"FinalConditionCostBase"}
+                            type="text"
+                            Controller={Controller}
+                            control={control}
+                            placeholder={'-'}
+                            register={register}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.NetConditionCostConversion}
+                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                            disabled={true}
+                        />
+                    </Col>}
+
+                </>}
+                <Col md="3">
+                    <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
+                    <TextFieldHookForm
+                        label={`Net Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
+                        name={"NetLandedCostCurrency"}
+                        type="text"
+                        Controller={Controller}
+                        control={control}
+                        placeholder={'-'}
+                        register={register}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.NetLandedCost}
                         defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        disabled={true}
                     />
-
-                </div>
-                {props?.IsImportEntery && <div className="input-group form-group col-md-6">
+                </Col>
+                {props?.IsImportEntery && <Col md="3">
+                    <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
                     <TextFieldHookForm
-                        label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                        name={'netCostBase'}
+                        label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
+                        name={"NetLandedCostBase"}
+                        type="text"
                         Controller={Controller}
                         control={control}
                         placeholder={'-'}
                         register={register}
                         className=""
                         customClassName={'withBorder'}
-                        errors={errors.netCostBase}
-                        disabled={true}
+                        errors={errors.NetLandedCostConversion}
                         defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        disabled={true}
                     />
-
-                </div>}
+                </Col>}
             </>
         )
     }
@@ -833,85 +1127,6 @@ function MasterSendForApproval(props) {
 
                                                 {showPriceKeysCommonRM()}
 
-                                                {/* <div className="input-group form-group col-md-6">
-                                                    <TextFieldHookForm
-                                                        label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label)}
-                                                        name={'basicRate'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        className=""
-                                                        placeholder={'-'}
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.basicRate}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                                        disabled={true}
-                                                    />
-
-                                                </div>
-                                                <div className="input-group form-group col-md-6">
-                                                    <TextFieldHookForm
-                                                        label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label)}
-                                                        name={'scrapRate'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        className=""
-                                                        placeholder={'-'}
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.basicRate}
-                                                        disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRate, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                                    />
-
-                                                </div>
-                                                <div className="input-group form-group col-md-6">
-                                                    <TextFieldHookForm
-                                                        label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label)}
-                                                        name={'freightCost'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        placeholder={'-'}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.freightCost}
-                                                        disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMFreightCost === undefined ? '' : checkForDecimalAndNull(approvalObj.RMFreightCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                                    />
-
-                                                </div>
-                                                <div className="input-group form-group col-md-6">
-                                                    <TextFieldHookForm
-                                                        label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label)}
-                                                        name={'shearingCost'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        placeholder={'-'}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.shearingCost}
-                                                        disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 ? approvalObj.RMShearingCost === undefined ? '' : checkForDecimalAndNull(approvalObj.RMShearingCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                                    />
-
-                                                </div>
-                                                <div className="input-group form-group col-md-6">
-                                                    <TextFieldHookForm
-                                                        label={labelWithUOMAndCurrency("Net Cost", props?.UOM?.label)}
-                                                        name={'netCost'}
-                                                        Controller={Controller}
-                                                        control={control}
-                                                        register={register}
-                                                        placeholder={'-'}
-                                                        className=""
-                                                        customClassName={'withBorder'}
-                                                        errors={errors.netCost}
-                                                        disabled={true}
-                                                        defaultValue={Object.keys(approvalObj).length > 0 && props?.IsImportEntery ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}
-                                                    />
-                                                </div> */}
                                             </>
                                         }
 

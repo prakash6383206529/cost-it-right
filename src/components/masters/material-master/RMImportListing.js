@@ -77,6 +77,7 @@ function RMImportListing(props) {
   const [dateArray, setDateArray] = useState([])
   const [attachment, setAttachment] = useState(false);
   const [viewAttachment, setViewAttachment] = useState([])
+  const netCostHeader = `Net Cost (${getConfigurationKey()?.BaseCurrency})`
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -945,15 +946,24 @@ function RMImportListing(props) {
                     {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                     <AgGridColumn field="DepartmentName" headerName="Company (Code)"></AgGridColumn>
                     <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
-                    <AgGridColumn field="BasicRatePerUOM" headerName='BasicRate' cellRenderer='commonCostFormatter'></AgGridColumn>
-                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
-                    {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
-                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
-                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='shearingCostFormatter'></AgGridColumn>
                     <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
-                    <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
 
-                    <AgGridColumn field="NetLandedCostConversion" headerName="Net Cost (INR)" cellRenderer='costFormatter'></AgGridColumn>
+                    <AgGridColumn field="BasicRatePerUOM" headerName='BasicRate' cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="BasicRatePerUOMConversion" headerName="Basic Rate Conversion" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                    <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="ScrapRateInINR" headerName="Scrap Rate Conversion" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
+                    {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" headerName='Machining Scrap Cost Conversion'></AgGridColumn>}
+                    <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialFreightCostConversion" headerName="Freight Cost Conversion" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="RawMaterialShearingCostConversion" headerName="Shearing Cost Conversion" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetConditionCostConversion" headerName="Net Condition Cost Conversion" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName="Basic Price Conversion" cellRenderer='commonCostFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
+                    <AgGridColumn field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer='costFormatter'></AgGridColumn>
 
                     <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                     {(!isSimulation && !props.isMasterSummaryDrawer) && <AgGridColumn width={160} field="RawMaterialId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}

@@ -15,10 +15,10 @@ function ConditionCosting(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
-        const sum = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCostConversion), 0);
+        const sum = props?.tableData?.reduce((acc, obj) => Number(acc) + Number(obj?.ConditionCostConversion), 0);
         setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
 
-        const sumCurrency = props?.tableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+        const sumCurrency = props?.tableData?.reduce((acc, obj) => Number(acc) + Number(obj?.ConditionCost), 0);
         setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     }, [props?.tableData])
 
