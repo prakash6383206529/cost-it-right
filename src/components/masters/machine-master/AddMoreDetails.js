@@ -156,7 +156,7 @@ class AddMoreDetails extends Component {
   /**
    * @method componentDidMount
    * @description Called after rendering the component
-   */
+  */
   componentDidMount() {
     const { initialConfiguration } = this.props
     this.props.getPlantSelectListByType(ZBC, () => { })
@@ -834,7 +834,7 @@ class AddMoreDetails extends Component {
     if (newValue && newValue !== '') {
 
       if (newValue.type !== TIME) {
-        this.props.change("MachineRate", 0)
+        this.props.change("MachineRate", '')
       }
 
       this.setState({ UOM: newValue, errorObj: { ...this.state.errorObj, processMachineRate: false } }, () => { this.handleProcessCalculation() });
@@ -1354,7 +1354,7 @@ class AddMoreDetails extends Component {
     }
     this.setState({ machineRate: MachineRate })
     this.props.change('OutputPerYear', checkForDecimalAndNull(OutputPerHours * NumberOfWorkingHoursPerYear))
-    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('MachineRate', checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice) ? checkForDecimalAndNull(MachineRate, initialConfiguration.NoOfDecimalForPrice) : '')
   }
 
   /**
@@ -1642,7 +1642,7 @@ class AddMoreDetails extends Component {
       }, () => {
         this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
-        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
       });
       if (!getConfigurationKey().IsMachineProcessGroup) {
         this.setState({ machineRate: "" })
@@ -1741,7 +1741,7 @@ class AddMoreDetails extends Component {
       machineRate: ""
     }, () => {
 
-      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
     });
 
   };
@@ -1762,7 +1762,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', isProcessGroup ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', isProcessGroup ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+      this.props.change('MachineRate', isProcessGroup && this.state.processGrid.length !== 0 ? checkForDecimalAndNull(fieldsObj.MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
     });
   };
 
@@ -1793,11 +1793,11 @@ class AddMoreDetails extends Component {
   }
 
   /**
-  * @method deleteItem
-  * @description used to Reset form
-  */
+   * @method deleteItem
+   * @description DELETE ROW ENTRY FROM TABLE 
+   */
   deleteItem = (index) => {
-    const { processGrid, UOM } = this.state;
+    const { processGrid, UOM, isProcessGroup } = this.state;
     const { fieldsObj } = this.props;
 
     let tempData = processGrid.filter((item, i) => {
@@ -1810,10 +1810,13 @@ class AddMoreDetails extends Component {
     if (tempData.length === 0) {
       this.setState({ disableAllForm: false })
     }
-
+    if (isProcessGroup) {
+      this.setState({ lockUOMAndRate: tempData.length === 0 ? false : true })
+    } else {
+      this.setState({ lockUOMAndRate: isProcessGroup })
+    }
     this.setState({
       processGrid: tempData,
-      lockUOMAndRate: tempData.length === 0 ? false : true,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
@@ -1821,7 +1824,7 @@ class AddMoreDetails extends Component {
     }, () => {
       this.props.change('OutputPerHours', tempData.length > 0 ? fieldsObj.OutputPerHours : 0)
       this.props.change('OutputPerYear', tempData.length > 0 ? fieldsObj.OutputPerYear : 0)
-      this.props.change('MachineRate', tempData.length > 0 ? fieldsObj.MachineRate : 0)
+      this.props.change('MachineRate', tempData.length > 0 ? fieldsObj.MachineRate : '')
     })
   }
 
