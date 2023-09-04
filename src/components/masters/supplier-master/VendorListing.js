@@ -32,6 +32,7 @@ import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash';
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
+import { hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -55,7 +56,7 @@ class VendorListing extends Component {
             totalRecordCount: 0,
             pageNo: 1,
             pageNoNew: 1,
-            floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
+            floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "", VendorTechnology: "", VendorPlant: "", IsCriticalVendor: "" },
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
@@ -584,6 +585,10 @@ class VendorListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
+        let excelData = [...data]
+        if (!getConfigurationKey()?.IsCriticalVendorConfigured) {
+            excelData = hideMultipleColumnFromExcel(excelData, ["IsCriticalVendor", "VendorTechnology", "VendorPlant"])
+        }
         temp = TempData && TempData.map((item) => {
             if (String(item.Country) === 'NA') {
                 item.Country = ' '
@@ -592,18 +597,12 @@ class VendorListing extends Component {
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
             }
-            // if (item.IsActive === true) {
-            //     item.IsActive = 'Active'
-            // }
-            // else if (item.IsActive === false) {
-            //     item.IsActive = 'In Active'
-            // }
             return item
         })
         return (
 
             <ExcelSheet data={temp} name={VendorMaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -738,7 +737,8 @@ class VendorListing extends Component {
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="IsCriticalVendor" headerName="IsCriticalVendor" ></AgGridColumn>}
-                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorTechnology" headerName="VendorTechnology" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorTechnology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorPlant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
