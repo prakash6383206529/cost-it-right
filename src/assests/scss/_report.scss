@@ -167,9 +167,25 @@
         margin-bottom: 20px;
     }
 
-    .given-report {
-        // border-right: 1px solid $agGridBorder;
-        border-left: 1px solid $agGridBorder;
+    .product-rollout-graph {
+        .seprate-box {
+            min-height: 472px;
+
+            .container {
+                height: 432px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    }
+
+    .part-usage-container {
+        .inner-container {
+            min-height: 80px;
+            position: relative;
+            border-right: 1px solid $borderColor;
+        }
     }
 
     .got-report {

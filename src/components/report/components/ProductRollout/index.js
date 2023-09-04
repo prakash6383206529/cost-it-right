@@ -5,13 +5,19 @@ import StageOfParts from "./StageOfParts";
 import CostMovement from "./CostMovement";
 import PartUsage from "./PartUsage";
 import DisplayCharts from "./DisplayCharts";
-import MasterUserage from "./MasterUsage";
+import MasterUsage from "./MasterUsage";
+import { useMemo } from "react";
 
 const ProductRollout = () => {
-    const [showData, setShowData] = useState(false)
+    const [modelLandingData, setModelLandingData] = useState({})
     const fetchData = (value) => {
-        setShowData(value)
+        setModelLandingData(value)
     }
+    const StageOfPartUI = useMemo(() => <StageOfParts productId={modelLandingData.productId} />, [modelLandingData.productId])
+    const CostMovementUI = useMemo(() => <CostMovement partId={modelLandingData.partId} />, [modelLandingData.partId])
+    const PartUsageUI = useMemo(() => <PartUsage productId={modelLandingData.productId} />, [modelLandingData.productId])
+    const DisplayChartsUI = useMemo(() => <DisplayCharts productId={modelLandingData.productId} />, [modelLandingData.productId])
+    const MasterUsageUI = useMemo(() => <MasterUsage productId={modelLandingData.productId} />, [modelLandingData.productId])
     return (
         <div className="product-rollout-container">
             <h1>Detailed Model/Assy Report</h1>
@@ -19,19 +25,19 @@ const ProductRollout = () => {
                 <Col md="6">
                     <ModelLanding fetchData={fetchData} />
                 </Col>
-                {showData && <>
+                {modelLandingData.showData && <>
                     <Col md="6">
-                        <StageOfParts />
+                        {StageOfPartUI}
                     </Col>
                     <Col md="12">
-                        <CostMovement />
+                        {CostMovementUI}
                     </Col>
                     <Col md="6">
-                        <PartUsage />
-                        <DisplayCharts />
+                        {PartUsageUI}
+                        {DisplayChartsUI}
                     </Col>
                     <Col md="6">
-                        <MasterUserage />
+                        {MasterUsageUI}
                     </Col>
                 </>}
 
