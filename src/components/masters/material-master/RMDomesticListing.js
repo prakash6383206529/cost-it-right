@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { deleteRawMaterialAPI, getAllRMDataList, } from '../actions/Material';
 import { loggedInUserId, userDepartmetList } from "../../../helper/auth"
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC } from '../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -12,7 +12,7 @@ import 'react-input-range/lib/css/index.css'
 import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import LoaderCustom from '../../common/LoaderCustom';
-import { RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
+import { FORGING, RMDOMESTIC_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { RM_MASTER_ID, APPROVAL_ID, RmDomestic } from '../../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -38,7 +38,7 @@ const gridOptions = {};
 
 
 function RMDomesticListing(props) {
-    const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor } = props;
+    const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor, initialConfiguration } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
     const [isBulkUpload, setisBulkUpload] = useState(false);
     const [gridApi, setgridApi] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
@@ -987,11 +987,11 @@ function RMDomesticListing(props) {
 
                                         <AgGridColumn field="BasicRatePerUOM" headerName='Basic Rate' cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        {props.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
+                                        {props.isMasterSummaryDrawer && rmDataList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
                                         <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        {((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
+                                        {((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>}
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
