@@ -565,10 +565,10 @@ class AddBOPDomestic extends Component {
       FinalNetLandedCostBase: netCostBase
     })
 
-    // if (this.state.isEditFlag && (Number(NetLandedCost) === Number(this.state.DataToCheck?.NetLandedCost)) && (this.state.sourceLocation === this.state.DataToCheck?.SourceLocation) && (this.state.source === this.state.DataToCheck?.Source)) {         frontend fixes
     if (this.state.isEditFlag && Number(basicPriceBase) === Number(this.state.DataToCheck?.NetCostWithoutConditionCost) && Number(NoOfPieces) === Number(this.state.DataToCheck?.NumberOfPieces)) {
 
-      this.setState({ IsFinancialDataChanged: false })
+      this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
+      this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
     } else {
       this.setState({ IsFinancialDataChanged: true })
 
@@ -725,9 +725,9 @@ class AddBOPDomestic extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    const { BOPCategory, selectedPlants, vendorName, costingTypeId,
-
-      sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged, isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBase, FinalBasicPriceBase, FinalNetLandedCostBase, FinalBasicRateBase, conditionTableData } = this.state;
+    const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
+      isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBase, FinalBasicPriceBase, FinalNetLandedCostBase, FinalBasicRateBase, conditionTableData, isBOPAssociated } = this.state;
+    const { fieldsObj } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
       this.setState({ isVendorNameNotSelected: true, setDisable: false })      // IF VENDOR NAME IS NOT SELECTED THEN WE WILL SHOW THE ERROR MESSAGE MANUALLY AND SAVE BUTTON WILL NOT BE DISABLED
@@ -775,128 +775,67 @@ class AddBOPDomestic extends Component {
       IsBreakupBoughtOutPart: isTechnologyVisible,
 
       BasicRate: FinalBasicRateBase,
-
       NetLandedCost: FinalNetLandedCostBase,
-
       NetCostWithoutConditionCost: FinalBasicPriceBase,
-
       NetConditionCost: FinalConditionCostBase,
-
       BoughtOutPartConditionsDetails: conditionTableData,
-
     }
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true) || (isEditFlag && isTechnologyVisible)) {
 
-      if (IsFinancialDataChanged) {
-        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOP(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-              this.cancel('submit');
-            }
-          })
-          return false
-        } else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
-          return false
-        }
+    // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
+    if (isEditFlag) {
+      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces)
+      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostBase)
+      // CHECK IF THERE IS CHANGE !!!  
+      // IF: NO CHANGE  
+
+      if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) &&
+        ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
+        ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+        checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
+        checkForNull(netLandedCostCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBase) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
+        this.setState({ isEditBuffer: true })
+        Toaster.warning('Please change data to send RM for approval')
+        return false
       }
+      //  ELSE: CHANGE
       else {
-        if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && JSON.stringify(updatedFiles) === JSON.stringify(DataToCheck.Attachements) && Number(DataToCheck.BasicRate) === Number(values.BasicRateBase) &&
-          ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
-          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : '')) && DataToCheck.IsClientVendorBOP === isClientVendorBOP) {
-          this.cancel('submit')
-          return false;
-        }
-        else {
-          this.props.updateBOP(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-              this.cancel('submit');
-            }
-          })
-          return false
-        }
-      }
-
-    } else {
-
-      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
-        formData.IsSendForApproval = true
-      } else {
-        formData.IsSendForApproval = false
-      }
-      // this.setState({ setDisable: true })
-
-
-      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
-        if (IsFinancialDataChanged) {
-          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState({ approveDrawer: true, approvalObj: formData })
-            return false
-
-          } else {
-
-            this.setState({ setDisable: false })
+        //  IF: NEE TO UPDATE EFFECTIVE DATE
+        if (IsFinancialDataChanged || isBOPAssociated) {
+          if (!isDateChange || (DayTime(oldDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            this.setState({ isEditBuffer: true })
             Toaster.warning('Please update the effective date')
             return false
           }
         }
-        if (DropdownChanged && (DataToCheck.Remark) === (values.Remark) && (JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements)) && Number(DataToCheck.BasicRateBase) === Number(values.BasicRateBase) &&
-          ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
-          ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation.value ? String(sourceLocation.value) : ''))) {
-          Toaster.warning('Please change data to send BOP for approval')
-          return false;
-        }
-        else {
-          this.setState({ approveDrawer: true, approvalObj: formData })
-        }
+      }
+    }
 
-        if (DataToCheck.IsVendor) {
-          if (DropdownChanged &&
-            (Number(DataToCheck.BasicRateBase) === Number(values.BasicRateBase)) && (DataToCheck.Remark === values.Remark) && JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements) &&
-            ((DataToCheck.Source ? DataToCheck.Source : '-') === (values.Source ? values.Source : '-')) &&
-            ((DataToCheck.SourceLocation ? DataToCheck.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-            Toaster.warning('Please change data to send BOP for approval')
-            return false;
+    //  IF: APPROVAL FLOW
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      formData.IsSendForApproval = true
+      this.setState({ approveDrawer: true, approvalObj: formData })
+    }
+    //  ELSE: NO APPROVAL FLOW
+    else {
+      if (isEditFlag) {
+        formData.IsSendForApproval = false
+        this.props.updateBOP(formData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+            this.cancel('submit');
           }
-        }
-        if (Boolean(DataToCheck.IsVendor) === false) {
-          if ((Number(DataToCheck.BasicRateBase) === Number(values.BasicRateBase)) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) && JSON.stringify(files) === JSON.stringify(DataToCheck.Attachements)) {
-            Toaster.warning('Please change data to send BOP for approval')
-            return false;
-          }
-        }
-        // if (((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) && uploadAttachements) {
-        //   
-        //   
-        //   
-        //   Toaster.warning('Please change data to send BOP for approval')
-        //   return false;
-        // } 
-        else {
-
-          this.setState({ approveDrawer: true, approvalObj: formData })
-          return false
-        }
+        })
+        this.setState({ updatedObj: formData })
       } else {
         this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
-            //this.clearForm()
-            this.cancel('submit')                                       //BOP APPROVAL IN PROGRESS DONT DELETE THIS CODE
+            this.cancel('submit')
           }
         })
       }
-
-
-
-
-
     }
   }, 500)
 
@@ -945,6 +884,9 @@ class AddBOPDomestic extends Component {
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
+    if (type === 'save') {
+      this.setState({ IsFinancialDataChanged: true })
+    }
     const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
     let netLandedCost = Number(sum) + Number(this.state.FinalBasicPriceBase)
     this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
@@ -1729,7 +1671,11 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
+<<<<<<< HEAD
   const fieldsObj = selector(state, 'BasicRate', 'NoOfPieces', 'NumberOfPieces', 'BasicRateBase');
+=======
+  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRateBase', 'Remark');
+>>>>>>> 972756525c (CIR-T1702 | CIR-T1688 | WIP IV)
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;

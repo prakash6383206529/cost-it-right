@@ -1607,6 +1607,42 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
 
 
     return (dispatch) => {
+        if (Number(masterId) === RM_MASTER_ID) {
+            dispatch({
+                type: GET_RM_DOMESTIC_LIST,
+                payload: [],
+            })
+            dispatch({
+                type: GET_RM_IMPORT_LIST,
+                payload: [],
+            })
+        }
+        else if (Number(masterId) === BOP_MASTER_ID) {
+            dispatch({
+                type: GET_BOP_DOMESTIC_DATA_LIST,
+                payload: [],
+            })
+            dispatch({
+                type: GET_BOP_IMPORT_DATA_LIST,
+                payload: [],
+            })
+        } else if (Number(masterId) === OPERATIONS_ID) {
+            dispatch({
+                type: GET_OPERATION_COMBINED_DATA_LIST,
+                payload: [],
+            })
+        } else if (Number(masterId) === MACHINE_MASTER_ID) {
+
+            dispatch({
+                type: GET_MACHINE_DATALIST_SUCCESS,
+                payload: [],
+            })
+        } else if (Number(masterId) === BUDGET_ID) {
+            dispatch({
+                type: GET_VOLUME_DATA_LIST,
+                payload: [],
+            })
+        }
         const request = axios.get(
             `${API.getMasterApprovalSummaryByApprovalNo}/${tokenNo}/${approvalProcessId}/${loggedInUserId()}`, config())
         request
@@ -1614,7 +1650,7 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                 if (response.data.Result) {
 
                     if (Number(masterId) === RM_MASTER_ID) {
-                        if (response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                        if (response.data.Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
                             dispatch({
                                 type: GET_RM_DOMESTIC_LIST,
                                 payload: response.data.Data.ImpactedMasterDataList.RawMaterialListResponse,

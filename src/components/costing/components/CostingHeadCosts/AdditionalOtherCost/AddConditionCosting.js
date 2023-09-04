@@ -122,7 +122,6 @@ function AddConditionCosting(props) {
         if (e?.target?.value) {
             let costCurrency = checkForNull((e.target.value) / 100) * checkForNull(basicRateCurrency)
             let costBase = checkForNull((e.target.value) / 100) * checkForNull(basicRateBase)
-            // let cost = checkForNull((e.target.value) / 100) * checkForNull(props.basicRate)
             setValue('CostBase', checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
             setValue('CostCurrency', checkForDecimalAndNull(costCurrency, initialConfiguration.NoOfDecimalForPrice))
             setTotalCostCurrency(costCurrency)
@@ -393,10 +392,6 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableTotalCost || disableBase}
                                         />
                                     </Col>}
-
-
-
-
 
                                     <Col md="3" className="mt-4 pt-1">
 

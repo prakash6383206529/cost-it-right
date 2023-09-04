@@ -115,9 +115,6 @@ class AddBOPImport extends Component {
       disableSendForApproval: false,
       isOpenConditionDrawer: false,
       conditionTableData: [],
-      BasicPriceINR: '',
-      BasicPriceCurrency: '',
-      NetConditionCost: '',
       NetLandedCostINR: '',
       NetLandedCostCurrency: '',
 
@@ -135,6 +132,7 @@ class AddBOPImport extends Component {
       FinalNetCostCurrency: '',
       FinalConditionCostBase: '',
       FinalConditionCostCurrency: '',
+      DropdownChanged: true,
     }
   }
   /**
@@ -664,7 +662,7 @@ class AddBOPImport extends Component {
     } else {
       this.setState({ sourceLocation: [], })
     }
-    this.setState({ DropdownChange: false })
+    this.setState({ DropdownChanged: false })
   };
 
 
@@ -772,7 +770,7 @@ class AddBOPImport extends Component {
     if (this.state.isEditFlag &&
 
       this.state.DataToChange.BoughtOutPartIncoTermId === this.state.incoTerm.value &&
-      // this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value && (this.state.sourceLocation === this.state.DataToCheck?.SourceLocation) && (this.state.source === this.state.DataToCheck?.Source)         frontend fixes
+      // this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value && (this.state.sourceLocation === this.state.DataToChange?.SourceLocation) && (this.state.source === this.state.DataToChange?.Source)         frontend fixes
       this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value &&
 
       Number(this.state.DataToChange.BasicRateConversion) === Number(basicRateBase) &&
@@ -784,10 +782,12 @@ class AddBOPImport extends Component {
       Number(this.state.DataToChange.NetLandedCostConversion) === Number(netLandedCostBase) &&
       Number(this.state.DataToChange.NetLandedCost) === Number(netLandedCostCurrency) &&
 
-      Number(this.state.DataToChange.NetConditionCostConversion) === Number(this.state.FinalConditionCostBase) &&
-      Number(this.state.DataToChange.NetConditionCost) === Number(this.state.FinalConditionCostCurrency)
+      Number(this.state.DataToChange.NetConditionCostConversion) === sumBase &&
+      Number(this.state.DataToChange.NetConditionCost) === sumCurrency
     ) {
-      this.setState({ IsFinancialDataChanged: false });
+
+      this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
+      this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
     } else if (this.state.isEditFlag) {
       this.setState({ IsFinancialDataChanged: true });
     }
@@ -958,7 +958,8 @@ class AddBOPImport extends Component {
     const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate,
       UOM, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, FinalConditionCostBase, FinalConditionCostCurrency, conditionTableData, FinalBasicPriceCurrency, FinalBasicPriceBase, FinalNetCostCurrency, FinalNetCostBase,
-      FinalBasicRateBase, FinalBasicRateCurrency, currencyValue } = this.state;
+      FinalBasicRateBase, FinalBasicRateCurrency, currencyValue, DropdownChanged } = this.state;
+    const { fieldsObj, isBOPAssociated } = this.props
 
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -981,16 +982,16 @@ class AddBOPImport extends Component {
       BoughtOutPartId: BOPID,
       Currency: currency.label,
       CostingTypeId: costingTypeId,
-      BoughtOutPartNumber: values.BoughtOutPartNumber,
-      BoughtOutPartName: values.BoughtOutPartName,
+      BoughtOutPartNumber: values?.BoughtOutPartNumber,
+      BoughtOutPartName: values?.BoughtOutPartName,
       CategoryId: BOPCategory.value,
-      Specification: values.Specification,
+      Specification: values?.Specification,
       Vendor: vendorName.value,
-      Source: values.Source,
+      Source: values?.Source,
       SourceLocation: sourceLocation.value,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1,
-      Remark: values.Remark,
+      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values?.NumberOfPieces : 1,
+      Remark: values?.Remark,
       IsActive: true,
       LoggedInUserId: loggedInUserId(),
       Plant: [plantArray],
@@ -1023,114 +1024,64 @@ class AddBOPImport extends Component {
       BoughtOutPartConditionsDetails: conditionTableData,
       CurrencyExchangeRate: currencyValue
     }
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(BOP_MASTER_ID) !== true) || (isEditFlag && isTechnologyVisible)) {
 
-      this.setState({ setDisable: true })
-      if (IsFinancialDataChanged) {
-        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateBOP(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-              this.cancel('submit')
-            }
-          });
-          return false
 
-        } else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
-          return false
-        }
+    // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
+    if (isEditFlag) {
+      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces)
+      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
+      // CHECK IF THERE IS CHANGE !!!  
+      // IF: NO CHANGE  
 
+      if (((files ? JSON.stringify(files) : []) === (DataToChange?.Attachements ? JSON.stringify(DataToChange?.Attachements) : [])) &&
+        ((DataToChange?.Remark ? DataToChange?.Remark : '') === (values?.Remark ? values?.Remark : '')) &&
+        ((DataToChange?.Source ? String(DataToChange?.Source) : '-') === (values?.Source ? String(values?.Source) : '-')) &&
+        ((DataToChange?.SourceLocation ? String(DataToChange?.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+        checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) &&
+
+        checkForNull(fieldsObj?.NumberOfPieces) === checkForNull(DataToChange?.NumberOfPieces) &&
+        checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRate) &&
+
+        checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged) {
+        this.setState({ isEditBuffer: true })
+        Toaster.warning('Please change data to send RM for approval')
+        return false
       }
+      //  ELSE: CHANGE
       else {
-
-
-        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
-          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && JSON.stringify(updatedFiles) === JSON.stringify(DataToChange.Attachements) &&
-          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-')) && (DataToChange.BoughtOutPartIncoTermId === incoTerm.value) && DataToChange.IsClientVendorBOP === isClientVendorBOP) {
-          this.cancel('submit')
-          return false;
-        }
-        else {
-          // if (isSourceChange) {
-          this.props.updateBOP(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-              this.cancel('submit')
-            }
-          });
-          // }
-          return false
-        }
-      }
-
-    } else {
-      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
-        formData.IsSendForApproval = true
-      } else {
-        formData.IsSendForApproval = false
-      }
-      // this.setState({ setDisable: true })
-
-
-      if ((CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) && !isTechnologyVisible) {
-        if (IsFinancialDataChanged) {
-          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState({ approveDrawer: true, approvalObj: formData })
-            return false
-
-          } else {
-            this.setState({ setDisable: false })
+        //  IF: NEE TO UPDATE EFFECTIVE DATE
+        if (IsFinancialDataChanged || isBOPAssociated) {
+          if (!isDateChange || (DayTime(oldDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            this.setState({ isEditBuffer: true })
             Toaster.warning('Please update the effective date')
             return false
           }
         }
-        if (DropdownChange && String(DataToChange.Source) === String(values.Source) &&
-          Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && (files === DataToChange.Attachements) &&
-          ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-          ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-          Toaster.warning('Please change data to send BOP for approval')
-          return false;
-        }
+      }
+    }
 
-        if (DataToChange.IsVendor) {
-          if (DropdownChange &&
-            Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && (files === DataToChange.Attachements) &&
-            ((DataToChange.Source ? DataToChange.Source : '-') === (values.Source ? values.Source : '-')) &&
-            ((DataToChange.SourceLocation ? DataToChange.SourceLocation : '-') === (sourceLocation.value ? sourceLocation.value : '-'))) {
-            Toaster.warning('Please change data to send BOP for approval')
-            // this.cancel()
-            return false;
+    //  IF: APPROVAL FLOW
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      formData.IsSendForApproval = true
+      this.setState({ approveDrawer: true, approvalObj: formData })
+    }
+    //  ELSE: NO APPROVAL FLOW
+    else {
+      if (isEditFlag) {
+        formData.IsSendForApproval = false
+        this.props.updateBOP(formData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+            this.cancel('submit');
           }
-        }
-        if (Boolean(DataToChange.IsVendor) === false) {
-          if (Number(DataToChange.BasicRate) === Number(values.BasicRate) && DataToChange.Remark === values.Remark && (uploadAttachements === DataToChange.Attachements)) {
-            Toaster.warning('Please change data to send BOP for approval')
-            // this.cancel()
-            return false;
-          }
-        }
-
-        if ((DataToChange.Remark) === (values.Remark) && (uploadAttachements === DataToChange.Attachements)) {
-          Toaster.warning('Please change data to send BOP for approval')
-          return false;
-        } else {
-
-          this.setState({ approveDrawer: true, approvalObj: formData })
-          return false
-        }
-
-
+        })
+        this.setState({ updatedObj: formData })
       } else {
         this.props.createBOP(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
             Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
-            //this.clearForm()
             this.cancel('submit')
           }
         })
@@ -1174,6 +1125,9 @@ class AddBOPImport extends Component {
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
+    if (type === 'save') {
+      this.setState({ IsFinancialDataChanged: true })
+    }
     const sumBase = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCostConversion), 0);
     const sumCurrency = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
     let netLandedCostINR = Number(sumBase) + Number(this.state.FinalBasicPriceBase)
@@ -1209,7 +1163,7 @@ class AddBOPImport extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceCurrency, FinalBasicPriceBase } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceCurrency, FinalBasicPriceBase } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -2008,7 +1962,6 @@ class AddBOPImport extends Component {
               tableData={conditionTableData}
               closeDrawer={this.openAndCloseAddConditionCosting}
               anchor={'right'}
-              basicRate={BasicPriceINR}
               ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
               isFromMaster={true}
               currency={this.state.currency}

@@ -32,7 +32,6 @@ function ConditionCosting(props) {
                                 <th>{`Condition`}</th>
                                 {<th>{`Type`}</th>}
                                 {<th>{`Percentage (%)`}</th>}
-                                {/* {<th>{`Fixed`}</th>} */}
                                 {isFromImport && <th>{`Cost (${currency?.label})`}</th>}
                                 {<th>{`Cost (${initialConfiguration?.BaseCurrency})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
@@ -46,7 +45,6 @@ function ConditionCosting(props) {
                                                 <td>{`${item.Description}`} </td>
                                                 {<td>{item.ConditionType}</td>}
                                                 {<td>{item.ConditionPercentage ? checkForDecimalAndNull(item?.ConditionPercentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
-                                                {/* {<td>{item.Percentage ? '-' : checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>} */}
                                                 {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {isFromImport && <td>{checkForDecimalAndNull(item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {!props.hideAction && <td><div className='text-right'>

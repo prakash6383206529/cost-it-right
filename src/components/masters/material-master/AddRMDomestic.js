@@ -25,7 +25,11 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
+<<<<<<< HEAD
 import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMDOMESTIC, ENTRY_TYPE_DOMESTIC, SHEET_METAL, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE } from '../../../config/constants'
+=======
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, SHEET_METAL, BOP_MASTER_ID } from '../../../config/constants'
+>>>>>>> 972756525c (CIR-T1702 | CIR-T1688 | WIP IV)
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -45,6 +49,7 @@ import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage';
 import Button from '../../layout/Button';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
+import { debounce } from 'lodash';
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -139,8 +144,6 @@ class AddRMDomestic extends Component {
       showErrorOnFocus: false,
       showPopup: false,
       levelDetails: {},
-      showForgingMachiningScrapCost: false,
-      showExtraCost: false,
       vendorFilterList: [],
       isDropDownChanged: false,
       CostingTypePermission: false,
@@ -311,18 +314,38 @@ class AddRMDomestic extends Component {
     this.setState({ Category: newValue, isDropDownChanged: true })
   }
 
+  checkTechnology = (technology) => {
+    let obj = {}
+    if (Number(technology.value) === FORGING) {
+      obj.showForging = true
+      obj.showCircleJali = false
+      obj.showScrap = false
+      this.setState({ showScrapKeys: obj })
+    } else if (Number(technology.value) === SHEETMETAL) {
+      obj.showForging = false
+      obj.showCircleJali = true
+      obj.showScrap = false
+      this.setState({ showScrapKeys: obj })
+    } else {
+      obj.showForging = false
+      obj.showCircleJali = false
+      obj.showScrap = true
+      this.setState({ showScrapKeys: obj })
+    }
+  }
 
   /**
    * @method handleTechnologyChange
    * @description Use to handle technology change
   */
   handleTechnologyChange = (newValue) => {
+    this.checkTechnology(newValue)
     if (newValue.value === String(FORGING)) {
-      this.setState({ Technology: newValue, showForgingMachiningScrapCost: true, showExtraCost: false, nameDrawer: true })
+      this.setState({ Technology: newValue, nameDrawer: true })
     } else if (newValue.value === String(SHEETMETAL)) {
-      this.setState({ Technology: newValue, showExtraCost: true, showForgingMachiningScrapCost: false, nameDrawer: true })
+      this.setState({ Technology: newValue, nameDrawer: true })
     } else {
-      this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
+      this.setState({ Technology: newValue, nameDrawer: true })
     }
     this.setState({ RawMaterial: [], nameDrawer: false, isDropDownChanged: true })
   }
@@ -487,7 +510,7 @@ class AddRMDomestic extends Component {
 
 
     const { fieldsObj, initialConfiguration } = this.props;
-    const { FinalConditionCostCurrency, DataToChange } = this.state
+    const { FinalConditionCostCurrency, DataToChange, isEditFlag } = this.state
 
     const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
     this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
@@ -495,11 +518,12 @@ class AddRMDomestic extends Component {
     const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    if (checkForNull(fieldsObj?.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice) && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
+    if (isEditFlag && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
       && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
       && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
       && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
-      this.setState({ IsFinancialDataChanged: false })
+      this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
+      this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
     } else {
       this.setState({ IsFinancialDataChanged: true })
     }
@@ -595,6 +619,7 @@ class AddRMDomestic extends Component {
   getDetails = (data) => {
 
     const { initialConfiguration } = this.props
+    const { showScrapKeys } = this.state
 
     if (data && data.isEditFlag) {
       this.setState({
@@ -637,6 +662,7 @@ class AddRMDomestic extends Component {
               FinalNetCostCurrency: Data?.NetLandedCost,
               conditionTableData: Data?.RawMaterialConditionsDetails,
             })
+            this.checkTechnology({ label: Data.TechnologyName, value: Data.TechnologyId })
 
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : "")
             this.setState({ minEffectiveDate: Data.EffectiveDate })
@@ -661,8 +687,8 @@ class AddRMDomestic extends Component {
               remarks: Data.Remark,
               files: Data.FileList,
               singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-              showForgingMachiningScrapCost: Data.TechnologyId === FORGING ? true : false,
-              showExtraCost: Data.TechnologyId === SHEETMETAL ? true : false,
+              showForgingMachiningScrapCost: showScrapKeys?.showForging,
+              showExtraCost: showScrapKeys?.showCircleJali,
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -1153,20 +1179,18 @@ class AddRMDomestic extends Component {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  onSubmit = (values) => {
-    const { RawMaterial, RMGrade, RMSpec, Category, client, Technology, selectedPlants, costingTypeId, vendorName, VendorCode, HasDifferentSource, sourceLocation, UOM, remarks, RawMaterialID, isEditFlag,
-      files, effectiveDate, NetLandedCostCurrency, oldDate, singlePlantSelected, showForgingMachiningScrapCost, DataToChange, DropdownChanged, isDateChange, isSourceChange, IsFinancialDataChanged,
-      showExtraCost, BasicPrice, totalConditionCost, conditionTableData, FinalCutOffCurrency, FinalScrapRateCurrency, FinalScrapRateBase, FinalForgingScrapCostCurrency, FinalForgingScrapCostBase,
-      FinalMachiningScrapCostCurrency, FinalMachiningScrapCostBase, FinalCircleScrapCostCurrency, FinalCircleScrapCostBase, FinalJaliScrapCostCurrency, FinalJaliScrapCostBase, FinalFreightCostCurrency,
-      FinalShearingCostCurrency, FinalBasicPriceCurrency, FinalConditionCostCurrency, FinalBasicRateCurrency } = this.state
+  onSubmit = debounce((values) => {
+    const { RawMaterial, RMGrade, RMSpec, Category, client, Technology, selectedPlants, costingTypeId, vendorName, VendorCode, HasDifferentSource, sourceLocation, UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate,
+      NetLandedCostCurrency, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, IsFinancialDataChanged, conditionTableData, FinalCutOffCurrency, FinalScrapRateCurrency, FinalForgingScrapCostCurrency,
+      FinalMachiningScrapCostCurrency, FinalCircleScrapCostCurrency, FinalJaliScrapCostCurrency, FinalFreightCostCurrency, FinalShearingCostCurrency, FinalBasicPriceCurrency, FinalConditionCostCurrency, FinalBasicRateCurrency, showScrapKeys, DataToCheck, isBOPAssociated } = this.state
 
-    const { isRMAssociated } = this.props
+    const { isRMAssociated, fieldsObj } = this.props
 
     let scrapRateCurrency = ''
     let jaliRateCurrency = ''
     let machiningRateCurrency = ''
 
-    if (Number(Technology?.value) === SHEETMETAL) {
+    if (showScrapKeys?.showCircleJali) {
 
       if (checkForNull(FinalBasicRateCurrency) < checkForNull(FinalJaliScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalJaliScrapCostCurrency) ||
         checkForNull(FinalBasicRateCurrency) < checkForNull(FinalCircleScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalCircleScrapCostCurrency)) {
@@ -1177,7 +1201,7 @@ class AddRMDomestic extends Component {
 
       scrapRateCurrency = checkForNull(FinalJaliScrapCostCurrency)
       jaliRateCurrency = checkForNull(FinalCircleScrapCostCurrency)
-    } else if (Number(Technology?.value) === FORGING) {
+    } else if (showScrapKeys?.showForging) {
 
       if (checkForNull(FinalBasicRateCurrency) < checkForNull(FinalForgingScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalForgingScrapCostCurrency) ||
         checkForNull(FinalBasicRateCurrency) < checkForNull(FinalMachiningScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalMachiningScrapCostCurrency)) {
@@ -1188,7 +1212,7 @@ class AddRMDomestic extends Component {
 
       scrapRateCurrency = checkForNull(FinalForgingScrapCostCurrency)
       machiningRateCurrency = checkForNull(FinalMachiningScrapCostCurrency)
-    } else {
+    } else if (showScrapKeys?.showScrap) {
 
       if (checkForNull(FinalBasicRateCurrency) < checkForNull(FinalScrapRateCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalScrapRateCurrency)) {
         this.setState({ setDisable: false })
@@ -1245,11 +1269,6 @@ class AddRMDomestic extends Component {
     formData.Source = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : values.Source
     formData.SourceLocation = costingTypeId !== VBCTypeId && !HasDifferentSource ? '' : sourceLocation.value
     formData.UOM = UOM.value
-    // formData.BasicRatePerUOM = values.BasicRateCurrency
-    // formData.RMFreightCost = values.FreightCharge
-    // formData.RMShearingCost = values.ShearingCost
-    formData.ScrapRateCurrency = showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRateCurrency
-    // formData.NetLandedCost = NetLandedCostCurrency
     formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     formData.Remark = remarks
     formData.LoggedInUserId = loggedInUserId()
@@ -1257,16 +1276,10 @@ class AddRMDomestic extends Component {
     formData.VendorCode = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : ''
     formData.VendorPlant = []
     formData.Attachements = isEditFlag ? updatedFiles : files
-    // formData.CutOffPrice = values.cutOffPrice
     formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCostCurrency ? true : false
     formData.RawMaterialCode = values.Code
     formData.CustomerId = costingTypeId === CBCTypeId ? client.value : ''
-    // formData.MachiningScrapRate = values.MachiningScrap
-    // formData.JaliScrapCost = values.CircleScrapCost ? values.CircleScrapCost : '' // THIS KEY FOR CIRCLE SCRAP COST
     formData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
-    // formData.NetCostWithoutConditionCost = BasicPrice
-    // formData.NetConditionCost = totalConditionCost
-    formData.BoughtOutPartConditionsDetails = conditionTableData
 
     formData.CutOffPrice = FinalCutOffCurrency
     formData.BasicRatePerUOM = FinalBasicRateCurrency
@@ -1280,125 +1293,64 @@ class AddRMDomestic extends Component {
     formData.NetConditionCost = FinalConditionCostCurrency
     formData.RawMaterialConditionsDetails = conditionTableData
 
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
-      //this.setState({ updatedObj: requestData })
 
-      if (IsFinancialDataChanged && isRMAssociated) {
-        if ((isDateChange) && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateRMAPI(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-              this.clearForm('submit')
+    // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
+    if (isEditFlag) {
+      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces)
+      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
+      // CHECK IF THERE IS CHANGE !!!  
+      // IF: NO CHANGE  
 
-            }
-          })
-          this.setState({ updatedObj: formData })
-          return
-
-        } else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
-          return false
-        }
-
+      if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) &&
+        ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
+        ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
+        checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
+        checkForNull(netLandedCostCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
+        this.setState({ isEditBuffer: true })
+        Toaster.warning('Please change data to send RM for approval')
+        return false
       }
+      //  ELSE: CHANGE
       else {
-        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRateCurrency) && (Number(DataToChange.ScrapRateCurrency) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRateCurrency))
-          && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCostCurrency) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
-          && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
-          && String(DataToChange.RawMaterialCode) === String(values.Code) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
-          && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
-          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : '')) && String(DataToChange.MachiningScrapRate) === String(values.MachiningScrap) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
-          && Number(DataToChange.BasicPrice) === Number(values.BasicPrice)) {
-          this.cancel('submit')
-          return false
-        }
-        else {
-
-          this.props.updateRMAPI(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-              this.clearForm('submit')
-            }
-          })
-          return false
+        //  IF: NEE TO UPDATE EFFECTIVE DATE
+        if (IsFinancialDataChanged || isBOPAssociated) {
+          if (!isDateChange || (DayTime(oldDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            this.setState({ isEditBuffer: true })
+            Toaster.warning('Please update the effective date')
+            return false
+          }
         }
       }
     }
 
+    //  IF: APPROVAL FLOW
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      formData.IsSendForApproval = true
+      this.setState({ approveDrawer: true, approvalObj: formData })
+    }
+    //  ELSE: NO APPROVAL FLOW
     else {
-      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        formData.NetLandedCostConversion = 0
-        formData.Currency = "INR"
-        formData.IsSendForApproval = true
-      } else {
+      if (isEditFlag) {
         formData.IsSendForApproval = false
-      }
-      // }
-      // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
-      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRateCurrency) && (Number(DataToChange.ScrapRateCurrency) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRateCurrency))
-          && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCostCurrency) && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : ''))
-          && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
-          && String(DataToChange.RawMaterialCode) === String(values.Code) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
-          && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
-          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : '')) && String(DataToChange.MachiningScrapRate) === String(values.MachiningScrap) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)
-          && Number(DataToChange.BasicPrice) === Number(values.BasicPrice)) {
-          Toaster.warning('Please change data to send RM for approval')
-          return false
-        }
-
-        if (IsFinancialDataChanged) {
-
-          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState({ approveDrawer: true, approvalObj: formData })
-            return
-
-          } else {
-
-            this.setState({ setDisable: false })
-            Toaster.warning('Please update the effective date')
-            return false
-          }
-
-        }
-
-        if (isSourceChange) {
-          this.setState({ approveDrawer: true, approvalObj: formData })
-          this.setState({ setDisable: false })
-          return
-
-        } else {
-
-          if (isEditFlag) {
-            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === values.BasicRateCurrency && (Number(DataToChange.ScrapRateCurrency) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRateCurrency))
-              && Number(DataToChange.NetLandedCost) === values.NetLandedCostCurrency && (DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')
-              && (Number(DataToChange.CutOffPrice) === values.cutOffPrice || values.cutOffPrice === undefined)
-              && DataToChange.RawMaterialCode === values.Code && DataToChange.BasicPrice === values.BasicPrice) {
-              Toaster.warning('Please change data to send RM for approval')
-              return false
-            }
-
-          }
-          this.setState({ approvalObj: formData })
-        }
-
-
-      } else {
-        this.props.createRM(formData, (res) => {
+        this.props.updateBOP(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
-            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
-            this.clearForm('submit')
+            Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
+            this.cancel('submit');
+          }
+        })
+        this.setState({ updatedObj: formData })
+      } else {
+        this.props.createBOP(formData, (res) => {
+          this.setState({ setDisable: false })
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
             this.cancel('submit')
           }
         })
       }
-
     }
-  }
+  }, 500)
 
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
@@ -1412,20 +1364,9 @@ class AddRMDomestic extends Component {
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
-    const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-    let netLandedCost = Number(sum) + Number(this.state.BasicPrice)
-    this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
-    this.setState({
-      isOpenConditionDrawer: false,
-      conditionTableData: data,
-      totalConditionCost: sum,
-      NetLandedCostCurrency: netLandedCost
-    })
-  }
-
-  openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
-    const { initialConfiguration } = this.props
+    if (type === 'save') {
+      this.setState({ IsFinancialDataChanged: true })
+    }
     const sumCurrency = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
     let netLandedCostCurrency = Number(sumCurrency) + Number(this.state.FinalBasicPriceCurrency)
     this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
@@ -1455,7 +1396,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, BasicPrice, conditionTableData,
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, IsFinancialDataChanged, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, BasicPrice, conditionTableData,
 
 
       FinalCutOffCurrency,
@@ -1470,6 +1411,7 @@ class AddRMDomestic extends Component {
       FinalBasicPriceCurrency,
       FinalConditionCostCurrency,
       NetLandedCostCurrency,
+      showScrapKeys
 
 
     } = this.state
@@ -1904,7 +1846,7 @@ class AddRMDomestic extends Component {
                           <>
                             <Col md="3">
                               <Field
-                                label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                 name={"cutOffPrice"}
                                 type="text"
                                 placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
@@ -1921,7 +1863,7 @@ class AddRMDomestic extends Component {
                             {(this.showBasicRate() || true) && <>
                               <Col md="3">
                                 <Field
-                                  label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                  label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                   name={"BasicRateCurrency"}
                                   type="text"
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
@@ -1938,11 +1880,11 @@ class AddRMDomestic extends Component {
 
 
 
-                            {(!this.state.showForgingMachiningScrapCost && !this.state.showExtraCost) &&
+                            {showScrapKeys?.showScrap &&
                               <>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                    label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"ScrapRateCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -1957,12 +1899,11 @@ class AddRMDomestic extends Component {
                                   />
                                 </Col>
                               </>}
-                            {
-                              (this.state.showForgingMachiningScrapCost) &&
+                            {showScrapKeys?.showForging &&
                               <>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                    label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"ForgingScrap"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -1977,7 +1918,7 @@ class AddRMDomestic extends Component {
                                 </Col>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                    label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"MachiningScrap"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -1992,12 +1933,11 @@ class AddRMDomestic extends Component {
                                 </Col>
                               </>
                             }
-                            {
-                              (this.state.showExtraCost) &&
+                            {showScrapKeys?.showCircleJali &&
                               <>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                    label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"CircleScrapCost"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -2011,7 +1951,7 @@ class AddRMDomestic extends Component {
                                 </Col>
                                 <Col md="3">
                                   <Field
-                                    label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                    label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"JaliScrapCost"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
@@ -2029,7 +1969,7 @@ class AddRMDomestic extends Component {
 
                             <Col md="3">
                               <Field
-                                label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                 name={"FreightCharge"}
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
@@ -2044,7 +1984,7 @@ class AddRMDomestic extends Component {
                             </Col>
                             <Col md="3">
                               <Field
-                                label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label)}
+                                label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                 name={"ShearingCost"}
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
@@ -2060,7 +2000,7 @@ class AddRMDomestic extends Component {
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                               <Col md="3">
                                 <Field
-                                  label={`Basic Price (${this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label})`}
+                                  label={labelWithUOMAndCurrency("Basic Price", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                   name={"BasicPriceCurrency"}
                                   type="text"
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
@@ -2077,7 +2017,7 @@ class AddRMDomestic extends Component {
                               <Col md="3">
                                 <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                                 <Field
-                                  label={`Condition Cost (${this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label})`}
+                                  label={labelWithUOMAndCurrency("Condition Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                   name={"FinalConditionCostCurrency"}
                                   type="text"
                                   placeholder={"-"}
@@ -2099,7 +2039,7 @@ class AddRMDomestic extends Component {
                             <Col md="3">
                               <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
                               <Field
-                                label={`Net Cost (${this.state.currency?.label === undefined ? 'Currency' : this.state.currency?.label})`}
+                                label={labelWithUOMAndCurrency("Net Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
                                 type="text"
                                 placeholder={"-"}
@@ -2406,6 +2346,8 @@ class AddRMDomestic extends Component {
                 costingTypeId={this.state.costingTypeId}
                 levelDetails={this.state.levelDetails}
                 currency={{ label: initialConfiguration?.BaseCurrency, value: initialConfiguration?.BaseCurrency }}
+                Technology={this.state.Technology}
+                showScrapKeys={showScrapKeys}
               />
             )
           }
