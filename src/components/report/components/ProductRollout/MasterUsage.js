@@ -3,6 +3,9 @@ import React, { useState } from "react";
 import { PaginationWrapper } from "../../../common/commonPagination";
 import { EMPTY_DATA } from "../../../../config/constants";
 import NoContentFound from "../../../common/NoContentFound";
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
+import { getUsageRmDetails } from "../../actions/ReportListing";
 const gridOptions = {};
 const DUMMY_DATA = [
     {
@@ -71,10 +74,20 @@ const DUMMY_DATA = [
         NoOfPart: 9
     }
 ]
-const MasterUserage = () => {
+const MasterUsage = ({ productId }) => {
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null)
     const [rowData, setRowData] = useState(DUMMY_DATA)
+    const dispatch = useDispatch();
+    useEffect(() => {
+        dispatch(getUsageRmDetails(productId, (res) => {
+            if (res && res.status === 200) {
+                setRowData(res.data.Data)
+            } else {
+                setRowData([])
+            }
+        }))
+    }, [])
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
@@ -121,7 +134,6 @@ const MasterUserage = () => {
                     </button>
                 </div>
             </div>
-
             <div className={`ag-grid-react mt-3`}>
                 <div className={`ag-grid-wrapper ${(rowData && rowData?.length <= 0) ? 'overlay-contain' : ''}`}>
                     <div className={`ag-theme-material`}>
@@ -146,9 +158,9 @@ const MasterUserage = () => {
                             suppressRowClickSelection={true}
                             enableBrowserTooltips={true}
                         >
-                            <AgGridColumn field="RMName" headerName='RM Name' cellRenderer='dateFormatter'></AgGridColumn>
-                            <AgGridColumn field="Material" headerName="Material" tooltipField="tooltipText" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
-                            <AgGridColumn field="NoOfPart" headerName='No. of Part'></AgGridColumn>
+                            <AgGridColumn field="RMCode" headerName='RM Name' cellRenderer='dateFormatter'></AgGridColumn>
+                            {/* <AgGridColumn field="Material" headerName="Material" tooltipField="tooltipText" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn> */}
+                            <AgGridColumn field="PartCount" headerName='No. of Part'></AgGridColumn>
 
                         </AgGridReact>
                         <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
@@ -159,4 +171,4 @@ const MasterUserage = () => {
         </div>
     );
 }
-export default MasterUserage;
+export default MasterUsage;

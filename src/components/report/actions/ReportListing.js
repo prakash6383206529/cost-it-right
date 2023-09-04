@@ -482,3 +482,63 @@ export function getStageOfPartDetails(productId, callback) {
         })
     }
 }
+export function getTotalPartsDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getTotalPartsDetails}?productId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getProductRolloutCostMovement(partId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductRolloutCostMovement}?partId=${partId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getProductRolloutCostRatio(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductRolloutCostRatio}?productId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getUsageRmDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getUsageRmDetails}?productId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getSupplierContributionDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getSupplierContributionDetails}?productId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}

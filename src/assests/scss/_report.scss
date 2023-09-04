@@ -167,6 +167,19 @@
         margin-bottom: 20px;
     }
 
+    .product-rollout-graph {
+        .seprate-box {
+            min-height: 472px;
+
+            .container {
+                height: 432px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    }
+
     .part-usage-container {
         .inner-container {
             min-height: 80px;

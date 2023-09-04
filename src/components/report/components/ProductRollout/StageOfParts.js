@@ -2,10 +2,28 @@
 import React from 'react'
 import { Bar } from 'react-chartjs-2';
 import { colorArray } from '../../../dashboard/ChartsDashboard';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getConfigurationKey } from '../../../../helper';
-const StageOfParts = () => {
+import { useEffect } from 'react';
+import { getStageOfPartDetails } from '../../actions/ReportListing';
+import { useState } from 'react';
+import NoContentFound from '../../../common/NoContentFound';
+import { EMPTY_DATA } from '../../../../config/constants';
+const StageOfParts = ({ productId }) => {
+    const dispatch = useDispatch()
     const StageOfPartDetails = useSelector(state => state.report.stageOfPartDetails)
+    const [noContent, setNoContent] = useState(true)
+
+    useEffect(() => {
+        dispatch(getStageOfPartDetails(productId, (res) => {
+            if (res && res.status === 200) {
+                setNoContent(false)
+            } else {
+                setNoContent(true)
+            }
+        }))
+    }, [])
+
     const { ApprovedPartCostingCount, DraftPartCostingCount, RejectedPartCostingCount, PendingPartCostingCount, CostNotDonePartCount, ProductPrice } = StageOfPartDetails
     const data = {
         labels: ['Parts'],
@@ -61,13 +79,19 @@ const StageOfParts = () => {
         <div className='seprate-box'>
             <div className='d-flex justify-content-between align-items-center'>
                 <h6>Stage of Parts</h6>
-                <input className='form-control w-auto' type='text' disabled={true} value={getConfigurationKey().BaseCurrency + " " + ProductPrice}></input>
+                <div className='d-flex align-items-center'>
+                    <label className='mr-2'>Cost: </label>
+                    <input className='form-control w-auto' type='text' disabled={true} value={ProductPrice ? getConfigurationKey().BaseCurrency + " " + ProductPrice : '-'}></input>
+                </div>
             </div>
-            <div className='mt-3'>
+            <div>
+                {noContent ? <NoContentFound title={EMPTY_DATA} customClassName="my-0" imagClass="custom-width-76px" /> : <Bar data={data} options={options} height={32} />}
 
-                <Bar data={data} options={options} height={32} />
             </div>
         </div>
     );
+}
+StageOfParts.defualtProps = {
+    productId: '0000-0000-0000-0000-00000'
 }
 export default React.memo(StageOfParts);
