@@ -180,7 +180,7 @@ class AddVendorDrawer extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { Technology } = this.state
+        const { Technology, selectedPlants } = this.state
         const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList, IsVendor, costingSpecifiTechnology, plantSelectList } = this.props;
         const temp = [];
         if (label === 'country') {
@@ -255,7 +255,10 @@ class AddVendorDrawer extends Component {
         if (label === 'plant') {
             plantSelectList && plantSelectList.map((item) => {
                 if (item.PlantId === '0') return false
-                temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+                else if (selectedPlants?.some(item1 => item1?.PlantNameCode === item?.PlantNameCode && Number(item1?.PlantId) === Number(item?.PlantId))) {
+                } else {
+                    temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+                }
                 return null
             })
             return temp
@@ -294,7 +297,7 @@ class AddVendorDrawer extends Component {
                     })
                     let plantArray = [];
                     Data && Data?.VendorPlants.map((item) => {
-                        plantArray.push({ Text: `${item?.PlantName} (${item?.PlantCode})`, Value: item?.plantId })
+                        plantArray.push({ Text: `${item?.PlantName} (${item?.PlantCode})`, Value: item?.PlantId })
                         return plantArray;
                     })
                     setTimeout(() => {
@@ -482,6 +485,7 @@ class AddVendorDrawer extends Component {
        * @description Used handle vendor plants
        */
     handlePlantChange = (newValue) => {
+        this.setState({ DropdownChanged: false })
         if (newValue && newValue !== '') {
             this.setState({ selectedPlants: newValue })
         }
