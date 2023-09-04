@@ -11,7 +11,7 @@ import Toaster from '../../common/Toaster'
 import { MESSAGES } from '../../../config/message'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper/auth'
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
-import { CBCTypeId, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { BOUGHTOUTPARTSPACING, CBCTypeId, PRODUCT_ID, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -216,6 +216,7 @@ class AddVolume extends Component {
       partTypeList && partTypeList.map((item) => {
         if (item.Value === '0') return false
         if (item.Value === PRODUCT_ID) return false
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -542,7 +543,11 @@ class AddVolume extends Component {
     )
   }
   cancelHandler = () => {
-    this.setState({ showPopup: true })
+    if (this.props.data.isViewFlag) {
+      this.cancel('cancel')
+    } else {
+      this.setState({ showPopup: true })
+    }
   }
   onPopupConfirm = () => {
     this.cancel('cancel')

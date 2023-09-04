@@ -38,6 +38,7 @@ function RubberWeightCalculator(props) {
     const [totalAdditionalRmCost, setTotalAdditionalRmCost] = useState('')
     const [rejectionCostType, setRejectionCostType] = useState('')
     const [disablePercentFields, setDisablePercentFields] = useState(false)
+    const [percentage, setPercentage] = useState(0)
 
     const rmGridFields = 'rmGridFields';
     const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = useForm({
@@ -153,13 +154,14 @@ function RubberWeightCalculator(props) {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
+        setPercentage(sum)
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
     const percentageChange = (e) => {
         setTimeout(() => {
             if (totalPercentageValue() > 100) {
-                Toaster.warning('Total percentage value should not be greater than 100')
+                Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
                 return false
             }
             calculateNetSCrapRate()
@@ -210,8 +212,8 @@ function RubberWeightCalculator(props) {
 
     const onSubmit = debounce(handleSubmit((values) => {
 
-        if (totalPercentageValue() !== 100) {
-            Toaster.warning('Total percentage must be 100% to save the values')
+        if (totalPercentageValue() > 100) {
+            Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
             return false
         }
 

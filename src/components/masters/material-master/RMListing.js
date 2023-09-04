@@ -20,6 +20,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import Button from '../../layout/Button';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -205,8 +206,8 @@ class RMListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {EditAccessibility && <Button title='Edit' variant="Edit" id={`addSpecificationList_edit${props?.rowIndex}`} className="mr-2" onClick={() => this.editItemDetails(cellValue, rowData)} />}
+                {DeleteAccessibility && <Button title='Delete' variant="Delete" id={`addSpecificationList_delete${props?.rowIndex}`} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -314,24 +315,25 @@ class RMListing extends Component {
                 <Row className="pt-4 no-filter-row">
                     <Col md={6} className="text-right search-user-block pr-0">
                         {AddAccessibility && (
-                            <button
-                                type={"button"}
-                                className={"user-btn mr5"}
+                            <Button
+                                id="rmSpecification_addAssociation"
+                                className="mr5"
                                 onClick={this.openAssociationModel}
                                 title="Add Association"
-                            >{"A"}
-                                <div className={"plus mr-0 ml5"}></div>
-                            </button>
+                                icon="plus mr-0 ml5"
+                                buttonName="A"
+                            />
                         )}
                         {AddAccessibility && (
-                            <button
-                                type={"button"}
-                                className={"user-btn mr5"}
+
+                            <Button
+                                id="rmSpecification_addMaterial"
+                                className="mr5"
                                 onClick={this.openModel}
                                 title="Add Material"
-                            >{"M"}
-                                <div className={"plus mr-0 ml5"}></div>
-                            </button>
+                                icon={"plus mr-0 ml5"}
+                                buttonName="M"
+                            />
                         )}
                         {
                             DownloadAccessibility &&
@@ -344,9 +346,6 @@ class RMListing extends Component {
                                     </ExcelFile>
                                 </>
                             </>
-
-                            //   <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-
                         }
                         <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                             <div className="refresh mr-0"></div>

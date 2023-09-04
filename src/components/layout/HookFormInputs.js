@@ -278,7 +278,7 @@ export const NumberFieldHookForm = (field) => {
 
 export const SearchableSelectHookForm = (field) => {
   const { name, label, Controller, mandatory, disabled, options, handleChange, rules, placeholder, defaultValue,
-    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus } = field;
+    control, errors, register, isLoading, customClassName, isMulti, buttonCross, title, dropdownHeight, dropDownClass, onFocus, isClearable } = field;
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
@@ -329,11 +329,22 @@ export const SearchableSelectHookForm = (field) => {
         {...register}
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name, } }) => {
+          let updatedValue = value
+          if (value) {
+            if ((Object.values(value).length === 0 || value.length === 0)) {
+              updatedValue = ''
+            } else if (value.label === null) {
+              updatedValue = ''
+            }
+          } else if (value === null) {
+            updatedValue = ''
+          }
           return (
             <div className={className} title={title ? title : isDisable ? value?.label : ''}>
               <Select
                 {...field}
                 id={containerId}
+                isClearable={isClearable}
                 inputId={name}
                 {...register}
                 name={name}
@@ -352,7 +363,7 @@ export const SearchableSelectHookForm = (field) => {
                 options={options}
                 onBlur={onBlur}
                 selected={value}
-                value={value}
+                value={updatedValue}
                 isLoading={isLoader}
                 isMulti={isMultiple}
                 onKeyDown={(onKeyDown) => {

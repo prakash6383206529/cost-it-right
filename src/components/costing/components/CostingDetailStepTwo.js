@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
   setCostingDataList, setPOPrice, setRMCCBOPCostData, setSurfaceCostData,
-  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setComponentDiscountOtherItemData, isDiscountDataChange, setIsBreakupBoughtOutPartCostingFromAPI
+  setOverheadProfitCostData, setDiscountCost, showLoader, hideLoader, saveAssemblyPartRowCostingCalculation, savePartNumber, setPartNumberArrayAPICALL, saveBOMLevel, saveAssemblyNumber, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, setComponentDiscountOtherItemData, isDiscountDataChange, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData
 } from '../actions/Costing';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper'
@@ -427,7 +427,7 @@ function CostingDetailStepTwo(props) {
       dispatch(isDiscountDataChange(false))
       dispatch(setOpenAllTabs(false))
       dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
-
+      dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
       props.backBtn()
     }
   }

@@ -30,6 +30,7 @@ function Ferrous(props) {
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
+    const [percentage, setPercentage] = useState(0)
     const { rmRowData, rmData, CostingViewMode, item } = props
 
     const rmGridFields = 'rmGridFields';
@@ -110,13 +111,14 @@ function Ferrous(props) {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
+        setPercentage(sum)
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
     const percentageChange = (e) => {
         setTimeout(() => {
             if (totalPercentageValue() > 100) {
-                Toaster.warning('Total percentage value should not be greater than 100')
+                Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
                 return false
             }
             calculateNetSCrapRate()
@@ -197,7 +199,7 @@ function Ferrous(props) {
     const onSubmit = debounce(handleSubmit((values) => {
 
         if (totalPercentageValue() !== 100) {
-            Toaster.warning('Total percentage must be 100% to save the values')
+            Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
             return false
         }
         let obj = {}
