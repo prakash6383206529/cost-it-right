@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
 import {
     getBOPDataList, deleteBOP, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
@@ -830,8 +830,8 @@ class BOPDomesticListing extends Component {
                                     {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
 
-                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
-                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
+                                    {((this.props.isMasterSummaryDrawer && this.props.bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
+                                    {((this.props.isMasterSummaryDrawer && this.props.bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
 
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}

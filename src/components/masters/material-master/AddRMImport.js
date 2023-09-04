@@ -119,8 +119,6 @@ class AddRMImport extends Component {
       finalApprovalLoader: true,
       showPopup: false,
       levelDetails: {},
-      showForgingMachiningScrapCost: false,
-      showExtraCost: false,
       vendorFilterList: [],
       isCallCalculation: false,
       isDropDownChanged: false,
@@ -337,17 +335,38 @@ class AddRMImport extends Component {
     this.setState({ Category: newValue, isDropDownChanged: true })
   }
 
+  checkTechnology = (technology) => {
+    let obj = {}
+    if (Number(technology.value) === FORGING) {
+      obj.showForging = true
+      obj.showCircleJali = false
+      obj.showScrap = false
+      this.setState({ showScrapKeys: obj })
+    } else if (Number(technology.value) === SHEETMETAL) {
+      obj.showForging = false
+      obj.showCircleJali = true
+      obj.showScrap = false
+      this.setState({ showScrapKeys: obj })
+    } else {
+      obj.showForging = false
+      obj.showCircleJali = false
+      obj.showScrap = true
+      this.setState({ showScrapKeys: obj })
+    }
+  }
+
   /**
   * @method handleTechnologyChange
   * @description Use to handle technology change
  */
   handleTechnologyChange = (newValue) => {
+    this.checkTechnology(newValue)
     if (newValue.value === String(FORGING)) {
-      this.setState({ Technology: newValue, showForgingMachiningScrapCost: true, showExtraCost: false, nameDrawer: true })
+      this.setState({ Technology: newValue, nameDrawer: true })
     } else if (newValue.value === String(SHEETMETAL)) {
-      this.setState({ Technology: newValue, showExtraCost: true, showForgingMachiningScrapCost: false, nameDrawer: true })
+      this.setState({ Technology: newValue, nameDrawer: true })
     } else {
-      this.setState({ Technology: newValue, showForgingMachiningScrapCost: false, showExtraCost: false, nameDrawer: true })
+      this.setState({ Technology: newValue, nameDrawer: true })
     }
     this.setState({ RawMaterial: [], nameDrawer: false, isDropDownChanged: true })
   }
@@ -477,7 +496,7 @@ class AddRMImport extends Component {
         }
         this.setState({ showCurrency: true })
       }
-      this.setState({ currency: newValue, }, () => {
+      this.setState({ currency: newValue, IsFinancialDataChanged: true }, () => {
         setTimeout(() => {
           this.handleNetCost()
         }, 200);
@@ -536,7 +555,7 @@ class AddRMImport extends Component {
   handleNetCost = () => {
 
     const { fieldsObj, initialConfiguration } = this.props;
-    const { FinalConditionCostCurrency, FinalConditionCostBase, DataToChange } = this.state
+    const { FinalConditionCostCurrency, FinalConditionCostBase, DataToChange, isEditFlag } = this.state
 
 
     const cutOffPriceBase = this.convertIntoBase(fieldsObj?.cutOffPrice)
@@ -577,11 +596,12 @@ class AddRMImport extends Component {
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice));
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice));
 
-    if (checkForNull(fieldsObj?.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice) && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
+    if (isEditFlag && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
       && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
       && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
       && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
-      this.setState({ IsFinancialDataChanged: false })
+      this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
+      this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
     } else {
       this.setState({ IsFinancialDataChanged: true })
     }
@@ -643,6 +663,7 @@ class AddRMImport extends Component {
   * @description Used to get Details
   */
   getDetails = (data) => {
+    const { showScrapKeys } = this.state
     if (data && data.isEditFlag) {
       const { initialConfiguration } = this.props
       this.setState({
@@ -738,6 +759,7 @@ class AddRMImport extends Component {
               conditionTableData: Data?.RawMaterialConditionsDetails,
 
             })
+            this.checkTechnology({ label: Data.TechnologyName, value: Data.TechnologyId })
 
             this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
             this.setState({
@@ -764,8 +786,8 @@ class AddRMImport extends Component {
               singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               // FreightCharge:Data.FreightCharge
               netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
-              showForgingMachiningScrapCost: Data.TechnologyId === FORGING ? true : false,
-              showExtraCost: Data.TechnologyId === SHEETMETAL ? true : false,
+              showForgingMachiningScrapCost: showScrapKeys?.showForging,
+              showExtraCost: showScrapKeys?.showCircleJali,
               showCurrency: true,
               currencyValue: Data.CurrencyExchangeRate,
             }, () => {
@@ -1243,13 +1265,11 @@ class AddRMImport extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode, HasDifferentSource, sourceLocation, UOM, currency, client,
-      effectiveDate, remarks, RawMaterialID, isEditFlag, files, Technology, netCost, costingTypeId, oldDate, netCurrencyCost, singlePlantSelected,
-      DataToChange, DropdownChanged, isDateChange, isSourceChange, currencyValue, IsFinancialDataChanged, showForgingMachiningScrapCost, showExtraCost,
-      conditionTableData, FinalBasicRateCurrency, FinalCutOffBase, FinalCutOffCurrency, FinalBasicRateBase, FinalScrapRateCurrency, FinalScrapRateBase, FinalForgingScrapCostCurrency,
-      FinalForgingScrapCostBase, FinalMachiningScrapCostCurrency, FinalMachiningScrapCostBase, FinalCircleScrapCostCurrency, FinalCircleScrapCostBase, FinalJaliScrapCostCurrency,
-      FinalJaliScrapCostBase, FinalFreightCostCurrency, FinalFreightCostBase, FinalShearingCostCurrency, FinalShearingCostBase, FinalBasicPriceCurrency, FinalBasicPriceBase,
-      FinalConditionCostCurrency, FinalConditionCostBase, FinalNetCostCurrency, FinalNetCostBase } = this.state;
+    const { RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode, HasDifferentSource, sourceLocation, UOM, currency, client, effectiveDate, remarks, RawMaterialID, isEditFlag, files,
+      Technology, netCost, costingTypeId, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, currencyValue, IsFinancialDataChanged, conditionTableData, FinalBasicRateCurrency, FinalCutOffBase,
+      FinalCutOffCurrency, FinalBasicRateBase, FinalScrapRateCurrency, FinalScrapRateBase, FinalForgingScrapCostCurrency, FinalForgingScrapCostBase, FinalMachiningScrapCostCurrency, FinalMachiningScrapCostBase,
+      FinalCircleScrapCostCurrency, FinalCircleScrapCostBase, FinalJaliScrapCostCurrency, FinalJaliScrapCostBase, FinalFreightCostCurrency, FinalFreightCostBase, FinalShearingCostCurrency, FinalShearingCostBase,
+      FinalBasicPriceCurrency, FinalBasicPriceBase, FinalConditionCostCurrency, FinalConditionCostBase, FinalNetCostCurrency, FinalNetCostBase, showScrapKeys } = this.state;
 
     const { fieldsObj, isRMAssociated } = this.props;
     const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
@@ -1266,7 +1286,7 @@ class AddRMImport extends Component {
     let machiningRateCurrency = ''
     let machiningRateBase = ''
 
-    if (Number(Technology?.value) === SHEETMETAL) {
+    if (showScrapKeys?.showCircleJali) {
 
       if (FinalBasicRateCurrency < FinalJaliScrapCostCurrency || FinalBasicRateCurrency === FinalJaliScrapCostCurrency ||
         FinalBasicRateCurrency < FinalCircleScrapCostCurrency || FinalBasicRateCurrency === FinalCircleScrapCostCurrency) {
@@ -1279,7 +1299,7 @@ class AddRMImport extends Component {
       scrapRateBase = FinalJaliScrapCostBase
       jaliRateCurrency = FinalCircleScrapCostCurrency
       jaliRateBase = FinalCircleScrapCostBase
-    } else if (Number(Technology?.value) === FORGING) {
+    } else if (showScrapKeys?.showForging) {
 
       if (FinalBasicRateCurrency < FinalForgingScrapCostCurrency || FinalBasicRateCurrency === FinalForgingScrapCostCurrency ||
         FinalBasicRateCurrency < FinalMachiningScrapCostCurrency || FinalBasicRateCurrency === FinalMachiningScrapCostCurrency) {
@@ -1292,7 +1312,7 @@ class AddRMImport extends Component {
       scrapRateBase = FinalForgingScrapCostBase
       machiningRateCurrency = FinalMachiningScrapCostCurrency
       machiningRateBase = FinalMachiningScrapCostBase
-    } else {
+    } else if (showScrapKeys?.showScrap) {
 
       if (FinalBasicRateCurrency < FinalScrapRateCurrency || FinalBasicRateCurrency === FinalScrapRateCurrency) {
         this.setState({ setDisable: false })
@@ -1344,10 +1364,6 @@ class AddRMImport extends Component {
       Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
       SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
       UOM: UOM.value,
-      // BasicRatePerUOM: values.BasicRate,
-      // ScrapRate: showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate,
-      // ScrapRateInINR: currency === INR ? (showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) : ((showExtraCost ? values.JaliScrapCost : showForgingMachiningScrapCost ? values.ForgingScrap : values.ScrapRate) * currencyValue),
-      // NetLandedCost: netCost,
       Remark: remarks,
       LoggedInUserId: loggedInUserId(),
       Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
@@ -1355,23 +1371,12 @@ class AddRMImport extends Component {
       Attachements: isEditFlag ? updatedFiles : files,
       Currency: currency.label,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      // NetLandedCostConversion: netCurrencyCost,
-      // RMFreightCost: values.FreightCharge,
-      // RMShearingCost: values.ShearingCost,
-      // CutOffPrice: values.cutOffPrice,
-      // CutOffPriceInINR: (values.cutOffPrice * currencyValue),
       IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
       RawMaterialCode: values.Code,
       IsSendForApproval: false,
       VendorPlant: [],
       CustomerId: client.value,
-      // MachiningScrapRate: values.MachiningScrap,
-      // MachiningScrapRateInINR: currency === INR ? values.MachiningScrap : values.MachiningScrap * currencyValue,
-      // JaliScrapCost: values.CircleScrapCost ? values.CircleScrapCost : '',// THIS KEY FOR CIRCLE SCRAP COST
       RawMaterialEntryType: Number(ENTRY_TYPE_IMPORT),
-
-
-
 
       CutOffPrice: FinalCutOffCurrency,
       CutOffPriceInINR: FinalCutOffBase,
@@ -1406,183 +1411,69 @@ class AddRMImport extends Component {
       CurrencyExchangeRate: currencyValue,
       RawMaterialConditionsDetails: conditionTableData,
 
-
-      // CutOffPrice: 0,
-
-
-      // BasicRatePerUOM: 0,
-      // ScrapRate: 0,
-      // MachiningScrapRate: 0,
-      // NetLandedCost: 0,
-      // RMFreightCost: 0,
-      // RMShearingCost: 0,
-      // JaliScrapCost: 0,
-
-      // ScrapRateInINR: 0,
-      // MachiningScrapRateInINR: 0,
-      // CutOffPriceInINR: 0,
-
-
-      // NetLandedCostConversion: 0,
-
-      // BasicRatePerUOMConversion: 0,
-      // NetCostWithoutConditionCost: 0,
-      // NetCostWithoutConditionCostConversion: 0,
-      // NetConditionCost: 0,
-      // NetConditionCostConversion: 0,
-      // CurrencyExchangeRate: 0,
-      // RawMaterialFreightCostConversion: 0,
-      // RawMaterialShearingCostConversion: 0,
-      // JaliScrapCostConversion: 0,
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-      // BasicRate: FinalBasicRateCurrency,
-      // BasicRateConversion: FinalBasicRateBase,
-
-      // NetLandedCost: FinalNetCostCurrency,
-      // NetLandedCostConversion: FinalNetCostBase,
-
-      // NetCostWithoutConditionCost: FinalBasicPriceCurrency,
-      // NetCostWithoutConditionCostConversion: FinalBasicPriceBase,
-
-      // NetConditionCost: FinalConditionCostCurrency,
-      // NetConditionCostConversion: FinalConditionCostBase,
-
-      // CurrencyExchangeRate: currencyValue
     }
-    if ((isEditFlag && this.state.isFinalApprovar) || (isEditFlag && CheckApprovalApplicableMaster(RM_MASTER_ID) !== true)) {
 
-      //DONT DELETE COMMENTED CODE BELOW
+    // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
+    if (isEditFlag) {
+      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
+      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
 
-      if (IsFinancialDataChanged && isRMAssociated) {
-
-        if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-          this.props.updateRMAPI(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-              this.clearForm('submit')
-            }
-          })
-          this.setState({ updatedObj: formData })
-          return
-
-        } else {
-          this.setState({ setDisable: false })
-          Toaster.warning('Please update the effective date')
-          return false
-        }
-
+      // CHECK IF THERE IS CHANGE !!!  
+      // IF: NO CHANGE  
+      if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged
+        && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
+        && String(DataToChange.RawMaterialCode) === String(values.Code) && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
+        && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))
+        && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
+        && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
+        && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
+        && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
+        this.setState({ isEditBuffer: true })
+        Toaster.warning('Please change data to send RM for approval')
+        return false
       }
+      //  ELSE: CHANGE
       else {
-        if (JSON.stringify(files) === JSON.stringify(DataToChange.FileList) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-          (Number(DataToChange.ScrapRate) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRate)) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-          ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : '')) && String(DataToChange.RawMaterialCode) === String(values.Code)
-          && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
-          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : '')) && String(DataToChange.MachiningScrapRate) === String(values.MachiningScrap) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)) {
-          this.cancel('submit')
-          return false
-        }
-        else {
-          this.props.updateRMAPI(formData, (res) => {
-            this.setState({ setDisable: false })
-            if (res?.data?.Result) {
-              Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
-              this.clearForm('submit')
-            }
-          })
-          return false
-
-        }
-
-      }
-
-    } else {
-
-      // this.setState({ setDisable: true })
-
-      // let obj
-      // if(CheckApprovalApplicableMaster(RM_MASTER_ID) === true){
-      //   obj = {...formData,IsSendForApproval:true}
-      // }
-      // THIS CONDITION TO CHECK IF IT IS FOR MASTER APPROVAL THEN WE WILL SEND DATA FOR APPROVAL ELSE CREATE API WILL BE CALLED
-      if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
-        if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-          (Number(DataToChange.ScrapRate) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRate)) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-          String(DataToChange.Remark ? DataToChange.Remark : '') === String(values.Remark ? values.Remark : '') && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-            values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)
-          && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
-          && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : '')) && String(DataToChange.MachiningScrapRate) === String(values.MachiningScrap) && String(DataToChange.JaliScrapCost) === String(values.CircleScrapCost)) {
-          Toaster.warning('Please change data to send RM for approval')
-          // return false
-        }
-
-
-        if (IsFinancialDataChanged) {
-
-          if (isDateChange && (DayTime(oldDate).format("DD/MM/YYYY") !== DayTime(effectiveDate).format("DD/MM/YYYY"))) {
-            this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
-            return
-
-          } else {
-
-            this.setState({ setDisable: false })
+        //  IF: NEE TO UPDATE EFFECTIVE DATE
+        if (IsFinancialDataChanged || isRMAssociated) {
+          if (!isDateChange || (DayTime(oldDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
+            this.setState({ isEditBuffer: true })
             Toaster.warning('Please update the effective date')
             return false
           }
-
         }
+      }
+    }
 
-        if (isSourceChange) {
-          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
+    //  IF: APPROVAL FLOW
+    if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
+      formData.IsSendForApproval = true
+      this.setState({ approveDrawer: true, approvalObj: formData })
+    }
+    //  ELSE: NO APPROVAL FLOW
+    else {
+      if (isEditFlag) {
+        formData.IsSendForApproval = false
+        this.props.updateRMAPI(formData, (res) => {
           this.setState({ setDisable: false })
-
-        } else {
-
-          if (isEditFlag) {
-
-
-            if ((JSON.stringify(files) === JSON.stringify(DataToChange.FileList)) && DropdownChanged && Number(DataToChange.BasicRatePerUOM) === Number(values.BasicRate) &&
-              (Number(DataToChange.ScrapRate) === showExtraCost ? showForgingMachiningScrapCost ? Number(values.ForgingScrap) : Number(values.JaliScrapCost) : Number(values.ScrapRate)) && Number(DataToChange.NetLandedCost) === Number(values.NetLandedCost) &&
-              String(DataToChange.Remark) === String(values.Remark) && (Number(DataToChange.CutOffPrice) === Number(values.cutOffPrice) ||
-                values.cutOffPrice === undefined) && String(DataToChange.RawMaterialCode) === String(values.Code)) {
-              this.cancel('submit')
-              return false
-            }
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+            this.clearForm('submit')
           }
-          this.setState({ approveDrawer: true, approvalObj: { ...formData, IsSendForApproval: true } })
-        }
-
+        })
+        this.setState({ updatedObj: formData })
       } else {
         this.props.createRM(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
-            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS);
-            this.clearForm('submit');
+            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
+            this.clearForm('submit')
+            this.cancel('submit')
           }
-        });
+        })
       }
     }
+
   }
 
   handleKeyDown = function (e) {
@@ -1607,6 +1498,9 @@ class AddRMImport extends Component {
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
+    if (type === 'save') {
+      this.setState({ IsFinancialDataChanged: true })
+    }
     const sumBase = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCostConversion), 0);
     const sumCurrency = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
     let netLandedCostINR = Number(sumBase) + Number(this.state.FinalBasicPriceBase)
@@ -1643,25 +1537,8 @@ class AddRMImport extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification,
-      isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData,
-      BasicPriceINR, FinalBasicRateCurrency, FinalCutOffBase, FinalCutOffCurrency, FinalBasicRateBase, FinalScrapRateCurrency, FinalScrapRateBase, FinalForgingScrapCostCurrency,
-      FinalForgingScrapCostBase, FinalMachiningScrapCostCurrency, FinalMachiningScrapCostBase, FinalCircleScrapCostCurrency, FinalCircleScrapCostBase, FinalJaliScrapCostCurrency,
-      FinalJaliScrapCostBase, FinalFreightCostCurrency, FinalFreightCostBase, FinalShearingCostCurrency, FinalShearingCostBase, FinalBasicPriceCurrency, FinalBasicPriceBase,
-      FinalConditionCostCurrency, FinalConditionCostBase, FinalNetCostCurrency, FinalNetCostBase, IsFinancialDataChanged } = this.state;
-
-
-
-
-
-
-
-
-
-
-
-
-
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval,
+      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceCurrency, FinalBasicPriceBase, showScrapKeys } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -2192,7 +2069,7 @@ class AddRMImport extends Component {
 
 
 
-                            {(!this.state.showForgingMachiningScrapCost && !this.state.showExtraCost) &&
+                            {showScrapKeys?.showScrap &&
                               <>
                                 <Col md="3">
                                   <Field
@@ -2227,8 +2104,7 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                               </>}
-                            {
-                              (this.state.showForgingMachiningScrapCost) &&
+                            {showScrapKeys?.showForging &&
                               <>
                                 <Col md="3">
                                   <Field
@@ -2295,8 +2171,7 @@ class AddRMImport extends Component {
                                 </Col>
                               </>
                             }
-                            {
-                              (this.state.showExtraCost) &&
+                            {showScrapKeys?.showCircleJali &&
                               <>
                                 <Col md="3">
                                   <Field
@@ -2800,6 +2675,8 @@ class AddRMImport extends Component {
                 levelDetails={this.state.levelDetails}
                 showForgingMachiningScrapCost={this.state.showForgingMachiningScrapCost}
                 showExtraCost={this.state.showExtraCost}
+                Technology={this.state.Technology}
+                showScrapKeys={showScrapKeys}
               />
             )
           }

@@ -14,13 +14,13 @@ import DayTime from '../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import { BOPTYPE, BUDGETTYPE, BUDGET_ID, EMPTY_GUID, MACHINETYPE, OPERATIONTYPE, RMTYPE, VBCTypeId, ZBCTypeId } from '../../config/constants';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
-import { REMARKMAXLENGTH } from '../../config/masterData';
+import { REMARKMAXLENGTH, SHEETMETAL } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { masterApprovalAPI, masterApprovalRequestBySenderBudget } from './actions/Budget';
 import TooltipCustom from '../common/Tooltip';
 
 function MasterSendForApproval(props) {
-    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails } = props
+    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
 
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -662,7 +662,7 @@ function MasterSendForApproval(props) {
 
 
                 {/* {(!this.state.showForgingMachiningScrapCost && !this.state.showExtraCost) && */}
-                {!props?.showForgingMachiningScrapCost && !props?.showExtraCost &&
+                {showScrapKeys?.showScrap &&
                     <>
                         <Col md="3">
                             <TextFieldHookForm
@@ -697,8 +697,7 @@ function MasterSendForApproval(props) {
                             />
                         </Col>}
                     </>}
-                {
-                    (props?.showForgingMachiningScrapCost) &&
+                {showScrapKeys?.showForging &&
                     <>
                         <Col md="3">
                             <TextFieldHookForm
@@ -769,8 +768,7 @@ function MasterSendForApproval(props) {
                         </Col>}
                     </>
                 }
-                {
-                    (props?.showExtraCost) &&
+                {showScrapKeys?.showCircleJali &&
                     <>
                         <Col md="3">
                             <TextFieldHookForm
@@ -790,7 +788,7 @@ function MasterSendForApproval(props) {
                         </Col>
                         {props?.IsImportEntery && <Col md="3">
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Circle Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                label={labelWithUOMAndCurrency("Circle Scrap Cost Conversion", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"CircleScrapCostBase"}
                                 type="text"
                                 Controller={Controller}
