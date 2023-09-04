@@ -70,7 +70,6 @@ function AddRfq(props) {
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
     const [showPopup, setShowPopup] = useState(false)
-    const [selectedRowPartNoTable, setSelectedRowPartNoTable] = useState({})
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
@@ -108,6 +107,7 @@ function AddRfq(props) {
     const [state, setState] = useState(true)
     const [rmspecification, setRMSpecification] = useState([])
     const [deleteToggle, setDeleteToggle] = useState(false)
+    const [plant, setPlant] = useState({})
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
@@ -799,6 +799,8 @@ function AddRfq(props) {
             setValue('partNumber', "")
             setTechnology(newValue)
         }
+        setVendor('')
+        setValue("vendor", "")
         setPartName('')
         setState(false)
         setShowTooltip(false)
@@ -811,6 +813,15 @@ function AddRfq(props) {
         reactLocalStorage.setObject('PartData', [])
 
     }
+    const handlePlant = (newValue) => {
+        if (newValue && newValue !== '') {
+            setPlant(newValue)
+        } else {
+            setPlant('')
+        }
+        setVendor('')
+        setValue("vendor", "")
+    }
     const handleNfrChnage = (newValue) => {
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
@@ -822,7 +833,6 @@ function AddRfq(props) {
     }
 
     const handleVendorChange = (data) => {
-
         dispatch(getContactPerson(data.value, (res) => {
             setGetReporterListDropDown(res?.data?.SelectList)
             setValue('contactPerson', "")
@@ -835,7 +845,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput, technology.value)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput, technology.value, plant.value)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -1117,35 +1127,16 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                defaultValue={Object.keys(technology).length !== 0 ? technology : ""}
                                                 options={renderListing("technology")}
                                                 mandatory={true}
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.technology}
                                                 disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
-                                                    || (partList?.length !== 0)}
-                                                isLoading={VendorLoaderObj}
+                                                    || (partList?.length !== 0 || vendorList?.length !== 0)}
                                             />
                                         </Col>
-                                        {/* <Col md="3">
-                                            <SearchableSelectHookForm
-                                                label={"NFR Id"}
-                                                name={"nfrId"}
-                                                placeholder={"Select"}
-                                                Controller={Controller}
-                                                control={control}
-                                                rules={{ required: false }}
-                                                register={register}
-                                                defaultValue={nfrId?.length !== 0 ? nfrId : ""}
-                                                options={renderListing("nfrId")}
-                                                mandatory={false}
-                                                handleChange={handleNfrChnage}
-                                                errors={errors.nfrId}
-                                                disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
-                                                    || (partList?.length !== 0)}
-                                            // isLoading={VendorLoaderObj}
-                                            />
-                                        </Col> */}
+
                                         {initialConfiguration.IsNFRConfigured && <Col md="3">
                                             <SearchableSelectHookForm
                                                 label={"NFR No."}
@@ -1174,14 +1165,13 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                defaultValue={Object.keys(plant).length !== 0 ? plant : ""}
                                                 options={renderListing("plant")}
                                                 mandatory={true}
-                                                // handleChange={handleVendorChange}
-                                                handleChange={() => { }}
+                                                handleChange={handlePlant}
                                                 errors={errors.plant}
-                                                isLoading={VendorLoaderObj}
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                // isLoading={VendorLoaderObj}
+                                                disabled={(vendorList?.length !== 0 || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)))}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -1444,11 +1434,17 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                disabled={
+                                                    initialConfiguration.IsCriticalVendorConfigured &&
+                                                        (Object.keys(technology).length === 0 || Object.keys(plant).length === 0)
+                                                        ? true
+                                                        : dataProps?.isAddFlag
+                                                            ? false
+                                                            : (isViewFlag || !isEditAll)
+                                                }
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
-
 
                                         <Col md="3">
                                             <SearchableSelectHookForm

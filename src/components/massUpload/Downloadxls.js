@@ -100,6 +100,11 @@ export const checkVendorPlantConfig = (excelData, type = '') => {
             if (el.value === 'IsBreakupBoughtOutPart') return false;
             if (el.value === 'TechnologyName') return false;
         }
+        if (!getConfigurationKey().IsCriticalVendorConfigured) {
+            if (el.value === "IsCriticalVendor") return false;
+            if (el.value === "Technology") return false;
+            if (el.value === "PlantCode") return false;
+        }
         return true;
     })
 }
@@ -113,7 +118,7 @@ class Downloadxls extends React.Component {
             case 'RM Specification':
                 return this.returnExcelColumn(RMSpecification, RMSpecificationXLTempData);
             case 'Vendor':
-                return this.returnExcelColumn(Vendor, VendorTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(Vendor), VendorTempData);
             case 'Overhead':
                 return this.returnExcelColumn(Overhead, OverheadTempData);
             case 'Fuel':

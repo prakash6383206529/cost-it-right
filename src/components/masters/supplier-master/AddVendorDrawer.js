@@ -8,7 +8,7 @@ import {
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
-import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, } from '../../../actions/Common';
+import { fetchCountryDataAPI, fetchStateDataAPI, fetchCityDataAPI, getVendorPlantSelectList, getAllCities, getCityByCountry, getPlantSelectListByType } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
@@ -19,6 +19,7 @@ import _, { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
+import { ZBC } from '../../../config/constants';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -60,6 +61,7 @@ class AddVendorDrawer extends Component {
                     let list = res?.data?.SelectList?.filter(element => element?.Value !== '0')
                     this.setState({ technologyList: list })
                 })
+                this.props.getPlantSelectListByType(ZBC, () => { })
             }
         }
         if (!(this.props.isEditFlag || this.props.isViewMode)) {
@@ -179,7 +181,7 @@ class AddVendorDrawer extends Component {
     */
     renderListing = (label) => {
         const { Technology } = this.state
-        const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList, IsVendor, costingSpecifiTechnology } = this.props;
+        const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList, IsVendor, costingSpecifiTechnology, plantSelectList } = this.props;
         const temp = [];
         if (label === 'country') {
             countryList && countryList.map(item => {
@@ -250,6 +252,14 @@ class AddVendorDrawer extends Component {
                 })
             return temp
         }
+        if (label === 'plant') {
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.PlantId === '0') return false
+                temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+                return null
+            })
+            return temp
+        }
     }
 
     /**
@@ -282,7 +292,11 @@ class AddVendorDrawer extends Component {
                         tempArr.push({ Text: item.VendorType, Value: (item.VendorTypeId).toString() })
                         return null;
                     })
-
+                    let plantArray = [];
+                    Data && Data?.VendorPlants.map((item) => {
+                        plantArray.push({ Text: `${item?.PlantName} (${item?.PlantCode})`, Value: item?.plantId })
+                        return plantArray;
+                    })
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
@@ -293,6 +307,7 @@ class AddVendorDrawer extends Component {
                             city: Data.City !== undefined ? { label: Data.City, value: Data.CityId } : [],
                             Technology: technologyList,
                             isCriticalVendor: Data.IsCriticalVendor,
+                            selectedPlants: plantArray,
                         }, () => this.setState({ isLoader: false }))
                     }, 1000)
 
@@ -343,7 +358,7 @@ class AddVendorDrawer extends Component {
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck, isCriticalVendor, Technology } = this.state;
+        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck, isCriticalVendor, Technology, selectedPlants } = this.state;
         const { supplierData } = this.props;
 
 
@@ -373,6 +388,11 @@ class AddVendorDrawer extends Component {
             obj.TechnologyId = item.Value
             technologyList.push(obj)
         })
+        let plantArray = []
+        selectedPlants && selectedPlants.map((item) => {
+            plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
+            return plantArray
+        })
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
 
@@ -399,7 +419,8 @@ class AddVendorDrawer extends Component {
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
                 IsCriticalVendor: isCriticalVendor,
-                VendorTechnologies: isCriticalVendor ? technologyList : []
+                VendorTechnologies: isCriticalVendor ? technologyList : [],
+                VendorPlants: isCriticalVendor ? plantArray : []
             }
             this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
@@ -428,7 +449,8 @@ class AddVendorDrawer extends Component {
                 CityId: city.value,
                 VendorId: VendorId,
                 IsCriticalVendor: isCriticalVendor,
-                VendorTechnologies: technologyList
+                VendorTechnologies: technologyList,
+                VendorPlants: plantArray
             }
             this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
@@ -455,7 +477,15 @@ class AddVendorDrawer extends Component {
             this.setState({ Technology: newValue })
         }
     }
-
+    /**
+       * @method handlePlantChange
+       * @description Used handle vendor plants
+       */
+    handlePlantChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            this.setState({ selectedPlants: newValue })
+        }
+    }
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
@@ -725,24 +755,48 @@ class AddVendorDrawer extends Component {
                                             />
                                         </label>
                                     </Col>
-                                    {isCriticalVendor && <Col md="6">
-                                        <Field
-                                            label="Technology"
-                                            name="Technology"
-                                            placeholder={"Select"}
-                                            selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
-                                            options={this.renderListing("technology")}
-                                            validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                                            required={true}
-                                            selectionChanged={this.handleTechnologyChange}
-                                            optionValue={(option) => option.Value}
-                                            optionLabel={(option) => option.Text}
-                                            component={renderMultiSelectField}
-                                            mendatory={true}
-                                            disabled={isViewMode ? true : false}
-                                            className="multiselect-with-border"
-                                        />
-                                    </Col>}
+                                </Row>}
+                                {initialConfiguration?.IsCriticalVendorConfigured && isCriticalVendor && <Row className="pl-3">
+                                    <>
+                                        <Col md="6">
+                                            <Field
+                                                label="Technology"
+                                                name="Technology"
+                                                placeholder={"Select"}
+                                                selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
+                                                options={this.renderListing("technology")}
+                                                validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                                required={true}
+                                                selectionChanged={this.handleTechnologyChange}
+                                                optionValue={(option) => option.Value}
+                                                optionLabel={(option) => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={true}
+                                                disabled={isViewMode ? true : false}
+                                                className="multiselect-with-border"
+                                            />
+                                        </Col>
+                                        <Col md="6">
+                                            <Field
+                                                label="Plant (Code)"
+                                                name="SourceSupplierPlantId"
+                                                placeholder={"Select"}
+                                                title={showDataOnHover(this.state.selectedPlants)}
+                                                selection={
+                                                    this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                                options={this.renderListing("plant")}
+                                                selectionChanged={this.handlePlantChange}
+                                                validate={
+                                                    this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
+                                                required={true}
+                                                optionValue={(option) => option.Value}
+                                                optionLabel={(option) => option.Text}
+                                                component={renderMultiSelectField}
+                                                mendatory={true}
+                                                disabled={isViewMode ? true : false}
+                                                className="multiselect-with-border"
+                                            />
+                                        </Col></>
                                 </Row>}
 
                                 <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
@@ -790,7 +844,7 @@ class AddVendorDrawer extends Component {
 * @param {*} state
 */
 function mapStateToProps({ comman, supplier, costing, auth }) {
-    const { countryList, stateList, cityList, plantList, vendorPlantSelectList, } = comman;
+    const { countryList, stateList, cityList, plantList, vendorPlantSelectList, plantSelectList } = comman;
     const { supplierData, vendorTypeList } = supplier;
     const { costingSpecifiTechnology } = costing
     const { initialConfiguration } = auth;
@@ -810,7 +864,7 @@ function mapStateToProps({ comman, supplier, costing, auth }) {
     }
     return {
         countryList, stateList, cityList, plantList, initialValues, supplierData, vendorTypeList,
-        vendorPlantSelectList, costingSpecifiTechnology, initialConfiguration
+        vendorPlantSelectList, costingSpecifiTechnology, initialConfiguration, plantSelectList
     }
 }
 
@@ -832,7 +886,8 @@ export default connect(mapStateToProps, {
     getCityByCountry,
     getVendorTypesSelectList,
     getVendorPlantSelectList,
-    getCostingSpecificTechnology
+    getCostingSpecificTechnology,
+    getPlantSelectListByType
 })(reduxForm({
     form: 'AddVendorDrawer',
     enableReinitialize: true,
