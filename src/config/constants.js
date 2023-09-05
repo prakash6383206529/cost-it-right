@@ -128,6 +128,7 @@ export const API = {
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
   getPartDescription: `${BASE_URL}/masters-part/get-info-name-by-part-number-and-type`,
 
+
   //ASSEMBLY PART
   createAssemblyPart: `${BASE_URL}/masters-part/create-assembly-part`,
   getAssemblyPartDataList: `${BASE_URL}/masters-part/get-all-assembly-part`,
@@ -898,6 +899,13 @@ export const API = {
   getComapanySelectList: `${BASE_URL}/company/get-company-select-list`,
   updateCompany: `${BASE_URL}/company/update`,
 
+  //OUTSOURCING
+  activeInactiveOutsourcingStatus: `${BASE_URL}/masters-outsourcing/active`,
+  createOutsourcing: `${BASE_URL}/masters-outsourcing/create`,
+  updateOutsourcing: `${BASE_URL}/masters-outsourcing/update`,
+  getAllOutsourcing: `${BASE_URL}/masters-outsourcing/get-all`,
+  getOutsourcing: `${BASE_URL}/masters-outsourcing/get`,
+
   //SIMULATION
   getSimulationHistory: `${BASE_URL}/simulation/get-simulation-history`,
   getSelectListOfSimulationMaster: `${BASE_URL}/simulation/select-list-get-simulation-applied-for-master`,
@@ -996,6 +1004,9 @@ export const API = {
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
   getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
   getPlantWiseGotAndGivenDetails: `${BASE_URL}/reports/get-plant-head-wise-details`,
+  getProductlist: `${BASE_URL}/reports/get-product-list`,
+  getProductPartDataList: `${BASE_URL}/reports/get-product-parts-list`,
+  getStageOfPartDetails: `${BASE_URL}/reports/get-stage-of-parts-details`,
 
 
   //SUB ASSEMBLY
@@ -1640,6 +1651,11 @@ export const GET_TAX_DETAILS_DATA = 'GET_TAX_DETAILS_DATA'
 //COMPANY
 export const GET_COMPANY_SELECTLIST = 'GET_COMPANY_SELECTLIST'
 
+//OUTSOURCING
+export const GET_OUTSOURCING_DATA = 'GET_OUTSOURCING_DATA'
+export const GET_ALL_OUTSOURCING_DATA = 'GET_ALL_OUTSOURCING_DATA'
+export const GET_OUTSOURCING_DATA_FOR_DOWNLOAD = 'GET_OUTSOURCING_DATA_FOR_DOWNLOAD'
+
 //SIMULATION
 export const GET_SIMULATION_HISTORY = 'GET_SIMULATION_HISTORY'
 export const GET_SELECTLIST_MASTERS = 'GET_SELECTLIST_MASTERS'
@@ -1685,6 +1701,9 @@ export const GET_BENCHMARK_MASTER_LIST = 'GET_BENCHMARK_MASTER_LIST'
 export const GET_COST_RATIO_REPORT = 'GET_COST_RATIO_REPORT'
 export const GET_REPORT_FORM_GRID_DATA = 'GET_REPORT_FORM_GRID_DATA'
 export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
+export const GET_PRODUCT_LIST = 'GET_PRODUCT_LIST'
+export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
+export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -1816,6 +1835,7 @@ export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
 export const GOT_GIVEN_REPORT = "Got Given Report"
 export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
+export const OUTSOURCING = "Outsourcing"
 
 
 //export const SIMULATION_HISTORY = 'Simulation History'
