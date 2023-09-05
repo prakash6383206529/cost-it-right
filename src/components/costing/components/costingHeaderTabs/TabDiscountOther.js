@@ -264,6 +264,7 @@ function TabDiscountOther(props) {
             let Data = res?.data?.Data.ConditionsData
             let temp = []
             Data && Data.map((item) => {
+              item.ConditionPercentage = item.Percentage
               item.condition = `${item.Description} (${item.CostingConditionNumber})`
               temp.push(item)
             })
@@ -1140,10 +1141,15 @@ function TabDiscountOther(props) {
 
       if (type === 'save') {
         if (data) {
+          let list = data && data?.map(item => {
+            item.Percentage = item?.ConditionPercentage
+            delete item?.ConditionPercentage
+            return item
+          })
           let obj = {}
           obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
           obj.LoggedInUserId = loggedInUserId()
-          obj.ConditionsData = data
+          obj.ConditionsData = list
           dispatch(saveCostingDetailCondition(obj, () => { }))
         }
       }
@@ -1643,11 +1649,11 @@ function TabDiscountOther(props) {
                       {isConditionCostingOpen && <AddConditionCosting
                         isOpen={isConditionCostingOpen}
                         tableData={conditionTableData}
-                        CostingViewMode={CostingViewMode}
                         closeDrawer={openAndCloseAddConditionCosting}
                         anchor={'right'}
                         netPOPrice={netPOPrice}
-                        basicRate={getValues('BasicRateINR')}
+                        basicRateCurrency={getValues('BasicRateINR')}
+                        ViewMode={CostingViewMode}
                       />}
                     </Col>
                     {/* {initialConfiguration?.IsShowNpvCost && <Row>
@@ -2213,11 +2219,11 @@ function TabDiscountOther(props) {
                     </div>
                   </Row>
 
-                </form>
-              </div>
-            </Col>
-          </Row>
-        </div>
+                </form >
+              </div >
+            </Col >
+          </Row >
+        </div >
       </div >}
       {
         openCloseOtherCost &&
