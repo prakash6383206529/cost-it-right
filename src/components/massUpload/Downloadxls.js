@@ -105,6 +105,11 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false) => {
             if (el.value === "Technology") return false;
             if (el.value === "PlantCode") return false;
         }
+        if (!getConfigurationKey().IsCriticalVendorConfigured) {
+            if (el.value === "IsCriticalVendor") return false;
+            if (el.value === "Technology") return false;
+            if (el.value === "PlantCode") return false;
+        }
         return true;
     })
 }

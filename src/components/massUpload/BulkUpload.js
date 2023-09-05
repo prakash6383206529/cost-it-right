@@ -437,7 +437,6 @@ class BulkUpload extends Component {
                                 } else if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
-
                                 if (fileHeads[i] === 'InsertPartNumber') {
                                     fileHeads[i] = 'BoughtOutPartNumber'
                                 }

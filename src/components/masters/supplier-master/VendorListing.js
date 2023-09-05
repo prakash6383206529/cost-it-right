@@ -632,6 +632,7 @@ class VendorListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
             valuesFloatingFilter: MultiDropdownFloatingFilter,
+            isCriticalVendor: this.isCriticalVendor
         };
 
         return (

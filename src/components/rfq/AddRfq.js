@@ -24,7 +24,7 @@ import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/CommonFunctions';
 import BulkUpload from '../massUpload/BulkUpload';
-import _, { debounce } from 'lodash';
+import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
@@ -884,7 +884,7 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, null)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -1174,7 +1174,6 @@ function AddRfq(props) {
                                                 mandatory={true}
                                                 handleChange={handlePlant}
                                                 errors={errors.plant}
-                                                // isLoading={VendorLoaderObj}
                                                 disabled={(vendorList?.length !== 0 || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)))}
                                             />
                                         </Col>

@@ -1703,7 +1703,6 @@ export function getCostingCondition(callback) {
   };
 }
 
-
 export function getVendorNameByVendorSelectList(vendorTypeId, vendorName, technologyId, plantId = '', callback) {
   return axios.get(`${API.getVendorNameByVendorSelectList}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}&technologyId=${technologyId}&plantId=${plantId}`, config()).catch(error => {
     apiErrors(error);

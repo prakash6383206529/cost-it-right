@@ -48,10 +48,9 @@ export default function supplierReducer(state = initialState, action) {
                 }
                 if (el.IsCriticalVendor === true) {
                     el.IsCriticalVendor = 'Yes'
-                } else if (el.IsCriticalVendor === false) {
+                } else {
                     el.IsCriticalVendor = 'No'
                 }
-
                 return true
             })
             return {
