@@ -486,9 +486,7 @@ class AddVendorDrawer extends Component {
        */
     handlePlantChange = (newValue) => {
         this.setState({ DropdownChanged: false })
-        if (newValue && newValue !== '') {
-            this.setState({ selectedPlants: newValue })
-        }
+        this.setState({ selectedPlants: newValue })
     }
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
