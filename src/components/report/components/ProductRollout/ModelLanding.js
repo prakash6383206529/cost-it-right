@@ -4,7 +4,7 @@ import { DatePickerHookForm, SearchableSelectHookForm } from "../../../layout/Ho
 import { Controller, useForm } from "react-hook-form";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
-import { getProductPartDataList, getProductlist, getStageOfPartDetails } from "../../actions/ReportListing";
+import { getProductPartDataList, getProductlist } from "../../actions/ReportListing";
 import DayTime from "../../../common/DayTimeWrapper";
 
 const ModelLanding = (props) => {
@@ -16,6 +16,7 @@ const ModelLanding = (props) => {
     const ProductList = useSelector(state => state.report.productList)
     const ProductPartDataList = useSelector(state => state.report.productPartDataList)
     const dispatch = useDispatch()
+    const [sendData, setSendData] = useState({})
     useEffect(() => {
         dispatch(getProductlist(() => { }))
     }, [])
@@ -31,7 +32,7 @@ const ModelLanding = (props) => {
             return temp
         } else if (label === 'PartNo') {
             ProductPartDataList && ProductPartDataList.map((item) => {
-                temp.push({ label: item.PartNumberAndRevisionNumber, value: item.PartId, effectiveDate: item.EffectiveDate })
+                temp.push({ label: item.PartNumberAndRevisionNumber, value: item.PartId, effectiveDate: item.EffectiveDate, partType: item.PartType, partNumber: item.PartNumber })
                 return null
             })
             return temp
@@ -41,7 +42,8 @@ const ModelLanding = (props) => {
     const modelHanlder = (newValue) => {
         if (newValue && newValue !== '') {
             setModel(newValue)
-            props.fetchData(false)
+            setSendData({ ...sendData, productId: newValue.value, showData: false })
+            props.fetchData(sendData)
             setValue('Part', '')
             dispatch(getProductPartDataList(newValue.value, (res) => {
             }))
@@ -49,10 +51,10 @@ const ModelLanding = (props) => {
     }
     const PartHandler = (newValue) => {
         setValue('EffectiveDate', DayTime(newValue.effectiveDate).$d)
+        setSendData({ ...sendData, partId: newValue.value, showData: false, partType: newValue.partType, partNumber: newValue.partNumber })
     }
     const onSubmit = (data) => {
-        dispatch(getStageOfPartDetails(data.model.value, () => { }))
-        props.fetchData(true)
+        props.fetchData({ ...sendData, showData: true })
     }
     return (
         <div className="seprate-box">

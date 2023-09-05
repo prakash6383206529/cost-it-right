@@ -22,7 +22,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.8.160/api/v1`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
-//const BASE_URL = `http://10.10.8.109:8081/api/v1`;
+// const BASE_URL = `http://10.10.8.120:81/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
@@ -1007,6 +1007,12 @@ export const API = {
   getProductlist: `${BASE_URL}/reports/get-product-list`,
   getProductPartDataList: `${BASE_URL}/reports/get-product-parts-list`,
   getStageOfPartDetails: `${BASE_URL}/reports/get-stage-of-parts-details`,
+  getProductRolloutCostMovement: `${BASE_URL}/reports/get-cost-movement-details`,
+  getTotalPartsDetails: `${BASE_URL}/reports/get-parts-details`,
+  getProductRolloutCostRatio: `${BASE_URL}/reports/get-cost-ratio-details`,
+  getUsageRmDetails: `${BASE_URL}/reports/get-usage-rm-details`,
+  getSupplierContributionDetails: `${BASE_URL}/reports/get-supplier-contribution-details`,
+
 
 
   //SUB ASSEMBLY
@@ -2642,4 +2648,4 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.242";
+export const VERSION = "V2.1.243";
