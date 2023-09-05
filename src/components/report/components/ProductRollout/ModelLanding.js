@@ -32,7 +32,7 @@ const ModelLanding = (props) => {
             return temp
         } else if (label === 'PartNo') {
             ProductPartDataList && ProductPartDataList.map((item) => {
-                temp.push({ label: item.PartNumberAndRevisionNumber, value: item.PartId, effectiveDate: item.EffectiveDate })
+                temp.push({ label: item.PartNumberAndRevisionNumber, value: item.PartId, effectiveDate: item.EffectiveDate, partType: item.PartType, partNumber: item.PartNumber })
                 return null
             })
             return temp
@@ -51,7 +51,7 @@ const ModelLanding = (props) => {
     }
     const PartHandler = (newValue) => {
         setValue('EffectiveDate', DayTime(newValue.effectiveDate).$d)
-        setSendData({ ...sendData, partId: newValue.value, showData: false })
+        setSendData({ ...sendData, partId: newValue.value, showData: false, partType: newValue.partType, partNumber: newValue.partNumber })
     }
     const onSubmit = (data) => {
         props.fetchData({ ...sendData, showData: true })

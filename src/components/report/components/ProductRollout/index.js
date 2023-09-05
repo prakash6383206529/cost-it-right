@@ -7,17 +7,15 @@ import PartUsage from "./PartUsage";
 import DisplayCharts from "./DisplayCharts";
 import MasterUsage from "./MasterUsage";
 import { useMemo } from "react";
+import { useCallback } from "react";
 
 const ProductRollout = () => {
-    const [modelLandingData, setModelLandingData] = useState({})
+    const [modelLandingData, setModelLandingData] = useState({});
+
     const fetchData = (value) => {
-        setModelLandingData(value)
-    }
-    const StageOfPartUI = useMemo(() => <StageOfParts productId={modelLandingData.productId} />, [modelLandingData.productId])
-    const CostMovementUI = useMemo(() => <CostMovement partId={modelLandingData.partId} />, [modelLandingData.partId])
-    const PartUsageUI = useMemo(() => <PartUsage productId={modelLandingData.productId} />, [modelLandingData.productId])
-    const DisplayChartsUI = useMemo(() => <DisplayCharts productId={modelLandingData.productId} />, [modelLandingData.productId])
-    const MasterUsageUI = useMemo(() => <MasterUsage productId={modelLandingData.productId} />, [modelLandingData.productId])
+        setModelLandingData(value);
+    };
+
     return (
         <div className="product-rollout-container">
             <h1>Detailed Model/Assy Report</h1>
@@ -25,24 +23,25 @@ const ProductRollout = () => {
                 <Col md="6">
                     <ModelLanding fetchData={fetchData} />
                 </Col>
-                {modelLandingData.showData && <>
-                    <Col md="6">
-                        {StageOfPartUI}
-                    </Col>
-                    <Col md="12">
-                        {CostMovementUI}
-                    </Col>
-                    <Col md="6">
-                        {PartUsageUI}
-                        {DisplayChartsUI}
-                    </Col>
-                    <Col md="6">
-                        {MasterUsageUI}
-                    </Col>
-                </>}
-
+                {modelLandingData.showData && (
+                    <>
+                        <Col md="6">
+                            <StageOfParts productId={modelLandingData.productId} />
+                        </Col>
+                        <Col md="12">
+                            <CostMovement partId={modelLandingData.partId} partNumber={modelLandingData.partNumber} partType={modelLandingData.partType} />
+                        </Col>
+                        <Col md="6">
+                            <PartUsage productId={modelLandingData.productId} />
+                            <MasterUsage productId={modelLandingData.productId} />
+                        </Col>
+                        <Col md="6">
+                            <DisplayCharts productId={modelLandingData.productId} />
+                        </Col>
+                    </>
+                )}
             </Row>
         </div>
-    )
-}
-export default ProductRollout;
+    );
+};
+export default React.memo(ProductRollout);
