@@ -493,6 +493,7 @@ export function getTotalPartsDetails(productId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }
@@ -505,6 +506,7 @@ export function getProductRolloutCostMovement(partId, partNumber, partType, call
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }
@@ -517,6 +519,7 @@ export function getProductRolloutCostRatio(productId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }
@@ -529,6 +532,7 @@ export function getUsageRmDetails(productId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }
@@ -541,6 +545,7 @@ export function getSupplierContributionDetails(productId, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+            callback(error)
         })
     }
 }
