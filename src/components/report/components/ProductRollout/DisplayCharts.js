@@ -8,7 +8,7 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getProductRolloutCostRatio, getSupplierContributionDetails } from "../../actions/ReportListing";
 import NoContentFound from "../../../common/NoContentFound";
-import { EMPTY_DATA } from "../../../../config/constants";
+import { EMPTY_DATA, EMPTY_GUID } from "../../../../config/constants";
 import LoaderCustom from "../../../common/LoaderCustom";
 
 
@@ -224,6 +224,6 @@ const DisplayCharts = ({ productId }) => {
     );
 }
 DisplayCharts.defualtProps = {
-    productId: '0000-0000-0000-0000-00000'
+    productId: EMPTY_GUID
 }
 export default React.memo(DisplayCharts);
