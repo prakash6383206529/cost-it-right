@@ -1671,11 +1671,7 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
-<<<<<<< HEAD
-  const fieldsObj = selector(state, 'BasicRate', 'NoOfPieces', 'NumberOfPieces', 'BasicRateBase');
-=======
   const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRateBase', 'Remark');
->>>>>>> 972756525c (CIR-T1702 | CIR-T1688 | WIP IV)
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;
