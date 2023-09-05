@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import ApprovalWorkFlow from '../costing/components/approval/ApprovalWorkFlow';
 import RMDomesticListing from './material-master/RMDomesticListing';
 import BOPDomesticListing from './bop-master/BOPDomesticListing';
+import BOPImportListing from './bop-master/BOPImportListing';
 import Drawer from '@material-ui/core/Drawer';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getMasterApprovalSummary } from './actions/Material';
 import { Fragment } from 'react';
@@ -12,11 +13,12 @@ import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
 import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL, BUDGET_ID, APPROVED_STATUS } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
-import { loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
+import { getConfigurationKey, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import BudgetListing from './budget-master/BudgetListing';
+import RMImportListing from './material-master/RMImportListing';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -53,8 +55,14 @@ function SummaryDrawer(props) {
     const [costingTypeId, setCostingTypeId] = useState('')
     const [levelDetails, setLevelDetails] = useState('')
     const [isBudgetApproval, setIsBudgetApproval] = useState(false)
+    const [showImport, setShowImport] = useState(false)
+
+    // const { rmDomesticListing, rmImportListing, bopDomesticList, bopImportList } = useSelector(state => state.material)
+
+
     useEffect(() => {
         let CostingTypeId = ''
+        setLoader(true)
         dispatch(getMasterApprovalSummary(approvalData.approvalNumber, approvalData.approvalProcessId, props.masterId, res => {
             const Data = res.data.Data
             setApprovalLevelStep(Data.MasterSteps)
@@ -64,9 +72,21 @@ function SummaryDrawer(props) {
                 CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                if (Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                    setShowImport(false)
+                } else {
+                    setShowImport(true)
+                }
             } else if (Number(props.masterId) === BOP_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.BOPDomesticListResponse[0].Attachements)
+
+                if (Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                    setShowImport(false)
+                } else {
+                    setShowImport(true)
+                }
+
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (Number(props.masterId) === OPERATIONS_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
@@ -146,29 +166,41 @@ function SummaryDrawer(props) {
                                 </div>
                             </Col>
                         </Row>
-                        {loader && <LoaderCustom />}
-                        <Row className="mx-0 mb-3">
-                            <Col>
-                                <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} />
+                        {loader ? <LoaderCustom /> :
+                            <Row className="mx-0 mb-3">
+                                <Col>
+                                    <ApprovalWorkFlow approvalLevelStep={approvalLevelStep} approvalNo={approvalDetails.Token} />
 
 
-                                {isRMApproval &&
-                                    <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
-                                {isBOPApproval &&
-                                    <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
+                                    {isRMApproval && <>
+                                        {showImport ?
+                                            <RMImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                            :
+                                            <RMDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                        }
+                                    </>}
+                                    {isBOPApproval && <>
+                                        {showImport ?
+                                            <BOPImportListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                            :
+                                            <BOPDomesticListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} stopApiCallOnCancel={true} costingTypeId={approvalData?.costingTypeId} />
+                                        }
+                                    </>
+                                    }
 
-                                {isOperationApproval &&
-                                    <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} stopAPICall={false} approvalStatus={APPROVED_STATUS} />}
+                                    {isOperationApproval &&
+                                        <OperationListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} stopAPICall={false} approvalStatus={APPROVED_STATUS} />}
 
-                                {isMachineApproval &&
-                                    <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
-                                {isBudgetApproval &&
-                                    <BudgetListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
+                                    {isMachineApproval &&
+                                        <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
+                                    {isBudgetApproval &&
+                                        <BudgetListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
 
-                            </Col>
+                                </Col>
 
 
-                        </Row>
+                            </Row>
+                        }
                         {
                             !approvalDetails.IsSent &&
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">

@@ -35,6 +35,7 @@ function ViewOtherCostDrawer(props) {
             let Data = viewCostingData[props.npvIndex]?.CostingPartDetails?.CostingConditionResponse
             let temp = []
             Data && Data.map((item) => {
+                item.ConditionPercentage = item.Percentage
                 item.condition = `${item.Description} (${item.CostingConditionNumber})`
                 temp.push(item)
             })

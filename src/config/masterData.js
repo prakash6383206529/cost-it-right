@@ -5104,8 +5104,17 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: "Customer (Code)", value: "CustomerName", },
+
+
+
+
     { label: "Basic Rate", value: "BasicRate", },
-    { label: "Net Cost", value: "NetLandedCost", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
+    { label: "Net Landed Cost", value: "NetLandedCost", },
+
+
+
     { label: "Effective Date", value: "EffectiveDate", }
 ]
 
@@ -5124,9 +5133,18 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     // { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" }, // FOR MINDA ONLY
-    { label: "Basic Rate", value: "BasicRate" },
-    { label: "Net Cost (Currency)", value: "NetLandedCost" },
-    { label: "Net Cost (INR)", value: "NetLandedCostConversion" },
+
+
+    { label: "Basic Rate", value: "BasicRate", },
+    { label: "Basic Rate Conversion", value: "BasicRateConversion", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
+    { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
+    { label: "Net Landed Cost", value: "NetLandedCost", },
+    { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
+
+
     { label: "Effective Date", value: "EffectiveDate" },
 ]
 
@@ -5244,14 +5262,18 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Vendor (code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UnitOfMeasurementName", },
+
+    { label: "Cut Off Price", value: "CutOffPrice", },
     { label: "Basic Rate", value: "BasicRatePerUOM", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
     { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost", value: "NetLandedCost", },
-    { label: "Cut Off Price", value: "CutOffPrice", },
+
     { label: "Effective Date", value: "EffectiveDate", },
 ]
 
@@ -5269,15 +5291,27 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "Currency", value: "Currency", },
+
+    { label: "CutOff Price", value: "CutOffPrice", },
+    { label: "CutOff Price Conversion", value: "CutOffPriceInINR", },
     { label: "Basic Rate", value: "BasicRatePerUOM", },
+    { label: "Basic Rate Conversion", value: "BasicRatePerUOMConversion", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
+    { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
     { label: "Freight Cost", value: "RMFreightCost", },
+    { label: "Freight Cost Conversion", value: "RawMaterialFreightCostConversion", },
     { label: "Shearing Cost", value: "RMShearingCost", },
-    { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
+    { label: "Shearing Cost Conversion", value: "RawMaterialShearingCostConversion", },
+    { label: "Machining Scrap Rate", value: "MachiningScrapRate", },
+    { label: "Machining Scrap Rate Conversion", value: "MachiningScrapRateInINR", },
     { label: "Circle Scrap Cost", value: "JaliScrapCost", },
+    { label: "Circle Scrap Cost Conversion", value: "JaliScrapCostConversion", },
     { label: "Scrap Rate", value: "ScrapRate", },
-    { label: "Net Cost(Currency)", value: "NetLandedCost", },
-    { label: "Net Cost(INR)", value: "NetLandedCostConversion", },
-    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Scrap Rate Conversion", value: "ScrapRateInINR", },
+    { label: "Net Landed Cost", value: "NetLandedCost", },
+    { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
 
 ]
 
