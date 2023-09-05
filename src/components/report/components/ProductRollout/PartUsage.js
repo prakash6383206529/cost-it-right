@@ -5,6 +5,7 @@ import { Col, Row } from "reactstrap";
 import { getTotalPartsDetails } from "../../actions/ReportListing";
 import { useState } from "react";
 import LoaderCustom from "../../../common/LoaderCustom";
+import { EMPTY_GUID } from "../../../../config/constants";
 
 const PartUsage = ({ productId }) => {
     const dispatch = useDispatch();
@@ -44,6 +45,6 @@ const PartUsage = ({ productId }) => {
     );
 }
 PartUsage.defualtProps = {
-    productId: '0000-0000-0000-0000-00000'
+    productId: EMPTY_GUID
 }
 export default React.memo(PartUsage);
