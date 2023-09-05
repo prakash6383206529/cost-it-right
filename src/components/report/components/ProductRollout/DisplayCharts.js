@@ -9,17 +9,49 @@ import { useDispatch } from "react-redux";
 import { getProductRolloutCostRatio, getSupplierContributionDetails } from "../../actions/ReportListing";
 import NoContentFound from "../../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../../config/constants";
+import LoaderCustom from "../../../common/LoaderCustom";
+
 
 const DisplayCharts = ({ productId }) => {
     const dispatch = useDispatch()
-    const [pieChartData, setPieChartData] = useState({});
-    const [doughnutData, setDoughnutData] = useState({})
-    const [noContent, setNoContent] = useState(true)
+    const [pieChartObj, setPieChartObj] = useState({});
+    const [doughnutObj, setDoughnutObj] = useState({})
+    const [chartStates, setChartStates] = useState({
+        noContent: {
+            pieChart: false,
+            doughnut: false
+        },
+        isLoader: {
+            pieChart: false,
+            doughnut: false
+        }
+    });
 
     useEffect(() => {
+        setChartStates(prevChartStates => ({
+            ...prevChartStates,
+            noContent: {
+                ...prevChartStates.noContent,
+                pieChart: true
+            },
+            isLoader: {
+                ...prevChartStates.isLoader,
+                pieChart: false
+            }
+        }));
         dispatch(getProductRolloutCostRatio(productId, (res) => {
             if (res && res.status === 200) {
-                setNoContent(false)
+                setChartStates(prevChartStates => ({
+                    ...prevChartStates,
+                    noContent: {
+                        ...prevChartStates.noContent,
+                        pieChart: false
+                    },
+                    isLoader: {
+                        ...prevChartStates.isLoader,
+                        pieChart: false
+                    }
+                }));
                 let pieChartDataTemp = res.data.Data;
 
                 let Labels = [];
@@ -40,26 +72,46 @@ const DisplayCharts = ({ productId }) => {
                     }
                 });
 
-                setPieChartData({
+                setPieChartObj({
                     labels: Labels,
-                    datasets: [
-                        {
-                            label: '',
-                            data: Dataset,
-                            backgroundColor: colorArray,
-                            borderWidth: 0.5,
-                            hoverOffset: 10
-                        },
-                    ],
+                    datasets: Dataset
                 })
+                setChartStates(prevChartStates => ({
+                    ...prevChartStates,
+                    isLoader: {
+                        ...prevChartStates.isLoader,
+                        pieChart: false
+                    }
+                }));
 
             }
             else {
-                setNoContent(true)
+                setChartStates(prevChartStates => ({
+                    ...prevChartStates,
+                    noContent: {
+                        ...prevChartStates.noContent,
+                        pieChart: true
+                    },
+                    isLoader: {
+                        ...prevChartStates.isLoader,
+                        pieChart: false
+                    }
+                }));
             }
         }))
         dispatch(getSupplierContributionDetails(productId, (res) => {
             if (res && res.status === 200) {
+                setChartStates(prevChartStates => ({
+                    ...prevChartStates,
+                    noContent: {
+                        ...prevChartStates.noContent,
+                        doughnut: false
+                    },
+                    isLoader: {
+                        ...prevChartStates.isLoader,
+                        doughnut: false
+                    }
+                }));
                 let temp = res.data.Data;
                 let Labels = []
                 let dataSet = [];
@@ -67,22 +119,55 @@ const DisplayCharts = ({ productId }) => {
                     Labels.push(item.Vendor)
                     dataSet.push(item.PartCount)
                 })
-                setDoughnutData({
+                setDoughnutObj({
                     labels: Labels,
-                    datasets: [
-                        {
-                            label: '',
-                            data: dataSet,
-                            backgroundColor: colorArray,
-                            borderWidth: 2,
-                        },
-                    ],
+                    datasets: dataSet
                 })
+                setChartStates(prevChartStates => ({
+                    ...prevChartStates,
+                    isLoader: {
+                        ...prevChartStates.isLoader,
+                        doughnut: false
+                    }
+                }));
+
+            } else {
+                setChartStates(prevChartStates => ({
+                    ...prevChartStates,
+                    noContent: {
+                        ...prevChartStates.noContent,
+                        doughnut: true
+                    },
+                    isLoader: {
+                        ...prevChartStates.isLoader,
+                        doughnut: false
+                    }
+                }));
             }
 
         }))
     }, []);
-
+    const pieChartData = {
+        labels: pieChartObj.labels,
+        datasets: [
+            {
+                data: pieChartObj.datasets,
+                backgroundColor: colorArray,
+                borderWidth: 0.5,
+                hoverOffset: 10
+            }
+        ]
+    }
+    const doughnutData = {
+        labels: doughnutObj.labels,
+        datasets: [
+            {
+                data: doughnutObj.datasets,
+                backgroundColor: colorArray,
+                borderWidth: 2,
+            }
+        ]
+    }
     const pieChartOption = {
         plugins: {
             legend: {
@@ -120,14 +205,17 @@ const DisplayCharts = ({ productId }) => {
                 <Col md="6">
                     <div className="seprate-box">
                         <h6>Supplier Contribution</h6>
-                        <Suppliercontributiongraph data={doughnutData} options={doughnutOptions} />
+                        {chartStates.isLoader.doughnut && <LoaderCustom />}
+                        {chartStates.noContent.doughnut ? <NoContentFound title={EMPTY_DATA} /> : <Suppliercontributiongraph data={doughnutData} options={doughnutOptions} />}
                     </div>
                 </Col>
                 <Col md="6">
                     <div className="seprate-box">
                         <h6>Cost Ratio</h6>
-                        {noContent ? <NoContentFound customClassName="" title={EMPTY_DATA} /> :
-                            <Costratiograph data={pieChartData} options={pieChartOption} />}
+                        {chartStates.isLoader.pieChart && <LoaderCustom />}
+                        {chartStates.noContent.pieChart ? <NoContentFound title={EMPTY_DATA} /> :
+                            <Costratiograph data={pieChartData} options={pieChartOption} />
+                        }
                     </div>
                 </Col>
             </Row>
