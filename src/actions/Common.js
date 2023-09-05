@@ -1709,8 +1709,8 @@ export function sidebarAndNavbarHide(data) {
     })
   }
 }
-export function getVendorNameByVendorSelectList(vendorTypeId, vendorName, callback) {
-  return axios.get(`${API.getVendorNameByVendorSelectList}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}`, config()).catch(error => {
+export function getVendorNameByVendorSelectList(vendorTypeId, vendorName, technologyId, plantId = '', callback) {
+  return axios.get(`${API.getVendorNameByVendorSelectList}?vendorTypeId=${vendorTypeId}&vendorName=${vendorName}&technologyId=${technologyId}&plantId=${plantId}`, config()).catch(error => {
     apiErrors(error);
     callback(error);
     return Promise.reject(error)

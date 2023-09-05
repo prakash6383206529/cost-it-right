@@ -16,7 +16,7 @@ import BulkUpload from '../../massUpload/BulkUpload';
 import AddVendorDrawer from './AddVendorDrawer';
 import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../../helper/util';
 import { MASTERS, VENDOR, VendorMaster } from '../../../config/constants';
-import { loggedInUserId } from '../../../helper';
+import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import ReactExport from 'react-export-excel';
 import { VENDOR_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -32,6 +32,7 @@ import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
 import _ from 'lodash';
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
+import { hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -55,7 +56,7 @@ class VendorListing extends Component {
             totalRecordCount: 0,
             pageNo: 1,
             pageNoNew: 1,
-            floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "" },
+            floatingFilterData: { vendorType: "", vendorName: "", VendorCode: "", Country: "", State: "", City: "", VendorTechnology: "", VendorPlant: "", IsCriticalVendor: "" },
             AddAccessibility: false,
             EditAccessibility: false,
             DeleteAccessibility: false,
@@ -337,6 +338,14 @@ class VendorListing extends Component {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
 
+    /**
+    * @method isCriticalVendor
+    */
+    isCriticalVendor = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? "Yes" : "No"
+    }
+
 
     checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -576,6 +585,10 @@ class VendorListing extends Component {
 
     returnExcelColumn = (data = [], TempData) => {
         let temp = []
+        let excelData = [...data]
+        if (!getConfigurationKey()?.IsCriticalVendorConfigured) {
+            excelData = hideMultipleColumnFromExcel(excelData, ["IsCriticalVendor", "VendorTechnology", "VendorPlant"])
+        }
         temp = TempData && TempData.map((item) => {
             if (String(item.Country) === 'NA') {
                 item.Country = ' '
@@ -584,18 +597,12 @@ class VendorListing extends Component {
             } else if (String(item.City) === 'NA') {
                 item.City = ' '
             }
-            // if (item.IsActive === true) {
-            //     item.IsActive = 'Active'
-            // }
-            // else if (item.IsActive === false) {
-            //     item.IsActive = 'In Active'
-            // }
             return item
         })
         return (
 
             <ExcelSheet data={temp} name={VendorMaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -634,6 +641,7 @@ class VendorListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
             valuesFloatingFilter: MultiDropdownFloatingFilter,
+            isCriticalVendor: this.isCriticalVendor
         };
 
         return (
@@ -728,6 +736,9 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="IsCriticalVendor" headerName="IsCriticalVendor" ></AgGridColumn>}
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorTechnology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorPlant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
@@ -743,6 +754,9 @@ class VendorListing extends Component {
                                 <p><button className="next-btn" type="button" onClick={() => this.onBtNext(this)}> </button></p>
                             </div>
                         </div>
+                    </div>
+                    <div className="text-right pb-3">
+                        <WarningMessage message="All the above details of supplier is entered through SAP." />
                     </div>
                 </div>}
 

@@ -15,7 +15,7 @@ import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity } from './actions/rfq';
+import { createRfqQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, checkExistCosting, setRFQBulkUpload, getNfrSelectList, getNfrAnnualForecastQuantity } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import redcrossImg from '../../assests/images/red-cross.png'
@@ -24,13 +24,12 @@ import HeaderTitle from '../common/HeaderTitle';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../common/CommonFunctions';
 import BulkUpload from '../massUpload/BulkUpload';
-import _, { debounce } from 'lodash';
+import _ from 'lodash';
 import { getPartSelectListWtihRevNo } from '../masters/actions/Volume';
 import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, visibilityModeDropdownArray } from '../../config/masterData';
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
-import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
 import { clearGradeSelectList, clearSpecificationSelectList, getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
 
@@ -70,7 +69,6 @@ function AddRfq(props) {
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
     const [showPopup, setShowPopup] = useState(false)
-    const [selectedRowPartNoTable, setSelectedRowPartNoTable] = useState({})
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
@@ -108,6 +106,7 @@ function AddRfq(props) {
     const [state, setState] = useState(true)
     const [rmspecification, setRMSpecification] = useState([])
     const [deleteToggle, setDeleteToggle] = useState(false)
+    const [plant, setPlant] = useState({})
     const rawMaterialNameSelectList = useSelector(state => state.material.rawMaterialNameSelectList);
     const gradeSelectList = useSelector(state => state.material.gradeSelectList);
     const rmSpecification = useSelector(state => state.comman.rmSpecification);
@@ -794,7 +793,6 @@ function AddRfq(props) {
     * @description  USED TO HANDLE TECHNOLOGY CHANGE
     */
     const handleTechnologyChange = (newValue) => {
-        console.log('newValue: ', newValue);
         if (newValue) {
             setPartNoDisable(false)
             setValue('partNumber', "")
@@ -802,6 +800,8 @@ function AddRfq(props) {
         } else {
             setPartNoDisable(true)
         }
+        setVendor('')
+        setValue("vendor", "")
         setPartName('')
         setState(false)
         setShowTooltip(false)
@@ -814,6 +814,15 @@ function AddRfq(props) {
         reactLocalStorage.setObject('PartData', [])
 
     }
+    const handlePlant = (newValue) => {
+        if (newValue && newValue !== '') {
+            setPlant(newValue)
+        } else {
+            setPlant('')
+        }
+        setVendor('')
+        setValue("vendor", "")
+    }
     const handleNfrChnage = (newValue) => {
         if (newValue && newValue !== '') {
             // setPartNoDisable(false)
@@ -825,7 +834,6 @@ function AddRfq(props) {
     }
 
     const handleVendorChange = (data) => {
-
         dispatch(getContactPerson(data.value, (res) => {
             setGetReporterListDropDown(res?.data?.SelectList)
             setValue('contactPerson', "")
@@ -838,7 +846,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput, technology.value, plant.value)
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -873,7 +881,7 @@ function AddRfq(props) {
 
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && partName !== resultInput) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, null)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
@@ -926,7 +934,6 @@ function AddRfq(props) {
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         const cell = props?.value;
         const value = beforeSaveCell(cell)
-
         setPartList(final)
         let isEnable
         if (getValues('nfrId')) {
@@ -1121,14 +1128,13 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                defaultValue={Object.keys(technology).length !== 0 ? technology : ""}
                                                 options={renderListing("technology")}
                                                 mandatory={true}
                                                 handleChange={handleTechnologyChange}
                                                 errors={errors.technology}
                                                 disabled={((dataProps?.isViewFlag || isEditAll) ? true : false)
-                                                    || (partList?.length !== 0)}
-                                                isLoading={VendorLoaderObj}
+                                                    || (partList?.length !== 0 || vendorList?.length !== 0)}
                                             />
                                         </Col>
                                         {initialConfiguration.IsNFRConfigured && <Col md="3">
@@ -1160,14 +1166,12 @@ function AddRfq(props) {
                                                 control={control}
                                                 rules={{ required: true }}
                                                 register={register}
-                                                // defaultValue={vendor.length !== 0 ? vendor : ""}
+                                                defaultValue={Object.keys(plant).length !== 0 ? plant : ""}
                                                 options={renderListing("plant")}
                                                 mandatory={true}
-                                                // handleChange={handleVendorChange}
-                                                handleChange={() => { }}
+                                                handleChange={handlePlant}
                                                 errors={errors.plant}
-                                                isLoading={VendorLoaderObj}
-                                                disabled={dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)}
+                                                disabled={(vendorList?.length !== 0 || (dataProps?.isAddFlag ? false : (dataProps?.isViewFlag || !isEditAll)))}
                                             />
                                         </Col>
                                         <Col md="3">
@@ -1430,11 +1434,17 @@ function AddRfq(props) {
                                                 errors={errors.vendor}
                                                 isLoading={VendorLoaderObj}
                                                 asyncOptions={vendorFilterList}
-                                                disabled={dataProps?.isAddFlag ? false : (isViewFlag || !isEditAll)}
+                                                disabled={
+                                                    initialConfiguration.IsCriticalVendorConfigured &&
+                                                        (Object.keys(technology).length === 0 || Object.keys(plant).length === 0)
+                                                        ? true
+                                                        : dataProps?.isAddFlag
+                                                            ? false
+                                                            : (isViewFlag || !isEditAll)
+                                                }
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
-
 
                                         <Col md="3">
                                             <SearchableSelectHookForm

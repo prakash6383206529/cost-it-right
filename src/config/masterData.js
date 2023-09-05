@@ -789,6 +789,9 @@ export const Vendor = [
     { label: 'ZipCode', value: 'ZipCode', },//*
     { label: 'AddressLine1', value: 'AddressLine1', },
     { label: 'AddressLine2', value: 'AddressLine2', },
+    { label: 'IsCriticalVendor', value: 'IsCriticalVendor' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'PlantCode', value: 'PlantCode' }
 ]
 
 export const VendorTempData = [
@@ -809,6 +812,9 @@ export const VendorTempData = [
         'ZipCode': '123456',
         'AddressLine1': '123, Area location',
         'AddressLine2': '123, Area location',
+        'IsCriticalVendor': 'YES',
+        'Technology': 'Plastic,Sheet Metal,Die Casting',
+        'PlantCode': '1001,952,100',
     }
 ]
 
@@ -5420,6 +5426,9 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
+    { label: "IsCriticalVendor", value: "IsCriticalVendor", },
+    { label: "Technology", value: "VendorTechnology", },
+    { label: "Plant (Code)", value: "VendorPlant", },
     { label: "ZipCode", value: "ZipCode", },
     { label: "Address 1", value: "AddressLine1", },
     { label: "Address 2", value: "AddressLine2", },
