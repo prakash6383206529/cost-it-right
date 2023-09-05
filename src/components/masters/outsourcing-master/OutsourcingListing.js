@@ -530,112 +530,112 @@ const OutsourcingListing = (props) => {
 
     return (
         <>
-            {isLoader && <LoaderCustom customClass="loader-center" />}
-            <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                <ScrollToTop pointProp="go-to-top" />
-                <form noValidate>
-                    <Row className="pt-4 ">
-                        <Col md="9" className="search-user-block mb-3 pl-0">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div className="warning-message d-flex align-items-center">
-                                    {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                    <Button
-                                        id="outsourcingListing_filter"
-                                        className={"mr5"}
-                                        onClick={() => onSearch()}
-                                        title={"Filtered data"}
-                                        icon={"filter"}
-                                        disabled={disableFilter}
-                                    />
-                                </div>
-
-                                {AddAccessibility && (
-                                    <Button
-                                        id="outsourcingListing_add"
-                                        className={"mr5"}
-                                        onClick={formToggle}
-                                        title={"Add"}
-                                        icon={"plus"}
-                                    />
-                                )}
-                                {
-                                    DownloadAccessibility &&
-                                    <>
+            {isLoader ? <LoaderCustom customClass="loader-center" /> :
+                <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+                    <ScrollToTop pointProp="go-to-top" />
+                    <form noValidate>
+                        <Row className="pt-4 ">
+                            <Col md="9" className="search-user-block mb-3 pl-0">
+                                <div className="d-flex justify-content-end bd-highlight w100">
+                                    <div className="warning-message d-flex align-items-center">
+                                        {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                         <Button
-                                            className="mr5"
-                                            id={"outsourceListing_excel_download"}
-                                            onClick={onExcelDownload}
-                                            title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                            icon={"download mr-1"}
-                                            buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                            id="outsourcingListing_filter"
+                                            className={"mr5"}
+                                            onClick={() => onSearch()}
+                                            title={"Filtered data"}
+                                            icon={"filter"}
+                                            disabled={disableFilter}
                                         />
-                                        <ExcelFile filename={'Outsourcing'} fileExtension={'.xls'} element={
-                                            <Button id={"Excel-Downloads-outsourcing"} className="p-absolute" />
+                                    </div>
 
-                                        }>
-                                            {onBtExport()}
-                                        </ExcelFile>
-                                    </>
-                                }
-                                <Button
-                                    id={"outsourceListing_refresh"}
-                                    onClick={() => resetState()}
-                                    title={"Reset Grid"}
-                                    icon={"refresh"}
-                                />
-                            </div>
-                        </Col>
-                    </Row>
-                </form >
-                {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper  ${(outsourcingDataList && outsourcingDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                    <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                    </div>
-                    <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
-                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                    {AddAccessibility && (
+                                        <Button
+                                            id="outsourcingListing_add"
+                                            className={"mr5"}
+                                            onClick={formToggle}
+                                            title={"Add"}
+                                            icon={"plus"}
+                                        />
+                                    )}
+                                    {
+                                        DownloadAccessibility &&
+                                        <>
+                                            <Button
+                                                className="mr5"
+                                                id={"outsourceListing_excel_download"}
+                                                onClick={onExcelDownload}
+                                                title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                icon={"download mr-1"}
+                                                buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                            />
+                                            <ExcelFile filename={'Outsourcing'} fileExtension={'.xls'} element={
+                                                <Button id={"Excel-Downloads-outsourcing"} className="p-absolute" />
 
-                        <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter={true}
-                            domLayout='autoHeight'
-                            rowData={outsourcingDataList}
-                            pagination={true}
-                            paginationPageSize={globalTake}
-                            onGridReady={onGridReady}
-                            gridOptions={gridOptions}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                                title: EMPTY_DATA,
-                                imagClass: 'imagClass'
-                            }}
-                            frameworkComponents={frameworkComponents}
-                            rowSelection={'multiple'}
-                            onRowSelected={onRowSelect}
-                            onFilterModified={onFloatingFilterChanged}
-                            suppressRowClickSelection={true}
-                        >
-                            <AgGridColumn field="OutSourcingName" headerName="Outsourcing Name" cellRenderer={checkBoxRenderer}></AgGridColumn>
-                            <AgGridColumn field="OutSourcingShortName" headerName="Outsourcing Short Name"></AgGridColumn>
-                            <AgGridColumn field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="OutSourcingId" cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>
-                        </AgGridReact>
-                        <div className='button-wrapper'>
-                            {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-                            {
-                                <div className="d-flex pagination-button-container">
-                                    <p><Button id="outsourcingListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                                    {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                                    {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                                    {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                    <p><Button id="outsourcingListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+                                            }>
+                                                {onBtExport()}
+                                            </ExcelFile>
+                                        </>
+                                    }
+                                    <Button
+                                        id={"outsourceListing_refresh"}
+                                        onClick={() => resetState()}
+                                        title={"Reset Grid"}
+                                        icon={"refresh"}
+                                    />
                                 </div>
-                            }
+                            </Col>
+                        </Row>
+                    </form >
+                    {gridLoad && <div className={`ag-grid-wrapper height-width-wrapper  ${(outsourcingDataList && outsourcingDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                        <div className="ag-grid-header">
+                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                         </div>
-                    </div>
-                </div>}
+                        <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
+                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
 
-                {showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.OUTSOURCING_DEACTIVE_ALERT : MESSAGES.OUTSOURCING_ACTIVE_ALERT}`} />}
-            </div >
+                            <AgGridReact
+                                defaultColDef={defaultColDef}
+                                floatingFilter={true}
+                                domLayout='autoHeight'
+                                rowData={outsourcingDataList}
+                                pagination={true}
+                                paginationPageSize={globalTake}
+                                onGridReady={onGridReady}
+                                gridOptions={gridOptions}
+                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                noRowsOverlayComponentParams={{
+                                    title: EMPTY_DATA,
+                                    imagClass: 'imagClass'
+                                }}
+                                frameworkComponents={frameworkComponents}
+                                rowSelection={'multiple'}
+                                onRowSelected={onRowSelect}
+                                onFilterModified={onFloatingFilterChanged}
+                                suppressRowClickSelection={true}
+                            >
+                                <AgGridColumn field="OutSourcingName" headerName="Outsourcing Name" cellRenderer={checkBoxRenderer}></AgGridColumn>
+                                <AgGridColumn field="OutSourcingShortName" headerName="Outsourcing Short Name"></AgGridColumn>
+                                <AgGridColumn field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                                <AgGridColumn field="OutSourcingId" cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer'></AgGridColumn>
+                            </AgGridReact>
+                            <div className='button-wrapper'>
+                                {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
+                                {
+                                    <div className="d-flex pagination-button-container">
+                                        <p><Button id="outsourcingListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
+                                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                                        <p><Button id="outsourcingListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    </div>}
+
+                    {showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.OUTSOURCING_DEACTIVE_ALERT : MESSAGES.OUTSOURCING_ACTIVE_ALERT}`} />}
+                </div >}
             {isOpenDrawer && (
                 <AddOutsourcing
                     isOpen={isOpenDrawer}
