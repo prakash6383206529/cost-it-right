@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, SHEET_METAL, BOP_MASTER_ID } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, SHEET_METAL } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -1180,7 +1180,7 @@ class AddRMDomestic extends Component {
   onSubmit = debounce((values) => {
     const { RawMaterial, RMGrade, RMSpec, Category, client, Technology, selectedPlants, costingTypeId, vendorName, VendorCode, HasDifferentSource, sourceLocation, UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate,
       NetLandedCostCurrency, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, IsFinancialDataChanged, conditionTableData, FinalCutOffCurrency, FinalScrapRateCurrency, FinalForgingScrapCostCurrency,
-      FinalMachiningScrapCostCurrency, FinalCircleScrapCostCurrency, FinalJaliScrapCostCurrency, FinalFreightCostCurrency, FinalShearingCostCurrency, FinalBasicPriceCurrency, FinalConditionCostCurrency, FinalBasicRateCurrency, showScrapKeys, DataToCheck, isBOPAssociated } = this.state
+      FinalMachiningScrapCostCurrency, FinalCircleScrapCostCurrency, FinalJaliScrapCostCurrency, FinalFreightCostCurrency, FinalShearingCostCurrency, FinalBasicPriceCurrency, FinalConditionCostCurrency, FinalBasicRateCurrency, showScrapKeys, } = this.state
 
     const { isRMAssociated, fieldsObj } = this.props
 
@@ -1291,19 +1291,21 @@ class AddRMDomestic extends Component {
     formData.NetConditionCost = FinalConditionCostCurrency
     formData.RawMaterialConditionsDetails = conditionTableData
 
-
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces)
+      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
       const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
+
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
-
-      if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) &&
-        ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
-        ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
-        checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
-        checkForNull(netLandedCostCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
+      if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged
+        && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
+        && String(DataToChange.RawMaterialCode) === String(values.Code) && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
+        && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))
+        && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
+        && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
+        && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
+        && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
         this.setState({ isEditBuffer: true })
         Toaster.warning('Please change data to send RM for approval')
         return false
@@ -1311,7 +1313,7 @@ class AddRMDomestic extends Component {
       //  ELSE: CHANGE
       else {
         //  IF: NEE TO UPDATE EFFECTIVE DATE
-        if (IsFinancialDataChanged || isBOPAssociated) {
+        if (IsFinancialDataChanged || isRMAssociated) {
           if (!isDateChange || (DayTime(oldDate).format("DD/MM/YYYY") === DayTime(effectiveDate).format("DD/MM/YYYY"))) {
             this.setState({ isEditBuffer: true })
             Toaster.warning('Please update the effective date')
@@ -1322,7 +1324,7 @@ class AddRMDomestic extends Component {
     }
 
     //  IF: APPROVAL FLOW
-    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+    if (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
@@ -1330,19 +1332,20 @@ class AddRMDomestic extends Component {
     else {
       if (isEditFlag) {
         formData.IsSendForApproval = false
-        this.props.updateBOP(formData, (res) => {
+        this.props.updateRMAPI(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
-            Toaster.success(MESSAGES.UPDATE_BOP_SUCESS);
-            this.cancel('submit');
+            Toaster.success(MESSAGES.RAW_MATERIAL_DETAILS_UPDATE_SUCCESS)
+            this.clearForm('submit')
           }
         })
         this.setState({ updatedObj: formData })
       } else {
-        this.props.createBOP(formData, (res) => {
+        this.props.createRM(formData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {
-            Toaster.success(MESSAGES.BOP_ADD_SUCCESS)
+            Toaster.success(MESSAGES.MATERIAL_ADD_SUCCESS)
+            this.clearForm('submit')
             this.cancel('submit')
           }
         })
