@@ -316,7 +316,7 @@ function MachiningStockTable(props) {
       Height: '',
       Breadth: '',
       No: '',
-      MachiningStock: {},
+      MachiningStock: '',
       grossWeight: '',
       forgingVolume: '',
 

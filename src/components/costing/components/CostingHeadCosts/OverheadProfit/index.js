@@ -1413,7 +1413,7 @@ function OverheadProfit(props) {
                                         handleModelTypeChange(ModelTypeValues, true)
                                     }}
                                     errors={errors.ModelType}
-                                    buttonCross={resetData}
+                                    isClearable={true}
                                 />
                             </Col>
 

@@ -197,14 +197,15 @@ const CostingSummaryTable = (props) => {
 
       let temp = []
       let tempObj = viewCostingData[index]
-      let labels = ['RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST', 'CONDITION COST', 'NPV COST']
+      console.log('tempObj: ', tempObj);
+      let labels = [partType ? 'COST/ASSEMBLY' : 'RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST', 'CONDITION COST', 'NPV COST']
       let dataArray = [];
       let tempColorArray = [];
 
       temp = [
-        checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(partType ? tempObj.nTotalRMBOPCC : tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(partType ? 0 : tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
         checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
@@ -221,11 +222,12 @@ const CostingSummaryTable = (props) => {
         }
         return acc;
       }, []);
+      console.log('labelArray: ', labelArray);
 
       labelArray.forEach(item => {
         switch (item) {
-          case 'RM':
-            dataArray.push(checkForDecimalAndNull(tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+          case partType ? 'COST/ASSEMBLY' : 'RM':
+            dataArray.push(checkForDecimalAndNull(partType ? tempObj.nTotalRMBOPCC : tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[0])
             break;
           case 'BOP':
@@ -263,6 +265,8 @@ const CostingSummaryTable = (props) => {
           case 'CONDITION COST':
             dataArray.push(checkForDecimalAndNull(tempObj.CostingPartDetails.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[9])
+            console.log('dataArray: ', dataArray);
+
             break;
           case 'NPV COST':
             dataArray.push(checkForDecimalAndNull(tempObj.CostingPartDetails.NetNpvCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1035,6 +1039,7 @@ const CostingSummaryTable = (props) => {
       return ' ';
     } else if (data?.CostingHeading !== VARIANCE) {
       const overheadTitle = data?.overheadOn.overheadTitle;
+      let isOverheadCombined = data.CostingPartDetails.CostingOverheadDetail.IsOverheadCombined
       switch (overheadTitle) {
         case 'RM':
           return data?.overheadOn.overheadRMPercentage;
@@ -1044,12 +1049,12 @@ const CostingSummaryTable = (props) => {
           return data?.overheadOn.overheadCCPercentage;
         case 'RM + CC':
         case 'Part Cost + CC':
-          return `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage}`;
+          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadCCPercentage}`}`;
         case 'RM + BOP':
         case 'Part Cost + BOP':
-          return `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadBOPPercentage}`;
+          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadRMPercentage} + ${data?.overheadOn.overheadBOPPercentage}`}`;
         case 'BOP + CC':
-          return `${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}`;
+          return `${isOverheadCombined ? data?.overheadOn.overheadPercentage : `${data?.overheadOn.overheadBOPPercentage} + ${data?.overheadOn.overheadCCPercentage}`}`;
         case 'RM + CC + BOP':
         case 'Part Cost + CC + BOP':
           if (data?.overheadOn.overheadRMPercentage !== '-') {
@@ -1070,6 +1075,7 @@ const CostingSummaryTable = (props) => {
       return ' ';
     } else if (data?.CostingHeading !== VARIANCE) {
       const profitTitle = data?.profitOn.profitTitle;
+      let isProfitCombined = data.CostingPartDetails.CostingProfitDetail.IsProfitCombined
       switch (profitTitle) {
         case 'RM':
           return data?.profitOn.profitRMPercentage;
@@ -1079,12 +1085,12 @@ const CostingSummaryTable = (props) => {
           return data?.profitOn.profitCCPercentage;
         case 'RM + CC':
         case 'Part Cost + CC':
-          return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage}`;
+          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitCCPercentage}`}`;
         case 'BOP + CC':
-          return `${data?.profitOn.profitBOPPercentage} + ${data?.profitOn.profitCCPercentage}`;
+          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitBOPPercentage} + ${data?.profitOn.profitCCPercentage}`}`;
         case 'RM + BOP':
         case 'Part Cost + BOP':
-          return `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitBOPPercentage}`;
+          return `${isProfitCombined ? data?.profitOn.profitPercentage : `${data?.profitOn.profitRMPercentage} + ${data?.profitOn.profitBOPPercentage}`}`;
         case 'RM + CC + BOP':
         case 'Part Cost + CC + BOP':
           if (data?.profitOn.profitRMPercentage !== '-') {
@@ -2578,7 +2584,7 @@ const CostingSummaryTable = (props) => {
                               })}
                           </tr>
                         }
-                        {
+                        {/* {
                           initialConfiguration?.IsShowNpvCost && <tr>
                             <td>
                               <span className={`d-block small-grey-text`}>Net NPV Cost</span>
@@ -2595,7 +2601,7 @@ const CostingSummaryTable = (props) => {
                                 )
                               })}
                           </tr>
-                        }
+                        } */}
                         {
                           initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr>
                             <td>

@@ -8,9 +8,9 @@ import { useSelector, useDispatch } from "react-redux"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { Col, Row } from "reactstrap"
 import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../../../actions/Common"
-import { defaultPageSize, EMPTY_DATA, PRODUCT_ID, searchCount, VBC_VENDOR_TYPE, ZBC } from "../../../config/constants"
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, defaultPageSize, EMPTY_DATA, PRODUCT_ID, searchCount, VBC_VENDOR_TYPE, ZBC } from "../../../config/constants"
 import { MESSAGES } from "../../../config/message"
-import { loggedInUserId } from "../../../helper"
+import { getConfigurationKey, loggedInUserId } from "../../../helper"
 import { autoCompleteDropdown, autoCompleteDropdownPart } from "../../common/CommonFunctions"
 import DayTime from "../../common/DayTimeWrapper"
 import LoaderCustom from "../../common/LoaderCustom"
@@ -23,6 +23,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { getClientSelectList } from "../../masters/actions/Client"
 import { getProductGroupSelectList, getSelectListPartType } from "../../masters/actions/Part"
 import { getPartSelectListWtihRevNo } from "../../masters/actions/Volume"
+import { ASSEMBLY } from "../../../config/masterData"
 
 
 
@@ -248,6 +249,8 @@ function CostReportForm(props) {
             partTypeList && partTypeList.map((item) => {
                 if (item.Value === '0') return false
                 if (item.Value === PRODUCT_ID) return false
+                if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
+                if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
                 temp.push({ label: item.Text, value: item.Value })
                 return null
             })

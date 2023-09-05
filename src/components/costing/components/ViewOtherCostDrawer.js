@@ -127,7 +127,7 @@ function ViewOtherCostDrawer(props) {
                             </Row>
                             <div className='hidepage-size'>
                                 {costingSummary && OtherCost()}
-                                {initialConfiguration?.IsShowNpvCost && costingSummary &&
+                                {/* {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                     <>
                                         <Col md="12" className='mt-4'>
                                             <HeaderTitle className="border-bottom"
@@ -137,7 +137,7 @@ function ViewOtherCostDrawer(props) {
                                         </Col>
                                     </>
                                 }
-                                {initialConfiguration?.IsShowNpvCost && costingSummary && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} />}
+                                {initialConfiguration?.IsShowNpvCost && costingSummary && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} />} */}
                                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
                                     <div className='firefox-spaces pb-3'>
                                         <Col md="12" className={'mt-4 firefox-spaces '}>
@@ -177,7 +177,7 @@ function ViewOtherCostDrawer(props) {
                 </div>
             </Drawer> : <>
                 {gridData && gridData.length !== 0 && OtherCost()}
-                {tableData && tableData.length !== 0 && <>
+                {/* {tableData && tableData.length !== 0 && <>
                     <Col md="12">
                         <HeaderTitle className="border-bottom"
                             title={'NPV Cost'}
@@ -185,7 +185,7 @@ function ViewOtherCostDrawer(props) {
                         />
                     </Col>
                     <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} />
-                </>}
+                </>} */}
                 {conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25 firefox-10'}>
                     <HeaderTitle className="border-bottom"
                         title={'Costing Condition'}
