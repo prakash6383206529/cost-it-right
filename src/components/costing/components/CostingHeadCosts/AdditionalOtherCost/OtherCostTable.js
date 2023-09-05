@@ -21,7 +21,7 @@ const OtherCostTable = (props) => {
                         <th>{`Other Cost Applicability`}</th>
                         <th>{'Percentage (%)'}</th>
                         <th>{`Cost`}</th>
-                        {props.actionButton && <th className='text-right'>{`Action`}</th>}
+                        {!CostingViewMode && <th className='text-right'>{`Action`}</th>}
                     </tr>
                 </thead>
                 <tbody>
@@ -34,12 +34,11 @@ const OtherCostTable = (props) => {
                                 <td>{item?.OtherCostApplicability}</td>
                                 <td>{item.PercentageOtherCost}</td>
                                 <td>{checkForDecimalAndNull(item.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice)}</td>
-                                {props.actionButton && <td className='text-right'>
+                                {!CostingViewMode && <td className='text-right'>
                                     <button
                                         className="Edit"
                                         title='Edit'
                                         type={"button"}
-                                        disabled={CostingViewMode}
                                         onClick={() =>
                                             props.editItemDetails(index)
                                         }
@@ -48,7 +47,6 @@ const OtherCostTable = (props) => {
                                         className="Delete ml-1"
                                         title='Delete'
                                         type={"button"}
-                                        disabled={CostingViewMode}
                                         onClick={() =>
                                             props.deleteItem(index)
                                         }

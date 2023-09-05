@@ -1,6 +1,7 @@
 @import "./abstracts/variable";
 @import "./abstracts/mixin";
-
+@import '../../../node_modules/@fortawesome/fontawesome-free/scss/fontawesome.scss';
+@import '../../../node_modules/@fortawesome/fontawesome-free/scss/solid.scss';
 
 // @mixin icons($path, $width: 26px, $height: 26px, $background-size: contain, $shadowColor: transparent, $borderColor: transparent) {
 //     background: transparent url($path) 0% 0% no-repeat padding-box;
@@ -121,6 +122,7 @@
 .plus-icon-square {
     @include icons("../../images/add-icons.png", 43px, 35px, none);
     margin-top: 5px;
+    border-radius: 3px;
     background-position: center right;
     cursor: pointer;
 
@@ -767,5 +769,26 @@
     &:focus {
         box-shadow: 0 0 5px #f8a000 !important;
         border: 1px solid #fdebcb !important;
+    }
+}
+
+.view-icon-primary {
+    color: #ffffff;
+    background-color: $colorPrimary;
+    height: 23px;
+    width: 26px;
+    border-radius: 3px;
+    margin-left: 8px;
+    margin-top: 10px;
+    position: relative;
+    @extend .fa-eye;
+    @extend .fa;
+
+    &::before {
+        font-size: 11px;
+        position: absolute;
+        top: 5px;
+        left: 5px;
+
     }
 }

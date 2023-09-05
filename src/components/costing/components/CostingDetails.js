@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR, VBC, BOUGHTOUTPARTSPACING } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR, VBC, BOUGHTOUTPARTSPACING, COMPONENT_PART } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails, number, decimalNumberLimit6, percentageLimitValidation } from '../../../helper';
@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -31,7 +31,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { debounce } from 'lodash';
 import AddClientDrawer from './AddClientDrawer';
-import { DETAILED_BOP_ID, IdForMultiTechnology, partTypeDropdownList } from '../../../config/masterData';
+import { ASSEMBLY, DETAILED_BOP_ID, IdForMultiTechnology, partTypeDropdownList } from '../../../config/masterData';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { getUOMSelectList } from '../../../actions/Common';
 import { Redirect } from 'react-router';
@@ -303,6 +303,8 @@ function CostingDetails(props) {
       partTypeList && partTypeList.map((item) => {
         if (item.Value === '0') return false
         if (item.Value === PRODUCT_ID) return false
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
+        if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -395,6 +397,7 @@ function CostingDetails(props) {
             dispatch(getPartInfo(newValue.value, (res) => {
               let Data = res.data.Data
               reactLocalStorage.setObject('costingArray', [])
+              reactLocalStorage.setObject('surfaceCostingArray', [])
               setValue('PartName', Data?.PartName ? Data.PartName : '')
               setValue('Description', Data?.Description ? Data.Description : '')
               setValue('ECNNumber', Data?.ECNNumber ? Data.ECNNumber : '')
@@ -533,7 +536,7 @@ function CostingDetails(props) {
       // })))
 
       // reactLocalStorage.setObject('costingArray', [])
-      reactLocalStorage.setObject('surfaceCostingArray', [])
+      // reactLocalStorage.setObject('surfaceCostingArray', [])
       setIsOpenVendorSOBDetails(true)
 
     } else {
@@ -1010,6 +1013,7 @@ function CostingDetails(props) {
       if (res && res?.data?.Result) {
         const userDetail = userDetails()
         setCostingOptionsSelectedObject({})
+
         setCostingType(type)
 
         if (CheckIsSOBChangedSaved()) {
@@ -1019,7 +1023,9 @@ function CostingDetails(props) {
 
         dispatch(getBriefCostingById('', (res) => { }))
 
+
         if (checkSOBTotal()) {
+          dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
 
           const userDetailsCosting = JSON.parse(localStorage.getItem('userDetail'))
           const data = {
@@ -1560,6 +1566,7 @@ function CostingDetails(props) {
       reactLocalStorage.setObject('costingArray', [])
       reactLocalStorage.setObject('surfaceCostingArray', [])
       dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
+      dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
       dispatch(setComponentItemData({}, () => { }))
 
       dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
