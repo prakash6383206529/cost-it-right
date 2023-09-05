@@ -1,23 +1,27 @@
 import React from "react";
 import { Line } from "react-chartjs-2";
-import { colorArray, data1, options1 } from "../../../dashboard/ChartsDashboard";
+import { colorArray } from "../../../dashboard/ChartsDashboard";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { useState } from "react";
 import { getProductRolloutCostMovement } from "../../actions/ReportListing";
 import NoContentFound from "../../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../../config/constants";
-const CostMovement = ({ partId }) => {
+import Toaster from "../../../common/Toaster";
+import LoaderCustom from "../../../common/LoaderCustom";
+const CostMovement = ({ partId, partType, partNumber, dateArr }) => {
     const dispatch = useDispatch()
     const [costMovementData, setCostMovementData] = useState([])
     const [noContent, setNoContent] = useState(true)
+    const [isLoader, setIsLaoder] = useState(false)
 
     const formatDate = (dateString) => {
         const parts = dateString.split('-');
         return `${parts[2]}-${parts[1]}-${parts[0]}`;
     };
     useEffect(() => {
-        dispatch(getProductRolloutCostMovement(partId, (res) => {
+        setIsLaoder(true)
+        dispatch(getProductRolloutCostMovement(partId, partNumber, partType, (res) => {
             if (res && res.status === 200) {
                 setNoContent(false)
                 const uniqueDates = new Set();
@@ -63,11 +67,14 @@ const CostMovement = ({ partId }) => {
                     datasets: Object.values(datasets),
                 };
                 setCostMovementData(chartData)
+                setIsLaoder(false)
             } else {
                 setNoContent(true)
+                setIsLaoder(false)
             }
         }))
-    }, [partId])
+    }, [partId, partNumber, partType, dispatch])
+
 
     const options = {
         scales: {
@@ -93,10 +100,17 @@ const CostMovement = ({ partId }) => {
     };
 
     return (
-        <div className="seprate-box">
+        <div className="seprate-box cost-movement-chart">
             <h4 className="mb-2 ml-1">Cost Movement</h4>
-            {noContent ? <NoContentFound customClassName="" title={EMPTY_DATA} /> : <Line data={costMovementData} options={options} height={80} />}
+            {isLoader ? <LoaderCustom /> : <>
+                {noContent ? <NoContentFound customClassName="" title={EMPTY_DATA} /> : <Line data={costMovementData} options={options} height={80} />}</>}
         </div>
     );
 }
+CostMovement.defaultProps = {
+    partId: null,
+    partType: null,
+    partNumber: null,
+}
+
 export default CostMovement;

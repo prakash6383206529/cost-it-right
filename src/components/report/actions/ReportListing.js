@@ -494,10 +494,10 @@ export function getTotalPartsDetails(productId, callback) {
         })
     }
 }
-export function getProductRolloutCostMovement(partId, callback) {
+export function getProductRolloutCostMovement(partId, partNumber, partType, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getProductRolloutCostMovement}?partId=${partId}`, config(),)
+        const request = axios.get(`${API.getProductRolloutCostMovement}?partId=${partId}&partNumber=${partNumber}&partType=${partType}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {

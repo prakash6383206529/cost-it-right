@@ -6,81 +6,19 @@ import NoContentFound from "../../../common/NoContentFound";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { getUsageRmDetails } from "../../actions/ReportListing";
+import LoaderCustom from "../../../common/LoaderCustom";
 const gridOptions = {};
-const DUMMY_DATA = [
-    {
-        RMName: 'RM00ARC-1002',
-        Material: 'Online',
-        NoOfPart: 5
-    },
-    {
-        RMName: 'RM00PRC-1005',
-        Material: 'Online',
-        NoOfPart: 1
-    },
-    {
-        RMName: 'RM20ARC-1222',
-        Material: 'Offline',
-        NoOfPart: 6
-    },
-    {
-        RMName: 'RM70ARC-1242',
-        Material: 'Offline',
-        NoOfPart: 14
-    },
-    {
-        RMName: 'RM10ARC-3002',
-        Material: 'Online',
-        NoOfPart: 70
-    },
-    {
-        RMName: 'RM06TRP-1002',
-        Material: 'Offline',
-        NoOfPart: 12
-    },
-    {
-        RMName: 'RM00ARC-1042',
-        Material: 'Online',
-        NoOfPart: 11
-    },
-    {
-        RMName: 'RM00ARC-1042',
-        Material: 'Online',
-        NoOfPart: 2
-    },
-    {
-        RMName: 'RM00ARC-1042',
-        Material: 'Online',
-        NoOfPart: 0
-    },
-    {
-        RMName: 'RM00ARC-1042',
-        Material: 'Online',
-        NoOfPart: 9
-    },
-    {
-        RMName: 'RM00ARC-1042',
-        Material: 'Online',
-        NoOfPart: 9
-    },
-    {
-        RMName: 'RM00ARC-1042',
-        Material: 'Online',
-        NoOfPart: 9
-    },
-    {
-        RMName: 'RM00ARC-1042',
-        Material: 'Online',
-        NoOfPart: 9
-    }
-]
+
 const MasterUsage = ({ productId }) => {
     const [gridApi, setgridApi] = useState(null);
     const [gridColumnApi, setgridColumnApi] = useState(null)
-    const [rowData, setRowData] = useState(DUMMY_DATA)
+    const [rowData, setRowData] = useState([])
+    const [isLoader, setIsLoader] = useState(false)
     const dispatch = useDispatch();
     useEffect(() => {
+        setIsLoader(true)
         dispatch(getUsageRmDetails(productId, (res) => {
+            setIsLoader(false)
             if (res && res.status === 200) {
                 setRowData(res.data.Data)
             } else {
@@ -137,6 +75,7 @@ const MasterUsage = ({ productId }) => {
             <div className={`ag-grid-react mt-3`}>
                 <div className={`ag-grid-wrapper ${(rowData && rowData?.length <= 0) ? 'overlay-contain' : ''}`}>
                     <div className={`ag-theme-material`}>
+                        {isLoader && <LoaderCustom />}
                         {/* {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />} */}
                         <AgGridReact
                             style={{ height: '100%', width: '100%' }}
@@ -145,7 +84,7 @@ const MasterUsage = ({ productId }) => {
                             domLayout='autoHeight'
                             rowData={rowData}
                             pagination={true}
-                            paginationPageSize={9}
+                            paginationPageSize={5}
                             onGridReady={onGridReady}
                             gridOptions={gridOptions}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
@@ -163,7 +102,7 @@ const MasterUsage = ({ productId }) => {
                             <AgGridColumn field="PartCount" headerName='No. of Part'></AgGridColumn>
 
                         </AgGridReact>
-                        <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
+                        <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={5} />
                     </div>
                 </div>
 
@@ -171,4 +110,7 @@ const MasterUsage = ({ productId }) => {
         </div>
     );
 }
-export default MasterUsage;
+MasterUsage.defualtProps = {
+    productId: '0000-0000-0000-0000-00000'
+}
+export default React.memo(MasterUsage);

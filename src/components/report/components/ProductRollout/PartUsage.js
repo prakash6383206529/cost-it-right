@@ -4,12 +4,16 @@ import { useDispatch } from "react-redux";
 import { Col, Row } from "reactstrap";
 import { getTotalPartsDetails } from "../../actions/ReportListing";
 import { useState } from "react";
+import LoaderCustom from "../../../common/LoaderCustom";
 
 const PartUsage = ({ productId }) => {
     const dispatch = useDispatch();
     const [totalPartsDetails, setTotalPartsDetails] = useState({});
+    const [isLoader, setIsLoader] = useState(false)
     useEffect(() => {
+        setIsLoader(true)
         dispatch(getTotalPartsDetails(productId, (res) => {
+            setIsLoader(false)
             if (res && res.status === 200) {
                 setTotalPartsDetails(res.data.Data)
             }
@@ -18,6 +22,7 @@ const PartUsage = ({ productId }) => {
     return (
         <div className="seprate-box">
             <Row className="text-center part-usage-container">
+                {isLoader && <LoaderCustom />}
                 <Col md="3" className="inner-container">
                     <h6>Total Parts </h6>
                     <h1 className="text-center">{totalPartsDetails.TotalParts ?? 0}</h1>
@@ -41,4 +46,4 @@ const PartUsage = ({ productId }) => {
 PartUsage.defualtProps = {
     productId: '0000-0000-0000-0000-00000'
 }
-export default PartUsage;;
+export default React.memo(PartUsage);
