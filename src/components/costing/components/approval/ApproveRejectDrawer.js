@@ -389,7 +389,8 @@ function ApproveRejectDrawer(props) {
           ApproverLevel: approver && approver.levelName ? approver.levelName : '',
           Remark: remark,
           IsApproved: type === 'Approve' ? true : false,
-          IsFinalApprovalProcess: false //ASK THIS CONDITION WITH KAMAL SIR
+          IsFinalApprovalProcess: false, //ASK THIS CONDITION WITH KAMAL SIR
+          IsRFQCostingSendForApproval: props?.isRFQApproval ? true : false,
 
         })
         return null;
