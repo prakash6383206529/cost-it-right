@@ -194,9 +194,6 @@ function MRSimulation(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
         window.screen.width >= 1600 && params.api.sizeColumnsToFit();
-        if (isImpactedMaster) {
-            window.screen.width >= 1365 && params.api.sizeColumnsToFit();
-        }
         var allColumnIds = [];
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
@@ -229,12 +226,7 @@ function MRSimulation(props) {
         gridApi?.setQuickFilter('');
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
-        if (!isImpactedMaster) {
-            window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
-        }
-        else {
-            gridRef.current.api.sizeColumnsToFit();
-        }
+        window.screen.width >= 1600 && gridRef.current.api.sizeColumnsToFit();
     }
 
     const NewcostFormatter = (props) => {
@@ -516,8 +508,8 @@ function MRSimulation(props) {
                                                     </>
                                                 }
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate"></AgGridColumn>
-                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {props.children}
                                                 <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={190} cellRenderer='effectiveDateRenderer'></AgGridColumn>
