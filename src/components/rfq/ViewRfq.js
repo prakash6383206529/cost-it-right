@@ -228,7 +228,7 @@ function RfqListing(props) {
     */
     const rejectDetailsClick = (Id, rowData = {}) => {
         if (selectedCostingList?.length === 0) {
-            Toaster.warning("Select at least one costing to send for approval")
+            Toaster.warning("Select at least one costing to reject")
             return false
         }
         const arrayOfObjects = [...viewCostingData]
