@@ -1,7 +1,7 @@
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import React, { useState } from "react";
 import { PaginationWrapper } from "../../../common/commonPagination";
-import { EMPTY_DATA } from "../../../../config/constants";
+import { EMPTY_DATA, EMPTY_GUID } from "../../../../config/constants";
 import NoContentFound from "../../../common/NoContentFound";
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
@@ -111,6 +111,6 @@ const MasterUsage = ({ productId }) => {
     );
 }
 MasterUsage.defualtProps = {
-    productId: '0000-0000-0000-0000-00000'
+    productId: EMPTY_GUID
 }
 export default React.memo(MasterUsage);

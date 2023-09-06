@@ -8,7 +8,7 @@ import { useEffect } from 'react';
 import { getStageOfPartDetails } from '../../actions/ReportListing';
 import { useState } from 'react';
 import NoContentFound from '../../../common/NoContentFound';
-import { EMPTY_DATA } from '../../../../config/constants';
+import { EMPTY_DATA, EMPTY_GUID } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 const StageOfParts = ({ productId }) => {
     const dispatch = useDispatch()
@@ -96,6 +96,6 @@ const StageOfParts = ({ productId }) => {
     );
 }
 StageOfParts.defualtProps = {
-    productId: '0000-0000-0000-0000-00000'
+    productId: EMPTY_GUID
 }
 export default React.memo(StageOfParts);
