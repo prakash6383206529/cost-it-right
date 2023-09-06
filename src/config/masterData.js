@@ -813,7 +813,7 @@ export const VendorTempData = [
         'ZipCode': '123456',
         'AddressLine1': '123, Area location',
         'AddressLine2': '123, Area location',
-        'IsCriticalVendor': 'YES',
+        'IsCriticalVendor': 'YES OR NO',
         'Technology': 'Plastic,Sheet Metal,Die Casting',
         'PlantCode': '1001,952,100',
     }

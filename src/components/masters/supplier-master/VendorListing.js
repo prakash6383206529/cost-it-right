@@ -632,7 +632,6 @@ class VendorListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
             valuesFloatingFilter: MultiDropdownFloatingFilter,
-            isCriticalVendor: this.isCriticalVendor
         };
 
         return (
@@ -748,9 +747,9 @@ class VendorListing extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="text-right pb-3">
+                    {/* <div className="text-right pb-3">
                         <WarningMessage message="All the above details of supplier is entered through SAP." />
-                    </div>
+                    </div> */}
                 </div>}
 
 
