@@ -361,7 +361,7 @@ function OperationSTSimulation(props) {
         gridApi?.setQuickFilter('');
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
-        gridRef.current.api.sizeColumnsToFit();
+        window.screen.width >= 1600 && gridOptions?.api?.sizeColumnsToFit();
         setTextFilterSearch('')
     }
 
