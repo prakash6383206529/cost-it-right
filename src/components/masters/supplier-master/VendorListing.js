@@ -338,15 +338,6 @@ class VendorListing extends Component {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
 
-    /**
-    * @method isCriticalVendor
-    */
-    isCriticalVendor = (props) => {
-        const cellValue = props?.value;
-        return cellValue ? "Yes" : "No"
-    }
-
-
     checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         // var selectedRows = gridApi?.getSelectedRows();
@@ -641,7 +632,6 @@ class VendorListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
             valuesFloatingFilter: MultiDropdownFloatingFilter,
-            isCriticalVendor: this.isCriticalVendor
         };
 
         return (
@@ -755,9 +745,9 @@ class VendorListing extends Component {
                             </div>
                         </div>
                     </div>
-                    <div className="text-right pb-3">
+                    {/* <div className="text-right pb-3">
                         <WarningMessage message="All the above details of supplier is entered through SAP." />
-                    </div>
+                    </div> */}
                 </div>}
 
 
