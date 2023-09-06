@@ -64,11 +64,11 @@ function RfqListing(props) {
     const [costingListToShow, setCostingListToShow] = useState([])
     const [selectedRowIndex, setSelectedRowIndex] = useState('')
     const [index, setIndex] = useState('')
-    const [selectedCostingList, setSelectedCostingList] = useState('')
+    const [selectedCostingList, setSelectedCostingList] = useState([])
     const [mandatoryRemark, setMandatoryRemark] = useState(false)
     const [compareButtonPressed, setCompareButtonPressed] = useState(false)
     const [isVisibiltyConditionMet, setisVisibiltyConditionMet] = useState(false)
-
+    const [rejectedList, setRejectedList] = useState([])
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 
@@ -165,10 +165,10 @@ function RfqListing(props) {
         props.closeDrawer()
     }
     /**
-    * @method editItemDetails
-    * @description edit material type
+    * @method approveDetails
+    * @description approveDetails
     */
-    const approvemDetails = (Id, rowData = {}) => {
+    const approveDetails = (Id, rowData = {}) => {
         if (selectedCostingList?.length === 0) {
             Toaster.warning("Select at least one costing to send for approval")
             return false
@@ -223,6 +223,30 @@ function RfqListing(props) {
 
         sendForApprovalData(arr)
         setSendForApproval(true)
+    }
+
+    /**
+    * @method rejectDetailsClick
+    * @description rejectDetailsClick
+    */
+    const rejectDetailsClick = (Id, rowData = {}) => {
+        if (selectedCostingList?.length === 0) {
+            Toaster.warning("Select at least one costing to send for approval")
+            return false
+        }
+        const arrayOfObjects = [...viewCostingData]
+        const matchingItems = selectedCostingList.filter(item =>
+            arrayOfObjects.some(obj => obj.costingId === item)
+        );
+        let arr = []
+        matchingItems.map(item => rowData.filter(el => {
+            if (el.CostingId === item) {
+                arr.push(el)
+            }
+            return null
+        }))
+        setRejectedList(arr)
+        setRejectDrawer(true)
     }
 
     /**
@@ -941,7 +965,7 @@ function RfqListing(props) {
                     <ApproveRejectDrawer
                         type={'Reject'}
                         isOpen={rejectDrawer}
-                        approvalData={selectedRows}
+                        approvalData={rejectedList}
                         closeDrawer={closeDrawer}
                         //  tokenNo={approvalNumber}
                         anchor={'right'}
@@ -1013,14 +1037,14 @@ function RfqListing(props) {
             {addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0 && <Row className="btn-sticky-container sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
 
-                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => setRejectDrawer(true)} >
+                    <button type={'button'} className="mr5 approve-reject-btn" onClick={() => rejectDetailsClick("", selectedRows)} >
                         <div className={'cancel-icon-white mr5'}></div>
                         {'Reject'}
                     </button>
                     <button
                         type="button"
                         className="approve-button mr5 approve-hover-btn"
-                        onClick={() => approvemDetails("", selectedRows)}
+                        onClick={() => approveDetails("", selectedRows)}
                     >
                         <div className={'save-icon'}></div>
                         {'Approve'}
