@@ -265,6 +265,7 @@ export function renderMultiSelectField(field) {
           value={field.selection}
           isMulti
           isDisabled={field.disabled}
+          instanceId={input.name}
           options={field.options}
           classNamePrefix="select"
           closeMenuOnSelect="false"
@@ -731,6 +732,7 @@ export const searchableSelect = ({
           inputId={specificId}
           isClearable={false}
           options={options}
+          instanceId={input.name}
           onChange={handleChangeDescription}
           value={valueDescription}
           isDisabled={isDisable}
