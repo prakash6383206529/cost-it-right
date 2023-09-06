@@ -710,6 +710,7 @@ function CostingSummary(props) {
         showWarningMsg={showWarningMsg}
         selectedTechnology={technology.label}
         costingSummaryMainPage={true}
+        partNumber={partNumber}
         setcostingOptionsSelectFromSummary={props.setcostingOptionsSelectFromSummary}
         costingIdExist={costingIdExist}
         storeSummary={true}

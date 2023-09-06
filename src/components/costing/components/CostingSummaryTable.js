@@ -160,6 +160,9 @@ const CostingSummaryTable = (props) => {
       setMultipleCostings([])
     }
   }, [compareButtonPressed])
+  useEffect(() => {
+    setViewPieChart({ 0: false })
+  }, [props.partNumber.value])
 
   useEffect(() => {
 
@@ -3054,5 +3057,8 @@ const CostingSummaryTable = (props) => {
       }
     </Fragment >
   )
+}
+CostingSummaryTable.defaultProps = {
+  partNumber: {}
 }
 export default CostingSummaryTable
