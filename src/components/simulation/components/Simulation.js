@@ -171,15 +171,10 @@ function Simulation(props) {
     }
 
     const handleAssociationChange = (value) => {
-        if (value?.value === NON_ASSOCIATED) {
-            setShowMasterList(true)
-            setShowEditTable(false)
-        } else {
-            setShowMasterList(false)
-            setShowEditTable(false)
-            setTechnology({ label: '', value: '' })
-            setValue('Technology', '')
-        }
+        setShowMasterList(false)
+        setShowEditTable(false)
+        setTechnology({ label: '', value: '' })
+        setValue('Technology', '')
         dispatch(setIsMasterAssociatedWithCosting(value?.value === ASSOCIATED))
         setTimeout(() => {
             setAssociation(value)
