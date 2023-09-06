@@ -345,6 +345,7 @@ export const SearchableSelectHookForm = (field) => {
                 {...field}
                 id={containerId}
                 inputId={name}
+                instanceId={name}
                 {...register}
                 name={name}
                 placeholder={placeholder ? placeholder : isDisable ? '-' : 'Select'}
