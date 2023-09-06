@@ -160,6 +160,9 @@ const CostingSummaryTable = (props) => {
       setMultipleCostings([])
     }
   }, [compareButtonPressed])
+  useEffect(() => {
+    setViewPieChart({ 0: false })
+  }, [props.partNumber.value])
 
   useEffect(() => {
 
@@ -197,7 +200,6 @@ const CostingSummaryTable = (props) => {
 
       let temp = []
       let tempObj = viewCostingData[index]
-      console.log('tempObj: ', tempObj);
       let labels = [partType ? 'COST/ASSEMBLY' : 'RM', 'BOP', 'CC', 'ST', 'O&P', 'P&F', 'TC', 'HUNDI/DIS', 'ANY OTHER COST', 'CONDITION COST', 'NPV COST']
       let dataArray = [];
       let tempColorArray = [];
@@ -222,7 +224,6 @@ const CostingSummaryTable = (props) => {
         }
         return acc;
       }, []);
-      console.log('labelArray: ', labelArray);
 
       labelArray.forEach(item => {
         switch (item) {
@@ -265,7 +266,6 @@ const CostingSummaryTable = (props) => {
           case 'CONDITION COST':
             dataArray.push(checkForDecimalAndNull(tempObj.CostingPartDetails.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[9])
-            console.log('dataArray: ', dataArray);
 
             break;
           case 'NPV COST':
@@ -3060,5 +3060,8 @@ const CostingSummaryTable = (props) => {
       }
     </Fragment >
   )
+}
+CostingSummaryTable.defaultProps = {
+  partNumber: {}
 }
 export default CostingSummaryTable
