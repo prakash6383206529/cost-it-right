@@ -108,6 +108,8 @@ export const createToprowObjAndSave = (tabData, surfaceTabData, PackageAndFreigh
       "NetDiscounts": discountAndOtherTabData?.HundiOrDiscountValue,
       "TotalCostINR": checkForNull(basicRate) + checkForNull(discountAndOtherTabData?.totalConditionCost) + checkForNull(discountAndOtherTabData?.totalNpvCost),
       "BasicRate": basicRate,
+      "FreightCost": PackageAndFreightTabData[0]?.CostingPartDetails?.FreightNetCost,
+      "PackagingCost": PackageAndFreightTabData[0]?.CostingPartDetails?.PackagingNetCost,
       "TabId": tabId,
       "EffectiveDate": DayTime(new Date(effectiveDate)),
       "TotalRawMaterialsCostWithQuantity": tabData && tabData.CostingPartDetails?.TotalRawMaterialsCostWithQuantity,
