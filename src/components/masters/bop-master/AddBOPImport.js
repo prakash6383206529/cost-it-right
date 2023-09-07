@@ -1652,7 +1652,7 @@ class AddBOPImport extends Component {
                               <Col md="3">
                                 <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                                 <Field
-                                  label={`Total Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                  label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                   name={"FinalConditionCostCurrency"}
                                   type="text"
                                   placeholder={"-"}
@@ -1667,24 +1667,30 @@ class AddBOPImport extends Component {
                               </Col>
 
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
-                                <Field
-                                  label={`Total Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
-                                  name={"FinalConditionCostBase"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderText}
-                                  required={false}
-                                  disabled={true}
-                                  isViewFlag={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                                <div
-                                  onClick={this.conditionToggle}
-                                  className={"plus-icon-square"}
-                                ></div>
+                                <div className='d-flex align-items-center'>
+                                  <div className='w-100'>
+                                    <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                                    <Field
+                                      label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
+                                      name={"FinalConditionCostBase"}
+                                      type="text"
+                                      placeholder={"-"}
+                                      validate={[]}
+                                      component={renderText}
+                                      required={false}
+                                      disabled={true}
+                                      isViewFlag={true}
+                                      className=" "
+                                      customClassName=" withBorder"
+                                    />
+                                  </div>
+                                  <Button
+                                    id="addBOPImport_condition"
+                                    onClick={this.conditionToggle}
+                                    className={"right mt-0 mb-2"}
+                                    variant="plus-icon-square"
+                                  />
+                                </div>
                               </Col>
 
                             </>}
