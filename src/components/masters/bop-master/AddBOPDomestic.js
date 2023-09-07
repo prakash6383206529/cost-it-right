@@ -1366,23 +1366,30 @@ class AddBOPDomestic extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <Field
-                                  label={`Total Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                  name={"ConditionCost"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderText}
-                                  required={false}
-                                  disabled={true}
-                                  isViewFlag={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                                <div
-                                  onClick={this.conditionToggle}
-                                  className={"plus-icon-square"}
-                                ></div>
+                                <div className='d-flex align-items-center'>
+                                  <div className="w-100">
+                                    <Field
+                                      label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                      name={"ConditionCost"}
+                                      type="text"
+                                      placeholder={"-"}
+                                      validate={[]}
+                                      component={renderText}
+                                      required={false}
+                                      disabled={true}
+                                      isViewFlag={true}
+                                      className=" "
+                                      customClassName=" withBorder"
+                                    />
+                                  </div>
+                                  <Button
+                                    id="addBOPDomestic_condition"
+                                    onClick={this.conditionToggle}
+                                    className={"right mt-0 mb-2"}
+                                    variant="plus-icon-square"
+                                  />
+
+                                </div>
                               </Col>
                             </>}
                             <Col md="3">
