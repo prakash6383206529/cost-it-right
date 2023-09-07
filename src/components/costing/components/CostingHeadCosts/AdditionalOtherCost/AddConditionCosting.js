@@ -327,7 +327,7 @@ function AddConditionCosting(props) {
                                             onClick={addData}
                                             disabled={props?.CostingViewMode}
                                         >
-                                            <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
+                                            {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}
                                         </button>
                                         <button
                                             type="button"
