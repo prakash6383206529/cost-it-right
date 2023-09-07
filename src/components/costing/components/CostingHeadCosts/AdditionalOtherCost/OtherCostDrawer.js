@@ -478,7 +478,7 @@ function OtherCostDrawer(props) {
                                                     className={"btn btn-primary mt30 pull-left mr5"}
                                                     disabled={CostingViewMode}
                                                 >
-                                                    <div className={"plus"}></div>  Update
+                                                    Update
                                                 </button>
                                                 <button
                                                     type="button"
