@@ -107,6 +107,7 @@ class BOPDomesticListing extends Component {
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
 
+        const { floatingFilterData } = this.state
         if (this.state.filterModel?.EffectiveDateNew && !isReset) {
             if (this.state.filterModel.EffectiveDateNew.dateTo) {
                 let temp = []
@@ -121,6 +122,7 @@ class BOPDomesticListing extends Component {
         let statusString = [this.props?.approvalStatus].join(",")
 
         const filterData = {
+            ...floatingFilterData,
             bop_for: bopFor,
             category_id: CategoryId,
             vendor_id: vendorId,
@@ -393,15 +395,6 @@ class BOPDomesticListing extends Component {
     }
 
     /**
-    * @method bopCostingFormatter
-    * @description bopCostingFormatter
-    */
-    bopCostingFormatter = (props) => {
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        return rowData?.IsBreakupBoughtOutPart != null ? (rowData?.IsBreakupBoughtOutPart ? 'Yes' : 'No') : '-';
-    }
-
-    /**
     * @method costingHeadFormatter
     * @description Renders Costing head
     */
@@ -659,7 +652,6 @@ class BOPDomesticListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
             commonCostFormatter: this.commonCostFormatter,
-            bopCostingFormatter: this.bopCostingFormatter,
             attachmentFormatter: this.attachmentFormatter,
         };
 
@@ -838,7 +830,7 @@ class BOPDomesticListing extends Component {
                                     {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
-                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart " headerName="Detailed BOP" cellRenderer={'bopCostingFormatter'} ></AgGridColumn>}
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
                                     {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                     {!this.props?.isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
