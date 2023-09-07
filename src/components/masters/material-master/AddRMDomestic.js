@@ -30,7 +30,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, userTechnologyDetailByMasterId } from '../../../helper';
+import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, showRMScrapKeys, userTechnologyDetailByMasterId } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import { animateScroll as scroll } from 'react-scroll';
 
@@ -313,23 +313,8 @@ class AddRMDomestic extends Component {
   }
 
   checkTechnology = (technology) => {
-    let obj = {}
-    if (Number(technology.value) === FORGING) {
-      obj.showForging = true
-      obj.showCircleJali = false
-      obj.showScrap = false
-      this.setState({ showScrapKeys: obj })
-    } else if (Number(technology.value) === SHEETMETAL) {
-      obj.showForging = false
-      obj.showCircleJali = true
-      obj.showScrap = false
-      this.setState({ showScrapKeys: obj })
-    } else {
-      obj.showForging = false
-      obj.showCircleJali = false
-      obj.showScrap = true
-      this.setState({ showScrapKeys: obj })
-    }
+    let obj = showRMScrapKeys(technology.value)
+    this.setState({ showScrapKeys: obj })
   }
 
   /**
@@ -338,14 +323,7 @@ class AddRMDomestic extends Component {
   */
   handleTechnologyChange = (newValue) => {
     this.checkTechnology(newValue)
-    if (newValue.value === String(FORGING)) {
-      this.setState({ Technology: newValue, nameDrawer: true })
-    } else if (newValue.value === String(SHEETMETAL)) {
-      this.setState({ Technology: newValue, nameDrawer: true })
-    } else {
-      this.setState({ Technology: newValue, nameDrawer: true })
-    }
-    this.setState({ RawMaterial: [], nameDrawer: false, isDropDownChanged: true })
+    this.setState({ RawMaterial: [], isDropDownChanged: true, Technology: newValue })
   }
   /**
   * @method handleClient
@@ -468,15 +446,15 @@ class AddRMDomestic extends Component {
 
   handleScrapRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
-    if (Number(newValue.target.value) > Number(fieldsObj.BasicRateCurrency)) {
+    if (checkForNull(newValue.target.value) > checkForNull(fieldsObj.BasicRateCurrency)) {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
 
     if (this.state.isEditFlag) {
 
-      if (Number(fieldsObj.ScrapRateCurrency) === Number(this.state.DataToChange.ScrapRateCurrency) && Number(this.state.NetLandedCostCurrency) === Number(this.state.DataToChange?.NetLandedCostCurrency)
-        && Number(this.state.BasicPrice) === Number(this.state.DataToChange?.BasicPrice)) {
+      if (checkForNull(fieldsObj.ScrapRateCurrency) === checkForNull(this.state.DataToChange.ScrapRateCurrency) && checkForNull(this.state.NetLandedCostCurrency) === checkForNull(this.state.DataToChange?.NetLandedCostCurrency)
+        && checkForNull(this.state.BasicPrice) === checkForNull(this.state.DataToChange?.BasicPrice)) {
         this.setState({ IsFinancialDataChanged: false })
       } else {
         this.setState({ IsFinancialDataChanged: true })
@@ -488,7 +466,7 @@ class AddRMDomestic extends Component {
 
   handleBasicRate = (newValue, actionMeta) => {
     const { fieldsObj } = this.props
-    if (Number(newValue.target.value) < Number(fieldsObj.ScrapRateCurrency)) {
+    if (checkForNull(newValue.target.value) < checkForNull(fieldsObj.ScrapRateCurrency)) {
       Toaster.warning("Scrap rate should not be greater than basic rate")
       return false
     }
@@ -554,35 +532,6 @@ class AddRMDomestic extends Component {
       NetLandedCostCurrency: netLandedCostCurrency,
 
     })
-
-
-
-
-
-
-
-
-
-
-
-
-
-    // const { initialConfiguration } = this.props
-    // const { fieldsObj } = this.props
-    // const basicPrice = checkForNull(Number(fieldsObj.BasicRateCurrency ? fieldsObj.BasicRateCurrency : 0) + Number(fieldsObj.FreightCharge ? fieldsObj.FreightCharge : 0) + Number(fieldsObj.ShearingCost ? fieldsObj.ShearingCost : 0))
-
-    // if (this.state.isEditFlag && Number(basicPrice) === Number(this.state.DataToChange?.BasicPrice) && Number(fieldsObj.ScrapRateCurrency) === Number(this.state.DataToChange?.ScrapRateCurrency)) {
-    //   if (String(this.state.Technology.label) === String(SHEET_METAL) && Number(fieldsObj.JaliScrapCost) === Number(this.state.DataToChange.ScrapRateCurrency) && checkForNull(Number(fieldsObj.CircleScrapCost)) === Number(this.state.DataToChange.JaliScrapCost)) {
-    //     this.setState({ IsFinancialDataChanged: false })
-    //   } else {
-    //     this.setState({ IsFinancialDataChanged: true })
-    //   }
-    // } else if (this.state.isEditFlag) {
-    //   this.setState({ IsFinancialDataChanged: true })
-    // }
-
-    // this.props.change('BasicPrice', checkForDecimalAndNull(basicPrice, initialConfiguration.NoOfDecimalForPrice))
-    // this.setState({ BasicPrice: basicPrice })
   }
 
   /**
@@ -1077,8 +1026,8 @@ class AddRMDomestic extends Component {
   * @description setDisableFalseFunction
   */
   setDisableFalseFunction = () => {
-    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
+    const loop = checkForNull(this.dropzone.current.files.length) - checkForNull(this.state.files.length)
+    if (checkForNull(loop) === 1 || checkForNull(this.dropzone.current.files.length) === checkForNull(this.state.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
@@ -1190,8 +1139,7 @@ class AddRMDomestic extends Component {
 
     if (showScrapKeys?.showCircleJali) {
 
-      if (checkForNull(FinalBasicRateCurrency) < checkForNull(FinalJaliScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalJaliScrapCostCurrency) ||
-        checkForNull(FinalBasicRateCurrency) < checkForNull(FinalCircleScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalCircleScrapCostCurrency)) {
+      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalJaliScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalCircleScrapCostCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
@@ -1201,8 +1149,7 @@ class AddRMDomestic extends Component {
       jaliRateCurrency = checkForNull(FinalCircleScrapCostCurrency)
     } else if (showScrapKeys?.showForging) {
 
-      if (checkForNull(FinalBasicRateCurrency) < checkForNull(FinalForgingScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalForgingScrapCostCurrency) ||
-        checkForNull(FinalBasicRateCurrency) < checkForNull(FinalMachiningScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalMachiningScrapCostCurrency)) {
+      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalForgingScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalMachiningScrapCostCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
@@ -1212,7 +1159,7 @@ class AddRMDomestic extends Component {
       machiningRateCurrency = checkForNull(FinalMachiningScrapCostCurrency)
     } else if (showScrapKeys?.showScrap) {
 
-      if (checkForNull(FinalBasicRateCurrency) < checkForNull(FinalScrapRateCurrency) || checkForNull(FinalBasicRateCurrency) === checkForNull(FinalScrapRateCurrency)) {
+      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalScrapRateCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
@@ -1277,7 +1224,7 @@ class AddRMDomestic extends Component {
     formData.IsCutOffApplicable = values.cutOffPrice < values.NetLandedCostCurrency ? true : false
     formData.RawMaterialCode = values.Code
     formData.CustomerId = costingTypeId === CBCTypeId ? client.value : ''
-    formData.RawMaterialEntryType = Number(ENTRY_TYPE_DOMESTIC)
+    formData.RawMaterialEntryType = checkForNull(ENTRY_TYPE_DOMESTIC)
 
     formData.CutOffPrice = FinalCutOffCurrency
     formData.BasicRatePerUOM = FinalBasicRateCurrency
@@ -1299,7 +1246,7 @@ class AddRMDomestic extends Component {
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
       if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged
-        && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? Number(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? Number(values.cutOffPrice) : ''))
+        && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? checkForNull(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? checkForNull(values.cutOffPrice) : ''))
         && String(DataToChange.RawMaterialCode) === String(values.Code) && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
         && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))
         && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
@@ -1368,8 +1315,8 @@ class AddRMDomestic extends Component {
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
-    const sumCurrency = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-    let netLandedCostCurrency = Number(sumCurrency) + Number(this.state.FinalBasicPriceCurrency)
+    const sumCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    let netLandedCostCurrency = checkForNull(sumCurrency) + checkForNull(this.state.FinalBasicPriceCurrency)
     this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.setState({
@@ -1381,15 +1328,6 @@ class AddRMDomestic extends Component {
 
   }
 
-  showBasicRate = () => {
-    const { isEditFlag } = this.state
-    let value = false
-    if (isEditFlag) {
-      value = this.props?.data?.showPriceFields ? true : false
-    }
-    return value
-  }
-
   /**
    * @method render
    * @description Renders the component
@@ -1397,29 +1335,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, IsFinancialDataChanged, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, BasicPrice, conditionTableData,
-
-
-      FinalCutOffCurrency,
-      FinalBasicRateCurrency,
-      FinalScrapRateCurrency,
-      FinalForgingScrapCostCurrency,
-      FinalMachiningScrapCostCurrency,
-      FinalCircleScrapCostCurrency,
-      FinalJaliScrapCostCurrency,
-      FinalFreightCostCurrency,
-      FinalShearingCostCurrency,
-      FinalBasicPriceCurrency,
-      FinalConditionCostCurrency,
-      NetLandedCostCurrency,
-      showScrapKeys
-
-
-    } = this.state
-
-
-
-
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceCurrency, showScrapKeys } = this.state
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1856,25 +1772,20 @@ class AddRMDomestic extends Component {
                               />
                             </Col>
 
-                            {(this.showBasicRate() || true) && <>
-                              <Col md="3">
-                                <Field
-                                  label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
-                                  name={"BasicRateCurrency"}
-                                  type="text"
-                                  placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                  validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                  component={renderTextInputField}
-                                  required={true}
-                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                            </>}
-
-
-
+                            <Col md="3">
+                              <Field
+                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
+                                name={"BasicRateCurrency"}
+                                type="text"
+                                placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
 
                             {showScrapKeys?.showScrap &&
                               <>
@@ -2337,7 +2248,7 @@ class AddRMDomestic extends Component {
                 UOM={this.state.UOM}
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
-                IsImportEntery={false}
+                IsImportEntry={false}
                 costingTypeId={this.state.costingTypeId}
                 levelDetails={this.state.levelDetails}
                 currency={{ label: initialConfiguration?.BaseCurrency, value: initialConfiguration?.BaseCurrency }}
