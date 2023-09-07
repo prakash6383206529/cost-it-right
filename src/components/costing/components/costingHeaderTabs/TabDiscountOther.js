@@ -34,7 +34,6 @@ import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionC
 import AddConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import OtherCostDrawer from '../CostingHeadCosts/AdditionalOtherCost/OtherCostDrawer'
-import OtherCostTable from '../CostingHeadCosts/AdditionalOtherCost/OtherCostTable';
 import Button from '../../../layout/Button';
 import { useMemo } from 'react';
 let counter = 0;
