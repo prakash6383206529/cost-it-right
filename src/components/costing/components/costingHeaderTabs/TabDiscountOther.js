@@ -1614,7 +1614,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="3">
-                      <TooltipCustom disabledIcon={true} width="280px" id="otherCost" tooltipText={"Other Cost = Sum of drawer cost"} />
+                      <TooltipCustom disabledIcon={true} width="280px" id="otherCost" tooltipText={"Other Cost = Sum of Add Other Cost"} />
                       {otherCostUI}
                     </Col>
                     <Col md="3">
@@ -1638,7 +1638,7 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="3">
-                      <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Costing Condition = Sum of drawer cost"} />
+                      <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Costing Condition = Sum of Add Condition"} />
                       {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
                       {isConditionCostingOpen && <AddConditionCosting
                         isOpen={isConditionCostingOpen}
