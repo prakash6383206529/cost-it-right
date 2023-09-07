@@ -1593,4 +1593,3 @@ export function clearSpecificationSelectList(data) {
         })
     }
 }
-// CIR-I5561
