@@ -64,12 +64,11 @@ function ConditionCosting(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
+                                <td colSpan={3} className="text-right">{`Total Cost :`}</td>
+                                <td colSpan={isFromImport ? 0 : 2}><div className='d-flex justify-content-between'>{totalCostCurrency} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`} {isFromImport && <span className='text-right'>{`Total Cost :`}</span>}</div></td>
                                 {isFromImport && <>
-                                    <td colSpan={"2"} className="text-right">{`Total Cost (${initialConfiguration?.BaseCurrency}) :`}</td>
-                                    <td colSpan={"1"}>{totalCostBase}</td>
+                                    <td colSpan={2} className="text-left"> {totalCostBase} ({initialConfiguration?.BaseCurrency})</td>
                                 </>}
-                                <td colSpan={"2"} className="text-right">{`Total Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) :`}</td>
-                                <td colSpan={"1"}>{totalCostCurrency}</td>
                             </tr>
                         </tbody>
                     </Table>

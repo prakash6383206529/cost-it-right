@@ -304,7 +304,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         />
                                     </Col>
-                                    <Col md="2" className='px-1'>
+                                    <Col md={isFromImport ? 3 : 2} className='px-1'>
                                         <SearchableSelectHookForm
                                             label={`Type`}
                                             name={'Type'}
@@ -322,7 +322,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         />
                                     </Col>
-                                    <Col md="2" className='px-1'>
+                                    <Col md={isFromImport ? 3 : 2} className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Percentage (%)`}
                                             name={'Percentage'}
@@ -348,7 +348,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableAllFields}
                                         />
                                     </Col>
-                                    <Col md="2" className='px-1'>
+                                    <Col md={isFromImport ? 3 : 2} className={isFromImport ? "pl-1" : 'px-1'}>
                                         {type !== 'Fixed' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
                                         <NumberFieldHookForm
                                             label={`Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
@@ -370,7 +370,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                         />
                                     </Col>
-                                    {isFromImport && <Col md="2" className='px-1'>
+                                    {isFromImport && <Col md={3} className='pr-0'>
                                         {type !== 'Fixed' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
                                         <NumberFieldHookForm
                                             label={`Cost (${initialConfiguration?.BaseCurrency})`}
