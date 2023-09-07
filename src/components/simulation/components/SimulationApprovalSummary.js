@@ -707,7 +707,7 @@ function SimulationApprovalSummary(props) {
 
     const percentageFormatter = (props) => {
         const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
     }
 
     const viewAssembly = (cell, row, rowIndex) => {
