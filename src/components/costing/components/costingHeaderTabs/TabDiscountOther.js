@@ -198,7 +198,7 @@ function TabDiscountOther(props) {
   }, [otherCostData])
 
   const costingConditionUI = useMemo(() => {
-    const sum = conditionTableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+    const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
     return <div className='d-flex align-items-center'>
       <TextFieldHookForm
@@ -246,7 +246,7 @@ function TabDiscountOther(props) {
           if (res?.data?.DataList) {
             let Data = res?.data?.DataList
             setNpvTableData(Data)
-            const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
+            const sum = Data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
             setTotalNpvCost(sum)
             npvSum = sum
             dispatch(isDiscountDataChange(true))
@@ -269,13 +269,13 @@ function TabDiscountOther(props) {
               temp.push(item)
             })
             seConditionTableData(temp)
-            const sum = Data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+            const sum = Data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
             setTotalConditionCost(sum)
             setTimeout(() => {
               dispatch(isDiscountDataChange(true))
               setDiscountObj({
                 ...discountObj,
-                totalConditionCost: Number(sum)
+                totalConditionCost: checkForNull(sum)
               })
             }, 1000);
           }
@@ -429,7 +429,7 @@ function TabDiscountOther(props) {
             let temp = []
             let otherTotalCost = 0
             Data?.CostingPartDetails?.OtherCostDetails && Data?.CostingPartDetails?.OtherCostDetails.map((item) => {
-              otherTotalCost = Number(otherTotalCost) + Number(item.NetCost)
+              otherTotalCost = checkForNull(otherTotalCost) + checkForNull(item.NetCost)
               let obj = {}
               obj.OtherCostDescription = item.Description
               obj.OtherCostApplicability = item.ApplicabilityType
@@ -792,8 +792,8 @@ function TabDiscountOther(props) {
   * @description setDisableFalseFunction
   */
   const setDisableFalseFunction = () => {
-    const loop = Number(dropzone.current.files.length) - Number(files.length)
-    if (Number(loop) === 1 || Number(dropzone.current.files.length) === Number(files.length)) {
+    const loop = checkForNull(dropzone.current.files.length) - checkForNull(files.length)
+    if (checkForNull(loop) === 1 || checkForNull(dropzone.current.files.length) === checkForNull(files.length)) {
       setIsDisable(false)
     }
   }
@@ -802,8 +802,8 @@ function TabDiscountOther(props) {
   * @description setDisableFalseFunctionFeasibility
   */
   const setDisableFalseFunctionFeasibility = () => {
-    const loop = Number(dropzoneCapacity?.current?.files?.length) - Number(capacityFiles?.length)
-    if (Number(loop) === 1 || Number(dropzoneCapacity?.current?.capacityFiles?.length) === Number(capacityFiles?.length)) {
+    const loop = checkForNull(dropzoneCapacity?.current?.files?.length) - checkForNull(capacityFiles?.length)
+    if (checkForNull(loop) === 1 || checkForNull(dropzoneCapacity?.current?.capacityFiles?.length) === checkForNull(capacityFiles?.length)) {
       setIsDisable(false)
     }
   }
@@ -813,8 +813,8 @@ function TabDiscountOther(props) {
   * @description setDisableFalseFunctionCapacity
   */
   const setDisableFalseFunctionCapacity = () => {
-    const loop = Number(dropzoneCapacity?.current?.files?.length) - Number(capacityFiles?.length)
-    if (Number(loop) === 1 || Number(dropzoneCapacity?.current?.capacityFiles?.length) === Number(capacityFiles?.length)) {
+    const loop = checkForNull(dropzoneCapacity?.current?.files?.length) - checkForNull(capacityFiles?.length)
+    if (checkForNull(loop) === 1 || checkForNull(dropzoneCapacity?.current?.capacityFiles?.length) === checkForNull(capacityFiles?.length)) {
       setIsDisable(false)
     }
   }
@@ -824,8 +824,8 @@ function TabDiscountOther(props) {
   * @description setDisableFalseFunctionTimeline
   */
   const setDisableFalseFunctionTimeline = () => {
-    const loop = Number(dropzoneTimeline?.current?.files?.length) - Number(timelineFiles?.length)
-    if (Number(loop) === 1 || Number(dropzoneTimeline?.current?.capacityFiles?.length) === Number(timelineFiles?.length)) {
+    const loop = checkForNull(dropzoneTimeline?.current?.files?.length) - checkForNull(timelineFiles?.length)
+    if (checkForNull(loop) === 1 || checkForNull(dropzoneTimeline?.current?.capacityFiles?.length) === checkForNull(timelineFiles?.length)) {
       setIsDisable(false)
     }
   }
@@ -1102,7 +1102,7 @@ function TabDiscountOther(props) {
 
   const setUpdatednetPoPrice = (data) => {
     dispatch(setNPVData([]))
-    const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
+    const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
     setTotalNpvCost(sum)
     dispatch(isDiscountDataChange(true))
     setDiscountObj({
@@ -1126,7 +1126,7 @@ function TabDiscountOther(props) {
       setisOpenandClose(false)
       setNpvTableData(data)
       dispatch(setNPVData([]))
-      const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0);
+      const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.NpvCost), 0);
       setTotalNpvCost(sum)
       dispatch(isDiscountDataChange(true))
       setDiscountObj({
@@ -1150,12 +1150,12 @@ function TabDiscountOther(props) {
     } else {
       setIsConditionCostingOpen(false)
       seConditionTableData(data)
-      const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+      const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
       setTotalConditionCost(sum)
       dispatch(isDiscountDataChange(true))
       setDiscountObj({
         ...discountObj,
-        totalConditionCost: Number(sum)
+        totalConditionCost: checkForNull(sum)
       })
 
       if (type === 'save') {
@@ -1212,7 +1212,7 @@ function TabDiscountOther(props) {
       finalListCondition.push(tempObject)
     })
     seConditionTableData(finalListCondition)
-    const sum = finalListCondition.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
+    const sum = finalListCondition.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
 
     if (finalListCondition) {
       let obj = {}
@@ -1259,8 +1259,8 @@ function TabDiscountOther(props) {
     dispatch(isDiscountDataChange(true))
     setDiscountObj({
       ...discountObj,
-      totalConditionCost: Number(sum),
-      totalNpvCost: Number(sumNPV)
+      totalConditionCost: checkForNull(sum),
+      totalNpvCost: checkForNull(sumNPV)
     })
 
     dispatch(setPOPrice(netPO, () => { }))

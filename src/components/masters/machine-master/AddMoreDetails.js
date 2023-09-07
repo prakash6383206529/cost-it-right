@@ -4416,7 +4416,7 @@ class AddMoreDetails extends Component {
               anchor={"right"}
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
-              IsImportEntery={false}
+              IsImportEntry={false}
               costingTypeId={this.state.CostingTypeId}
               levelDetails={this.state.levelDetails}
             />

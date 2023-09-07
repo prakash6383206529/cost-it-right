@@ -2023,7 +2023,7 @@ class AddMachineRate extends Component {
               anchor={"right"}
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
-              IsImportEntery={false}
+              IsImportEntry={false}
               costingTypeId={this.state.costingTypeId}
               levelDetails={this.state.levelDetails}
             />

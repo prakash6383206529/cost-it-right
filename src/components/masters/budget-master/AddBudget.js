@@ -1285,7 +1285,7 @@ function AddBudget(props) {
                                                 anchor={"right"}
                                                 approvalObj={approvalObj}
                                                 isBulkUpload={false}
-                                                IsImportEntery={false}
+                                                IsImportEntry={false}
                                                 costingTypeId={costingTypeId}
                                                 //costingTypeId={this.state.costingTypeId}
                                                 levelDetails={levelDetails}
