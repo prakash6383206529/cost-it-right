@@ -775,7 +775,8 @@ class AddVendorDrawer extends Component {
                                                 component={renderMultiSelectField}
                                                 mendatory={true}
                                                 disabled={isViewMode ? true : false}
-                                                className="multiselect-with-border"
+                                                className={`multiselect-with-border ${isViewMode ? "hide-scroll" : ""}`}
+                                                title={showDataOnHover(this.state.Technology)}
                                             />
                                         </Col>
                                         <Col md="6">
