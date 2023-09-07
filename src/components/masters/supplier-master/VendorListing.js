@@ -338,15 +338,6 @@ class VendorListing extends Component {
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined && String(cellValue) !== 'NA') ? cellValue : '-';
     }
 
-    /**
-    * @method isCriticalVendor
-    */
-    isCriticalVendor = (props) => {
-        const cellValue = props?.value;
-        return cellValue ? "Yes" : "No"
-    }
-
-
     checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         // var selectedRows = gridApi?.getSelectedRows();
@@ -641,7 +632,6 @@ class VendorListing extends Component {
             hyphenFormatter: this.hyphenFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
             valuesFloatingFilter: MultiDropdownFloatingFilter,
-            isCriticalVendor: this.isCriticalVendor
         };
 
         return (
@@ -737,8 +727,8 @@ class VendorListing extends Component {
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="IsCriticalVendor" headerName="IsCriticalVendor" ></AgGridColumn>}
-                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorTechnology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorPlant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorTechnology" tooltipField="VendorTechnology" headerName="Technology" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="VendorPlant" tooltipField="VendorPlant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
@@ -813,7 +803,6 @@ function mapStateToProps({ comman, supplier, auth, simulation }) {
 
     return { statusColumnData, loading, vendorTypeList, countryList, leftMenuData, vendorSelectList, vendorTypeByVendorSelectList, supplierDataList, allSupplierDataList, topAndLeftMenuData, selectedRowForPagination };
 }
-
 /**
                     * @method connect
                     * @description connect with redux
