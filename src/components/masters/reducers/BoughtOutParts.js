@@ -127,7 +127,7 @@ export default function BOPReducer(state = initialState, action) {
                 el.BasicRate = checkForDecimalAndNull(el.BasicRate, getConfigurationKey()?.NoOfDecimalForPrice)
                 el.NetLandedCost = checkForDecimalAndNull(el.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)
                 el.IncoSummary = `${el.IncoTermDescription ? `${el.IncoTermDescription}` : ''} ${el.IncoTerm ? `(${el.IncoTerm})` : '-'}`
-                el.PaymentSummary = `${el.PaymentTermDescription ? `${el.PaymentTermDescription}` : ''} ${el.PaymentTerm ? `(${el.PaymentTerm})` : '-'}`                       //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID
+                el.PaymentSummary = `${el.PaymentTermDescription ? `${el.PaymentTermDescription}` : ''} ${el.PaymentTerm ? `(${el.PaymentTerm})` : '-'}`          //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID
                 el.IsBreakupBoughtOutPart = el.IsBreakupBoughtOutPart ? 'Yes' : 'No'
                 return el
             })
@@ -141,8 +141,8 @@ export default function BOPReducer(state = initialState, action) {
             let arry = []
             arry = action.payload && action.payload.filter((el, i) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: '2021-03-01T00:00:00' BUT WE WERE RECEIVING DATE IN 01/03/2021
                 el.EffectiveDateNew = el.EffectiveDate                                 //  WHICH WAS CAUSING DATE FILTER TO NOT WORK PROPERLY IN AG GRID
-                el.IncoTermDescriptionAndInfoTerm = `${el.IncoTermDescription ? `${el.IncoTermDescription}` : ''} ${el.IncoTerm ? `(${el.IncoTerm})` : '-'}`
-                el.PaymentTermDescriptionAndPaymentTerm = `${el.PaymentTermDescription ? `${el.PaymentTermDescription}` : ''} ${el.PaymentTerm ? `(${el.PaymentTerm})` : '-'}`
+                el.IncoTermDescriptionAndInfoTerm = `${el.IncoTermDescription ? `${el.IncoTermDescription}` : ''} ${el.IncoTerm ? ` (${el.IncoTerm})` : '-'}`
+                el.PaymentTermDescriptionAndPaymentTerm = `${el.PaymentTermDescription ? `${el.PaymentTermDescription}` : ''} ${el.PaymentTerm ? ` (${el.PaymentTerm})` : '-'}`
                 el.IsBreakupBoughtOutPart = el.IsBreakupBoughtOutPart ? 'Yes' : 'No'
                 return true
             })
