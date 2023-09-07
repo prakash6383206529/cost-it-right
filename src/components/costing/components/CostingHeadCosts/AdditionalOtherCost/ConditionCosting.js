@@ -2,7 +2,7 @@ import React, { Fragment, useEffect, useState } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
 import { useSelector } from 'react-redux'
 
 function ConditionCosting(props) {
@@ -15,10 +15,10 @@ function ConditionCosting(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     useEffect(() => {
-        const sum = props?.tableData?.reduce((acc, obj) => Number(acc) + Number(obj?.ConditionCostConversion), 0);
+        const sum = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCostConversion), 0);
         setTotalCostBase(checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
 
-        const sumCurrency = props?.tableData?.reduce((acc, obj) => Number(acc) + Number(obj?.ConditionCost), 0);
+        const sumCurrency = props?.tableData?.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj?.ConditionCost), 0);
         setTotalCostCurrency(checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     }, [props?.tableData])
 
@@ -65,9 +65,9 @@ function ConditionCosting(props) {
                             )}
                             <tr className='table-footer'>
                                 <td colSpan={3} className="text-right">{`Total Cost :`}</td>
-                                <td colSpan={isFromImport ? 0 : 2}><div className='d-flex justify-content-between'>{totalCostCurrency} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`} {isFromImport && <span className='text-right'>{`Total Cost :`}</span>}</div></td>
+                                <td colSpan={isFromImport ? 0 : 2}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`} {isFromImport && <span className='text-right'>{`Total Cost :`}</span>}</div></td>
                                 {isFromImport && <>
-                                    <td colSpan={2} className="text-left"> {totalCostBase} ({initialConfiguration?.BaseCurrency})</td>
+                                    <td colSpan={2} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({initialConfiguration?.BaseCurrency})</td>
                                 </>}
                             </tr>
                         </tbody>

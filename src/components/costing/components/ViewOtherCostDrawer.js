@@ -10,7 +10,7 @@ import LoaderCustom from '../../common/LoaderCustom'
 import YOYCost from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/YOYCost'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
-import { checkForDecimalAndNull } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull } from '../../../helper'
 
 function ViewOtherCostDrawer(props) {
     const { partId, vendorId, costingIndex } = props
@@ -46,7 +46,7 @@ function ViewOtherCostDrawer(props) {
             let totalCost = 0
             viewCostingData && viewCostingData[costingIndex]?.CostingPartDetails?.OtherCostDetails && viewCostingData[costingIndex].CostingPartDetails.OtherCostDetails.map((item) => {
 
-                totalCost = Number(totalCost) + Number(item.NetCost)
+                totalCost = checkForNull(totalCost) + checkForNull(item.NetCost)
                 let obj = {}
                 obj.OtherCostDescription = item.Description
                 obj.OtherCostApplicability = item.ApplicabilityType

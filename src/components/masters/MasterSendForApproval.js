@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails } from '../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails, checkForNull } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
@@ -20,7 +20,7 @@ import { masterApprovalAPI, masterApprovalRequestBySenderBudget } from './action
 import TooltipCustom from '../common/Tooltip';
 
 function MasterSendForApproval(props) {
-    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntery, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
+    const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
 
 
     const { register, control, formState: { errors }, handleSubmit, setValue, getValues, reset, } = useForm({
@@ -183,7 +183,7 @@ function MasterSendForApproval(props) {
             ]
             senderObj.BudgetingIdList = []
             let tempArray = []
-            switch (masterId) {
+            switch (checkForNull(masterId)) {
                 case 1:                        // CASE 1 FOR RAW MATERIAL
                     if (isBulkUpload) {
                         senderObj.MasterIdList = approvalData.map(item => item?.RawMaterialId)
@@ -267,11 +267,11 @@ function MasterSendForApproval(props) {
 
                     // if (isBulkUpload) {
                     //     approvalData && approvalData.map(item => {
-                    //         tempArray.push({ MachineId: item.MachineId, IsImportEntery: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item.CostingTypeId })
+                    //         tempArray.push({ MachineId: item.MachineId, IsImportEntry: item.EnteryType === 'Domestic' ? false : true, MachineRequest: {}, CostingTypeId: item.CostingTypeId })
                     //         return null
                     //     })
                     // } else {
-                    //     tempArray.push({ MachineId: EMPTY_GUID, IsImportEntery: IsImportEntery, MachineRequest: approvalObj })
+                    //     tempArray.push({ MachineId: EMPTY_GUID, IsImportEntry: IsImportEntry, MachineRequest: approvalObj })
                     // }
                     if (isBulkUpload) {
                         senderObj.MasterIdList = approvalData.map(item => item?.MachineId)
@@ -425,7 +425,7 @@ function MasterSendForApproval(props) {
     }), 500)
 
     const getHeaderNameForApproveReject = () => {
-        switch (masterId) {
+        switch (checkForNull(masterId)) {
             case 1:
                 return "Raw Material"
             case 2:
@@ -460,7 +460,7 @@ function MasterSendForApproval(props) {
                     />
 
                 </div>
-                {props?.IsImportEntery && <div className="input-group form-group col-md-6">
+                {props?.IsImportEntry && <div className="input-group form-group col-md-6">
                     <TextFieldHookForm
                         label={`Basic Rate/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
                         name={'basicRateBase'}
@@ -495,7 +495,7 @@ function MasterSendForApproval(props) {
                             />
 
                         </div>
-                        {props?.IsImportEntery && <div className="input-group form-group col-md-6">
+                        {props?.IsImportEntry && <div className="input-group form-group col-md-6">
                             <TextFieldHookForm
                                 label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
                                 name={'BasicPriceBase'}
@@ -529,7 +529,7 @@ function MasterSendForApproval(props) {
                             />
 
                         </div>
-                        {props?.IsImportEntery && <div className="input-group form-group col-md-6">
+                        {props?.IsImportEntry && <div className="input-group form-group col-md-6">
                             <TextFieldHookForm
                                 label={`Total Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
                                 name={'ConditionCostBase'}
@@ -564,7 +564,7 @@ function MasterSendForApproval(props) {
                     />
 
                 </div>
-                {props?.IsImportEntery && <div className="input-group form-group col-md-6">
+                {props?.IsImportEntry && <div className="input-group form-group col-md-6">
                     <TextFieldHookForm
                         label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
                         name={'netCostBase'}
@@ -604,7 +604,7 @@ function MasterSendForApproval(props) {
                     />
                 </Col>
 
-                {props?.IsImportEntery && <Col md="3">
+                {props?.IsImportEntry && <Col md="3">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"cutOffPriceBase"}
@@ -640,7 +640,7 @@ function MasterSendForApproval(props) {
                         disabled={true}
                     />
                 </Col>
-                {props?.IsImportEntery && <Col md="3">
+                {props?.IsImportEntry && <Col md="3">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"BasicRateBase"}
@@ -679,7 +679,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntery && <Col md="3">
+                        {props?.IsImportEntry && <Col md="3">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"ScrapRateBase"}
@@ -714,7 +714,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntery && <Col md="3">
+                        {props?.IsImportEntry && <Col md="3">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Forging Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"ForgingScrapBase"}
@@ -749,7 +749,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntery && <Col md="3">
+                        {props?.IsImportEntry && <Col md="3">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Machining Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"MachiningScrapBase"}
@@ -785,7 +785,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntery && <Col md="3">
+                        {props?.IsImportEntry && <Col md="3">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Circle Scrap Cost Conversion", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"CircleScrapCostBase"}
@@ -820,7 +820,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntery && <Col md="3">
+                        {props?.IsImportEntry && <Col md="3">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Jali Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"JaliScrapCostBase"}
@@ -856,7 +856,7 @@ function MasterSendForApproval(props) {
                         disabled={true}
                     />
                 </Col>
-                {props?.IsImportEntery && <Col md="3">
+                {props?.IsImportEntry && <Col md="3">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"FreightChargeBase"}
@@ -891,7 +891,7 @@ function MasterSendForApproval(props) {
                         disabled={true}
                     />
                 </Col>
-                {props?.IsImportEntery && <Col md="3">
+                {props?.IsImportEntry && <Col md="3">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"ShearingCostBase"}
@@ -925,7 +925,7 @@ function MasterSendForApproval(props) {
                             disabled={true}
                         />
                     </Col>
-                    {props?.IsImportEntery && <Col md="3">
+                    {props?.IsImportEntry && <Col md="3">
                         <TextFieldHookForm
                             label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
                             name={"BasicPriceBase"}
@@ -961,7 +961,7 @@ function MasterSendForApproval(props) {
                         />
                     </Col>
 
-                    {props?.IsImportEntery && <Col md="3">
+                    {props?.IsImportEntry && <Col md="3">
                         <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                         <TextFieldHookForm
                             label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
@@ -997,7 +997,7 @@ function MasterSendForApproval(props) {
                         disabled={true}
                     />
                 </Col>
-                {props?.IsImportEntery && <Col md="3">
+                {props?.IsImportEntry && <Col md="3">
                     <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
                     <TextFieldHookForm
                         label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
@@ -1101,7 +1101,7 @@ function MasterSendForApproval(props) {
                                             />
                                         </div>
                                         {
-                                            !isBulkUpload && masterId === Number('1') &&
+                                            !isBulkUpload && checkForNull(masterId) === 1 &&
                                             <>
                                                 <div className="input-group form-group col-md-6">
                                                     <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
@@ -1129,7 +1129,7 @@ function MasterSendForApproval(props) {
                                         }
 
                                         {
-                                            !isBulkUpload && (masterId) === Number('2') &&
+                                            !isBulkUpload && checkForNull(masterId) === 2 &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
                                                     <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
@@ -1159,7 +1159,7 @@ function MasterSendForApproval(props) {
 
 
                                         {
-                                            !isBulkUpload && masterId === Number('3') &&
+                                            !isBulkUpload && checkForNull(masterId) === 3 &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
                                                     <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
@@ -1203,7 +1203,7 @@ function MasterSendForApproval(props) {
                                         }
 
                                         {
-                                            !isBulkUpload && masterId === Number('4') &&
+                                            !isBulkUpload && checkForNull(masterId) === 4 &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
                                                     <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
@@ -1252,7 +1252,7 @@ function MasterSendForApproval(props) {
 
 
                                         {
-                                            !isBulkUpload && masterId === Number('5') &&
+                                            !isBulkUpload && checkForNull(masterId) === 5 &&
                                             <>
                                                 {(props.costingTypeId === ZBCTypeId && (<>
                                                     <div className="col-md-12">

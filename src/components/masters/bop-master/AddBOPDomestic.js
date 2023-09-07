@@ -99,7 +99,6 @@ class AddBOPDomestic extends Component {
       isOpenConditionDrawer: false,
       conditionTableData: [],
 
-
       FinalBasicRateBase: '',
       FinalBasicPriceBase: '',
       FinalConditionCostBase: '',
@@ -558,7 +557,7 @@ class AddBOPDomestic extends Component {
       FinalNetLandedCostBase: netCostBase
     })
 
-    if (this.state.isEditFlag && Number(basicPriceBase) === Number(this.state.DataToCheck?.NetCostWithoutConditionCost) && Number(NoOfPieces) === Number(this.state.DataToCheck?.NumberOfPieces)) {
+    if (this.state.isEditFlag && checkForNull(basicPriceBase) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) && checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces)) {
 
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
@@ -591,8 +590,8 @@ class AddBOPDomestic extends Component {
   * @description setDisableFalseFunction
   */
   setDisableFalseFunction = () => {
-    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
+    const loop = checkForNull(this.dropzone.current.files.length) - checkForNull(this.state.files.length)
+    if (checkForNull(loop) === 1 || checkForNull(this.dropzone.current.files.length) === checkForNull(this.state.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
@@ -758,7 +757,7 @@ class AddBOPDomestic extends Component {
       DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
       Attachements: isEditFlag ? updatedFiles : files,
       CustomerId: client.value,
-      EntryType: Number(ENTRY_TYPE_DOMESTIC),
+      EntryType: checkForNull(ENTRY_TYPE_DOMESTIC),
       CategoryName: BOPCategory.label,
       IsClientVendorBOP: isClientVendorBOP,
       TechnologyName: Technology?.label,
@@ -864,22 +863,13 @@ class AddBOPDomestic extends Component {
     // this.setState({ isDropDownChanged: true })
   }
 
-  showBasicRate = () => {
-    const { isEditFlag } = this.state
-    let value = false
-    if (isEditFlag) {
-      value = this.props?.data?.showPriceFields ? true : false
-    }
-    return value
-  }
-
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
-    const sum = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-    let netLandedCost = Number(sum) + Number(this.state.FinalBasicPriceBase)
+    const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    let netLandedCost = checkForNull(sum) + checkForNull(this.state.FinalBasicPriceBase)
     this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
     this.setState({
@@ -1638,7 +1628,7 @@ class AddBOPDomestic extends Component {
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
-                IsImportEntery={false}
+                IsImportEntry={false}
                 UOM={this.state.UOM}
                 costingTypeId={this.state.costingTypeId}
                 levelDetails={this.state.levelDetails}

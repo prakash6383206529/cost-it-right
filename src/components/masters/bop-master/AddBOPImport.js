@@ -116,12 +116,6 @@ class AddBOPImport extends Component {
       NetLandedCostINR: '',
       NetLandedCostCurrency: '',
 
-
-
-
-
-
-
       FinalBasicRateCurrency: '',
       FinalBasicRateBase: '',
       FinalBasicPriceCurrency: '',
@@ -657,7 +651,7 @@ class AddBOPImport extends Component {
     if (newValue && newValue !== '') {
       if (newValue && newValue.length !== 0 && effectiveDate) {
         const { costingTypeId, vendorName, client } = this.state;
-        this.props.getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
+        this.props.getExchangeRateByCurrency(newValue.label, costingTypeId, DayTime(effectiveDate).format('YYYY-MM-DD'), costingTypeId === VBCTypeId ? vendorName.value : EMPTY_GUID, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
           } else {
@@ -710,10 +704,10 @@ class AddBOPImport extends Component {
 
     let conditionList = this.recalculateConditions(basicPriceCurrency, basicPriceBase)
 
-    const sumBase = conditionList.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCostConversion), 0);
-    const sumCurrency = conditionList.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-    let netLandedCostBase = Number(sumBase) + Number(basicPriceBase)
-    let netLandedCostCurrency = Number(sumCurrency) + Number(basicPriceCurrency)
+    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+    const sumCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    let netLandedCostBase = checkForNull(sumBase) + checkForNull(basicPriceBase)
+    let netLandedCostCurrency = checkForNull(sumCurrency) + checkForNull(basicPriceCurrency)
     this.props.change('FinalConditionCostBase', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice))
@@ -737,17 +731,17 @@ class AddBOPImport extends Component {
       // this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value && (this.state.sourceLocation === this.state.DataToChange?.SourceLocation) && (this.state.source === this.state.DataToChange?.Source)         frontend fixes
       this.state.DataToChange.BoughtOutPartPaymentTermId === this.state.paymentTerm.value &&
 
-      Number(this.state.DataToChange.BasicRateConversion) === Number(basicRateBase) &&
-      Number(this.state.DataToChange.BasicRate) === Number(fieldsObj?.BasicRateCurrency) &&
+      checkForNull(this.state.DataToChange.BasicRateConversion) === checkForNull(basicRateBase) &&
+      checkForNull(this.state.DataToChange.BasicRate) === checkForNull(fieldsObj?.BasicRateCurrency) &&
 
-      Number(this.state.DataToChange.NetCostWithoutConditionCostConversion) === Number(basicPriceBase) &&
-      Number(this.state.DataToChange.NetCostWithoutConditionCost) === Number(basicPriceCurrency) &&
+      checkForNull(this.state.DataToChange.NetCostWithoutConditionCostConversion) === checkForNull(basicPriceBase) &&
+      checkForNull(this.state.DataToChange.NetCostWithoutConditionCost) === checkForNull(basicPriceCurrency) &&
 
-      Number(this.state.DataToChange.NetLandedCostConversion) === Number(netLandedCostBase) &&
-      Number(this.state.DataToChange.NetLandedCost) === Number(netLandedCostCurrency) &&
+      checkForNull(this.state.DataToChange.NetLandedCostConversion) === checkForNull(netLandedCostBase) &&
+      checkForNull(this.state.DataToChange.NetLandedCost) === checkForNull(netLandedCostCurrency) &&
 
-      Number(this.state.DataToChange.NetConditionCostConversion) === sumBase &&
-      Number(this.state.DataToChange.NetConditionCost) === sumCurrency
+      checkForNull(this.state.DataToChange.NetConditionCostConversion) === sumBase &&
+      checkForNull(this.state.DataToChange.NetConditionCost) === sumCurrency
     ) {
 
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
@@ -772,7 +766,7 @@ class AddBOPImport extends Component {
     if (date !== effectiveDate) {
       if (currency && currency.length !== 0 && date) {
         const { costingTypeId, vendorName, client } = this.state;
-        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(date).format('YYYY-MM-DD'), costingTypeId === ZBCTypeId ? EMPTY_GUID : vendorName.value, client.value, false, res => {
+        this.props.getExchangeRateByCurrency(currency.label, costingTypeId, DayTime(date).format('YYYY-MM-DD'), costingTypeId === VBCTypeId ? vendorName.value : EMPTY_GUID, client.value, false, res => {
           if (Object.keys(res.data.Data).length === 0) {
             this.setState({ showWarning: true });
           } else {
@@ -795,8 +789,8 @@ class AddBOPImport extends Component {
   * @description setDisableFalseFunction
   */
   setDisableFalseFunction = () => {
-    const loop = Number(this.dropzone.current.files.length) - Number(this.state.files.length)
-    if (Number(loop) === 1 || Number(this.dropzone.current.files.length) === Number(this.state.files.length)) {
+    const loop = checkForNull(this.dropzone.current.files.length) - checkForNull(this.state.files.length)
+    if (checkForNull(loop) === 1 || checkForNull(this.dropzone.current.files.length) === checkForNull(this.state.files.length)) {
       this.setState({ setDisable: false, attachmentLoader: false })
     }
   }
@@ -967,7 +961,7 @@ class AddBOPImport extends Component {
       CustomerId: client.value,
       BoughtOutPartIncoTermId: incoTerm.value,
       BoughtOutPartPaymentTermId: paymentTerm.value,
-      EntryType: Number(ENTRY_TYPE_IMPORT),
+      EntryType: checkForNull(ENTRY_TYPE_IMPORT),
       IsClientVendorBOP: isClientVendorBOP,
       TechnologyName: Technology?.label,
       TechnologyId: Technology?.value,
@@ -1092,10 +1086,10 @@ class AddBOPImport extends Component {
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
-    const sumBase = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCostConversion), 0);
-    const sumCurrency = data.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
-    let netLandedCostINR = Number(sumBase) + Number(this.state.FinalBasicPriceBase)
-    let netLandedCostCurrency = Number(sumCurrency) + Number(this.state.FinalBasicPriceCurrency)
+    const sumBase = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+    const sumCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    let netLandedCostINR = checkForNull(sumBase) + checkForNull(this.state.FinalBasicPriceBase)
+    let netLandedCostCurrency = checkForNull(sumCurrency) + checkForNull(this.state.FinalBasicPriceCurrency)
     this.props.change('FinalConditionCostBase', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostINR, initialConfiguration.NoOfDecimalForPrice))
@@ -1110,15 +1104,6 @@ class AddBOPImport extends Component {
     })
   }
 
-
-  showBasicRate = () => {
-    const { isEditFlag } = this.state
-    let value = false
-    if (isEditFlag) {
-      value = this.props?.data?.showPriceFields ? true : false
-    }
-    return value
-  }
 
   /**
   * @method render
@@ -1631,7 +1616,7 @@ class AddBOPImport extends Component {
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={true}
-                                  disabled={isViewMode || (isEditFlag && isBOPAssociated) || true}
+                                  disabled={true}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
@@ -1645,7 +1630,7 @@ class AddBOPImport extends Component {
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                   component={renderTextInputField}
                                   required={true}
-                                  disabled={isViewMode || (isEditFlag && isBOPAssociated) || true}
+                                  disabled={true}
                                   className=" "
                                   customClassName=" withBorder"
                                 />
@@ -1958,7 +1943,7 @@ class AddBOPImport extends Component {
                 anchor={"right"}
                 approvalObj={this.state.approvalObj}
                 isBulkUpload={false}
-                IsImportEntery={true}
+                IsImportEntry={true}
                 currency={this.state.currency}
                 costingTypeId={this.state.costingTypeId}
                 levelDetails={this.state.levelDetails}
