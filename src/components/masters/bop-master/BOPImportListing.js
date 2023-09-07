@@ -805,7 +805,7 @@ class BOPImportListing extends Component {
                                     {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP" cellRenderer={'bopCostingFormatter'} ></AgGridColumn>}
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
                                     {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                     <AgGridColumn field="Currency"></AgGridColumn>
 
