@@ -46,6 +46,11 @@ export default function supplierReducer(state = initialState, action) {
                 } else if (el.status === false) {
                     el.status = 'In Active'
                 }
+                if (el.IsCriticalVendor === true) {
+                    el.IsCriticalVendor = 'Yes'
+                } else {
+                    el.IsCriticalVendor = 'No'
+                }
                 return true
             })
             return {
@@ -62,6 +67,11 @@ export default function supplierReducer(state = initialState, action) {
                     el.status = 'Active'
                 } else if (el.status === false) {
                     el.status = 'In Active'
+                }
+                if (el.IsCriticalVendor === true) {
+                    el.IsCriticalVendor = 'Yes'
+                } else {
+                    el.IsCriticalVendor = 'No'
                 }
                 return true
             })

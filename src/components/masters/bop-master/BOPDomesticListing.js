@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID } from '../../../config/constants';
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
 import {
     getBOPDataList, deleteBOP, getPlantSelectListByVendor,
 } from '../actions/BoughtOutParts';
@@ -391,7 +391,7 @@ class BOPDomesticListing extends Component {
     */
     commonCostFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? cell : '-';
+        return cell ? cell : '-';
     }
 
     /**
@@ -514,19 +514,18 @@ class BOPDomesticListing extends Component {
     };
 
     returnExcelColumn = (data = [], TempData) => {
-        let excelData = hideCustomerFromExcel(data, "CustomerName")
-        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured) {
-            excelData = hideMultipleColumnFromExcel(excelData, ["IsBreakupBoughtOutPart", "TechnologyName"])
-        }
         let temp = []
         let tempData = [...data]
+        tempData = hideCustomerFromExcel(tempData, "CustomerName")
         if (!getConfigurationKey().IsMinimumOrderQuantityVisible) {
             tempData = hideColumnFromExcel(tempData, 'Quantity')
-        }
-        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        } else if (!getConfigurationKey().IsBasicRateAndCostingConditionVisible) {
+            tempData = hideMultipleColumnFromExcel(tempData, ["NetConditionCost", "NetCostWithoutConditionCost"])
+        } else if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured) {
+            tempData = hideMultipleColumnFromExcel(tempData, ["IsBreakupBoughtOutPart", "TechnologyName"])
+        } else if (!reactLocalStorage.getObject('cbcCostingPermission')) {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
-        }
-        else {
+        } else {
             tempData = data
         }
         temp = TempData && TempData.map((item) => {
@@ -829,6 +828,10 @@ class BOPDomesticListing extends Component {
                                     {/* {this.props?.isMasterSummaryDrawer && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>} */}
                                     {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
+
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
+
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                                     {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
                                     {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}

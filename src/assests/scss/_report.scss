@@ -165,9 +165,32 @@
         box-shadow: 0 3px 5px rgba(55, 0, 0, 0.15), 0 0px 0px rgba(0, 0, 0, 0.02);
         padding: 10px;
         margin-bottom: 20px;
+        position: relative;
+    }
+
+    .product-rollout-graph {
+        .seprate-box {
+            min-height: 472px;
+
+            .container {
+                height: 432px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+        }
+    }
+
+    .cost-movement-chart {
+        min-height: 230px;
+    }
+
+    .stage-of-parts {
+        min-height: 170px;
     }
 
     .part-usage-container {
+
         .inner-container {
             min-height: 80px;
             position: relative;

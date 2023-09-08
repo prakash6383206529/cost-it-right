@@ -89,7 +89,6 @@ function ApprovalListing(props) {
 
   useEffect(() => {
     if (props.activeTab === "3" || isDashboard) {
-      getTableData("", "", "", "", 0, defaultPageSize, true, floatingFilterData)
       resetState()
     }
     dispatch(isResetClick(false))

@@ -5,13 +5,17 @@ import StageOfParts from "./StageOfParts";
 import CostMovement from "./CostMovement";
 import PartUsage from "./PartUsage";
 import DisplayCharts from "./DisplayCharts";
-import MasterUserage from "./MasterUsage";
+import MasterUsage from "./MasterUsage";
+import { useMemo } from "react";
+import { useCallback } from "react";
 
 const ProductRollout = () => {
-    const [showData, setShowData] = useState(false)
-    const fetchData = () => {
-        setShowData(true)
-    }
+    const [modelLandingData, setModelLandingData] = useState({});
+
+    const fetchData = (value) => {
+        setModelLandingData(value);
+    };
+
     return (
         <div className="product-rollout-container">
             <h1>Detailed Model/Assy Report</h1>
@@ -19,24 +23,25 @@ const ProductRollout = () => {
                 <Col md="6">
                     <ModelLanding fetchData={fetchData} />
                 </Col>
-                {showData && <>
-                    <Col md="6">
-                        <StageOfParts />
-                    </Col>
-                    <Col md="12">
-                        <CostMovement />
-                    </Col>
-                    <Col md="6">
-                        <PartUsage />
-                        <DisplayCharts />
-                    </Col>
-                    <Col md="6">
-                        <MasterUserage />
-                    </Col>
-                </>}
-
+                {modelLandingData.showData && (
+                    <>
+                        <Col md="6">
+                            <StageOfParts productId={modelLandingData.productId} />
+                        </Col>
+                        <Col md="12">
+                            <CostMovement partId={modelLandingData.partId} partNumber={modelLandingData.partNumber} partType={modelLandingData.partType} />
+                        </Col>
+                        <Col md="6">
+                            <PartUsage productId={modelLandingData.productId} />
+                            <MasterUsage productId={modelLandingData.productId} />
+                        </Col>
+                        <Col md="6">
+                            <DisplayCharts productId={modelLandingData.productId} />
+                        </Col>
+                    </>
+                )}
             </Row>
         </div>
-    )
-}
-export default ProductRollout;
+    );
+};
+export default React.memo(ProductRollout);

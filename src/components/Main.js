@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -70,6 +70,9 @@ import GotGivenReport from './report/components/GotGivenReport/GotGivenReport'
 import PipdReport from './report/components/PIPDReport/PipdReport'
 import PlantWiseCostingGotGiven from './report/components/PlantWiseCostingGotGiven/PlantWiseCostingGotGiven'
 import ProductRollout from './report/components/ProductRollout'
+import OutsourcingListing from './masters/outsourcing-master/OutsourcingListing'
+import CostingForm from './costing/components'
+import SimulationForm from './simulation/components'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -327,14 +330,13 @@ class Main extends Component {
                     <Route path="/interest-rate-master" component={AuthMiddleware(InterestRate, INTEREST_RATE)} />
 
                     <Route path="/costing" component={CostingRoutes} exact={true} />
-
-                    <Route path="/costing-summary" component={AuthMiddleware(CostingRoutes, COSTING_SUMMARY_)} />
+                    <Route path="/costing-summary" component={AuthMiddleware(CostingForm, COSTING_SUMMARY_)} />
 
                     {/* <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, Approval_Summary)} /> */}
                     <Route path="/approval-summary" component={AuthMiddleware(ApprovalSummary, APPROVAL_APP)} />
 
 
-                    <Route path="/approval-listing" component={AuthMiddleware(CostingRoutes, APPROVAL_APP)} />
+                    <Route path="/approval-listing" component={AuthMiddleware(CostingForm, APPROVAL_APP)} />
                     {/* <Route path="/approval-listing" component={AuthMiddleware(ApprovalListing,Approval_Listing)} /> */}
 
                     <Route path="/costing-bulkUpload" component={AuthMiddleware(CostingSummaryBulkUpload, SHEET_METAL)} />
@@ -352,7 +354,7 @@ class Main extends Component {
                     {/* <Route path="/simulation-history" component={AuthMiddleware(SimulationHistory, Simulation_History)} /> */}
 
                     {/* <Route path="/simulation-history" component={SimulationHistory} /> */}
-                    <Route path="/simulation-history" component={AuthMiddleware(SimulationRoutes, Simulation_Page)} />
+                    <Route path="/simulation-history" component={AuthMiddleware(SimulationForm, Simulation_Page)} />
 
                     <Route path='/simulation-approval-summary' component={AuthMiddleware(SimulationApprovalSummary, Simulation_Page)} />
                     <Route path="/simulation" component={SimulationRoutes} exact={true} />
@@ -376,6 +378,7 @@ class Main extends Component {
                     <Route path="/nfr" component={AuthMiddleware(NfrTabs, NFR)} />
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
                     <Route path="/got-given-summary-details-report" component={GotGivenReport} />
+                    <Route path="/out-sourcing-master" component={AuthMiddleware(OutsourcingListing, OUTSOURCING)} />
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}
