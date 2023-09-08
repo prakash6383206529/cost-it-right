@@ -72,10 +72,10 @@ const ApprovalDrawer = (props) => {
         dispatch(checkFinalUser(obj, (res) => {
             if (res?.data?.Result) {
                 if (res?.data?.Data?.IsFinalApprover) {
-                    if (res?.data?.Data?.IsFinalApprover) {
+                    if (res?.data?.Data?.IsUserInApprovalFlow === false) {
                         setIsDisable(true)
                         setEditWarning(true)
-                        setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                        setFilterStatus('This user is not in the approval cycle')
                     } else {
                         setIsDisable(false)
                         setEditWarning(false)
@@ -177,10 +177,10 @@ const ApprovalDrawer = (props) => {
                 obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
                 dispatch(checkFinalUser(obj, (res) => {
                     if (res?.data?.Result) {
-                        if (res?.data?.Data?.IsFinalApprover) {
+                        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
                             setIsDisable(true)
                             setEditWarning(true)
-                            setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                            setFilterStatus('This user is not in the approval cycle')
                         } else {
                             setIsDisable(false)
                             setEditWarning(false)
