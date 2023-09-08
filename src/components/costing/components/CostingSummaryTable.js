@@ -2546,17 +2546,18 @@ const CostingSummaryTable = (props) => {
                                       <span className="d-inline-block small-grey-text">{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</span>
                                       <span className="d-inline-block small-grey-text">{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div> */}
-                                    </td>
+                                    </td >
                                     : ""
                                 )
                               })}
-                          </tr>
+                          </tr >
                           { }
-                          <tr className='border-right'>
+                          < tr className='border-right' >
                             <td>
                               <span className="d-block small-grey-text"> Any Other Cost</span>
                             </td>
-                            {viewCostingData &&
+                            {
+                              viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 return (
 
@@ -2569,8 +2570,9 @@ const CostingSummaryTable = (props) => {
                                     : ""
 
                                 )
-                              })}
-                          </tr>
+                              })
+                            }
+                          </tr >
 
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
