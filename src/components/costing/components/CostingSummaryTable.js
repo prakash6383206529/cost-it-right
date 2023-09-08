@@ -205,17 +205,17 @@ const CostingSummaryTable = (props) => {
       let tempColorArray = [];
 
       temp = [
-        checkForDecimalAndNull(partType ? tempObj.nTotalRMBOPCC : tempObj.netRM, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(partType ? 0 : tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.CostingPartDetails?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice),
-        checkForDecimalAndNull(tempObj.CostingPartDetails?.NetNpvCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(partType ? tempObj?.nTotalRMBOPCC : tempObj?.netRM, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.netBOP, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(partType ? 0 : tempObj?.nConvCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.nsTreamnt, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.totalToolCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.CostingPartDetails?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice),
+        checkForDecimalAndNull(tempObj?.CostingPartDetails?.NetNpvCost, initialConfiguration.NoOfDecimalForPrice),
       ]
 
       let labelArray = temp.reduce((acc, item, index) => {
@@ -228,48 +228,48 @@ const CostingSummaryTable = (props) => {
       labelArray.forEach(item => {
         switch (item) {
           case partType ? 'COST/ASSEMBLY' : 'RM':
-            dataArray.push(checkForDecimalAndNull(partType ? tempObj.nTotalRMBOPCC : tempObj.netRM, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(partType ? tempObj?.nTotalRMBOPCC : tempObj?.netRM, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[0])
             break;
           case 'BOP':
-            dataArray.push(checkForDecimalAndNull(tempObj.netBOP, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.netBOP, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[1])
             break;
           case 'CC':
-            dataArray.push(checkForDecimalAndNull(tempObj.nConvCost, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.nConvCost, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[2])
             break;
           case 'ST':
-            dataArray.push(checkForDecimalAndNull(tempObj.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.nsTreamnt, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[3])
             break;
           case 'O&P':
-            dataArray.push(checkForDecimalAndNull(tempObj.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.nOverheadProfit, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[4])
             break;
           case 'P&F':
-            dataArray.push(checkForDecimalAndNull(tempObj.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.nPackagingAndFreight, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[5])
             break;
           case 'TC':
-            dataArray.push(checkForDecimalAndNull(tempObj.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.totalToolCost, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[6])
             break;
           case 'HUNDI/DIS':
-            dataArray.push(checkForDecimalAndNull(tempObj.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.otherDiscountCost, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[7])
             break;
           case 'ANY OTHER COST':
-            dataArray.push(checkForDecimalAndNull(tempObj.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.anyOtherCostTotal, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[8])
             break;
           case 'CONDITION COST':
-            dataArray.push(checkForDecimalAndNull(tempObj.CostingPartDetails.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.CostingPartDetails?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[9])
 
             break;
           case 'NPV COST':
-            dataArray.push(checkForDecimalAndNull(tempObj.CostingPartDetails.NetNpvCost, initialConfiguration.NoOfDecimalForPrice))
+            dataArray.push(checkForDecimalAndNull(tempObj?.CostingPartDetails?.NetNpvCost, initialConfiguration.NoOfDecimalForPrice))
             tempColorArray.push(colorArray[10])
             break;
           default:
@@ -1039,7 +1039,7 @@ const CostingSummaryTable = (props) => {
       return ' ';
     } else if (data?.CostingHeading !== VARIANCE) {
       const overheadTitle = data?.overheadOn.overheadTitle;
-      let isOverheadCombined = data.CostingPartDetails.CostingOverheadDetail.IsOverheadCombined
+      let isOverheadCombined = data.CostingPartDetails?.CostingOverheadDetail.IsOverheadCombined
       switch (overheadTitle) {
         case 'RM':
           return data?.overheadOn.overheadRMPercentage;
@@ -1075,7 +1075,7 @@ const CostingSummaryTable = (props) => {
       return ' ';
     } else if (data?.CostingHeading !== VARIANCE) {
       const profitTitle = data?.profitOn.profitTitle;
-      let isProfitCombined = data.CostingPartDetails.CostingProfitDetail.IsProfitCombined
+      let isProfitCombined = data.CostingPartDetails?.CostingProfitDetail.IsProfitCombined
       switch (profitTitle) {
         case 'RM':
           return data?.profitOn.profitRMPercentage;
@@ -2151,13 +2151,13 @@ const CostingSummaryTable = (props) => {
                                         </span>
 
                                         {showLabourData && <span className={highlighter('NetLabourCost')}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (<span title={checkForDecimalAndNull(data?.CostingPartDetails.NetLabourCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.NetLabourCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.NetLabourCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.NetLabourCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
                                         </span>}
                                         {showLabourData && <span className={highlighter('IndirectLaborCost')}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (<span title={checkForDecimalAndNull(data?.CostingPartDetails.IndirectLaborCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.IndirectLaborCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.IndirectLaborCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.IndirectLaborCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
                                         </span>}
                                         {showLabourData && <span className={highlighter('StaffCost')}>
-                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (<span title={checkForDecimalAndNull(data?.CostingPartDetails.StaffCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.StaffCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
+                                          {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? (<span title={checkForDecimalAndNull(data?.CostingPartDetails?.StaffCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.StaffCost, initialConfiguration.NoOfDecimalForPrice)}</span>) : '')}
                                         </span>}
                                       </td>
                                     )
@@ -2525,15 +2525,15 @@ const CostingSummaryTable = (props) => {
                                     <div style={{ width: '95%' }} className={`d-flex justify-content-between`}>
                                       <div>
                                         <div className=''>Applicability</div>
-                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0 && (data?.CostingPartDetails.DiscountCostDetails[0]?.ApplicabilityType ?? '-')}</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0 && (data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType ?? '-')}</div>
                                       </div>
                                       <div>
                                         <div>Value</div>
-                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</div>
                                       </div>
                                       <div className='mr-2'>
                                         <div>Cost</div>
-                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</div>
                                       </div>
                                     </div>
                                     {/* <span className="d-inline-block ">{"Applicability"}</span>
@@ -2541,9 +2541,9 @@ const CostingSummaryTable = (props) => {
                                       <span className="d-inline-block ">{"Cost"}</span>
                                  
                                     <div className={`d-grid ${highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}`}>
-                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0 && data?.CostingPartDetails.DiscountCostDetails[0]?.ApplicabilityType}</span>
-                                      <span className="d-inline-block small-grey-text">{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</span>
-                                      <span className="d-inline-block small-grey-text">{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
+                                      <span className="d-inline-block small-grey-text">{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0 && data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType}</span>
+                                      <span className="d-inline-block small-grey-text">{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</span>
+                                      <span className="d-inline-block small-grey-text">{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</span>
                                     </div> */}
                                   </td>
                                   : ""
