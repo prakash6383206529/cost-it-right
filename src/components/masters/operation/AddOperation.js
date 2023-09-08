@@ -233,8 +233,6 @@ class AddOperation extends Component {
   onPressVendor = (costingHeadFlag) => {
     const fieldsToClear = [
       'technology',
-      'OperationName',
-      'OperationCode',
       'Plant',
       'DestinationPlant',
       'UnitOfMeasurementId',
