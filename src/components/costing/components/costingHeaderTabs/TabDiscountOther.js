@@ -1646,17 +1646,15 @@ function TabDiscountOther(props) {
                       />
                     </Col >}
                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
-                    {
-                      isConditionCostingOpen && <AddConditionCosting
-                        isOpen={isConditionCostingOpen}
-                        tableData={conditionTableData}
-                        CostingViewMode={CostingViewMode}
-                        closeDrawer={openAndCloseAddConditionCosting}
-                        anchor={'right'}
-                        netPOPrice={netPOPrice}
-                        basicRate={getValues('BasicRateINR')}
-                      />
-                    }
+                    {isConditionCostingOpen && <AddConditionCosting
+                      isOpen={isConditionCostingOpen}
+                      tableData={conditionTableData}
+                      CostingViewMode={CostingViewMode}
+                      closeDrawer={openAndCloseAddConditionCosting}
+                      anchor={'right'}
+                      netPOPrice={netPOPrice}
+                      basicRate={getValues('BasicRateINR')}
+                    />}
                     {/* {initialConfiguration?.IsShowNpvCost && <Row>
                     <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
                     <Col md="4" className="text-right">
