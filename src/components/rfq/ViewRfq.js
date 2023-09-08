@@ -196,7 +196,7 @@ function RfqListing(props) {
             }
         })
         let tempArray = _.map(arr, 'NetPOPrice')
-        const firstElement = tempArray[0];
+        const firstElement = rowData[0]?.NetPOPrice;
         let test = tempArray.every(element => element === firstElement);
         if (arr?.length > 1) {
             if (test) {
