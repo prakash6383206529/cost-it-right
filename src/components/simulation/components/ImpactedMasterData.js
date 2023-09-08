@@ -29,12 +29,12 @@ export function Impactedmasterdata(props) {
             machineListing = data?.MachineProcessImpactedMasterDataList?.length === 0 || data?.MachineProcessImpactedMasterDataList === null ? false : true
         }
         const commonGridColumns = <>
-            <AgGridColumn width={140} field="PreviousMinimum" cellRenderer={'nullHandler'} headerName={"Previous Min."} ></AgGridColumn>
-            <AgGridColumn width={140} field="PreviousMaximum" cellRenderer={'nullHandler'} headerName={"Previous Max."} ></AgGridColumn>
-            <AgGridColumn width={140} field="PreviousAverage" cellRenderer={'nullHandler'} headerName={"Previous Avg."} ></AgGridColumn>
-            <AgGridColumn width={140} field="Minimum" cellRenderer={'nullHandler'} headerName={"Current Min."} ></AgGridColumn>
-            <AgGridColumn width={140} field="Maximum" cellRenderer={'nullHandler'} headerName={"Current Max."} ></AgGridColumn>
-            <AgGridColumn width={140} field="Average" cellRenderer={'nullHandler'} headerName={"Current Avg."} ></AgGridColumn>
+            <AgGridColumn width={140} field="PreviousMinimum" cellRenderer={'nullHandler'} headerName={"Previous Min."} suppressSizeToFit={true}></AgGridColumn>
+            <AgGridColumn width={140} field="PreviousMaximum" cellRenderer={'nullHandler'} headerName={"Previous Max."} suppressSizeToFit={true} ></AgGridColumn>
+            <AgGridColumn width={140} field="PreviousAverage" cellRenderer={'nullHandler'} headerName={"Previous Avg."} suppressSizeToFit={true}></AgGridColumn>
+            <AgGridColumn width={140} field="Minimum" cellRenderer={'nullHandler'} headerName={"Current Min."} suppressSizeToFit={true}></AgGridColumn>
+            <AgGridColumn width={140} field="Maximum" cellRenderer={'nullHandler'} headerName={"Current Max."} suppressSizeToFit={true}></AgGridColumn>
+            <AgGridColumn width={140} field="Average" cellRenderer={'nullHandler'} headerName={"Current Avg."} suppressSizeToFit={true}></AgGridColumn>
         </>
 
         const nullHandler = (props) => {

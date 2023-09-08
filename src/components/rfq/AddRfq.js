@@ -33,7 +33,12 @@ import { setHours, setMinutes } from 'date-fns';
 import WarningMessage from '../common/WarningMessage';
 import { clearGradeSelectList, clearSpecificationSelectList, getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
 
-const gridOptions = {};
+const gridOptionsPart = {}
+const gridOptionsVendor = {}
+const gridOptions = {
+    gridOptionsPart: gridOptionsPart,
+    gridOptionsVendor: gridOptionsVendor,
+};
 
 function AddRfq(props) {
     const { data: dataProps } = props
@@ -333,7 +338,6 @@ function AddRfq(props) {
     }
 
     const deleteItemVendorTable = (gridData, props) => {
-
         let arr = []
         gridData && gridData.map((item) => {
 
@@ -342,7 +346,6 @@ function AddRfq(props) {
             }
             return null
         })
-
         setVendorList(arr)
         onResetVendorTable()
     }
@@ -1384,10 +1387,11 @@ function AddRfq(props) {
                                                                     //pagination={true}
                                                                     paginationPageSize={10}
                                                                     onGridReady={onGridReady}
-                                                                    gridOptions={gridOptions}
+                                                                    gridOptions={gridOptionsPart}
                                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                     noRowsOverlayComponentParams={{
                                                                         title: EMPTY_DATA,
+                                                                        imagClass: 'imagClass'
                                                                     }}
                                                                     frameworkComponents={frameworkComponents}
                                                                     stopEditingWhenCellsLoseFocus={true}
@@ -1504,10 +1508,11 @@ function AddRfq(props) {
                                                                 //pagination={true}
                                                                 paginationPageSize={10}
                                                                 onGridReady={onGridReady}
-                                                                gridOptions={gridOptions}
-                                                                //noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                gridOptions={gridOptionsVendor}
+                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                 noRowsOverlayComponentParams={{
                                                                     title: EMPTY_DATA,
+                                                                    imagClass: 'imagClass'
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
@@ -1515,7 +1520,7 @@ function AddRfq(props) {
 
                                                                 <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
                                                                 <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
-                                                                <AgGridColumn width={"180px"} field="partId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
+                                                                <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>
                                                         </div>
                                                     </div>
