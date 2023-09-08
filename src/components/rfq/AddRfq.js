@@ -30,11 +30,15 @@ import { DATE_STRING, DURATION_STRING, LOGISTICS, REMARKMAXLENGTH, nfrDropdown, 
 import DayTime from '../common/DayTimeWrapper';
 import DatePicker from 'react-datepicker'
 import { setHours, setMinutes } from 'date-fns';
-import { label } from 'react-dom-factories';
 import WarningMessage from '../common/WarningMessage';
 import { clearGradeSelectList, clearSpecificationSelectList, getRMGradeSelectListByRawMaterial, getRawMaterialNameChild } from '../masters/actions/Material';
 
-const gridOptions = {};
+const gridOptionsPart = {}
+const gridOptionsVendor = {}
+const gridOptions = {
+    gridOptionsPart: gridOptionsPart,
+    gridOptionsVendor: gridOptionsVendor,
+};
 
 function AddRfq(props) {
     const { data: dataProps } = props
@@ -70,7 +74,6 @@ function AddRfq(props) {
     const [updateButtonPartNoTable, setUpdateButtonPartNoTable] = useState(false)
     const [updateButtonVendorTable, setUpdateButtonVendorTable] = useState(false)
     const [showPopup, setShowPopup] = useState(false)
-    const [selectedRowPartNoTable, setSelectedRowPartNoTable] = useState({})
     const [selectedRowVendorTable, setSelectedVendorTable] = useState({})
     const [files, setFiles] = useState([])
     const [IsOpen, setIsOpen] = useState(false);
@@ -334,7 +337,6 @@ function AddRfq(props) {
     }
 
     const deleteItemVendorTable = (gridData, props) => {
-
         let arr = []
         gridData && gridData.map((item) => {
 
@@ -343,7 +345,6 @@ function AddRfq(props) {
             }
             return null
         })
-
         setVendorList(arr)
         onResetVendorTable()
     }
@@ -813,7 +814,7 @@ function AddRfq(props) {
     * @description  USED TO HANDLE TECHNOLOGY CHANGE
     */
     const handleTechnologyChange = (newValue) => {
-        if (newValue && newValue !== '') {
+        if (newValue) {
             setPartNoDisable(false)
             setValue('partNumber', "")
             setTechnology(newValue)
@@ -939,7 +940,6 @@ function AddRfq(props) {
         let final = _.map(props?.node?.rowModel?.rowsToDisplay, 'data')
         const cell = props?.value;
         const value = beforeSaveCell(cell)
-
         setPartList(final)
         let isEnable
         if (getValues('nfrId')) {
@@ -1406,10 +1406,11 @@ function AddRfq(props) {
                                                                     //pagination={true}
                                                                     paginationPageSize={10}
                                                                     onGridReady={onGridReady}
-                                                                    gridOptions={gridOptions}
+                                                                    gridOptions={gridOptionsPart}
                                                                     noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                     noRowsOverlayComponentParams={{
                                                                         title: EMPTY_DATA,
+                                                                        imagClass: 'imagClass'
                                                                     }}
                                                                     frameworkComponents={frameworkComponents}
                                                                     stopEditingWhenCellsLoseFocus={true}
@@ -1460,7 +1461,6 @@ function AddRfq(props) {
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
                                             />
                                         </Col>
-
 
                                         <Col md="3">
                                             <SearchableSelectHookForm
@@ -1520,10 +1520,11 @@ function AddRfq(props) {
                                                                 //pagination={true}
                                                                 paginationPageSize={10}
                                                                 onGridReady={onGridReady}
-                                                                gridOptions={gridOptions}
-                                                                //noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                                gridOptions={gridOptionsVendor}
+                                                                noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                 noRowsOverlayComponentParams={{
                                                                     title: EMPTY_DATA,
+                                                                    imagClass: 'imagClass'
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >
@@ -1531,7 +1532,7 @@ function AddRfq(props) {
 
                                                                 <AgGridColumn width={"270px"} field="ContactPerson" headerName="Point of Contact" ></AgGridColumn>
                                                                 <AgGridColumn width={"270px"} field="VendorId" headerName="Vendor Id" hide={true} ></AgGridColumn>
-                                                                <AgGridColumn width={"180px"} field="partId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
+                                                                <AgGridColumn width={"180px"} field="VendorId" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'buttonFormatterVendorTable'}></AgGridColumn>
                                                             </AgGridReact>
                                                         </div>
                                                     </div>

@@ -202,9 +202,6 @@ function RMSimulation(props) {
         setTextFilterSearch('')
         gridOptions?.columnApi?.resetColumnState();
         gridOptions?.api?.setFilterModel(null);
-        if (isImpactedMaster) {
-            window.screen.width >= 1365 && gridRef.current.api.sizeColumnsToFit();
-        }
         window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
     }
 

@@ -10,18 +10,18 @@ import {
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
-import { checkForDecimalAndNull, checkForNull, formViewData, loggedInUserId } from '../../../helper'
+import { checkForDecimalAndNull, formViewData, getConfigurationKey, loggedInUserId, checkForNull, } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
 import { useHistory } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../common/LoaderCustom';
 import { MACHINING } from '../../../config/masterData'
-import { PRODUCT_ID, searchCount } from '../../../config/constants'
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, PRODUCT_ID, searchCount } from '../../../config/constants'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
 import { MESSAGES } from '../../../config/message'
 import { getSelectListPartType } from '../../masters/actions/Part'
-import { DETAILED_BOP_ID } from '../../../config/masterData'
+import { ASSEMBLY, DETAILED_BOP_ID } from '../../../config/masterData'
 
 function CostingSummary(props) {
 
@@ -186,6 +186,7 @@ function CostingSummary(props) {
       setEffectiveDate('')
       reset({
         Part: '',
+        PartType: ''
       })
     } else {
       setTechnology([])
@@ -220,6 +221,8 @@ function CostingSummary(props) {
       partTypeList && partTypeList.map((item) => {
         if (item.Value === '0') return false
         if (item.Value === PRODUCT_ID) return false
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
+        if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -707,6 +710,7 @@ function CostingSummary(props) {
         showWarningMsg={showWarningMsg}
         selectedTechnology={technology.label}
         costingSummaryMainPage={true}
+        partNumber={partNumber}
         setcostingOptionsSelectFromSummary={props.setcostingOptionsSelectFromSummary}
         costingIdExist={costingIdExist}
         storeSummary={true}

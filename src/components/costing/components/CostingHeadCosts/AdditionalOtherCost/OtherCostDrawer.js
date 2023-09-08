@@ -352,86 +352,112 @@ function OtherCostDrawer(props) {
                         </Row>
 
                         <form onSubmit={handleSubmit(onSubmit)}>
-                            <Row>
-                                {initialConfiguration.IsShowCRMHead && <Col md="4">
-                                    <SearchableSelectHookForm
-                                        name={`crmHeadOtherCost`}
-                                        type="text"
-                                        label="CRM Head"
-                                        errors={errors.crmHeadOtherCost}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                        }}
-                                        placeholder={'Select'}
-                                        options={CRMHeads}
-                                        required={false}
-                                        handleChange={() => { }}
-                                        disabled={CostingViewMode}
-                                    />
-                                </Col>}
-
-                                <Col md="4" >
-                                    <TextFieldHookForm
-                                        label="Other Cost Description"
-                                        name={"OtherCostDescription"}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { checkWhiteSpaces, hashValidation },
-                                            maxLength: 80
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={""}
-                                        className=""
-                                        customClassName={"withBorder"}
-                                        errors={errors.OtherCostDescription}
-                                        disabled={CostingViewMode ? true : false}
-                                    />
-                                </Col>
-
-
-                                {
-                                    <Col md="4">
+                            <div className='hidepage-size'>
+                                <Row>
+                                    {initialConfiguration.IsShowCRMHead && <Col md="4">
                                         <SearchableSelectHookForm
-                                            label={'Other Cost Applicability'}
-                                            name={'OtherCostApplicability'}
-                                            placeholder={'Select'}
+                                            name={`crmHeadOtherCost`}
+                                            type="text"
+                                            label="CRM Head"
+                                            errors={errors.crmHeadOtherCost}
                                             Controller={Controller}
                                             control={control}
-                                            rules={{ required: true }}
                                             register={register}
-                                            defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
-                                            options={renderListing('Applicability')}
-                                            mandatory={true}
-                                            disabled={CostingViewMode ? true : false}
-                                            handleChange={handleOherCostApplicabilityChange}
-                                            errors={errors.OtherCostApplicability}
+                                            mandatory={false}
+                                            rules={{
+                                                required: false,
+                                            }}
+                                            placeholder={'Select'}
+                                            options={CRMHeads}
+                                            required={false}
+                                            handleChange={() => { }}
+                                            disabled={CostingViewMode}
                                         />
-                                    </Col>
-                                }
-                                {
-                                    <Col md="4">
+                                    </Col>}
+
+                                    <Col md="4" >
                                         <TextFieldHookForm
-                                            label="Percentage (%)"
-                                            name={"PercentageOtherCost"}
+                                            label="Other Cost Description"
+                                            name={"OtherCostDescription"}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
                                             mandatory={true}
                                             rules={{
-                                                required: false,
-                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                                max: {
-                                                    value: 100,
-                                                    message: 'Percentage cannot be greater than 100'
-                                                },
+                                                required: true,
+                                                validate: { checkWhiteSpaces, hashValidation },
+                                                maxLength: 80
+                                            }}
+                                            handleChange={() => { }}
+                                            defaultValue={""}
+                                            className=""
+                                            customClassName={"withBorder"}
+                                            errors={errors.OtherCostDescription}
+                                            disabled={CostingViewMode ? true : false}
+                                        />
+                                    </Col>
+
+
+                                    {
+                                        <Col md="4">
+                                            <SearchableSelectHookForm
+                                                label={'Other Cost Applicability'}
+                                                name={'OtherCostApplicability'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: true }}
+                                                register={register}
+                                                defaultValue={otherCostApplicability.length !== 0 ? otherCostApplicability : ''}
+                                                options={renderListing('Applicability')}
+                                                mandatory={true}
+                                                disabled={CostingViewMode ? true : false}
+                                                handleChange={handleOherCostApplicabilityChange}
+                                                errors={errors.OtherCostApplicability}
+                                            />
+                                        </Col>
+                                    }
+                                    {
+                                        <Col md="4">
+                                            <TextFieldHookForm
+                                                label="Percentage (%)"
+                                                name={"PercentageOtherCost"}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                    max: {
+                                                        value: 100,
+                                                        message: 'Percentage cannot be greater than 100'
+                                                    },
+                                                }}
+                                                handleChange={(e) => {
+                                                    e.preventDefault();
+                                                }}
+                                                defaultValue={""}
+                                                className=""
+                                                customClassName={"withBorder"}
+                                                errors={errors.PercentageOtherCost}
+                                                disabled={CostingViewMode || !(otherCostType && otherCostType.value === 'Percentage') ? true : false}
+                                            />
+                                        </Col>}
+
+                                    <Col md="4">
+                                        {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="drawer-other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
+                                        <TextFieldHookForm
+                                            label="Other Cost"
+                                            name={"AnyOtherCost"}
+                                            id="drawer-other-cost"
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                             }}
                                             handleChange={(e) => {
                                                 e.preventDefault();
@@ -439,79 +465,55 @@ function OtherCostDrawer(props) {
                                             defaultValue={""}
                                             className=""
                                             customClassName={"withBorder"}
-                                            errors={errors.PercentageOtherCost}
-                                            disabled={CostingViewMode || !(otherCostType && otherCostType.value === 'Percentage') ? true : false}
+                                            errors={errors.AnyOtherCost}
+                                            disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
                                         />
-                                    </Col>}
 
-                                <Col md="4">
-                                    {(otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0) && <TooltipCustom disabledIcon={true} id="drawer-other-cost" tooltipText={"Other Cost = (Other Cost Applicability * Percentage / 100)"} />}
-                                    <TextFieldHookForm
-                                        label="Other Cost"
-                                        name={"AnyOtherCost"}
-                                        id="drawer-other-cost"
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                        }}
-                                        handleChange={(e) => {
-                                            e.preventDefault();
-                                        }}
-                                        defaultValue={""}
-                                        className=""
-                                        customClassName={"withBorder"}
-                                        errors={errors.AnyOtherCost}
-                                        disabled={CostingViewMode || otherCostType.value === 'Percentage' || Object.keys(otherCostType).length === 0 ? true : false}
-                                    />
-
-                                </Col>
-                                <Col md="4" className='pt-1 d-flex'>
-                                    {isEdit ? (
-                                        <>
-                                            <button
-                                                type="submit"
-                                                className={"btn btn-primary mt30 pull-left mr5"}
-                                                disabled={CostingViewMode}
-                                            >
-                                                <div className={"plus"}></div>  Update
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
-                                                onClick={() => resetData()}
-                                                disabled={CostingViewMode}
-                                            >
-                                                <div className={"cancel-icon"}></div>Cancel
-                                            </button>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <button
-                                                type="submit"
-                                                className={"user-btn mt30 pull-left"}
-                                                disabled={CostingViewMode}
-                                            >
-                                                <div className={"plus"}></div>ADD
-                                            </button>
-                                            <button
-                                                type="button"
-                                                className={"mr15 ml-1 mt30 reset-btn"}
-                                                disabled={CostingViewMode}
-                                                onClick={() => resetData()}
-                                            >
-                                                Reset
-                                            </button>
-                                        </>
-                                    )}
-                                </Col>
-                            </Row>
-                            <OtherCostTable editItemDetails={editItemDetails} deleteItem={deleteItem} tableData={{ gridData: gridData, otherCostTotal: otherCostTotal }} actionButton={true} />
-                            <Row className="pr-0">
-                                <div className="col-sm-12 text-right">
+                                    </Col>
+                                    <Col md="4" className='pt-1 d-flex'>
+                                        {isEdit ? (
+                                            <>
+                                                <button
+                                                    type="submit"
+                                                    className={"btn btn-primary mt30 pull-left mr5"}
+                                                    disabled={CostingViewMode}
+                                                >
+                                                    Update
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={"mr15 ml-1 mt30 add-cancel-btn cancel-btn"}
+                                                    onClick={() => resetData()}
+                                                    disabled={CostingViewMode}
+                                                >
+                                                    <div className={"cancel-icon"}></div>Cancel
+                                                </button>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <button
+                                                    type="submit"
+                                                    className={"user-btn mt30 pull-left"}
+                                                    disabled={CostingViewMode}
+                                                >
+                                                    <div className={"plus"}></div>ADD
+                                                </button>
+                                                <button
+                                                    type="button"
+                                                    className={"mr15 ml-1 mt30 reset-btn"}
+                                                    disabled={CostingViewMode}
+                                                    onClick={() => resetData()}
+                                                >
+                                                    Reset
+                                                </button>
+                                            </>
+                                        )}
+                                    </Col>
+                                </Row>
+                                <OtherCostTable editItemDetails={editItemDetails} deleteItem={deleteItem} tableData={{ gridData: gridData, otherCostTotal: otherCostTotal }} />
+                            </div>
+                            <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0 pr-0">
+                                <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                     <button
                                         type={"button"}
                                         className="reset mr15 cancel-btn"

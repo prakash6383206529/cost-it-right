@@ -1795,7 +1795,7 @@ class AddMoreDetails extends Component {
   * @description used to Reset form
   */
   deleteItem = (index) => {
-    const { processGrid, UOM } = this.state;
+    const { processGrid, UOM, isProcessGroup } = this.state;
     const { fieldsObj } = this.props;
 
     let tempData = processGrid.filter((item, i) => {
@@ -1808,10 +1808,13 @@ class AddMoreDetails extends Component {
     if (tempData.length === 0) {
       this.setState({ disableAllForm: false })
     }
-
+    if (isProcessGroup) {
+      this.setState({ lockUOMAndRate: tempData.length === 0 ? false : true })
+    } else {
+      this.setState({ lockUOMAndRate: isProcessGroup })
+    }
     this.setState({
       processGrid: tempData,
-      lockUOMAndRate: tempData.length === 0 ? false : true,
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],

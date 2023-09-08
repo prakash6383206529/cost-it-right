@@ -388,6 +388,7 @@ function AttachmentSec(props) {
         }
         // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
         if (dropzoneImpactSheet?.current !== null) {
+            setCountImpactSheet(countImpactSheet - 1)
             dropzoneImpactSheet.current?.files.pop()
         }
     }
@@ -409,8 +410,9 @@ function AttachmentSec(props) {
             setOtherFiles(tempArr)
             setIsOpen(!IsOpen)
         }
-        if (dropzoneSupplierConfirm?.current !== null) {
-            dropzoneSupplierConfirm.current?.files.pop()
+        if (dropzoneOthers?.current !== null) {
+            setCountOthers(countOthers - 1)
+            dropzoneOthers.current?.files.pop()
         }
     }
 
@@ -432,8 +434,9 @@ function AttachmentSec(props) {
             setSupplierFiles(tempArr)
             setIsOpen(!IsOpen)
         }
-        if (dropzoneInvoiceBackup?.current !== null) {
-            dropzoneInvoiceBackup.current?.files.pop()
+        if (dropzoneSupplierConfirm?.current !== null) {
+            setCountSupplierConfirm(countSupplierConfirm - 1)
+            dropzoneSupplierConfirm.current?.files.pop()
         }
     }
 
@@ -455,8 +458,9 @@ function AttachmentSec(props) {
             setInvoiceFiles(tempArr)
             setIsOpen(!IsOpen)
         }
-        if (dropzoneOthers?.current !== null) {
-            dropzoneOthers.current?.files.pop()
+        if (dropzoneInvoiceBackup?.current !== null) {
+            setCountInvoiceBackup(countInvoiceBackup - 1)
+            dropzoneInvoiceBackup.current?.files.pop()
         }
     }
 
@@ -479,6 +483,7 @@ function AttachmentSec(props) {
             setIsOpen(!IsOpen)
         }
         if (dropzoneAttachments?.current !== null) {
+            setCountAttachments(countAttachments - 1)
             dropzoneAttachments.current?.files.pop()
         }
     }
