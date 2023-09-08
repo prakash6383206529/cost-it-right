@@ -349,7 +349,7 @@ function AddToComparisonDrawer(props) {
           obj.npvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingNpvResponse?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
           obj.conditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingConditionResponse?.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0)
           obj.netConditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConditionCost
-          obj.netNpvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.NetNpvCost
+          obj.netNpvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost
 
           obj.aValue = { applicability: 'Applicability', percentage: 'Percentage (%)', value: 'Value' }
           obj.overheadOn = {

@@ -25,7 +25,7 @@ import Toaster from '../../../common/Toaster'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
-import { getMultipleCostingDetails, rfqGetBestCostingDetails } from '../../../rfq/actions/rfq'
+import { getMultipleCostingDetails, rfqGetBestCostingDetails, setQuotationIdForRFQ } from '../../../rfq/actions/rfq'
 import _ from 'lodash'
 
 
@@ -129,8 +129,9 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, PurchasingGroup, MaterialGroup, BestCostAndShouldCostDetails } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId, BestCostAndShouldCostDetails, QuotationId } = res?.data?.Data?.Costings[0];
 
+      dispatch(setQuotationIdForRFQ(QuotationId))
       // let BestCostAndShouldCostDetails = {
       //   ShouldCostings: [{ CostingId: "aae83b68-128d-4ade-b446-cd2407d6c1c2" }],
       //   CostingIdList: [{ CostingId: "4a3dc510-ae1c-478a-969a-3fa7c1820d62" }, { CostingId: "2d49ced2-dc50-4e63-b2b9-ed74dd44fb24" }],
