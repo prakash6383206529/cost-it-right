@@ -13,7 +13,7 @@ import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
 import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL, BUDGET_ID, APPROVED_STATUS } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
-import { getConfigurationKey, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
+import { checkForNull, getConfigurationKey, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
@@ -68,7 +68,7 @@ function SummaryDrawer(props) {
             setApprovalLevelStep(Data.MasterSteps)
             setApprovalDetails({ IsSent: Data.IsSent, IsFinalLevelButtonShow: Data.IsFinalLevelButtonShow, ApprovalProcessId: Data.ApprovalProcessId, MasterApprovalProcessSummaryId: Data.ApprovalProcessSummaryId, Token: Data.Token, MasterId: Data.MasterId })
             setLoader(false)
-            if (Number(props.masterId) === RM_MASTER_ID) {
+            if (checkForNull(props.masterId) === RM_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.RawMaterialListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.RawMaterialListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.RawMaterialListResponse.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
@@ -77,7 +77,7 @@ function SummaryDrawer(props) {
                 } else {
                     setShowImport(true)
                 }
-            } else if (Number(props.masterId) === BOP_MASTER_ID) {
+            } else if (checkForNull(props.masterId) === BOP_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.BOPDomesticListResponse[0].Attachements)
 
@@ -88,15 +88,15 @@ function SummaryDrawer(props) {
                 }
 
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-            } else if (Number(props.masterId) === OPERATIONS_ID) {
+            } else if (checkForNull(props.masterId) === OPERATIONS_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-            } else if (Number(props.masterId) === MACHINE_MASTER_ID) {
+            } else if (checkForNull(props.masterId) === MACHINE_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.MachineListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.MachineListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
-            } else if (Number(props.masterId) === BUDGET_ID) {
+            } else if (checkForNull(props.masterId) === BUDGET_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.BudgetListResponse[0]?.CostingHeadId
                 setFiles(Data.ImpactedMasterDataList.BudgetingListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
@@ -117,16 +117,16 @@ function SummaryDrawer(props) {
             }))
         }))
 
-        if (Number(props.masterId) === RM_MASTER_ID) {            // MASTER ID 1 FOR RAW MATERIAL
+        if (checkForNull(props.masterId) === RM_MASTER_ID) {            // MASTER ID 1 FOR RAW MATERIAL
             setIsRMApproval(true)
         }
-        else if (Number(props.masterId) === BOP_MASTER_ID) {     // MASTER ID 2 FOR BOP 
+        else if (checkForNull(props.masterId) === BOP_MASTER_ID) {     // MASTER ID 2 FOR BOP 
             setIsBOPApproval(true)
-        } else if (Number(props.masterId) === OPERATIONS_ID) {  // MASTER ID 3 FOR OPERATION
+        } else if (checkForNull(props.masterId) === OPERATIONS_ID) {  // MASTER ID 3 FOR OPERATION
             setIsOperationApproval(true)
-        } else if (Number(props.masterId) === MACHINE_MASTER_ID) {  // MASTER ID 4 FOR MACHINE
+        } else if (checkForNull(props.masterId) === MACHINE_MASTER_ID) {  // MASTER ID 4 FOR MACHINE
             setIsMachineApproval(true)
-        } else if (Number(props.masterId) === BUDGET_ID) {
+        } else if (checkForNull(props.masterId) === BUDGET_ID) {
             setIsBudgetApproval(true)
         }
 
