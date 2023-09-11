@@ -154,7 +154,7 @@ function BDSimulation(props) {
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 
-        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? <span title={DayTime(cell).format('DD/MM/YYYY')}>{DayTime(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
     const costingHeadFormatter = (props) => {
@@ -176,7 +176,7 @@ function BDSimulation(props) {
                 {
                     isImpactedMaster ?
                         Number(row.NewBOPRate) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRate)}>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
             </>
@@ -192,7 +192,7 @@ function BDSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldBOPRate :
-                        <span>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span title={cell && value ? Number(cell) : Number(row.BasicRate)}>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
             </>
@@ -215,7 +215,7 @@ function BDSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                {isbulkUpload ? row['Plant (Code)'] : cell}
+                {<span title={isbulkUpload ? row['Plant (Code)'] : cell}>{isbulkUpload ? row['Plant (Code)'] : cell}</span>}
 
             </>
         )
@@ -262,7 +262,7 @@ function BDSimulation(props) {
 
             const NewBasicRate = checkForNull((row.NewBasicRate) / NumberOfPieces)
             const classGreen = (BasicRate < NewBasicRate) ? 'red-value form-control' : (BasicRate > NewBasicRate) ? 'green-value form-control' : 'form-class'
-            return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull((row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : checkForDecimalAndNull(row.BasicRate, getConfigurationKey().NoOfDecimalForPrice)
+            return row.NewBasicRate != null ? <span className={classGreen} title={checkForDecimalAndNull((row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}>{checkForDecimalAndNull((row.NewBasicRate), getConfigurationKey().NoOfDecimalForPrice)}</span> : <span title={checkForDecimalAndNull(row.BasicRate, getConfigurationKey().NoOfDecimalForPrice)}>{checkForDecimalAndNull(row.BasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span>
         }
     }
 
@@ -274,7 +274,7 @@ function BDSimulation(props) {
         } else {
             if (!row.BasicRate || row.BasicRate === '') return ''
 
-            return row.BasicRate != null ? checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice) : ''
+            return row.BasicRate != null ? <span title={checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}>{checkForDecimalAndNull(Number(row.BasicRate) / NumberOfPieces, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
 
         }
     }
@@ -294,7 +294,7 @@ function BDSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.Quantity, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span >{Number(row.NumberOfPieces)} </span>
+                        <span title={Number(row.NumberOfPieces)}>{Number(row.NumberOfPieces)} </span>
                 }
 
             </>
@@ -514,7 +514,7 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
-                                            {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" editable='false' headerName="Min Order Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>}
+                                            {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" tooltipField='Quantity' editable='false' headerName="Min Order Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate" suppressSizeToFit={true}></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
