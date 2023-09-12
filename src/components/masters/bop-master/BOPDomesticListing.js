@@ -30,6 +30,7 @@ import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideColumnFromExcel, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
+import Button from '../../layout/Button';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -420,10 +421,34 @@ class BOPDomesticListing extends Component {
 
         return (
             <>
-                <button className="mr-1 cost-movement" title='Cost Movement' type={'button'} onClick={() => this.showAnalytics(cellValue, rowData)}></button>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-                {isEditbale && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-                {isDeleteButton && <button title='Delete' className="Delete ml-2" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                <Button
+                    id={`bopDomesticListing_movement${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="cost-movement"
+                    onClick={() => this.showAnalytics(cellValue, rowData)}
+                    title={"Cost Movement"}
+                />
+                {ViewAccessibility && <Button
+                    id={`bopDomesticListing_view${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="View"
+                    onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)}
+                    title={"View"}
+                />}
+                {isEditbale && <Button
+                    id={`bopDomesticListing_edit${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="Edit"
+                    onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)}
+                    title={"Edit"}
+                />}
+                {isDeleteButton && <Button
+                    id={`bopDomesticListing_delete${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="Delete"
+                    onClick={() => this.deleteItem(cellValue)}
+                    title={"Delete"}
+                />}
             </>
         )
     };
@@ -796,52 +821,58 @@ class BOPDomesticListing extends Component {
                                 }
 
                                 {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
-                                    <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+                                    <Button
+                                        id="bopDomesticListing_filter"
+                                        className={"mr5"}
+                                        onClick={() => this.onSearch()}
+                                        title={"Filtered data"}
+                                        icon={"filter"}
+                                        disabled={this.state.disableFilter}
+                                    />
 
                                 }
 
                                 {AddAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5"}
+                                    <Button
+                                        id="bopDomesticListing_add"
+                                        className={"mr5"}
                                         onClick={this.formToggle}
-                                        title="Add"
-                                    >
-                                        <div className={"plus mr-0"}></div>
-                                        {/* ADD */}
-                                    </button>
+                                        title={"Add"}
+                                        icon={"plus"}
+                                    />
                                 )}
                                 {BulkUploadAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5"}
+                                    <Button
+                                        id="bopDomesticListing_add"
+                                        className={"mr5"}
                                         onClick={this.bulkToggle}
-                                        title="Bulk Upload"
-                                    >
-                                        <div className={"upload mr-0"}></div>
-                                        {/* Bulk Upload */}
-                                    </button>
+                                        title={"Bulk Upload"}
+                                        icon={"upload"}
+                                    />
                                 )}
                                 {
                                     DownloadAccessibility &&
                                     <>
-                                        <>
-                                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                {/* DOWNLOAD */}
-                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
-                                            </button>
-
-                                            <ExcelFile filename={'Insert Domestic'} fileExtension={'.xls'} element={
-                                                <button id={'Excel-Downloads-bop-domestic'} className="p-absolute" type="button" >
-                                                </button>}>
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-                                        </>
+                                        <Button
+                                            className="mr5"
+                                            id={"bopDomesticListing_excel_download"}
+                                            onClick={this.onExcelDownload}
+                                            title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                            icon={"download mr-1"}
+                                            buttonName={`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                        />
+                                        <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
+                                            <Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
+                                            {this.onBtExport()}
+                                        </ExcelFile>
                                     </>
                                 }
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
+                                <Button
+                                    id={"bopDomesticListing_refresh"}
+                                    onClick={() => this.resetState()}
+                                    title={"Reset Grid"}
+                                    icon={"refresh"}
+                                />
 
                             </div>
                         </Col>
@@ -908,11 +939,11 @@ class BOPDomesticListing extends Component {
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
                                         <div className="d-flex pagination-button-container">
-                                            <p><button className="previous-btn" type="button" disabled={false} onClick={() => this.onBtPrevious()}> </button></p>
+                                            <p><Button id="bopDomesticListing_previous" variant="previous-btn" onClick={() => this.onBtPrevious()} /></p>
                                             {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
                                             {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
                                             {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
-                                            <p><button className="next-btn" type="button" onClick={() => this.onBtNext()}> </button></p>
+                                            <p><Button id="bopDomesticListing_next" variant="next-btn" onClick={() => this.onBtNext()} /></p>
                                         </div>
                                     }
                                 </div>
