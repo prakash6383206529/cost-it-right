@@ -127,6 +127,7 @@ class AddBOPImport extends Component {
       FinalConditionCostBase: '',
       FinalConditionCostCurrency: '',
       DropdownChanged: true,
+      toolTipTextNetCost: {},
     }
   }
   /**
@@ -141,17 +142,36 @@ class AddBOPImport extends Component {
     }
   }
 
+  toolTipCommon = (currency) => {
+    const { initialConfiguration } = this.props
+    let obj = {}
+    if (initialConfiguration.IsBasicRateAndCostingConditionVisible) {
+      obj = {
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Price (${currency?.label})  + Condition Cost (${currency?.label})`,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
+      }
+    } else {
+      obj = {
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Rate (${currency?.label})`,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+      }
+    }
+    this.setState({ toolTipTextNetCost: obj })
+  }
+
   /**
    * @method componentDidMount
    * @description Called after rendering the component
    */
   componentDidMount() {
     const { initialConfiguration } = this.props
+    const { currency } = this.state
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
     }
+    this.toolTipCommon(currency)
     this.props.getIncoTermSelectList(() => { })
     this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
@@ -696,6 +716,7 @@ class AddBOPImport extends Component {
           this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) });
         });
       }
+      this.toolTipCommon(newValue)
       this.setState({ showCurrency: true })
       this.setState({ currency: newValue, }, () => {
         setTimeout(() => {
@@ -1148,7 +1169,7 @@ class AddBOPImport extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceCurrency, FinalBasicPriceBase } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceCurrency, FinalBasicPriceBase, toolTipTextNetCost } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1675,7 +1696,6 @@ class AddBOPImport extends Component {
 
 
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                                 <Field
                                   label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                   name={"FinalConditionCostCurrency"}
@@ -1694,7 +1714,6 @@ class AddBOPImport extends Component {
                               <Col md="3">
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
-                                    <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                                     <Field
                                       label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
                                       name={"FinalConditionCostBase"}
@@ -1721,7 +1740,7 @@ class AddBOPImport extends Component {
                             </>}
                             {this.state.showCurrency && !isTechnologyVisible && <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" tooltipText={`Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate * Currency Rate`} />
+                                <TooltipCustom id="bop-net-cost-currency" tooltipText={toolTipTextNetCost?.toolTipTextNetCostSelectedCurrency} />
                                 <Field
                                   label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
@@ -1736,7 +1755,7 @@ class AddBOPImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" tooltipText={`Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate * Currency Rate`} />
+                                <TooltipCustom id="bop-net-cost-base" tooltipText={toolTipTextNetCost?.toolTipTextNetCostBaseCurrency} />
                                 <Field
                                   label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBase"}
