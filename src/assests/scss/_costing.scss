@@ -650,3 +650,24 @@
     z-index: 13 !important;
   }
 }
+
+.date-and-btn-wrapper {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  align-items: center;
+
+  .date-and-version {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .button-container {
+    justify-self: right;
+
+    button {
+      padding-right: 0 !important;
+      min-width: 100px;
+    }
+  }
+}
