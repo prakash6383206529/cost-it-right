@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
 import TooltipCustom from '../components/common/Tooltip';
+import { SHEETMETAL } from '../config/masterData';
 
 /**
  * @method  apiErrors
@@ -588,10 +589,10 @@ export function formViewData(costingSummary, header = '') {
   obj.BudgetedPrice = (dataFromAPI && dataFromAPI.BudgetedPrice) ? dataFromAPI.BudgetedPrice : 0
   obj.BudgetedPriceVariance = (dataFromAPI && dataFromAPI.BudgetedPriceVariance) ? dataFromAPI.BudgetedPriceVariance : 0
   obj.CostingPartDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails
-  obj.npvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingNpvResponse?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
-  obj.conditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.CostingConditionResponse?.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0)
-  obj.netConditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.NetConditionCost
-  obj.netNpvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails.NetNpvCost
+  obj.npvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingNpvResponse?.reduce((acc, obj) => Number(acc) + Number(obj.NpvCost), 0)
+  obj.conditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingConditionResponse?.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0)
+  obj.netConditionCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetConditionCost
+  obj.netNpvCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetNpvCost
   obj.overheadOn = {
     overheadTitle: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail !== null && dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability !== null ? dataFromAPI?.CostingPartDetails?.CostingOverheadDetail.OverheadApplicability : '-',
     overheadValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadCost !== null ? dataFromAPI?.CostingPartDetails?.NetOverheadCost : '-',
@@ -1214,4 +1215,26 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
     text = <>{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('RM') && arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{conditon && <p>BOP cost is not included for BOP part type</p>}</>;
     return (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('RM') && arr[0]?.IsRMCutOffApplicable === true) || conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
+}
+
+export function showRMScrapKeys(technology) {
+  let obj = {}
+  switch (Number(technology.value)) {
+    case FORGING:
+      obj.showForging = true
+      obj.showCircleJali = false
+      obj.showScrap = false
+      break;
+    case SHEETMETAL:
+      obj.showForging = false
+      obj.showCircleJali = true
+      obj.showScrap = false
+      break;
+    default:
+      obj.showForging = false
+      obj.showCircleJali = false
+      obj.showScrap = true
+      break;
+  }
+  return obj
 }
