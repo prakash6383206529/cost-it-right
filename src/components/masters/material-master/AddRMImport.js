@@ -155,6 +155,7 @@ class AddRMImport extends Component {
       FinalFreightCostCurrency: '',
       FinalShearingCostBase: '',
       FinalShearingCostCurrency: '',
+      toolTipTextNetCost: {},
     }
   }
 
@@ -169,12 +170,30 @@ class AddRMImport extends Component {
     }
   }
 
+  toolTipCommon = (currency) => {
+    const { initialConfiguration } = this.props
+    let obj = {}
+    if (initialConfiguration.IsBasicRateAndCostingConditionVisible) {
+      obj = {
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Price (${currency?.label})  + Condition Cost (${currency?.label})`,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
+      }
+    } else {
+      obj = {
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Rate (${currency?.label})`,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+      }
+    }
+    this.setState({ toolTipTextNetCost: obj })
+  }
+
   /**
    * @method componentDidMount
    * @description Called after rendering the component
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    const { currency } = this.state
     this.getDetails(data);
     this.props.change('NetLandedCostINR', 0)
     this.props.change('NetLandedCostCurrency', 0)
@@ -183,6 +202,7 @@ class AddRMImport extends Component {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
     }
+    this.toolTipCommon(currency)
     if (!(data.isEditFlag || data.isViewFlag)) {
       this.props.getRawMaterialCategory(res => { });
       this.props.getRawMaterialNameChild(() => { })
@@ -456,6 +476,7 @@ class AddRMImport extends Component {
             this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) });
           });
         }
+        this.toolTipCommon(newValue)
         this.setState({ showCurrency: true })
       }
       this.setState({ currency: newValue, IsFinancialDataChanged: true }, () => {
@@ -1488,7 +1509,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval,
-      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceCurrency, FinalBasicPriceBase, showScrapKeys } = this.state;
+      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceCurrency, FinalBasicPriceBase, showScrapKeys, toolTipTextNetCost } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -2282,7 +2303,6 @@ class AddRMImport extends Component {
 
 
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                                 <Field
                                   label={`Condition Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                   name={"FinalConditionCostCurrency"}
@@ -2301,7 +2321,6 @@ class AddRMImport extends Component {
                               <Col md="3">
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
-                                    <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                                     <Field
                                       label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
                                       name={"FinalConditionCostBase"}
@@ -2330,7 +2349,7 @@ class AddRMImport extends Component {
                             </>}
                             {this.state.showCurrency && <>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
+                                <TooltipCustom id="bop-net-cost-currency" tooltipText={toolTipTextNetCost?.toolTipTextNetCostSelectedCurrency} />
                                 <Field
                                   label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
@@ -2345,7 +2364,7 @@ class AddRMImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
+                                <TooltipCustom id="bop-net-cost-base" tooltipText={toolTipTextNetCost?.toolTipTextNetCostBaseCurrency} />
                                 <Field
                                   label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBase"}
