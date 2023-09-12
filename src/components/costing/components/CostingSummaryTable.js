@@ -146,7 +146,7 @@ const CostingSummaryTable = (props) => {
   const [pieChartDataArray, setPieChartDataArray] = useState([])
   const [count, setCount] = useState(0);
   const [disableSendForApproval, setDisableSendForApproval] = useState(false)
-
+  const [cssObj, setCssObj] = useState({})
   useEffect(() => {
     applyPermission(topAndLeftMenuData, selectedTechnology)
     setIsSuperAdmin(userDetails()?.Role === "SuperAdmin")
@@ -183,6 +183,11 @@ const CostingSummaryTable = (props) => {
         }
       }))
 
+    }
+    if (viewCostingData?.length > (window.screen.width >= 1600 ? 3 : 2)) {
+      setCssObj(prevState => ({ ...prevState, width: "auto", particularWidth: 50 / viewCostingData.length, tableWidth: (window.screen.width >= 1600 ? 540 : 480) * viewCostingData.length + "px" }))
+    } else {
+      setCssObj(prevState => ({ ...prevState, particularWidth: 50 / viewCostingData.length, tableWidth: "auto" }))
     }
   }, [viewCostingData])
 
@@ -1669,13 +1674,13 @@ const CostingSummaryTable = (props) => {
 
               <Col md="12">
                 <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive`}>
-                  <table className={`table table-bordered costing-summary-table ${approvalMode ? 'costing-approval-summary' : ''}`}>
+                  <table style={{ minWidth: cssObj.tableWidth }} className={`table table-bordered costing-summary-table mb-0 ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     {props.isRfqCosting && <thead>
                       <tr>
-                        {<th></th>}
+                        {<th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} ></th>}
                         {viewCostingData && viewCostingData?.map((data, index) => {
                           return (<>
-                            <th key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? "Best Cost" : ""}</th>
+                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? "Best Cost" : ""}</th>
                           </>
                           )
                         })}
@@ -1683,7 +1688,7 @@ const CostingSummaryTable = (props) => {
                     </thead>}
                     <thead>
                       <tr className="main-row">
-                        {isApproval ? <th scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('cbcCostingPermission')) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>}
+                        {isApproval ? <th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('cbcCostingPermission')) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>}
                         { }
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
@@ -1692,7 +1697,7 @@ const CostingSummaryTable = (props) => {
                               : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId)
                                 ? data?.vendorName + "(SOB: " + data?.shareOfBusinessPercent + "%)" : data.customerName
                             return (
-                              <th scope="col" className={`${tableDataClass(data)} header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
+                              <th scope="col" style={{ width: cssObj.particularWidth + "%" }} className={`${tableDataClass(data)} header-name ${isLockedState && data?.status !== DRAFT && costingSummaryMainPage && !pdfHead && !drawerDetailPDF ? 'pt-30' : ''}`}>
                                 {data?.IsApprovalLocked && !pdfHead && !drawerDetailPDF && costingSummaryMainPage && data?.status === DRAFT && <WarningMessage title={data?.getApprovalLockedMessage} dClass={"costing-summary-warning-mesaage"} message={data?.getApprovalLockedMessage} />}    {/* ADD THIS CODE ONCE DEPLOYED FROM BACKEND{data.ApprovalLockedMessage}*/}
                                 <div className={` ${drawerDetailPDF ? 'pdf-header' : 'header-name-button-container'}`}>
                                   <div className="element d-inline-flex align-items-center">
@@ -1777,27 +1782,29 @@ const CostingSummaryTable = (props) => {
                             {viewCostingData &&
                               viewCostingData?.map((data, index) => {
                                 const isPieChartVisible = viewPieChart[index];
+                                const dateVersionAndStatus = (data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (notSelectedCostingId?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`
                                 return (
                                   <td className={tableDataClass(data)}>
-                                    <span className={`d-flex justify-content-between ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
-                                      {(data?.bestCost === true) ? ' ' : `${DayTime(data?.costingDate).format('DD-MM-YYYY')}-${data?.CostingNumber}${props.isRfqCosting ? (notSelectedCostingId?.includes(data?.costingId) ? "-Not Selected" : `-${data?.status}`) : props.costingSummaryMainPage ? `-${data?.status}` : ''}`}{' '}
-                                      {costingIdList?.includes(data?.costingId) && <button
+                                    <div className={`date-and-btn-wrapper ${(data?.bestCost === true) ? '' : 'bg-grey'} ${drawerDetailPDF ? 'p-0' : ''}`}>
+                                      <span className='date-and-version' title={dateVersionAndStatus}>{dateVersionAndStatus}</span>
+                                      <div className='button-container'>{costingIdList?.includes(data?.costingId) && <button
                                         className="text-primary d-inline-block btn-a"
                                         onClick={() => showReturnCosting(index)}
                                         title='View Returned Costing'
                                       >
                                         <small>Returned Costing</small>{''}
                                       </button>}
-                                      {
-                                        !viewMode &&
-                                        <button
-                                          className="text-primary d-inline-block btn-a"
-                                          onClick={() => editHandler(index)}
-                                        >
-                                          {(!drawerDetailPDF && !pdfHead) && <small>Change version</small>}
-                                        </button>
-                                      }
-                                    </span>
+                                        {
+                                          !viewMode &&
+                                          <button
+                                            className="text-primary d-inline-block btn-a"
+                                            onClick={() => editHandler(index)}
+                                          >
+                                            {(!drawerDetailPDF && !pdfHead) && <small>Change version</small>}
+                                          </button>
+                                        }
+                                      </div>
+                                    </div>
                                     {(!data?.bestCost === true) && (
                                       <span className="d-flex justify-content-between align-items-center pie-chart-container">
                                         <span>

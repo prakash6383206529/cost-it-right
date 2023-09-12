@@ -1333,22 +1333,15 @@ $roboto: "Roboto",
   thead {
     .main-row {
       th {
-        width: 23%;
-        min-width: 384px;
         vertical-align: middle;
         font-weight: 500;
 
-        &:first-child {
-          width: 15%;
-          min-width: 247px;
-        }
 
         .checkbox-text {
           overflow: hidden;
           white-space: nowrap;
           text-overflow: ellipsis;
           padding: 9px 5px;
-          min-width: 186px;
         }
       }
     }
@@ -4538,14 +4531,6 @@ body {
   }
 
   .costing-summary-table {
-    thead {
-      .main-row {
-        th {
-          width: 25%;
-          min-width: unset;
-        }
-      }
-    }
 
     .background-light-blue {
 
@@ -7411,21 +7396,6 @@ body {
 
 @media screen and (max-width:$middleDesktop) {
   .costing-summary-table {
-    thead {
-      .main-row {
-        th {
-          min-width: 340px;
-          font-size: 14px;
-          width: 27%;
-
-          &:first-child {
-            width: 19%;
-            min-width: 247px;
-          }
-
-        }
-      }
-    }
 
     tr {
       td {
