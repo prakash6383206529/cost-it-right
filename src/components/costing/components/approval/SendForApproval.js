@@ -476,7 +476,7 @@ const SendForApproval = (props) => {
         tempObj.BasicRate = data.basicRate
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
-        tempObj.IsRFQCostingSendForApproval = false
+        tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
         temp.push(tempObj)
         return null
       })
