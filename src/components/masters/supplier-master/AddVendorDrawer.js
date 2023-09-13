@@ -765,6 +765,7 @@ class AddVendorDrawer extends Component {
                                                 label="Technology"
                                                 name="Technology"
                                                 placeholder={"Select"}
+                                                title={showDataOnHover(this.state.Technology)}
                                                 selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
                                                 options={this.renderListing("technology")}
                                                 validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
@@ -776,7 +777,6 @@ class AddVendorDrawer extends Component {
                                                 mendatory={true}
                                                 disabled={isViewMode ? true : false}
                                                 className={`multiselect-with-border ${isViewMode ? "hide-scroll" : ""}`}
-                                                title={showDataOnHover(this.state.Technology)}
                                             />
                                         </Col>
                                         <Col md="6">
@@ -797,7 +797,7 @@ class AddVendorDrawer extends Component {
                                                 component={renderMultiSelectField}
                                                 mendatory={true}
                                                 disabled={isViewMode ? true : false}
-                                                className="multiselect-with-border"
+                                                className={`multiselect-with-border ${isViewMode ? "hide-scroll" : ""}`}
                                             />
                                         </Col></>
                                 </Row>}
