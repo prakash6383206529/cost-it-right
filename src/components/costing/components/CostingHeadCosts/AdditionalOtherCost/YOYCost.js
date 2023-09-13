@@ -230,7 +230,7 @@ function YOYCost(props) {
                                                             }}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y1}
                                                             disabled={outside ? true : false}
                                                         /></td>
@@ -254,7 +254,7 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y2}
                                                             disabled={outside ? true : false}
                                                         /></td>
@@ -278,7 +278,7 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y3}
                                                             disabled={outside ? true : false}
                                                         /></td>
@@ -302,7 +302,7 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y4}
                                                             disabled={outside ? true : false}
                                                         /></td>
@@ -326,7 +326,7 @@ function YOYCost(props) {
                                                             handleChange={(e) => handleChangeYears(e)}
                                                             defaultValue={''}
                                                             className=""
-                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2' : ''}`}
+                                                            customClassName={`withBorder mb-0 ${outside ? 'ml-n2 min-h-auto' : ''}`}
                                                             errors={errors.Y5}
                                                             disabled={outside ? true : false}
                                                         /></td>
