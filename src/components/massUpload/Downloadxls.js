@@ -62,7 +62,7 @@ export const checkLabourRateConfigure = (excelData) => {
 * @method checkVendorPlantConfig
 * @description CONDITION TO CHECK:- TO AVOID VENDOR PLANT IF NOT CONFIGURABLE FROM INITIALIZER
 */
-export const checkVendorPlantConfig = (excelData, type = '') => {
+export const checkVendorPlantConfig = (excelData, type = '', isBop = false) => {
     return excelData.filter((el) => {
         if (checkVendorPlantConfigurable() === false) {
             if (el.value === 'VendorPlant') return false;
@@ -96,7 +96,7 @@ export const checkVendorPlantConfig = (excelData, type = '') => {
         if (getConfigurationKey().IsMinimumOrderQuantityVisible === false) {
             if (el.value === 'NumberOfPieces') return false;
         }
-        if (getConfigurationKey().IsBoughtOutPartCostingConfigured === false) {
+        if (isBop && getConfigurationKey().IsBoughtOutPartCostingConfigured === false) {
             if (el.value === 'IsBreakupBoughtOutPart') return false;
             if (el.value === 'TechnologyName') return false;
         }
@@ -160,10 +160,10 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(MHRMoreZBC), MHRMoreZBCTempData);
             case 'BOP Domestic':
             case 'Insert Domestic':
-                return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_DOMESTIC), BOP_ZBC_DOMESTIC_TempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_DOMESTIC, '', true), BOP_ZBC_DOMESTIC_TempData);
             case 'BOP Import':
             case 'Insert Import':
-                return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT), BOP_ZBC_IMPORT_TempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(BOP_ZBC_IMPORT, '', true), BOP_ZBC_IMPORT_TempData);
             case 'Actual Volume':
                 return this.returnExcelColumn(VOLUME_ACTUAL_ZBC, VOLUME_ACTUAL_ZBC_TEMPDATA);
             case 'Budgeted Volume':
@@ -198,16 +198,16 @@ class Downloadxls extends React.Component {
             case 'Insert Domestic':
             case 'BOP Domestic':
                 if (bopType === DETAILED_BOP) {
-                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_DETAILED_DOMESTIC), BOP_DETAILED_DOMESTIC_TempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_DETAILED_DOMESTIC, '', true), BOP_DETAILED_DOMESTIC_TempData);
                 } else {
-                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_DOMESTIC), BOP_VBC_DOMESTIC_TempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_DOMESTIC, '', true), BOP_VBC_DOMESTIC_TempData);
                 }
             case 'BOP Import':
             case 'Insert Import':
                 if (bopType === DETAILED_BOP) {
-                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_DETAILED_IMPORT), BOP_DETAILED_IMPORT_TempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_DETAILED_IMPORT, '', true), BOP_DETAILED_IMPORT_TempData);
                 } else {
-                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_IMPORT), BOP_VBC_IMPORT_TempData);
+                    return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_IMPORT, '', true), BOP_VBC_IMPORT_TempData);
                 }
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_VBC), VOLUME_ACTUAL_VBC_TEMPDATA);
@@ -241,10 +241,10 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineCBC, CBCTypeId), MachineCBCTempData);
             case 'Insert Domestic':
             case 'BOP Domestic':
-                return this.returnExcelColumn(checkVendorPlantConfig(BOP_CBC_DOMESTIC, CBCTypeId), BOP_CBC_DOMESTIC_TempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(BOP_CBC_DOMESTIC, CBCTypeId, true), BOP_CBC_DOMESTIC_TempData);
             case 'Insert Import':
             case 'BOP Import':
-                return this.returnExcelColumn(checkVendorPlantConfig(BOP_CBC_IMPORT, CBCTypeId), BOP_CBC_IMPORT_TempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(BOP_CBC_IMPORT, CBCTypeId, true), BOP_CBC_IMPORT_TempData);
             case 'Actual Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_ACTUAL_CBC, CBCTypeId), VOLUME_ACTUAL_CBC_TEMPDATA);
             case 'Budgeted Volume':
