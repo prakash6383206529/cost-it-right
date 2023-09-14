@@ -125,16 +125,6 @@ function ApprovalSummary(props) {
     }
   }, [lastRevisionDataAcc, impactedMasterDataListForLastRevisionData])
 
-  const costingIdObj = (list) => {
-    let data = []
-    list && list?.map(item => {
-      let obj = {}
-      obj.CostingId = item?.costingId
-      data.push(obj)
-    })
-    return data
-  }
-
   const approvalSummaryHandler = () => {
     setIsLoader(true)
     dispatch(getApprovalSummary(approvalNumber, approvalProcessId, loggedInUser, (res) => {
@@ -213,7 +203,6 @@ function ApprovalSummary(props) {
         VendorId: VendorId
       })
 
-      let normalFlow = false
       if (initialConfiguration.IsReleaseStrategyConfigured) {
         let requestObject = {
           "RequestFor": "COSTING",
@@ -225,17 +214,26 @@ function ApprovalSummary(props) {
           setReleaseStrategyDetails(res?.data?.Data)
           if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
           } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-            normalFlow = true
+            let obj = {
+              DepartmentId: DepartmentId,
+              UserId: loggedInUserId(),
+              TechnologyId: technologyId,
+              Mode: 'costing',
+              approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+            }
+            dispatch(checkFinalUser(obj, res => {
+              if (res && res.data && res.data.Result) {
+                setFinalLevelUser(res.data.Data.IsFinalApprover)
+              }
+            }))
           } else if (res?.data?.Data?.IsFinalApprover) {
             setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+            return false
           } else if (res?.data?.Result === false) {
           } else {
           }
         }))
-      }
-
-
-      if (!initialConfiguration.IsReleaseStrategyConfigured || normalFlow) {
+      } else {
         let obj = {
           DepartmentId: DepartmentId,
           UserId: loggedInUserId(),

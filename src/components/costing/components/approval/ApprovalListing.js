@@ -682,6 +682,10 @@ function ApprovalListing(props) {
   }
 
   const sendForApproval = () => {
+    if (selectedRowData?.length === 0) {
+      Toaster.warning("Please select at least one costing to send for approval.")
+      return false
+    }
     if (initialConfiguration.IsReleaseStrategyConfigured) {
       let dataList = costingIdObj(selectedRowData)
       let requestObject = {
@@ -692,7 +696,7 @@ function ApprovalListing(props) {
       }
       dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
         setReleaseStrategyDetails(res?.data?.Data)
-        if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
+        if (res?.data?.Data?.IsUserInApprovalFlow) {
           if (selectedRowData.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
@@ -1114,6 +1118,7 @@ function ApprovalListing(props) {
           IsFinalLevel={!showFinalLevelButtons}
           costingTypeId={selectedRowData[0]?.CostingTypeId}
           TechnologyId={selectedRowData[0]?.TechnologyId}
+          releaseStrategyDetails={releaseStrategyDetails}
         />
       )}
       {

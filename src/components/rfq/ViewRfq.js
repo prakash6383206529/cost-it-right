@@ -16,9 +16,9 @@ import { PaginationWrapper } from '.././common/commonPagination'
 import { sendReminderForQuotation, getQuotationDetailsList, getMultipleCostingDetails, setQuotationIdForRFQ, checkExistCosting } from './actions/rfq';
 import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
-import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
+import { getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, formViewData } from '../../helper';
+import { checkForNull, formViewData, loggedInUserId } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -70,6 +70,8 @@ function RfqListing(props) {
     const [isVisibiltyConditionMet, setisVisibiltyConditionMet] = useState(false)
     const [rejectedList, setRejectedList] = useState([])
     const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
+    const { initialConfiguration } = useSelector(state => state.auth)
+    const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
 
 
     useEffect(() => {
@@ -161,18 +163,19 @@ function RfqListing(props) {
         setaddComparisonToggle(false)
     }
 
-    const cancel = () => {
-        props.closeDrawer()
+    const costingIdObj = (list) => {
+        let data = []
+        list && list?.map(item => {
+            let obj = {}
+            obj.CostingId = item
+            data.push(obj)
+        })
+        return data
     }
-    /**
-    * @method approveDetails
-    * @description approveDetails
-    */
-    const approveDetails = (Id, rowData = {}) => {
-        if (selectedCostingList?.length === 0) {
-            Toaster.warning("Select at least one costing to send for approval")
-            return false
-        }
+
+    const commonFunction = () => {
+
+
         const arrayOfObjects = [...viewCostingData]
         const matchingItems = selectedCostingList.filter(item =>
             arrayOfObjects.some(obj => obj.costingId === item)
@@ -223,6 +226,47 @@ function RfqListing(props) {
 
         sendForApprovalData(arr)
         setSendForApproval(true)
+    }
+
+    /**
+    * @method approveDetails
+    * @description approveDetails
+    */
+    const approveDetails = (Id, rowData = {}) => {
+        if (selectedCostingList?.length === 0) {
+            Toaster.warning("Select at least one costing to send for approval")
+            return false
+        }
+
+        if (initialConfiguration.IsReleaseStrategyConfigured) {
+            let dataList = costingIdObj(selectedCostingList)
+            let requestObject = {
+                "RequestFor": "COSTING",
+                "TechnologyId": technologyId,
+                "LoggedInUserId": loggedInUserId(),
+                "ReleaseStrategyApprovalDetails": dataList
+            }
+            dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                setReleaseStrategyDetails(res?.data?.Data)
+                if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
+                    commonFunction()
+                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                    commonFunction()
+                } else if (res?.data?.Data?.IsFinalApprover === true) {
+                    Toaster.warning('This is final level user')
+                    return false
+                } else if (res?.data?.Result === false) {
+                    Toaster.warning(res?.data?.Message)
+                    return false
+                } else {
+                    Toaster.warning('This user is not in approval cycle')
+                    return false
+                }
+            }))
+        } else {
+            commonFunction()
+        }
+
     }
 
     /**
