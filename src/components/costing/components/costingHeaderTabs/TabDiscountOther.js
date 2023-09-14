@@ -201,6 +201,7 @@ function TabDiscountOther(props) {
     const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
     return <div className='d-flex align-items-center'>
+      <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
       <TextFieldHookForm
         label="Condition"
         name={'ConditionCosting'}
@@ -1644,7 +1645,6 @@ function TabDiscountOther(props) {
                       />
                     </Col>
                     <Col md="3">
-                      <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
                       {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
                       {isConditionCostingOpen && <AddConditionCosting
                         isOpen={isConditionCostingOpen}

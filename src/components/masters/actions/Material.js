@@ -1561,15 +1561,15 @@ export function getMasterApprovalSummary(tokenNo, approvalProcessId, masterId, c
                         callback(response)
                     }
                     else if (Number(masterId) === BOP_MASTER_ID) {
-                        if (response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                        if (response.data.Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
                             dispatch({
                                 type: GET_BOP_DOMESTIC_DATA_LIST,
-                                payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
+                                payload: response.data.Data.ImpactedMasterDataList.BOPListResponse,
                             })
                         } else {
                             dispatch({
                                 type: GET_BOP_IMPORT_DATA_LIST,
-                                payload: response.data.Data.ImpactedMasterDataList.BOPDomesticListResponse,
+                                payload: response.data.Data.ImpactedMasterDataList.BOPListResponse,
                             })
                         }
                         callback(response)

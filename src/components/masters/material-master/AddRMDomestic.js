@@ -174,15 +174,36 @@ class AddRMDomestic extends Component {
     }
   }
 
+  netCostTitle() {
+    const { initialConfiguration } = this.props
+    const { costingTypeId } = this.state
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      return `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
+    } else {
+      return `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+    }
+  }
+
+  basicPriceTitle() {
+    const { initialConfiguration } = this.props
+    const { costingTypeId } = this.state
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      return `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+    }
+  }
+
+
   /**
    * @method componentDidMount
    * @description Called after rendering the component
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    const { costingTypeId } = this.state
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.getDetails(data)
     }
+
     this.getDetails(data)
     if (!this.state.isViewFlag) {
       this.props.getRawMaterialNameChild(() => { })
@@ -1908,6 +1929,7 @@ class AddRMDomestic extends Component {
                             </Col>
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                               <Col md="3">
+                                <TooltipCustom id="rm-basic-price" tooltipText={this.basicPriceTitle()} />
                                 <Field
                                   label={labelWithUOMAndCurrency("Basic Price", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                   name={"BasicPriceCurrency"}
@@ -1926,7 +1948,6 @@ class AddRMDomestic extends Component {
                               <Col md="3">
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
-                                    <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                                     <Field
                                       label={labelWithUOMAndCurrency("Condition Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                       name={"FinalConditionCostCurrency"}
@@ -1953,7 +1974,7 @@ class AddRMDomestic extends Component {
 
                             </>}
                             <Col md="3">
-                              <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
+                              <TooltipCustom id="bop-net-cost-currency" tooltipText={this.netCostTitle()} />
                               <Field
                                 label={labelWithUOMAndCurrency("Net Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}

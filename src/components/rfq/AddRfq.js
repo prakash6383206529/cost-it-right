@@ -106,6 +106,7 @@ function AddRfq(props) {
     const [fiveyearList, setFiveyearList] = useState([])
     const [selectedparts, setSelectedParts] = useState([])
     const [nfrId, setNfrId] = useState('')
+    const [storeNfrId, setStoreNfrId] = useState('')
     const [rmName, setRMName] = useState([])
     const [rmgrade, setRMGrade] = useState([])
     const [state, setState] = useState(true)
@@ -833,6 +834,8 @@ function AddRfq(props) {
             setPartName('')
             reactLocalStorage.setObject('PartData', [])
             setNfrId(newValue)
+        } else {
+            setNfrId(null)
         }
     }
 
@@ -883,9 +886,11 @@ function AddRfq(props) {
     const partFilterList = async (inputValue) => {
 
         const resultInput = inputValue.slice(0, searchCount)
-        if (inputValue?.length >= searchCount && partName !== resultInput) {
+        const nfrChange = nfrId?.value;
+        if (inputValue?.length >= searchCount && (partName !== resultInput || nfrChange !== storeNfrId)) {
             const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
             setPartName(resultInput)
+            setStoreNfrId(nfrId?.value)
             let partDataAPI = res?.data?.DataList
             if (inputValue) {
                 let temp = [...autoCompleteDropdownPart(inputValue, partDataAPI, false, [], true)]
