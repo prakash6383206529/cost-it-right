@@ -7,7 +7,7 @@ import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '.
 import AddProcess from '../../Drawers/AddProcess';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey } from '../../../../../helper';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, MASS, TIME, defaultPageSize } from '../../../../../config/constants';
+import { CRMHeads, DISPLAY_HOURS, DISPLAY_MICROSECONDS, DISPLAY_MILISECONDS, DISPLAY_MINUTES, DISPLAY_SECONDS, EMPTY_DATA, EMPTY_GUID, HOUR, MASS, MICROSECONDS, MILLISECONDS, MINUTES, SECONDS, TIME, defaultPageSize } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import VariableMhrDrawer from '../../Drawers/processCalculatorDrawer/VariableMhrDrawer'
 import { getProcessMachiningCalculation, getProcessDefaultCalculation } from '../../../actions/CostWorking';
@@ -1044,19 +1044,19 @@ function ProcessCost(props) {
   const processNetCostFormula = (value) => {
     let processNetCostFormulaText;
     switch (value) {
-      case DISPLAY_HOURS:
+      case HOUR:
         processNetCostFormulaText = 'Net Cost = Machine Rate / Part per Hour'
         break;
-      case DISPLAY_MINUTES:
+      case MINUTES:
         processNetCostFormulaText = 'Net Cost = (Machine Rate * 60) / Part per Hour'
         break;
-      case DISPLAY_SECONDS:
+      case SECONDS:
         processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600) / Part per Hour'
         break;
-      case DISPLAY_MILISECONDS:
+      case MILLISECONDS:
         processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600000) / Part per Hour'
         break;
-      case DISPLAY_MICROSECONDS:
+      case MICROSECONDS:
         processNetCostFormulaText = 'Net Cost = (Machine Rate * 3600000000) / Part per Hour'
         break;
       case undefined:
