@@ -161,7 +161,6 @@ class AddRMDomestic extends Component {
       FinalJaliScrapCostCurrency: '',
       FinalFreightCostCurrency: '',
       FinalShearingCostCurrency: '',
-      toolTipTextNetCost: {},
 
     }
   }
@@ -176,6 +175,25 @@ class AddRMDomestic extends Component {
     }
   }
 
+  netCostTitle() {
+    const { initialConfiguration } = this.props
+    const { costingTypeId } = this.state
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      return `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
+    } else {
+      return `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+    }
+  }
+
+  basicPriceTitle() {
+    const { initialConfiguration } = this.props
+    const { costingTypeId } = this.state
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      return `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+    }
+  }
+
+
   /**
    * @method componentDidMount
    * @description Called after rendering the component
@@ -186,11 +204,7 @@ class AddRMDomestic extends Component {
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.getDetails(data)
     }
-    if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-      this.setState({ toolTipTextNetCost: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})` })
-    } else {
-      this.setState({ toolTipTextNetCost: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})` })
-    }
+
     this.getDetails(data)
     if (!this.state.isViewFlag) {
       this.props.getRawMaterialNameChild(() => { })
@@ -1342,7 +1356,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceCurrency, showScrapKeys, toolTipTextNetCost } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceCurrency, showScrapKeys } = this.state
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -1913,6 +1927,7 @@ class AddRMDomestic extends Component {
                             </Col>
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                               <Col md="3">
+                                <TooltipCustom id="rm-basic-price" tooltipText={this.basicPriceTitle()} />
                                 <Field
                                   label={labelWithUOMAndCurrency("Basic Price", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                   name={"BasicPriceCurrency"}
@@ -1957,7 +1972,7 @@ class AddRMDomestic extends Component {
 
                             </>}
                             <Col md="3">
-                              <TooltipCustom id="bop-net-cost-currency" tooltipText={toolTipTextNetCost} />
+                              <TooltipCustom id="bop-net-cost-currency" tooltipText={this.netCostTitle()} />
                               <Field
                                 label={labelWithUOMAndCurrency("Net Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
