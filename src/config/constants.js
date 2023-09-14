@@ -2702,3 +2702,4 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 export const VERSION = "V2.1.246";
 
 
+
