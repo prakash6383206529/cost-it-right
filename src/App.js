@@ -33,24 +33,24 @@ class App extends Component {
 
         let objShort = {};
         costingHeadsListArray && costingHeadsListArray.map(item => {
-          let shortFormList = objShort[item.split("=")[0]] = item.match(/\d+/g)[0]
+          let shortFormList = objShort[item.split("=")[0]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
           return shortFormList
         })
         let objFull = {}
         costingHeadsListArray && costingHeadsListArray.map(item => {
-          let fullFormList = objFull[item.split("=")[1]] = item.match(/\d+/g)[0]
+          let fullFormList = objFull[item.split("=")[1]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
           return fullFormList
         })
 
 
         let objShortApp = {};
         approvalTypeListArray && approvalTypeListArray.map(item => {
-          let shortFormList = objShortApp[item.split("=")[0]] = item.match(/\d+/g)[0]
+          let shortFormList = objShortApp[item.split("=")[0]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
           return shortFormList
         })
         let objFullApp = {}
         approvalTypeListArray && approvalTypeListArray.map(item => {
-          let fullFormList = objFullApp[item.split("=")[1]] = item.match(/\d+/g)[0]
+          let fullFormList = objFullApp[item.split("=")[1]] = item.match(/\d+/g)[item.match(/\d+/g)?.length - 1]
           return fullFormList
         })
 

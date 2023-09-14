@@ -2716,3 +2716,20 @@ export function setCostingMode(value) {
     });
   }
 };
+
+/**
+ * @method getReleaseStrategyApprovalDetails
+ * @description getReleaseStrategyApprovalDetails
+ */
+export function getReleaseStrategyApprovalDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.getReleaseStrategyApprovalDetails, data, config())
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      callback(error.response)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}

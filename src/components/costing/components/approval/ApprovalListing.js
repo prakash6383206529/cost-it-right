@@ -20,7 +20,7 @@ import LoaderCustom from '../../../common/LoaderCustom'
 import { Redirect } from 'react-router'
 import WarningMessage from '../../../common/WarningMessage'
 import { getVolumeDataByPartAndYear } from '../../../masters/actions/Volume'
-import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, checkFinalUser } from '../../actions/Costing'
+import { getSingleCostingDetails, setCostingApprovalData, setCostingViewData, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import SendForApproval from './SendForApproval'
 import CostingDetailSimulationDrawer from '../../../simulation/components/CostingDetailSimulationDrawer'
 import { PaginationWrapper } from '../../../common/commonPagination'
@@ -71,6 +71,7 @@ function ApprovalListing(props) {
   const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+  const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
 
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
@@ -670,16 +671,69 @@ function ApprovalListing(props) {
     setSelectedRowData(uniqeArray)
   }
 
-  const sendForApproval = () => {
-    if (selectedRowData.length === 0) {
-      Toaster.warning('Please select atleast one approval to send for approval.')
-      return false
-    }
+  const costingIdObj = (list) => {
+    let data = []
+    list && list?.map(item => {
+      let obj = {}
+      obj.CostingId = item?.CostingId
+      data.push(obj)
+    })
+    return data
+  }
 
-    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-      setShowPopup(true)
+  const sendForApproval = () => {
+    if (initialConfiguration.IsReleaseStrategyConfigured) {
+      let dataList = costingIdObj(selectedRowData)
+      let requestObject = {
+        "RequestFor": "COSTING",
+        "TechnologyId": selectedRowData[0].TechnologyId,
+        "LoggedInUserId": loggedInUserId(),
+        "ReleaseStrategyApprovalDetails": dataList
+      }
+      dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+        setReleaseStrategyDetails(res?.data?.Data)
+        if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
+          if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one approval to send for approval.')
+            return false
+          }
+          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+            setShowPopup(true)
+          } else {
+            sendForApprovalDrawer()
+          }
+        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+
+          if (selectedRowData.length === 0) {
+            Toaster.warning('Please select atleast one approval to send for approval.')
+            return false
+          }
+          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+            setShowPopup(true)
+          } else {
+            sendForApprovalDrawer()
+          }
+
+        } else if (res?.data?.Data?.IsFinalApprover === true) {
+          Toaster.warning('This is final level user')
+        } else if (res?.data?.Result === false) {
+          Toaster.warning(res?.data?.Message)
+        } else {
+          Toaster.warning('This user is not in approval cycle')
+        }
+      }))
     } else {
-      sendForApprovalDrawer()
+
+      if (selectedRowData.length === 0) {
+        Toaster.warning('Please select atleast one approval to send for approval.')
+        return false
+      }
+      if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+        setShowPopup(true)
+      } else {
+        sendForApprovalDrawer()
+      }
+
     }
   }
 

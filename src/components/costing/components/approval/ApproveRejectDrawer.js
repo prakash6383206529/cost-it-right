@@ -26,7 +26,7 @@ function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments, apiData, SimulationHeadId, TechnologyId } = props
+  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments, apiData, SimulationHeadId, TechnologyId, releaseStrategyDetails } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -50,10 +50,44 @@ function ApproveRejectDrawer(props) {
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [levelDetails, setLevelDetails] = useState({})
   const [showWarningMessage, setShowWarningMessage] = useState(false)
+  const [disableSR, setDisableSR] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+  const approverAPICall = (departObj, technology, approverTypeId) => {
+    let obj = {
+      LoggedInUserId: userData.LoggedInUserId,
+      DepartmentId: departObj && departObj[0]?.Value,
+      TechnologyId: technology,
+      ReasonId: reasonId,
+      ApprovalTypeId: approverTypeId
+    }
+    dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
+      const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+      setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+      setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+      let tempDropdownList = []
+      res.data.DataList && res.data.DataList.map((item) => {
+        if (item.Value === '0') return false;
+        if (item.Value === EMPTY_GUID) {
+          setShowWarningMessage(true)
+          return false
+        } else {
+          setShowWarningMessage(false)
+        }
+        tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
+        return null
+      })
+      setApprovalDropDown(tempDropdownList)
+      // setApprover(Data.Text)
+      // setSelectedApprover(Data.Value)
+      // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
+      // setValue('approver', { label: Data.Text, value: Data.Value })
+    }))
+  }
 
   useEffect(() => {
     dispatch(setAttachmentFileData([], () => { }))
@@ -79,37 +113,16 @@ function ApproveRejectDrawer(props) {
 
           setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
-          let obj = {
-            LoggedInUserId: userData.LoggedInUserId,
-            DepartmentId: departObj && departObj[0]?.Value,
-            TechnologyId: approvalData && approvalData[0]?.TechnologyId,
-            ReasonId: reasonId,
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId)
+          if (initialConfiguration.IsReleaseStrategyConfigured) {
+            setDisableSR(true)
+            approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId)
+          } else {
+            setDisableSR(false)
+            approverAPICall(departObj, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId))
           }
-          dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
-            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-            setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-            setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-            let tempDropdownList = []
-            res.data.DataList && res.data.DataList.map((item) => {
-              if (item.Value === '0') return false;
-              if (item.Value === EMPTY_GUID) {
-                setShowWarningMessage(true)
-                return false
-              } else {
-                setShowWarningMessage(false)
-                setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-              }
-              tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
-              return null
-            })
-            setApprovalDropDown(tempDropdownList)
-            // setApprover(Data.Text)
-            // setSelectedApprover(Data.Value)
-            // setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
-            // setValue('approver', { label: Data.Text, value: Data.Value })
-          }))
         }))
+
+
       } else {
         dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
           if (res?.data?.Data) {
@@ -717,7 +730,7 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={false}
+                        disabled={disableSR}
                       />
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
@@ -734,7 +747,7 @@ function ApproveRejectDrawer(props) {
                         options={approvalDropDown}
                         mandatory={true}
                         handleChange={() => { }}
-                        disabled={false}
+                        disabled={disableSR}
                         errors={errors.approver}
                       />
                     </div>

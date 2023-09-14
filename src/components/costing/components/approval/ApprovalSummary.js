@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
 import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getConfigurationKey, loggedInUserId, getPOPriceAfterDecimal } from '../../../../helper'
 import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
-import { checkFinalUser, getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
+import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
@@ -70,6 +70,7 @@ function ApprovalSummary(props) {
   const [isRFQ, setisRFQ] = useState(false)
   const [conditionInfo, setConditionInfo] = useState([])
   const [vendorCodeForSap, setVendorCodeForSap] = useState('')
+  const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
@@ -123,6 +124,16 @@ function ApprovalSummary(props) {
       setEditWarning(false)
     }
   }, [lastRevisionDataAcc, impactedMasterDataListForLastRevisionData])
+
+  const costingIdObj = (list) => {
+    let data = []
+    list && list?.map(item => {
+      let obj = {}
+      obj.CostingId = item?.costingId
+      data.push(obj)
+    })
+    return data
+  }
 
   const approvalSummaryHandler = () => {
     setIsLoader(true)
@@ -202,18 +213,42 @@ function ApprovalSummary(props) {
         VendorId: VendorId
       })
 
-      let obj = {
-        DepartmentId: DepartmentId,
-        UserId: loggedInUserId(),
-        TechnologyId: technologyId,
-        Mode: 'costing',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
-      }
-      dispatch(checkFinalUser(obj, res => {
-        if (res && res.data && res.data.Result) {
-          setFinalLevelUser(res.data.Data.IsFinalApprover)
+      let normalFlow = false
+      if (initialConfiguration.IsReleaseStrategyConfigured) {
+        let requestObject = {
+          "RequestFor": "COSTING",
+          "TechnologyId": technologyId,
+          "LoggedInUserId": loggedInUserId(),
+          "ReleaseStrategyApprovalDetails": [{ CostingId: CostingId }]
         }
-      }))
+        dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+          setReleaseStrategyDetails(res?.data?.Data)
+          if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+          } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+            normalFlow = true
+          } else if (res?.data?.Data?.IsFinalApprover) {
+            setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+          } else if (res?.data?.Result === false) {
+          } else {
+          }
+        }))
+      }
+
+
+      if (!initialConfiguration.IsReleaseStrategyConfigured || normalFlow) {
+        let obj = {
+          DepartmentId: DepartmentId,
+          UserId: loggedInUserId(),
+          TechnologyId: technologyId,
+          Mode: 'costing',
+          approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+        }
+        dispatch(checkFinalUser(obj, res => {
+          if (res && res.data && res.data.Result) {
+            setFinalLevelUser(res.data.Data.IsFinalApprover)
+          }
+        }))
+      }
 
       dispatch(getSingleCostingDetails(CostingId, res => {
         let responseData = res?.data?.Data
@@ -742,6 +777,7 @@ function ApprovalSummary(props) {
           TechnologyId={approvalData?.TechnologyId}
           conditionInfo={conditionInfo}
           vendorCodeForSAP={vendorCodeForSap}
+          releaseStrategyDetails={releaseStrategyDetails}
         />
       )}
       {rejectDrawer && (

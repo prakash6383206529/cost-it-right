@@ -738,6 +738,7 @@ export const API = {
 
   // ApproveReject Drawer final approver
   checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,
+  getReleaseStrategyApprovalDetails: `${BASE_URL}/app-approval-system/get-release-strategy-approval-details`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -1933,6 +1934,10 @@ export const NFR = 'NFR'
 export const PFS1 = 'PFS1'
 export const PFS2 = 'PFS2'
 export const PFS3 = 'PFS3'
+export const ReleaseStrategyB1 = 'RSB1'
+export const ReleaseStrategyB2 = 'RSB2'
+export const ReleaseStrategyB3 = 'RSB3'
+export const ReleaseStrategyB4 = 'RSB4'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2623,6 +2628,7 @@ export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const PFS1TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS1])
 export const PFS2TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS2])
 export const PFS3TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS3])
+
 export const ZBCADDMORE = 15
 export const VBCADDMORE = 16
 export const CBCADDMORE = 17
@@ -2648,6 +2654,11 @@ export const NCCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('Approva
 export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[VBC])
 export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
 export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
+
+export const RELEASESTRATEGYTYPEID1 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB1])
+export const RELEASESTRATEGYTYPEID2 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB2])
+export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB3])
+export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
 
 //CONSTANTS FOR MASTER APPROVAL TYPE 
 export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])
