@@ -151,7 +151,7 @@ function ViewOtherCostDrawer(props) {
                                     </div>}
 
                                 {costingSummary && props?.isRfqCosting &&
-                                    <div className={'mt-4'}>
+                                    <div className={'mt-4 pb-1'}>
                                         <Col md="12" className={'mt25 pb-15'}>
                                             <HeaderTitle className="border-bottom"
                                                 title={'YOY'}

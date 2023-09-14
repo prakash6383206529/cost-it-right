@@ -78,10 +78,10 @@ function SummaryDrawer(props) {
                     setShowImport(true)
                 }
             } else if (checkForNull(props.masterId) === BOP_MASTER_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.CostingTypeId
-                setFiles(Data.ImpactedMasterDataList.BOPDomesticListResponse[0].Attachements)
+                CostingTypeId = Data.ImpactedMasterDataList.BOPListResponse[0]?.CostingTypeId
+                setFiles(Data.ImpactedMasterDataList.BOPListResponse[0].Attachements)
 
-                if (Data.ImpactedMasterDataList.BOPDomesticListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
+                if (Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
                     setShowImport(false)
                 } else {
                     setShowImport(true)

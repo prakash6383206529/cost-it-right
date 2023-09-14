@@ -68,7 +68,7 @@ function OperationSTSimulation(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? <span title={DayTime(cell).format('DD/MM/YYYY')}>{DayTime(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
     useEffect(() => {
@@ -106,7 +106,7 @@ function OperationSTSimulation(props) {
                 {
                     isImpactedMaster ?
                         valueShow ://NewNetOperationCost
-                        <span className={`${true ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                        <span className={`${true ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
             </>
@@ -139,7 +139,7 @@ function OperationSTSimulation(props) {
                 {
                     isImpactedMaster ?
                         valueShow :
-                        <span>{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                        <span title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
             </>
@@ -493,10 +493,10 @@ function OperationSTSimulation(props) {
                                                 enableBrowserTooltips={true}
                                             // frameworkComponents={frameworkComponents}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn width={140} field="CostingHead" headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn width={140} field="CostingHead" tooltipField='CostingHead' headerName="Costing Head" editable='false' cellRenderer={'costingHeadFormatter'}></AgGridColumn>}
                                                 <AgGridColumn field="OperationName" tooltipField='OperationName' editable='false' headerName="Operation Name" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn field="OperationCode" tooltipField='OperationCode' editable='false' headerName="Operation Code" minWidth={190}></AgGridColumn>
-                                                {!isImpactedMaster && <><AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
+                                                {!isImpactedMaster && <><AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn></>}
                                                 {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <><AgGridColumn field="VendorName" tooltipField='VendorName' editable='false' headerName="Vendor (Code)" minWidth={190} cellRenderer='vendorFormatter'></AgGridColumn></>}
                                                 {!isImpactedMaster && <><AgGridColumn field={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} tooltipField={`${isbulkUpload ? 'DestinationPlant' : 'Plants'}`} editable='false' headerName="Plant (Code)" minWidth={190} cellRenderer='plantFormatter'></AgGridColumn></>}
                                                 {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={100} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}

@@ -103,6 +103,7 @@ class AddBOPDomestic extends Component {
       FinalBasicPriceBase: '',
       FinalConditionCostBase: '',
       FinalNetLandedCostBase: '',
+      toolTipTextNetCost: {},
     }
   }
 
@@ -124,6 +125,7 @@ class AddBOPDomestic extends Component {
    */
   componentDidMount() {
     const { initialConfiguration } = this.props
+    const { costingTypeId } = this.state
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
@@ -132,6 +134,11 @@ class AddBOPDomestic extends Component {
     setTimeout(() => {
       this.getDetails()
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
+      if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+        this.setState({ toolTipTextNetCost: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})` })
+      } else {
+        this.setState({ toolTipTextNetCost: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})` })
+      }
       if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
       }
@@ -891,7 +898,7 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBase, IsFinancialDataChanged } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBase, IsFinancialDataChanged, toolTipTextNetCost } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1383,7 +1390,7 @@ class AddBOPDomestic extends Component {
                               </Col>
                             </>}
                             <Col md="3">
-                              <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                              <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
                               <Field
                                 label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
                                 name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCostBase"}`}
