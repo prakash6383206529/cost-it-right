@@ -2858,6 +2858,7 @@ function CostingDetails(props) {
           //isEditFlag={false}
           anchor={"right"}
           setCostingOptionSelect={setCostingOptionSelect}
+          cbcGrid={cbcGrid}
         />
       )}
 
