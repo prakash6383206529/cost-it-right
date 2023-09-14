@@ -34,7 +34,7 @@ function NFRApprovalListing(props) {
     const floatingFilterNfr = {
         maxValue: 12,
         suppressFilterButton: true,
-        component: "NFR",
+        component: "NFRApproval",
     }
 
     const defaultColDef = {
@@ -48,6 +48,7 @@ function NFRApprovalListing(props) {
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
         agGridRef.current = params.api;
+        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
     };
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
@@ -153,7 +154,7 @@ function NFRApprovalListing(props) {
     }
 
     const statusFormatter = (props) => {
-        dispatch(getGridHeight({ value: props.rowIndex, component: 'NFR' }))
+        dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'NFRApproval' }))
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <div className={row?.Status}>{row.DisplayStatus}</div>
     }
@@ -260,7 +261,7 @@ function NFRApprovalListing(props) {
                                             <AgGridColumn field="InitiatedByName" headerName="Initiated By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field="CreatedByName" headerName=" Created By" cellRenderer='hyphenFormatter'></AgGridColumn>
                                             <AgGridColumn field='LastApprovedByName' headerName="Last Approved /Rejected By" cellRenderer='hyphenFormatter'></AgGridColumn>
-                                            <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" field="DisplayStatus" tooltipField="TooltipText" cellRenderer='statusFormatter' headerName="Status" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
                                         </AgGridReact>
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={defaultPageSize} />}
                                     </div>

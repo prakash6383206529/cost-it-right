@@ -71,7 +71,7 @@ function MRSimulation(props) {
 
     const effectiveDateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? moment(cell).format('DD/MM/YYYY') : '';
+        return cell != null ? <span title={moment(cell).format('DD/MM/YYYY')}>{moment(cell).format('DD/MM/YYYY')}</span> : '';
     }
 
     useEffect(() => {
@@ -116,7 +116,7 @@ function MRSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.NewMachineRate :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} >{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
+                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.MachineRate)}>{cell && value ? Number(cell) : Number(row.MachineRate)} </span>
                 }
 
             </>
@@ -494,8 +494,8 @@ function MRSimulation(props) {
                                                 onCellValueChanged={onCellValueChanged}
                                                 enableBrowserTooltips={true}
                                             >
-                                                {!isImpactedMaster && <AgGridColumn field="Technology" editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
-                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
+                                                {!isImpactedMaster && <AgGridColumn field="Technology" tooltipField='Technology' editable='false' headerName="Technology" minWidth={190}></AgGridColumn>}
+                                                {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNo" tooltipField='PartNo' editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
                                                 <AgGridColumn field="MachineName" tooltipField='MachineName' editable='false' headerName="Machine Name" minWidth={140}></AgGridColumn>
                                                 <AgGridColumn field="MachineNumber" tooltipField='MachineNumber' editable='false' headerName="Machine Number" minWidth={140}></AgGridColumn>
@@ -510,7 +510,7 @@ function MRSimulation(props) {
                                                     </>
                                                 }
                                                 <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Net Machine Rate" marryChildren={true} >
-                                                    <AgGridColumn width={120} field="MachineRate" editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
+                                                    <AgGridColumn width={120} field="MachineRate" tooltipField='MachineRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="MachineRate" suppressSizeToFit={true}></AgGridColumn>
                                                     <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewMachineRate" headerName="Revised" colId='NewMachineRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                                 </AgGridColumn>
                                                 {props.children}
