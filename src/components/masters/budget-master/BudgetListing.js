@@ -682,10 +682,7 @@ function BudgetListing(props) {
                                 </Col>
                             </Row>
                             <Row className="">
-                                <Col md="12" className=""> <Nav tabs className="subtabs">
-
-                                </Nav></Col>
-                                <Col md="12" className='px-0 mt-3'><TabContent activeTab={activeTab}>
+                                <Col md="12" className='px-0 mt-3'>
                                     <BulkUpload
                                         closeDrawer={closeActualBulkUploadDrawer}
                                         isEditFlag={false}
@@ -694,8 +691,7 @@ function BudgetListing(props) {
                                         messageLabel={'Budget Actual'}
                                         anchor={'right'}
                                         isDrawerfasle={true}
-                                    />
-                                </TabContent></Col>
+                                    /></Col>
                             </Row>
                         </div>
                     </Container>
