@@ -130,6 +130,7 @@ const CostingSummaryTable = (props) => {
   const [isLogisticsTechnology, setIsLogisticsTechnology] = useState(false);
   const [openNpvDrawer, setNpvDrawer] = useState(false);
   const [isOpenRejectedCosting, setIsOpenRejectedCosting] = useState(false);
+  const [isFinalCommonApproval, setIsFinalCommonApproval] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState({
     BOP: false,
     process: false,
@@ -193,6 +194,7 @@ const CostingSummaryTable = (props) => {
           dispatch(checkFinalUser(obj, res => {
             if (res.data?.Result) {
               // setIsFinalApproverShow(res.data?.Data?.IsFinalApprover)
+              setIsFinalCommonApproval(res.data?.Data?.IsFinalApprover)
               if (res.data?.Data?.IsUserInApprovalFlow === false) {
                 // setDisableSendForApproval(true)
               }
@@ -908,6 +910,11 @@ const CostingSummaryTable = (props) => {
   }
 
   const checkCostings = () => {
+    if (dataSelected?.length === 0) {
+      Toaster.warning("Please select at least one costing to send for approval")
+      return false
+
+    }
     let list = [...dataSelected]
     let vendorArray = []
     let effectiveDateArray = []
@@ -945,26 +952,34 @@ const CostingSummaryTable = (props) => {
             setShowApproval(true)
           }
         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-          if (list?.length === 0) {
-            Toaster.warning('Please select at least one costing to send for approval')
-            return
-          } else if (!allEqual(vendorArray)) {
-            Toaster.warning('Vendor should be same for sending multiple costing for approval')
-            return
-          } else if (!allEqual(effectiveDateArray)) {
-            Toaster.warning('Effective Date should be same for sending multiple costing for approval')
-          } else if (!allEqual(plantArray)) {
-            Toaster.warning('Plant should be same for sending multiple costing for approval')
+          if (!isFinalCommonApproval) {
+            if (list?.length === 0) {
+              Toaster.warning('Please select at least one costing to send for approval')
+              return
+            } else if (!allEqual(vendorArray)) {
+              Toaster.warning('Vendor should be same for sending multiple costing for approval')
+              return
+            } else if (!allEqual(effectiveDateArray)) {
+              Toaster.warning('Effective Date should be same for sending multiple costing for approval')
+            } else if (!allEqual(plantArray)) {
+              Toaster.warning('Plant should be same for sending multiple costing for approval')
+            } else {
+              sendForApprovalData(multipleCostings)
+              setShowApproval(true)
+            }
           } else {
-            sendForApprovalData(multipleCostings)
-            setShowApproval(true)
+            Toaster.warning('This is final level user')
+            return false
           }
         } else if (res?.data?.Data?.IsFinalApprover === true) {
           Toaster.warning('This is final level user')
+          return false
         } else if (res?.data?.Result === false) {
           Toaster.warning(res?.data?.Message)
+          return false
         } else {
           Toaster.warning('This user is not in approval cycle')
+          return false
         }
       }))
     } else {
@@ -1082,7 +1097,6 @@ const CostingSummaryTable = (props) => {
   }
 
   const sendForApprovalDown = (data) => {
-    let normalFlow = false
     if (initialConfiguration.IsReleaseStrategyConfigured) {
       let returnValue = true
       let dataList = costingIdObj(data)
@@ -1103,7 +1117,18 @@ const CostingSummaryTable = (props) => {
             Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
           }
         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-          normalFlow = true
+          if (data && !isFinalCommonApproval) {
+            let temp = moduleHandler(data[0]?.costingId, 'down', data)
+            if (!temp) {
+              sendForApprovalData([data[0]?.costingId], index)
+              setShowApproval(true)
+            } else {
+              Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
+            }
+          } else {
+            Toaster.warning('This is final level user')
+            return false
+          }
         } else if (res?.data?.Data?.IsFinalApprover === true) {
           returnValue = false
           Toaster.warning('This is final level user')
@@ -1115,9 +1140,7 @@ const CostingSummaryTable = (props) => {
         }
       }))
       return returnValue
-    }
-
-    if (!initialConfiguration.IsReleaseStrategyConfigured || normalFlow) {
+    } else {
       if (data) {
         let temp = moduleHandler(data[0]?.costingId, 'down', data)
         if (!temp) {
