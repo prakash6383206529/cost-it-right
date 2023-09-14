@@ -200,7 +200,7 @@ function TabDiscountOther(props) {
   const costingConditionUI = useMemo(() => {
     const sum = conditionTableData.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
-    return <Col md="3"> <div className='d-flex align-items-center'>
+    return <div className='d-flex align-items-center'>
       <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
       <TextFieldHookForm
         label="Condition"
@@ -225,7 +225,7 @@ function TabDiscountOther(props) {
         variant={viewAddButtonIcon(conditionTableData, "className")}
         title={viewAddButtonIcon(conditionTableData, "title")}
       />
-    </div></Col>
+    </div></Col >
   }, [conditionTableData])
 
 
@@ -1649,12 +1649,13 @@ function TabDiscountOther(props) {
                     {isConditionCostingOpen && <AddConditionCosting
                       isOpen={isConditionCostingOpen}
                       tableData={conditionTableData}
-                      CostingViewMode={CostingViewMode}
                       closeDrawer={openAndCloseAddConditionCosting}
                       anchor={'right'}
                       netPOPrice={netPOPrice}
-                      basicRate={getValues('BasicRateINR')}
-                    />}
+                      basicRateCurrency={getValues('BasicRateINR')}
+                      ViewMode={CostingViewMode}
+                    />
+                    }
                     {/* {initialConfiguration?.IsShowNpvCost && <Row>
                     <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
                     <Col md="4" className="text-right">
