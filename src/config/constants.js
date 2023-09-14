@@ -528,7 +528,7 @@ export const API = {
   getCostingDetailsByCostingId: `${BASE_URL}/costing/get-view-costing`,
 
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
-  saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
+  saveCostingCopy: `${BASE_URL}/costing/exact-or-latest-data-copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
