@@ -12,7 +12,7 @@ import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
 import { Redirect } from 'react-router';
-import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, getReleaseStrategyApprovalDetails, setCostingViewData } from '../../costing/actions/Costing';
 import {
     ASSEMBLY_TECHNOLOGY_MASTER,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
@@ -116,6 +116,9 @@ function CostingSimulation(props) {
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
     const [noData, setNoData] = useState(false);
+    const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+    const [isPFSOrBudgetingDetailsExistWarning, showIsPFSOrBudgetingDetailsExistWarning] = useState(false);
+    const [warningMessage, setWarningMessage] = useState('');
 
     const costingSimulationListAllKeys = useSelector(state => state.simulation.costingSimulationListAllKeys)
 
@@ -150,23 +153,91 @@ function CostingSimulation(props) {
 
     useEffect(() => {
         if (SimulationTechnologyIdState && count === 0 && amendmentDetails.SimulationHeadId) {
-            let obj = {
-                DepartmentId: userData.DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: SimulationTechnologyIdState,
-                Mode: 'simulation',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
-            }
-            dispatch(checkFinalUser(obj, res => {
-                if (res && res.data && res.data.Result) {
-                    setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                    if (res.data?.Data?.IsUserInApprovalFlow === false) {
-                        setDisableSendForApproval(true)
-                    }
-                    let countTemp = count + 1
-                    setCount(countTemp)
+            if (getConfigurationKey().IsReleaseStrategyConfigured) {
+                let data = []
+                selectedRowData && selectedRowData?.map(item => {
+                    let obj = {}
+                    obj.SimulationId = simulationId
+                    data.push(obj)
+                })
+                let requestObject = {
+                    "RequestFor": "SIMULATION",
+                    "TechnologyId": props.technologyId,
+                    "LoggedInUserId": loggedInUserId(),
+                    "ReleaseStrategyApprovalDetails": data
                 }
-            }))
+                dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                    setReleaseStrategyDetails(res?.data?.Data)
+                    if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+                        showIsPFSOrBudgetingDetailsExistWarning(false)
+                        setWarningMessage("")
+                        setDisableSendForApproval(false)
+                        setIsFinalLevelApprover(false)
+
+                    } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                        setWarningMessage("Budgeting cost does not exist, common approval flow will run for this part")
+                        showIsPFSOrBudgetingDetailsExistWarning(true)
+                        let obj = {
+                            DepartmentId: userData.DepartmentId,
+                            UserId: loggedInUserId(),
+                            TechnologyId: SimulationTechnologyIdState,
+                            Mode: 'simulation',
+                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+                        }
+                        dispatch(checkFinalUser(obj, res => {
+                            if (res && res.data && res.data.Result) {
+                                setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                                if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                                    setDisableSendForApproval(true)
+                                }
+                                let countTemp = count + 1
+                                setCount(countTemp)
+                            }
+                        }))
+                    } else if (res?.data?.Result === false) {
+                        showIsPFSOrBudgetingDetailsExistWarning(true)
+                        setWarningMessage("This user is not in the approval cycle")
+                    } else {
+                        showIsPFSOrBudgetingDetailsExistWarning(true)
+                        setWarningMessage("This user is not in the approval cycle")
+                    }
+                }))
+            } else {
+                let obj = {
+                    DepartmentId: userData.DepartmentId,
+                    UserId: loggedInUserId(),
+                    TechnologyId: SimulationTechnologyIdState,
+                    Mode: 'simulation',
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+                }
+                dispatch(checkFinalUser(obj, res => {
+                    if (res && res.data && res.data.Result) {
+                        setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+                        if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                            setDisableSendForApproval(true)
+                        }
+                        let countTemp = count + 1
+                        setCount(countTemp)
+                    }
+                }))
+            }
+            // let obj = {
+            //     DepartmentId: userData.DepartmentId,
+            //     UserId: loggedInUserId(),
+            //     TechnologyId: SimulationTechnologyIdState,
+            //     Mode: 'simulation',
+            //     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
+            // }
+            // dispatch(checkFinalUser(obj, res => {
+            //     if (res && res.data && res.data.Result) {
+            //         setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
+            //         if (res.data?.Data?.IsUserInApprovalFlow === false) {
+            //             setDisableSendForApproval(true)
+            //         }
+            //         let countTemp = count + 1
+            //         setCount(countTemp)
+            //     }
+            // }))
         }
     }, [SimulationTechnologyIdState, amendmentDetails.SimulationHeadId])
 
@@ -1223,6 +1294,47 @@ function CostingSimulation(props) {
         return temp
     }
 
+    const costingIdObj = (list) => {
+        let data = []
+        list && list?.map(item => {
+            let obj = {}
+            obj.SimulationId = simulationId
+            data.push(obj)
+        })
+        return data
+    }
+
+    const sendForApproval = () => {
+        if (getConfigurationKey().IsReleaseStrategyConfigured) {
+            let returnValue = true
+            let dataList = costingIdObj(selectedRowData)
+            let requestObject = {
+                "RequestFor": "SIMULATION",
+                "TechnologyId": SimulationTechnologyIdState,
+                "LoggedInUserId": loggedInUserId(),
+                "ReleaseStrategyApprovalDetails": dataList
+            }
+            dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                setReleaseStrategyDetails(res?.data?.Data)
+                if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
+                    setIsApprovalDrawer(true)
+                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                    setIsApprovalDrawer(true)
+                    showIsPFSOrBudgetingDetailsExistWarning(true)
+                } else if (res?.data?.Data?.IsFinalApprover === true) {
+                    Toaster.warning('This is final level user')
+                    return false
+                } else {
+                    Toaster.warning('This user is not in approval cycle')
+                    return false
+                }
+            }))
+            return returnValue
+        } else {
+            setIsApprovalDrawer(true)
+        }
+    }
+
 
     const frameworkComponents = {
 
@@ -1502,9 +1614,10 @@ function CostingSimulation(props) {
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                                         {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                                        {isPFSOrBudgetingDetailsExistWarning && <WarningMessage message={warningMessage} />}
                                         <button
                                             class="user-btn approval-btn mr5"
-                                            onClick={() => { setIsApprovalDrawer(true) }}
+                                            onClick={() => sendForApproval()}
                                             disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover || disableSendForApproval) ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
                                         >
@@ -1551,6 +1664,7 @@ function CostingSimulation(props) {
                                     isSimulation={true}
                                     apiData={apiData}
                                     costingTypeId={amendmentDetails.SimulationHeadId}
+                                    releaseStrategyDetails={releaseStrategyDetails}
                                 // isSaveDone={isSaveDone}
                                 />
                             }

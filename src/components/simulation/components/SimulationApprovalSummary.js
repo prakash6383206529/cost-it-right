@@ -22,7 +22,7 @@ import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, getReleaseStrategyApprovalDetails, setCostingViewData } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -133,6 +133,7 @@ function SimulationApprovalSummary(props) {
     const [showSuccessMessage, setShowSuccessMessage] = useState(false)
     const [showErrorMessage, setShowErrorMessage] = useState(false)
     const [finalLeveluser, setFinalLevelUser] = useState(false)
+    const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
 
 
@@ -220,18 +221,52 @@ function SimulationApprovalSummary(props) {
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
 
-            let finalUserObj = {
-                DepartmentId: DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: SimulationTechnologyId,
-                Mode: 'simulation',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
-            }
-            dispatch(checkFinalUser(finalUserObj, res => {
-                if (res && res.data && res.data.Result) {
-                    setFinalLevelUser(res.data.Data.IsFinalApprover)
+            if (initialConfiguration.IsReleaseStrategyConfigured) {
+                let requestObject = {
+                    "RequestFor": "SIMULATION",
+                    "TechnologyId": SimulationTechnologyId,
+                    "LoggedInUserId": loggedInUserId(),
+                    "ReleaseStrategyApprovalDetails": [{ SimulationId: SimulationId }]
                 }
-            }))
+                dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                    setReleaseStrategyDetails(res?.data?.Data)
+                    if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+
+                    } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                        let obj = {
+                            DepartmentId: DepartmentId,
+                            UserId: loggedInUserId(),
+                            TechnologyId: SimulationTechnologyId,
+                            Mode: 'simulation',
+                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
+                        }
+                        dispatch(checkFinalUser(obj, res => {
+                            if (res && res.data && res.data.Result) {
+                                setFinalLevelUser(res.data.Data.IsFinalApprover)
+                            }
+                        }))
+                    } else if (res?.data?.Data?.IsFinalApprover) {
+                        setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+                        return false
+                    } else if (res?.data?.Result === false) {
+                    } else {
+                    }
+                }))
+            } else {
+                let obj = {
+                    DepartmentId: DepartmentId,
+                    UserId: loggedInUserId(),
+                    TechnologyId: SimulationTechnologyId,
+                    Mode: 'simulation',
+                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
+                }
+                dispatch(checkFinalUser(obj, res => {
+                    if (res && res.data && res.data.Result) {
+                        setFinalLevelUser(res.data.Data.IsFinalApprover)
+                    }
+                }))
+            }
+
         }))
 
 
@@ -496,8 +531,6 @@ function SimulationApprovalSummary(props) {
         if (isMultiTechnology) {
             return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, downloadGrid.length > 0 ? downloadGrid : [])
         } else {
-            console.log('SimulationTechnologyId: ', SimulationTechnologyId);
-            console.log('BOPDOMESTIC: ', BOPDOMESTIC);
             switch (String(SimulationTechnologyId)) {
                 case RMDOMESTIC:
                 case RMIMPORT:
@@ -1657,6 +1690,7 @@ domLayout='autoHeight'
                     IsFinalLevel={finalLeveluser}
                     SimulationHeadId={simulationDetail?.SimulationHeadId}
                     costingTypeId={simulationDetail?.SimulationHeadId}
+                    releaseStrategyDetails={releaseStrategyDetails}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />

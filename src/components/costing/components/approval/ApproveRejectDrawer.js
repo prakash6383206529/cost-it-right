@@ -107,7 +107,9 @@ function ApproveRejectDrawer(props) {
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
           levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
           setLevelDetails(levelDetailsTemp)
-
+          if (levelDetailsTemp?.length === 0) {
+            Toaster.warning("You don't have permission to send simulation for approval.")
+          }
         }))
 
         dispatch(getAllApprovalDepartment((res) => {
@@ -117,7 +119,7 @@ function ApproveRejectDrawer(props) {
 
           setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
-          if (initialConfiguration.IsReleaseStrategyConfigured) {
+          if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
             setDisableSR(true)
             approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId)
           } else {
@@ -132,13 +134,25 @@ function ApproveRejectDrawer(props) {
           if (res?.data?.Data) {
             levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
             setLevelDetails(levelDetailsTemp)
-            dispatch(getSimulationApprovalByDepartment(res => {
-              const Data = res.data.SelectList
-              const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
-              setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
-              getApproversList(departObj[0].Value, departObj[0].Text, levelDetailsTemp)
-
-            }))
+            if (levelDetailsTemp?.length !== 0) {
+              dispatch(getSimulationApprovalByDepartment(res => {
+                const Data = res.data.SelectList
+                const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
+                setValue('dept', { label: departObj[0].Text, value: departObj[0].Value })
+                if (levelDetailsTemp?.length !== 0) {
+                  getApproversList(departObj[0].Value, departObj[0].Text, levelDetailsTemp)
+                }
+                if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+                  setDisableSR(true)
+                  approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId)
+                } else {
+                  setDisableSR(false)
+                  approverAPICall(departObj, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId))
+                }
+              }))
+            } else {
+              Toaster.warning("You don't have permission to send simulation for approval.")
+            }
           }
         }))
 
@@ -208,7 +222,7 @@ function ApproveRejectDrawer(props) {
             let tempDropdownList = []
             let listForDropdown = []
 
-            res.data.DataList && res.data.DataList.map((item) => {
+            res?.data?.DataList && res?.data?.DataList?.map((item) => {
               if (item.Value === '0') return false;
               tempDropdownList.push({
                 label: item.Text,
@@ -274,18 +288,18 @@ function ApproveRejectDrawer(props) {
 
         dispatch(getAllSimulationApprovalList(obj, (res) => {
           const Data = res && res.data && res?.data?.DataList[1] ? res?.data?.DataList[1] : []
-          if (Object.keys(Data).length > 0) {
-            setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+          if (Object?.keys(Data)?.length > 0) {
+            setValue('dept', { label: Data?.DepartmentName, value: Data?.DepartmentId })
           }
-          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+          setValue('approver', { label: Data?.Text ? Data?.Text : '', value: Data?.Value ? Data?.Value : '', levelId: Data?.LevelId ? Data?.LevelId : '', levelName: Data?.LevelName ? Data?.LevelName : '' })
           let tempDropdownList = []
-          res && res.data && res?.data?.DataList && res?.data?.DataList.map((item) => {
-            if (item.Value === '0') return false;
-            tempDropdownList.push({
-              label: item.Text,
-              value: item.Value,
-              levelId: item.LevelId,
-              levelName: item.LevelName
+          res && res?.data?.DataList && res?.data?.DataList?.map((item) => {
+            if (item?.Value === '0') return false;
+            tempDropdownList?.push({
+              label: item?.Text,
+              value: item?.Value,
+              levelId: item?.LevelId,
+              levelName: item?.LevelName
             })
             return null
           })
@@ -715,7 +729,9 @@ function ApproveRejectDrawer(props) {
         setApprovalDropDown(tempDropdownList)
       }))
     } else {
-      getApproversList(value.value, value.label, levelDetails)
+      if (levelDetails?.length !== 0) {
+        getApproversList(value.value, value.label, levelDetails)
+      }
       // dispatch(
       //   getAllSimulationApprovalList(simObj, (res) => {
       //     res.data.DataList &&
