@@ -1,74 +1,58 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col } from 'reactstrap';
+import { Container, Row, Col, Label } from 'reactstrap';
 import { useForm, Controller } from 'react-hook-form';
 import { useDispatch } from 'react-redux';
 import Drawer from '@material-ui/core/Drawer';
-import Switch from 'react-switch';
-import { DatePickerHookForm, SearchableSelectHookForm, } from '../../../layout/HookFormInputs';
-import { getPlantBySupplier, } from '../../../../actions/Common';
-import { getCostingSummaryByplantIdPartNo, saveCopyCosting, checkDataForCopyCosting } from '../../actions/Costing';
-import { NCCTypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
-import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../../../helper';
-import DatePicker from "react-datepicker";
+import { DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs';
+import { saveCopyCosting, checkDataForCopyCosting } from '../../actions/Costing';
+import { CBCTypeId, NCCTypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
+import { getConfigurationKey, loggedInUserId } from '../../../../helper';
 import DayTime from '../../../common/DayTimeWrapper'
 import Toaster from '../../../common/Toaster';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 function CopyCosting(props) {
-  const loggedIn = isUserLoggedIn()
   const loggedUserId = loggedInUserId()
 
-  const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, selectedCostingId, nccGrid } = props
+  const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, nccGrid, cbcGrid } = props
 
   const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
-    defaultValues: {
-      fromPlant: type === ZBCTypeId ? { label: `${copyCostingData.PlantName}`, value: copyCostingData.PlantId, } : '',
-      fromVendorName: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.VendorName}`, value: copyCostingData.VendorId, } : '',
-      // fromVendorPlant: type === VBC ? {label:`${copyCostingData.VendorPlantName}(${copyCostingData.VendorPlantCode})`,value: copyCostingData.VendorPlantId} : ''
-      fromDestinationPlant: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.DestinationPlantName}`, value: copyCostingData.DestinationPlantId } : '',
-      fromcostingId: selectedCostingId.zbcCosting,
-      fromVbccostingId: selectedCostingId.vbcCosting,
-      fromNcccostingId: selectedCostingId.nccCosting,
-      toVendorName: type === VBCTypeId || type === NCCTypeId ? { label: `${copyCostingData.VendorName}`, value: copyCostingData.VendorId } : '',
-    },
   })
-
-
-  // const part = partNo ? partNo : '' should do or not ?
 
   const dispatch = useDispatch()
 
   const [plantDropDownList, setPlantDropDownList] = useState([])
   const [vendorName, setVendorName] = useState([])
-  const [costingId, setCostingId] = useState([])
-  const [vendorFromPlantDropdown, setVendorFromPlantDropdown] = useState([])
-  const [vendorToPlantDropdown, setVendorToPlantDropdown] = useState([])
-  const [vendorCostingId, setVendorCostingId] = useState([])
   const [destinationPlant, setDestinationPlant] = useState([])
   const [effectiveDate, setEffectiveDate] = useState('')
   const [minDate, setMinDate] = useState('')
-
-  const [fromtype, setFromType] = useState(type === ZBCTypeId ? false : true)
-  const [isFromZbc, setIsFromZbc] = useState(type === ZBCTypeId ? true : false)
-  const [isFromNcc, setIsFromNcc] = useState(type === NCCTypeId ? true : false)
-  const [isToZbc, setIsToZbc] = useState(type === ZBCTypeId ? true : false)
-  const [isFromVbc, setIsFromVbc] = useState(type === VBCTypeId ? true : false)
-  const [isToVbc, setIsToVbc] = useState(type === VBCTypeId ? true : false)
-  const [isToNcc, setIsToNcc] = useState(type === NCCTypeId ? true : false)
-  const [toSwitch, setToSwitch] = useState(type === VBCTypeId ? true : false)
   const [showPopup, setShowPopup] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
   const [disablePopup, setDisablePopup] = useState(false)
   const [updatedObj, setUpdatedObj] = useState({})
   const [msgObj, setMsgObj] = useState({})
+  const [costingTypeId, setCostingTypeId] = useState('')
+  const [customer, setCustomer] = useState([])
+  const [customerPlant, setCustomerPlant] = useState([])
+  const [toPlant, setToplant] = useState({})
+  const [toVendor, setToVendor] = useState({})
+  const [toCustomer, setToCustomer] = useState({})
+  const [nccVendor, setNccVendor] = useState({})
+  const [nccPlant, setNccPlant] = useState({})
 
   useEffect(() => {
+    setCostingTypeId(type)
     const ZbcTemp = []
     const VbcTemp = []
-
+    const CbcTemp = []
+    const tempPlantCbc = []
+    const NccVendor = []
+    const NccPlant = []
+    const VbcPlant = []
     /* For ZBC plant drop down*/
     zbcPlantGrid &&
       zbcPlantGrid.map((item) => (
@@ -77,311 +61,130 @@ function CopyCosting(props) {
           value: item.PlantId,
         })
       ))
-    setPlantDropDownList(ZbcTemp)
+    let uniqueArrayZbcPlant = _.uniqBy(ZbcTemp, "value")
+    setPlantDropDownList(uniqueArrayZbcPlant)
+
+    /* For CBC drop down*/
+    cbcGrid && cbcGrid.map((item) => {
+      CbcTemp.push({ label: item.Customer, value: item.CustomerId })
+      tempPlantCbc.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
+      return null
+    })
+    let uniqueArrayCbc = _.uniqBy(CbcTemp, "value")
+    let uniqueArrayCbcPlant = _.uniqBy(tempPlantCbc, "value")
+    setCustomer(uniqueArrayCbc)
+    setCustomerPlant(uniqueArrayCbcPlant)
+
     /*For vendor dropdown*/
     if (getConfigurationKey().IsDestinationPlantConfigure) {
       vbcVendorGrid &&
-        vbcVendorGrid.map((item) => (
-          VbcTemp.push({
-            label: item.VendorName,
-            value: item.VendorId
-          })
-        ))
+        vbcVendorGrid.map((item) => {
+          VbcTemp.push({ label: item.VendorName, value: item.VendorId })
+          VbcPlant.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
+          return null
+        })
+      let uniqueArrayVbcPlant = _.uniqBy(VbcPlant, "value")
+      setDestinationPlant(uniqueArrayVbcPlant)
     } else {
       vbcVendorGrid &&
         vbcVendorGrid.map((item) => (
           VbcTemp.push({
             label: item.VendorName,
             value: item.VendorId
-            // destPlant: item.DestinationPlantId ? item.DestinationPlantId : ''
           })
         ))
     }
-
-
     let uniqueArray = _.uniqBy(VbcTemp, "value")
     setVendorName(uniqueArray)
 
-    if (type === NCCTypeId) {
-      let tempPlant = []
-      let tempVendor = []
-      nccGrid && nccGrid.map((item) => {
-        tempPlant.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
-        tempVendor.push({
-          label: item.VendorName,
-          value: item.VendorId
-        })
-        return null
+    /*For New Component dropdown*/
+    nccGrid && nccGrid.map((item) => {
+      NccPlant.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })
+      NccVendor.push({
+        label: item.VendorName,
+        value: item.VendorId
       })
-      setDestinationPlant(tempPlant)
-      setVendorName(tempVendor)
-      // setVendorCostingId([copyCostingData?.SelectedCostingVersion])
-    }
-    else {
-      getVendorPlantDropdown(copyCostingData.VendorId, 'from')
-      filterCostingDropDown(copyCostingData.VendorId)
-      getDestinationPlant({ vendorId: copyCostingData.VendorId })
-    }
+      return null
+    })
+    let uniqueArrayNccVendor = _.uniqBy(NccVendor, "value")
+    let uniqueArrayNccPlant = _.uniqBy(NccPlant, "value")
+    setNccVendor(uniqueArrayNccVendor)
+    setNccPlant(uniqueArrayNccPlant)
     const date = copyCostingData && copyCostingData.CostingOptions.filter(item => item.CostingId === copyCostingData.CostingId)
     setMinDate(date[0]?.LastApproveEffectiveDate ? date[0].LastApproveEffectiveDate : date[0]?.PartEffectiveDate)
   }, [])
 
 
   /**
-   * @method handleToSwitch
-   * @description Handle switch of 'To'
-   */
-  const handleToSwitch = (checked) => {
-    setToSwitch(checked)
-    if (checked === ZBCTypeId) {
-      setIsToVbc(false)
-      setIsToZbc(true)
-      setIsToNcc(false)
-    } else if (checked === VBCTypeId) {
-      setIsToVbc(true)
-      setIsToNcc(false)
-      setIsToZbc(false)
-    } else if (checked === NCCTypeId) {
-      setIsToVbc(false)
-      setIsToNcc(true)
-      setIsToZbc(false)
-    }
-  }
-
-  /**
-   * @method handleFromChange
-   * @description Handle switch of 'From'
-   */
-  const handleFromChange = (checked, event, id) => {
-    setFromType(checked)
-    if (checked === ZBCTypeId) {
-      setIsFromVbc(false)
-      setIsFromNcc(false)
-      setIsFromZbc(true)
-    } else if (checked === VBCTypeId) {
-      setIsFromVbc(true)
-      setIsFromNcc(false)
-      setIsFromZbc(false)
-    } else if (checked === NCCTypeId) {
-      setIsFromVbc(false)
-      setIsFromNcc(true)
-      setIsFromZbc(false)
-    }
-  }
-  /**
-   * @method filterCostingDropDown
-   * @description fliter costing dropdown for vendor
-   */
-  function filterCostingDropDown(value) {
-    const temp = []
-    let CostingOptionsValue;
-    const filterValue = vbcVendorGrid.filter((item) => value === item.VendorId)
-
-    if (filterValue) {
-      const { CostingOptions } = filterValue[0]
-      CostingOptionsValue = CostingOptions
-
-    } else {
-      CostingOptionsValue = []
-    }
-
-    CostingOptionsValue &&
-      CostingOptionsValue.map((costing) => {
-        temp.push({
-          label: costing.DisplayCostingNumber,
-          value: costing.CostingId,
-        })
-        return null
-      })
-    setVendorCostingId(temp)
-  }
-  /**
-   * @method getVendorPlantDropdown
-   * @description vendorplant dropdown
-   */
-
-  function getVendorPlantDropdown(value, vendorType) {
-    const temp = []
-    dispatch(
-      getPlantBySupplier(value, (res) => {
-        res.data.SelectList &&
-          res.data.SelectList.map((plant) => {
-            if (
-              plant.Value === '0' ||
-              vendorFromPlantDropdown.includes(plant.Value)
-            )
-              return false
-            temp.push({ label: plant.Text, value: plant.Value })
-            return null
-          })
-        if (vendorType === 'from') {
-          setVendorFromPlantDropdown(temp)
-        } else {
-          setVendorToPlantDropdown(temp)
-        }
-      }),
-    )
-  }
-
-
-
-
-  /**
-   * @method handlePlantChange
-   * @description for finding costing based plant change
-   */
-  const handlePlantChange = (value) => {
-    setValue('fromcostingId', '')
-  }
-  /**
-   * @method handleFromVendorName
-   * @description for changing vendor plant and costing id based on vendor for "from"
-   */
-  const handleFromVendorName = (value) => {
-    setValue('fromVbccostingId', '')
-    getVendorPlantDropdown(value.value, 'from')
-    filterCostingDropDown(value.value)
-    if (getConfigurationKey().IsDestinationPlantConfigure) {
-      getDestinationPlant(value, 'from')
-    }
-  }
-  /**
    * @method handleToVendorName
    * @descriptionfor changing vendor plant  based on vendor for "To"
    */
   const handleToVendorName = (value) => {
+    setToVendor(value)
+  }
 
-    getVendorPlantDropdown(value.value, 'to')
-    if (getConfigurationKey().IsDestinationPlantConfigure) {
-      getDestinationPlant(value, 'to')
+  const handlePlantChange = (value) => {
+    if (value && value !== '') {
+      setToplant(value)
+    } else {
+      setToplant({})
     }
   }
-
-
-  const getDestinationPlant = (value, type) => {
-    let temp = []
-
-    vbcVendorGrid && vbcVendorGrid.filter(item => {
-
-      temp.push({ label: item.DestinationPlantName, value: item.DestinationPlantId })     // ALL PLANTS LIST SHOULD BE VISIBLE IN THE DROPDOWN IN COPY COSTING DRAWER
-      return temp
-
-    })
-    let uniqueArray = _.uniqBy(temp, "value")
-    setDestinationPlant(uniqueArray)
-
+  const handleCustomerChange = (value) => {
+    if (value && value !== '') {
+      setToCustomer(value)
+    } else {
+      setToCustomer({})
+    }
   }
-
-
   const handleEffectiveDateChange = (date) => {
     setEffectiveDate(date)
   }
-
-
-
-  // const handleFromVendorPlant = (value) => {
-  //   
-  //   getCostingDropDown(value.value, VBC)
-  // }
   /**
    * @method submitForm
    * @description Submitting the form
    */
   const submitForm = debounce(handleSubmit((value) => {
     setIsDisable(true)
+    let checkCostingObj = {}
+    let copyCostingObj = {}
 
-    const tovendorCode = value.toVendorName && value.toVendorName.label.split('(')
+    // Check copy costing data object
+    checkCostingObj.CostingId = copyCostingData.CostingId
+    checkCostingObj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+    checkCostingObj.ToCostingHeadId = costingTypeId
+    checkCostingObj.ToPlantId = toPlant?.value
+    checkCostingObj.ToVendorId = costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? toVendor?.value : null
+    checkCostingObj.ToCustomerId = costingTypeId === VBCTypeId ? toCustomer?.value : null
 
-    let obj = {}
+    // COPY COSTING OBJECT
+    copyCostingObj.ToCostingHeadId = costingTypeId
+    copyCostingObj.CostingId = copyCostingData.CostingId
+    copyCostingObj.PartId = partNo.value
+    copyCostingObj.ToPlantId = toPlant?.value
+    copyCostingObj.ToPlantName = toPlant?.label?.split('(')[0].trim()
+    copyCostingObj.ToPlantCode = toPlant?.label?.split('(')[1]?.split(')')[0]
+    copyCostingObj.ToVendorId = toVendor?.value
+    copyCostingObj.ToCustomerId = toCustomer?.value
+    copyCostingObj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+    copyCostingObj.LoggedInUserId = loggedUserId
+    copyCostingObj.IsDuplicate = getConfigurationKey().IsExactCopyCosting
 
-    //  COPY FROM ZBC
-    if (isFromZbc) {
-      const plantCode = value.fromPlant && value.fromPlant.label?.split('(')
-
-      obj.FromPlantId = value.fromPlant && value.fromPlant.value
-      obj.FromPlantCode = plantCode[1] && plantCode[1]?.split(')')[0]
-      obj.CostingId = value.fromcostingId && value.fromcostingId.value
-      obj.CostingNumber = value.fromcostingId && value.fromcostingId.label
-      obj.FromVendorPlantId = '00000000-0000-0000-0000-000000000000'
-      obj.FromVendorPlantCode = ''
-      obj.FromVendorId = '00000000-0000-0000-0000-000000000000'
-      obj.FromVendorCode = ''
-
-    }
-    // COPY TO ZBC
-    if (isToZbc) {
-      const plant = value.toPlant && value.toPlant.label?.split('(')
-      obj.ToPlantId = value.toPlant && value.toPlant.value
-      obj.toPlantCode = plant && plant[1] && plant[1]?.split(')')[0]
-      obj.ToVendorPlantId = '00000000-0000-0000-0000-000000000000'
-      obj.ToVendorId = '00000000-0000-0000-0000-000000000000'
-    }
-    const toPlantCode = value?.toDestinationPlant && value?.toDestinationPlant.label?.split('(')
-    //COPY FROM VBC
-    if (isFromVbc || isFromNcc) {
-      const plantCode = value.fromVendorPlant && value.fromVendorPlant.label?.split('(')
-      const vendorCode = value.fromVendorName && value.fromVendorName.label?.split('(')
-      obj.CostingId = type === VBCTypeId ? value.fromVbccostingId.value : value.fromNcccostingId.value
-      obj.CostingNumber = type === VBCTypeId ? `${value.fromVbccostingId.label?.split(' ')[0]}` : `${value.fromNcccostingId.label?.split(' ')[0]}`
-      obj.FromVendorId = value.fromVendorName.value
-      obj.FromVendorCode = vendorCode && vendorCode[1] && vendorCode[1]?.split(')')[0]
-      obj.FromVendorPlantId = value.fromVendorPlant && value.fromVendorPlant.value
-      obj.FromVendorPlantCode = plantCode && plantCode[1] && plantCode[1]?.split(')')[0]
-      obj.FromPlantCode = ''
-      obj.ToPlantCode = toPlantCode[1].split(')')[0]
-      obj.FromPlantId = '00000000-0000-0000-0000-000000000000'
-    }
-    //COPY TO VBC
-    if (isToVbc || isToNcc) {
-
-      obj.ToVendorId = type === VBCTypeId ? value.toVendorName && value.toVendorName.value : value?.nccToVendorName?.value
-      obj.ToVendorname = type === VBCTypeId ? value.toVendorName && value.toVendorName.label : value?.nccToVendorName?.label
-      obj.ToVendorCode = tovendorCode && tovendorCode[1] && tovendorCode[1]?.split(')')[0]
-      obj.ToVendorPlantId = value.toVendorPlant && value.toVendorPlant.value
-      obj.ToPlantId = '00000000-0000-0000-0000-000000000000'
-
-    }
-
-    obj.PartNumber = partNo.label
-    obj.Comments = ''
-    // obj.IsVendor = isToVbc ? true : false
-    obj.LoggedInUserId = loggedUserId
-    if (isFromZbc && isToZbc) {
-      obj.TypeOfCopy = 101
-    } else if (isFromZbc && isToVbc) {
-      obj.TypeOfCopy = 102
-    } else if (isFromVbc && isToZbc) {
-      obj.TypeOfCopy = 201
-    } else if (isFromVbc && isToVbc) {
-      obj.TypeOfCopy = 202
-    } else if (isFromNcc && isToNcc) {
-      obj.TypeOfCopy = 301
-    }
-
-
-    obj.ToDestinationPlantId = type === VBCTypeId ? value?.toDestinationPlant && value?.toDestinationPlant?.value : value?.nccToPlant?.value
-    obj.ToDestinationPlantName = type === VBCTypeId ? value?.toDestinationPlant && value?.toDestinationPlant?.label : value?.nccToPlant?.label
-    obj.ToDestinationPlantCode = type === VBCTypeId ? value?.toDestinationPlant && toPlantCode[1].split(')')[0] : value?.nccToPlant?.destinationPlantCode
-    obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-
-    dispatch(checkDataForCopyCosting(obj, (res) => {
+    dispatch(checkDataForCopyCosting(checkCostingObj, (res) => {
       setIsDisable(false)
       if ('response' in res) {
         if (res && res?.response?.data?.Result === false) {
           return false
         }
-
       }
       const Data = res?.data?.Data
-
       if (Data?.IsRMExist && Data?.IsOperationExist && Data?.IsProcessExist && Data?.IsBOPExist && Data?.IsOtherOperationExist) {
-
         dispatch(
-          saveCopyCosting(obj, (res) => {
+          saveCopyCosting(copyCostingObj, (res) => {
             setIsDisable(false)
             if ((res.status = 200)) {
               Toaster.success("Copy costing done successfully!")
-              const { CostingId } = res.data.Data
+              const CostingId = res.data.Identity
               props.closeDrawer('', CostingId, type)
             }
           }),
@@ -389,7 +192,7 @@ function CopyCosting(props) {
       } else {
         setShowPopup(true)
         setMsgObj(Data)
-        setUpdatedObj(obj)
+        setUpdatedObj(copyCostingObj)
       }
     }))
 
@@ -403,7 +206,7 @@ function CopyCosting(props) {
         setDisablePopup(false)
         if ((res.status = 200)) {
           Toaster.success("Copy costing done successfully!")
-          const { CostingId } = res.data.Data
+          const CostingId = res.data.Identity
           props.closeDrawer('', CostingId, type)
 
         }
@@ -428,7 +231,12 @@ function CopyCosting(props) {
     }
     props.closeDrawer('')
   }
-
+  const onPressRadioButton = (costingType) => {
+    setCostingTypeId(costingType)
+    setValue('toVendor', '')
+    setValue('toCustomer', '')
+    setValue('toPlant', '')
+  }
   return (
     <>
       <Drawer
@@ -457,250 +265,183 @@ function CopyCosting(props) {
                 <Col md="6">
                   <div className="left-border">{"From:"}</div>
                 </Col>
-                <Col md="6" className="text-right">
-                  {type !== NCCTypeId &&
-                    <div className="switch d-inline-block">
-                      <label className="switch-level justify-content-end">
-                        <div className={"left-title"}>ZBC</div>
-                        <Switch
-                          checked={fromtype}
-                          id="normal-switch"
-                          //disabled={isEditFlag ? true : false}
-                          background="#4DC771"
-                          onColor="#4DC771"
-                          onHandleColor="#ffffff"
-                          offColor="#4DC771"
-                          uncheckedIcon={false}
-                          onChange={handleFromChange}
-                          checkedIcon={false}
-                          height={20}
-                          width={46}
-                          disabled={true}
-                        />
-                        <div className={"right-title"}>VBC</div>
-                      </label>
-                    </div>
-                  }
-                </Col>
               </Row>
-              {/* From data for ZBC */}
-              {isFromZbc && (
-                <Row className="pl-3">
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Plant"}
-                      name={"fromPlant"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      //defaultValue={fromplant.length !== 0 ? fromplant : ''}
-                      options={plantDropDownList}
-                      mandatory={true}
-                      handleChange={handlePlantChange}
-                      errors={errors.fromPlant}
-                      disabled={true}
-                    />
-                  </div>
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Costing Id"}
-                      name={"fromcostingId"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      //defaultValue={costingId.length !== 0 ? costingId : ''}
-                      options={costingId}
-                      mandatory={true}
-                      handleChange={() => { }}
-                      errors={errors.fromcostingId}
-                      disabled={true}
-                    />
-                  </div>
-                </Row>
-              )}
-              {/* From data for VBC */}
-              {isFromVbc && (
-                <Row className="pl-3">
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Vendor"}
-                      name={"fromVendorName"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={vendorName}
-                      mandatory={true}
-                      handleChange={handleFromVendorName}
-                      errors={errors.fromVendorName}
-                      disabled={true}
-                    />
-                  </div>
-                  {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={"Vendor Plant"}
-                        name={"fromVendorPlant"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        defaultValue={""}
-                        options={vendorFromPlantDropdown}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        errors={errors.fromVendorPlant}
-                        disabled={true}
-                      />
-                    </div>
-                  )}
-                  {getConfigurationKey().IsDestinationPlantConfigure && (
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={"Destination Plant"}
-                        name={"fromDestinationPlant"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        defaultValue={""}
-                        options={destinationPlant}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        errors={errors.fromDestinationPlant}
-                        disabled={true}
-                      />
-                    </div>
-                  )}
-
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Costing Id"}
-                      name={"fromVbccostingId"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={vendorCostingId}
-                      mandatory={true}
-                      handleChange={() => { }}
-                      errors={errors.fromVbccostingId}
-                      disabled={true}
-                    />
-                  </div>
-                </Row>
-              )}
-
-
-              {isFromNcc && (
-                <Row className="pl-3">
-
-                  {getConfigurationKey().IsDestinationPlantConfigure && (
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={"Plant"}
-                        name={"fromDestinationPlant"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        defaultValue={""}
-                        options={destinationPlant}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        errors={errors.fromPlant}
-                        disabled={true}
-                      />
-                    </div>
-                  )}
-
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Vendor"}
-                      name={"fromVendorName"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={vendorName}
-                      mandatory={true}
-                      handleChange={handleFromVendorName}
-                      errors={errors.fromVendorName}
-                      disabled={true}
-                    />
-                  </div>
-
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Costing Id"}
-                      name={"fromNcccostingId"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={vendorCostingId}
-                      mandatory={true}
-                      handleChange={() => { }}
-                      errors={errors.fromVbccostingId}
-                      disabled={true}
-                    />
-                  </div>
-                </Row>
-              )}
-
+              <Row className="pl-3">
+                <div className="input-group form-group col-md-12 input-withouticon">
+                  {(type === VBCTypeId || type === NCCTypeId) && <TextFieldHookForm
+                    label={"Vendor (Code)"}
+                    name={"Vendor"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={copyCostingData.VendorName}
+                    className=""
+                    customClassName={"withBorder"}
+                    errors={errors.Vendor}
+                    disabled={true}
+                  />}
+                  {(type === CBCTypeId) && <TextFieldHookForm
+                    label={"Customer (Code)"}
+                    name={"customer"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={copyCostingData.Customer}
+                    className=""
+                    customClassName={"withBorder"}
+                    errors={errors.customer}
+                    disabled={true}
+                  />}
+                  <TextFieldHookForm
+                    label={`${costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}`}
+                    name={"plant"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={type === ZBCTypeId ? copyCostingData.PlantName : copyCostingData.DestinationPlantName}
+                    className=""
+                    customClassName={"withBorder"}
+                    errors={errors.plant}
+                    disabled={true}
+                  />
+                </div>
+                <div className="input-group form-group col-md-12 input-withouticon">
+                  <TextFieldHookForm
+                    label={"Costing Id"}
+                    name={"costingId"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={copyCostingData.SelectedCostingVersion.label}
+                    className=""
+                    customClassName={"withBorder"}
+                    errors={errors.costingId}
+                    disabled={true}
+                  />
+                </div>
+              </Row>
               <hr />
 
               <Row className="pl-3 align-items-center">
                 <Col md="6">
                   <div className="left-border">{"To:"}</div>
                 </Col>
-                <Col md="6" className="text-right">
-                  {type !== NCCTypeId &&
-                    <div className="switch d-inline-block">
-                      <label className="switch-level justify-content-end">
-                        <div className={"left-title"}>ZBC</div>
-                        <Switch
-                          onChange={handleToSwitch}
-                          checked={toSwitch}
-                          id="normal-switch"
-                          //disabled={isEditFlag ? true : false}
-                          background="#4DC771"
-                          onColor="#4DC771"
-                          onHandleColor="#ffffff"
-                          offColor="#4DC771"
-                          uncheckedIcon={false}
-                          checkedIcon={false}
-                          height={20}
-                          width={46}
-                          disabled={true}
-                        />
-                        <div className={"right-title"}>VBC</div>
-                      </label>
-                    </div>
-                  }
+                <Col md="12">
+                  <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                    <input
+                      type="radio"
+                      name="costingHead"
+                      className='zero-based'
+                      id='zeroBased'
+                      checked={
+                        costingTypeId === ZBCTypeId ? true : false
+                      }
+                      onClick={() =>
+                        onPressRadioButton(ZBCTypeId)
+                      }
+                    />{" "}
+                    <span>Zero Based</span>
+                  </Label>
+                  <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                    <input
+                      type="radio"
+                      name="costingHead"
+                      className='vendor-based'
+                      id='vendorBased'
+                      checked={
+                        costingTypeId === VBCTypeId ? true : false
+                      }
+                      onClick={() =>
+                        onPressRadioButton(VBCTypeId)
+                      }
+                    />{" "}
+                    <span>Vendor Based</span>
+                  </Label>
+                  {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                    <input
+                      type="radio"
+                      name="costingHead"
+                      className='customer-based'
+                      id='customerBased'
+                      checked={
+                        costingTypeId === CBCTypeId ? true : false
+                      }
+                      onClick={() =>
+                        onPressRadioButton(CBCTypeId)
+                      }
+                    />{" "}
+                    <span>Customer Based</span>
+                  </Label>}
+                  <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                    <input
+                      type="radio"
+                      name="costingHead"
+                      className='vendor-based'
+                      id='vendorBased'
+                      checked={
+                        costingTypeId === NCCTypeId ? true : false
+                      }
+                      onClick={() =>
+                        onPressRadioButton(NCCTypeId)
+                      }
+                    />{" "}
+                    <span>New Component Based</span>
+                  </Label>
                 </Col>
               </Row>
-              {/* To data for ZBC */}
-              {isToZbc && (
+
+              {(costingTypeId === VBCTypeId || costingTypeId === NCCTypeId) && (
                 <Row className="pl-3">
                   <div className="input-group form-group col-md-12 input-withouticon">
                     <SearchableSelectHookForm
-                      label={"Plant"}
+                      label={"Vendor (Code)"}
+                      name={"toVendor"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: true }}
+                      register={register}
+                      defaultValue={""}
+                      options={costingTypeId === VBCTypeId ? vendorName : nccVendor}
+                      mandatory={true}
+                      handleChange={handleToVendorName}
+                      errors={errors.toVendor}
+                      disabled={false}
+                    />
+                  </div>
+                </Row>
+              )}
+              {costingTypeId === CBCTypeId && (
+                <Row className="pl-3">
+                  <SearchableSelectHookForm
+                    label={"Customer (Code)"}
+                    name={"toCustomer"}
+                    placeholder={"Select"}
+                    Controller={Controller}
+                    control={control}
+                    rules={{ required: false }}
+                    register={register}
+                    // defaultValue={customer.length !== 0 ? customer : ""}
+                    options={customer}
+                    mandatory={false}
+                    handleChange={handleCustomerChange}
+                    errors={errors.toCustomer}
+                  />
+                </Row>
+              )}
+              {((costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === VBCTypeId || costingTypeId === NCCTypeId || costingTypeId === ZBCTypeId)) && (
+                <Row className="pl-3">
+                  <div className="input-group form-group col-md-12 input-withouticon">
+                    <SearchableSelectHookForm
+                      label={`${costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}`}
                       name={"toPlant"}
                       placeholder={"Select"}
                       Controller={Controller}
@@ -708,264 +449,45 @@ function CopyCosting(props) {
                       rules={{ required: true }}
                       register={register}
                       //defaultValue={plant.length !== 0 ? plant : ''}
-                      options={plantDropDownList}
+                      options={costingTypeId === ZBCTypeId ? plantDropDownList : costingTypeId === CBCTypeId ? customerPlant : costingTypeId === VBCTypeId ? destinationPlant : nccPlant}
                       mandatory={true}
-                      handleChange={() => { }}
+                      handleChange={handlePlantChange}
                       errors={errors.toPlant}
                     />
                   </div>
-                  <div className="form-group mb-0 col-md-12">
-                    <label>Costing Effective Date<span className="asterisk-required">*</span></label>
-                    <div className="inputbox date-section">
-                      <DatePicker
-                        name="EffectiveDate"
-                        //selected={effectiveDate}
-                        //selected={effectiveDate ? new Date(effectiveDate) : ''}
-                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                        onChange={handleEffectiveDateChange}
-                        showMonthDropdown
-                        showYearDropdown
-                        dropdownMode="select"
-                        dateFormat="dd/MM/yyyy"
-                        //maxDate={new Date()}
-                        minDate={new Date(minDate)}
-                        placeholderText="Select date"
-                        className="withBorder"
-                        autoComplete={"off"}
-                        disabledKeyboardNavigation
-                        onChangeRaw={(e) => e.preventDefault()}
-
-                      />
-                    </div>
-                  </div>
-                  {/* <div className="input-group form-group col-md-12 input-withouticon">
-                  <SearchableSelectHookForm
-                    label={'Costing ID'}
-                    name={'tocostingId'}
-                    placeholder={'Select'}
+                </Row>
+              )}
+              <div className="form-group mb-0 col-md-12 pl-2 pr-4 ml-1 mr-2">
+                <div className="inputbox date-section">
+                  <DatePickerHookForm
+                    name={`EffectiveDate`}
+                    label={'Effective Date'}
+                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                    handleChange={(date) => {
+                      handleEffectiveDateChange(date)
+                    }}
+                    //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
+                    rules={{ required: true }}
                     Controller={Controller}
                     control={control}
-                    rules={{ required: true }}
                     register={register}
-                    //defaultValue={costingId.length !== 0 ? costingId : ''}
-                    options={costingId}
+                    showMonthDropdown
+                    showYearDropdown
+                    dateFormat="DD/MM/YYYY"
+                    minDate={new Date(minDate)}
+                    //maxDate={new Date()}
+                    placeholderText="Select date"
+                    customClassName="withBorder"
+                    className="withBorder"
+                    autoComplete={"off"}
+                    disabledKeyboardNavigation
+                    onChangeRaw={(e) => e.preventDefault()}
+                    disabled={false}
                     mandatory={true}
-                    handleChange={() => {}}
-                    errors={errors.tocostingId}
+                    errors={errors.EffectiveDate}
                   />
-                </div> */}
-                </Row>
-              )}
-              {/* To data for VBC */}
-              {isToVbc && (
-                <Row className="pl-3">
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Vendor"}
-                      name={"toVendorName"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={vendorName}
-                      mandatory={true}
-                      handleChange={handleToVendorName}
-                      errors={errors.toVendorName}
-                      disabled={false}
-                    />
-                  </div>
-                  {loggedIn && getConfigurationKey().IsVendorPlantConfigurable && (
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={"Vendor Plant"}
-                        name={"toVendorPlant"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        defaultValue={""}
-                        options={vendorToPlantDropdown}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        errors={errors.toVendorPlant}
-                        disabled={true}
-                      />
-                    </div>
-                  )}
-                  {getConfigurationKey().IsDestinationPlantConfigure && (
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={"Destination Plant"}
-                        name={"toDestinationPlant"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        defaultValue={""}
-                        options={destinationPlant}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        errors={errors.toDestinationPlant}
-                      />
-                    </div>
-                  )}
-                  {/* <Col md="auto"> */}
-                  {/* <div className="form-group mb-0 col-md-12">
-                    <label>Costing Effective Date<span className="asterisk-required">*</span></label>
-                    <div className="inputbox date-section">
-                      <DatePicker
-                        name="EffectiveDate"
-                        //selected={effectiveDate ? new Date(effectiveDate) : ''}
-                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                        onChange={handleEffectiveDateChange}
-                        showMonthDropdown
-                        showYearDropdown
-                        dateFormat="dd/MM/yyyy"
-                        //maxDate={new Date()}
-                        minDate={new Date(minDate)}
-                        
-                        placeholderText="Select date"
-                        className="withBorder"
-                        autoComplete={"off"}
-                        disabledKeyboardNavigation
-                        onChangeRaw={(e) => e.preventDefault()}
-
-                      />
-                    </div>
-                  </div> */}
-                  <div className="form-group mb-0 col-md-12">
-                    <div className="inputbox date-section">
-                      <DatePickerHookForm
-                        name={`EffectiveDate`}
-                        label={'Effective Date'}
-                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                        handleChange={(date) => {
-                          handleEffectiveDateChange(date)
-                        }}
-                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                        rules={{ required: true }}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        showMonthDropdown
-                        showYearDropdown
-                        dateFormat="DD/MM/YYYY"
-                        minDate={new Date(minDate)}
-                        //maxDate={new Date()}
-
-                        placeholderText="Select date"
-                        customClassName="withBorder"
-                        className="withBorder"
-                        autoComplete={"off"}
-                        disabledKeyboardNavigation
-                        onChangeRaw={(e) => e.preventDefault()}
-                        disabled={false}
-                        mandatory={true}
-                        errors={errors.EffectiveDate}
-                      />
-                    </div>
-                  </div>
-                  {/* </Col> */}
-                  {/* <div className="input-group form-group col-md-12 input-withouticon">
-                  <SearchableSelectHookForm
-                    label={'Costing ID'}
-                    name={'toVbccostingId'}
-                    placeholder={'Select'}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: true }}
-                    register={register}
-                    defaultValue={''}
-                    options={() => {}}
-                    mandatory={true}
-                    handleChange={() => {}}
-                    errors={errors.toVbccostingId}
-                  />
-                </div> */}
-                </Row>
-              )}
-
-
-              {isFromNcc && (
-                <Row className="pl-3">
-
-
-                  {getConfigurationKey().IsDestinationPlantConfigure && (
-                    <div className="input-group form-group col-md-12 input-withouticon">
-                      <SearchableSelectHookForm
-                        label={"Plant"}
-                        name={"nccToPlant"}
-                        placeholder={"Select"}
-                        Controller={Controller}
-                        control={control}
-                        rules={{ required: true }}
-                        register={register}
-                        defaultValue={""}
-                        options={destinationPlant}
-                        mandatory={true}
-                        handleChange={() => { }}
-                        errors={errors.Plant}
-                      />
-                    </div>
-                  )}
-
-
-
-                  <div className="input-group form-group col-md-12 input-withouticon">
-                    <SearchableSelectHookForm
-                      label={"Vendor"}
-                      name={"nccToVendorName"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={vendorName}
-                      mandatory={true}
-                      handleChange={handleToVendorName}
-                      errors={errors.toVendorName}
-                      disabled={false}
-                    />
-                  </div>
-
-                  <div className="form-group mb-0 col-md-12">
-                    <div className="inputbox date-section">
-                      <DatePickerHookForm
-                        name={`EffectiveDate`}
-                        label={'Effective Date'}
-                        selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                        handleChange={(date) => {
-                          handleEffectiveDateChange(date)
-                        }}
-                        //defaultValue={data.effectiveDate != "" ? moment(data.effectiveDate).format('DD/MM/YYYY') : ""}
-                        rules={{ required: true }}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        showMonthDropdown
-                        showYearDropdown
-                        dateFormat="DD/MM/YYYY"
-                        minDate={new Date(minDate)}
-                        //maxDate={new Date()}
-                        placeholderText="Select date"
-                        customClassName="withBorder"
-                        className="withBorder"
-                        autoComplete={"off"}
-                        disabledKeyboardNavigation
-                        onChangeRaw={(e) => e.preventDefault()}
-                        disabled={false}
-                        mandatory={true}
-                        errors={errors.EffectiveDate}
-                      />
-                    </div>
-                  </div>
-                </Row>
-              )}
+                </div>
+              </div>
               <Row className="justify-content-between my-3">
                 <div className="col-sm-12 text-right">
 
@@ -978,7 +500,6 @@ function CopyCosting(props) {
                     <div className={'cancel-icon'}></div>
                     {"Cancel"}
                   </button>
-
 
                   <button
                     type="button"

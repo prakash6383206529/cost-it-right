@@ -2011,7 +2011,7 @@ export function setPlasticArray(array, callback) {
 
 export function checkDataForCopyCosting(data, callback) {
   return (dispatch) => {
-    const queryParams = `CostingId=${data.CostingId}&EffectiveDate=${data.EffectiveDate}&TypeOfCopy=${data.TypeOfCopy}&ToPlantId=${data.ToPlantId}&ToVendorId=${data.ToVendorId}&ToDestinationPlantId=${data.ToDestinationPlantId}&ToPlantCode=${data.ToPlantCode}&PartNumber=${data.PartNumber}&ToVendorCode=${data.ToVendorCode}`
+    const queryParams = `CostingId=${data.CostingId}&EffectiveDate=${data.EffectiveDate}&ToCostingHeadId=${data.ToCostingHeadId}&ToPlantId=${data.ToPlantId}&ToVendorId=${data.ToVendorId}&ToCustomerId=${data.ToCustomerId}`
     const request = axios.get(`${API.checkDataForCopyCosting}?${queryParams}`, config())
     request.then((response) => {
       if (response.data.Result) {
@@ -2674,3 +2674,20 @@ export function setCostingMode(value) {
     });
   }
 };
+
+/**
+ * @method getReleaseStrategyApprovalDetails
+ * @description getReleaseStrategyApprovalDetails
+ */
+export function getReleaseStrategyApprovalDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.getReleaseStrategyApprovalDetails, data, config())
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      callback(error.response)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}

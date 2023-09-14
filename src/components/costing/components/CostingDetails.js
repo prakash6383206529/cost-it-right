@@ -2390,9 +2390,8 @@ function CostingDetails(props) {
                                 >
                                   <thead>
                                     <tr>
-                                      <th className="destination-plant">{`Plant (Code)`}</th>
+                                      <th className="destination-plant">{`Destination Plant (Code)`}</th>
                                       <th className='vendor'>{`Vendor (Code)`}</th>
-
                                       <th className="costing-version">{`Costing Version`}</th>
                                       <th className="text-center costing-status">{`Status`}</th>
                                       <th className="costing-price">{`Net Cost`}</th>
@@ -2622,7 +2621,7 @@ function CostingDetails(props) {
                                   <thead>
                                     <tr>
                                       <th className='vendor'>{`Customer (Code)`}</th>
-                                      {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
+                                      {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Plant (Code)`}</th>}
                                       <th className="costing-version">{`Costing Version`}</th>
                                       <th className="text-center costing-status">{`Status`}</th>
                                       <th className="costing-price">{`Net Cost`}</th>
@@ -2632,7 +2631,7 @@ function CostingDetails(props) {
                                   <tbody>
                                     {cbcGrid && cbcGrid?.map((item, index) => {
                                       let displayEditBtn = (item.Status === DRAFT) ? true : false;
-                                      let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM) ? true : false;
+                                      let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                       let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
 
                                       return (
@@ -2902,6 +2901,7 @@ function CostingDetails(props) {
           //isEditFlag={false}
           anchor={"right"}
           setCostingOptionSelect={setCostingOptionSelect}
+          cbcGrid={cbcGrid}
         />
       )}
 
