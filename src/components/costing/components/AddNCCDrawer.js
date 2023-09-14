@@ -187,7 +187,7 @@ function AddNCCDrawer(props) {
               <Row className="pl-3">
                 <Col md="12">
                   <SearchableSelectHookForm
-                    label={"Plant (Code)"}
+                    label={"Destination Plant (Code)"}
                     name={"Plant"}
                     placeholder={"Select"}
                     Controller={Controller}
