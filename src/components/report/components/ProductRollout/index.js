@@ -26,17 +26,17 @@ const ProductRollout = () => {
                 {modelLandingData.showData && (
                     <>
                         <Col md="6">
-                            <StageOfParts productId={modelLandingData.productId} />
+                            <StageOfParts productId={modelLandingData.partId} />
                         </Col>
                         <Col md="12">
                             <CostMovement partId={modelLandingData.partId} partNumber={modelLandingData.partNumber} partType={modelLandingData.partType} />
                         </Col>
                         <Col md="6">
-                            <PartUsage productId={modelLandingData.productId} />
-                            <MasterUsage productId={modelLandingData.productId} />
+                            <PartUsage productId={modelLandingData.partId} />
+                            <MasterUsage productId={modelLandingData.partId} />
                         </Col>
                         <Col md="6">
-                            <DisplayCharts productId={modelLandingData.productId} />
+                            <DisplayCharts productId={modelLandingData.partId} />
                         </Col>
                     </>
                 )}

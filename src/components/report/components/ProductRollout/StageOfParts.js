@@ -25,7 +25,7 @@ const StageOfParts = ({ productId }) => {
                 setNoContent(true)
             }
         }))
-    }, [])
+    }, [productId])
 
     const { ApprovedPartCostingCount, DraftPartCostingCount, RejectedPartCostingCount, PendingPartCostingCount, CostNotDonePartCount, ProductPrice } = StageOfPartDetails
     const data = {

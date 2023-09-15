@@ -25,7 +25,7 @@ const MasterUsage = ({ productId }) => {
                 setRowData([])
             }
         }))
-    }, [])
+    }, [productId])
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
