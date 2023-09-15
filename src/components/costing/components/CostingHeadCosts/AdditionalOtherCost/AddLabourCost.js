@@ -423,9 +423,6 @@ function AddLabourCost(props) {
                                         />
                                     </Col>
 
-
-
-
                                     <Col md="3" className='px-1'>
                                         <NumberFieldHookForm
                                             label={`No. of Labour`}
@@ -443,7 +440,7 @@ function AddLabourCost(props) {
                                             customClassName={'withBorder'}
                                             errors={errors.noOfLabour}
                                             handleChange={handleNoOfLabour}
-                                        //disabled={true}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
 
@@ -464,12 +461,9 @@ function AddLabourCost(props) {
                                             customClassName={'withBorder'}
                                             handleChange={handleAbsentismChange}
                                             errors={errors.absentism}
-                                        //disabled={true}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
-
-
-
 
                                     <Col md="3" className='px-1'>
                                         <NumberFieldHookForm
@@ -488,7 +482,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Cost}
-                                        //disabled={true}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
 
@@ -511,7 +505,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.workingHours}
-                                        //disabled={true}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
                                     <Col md="3" className='pl-1'>
@@ -531,7 +525,7 @@ function AddLabourCost(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.efficiency}
-                                        //disabled={true}
+                                            disabled={CostingViewMode}
                                         />
                                     </Col>
 
