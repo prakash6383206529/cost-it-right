@@ -2490,6 +2490,10 @@ export const PROVISIONAL = "Provisional"
 export const APPROVER = 'Approver'
 export const NEW_COMPONENT = "New Component"
 export const CUSTOMER_BASED = "Customer Based"
+export const RELEASE_STRATEGY_B1 = "Release Strategy B1"
+export const RELEASE_STRATEGY_B2 = "Release Strategy B2"
+export const RELEASE_STRATEGY_B3 = "Release Strategy B3"
+export const RELEASE_STRATEGY_B4 = "Release Strategy B4"
 
 //default value for page size
 export const defaultPageSize = 10;
