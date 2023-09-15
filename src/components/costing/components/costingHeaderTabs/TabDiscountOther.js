@@ -199,7 +199,7 @@ function TabDiscountOther(props) {
   const costingConditionUI = useMemo(() => {
     const sum = conditionTableData.reduce((acc, obj) => Number(acc) + Number(obj.ConditionCost), 0);
     setValue('ConditionCosting', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
-    return <div className='d-flex align-items-center'>
+    return <Col md="3"> <div className='d-flex align-items-center'>
       <TooltipCustom disabledIcon={true} width="280px" id="costingCondition" tooltipText={"Condition Cost = Sum of condition cost added in condition drawer"} />
       <TextFieldHookForm
         label="Condition"
@@ -224,7 +224,7 @@ function TabDiscountOther(props) {
         variant={viewAddButtonIcon(conditionTableData, "className")}
         title={viewAddButtonIcon(conditionTableData, "title")}
       />
-    </div>
+    </div></Col>
   }, [conditionTableData])
 
 
@@ -1651,7 +1651,7 @@ function TabDiscountOther(props) {
                       <TooltipCustom disabledIcon={true} width="280px" id="otherCost" tooltipText={"Other Cost = Sum of other cost added in other cost drawer"} />
                       {otherCostUI}
                     </Col>
-                    <Col md="3">
+                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <Col md="3">
                       <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
                       <TextFieldHookForm
                         label="Basic Price (INR)"
@@ -1670,19 +1670,17 @@ function TabDiscountOther(props) {
                         disabled={true}
                         hidden={initialConfiguration?.IsBasicRateAndCostingConditionVisible ? false : true}
                       />
-                    </Col>
-                    <Col md="3">
-                      {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
-                      {isConditionCostingOpen && <AddConditionCosting
-                        isOpen={isConditionCostingOpen}
-                        tableData={conditionTableData}
-                        CostingViewMode={CostingViewMode}
-                        closeDrawer={openAndCloseAddConditionCosting}
-                        anchor={'right'}
-                        netPOPrice={netPOPrice}
-                        basicRate={getValues('BasicRateINR')}
-                      />}
-                    </Col>
+                    </Col>}
+                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
+                    {isConditionCostingOpen && <AddConditionCosting
+                      isOpen={isConditionCostingOpen}
+                      tableData={conditionTableData}
+                      CostingViewMode={CostingViewMode}
+                      closeDrawer={openAndCloseAddConditionCosting}
+                      anchor={'right'}
+                      netPOPrice={netPOPrice}
+                      basicRate={getValues('BasicRateINR')}
+                    />}
                     {/* {initialConfiguration?.IsShowNpvCost && <Row>
                     <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
                     <Col md="4" className="text-right">
@@ -1765,7 +1763,7 @@ function TabDiscountOther(props) {
                     netPOPrice={netPOPrice - totalNpvCost}
                   />
                   } */}
-                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={"Net Cost = Basic Rate + Total Costing Condition Cost"} />
+                    <TooltipCustom disabledIcon={true} width="280px" id="net-po-price" tooltipText={`Net Cost = ${initialConfiguration?.IsBasicRateAndCostingConditionVisible ? 'Basic Rate + Total Costing Condition Cost' : '(Total Cost - Hundi/Discount Value) + Total Other Cost'} `} />
                     <Col md="3">
                       <TextFieldHookForm
                         label="Net Cost (INR)"
