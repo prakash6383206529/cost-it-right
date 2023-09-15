@@ -1953,6 +1953,7 @@ export const VIEW_COSTING_DATA = {
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
+  sobPercentageExcel: 'SOB',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
@@ -2084,6 +2085,10 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Status',
     value: 'status'
+  },
+  {
+    label: 'SOB',
+    value: 'sobPercentageExcel'
   },
   {
     label: 'RM-Grade',
