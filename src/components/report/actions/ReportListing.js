@@ -451,10 +451,10 @@ export function getProductlist(callback) {
         })
     }
 }
-export function getProductPartDataList(productId, callback) {
+export function getProductPartDataList(data, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getProductPartDataList}?productId=${productId}`, config(),)
+        const request = axios.post(`${API.getProductPartDataList}`, data, config(),)
         request.then((response) => {
             dispatch({
                 type: GET_PRODUCT_PART_DATA_LIST,
@@ -470,7 +470,7 @@ export function getProductPartDataList(productId, callback) {
 export function getStageOfPartDetails(productId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getStageOfPartDetails}?productId=${productId}`, config(),)
+        const request = axios.get(`${API.getStageOfPartDetails}?partId=${productId}`, config(),)
         request.then((response) => {
             dispatch({
                 type: GET_STAGE_OF_PART_DETAILS,
