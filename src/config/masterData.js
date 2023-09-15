@@ -5434,8 +5434,6 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "State", value: "State", },
     { label: "City", value: "City", },
     { label: "IsCriticalVendor", value: "IsCriticalVendor", },
-    { label: "Technology", value: "VendorTechnology", },
-    { label: "Plant (Code)", value: "VendorPlant", },
     { label: "ZipCode", value: "ZipCode", },
     { label: "Address 1", value: "AddressLine1", },
     { label: "Address 2", value: "AddressLine2", },

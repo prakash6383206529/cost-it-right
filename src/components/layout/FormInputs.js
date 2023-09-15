@@ -228,7 +228,7 @@ export function renderPasswordInputField(field) {
 */
 export function renderMultiSelectField(field) {
   const {
-    input,
+    input, vendorMaster,
     meta: { touched, error, active, form },
   } = field;
   //const inputbox = `inputbox ${active ? "active" : ""}`;
@@ -277,15 +277,15 @@ export function renderMultiSelectField(field) {
           filterOption={createFilter(filterConfig)}
         />
       </div>
-      <div className="text-help mb-2">
+      {<div className="text-help mb-2">
         {touched &&
-          field.mendatory &&
+          (field.mendatory && !vendorMaster) &&
           field.selection &&
           field.selection.length === 0
           ? "This field is required."
           : ""}
         {/* <div className="text-help mb-2">{field.isEmpty ? 'This field is required.' : ""}</div> */}
-      </div>
+      </div>}
     </div>
   );
 }
