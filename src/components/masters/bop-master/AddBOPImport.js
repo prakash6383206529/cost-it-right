@@ -1161,6 +1161,14 @@ class AddBOPImport extends Component {
     })
   }
 
+  showBasicRate = () => {
+    const { isEditFlag } = this.state
+    let value = false
+    if (isEditFlag) {
+      value = this.props?.data?.showPriceFields ? true : false
+    }
+    return value
+  }
 
   /**
   * @method render

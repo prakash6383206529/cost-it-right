@@ -879,6 +879,15 @@ class AddBOPDomestic extends Component {
     // this.setState({ isDropDownChanged: true })
   }
 
+  showBasicRate = () => {
+    const { isEditFlag } = this.state
+    let value = false
+    if (isEditFlag) {
+      value = this.props?.data?.showPriceFields ? true : false
+    }
+    return value
+  }
+
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
     const { initialConfiguration } = this.props
     if (type === 'save') {
