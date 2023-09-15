@@ -503,6 +503,7 @@ function CommonApproval(props) {
     const closeApprovalDrawer = (e = '', type) => {
         setApprovalDrawer(false)
         if (type === 'submit') {
+            setSelectedRowData([])
             setLoader(true)
             getTableData(0, 10, true, floatingFilterData)
         }
@@ -598,7 +599,6 @@ function CommonApproval(props) {
 
 
     const sendForApproval = () => {
-
         if (selectedRowData?.length > 0) {
             let levelDetailsTemp = []
             dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, (res) => {
