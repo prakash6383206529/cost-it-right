@@ -1013,7 +1013,7 @@ class AddVendorDrawer extends Component {
                                                     <tr>
                                                         <th className='border'>{`Plant (Code)`}</th>
                                                         <th>{`Technology`}</th>
-                                                        <th className='border'>{`Action`}</th>
+                                                        <th className='border text-right'>{`Action`}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
