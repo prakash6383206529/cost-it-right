@@ -25,7 +25,10 @@ import { Redirect } from 'react-router';
 import { getUsersSimulationTechnologyLevelAPI, getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import WarningMessage from '../../../common/WarningMessage'
-
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
+import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
+import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
+import { MESSAGES } from '../../../../config/message'
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
@@ -55,7 +58,8 @@ function ApproveRejectDrawer(props) {
   const [levelDetails, setLevelDetails] = useState({})
   const [showWarningMessage, setShowWarningMessage] = useState(false)
   const [disableSR, setDisableSR] = useState(false)
-
+  const [showPopup, setShowPopup] = useState(false)
+  const nfr = 101
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
@@ -849,8 +853,33 @@ function ApproveRejectDrawer(props) {
       return <Redirect to="/simulation-history" />
     }
   }, [showListingPage])
-
-
+  const showPopupWrapper = () => {
+    setShowPopup(true)
+  }
+  const onPopupConfirm = () => {
+    let obj = {
+      "CostingId": approvalData.CostingId,
+      "NfrId": approvalData.NfrId,
+      "LoggedInUserId": loggedInUserId(),
+      "IsRegularized": props?.IsRegularized
+    }
+    dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
+      let pushRequest = {
+        nfrGroupId: res.data.Data.NfrGroupIdForPFS2,
+        costingId: approvalData.CostingId
+      }
+      dispatch(pushNfrOnSap(pushRequest, res => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.NFR_PUSHED)
+        }
+      }))
+    }))
+    setShowPopup(false)
+  }
+  const closePopUp = () => {
+    onSubmit()
+    setShowPopup(false)
+  }
   return (
     <>
       <Drawer
@@ -1072,23 +1101,8 @@ function ApproveRejectDrawer(props) {
                       errors={errors.Masters}
                       customClassName="mb-0"
                     />
-
-
-
                   </div>
                 }
-
-
-
-
-
-
-
-
-
-
-
-
                 <div className="input-group form-group col-md-12">
                   <TextAreaHookForm
                     label="Remark"
@@ -1210,7 +1224,7 @@ function ApproveRejectDrawer(props) {
                   <button
                     type="button"
                     className="submit-button  save-btn"
-                    onClick={onSubmit}
+                    onClick={showPopup && props.isShowNFRPopUp && IsFinalLevel ? showPopupWrapper : onSubmit}
                     disabled={isDisable}
                   >
                     <div className={'save-icon'}></div>
@@ -1221,6 +1235,9 @@ function ApproveRejectDrawer(props) {
             </form>
           </div>
         </Container>
+        {
+          (showPopup && props.isShowNFRPopUp && IsFinalLevel) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`costing`} nfrPopup={true} />
+        }
       </Drawer>
       {(openPushButton || showFinalLevelButtons) && (
         <PushButtonDrawer

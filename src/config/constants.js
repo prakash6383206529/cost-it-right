@@ -24,7 +24,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
-// const BASE_URL = `http://10.10.1.100:1002/api/v1`;
+// const BASE_URL = `https://apiinsightdev.unominda.com/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -1029,7 +1029,7 @@ export const API = {
   getProductRolloutCostRatio: `${BASE_URL}/reports/get-cost-ratio-details`,
   getUsageRmDetails: `${BASE_URL}/reports/get-usage-rm-details`,
   getSupplierContributionDetails: `${BASE_URL}/reports/get-supplier-contribution-details`,
-
+  updateCostingIdFromRfqToNfrPfs: `${BASE_URL}/nfr/update-costing-id-from-rfq-to-nfr-pfs`,
 
 
   //SUB ASSEMBLY

@@ -2711,3 +2711,19 @@ export function getReleaseStrategyApprovalDetails(data, callback) {
     })
   }
 }
+/**
+ * @method updateZBCSOBDetail
+ * @description UPDATE ZBC SOB DETAILS
+ */
+export function updateCostingIdFromRfqToNfrPfs(requestData, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    axios.put(`${API.updateCostingIdFromRfqToNfrPfs}`, requestData, config())
+      .then((response) => {
+        callback(response)
+      }).catch((error) => {
+        apiErrors(error)
+        dispatch({ type: API_FAILURE })
+      })
+  }
+}
