@@ -19,7 +19,7 @@ const PartUsage = ({ productId }) => {
                 setTotalPartsDetails(res.data.Data)
             }
         }));
-    }, []);
+    }, [productId]);
     return (
         <div className="seprate-box">
             <Row className="text-center part-usage-container">

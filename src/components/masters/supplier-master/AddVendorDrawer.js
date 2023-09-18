@@ -983,7 +983,7 @@ class AddVendorDrawer extends Component {
                                                 {this.state.errorObj?.technology && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                                             </Col>
                                             <Col md="4" className='pl-0 mb-2 d-flex align-items-center'>
-                                                <div className='d-flex mb-1'>
+                                                <div className='d-flex'>
                                                     {this.state.isEditIndex ?
                                                         <button
                                                             type="button"
@@ -1011,9 +1011,9 @@ class AddVendorDrawer extends Component {
                                             <Table className="table border" size="sm" >
                                                 <thead>
                                                     <tr>
-                                                        <th>{`Plant (Code)`}</th>
+                                                        <th className='border'>{`Plant (Code)`}</th>
                                                         <th>{`Technology`}</th>
-                                                        <th>{`Action`}</th>
+                                                        <th className='border text-right'>{`Action`}</th>
                                                     </tr>
                                                 </thead>
                                                 <tbody>
@@ -1022,12 +1022,12 @@ class AddVendorDrawer extends Component {
                                                         this.state.technologyPlantGrid.map((item, index) => {
                                                             return (
                                                                 <tr key={index}>
-                                                                    <td>{`${item.PlantName} (${item.PlantCode})`}</td>
+                                                                    <td className='border'>{`${item.PlantName} (${item.PlantCode})`}</td>
                                                                     <td>{item.VendorTechnologies?.map(technologyItem => technologyItem.TechnologyName).join(', ')}</td>
-                                                                    <td>
+                                                                    <td className='border'>
                                                                         <div className='d-flex justify-content-end'>
                                                                             <button title='Edit' className="Edit mr-1" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index)} />
-                                                                            <button title='Delete' className="Delete" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
+                                                                            <button title='Delete' className="Delete mx-0" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
                                                                         </div>
                                                                     </td>
                                                                 </tr>
