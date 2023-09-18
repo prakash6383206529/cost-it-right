@@ -7,7 +7,7 @@ import { getReporterList, getVendorNameByVendorSelectList, getPlantSelectListByT
 import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
 import { addDays, loggedInUserId } from '../.././helper';
 import { checkForNull, checkForDecimalAndNull } from '../.././helper/validation'
-import { EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
+import { Component, EMPTY_DATA, FILE_URL, VBC_VENDOR_TYPE, ZBC, searchCount } from '../.././config/constants';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -35,10 +35,6 @@ import { clearGradeSelectList, clearSpecificationSelectList, getRMGradeSelectLis
 
 const gridOptionsPart = {}
 const gridOptionsVendor = {}
-const gridOptions = {
-    gridOptionsPart: gridOptionsPart,
-    gridOptionsVendor: gridOptionsVendor,
-};
 
 function AddRfq(props) {
     const { data: dataProps } = props
@@ -1087,7 +1083,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         const nfrChange = nfrId?.value;
         if (inputValue?.length >= searchCount && (partName !== resultInput || nfrChange !== storeNfrId)) {
-            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value)
+            const res = await getPartSelectListWtihRevNo(resultInput, technology.value, nfrId?.value, Component)
             setPartName(resultInput)
             setStoreNfrId(nfrId?.value)
             let partDataAPI = res?.data?.DataList
