@@ -450,10 +450,10 @@ export function getProductlist(callback) {
         })
     }
 }
-export function getProductPartDataList(productId, callback) {
+export function getProductPartDataList(data, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getProductPartDataList}?productId=${productId}`, config(),)
+        const request = axios.post(`${API.getProductPartDataList}`, data, config(),)
         request.then((response) => {
             dispatch({
                 type: GET_PRODUCT_PART_DATA_LIST,
@@ -469,7 +469,7 @@ export function getProductPartDataList(productId, callback) {
 export function getStageOfPartDetails(productId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getStageOfPartDetails}?productId=${productId}`, config(),)
+        const request = axios.get(`${API.getStageOfPartDetails}?partId=${productId}`, config(),)
         request.then((response) => {
             dispatch({
                 type: GET_STAGE_OF_PART_DETAILS,
@@ -485,7 +485,7 @@ export function getStageOfPartDetails(productId, callback) {
 export function getTotalPartsDetails(productId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getTotalPartsDetails}?productId=${productId}`, config(),)
+        const request = axios.get(`${API.getTotalPartsDetails}?partId=${productId}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -511,7 +511,7 @@ export function getProductRolloutCostMovement(partId, partNumber, partType, call
 export function getProductRolloutCostRatio(productId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getProductRolloutCostRatio}?productId=${productId}`, config(),)
+        const request = axios.get(`${API.getProductRolloutCostRatio}?partId=${productId}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -524,7 +524,7 @@ export function getProductRolloutCostRatio(productId, callback) {
 export function getUsageRmDetails(productId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getUsageRmDetails}?productId=${productId}`, config(),)
+        const request = axios.get(`${API.getUsageRmDetails}?partId=${productId}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
@@ -537,7 +537,7 @@ export function getUsageRmDetails(productId, callback) {
 export function getSupplierContributionDetails(productId, callback) {
 
     return (dispatch) => {
-        const request = axios.get(`${API.getSupplierContributionDetails}?productId=${productId}`, config(),)
+        const request = axios.get(`${API.getSupplierContributionDetails}?partId=${productId}`, config(),)
         request.then((response) => {
             callback(response);
         }).catch((error) => {
