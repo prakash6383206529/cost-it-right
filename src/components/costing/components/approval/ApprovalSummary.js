@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, Table } from 'reactstrap'
 import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, getConfigurationKey, loggedInUserId, getPOPriceAfterDecimal } from '../../../../helper'
 import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
-import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
+import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingViewData, storePartNumber, updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
 import ApproveRejectDrawer from './ApproveRejectDrawer'
 import CostingSummaryTable from '../CostingSummaryTable'
@@ -27,6 +27,8 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import { getMultipleCostingDetails, rfqGetBestCostingDetails, setQuotationIdForRFQ } from '../../../rfq/actions/rfq'
 import _ from 'lodash'
+import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
+import { MESSAGES } from '../../../../config/message'
 
 
 function ApprovalSummary(props) {
@@ -130,7 +132,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId, BestCostAndShouldCostDetails, QuotationId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPushedButtonShow } = res?.data?.Data?.Costings[0];
 
       dispatch(setQuotationIdForRFQ(QuotationId))
       // let BestCostAndShouldCostDetails = {
@@ -198,7 +200,11 @@ function ApprovalSummary(props) {
         DecimalOption: DecimalOption,
         LastCostingId: LastCostingId,
         EffectiveDate: ApprovalDetails[0].EffectiveDate,
-        VendorId: VendorId
+        VendorId: VendorId,
+        NfrId: NfrId,
+        NfrGroupIdForPFS2: NfrGroupIdForPFS2,
+        NfrGroupIdForPFS3: NfrGroupIdForPFS3,
+        IsNFRPushedButtonShow: IsNFRPushedButtonShow
       })
 
       if (initialConfiguration.IsReleaseStrategyConfigured) {
@@ -401,7 +407,72 @@ function ApprovalSummary(props) {
     setShowListing(true)
 
   }, 500)
+  const pushTonfr = () => {
+    if (approvalData.IsShowNFRPushButton && approvalData.NfrGroupIdForPFS2 === null && !IsRegularized) {
 
+      let obj = {
+        "CostingId": approvalData.CostingId,
+        "NfrId": approvalData.NfrId,
+        "LoggedInUserId": loggedInUser,
+        "IsRegularized": IsRegularized
+      }
+      dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
+        let pushRequest = {
+          nfrGroupId: res.data.Data.NfrGroupIdForPFS2,
+          costingId: approvalData.CostingId
+        }
+        dispatch(pushNfrOnSap(pushRequest, res => {
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.NFR_PUSHED)
+          }
+        }))
+      }))
+    }
+    else if (approvalData.IsShowNFRPushButton && approvalData.NfrGroupIdForPFS2 !== null && !IsRegularized) {
+
+      let pushRequest = {
+        nfrGroupId: approvalData.NfrGroupIdForPFS2,
+        costingId: approvalData.CostingId
+      }
+      dispatch(pushNfrOnSap(pushRequest, res => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.NFR_PUSHED)
+        }
+      }))
+    }
+    if (approvalData.IsShowNFRPushButton && approvalData.NfrGroupIdForPFS3 === null && IsRegularized) {
+      let obj = {
+        "CostingId": approvalData.CostingId,
+        "NfrId": approvalData.NfrId,
+        "LoggedInUserId": loggedInUser,
+        "IsRegularized": IsRegularized
+      }
+      dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
+        let pushRequest = {
+          nfrGroupId: res.data.Data.NfrGroupIdForPFS3,
+          costingId: approvalData.CostingId
+        }
+        dispatch(pushNfrOnSap(pushRequest, res => {
+          if (res?.data?.Result) {
+            Toaster.success(MESSAGES.NFR_PUSHED)
+          }
+        }))
+      }))
+    }
+    else if (approvalData.IsShowNFRPushButton && approvalData.NfrGroupIdForPFS3 !== null && IsRegularized) {
+
+      let pushRequest = {
+        nfrGroupId: approvalData.NfrGroupIdForPFS3,
+        costingId: approvalData.CostingId
+      }
+      dispatch(pushNfrOnSap(pushRequest, res => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.NFR_PUSHED)
+        }
+      }))
+    }
+    setShowListing(true)
+  }
   return (
 
     <>
@@ -728,6 +799,7 @@ function ApprovalSummary(props) {
                     <div className={'save-icon'}></div>
                     {'Approve'}
                   </button>
+
                 </Fragment>
 
               </div>
@@ -745,6 +817,11 @@ function ApprovalSummary(props) {
                 </Fragment>
               </div>
             </Row>
+          }
+          {approvalData.IsShowNFRPushButton &&
+            <button type={'button'} className="mr5" onClick={pushTonfr} >
+              {'Push To Nfr'}
+            </button>
           }
 
 
@@ -774,6 +851,8 @@ function ApprovalSummary(props) {
           conditionInfo={conditionInfo}
           vendorCodeForSAP={vendorCodeForSap}
           releaseStrategyDetails={releaseStrategyDetails}
+          IsRegularized={IsRegularized}
+          isShowNFRPopUp={!IsRegularized && approvalData.NfrId !== null ? true : false}
         />
       )}
       {rejectDrawer && (
