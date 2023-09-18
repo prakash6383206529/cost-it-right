@@ -546,6 +546,18 @@ class AddBOPDomestic extends Component {
     this.setState({ isOpenUOM: false })
   }
 
+  recalculateConditions = (basicPriceBase) => {
+    const { conditionTableData } = this.state;
+    let tempList = conditionTableData && conditionTableData?.map(item => {
+      if (item?.ConditionType === "Percentage") {
+        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBase)
+        item.ConditionCost = costBase
+      }
+      return item
+    })
+    return tempList
+  }
+
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
     const { FinalConditionCostBase, NetLandedCost } = this.state
@@ -554,16 +566,22 @@ class AddBOPDomestic extends Component {
     const basicRateBase = checkForNull(fieldsObj?.BasicRateBase)
     const basicPriceBase = checkForNull(basicRateBase) / checkForNull(NoOfPieces)
     const conditionCostBase = checkForNull(FinalConditionCostBase)
-    const netCostBase = checkForNull(basicPriceBase) + checkForNull(conditionCostBase)
+
+    let conditionList = this.recalculateConditions(basicPriceBase)
+
+    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    let netLandedCostBase = checkForNull(sumBase) + checkForNull(basicPriceBase)
 
     this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBase, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change("NetLandedCostBase", checkForDecimalAndNull(netCostBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice))
 
     this.setState({
       FinalBasicRateBase: basicRateBase,
       FinalBasicPriceBase: basicPriceBase,
       FinalConditionCostBase: conditionCostBase,
-      FinalNetLandedCostBase: netCostBase
+      FinalNetLandedCostBase: netLandedCostBase,
+      conditionTableData: conditionList,
     })
 
     if (this.state.isEditFlag && checkForNull(basicPriceBase) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) && checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces)) {

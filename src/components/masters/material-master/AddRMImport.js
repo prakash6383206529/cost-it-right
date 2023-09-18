@@ -553,10 +553,24 @@ class AddRMImport extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
 
+  recalculateConditions = (basicPriceCurrency, basicPriceBase) => {
+    const { conditionTableData } = this.state;
+    let tempList = conditionTableData && conditionTableData?.map(item => {
+      if (item?.ConditionType === "Percentage") {
+        let costCurrency = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceCurrency)
+        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBase)
+        item.ConditionCost = costCurrency
+        item.ConditionCostConversion = costBase
+      }
+      return item
+    })
+    return tempList
+  }
+
   handleNetCost = () => {
 
     const { fieldsObj, initialConfiguration } = this.props;
-    const { FinalConditionCostCurrency, FinalConditionCostBase, DataToChange, isEditFlag } = this.state
+    const { FinalConditionCostCurrency, DataToChange, isEditFlag } = this.state
 
 
     const cutOffPriceBase = this.convertIntoBase(fieldsObj?.cutOffPrice)
@@ -592,8 +606,16 @@ class AddRMImport extends Component {
     const basicPriceBase = this.convertIntoBase(basicPriceCurrency)
     this.props.change('BasicPriceBase', checkForDecimalAndNull(basicPriceBase, initialConfiguration.NoOfDecimalForPrice));
 
-    const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
-    const netLandedCostBase = checkForNull(basicPriceBase) + checkForNull(FinalConditionCostBase)
+    let conditionList = this.recalculateConditions(basicPriceCurrency, basicPriceBase)
+
+    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+    this.props.change('FinalConditionCostBase', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
+
+    const sumCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
+
+    const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(sumCurrency)
+    const netLandedCostBase = checkForNull(basicPriceBase) + checkForNull(sumBase)
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice));
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice));
 
@@ -639,8 +661,8 @@ class AddRMImport extends Component {
       FinalBasicPriceCurrency: basicPriceCurrency,
       FinalBasicPriceBase: basicPriceBase,
 
-      FinalConditionCostCurrency: FinalConditionCostCurrency,
-      FinalConditionCostBase: FinalConditionCostBase,
+      FinalConditionCostCurrency: sumCurrency,
+      FinalConditionCostBase: sumBase,
 
       FinalNetCostCurrency: netLandedCostCurrency,
       FinalNetCostBase: netLandedCostBase,
