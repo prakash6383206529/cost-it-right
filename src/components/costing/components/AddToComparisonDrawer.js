@@ -119,7 +119,7 @@ function AddToComparisonDrawer(props) {
         setisNccSelected(false)
         dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
         // dispatch(getPlantBySupplier(VendorId, (res) => { }))
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getPlantSelectListByType(ZBC, '', () => { }))
         commonApiCall(VBCTypeId)
       }
       else if (costingTypeId === NCCTypeId) {
@@ -127,7 +127,7 @@ function AddToComparisonDrawer(props) {
         setIsVbcSelected(false)
         setisCbcSelected(false)
         setisNccSelected(true)
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getPlantSelectListByType(ZBC, '', () => { }))
         commonApiCall(NCCTypeId)
       } else if (costingTypeId === CBCTypeId) {//CBC COSTING CONDITION
         setIsZbcSelected(false)
@@ -136,7 +136,7 @@ function AddToComparisonDrawer(props) {
         setisCbcSelected(true)
         dispatch(getClientSelectList(() => { }))
         commonApiCall(CBCTypeId)
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getPlantSelectListByType(ZBC, '', () => { }))
       }
       // if (typeOfCosting === 0) { //ZBC COSTING CONDITION
 
@@ -255,7 +255,7 @@ function AddToComparisonDrawer(props) {
       setValue('vendor', '')
       setValue('destinationPlant', '')
       setCostingDropdown([])
-      dispatch(getPlantSelectListByType(ZBC, () => { }))
+      dispatch(getPlantSelectListByType(ZBC, '', () => { }))
       dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
       commonApiCall(NCCTypeId)
     }
@@ -269,7 +269,7 @@ function AddToComparisonDrawer(props) {
     setVendorId(newValue.value)
     setVendor(newValue)
     setValue('destinationPlant', '')
-    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    dispatch(getPlantSelectListByType(ZBC, '', () => { }))
     setValue('costings', '')
     // if (loggedIn) {
     //   dispatch(getPlantBySupplier(value, (res) => { }),
@@ -293,7 +293,7 @@ function AddToComparisonDrawer(props) {
     if (!getConfigurationKey().IsCBCApplicableOnPlant) {
       dispatch(getCostingByVendorAndVendorPlant(partNo.partId, VendorId, vendorPlantId, userDetails.Plants[0].PlantId, customerId, costingTypeId, () => { }))
     }
-    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    dispatch(getPlantSelectListByType(ZBC, '', () => { }))
   }
   /**
    * @method onSubmit
@@ -680,7 +680,7 @@ function AddToComparisonDrawer(props) {
     if (value === '') {
       value = '00000000-0000-0000-0000-000000000000'
     }
-    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    dispatch(getPlantSelectListByType(ZBC, '', () => { }))
 
   }
   const handleVendorChangeForNCC = ({ value }) => {

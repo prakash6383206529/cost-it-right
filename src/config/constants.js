@@ -1060,6 +1060,8 @@ export const API = {
   // NFR
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
   getNfrAnnualForecastQuantity: `${BASE_URL}/rfq-quotation/get-nfr-annual-forecast-quantity`,
+  getNFRRMList: `${BASE_URL}/rfq-quotation/get-nfr-rm-list`,
+  getNFRPartRMList: `${BASE_URL}/rfq-quotation/get-nfr-part-raw-material-details`
 }
 
 //Api constants

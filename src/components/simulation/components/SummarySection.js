@@ -70,7 +70,7 @@
 
 //     useEffect(() => {
 //         dispatch(getTechnologySelectList(() => { }))
-//         dispatch(getPlantSelectListByType(ZBC, () => { }))
+//         dispatch(getPlantSelectListByType(ZBC, '' ,() => { }))
 
 //         const reqParams = {
 //             loggedInUserId: loggedInUserId(),

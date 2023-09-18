@@ -382,3 +382,33 @@ export function getNfrAnnualForecastQuantity(nfrId, partId, sopDate, callback) {
         });
     };
 }
+
+export function getNFRRMList(nfrId, partId, sopDate, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNFRRMList}?nfrId=${nfrId}&partId=${partId}&sopDate=${sopDate}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+export function getPartNFRRMList(nfrId, partId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNFRPartRMList}?nfrId=${nfrId}&partId=${partId}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
