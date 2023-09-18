@@ -214,3 +214,18 @@
     }
   }
 }
+
+.vendor-drawer {
+  position: relative;
+  margin-bottom: 20px;
+
+  .form-group {
+    margin-bottom: 0 !important;
+    min-height: auto !important;
+
+  }
+
+  .text-help.p-absolute.bottom-7 {
+    bottom: 1px;
+  }
+}
