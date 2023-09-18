@@ -1188,6 +1188,7 @@ export function ceilByMultiple(number, multiple = 0.25) {
 export function userTechnologyLevelDetails(approvalTypeId, data = []) {
   let dataList = [...data]
   let filteredData = dataList?.filter(element => element.ApprovalTypeId === costingTypeIdToApprovalTypeIdFunction(approvalTypeId))
+  console.log('filteredData: ', filteredData);
   let obj = {
     Level: filteredData[0]?.Level,
     LevelId: filteredData[0]?.LevelId,

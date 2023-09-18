@@ -852,7 +852,7 @@ function ApprovalSummary(props) {
           vendorCodeForSAP={vendorCodeForSap}
           releaseStrategyDetails={releaseStrategyDetails}
           IsRegularized={IsRegularized}
-          isShowNFRPopUp={!IsRegularized && approvalData.NfrId !== null ? true : false}
+          isShowNFRPopUp={!IsRegularized && approvalData.NfrId !== null && finalLevelUser ? true : false}
         />
       )}
       {rejectDrawer && (

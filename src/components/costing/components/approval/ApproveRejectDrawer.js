@@ -30,6 +30,7 @@ import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
 function ApproveRejectDrawer(props) {
+  console.log('props: ', props);
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
@@ -379,6 +380,29 @@ function ApproveRejectDrawer(props) {
     setShowListingPage(true)
     props.closeDrawer('', 'Cancel')
   }
+
+
+  const pushTonfr = () => {
+    let nfrobj = {
+      "CostingId": approvalData[0]?.CostingId,
+      "NfrId": approvalData[0]?.NfrId,
+      "LoggedInUserId": loggedInUserId(),
+      "IsRegularized": props?.IsRegularized
+    }
+
+    dispatch(updateCostingIdFromRfqToNfrPfs(nfrobj, res => {
+      let pushRequest = {
+        nfrGroupId: res.data.Data.NfrGroupIdForPFS3,
+        costingId: approvalData[0].CostingId
+      }
+      dispatch(pushNfrOnSap(pushRequest, res => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.NFR_PUSHED)
+          onSubmit()
+        }
+      }))
+    }))
+  }
   const onSubmit = debounce(handleSubmit(() => {
     const remark = getValues('remark')
     const reason = getValues('reason')
@@ -474,6 +498,10 @@ function ApproveRejectDrawer(props) {
                   Toaster.success('Approval pushed successfully.')
                 }
               }))
+              if (approvalData[0].NfrGroupIdForPFS3 === null && props.IsRegularized) {
+                pushTonfr()
+
+              }
               props.closeDrawer('', 'submit')
               // setOpenPushButton(true)
 
@@ -854,23 +882,27 @@ function ApproveRejectDrawer(props) {
     }
   }, [showListingPage])
   const showPopupWrapper = () => {
+    console.log("POPUP");
     setShowPopup(true)
   }
   const onPopupConfirm = () => {
+    console.log('approvalData: ', approvalData);
     let obj = {
-      "CostingId": approvalData.CostingId,
-      "NfrId": approvalData.NfrId,
+      "CostingId": approvalData[0]?.CostingId,
+      "NfrId": approvalData[0]?.NfrId,
       "LoggedInUserId": loggedInUserId(),
       "IsRegularized": props?.IsRegularized
     }
+    console.log(obj, "obj");
     dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
       let pushRequest = {
         nfrGroupId: res.data.Data.NfrGroupIdForPFS2,
-        costingId: approvalData.CostingId
+        costingId: approvalData[0].CostingId
       }
       dispatch(pushNfrOnSap(pushRequest, res => {
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.NFR_PUSHED)
+          onSubmit()
         }
       }))
     }))
@@ -1224,7 +1256,7 @@ function ApproveRejectDrawer(props) {
                   <button
                     type="button"
                     className="submit-button  save-btn"
-                    onClick={showPopup && props.isShowNFRPopUp && IsFinalLevel ? showPopupWrapper : onSubmit}
+                    onClick={props.isShowNFRPopUp ? showPopupWrapper : onSubmit}
                     disabled={isDisable}
                   >
                     <div className={'save-icon'}></div>
@@ -1236,7 +1268,7 @@ function ApproveRejectDrawer(props) {
           </div>
         </Container>
         {
-          (showPopup && props.isShowNFRPopUp && IsFinalLevel) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`costing`} nfrPopup={true} />
+          (showPopup && props.isShowNFRPopUp) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Do you want to push this vendor's costing to SAP fro PFS2`} nfrPopup={true} />
         }
       </Drawer>
       {(openPushButton || showFinalLevelButtons) && (

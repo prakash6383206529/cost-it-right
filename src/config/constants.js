@@ -1029,7 +1029,7 @@ export const API = {
   getProductRolloutCostRatio: `${BASE_URL}/reports/get-cost-ratio-details`,
   getUsageRmDetails: `${BASE_URL}/reports/get-usage-rm-details`,
   getSupplierContributionDetails: `${BASE_URL}/reports/get-supplier-contribution-details`,
-  updateCostingIdFromRfqToNfrPfs: `${BASE_URL}/nfr/update-costing-id-from-rfq-to-nfr-pfs`,
+  updateCostingIdFromRfqToNfrPfs: `${BASE_URL}/nfr/update-costingId-from-rfq-to-nfr-pfs`,
 
 
   //SUB ASSEMBLY
@@ -2687,7 +2687,7 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.247.1";
+export const VERSION = "V2.1.248.1";
 
 
 

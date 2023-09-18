@@ -71,6 +71,7 @@ const SendForApproval = (props) => {
   const [levelDetails, setLevelDetails] = useState('');
   const [disableRS, setDisableRS] = useState(false);
   const [isPFSOrBudgetingDetailsExistWarning, showIsPFSOrBudgetingDetailsExistWarning] = useState(false);
+  const [approvalTypeId, setApprovalTypeId] = useState('')
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -147,7 +148,9 @@ const SendForApproval = (props) => {
 
     let levelDetailsTemp = ''
     dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+      console.log('viewApprovalData[0]?.costingTypeId: ', viewApprovalData[0]?.costingTypeId);
       levelDetailsTemp = userTechnologyLevelDetails(viewApprovalData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+      console.log('levelDetailsTemp: ', levelDetailsTemp);
       setLevelDetails(levelDetailsTemp)
 
     }))
@@ -170,8 +173,10 @@ const SendForApproval = (props) => {
       }
       dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
         if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+          setApprovalTypeId(res.data.Data?.ApprovalTypeId)
           apicall(props.technologyId, res?.data?.Data?.DepartmentId, res.data.Data?.ApprovalTypeId, true)
         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+          setApprovalTypeId(res.data.Data?.ApprovalTypeId)
           showIsPFSOrBudgetingDetailsExistWarning(true)
           apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false)
         } else if (res?.data?.Result === false) {
@@ -404,8 +409,8 @@ const SendForApproval = (props) => {
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
-        tempObj.SenderLevelId = userData.LoggedInLevelId
-        tempObj.SenderLevel = userData.LoggedInLevel
+        tempObj.SenderLevelId = levelDetails.LevelId
+        tempObj.SenderLevel = levelDetails.Level
         tempObj.SenderId = userData.LoggedInUserId
         // tempObj.SenderRemark = data.remarks
         tempObj.LoggedInUserId = userData.LoggedInUserId
@@ -475,7 +480,7 @@ const SendForApproval = (props) => {
         SenderId: userData.LoggedInUserId,
         SenderRemark: data.remarks,
         LoggedInUserId: userData.LoggedInUserId,
-        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0].costingTypeId),
+        ApprovalTypeId: approvalTypeId,
         IsTentativeSaleRate: tentativeCost
         // Quantity: getValues('Quantity'),
         // Attachment: files,
@@ -490,7 +495,7 @@ const SendForApproval = (props) => {
 
         let tempObj = {}
         tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
-        tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : VBC
+        tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : checkForNull(data.typeOfCosting) === checkForNull(NCCTypeId) ? NCC : VBC
         tempObj.PlantId =
           (data.costingTypeId === ZBCTypeId) ? data.plantId : ''
         tempObj.PlantNumber =
