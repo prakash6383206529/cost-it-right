@@ -491,6 +491,9 @@ function AddBudget(props) {
                     setVendorName({ label: `${Data.VendorName} (${Data.VendorCode})`, value: Data.VendorId })
                     setValue('currentPrice', Data.NetPoPrice)
                     setValue('FinancialYear', { label: Data.FinancialYear, value: 0 })
+                    setValue('currency', { label: Data.Currency, value: Data.CurrencyId })
+                    setPartType({ label: Data.PartType, value: Data?.PartTypeId })
+
                     setTimeout(() => {
                         setTableData(temp)
                         setIsLoader(false)
