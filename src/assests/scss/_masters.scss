@@ -206,3 +206,11 @@
     overflow: hidden !important;
   }
 }
+
+[id^="AddVendorDrawer"] {
+  .select__value-container--has-value {
+    .css-b8ldur-Input {
+      width: 100% !important;
+    }
+  }
+}
