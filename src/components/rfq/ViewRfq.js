@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, VBCTypeId, } from '../.././config/constants'
+import { EMPTY_DATA, NCCTypeId, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -320,6 +320,7 @@ function RfqListing(props) {
 
     const sendForApprovalData = (rowData) => {
 
+
         let temp = []
 
         let quotationGrid;
@@ -339,9 +340,9 @@ function RfqListing(props) {
                     obj.ApprovalToken = quotationGrid[index].ApprovalToken
                     obj.typeOfCosting = 1
                     obj.partNo = quotationGrid[index]?.PartNumber
-                    obj.plantCode = quotationGrid[index]?.DestinationPlantCode
-                    obj.plantName = quotationGrid[index]?.DestinationPlantName
-                    obj.plantId = quotationGrid[index]?.DestinationPlantId
+                    obj.plantCode = quotationGrid[index]?.PlantName.split('(')[1]?.split(')')[0]
+                    obj.plantName = quotationGrid[index]?.PlantName.split('(')[0]
+                    obj.plantId = quotationGrid[index]?.PlantId
 
                     obj.vendorId = quotationGrid[index]?.VendorId
 
@@ -422,10 +423,10 @@ function RfqListing(props) {
 
                     obj.CostingHead = quotationGrid[index]?.costingHeadCheck
 
-                    obj.destinationPlantCode = quotationGrid[index]?.destinationPlantCode
-                    obj.destinationPlantName = quotationGrid[index]?.destinationPlantName
-                    obj.destinationPlantId = quotationGrid[index]?.destinationPlantId
-                    obj.costingTypeId = VBCTypeId
+                    obj.destinationPlantCode = quotationGrid[index]?.PlantName.split('(')[1]?.split(')')[0]
+                    obj.destinationPlantName = quotationGrid[index]?.PlantName.split('(')[0]
+                    obj.destinationPlantId = quotationGrid[index]?.PlantId
+                    obj.costingTypeId = quotationGrid[index]?.NfrId !== null ? NCCTypeId : VBCTypeId
                     obj.customerName = quotationGrid[index]?.customerName
                     obj.customerId = quotationGrid[index]?.customerId
                     obj.customerCode = quotationGrid[index]?.customerCode

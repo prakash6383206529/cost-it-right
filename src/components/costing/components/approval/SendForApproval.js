@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { EMPTY_GUID, FILE_URL, NCC, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import PushSection from '../../../common/PushSection'
@@ -42,6 +42,7 @@ const SendForApproval = (props) => {
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
+
   const SAPData = useSelector(state => state.approval.SAPObj)
 
 
@@ -154,7 +155,7 @@ const SendForApproval = (props) => {
   }
 
   useEffect(() => {
-    if (initialConfiguration.IsReleaseStrategyConfigured) {
+    if (initialConfiguration.IsReleaseStrategyConfigured && !props.isRfq) {
       let data = []
       viewApprovalData && viewApprovalData?.map(item => {
         let obj = {}
@@ -162,7 +163,7 @@ const SendForApproval = (props) => {
         data.push(obj)
       })
       let requestObject = {
-        "RequestFor": "COSTING",
+        "RequestFor": viewApprovalData[0]?.costingTypeId === NCCTypeId ? "RFQ" : "COSTING",
         "TechnologyId": props.technologyId,
         "LoggedInUserId": loggedInUserId(),
         "ReleaseStrategyApprovalDetails": data
