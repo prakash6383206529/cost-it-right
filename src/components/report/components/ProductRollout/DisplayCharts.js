@@ -146,7 +146,7 @@ const DisplayCharts = ({ productId }) => {
             }
 
         }))
-    }, []);
+    }, [productId]);
     const pieChartData = {
         labels: pieChartObj.labels,
         datasets: [

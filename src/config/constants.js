@@ -1953,6 +1953,7 @@ export const VIEW_COSTING_DATA = {
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
+  sobPercentageExcel: 'SOB',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
@@ -2084,6 +2085,10 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Status',
     value: 'status'
+  },
+  {
+    label: 'SOB',
+    value: 'sobPercentageExcel'
   },
   {
     label: 'RM-Grade',
@@ -2687,7 +2692,6 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.248.1";
-
+export const VERSION = "V2.1.250";
 
 
