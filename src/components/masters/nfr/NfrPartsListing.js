@@ -215,7 +215,7 @@ function NfrPartsListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
+        window.screen.width >= 1921 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
@@ -223,7 +223,7 @@ function NfrPartsListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
-        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        window.screen.width >= 1921 && gridApi.sizeColumnsToFit();
 
     };
 
@@ -357,7 +357,7 @@ function NfrPartsListing(props) {
 
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
-        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        window.screen.width >= 1921 && gridApi.sizeColumnsToFit();
         getDataList()
     }
     return (
@@ -424,9 +424,11 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NumberOfSimulation" headerName='No. of Simulations' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="ComponentQty" headerName='Component Quantity' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NetLandedCost" headerName='Cost/Rate' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
+                                                <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
