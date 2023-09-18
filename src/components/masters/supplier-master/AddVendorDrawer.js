@@ -943,47 +943,51 @@ class AddVendorDrawer extends Component {
                                     <>
                                         <Row className="pl-3">
                                             <Col md="4">
-                                                <Field
-                                                    label="Technology"
-                                                    name="Technology"
-                                                    placeholder={"Select"}
-                                                    selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
-                                                    options={this.renderListing("technology")}
-                                                    required={true}
-                                                    selectionChanged={this.handleTechnologyChange}
-                                                    optionValue={(option) => option.Value}
-                                                    optionLabel={(option) => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    disabled={isViewMode ? true : false}
-                                                    className="multiselect-with-border"
-                                                    vendorMaster={true}
-                                                />
-                                                {this.state.errorObj?.technology && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                <div className='vendor-drawer'>
+                                                    <Field
+                                                        label="Technology"
+                                                        name="Technology"
+                                                        placeholder={"Select"}
+                                                        selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
+                                                        options={this.renderListing("technology")}
+                                                        required={true}
+                                                        selectionChanged={this.handleTechnologyChange}
+                                                        optionValue={(option) => option.Value}
+                                                        optionLabel={(option) => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        disabled={isViewMode ? true : false}
+                                                        className="multiselect-with-border"
+                                                        vendorMaster={true}
+                                                    />
+                                                    {this.state.errorObj?.technology && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                </div>
                                             </Col>
                                             <Col md="4">
-                                                <Field
-                                                    label="Plant (Code)"
-                                                    name="SourceSupplierPlantId"
-                                                    placeholder={"Select"}
-                                                    title={showDataOnHover(this.state.selectedPlants)}
-                                                    selection={
-                                                        this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                                                    options={this.renderListing("plant")}
-                                                    selectionChanged={this.handlePlantChange}
-                                                    required={true}
-                                                    optionValue={(option) => option.Value}
-                                                    optionLabel={(option) => option.Text}
-                                                    component={renderMultiSelectField}
-                                                    mendatory={true}
-                                                    disabled={isViewMode || this.state.disablePlant ? true : false}
-                                                    className="multiselect-with-border"
-                                                    vendorMaster={true}
-                                                />
-                                                {this.state.errorObj?.plant && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                <div className='vendor-drawer'>
+                                                    <Field
+                                                        label="Plant (Code)"
+                                                        name="SourceSupplierPlantId"
+                                                        placeholder={"Select"}
+                                                        title={showDataOnHover(this.state.selectedPlants)}
+                                                        selection={
+                                                            this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                                        options={this.renderListing("plant")}
+                                                        selectionChanged={this.handlePlantChange}
+                                                        required={true}
+                                                        optionValue={(option) => option.Value}
+                                                        optionLabel={(option) => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        disabled={isViewMode || this.state.disablePlant ? true : false}
+                                                        className="multiselect-with-border"
+                                                        vendorMaster={true}
+                                                    />
+                                                    {this.state.errorObj?.plant && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                </div>
                                             </Col>
                                             <Col md="4" className='pl-0 mb-2 d-flex align-items-center'>
-                                                <div className='d-flex mb-1'>
+                                                <div className='d-flex'>
                                                     {this.state.isEditIndex ?
                                                         <button
                                                             type="button"
