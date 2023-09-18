@@ -32,7 +32,7 @@ function AddClientDrawer(props) {
     dispatch(getClientSelectList((res) => {
       setVendorInputLoader(false)
     }))
-    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    dispatch(getPlantSelectListByType(ZBC, '', () => { }))
 
     let tempArr = [];
     cbcGrid && cbcGrid.map(el => {

@@ -75,7 +75,7 @@ function CostReportForm(props) {
 
 
     useEffect(() => {
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getPlantSelectListByType(ZBC, '', () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
         dispatch(getProductGroupSelectList(() => { }))

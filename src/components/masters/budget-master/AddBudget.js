@@ -95,7 +95,7 @@ function AddBudget(props) {
 
     useEffect(() => {
 
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getPlantSelectListByType(ZBC, '', () => { }))
         dispatch(getCurrencySelectList(() => { }))
         dispatch(getFinancialYearSelectList(() => { }))
         dispatch(getClientSelectList((res) => { }))
