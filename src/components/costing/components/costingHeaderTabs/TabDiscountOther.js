@@ -225,7 +225,7 @@ function TabDiscountOther(props) {
         variant={viewAddButtonIcon(conditionTableData, "className")}
         title={viewAddButtonIcon(conditionTableData, "title")}
       />
-    </div></Col >
+    </div>
   }, [conditionTableData])
 
 

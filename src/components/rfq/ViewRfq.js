@@ -314,6 +314,10 @@ function RfqListing(props) {
         }, 600);
     }
 
+    const cancel = () => {
+        props.closeDrawer()
+    }
+
     const sendForApprovalData = (rowData) => {
 
         let temp = []
