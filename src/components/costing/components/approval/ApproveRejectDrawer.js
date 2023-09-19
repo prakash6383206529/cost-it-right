@@ -498,7 +498,7 @@ function ApproveRejectDrawer(props) {
                   Toaster.success('Approval pushed successfully.')
                 }
               }))
-              if (approvalData[0].NfrGroupIdForPFS3 === null && props.IsRegularized) {
+              if (approvalData[0].IsNFRPFS3PushedButtonShow && approvalData[0].NfrGroupIdForPFS3 === null && props.IsRegularized) {
                 pushTonfr()
 
               }
@@ -1268,7 +1268,7 @@ function ApproveRejectDrawer(props) {
           </div>
         </Container>
         {
-          (showPopup && props.isShowNFRPopUp) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Do you want to push this vendor's costing to SAP fro PFS2`} nfrPopup={true} />
+          (showPopup && props.isShowNFRPopUp) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Do you want to push this vendor's costing to SAP for PFS2`} nfrPopup={true} />
         }
       </Drawer>
       {(openPushButton || showFinalLevelButtons) && (
