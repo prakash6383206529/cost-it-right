@@ -1560,7 +1560,7 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode ? true : false}
                           handleChange={handleDiscountApplicabilityChange}
                           errors={errors.DiscountCostApplicability}
-                          buttonCross={resetData('discount')}
+                          isClearable={true}
                         />
                       </Col>
                     }
