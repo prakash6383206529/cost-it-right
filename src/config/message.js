@@ -329,6 +329,14 @@ export const MESSAGES = {
   TAX_DELETE_ALERT: 'Are you sure you want to delete this Tax Details?',
   DELETE_TAX_SUCCESS: 'Tax Details deleted successfully',
 
+  //OUTSOURCING MASTER
+  OUTSOURCING_ADD_SUCCESS: 'Outsourcing added successfully',
+  UPDATE_OUTSOURCING_SUCESS: 'Outsourcing updated successfully',
+  OUTSOURCING_ACTIVE_SUCCESSFULLY: 'Outsourcing activated successfully',
+  OUTSOURCING_INACTIVE_SUCCESSFULLY: 'Outsourcing de-activated successfully',
+  OUTSOURCING_ACTIVE_ALERT: 'Are you sure you want to activate this outsourcing?',
+  OUTSOURCING_DEACTIVE_ALERT: 'Are you sure you want to de-activate this outsourcing?',
+
   //MESSAGES FOR COSTING TABS SUCCESS
   OVERHEAD_PROFIT_COSTING_SAVE_SUCCESS: 'Overhead & Profit saved successfully.',
   OTHER_DISCOUNT_COSTING_SAVE_SUCCESS: 'Discount & Other Cost saved successfully.',

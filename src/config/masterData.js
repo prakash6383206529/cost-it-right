@@ -801,6 +801,9 @@ export const Vendor = [
     { label: 'ZipCode', value: 'ZipCode', },//*
     { label: 'AddressLine1', value: 'AddressLine1', },
     { label: 'AddressLine2', value: 'AddressLine2', },
+    { label: 'IsCriticalVendor', value: 'IsCriticalVendor' },
+    { label: 'Technology', value: 'Technology' },
+    { label: 'PlantCode', value: 'PlantCode' }
 ]
 
 export const VendorTempData = [
@@ -821,6 +824,9 @@ export const VendorTempData = [
         'ZipCode': '123456',
         'AddressLine1': '123, Area location',
         'AddressLine2': '123, Area location',
+        'IsCriticalVendor': 'YES OR NO',
+        'Technology': 'Plastic,Sheet Metal,Die Casting',
+        'PlantCode': '1001,952,100',
     }
 ]
 
@@ -1953,8 +1959,6 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: 'TechnologyName', value: 'TechnologyName', }, //NOUI
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'Source', value: 'Source', },
     { label: 'SourceLocation', value: 'SourceLocation', },
@@ -1974,8 +1978,6 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
-        'IsBreakupBoughtOutPart': 'No',
-        'TechnologyName': '',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -1993,8 +1995,6 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
-        'IsBreakupBoughtOutPart': 'No',
-        'TechnologyName': '',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -2012,8 +2012,6 @@ export const BOP_VBC_DOMESTIC_TempData = [
         'DestinationPlantCode': "1032",
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
-        'IsBreakupBoughtOutPart': 'No',
-        'TechnologyName': '',
         'VendorPlant': 'VPlant',
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
@@ -2320,8 +2318,6 @@ export const BOP_VBC_IMPORT = [
     { label: 'PlantCode', value: 'DestinationPlantCode', },
     { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
-    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //NOUI
-    { label: 'TechnologyName', value: 'TechnologyName', }, //NOUI
     // { label: 'VendorPlant', value: 'VendorPlant' },
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
     { label: 'SourceVendorName', value: 'SourceVendorName', },
@@ -2345,8 +2341,6 @@ export const BOP_VBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
-        'IsBreakupBoughtOutPart': 'No',
-        'TechnologyName': '',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -2365,8 +2359,6 @@ export const BOP_VBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
-        'IsBreakupBoughtOutPart': 'No',
-        'TechnologyName': '',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -2385,8 +2377,6 @@ export const BOP_VBC_IMPORT_TempData = [
         'DestinationPlantCode': '1032',
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
-        'IsBreakupBoughtOutPart': 'No',
-        'TechnologyName': '',
         'SourceVendorName': 'TATA Steel',
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
@@ -2484,7 +2474,7 @@ export const VOLUME_ACTUAL_ZBC = [
 export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     {
         'PlantCode': 'P1',
-        'PartType': 'Component/Assembly/Bought Out Part',
+        'PartType': 'Component/Assembly/BoughtOutPart',
         'PartNumber': 'Screw01',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2511,7 +2501,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
     {
         'VendorCode': 'Tata01',
         'PlantCode': 1032,
-        'PartType': 'Component/Assembly/Bought Out Part',
+        'PartType': 'Component/Assembly/BoughtOutPart',
         'PartNumber': 'Screw Jack',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2537,7 +2527,7 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
     {
         'CustomerCode': 'C-10008',
         'PlantCode': 1032,
-        'PartType': 'Component/Assembly/Bought Out Part',
+        'PartType': 'Component/Assembly/BoughtOutPart',
         'PartNumber': 'Screw Jack',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2562,7 +2552,7 @@ export const VOLUME_BUDGETED_ZBC = [
 export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     {
         'PlantCode': 'Systematix01',
-        'PartType': 'Component/Assembly/Bought Out Part',
+        'PartType': 'Component/Assembly/BoughtOutPart',
         'PartNumber': 'Screw01',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2591,7 +2581,7 @@ export const VOLUME_BUDGETED_VBC_TEMPDATA = [
     {
         'VendorCode': 'Tata01',
         'PlantCode': "1032",
-        'PartType': 'Component/Assembly/Bought Out Part',
+        'PartType': 'Component/Assembly/BoughtOutPart',
         'PartNumber': 'Screw01',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2616,7 +2606,7 @@ export const VOLUME_BUDGETED_CBC_TEMPDATA = [
     {
         'CustomerCode': 'C-10008',
         'PlantCode': "1032",
-        'PartType': 'Component/Assembly/Bought Out Part',
+        'PartType': 'Component/Assembly/BoughtOutPart',
         'PartNumber': 'Screw01',
         'RevisionNumber': '1',
         'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
@@ -2649,7 +2639,7 @@ Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
         {
             'PartCostingHead': `${item.Text}`,
             'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-            'PartType': 'Component/Assembly/Bought Out Part',
+            'PartType': 'Component/Assembly/BoughtOutPart',
             'PartNumber': 'Screw01',
             'RevisionNumber': '1',
             'PlantCode': '1032',
@@ -2683,7 +2673,7 @@ Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
         {
             'PartCostingHead': `${item.Text}`,
             'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-            'PartType': 'Component/Assembly/Bought Out Part',
+            'PartType': 'Component/Assembly/BoughtOutPart',
             'PartNumber': 'Screw01',
             'RevisionNumber': '1',
             'VendorCode': "Tata01",
@@ -2717,7 +2707,7 @@ Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
         {
             'PartCostingHead': `${item.Text}`,
             'Year': `${DayTime().$y}-${DayTime().$y + 1}`,
-            'PartType': 'Component/Assembly/Bought Out Part',
+            'PartType': 'Component/Assembly/BoughtOutPart',
             'PartNumber': 'Screw01',
             'RevisionNumber': '1',
             'PlantCode': '1032',
@@ -5179,8 +5169,17 @@ export const BOP_DOMESTIC_DOWNLOAD_EXCEl = [
     { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', },
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: "Customer (Code)", value: "CustomerName", },
+
+
+
+
     { label: "Basic Rate", value: "BasicRate", },
-    { label: "Net Cost", value: "NetLandedCost", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
+    { label: "Net Landed Cost", value: "NetLandedCost", },
+
+
+
     { label: "Effective Date", value: "EffectiveDate", }
 ]
 
@@ -5199,9 +5198,18 @@ export const BOP_IMPORT_DOWNLOAD_EXCEl = [
     { label: 'TechnologyName', value: 'TechnologyName', },
     { label: "Inco Terms", value: "IncoTermDescriptionAndInfoTerm" },
     // { label: "Payment Terms", value: "PaymentTermDescriptionAndPaymentTerm" }, // FOR MINDA ONLY
-    { label: "Basic Rate", value: "BasicRate" },
-    { label: "Net Cost (Currency)", value: "NetLandedCost" },
-    { label: "Net Cost (INR)", value: "NetLandedCostConversion" },
+
+
+    { label: "Basic Rate", value: "BasicRate", },
+    { label: "Basic Rate Conversion", value: "BasicRateConversion", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
+    { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
+    { label: "Net Landed Cost", value: "NetLandedCost", },
+    { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
+
+
     { label: "Effective Date", value: "EffectiveDate" },
 ]
 
@@ -5319,7 +5327,10 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Vendor (code)", value: "VendorName", },
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UnitOfMeasurementName", },
+
     { label: "Basic Rate", value: "BasicRatePerUOM", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
     // { label: "Freight Cost", value: "RMFreightCost", },
     // { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
@@ -5345,15 +5356,27 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Customer (Code)", value: "CustomerName", },
     { label: "UOM", value: "UnitOfMeasurementName", },
     { label: "Currency", value: "Currency", },
+
+    { label: "CutOff Price", value: "CutOffPrice", },
+    { label: "CutOff Price Conversion", value: "CutOffPriceInINR", },
     { label: "Basic Rate", value: "BasicRatePerUOM", },
+    { label: "Basic Rate Conversion", value: "BasicRatePerUOMConversion", },
+    { label: "Net Condition Cost", value: "NetConditionCost", },
+    { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
+    { label: "Basic Price", value: "NetCostWithoutConditionCost", },
+    { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
     // { label: "Freight Cost", value: "RMFreightCost", },
+    // { label: "Freight Cost Conversion", value: "RawMaterialFreightCostConversion", },
     // { label: "Shearing Cost", value: "RMShearingCost", },
-    { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
+    // { label: "Shearing Cost Conversion", value: "RawMaterialShearingCostConversion", },
+    { label: "Machining Scrap Rate", value: "MachiningScrapRate", },
+    { label: "Machining Scrap Rate Conversion", value: "MachiningScrapRateInINR", },
     { label: "Circle Scrap Cost", value: "JaliScrapCost", },
+    { label: "Circle Scrap Cost Conversion", value: "JaliScrapCostConversion", },
     { label: "Scrap Rate", value: "ScrapRate", },
-    { label: "Net Cost(Currency)", value: "NetLandedCost", },
-    { label: "Net Cost(INR)", value: "NetLandedCostConversion", },
-    { label: "Effective Date", value: "EffectiveDate", },
+    { label: "Scrap Rate Conversion", value: "ScrapRateInINR", },
+    { label: "Net Landed Cost", value: "NetLandedCost", },
+    { label: "Net Landed Cost Conversion", value: "NetLandedCostConversion", },
 
 ]
 
@@ -5462,6 +5485,7 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
+    { label: "IsCriticalVendor", value: "IsCriticalVendor", },
     { label: "ZipCode", value: "ZipCode", },
     { label: "Address 1", value: "AddressLine1", },
     { label: "Address 2", value: "AddressLine2", },
@@ -7376,6 +7400,7 @@ export const statusDropdownforRfq = [
     { label: "UnderRevision", value: "4" },
     { label: "Submitted", value: "5" },
 ]
+
 export const statusDropdownforNfr = [
     { label: 'Draft', value: 1 },
     { label: 'PendingForApproval', value: 2 },
@@ -7388,6 +7413,7 @@ export const statusDropdownforNfr = [
     { label: 'UnderApproval', value: 21 },
     { label: 'ExternalReject', value: 27 },
 ];
+
 export const nfrDropdown = [
     { label: "00000563", value: "160e1194-ae06-4ab8-a1ca-98acc064a017" },
     { label: "00000570", value: "da6d8995-14a7-46d9-9383-9eace3e6df29" },
@@ -7397,4 +7423,8 @@ export const nfrDropdown = [
     { label: "00000575", value: "18ba3689-ee0e-4afe-907a-373df9a62446" },
     { label: "00000578", value: "67c812bd-7045-440a-ba84-e9ce7131b82a" },
     { label: "00000579", value: "5e8c78e6-ecc6-4034-b1fd-47c72d2efdc0" },
+]
+
+export const CostingBulkUploadTechnologyDropdown = [
+    { label: "Sheet Metal", value: "7" },
 ]

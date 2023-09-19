@@ -869,7 +869,7 @@ function UserRegistration(props) {
       Level: level.label,
       LevelId: level.value,
       ApprovalType: costingApprovalType?.label,
-      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(costingApprovalType?.value)),
+      ApprovalTypeId: costingApprovalType?.value,
     }
 
     if (checkDuplicacy(TechnologyLevelGrid, obj, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
@@ -901,7 +901,7 @@ function UserRegistration(props) {
       Level: level.label,
       LevelId: level.value,
       ApprovalType: costingApprovalType?.label,
-      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(costingApprovalType?.value),
+      ApprovalTypeId: costingApprovalType?.value,
     }
 
     if (checkDuplicacy(TechnologyLevelGrid, technologyLevelEditIndex, 'TechnologyId', technology.value, costingApprovalType.value, 'Technology', level.value)) return false
@@ -955,7 +955,7 @@ function UserRegistration(props) {
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
       ApprovalType: simulationApprovalType?.label,
-      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(simulationApprovalType?.value)),
+      ApprovalTypeId: simulationApprovalType?.value,
     }
 
     if (checkDuplicacy(HeadLevelGrid, obj, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
@@ -991,7 +991,7 @@ function UserRegistration(props) {
       Level: simualtionLevel.label,
       LevelId: simualtionLevel.value,
       ApprovalType: simulationApprovalType?.label,
-      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(simulationApprovalType?.value),
+      ApprovalTypeId: simulationApprovalType?.value,
     }
 
     if (checkDuplicacy(HeadLevelGrid, simulationLevelEditIndex, 'TechnologyId', simulationHeads.value, simulationApprovalType.value, 'Simulation Head', simualtionLevel.value)) return false
@@ -1124,7 +1124,7 @@ function UserRegistration(props) {
       Level: masterLevel.label,
       LevelId: masterLevel.value,
       ApprovalType: masterApprovalType?.label,
-      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(masterApprovalType?.value)),
+      ApprovalTypeId: masterApprovalType?.value,
     }
 
     if (checkDuplicacy(masterLevelGrid, obj, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false
@@ -1158,7 +1158,7 @@ function UserRegistration(props) {
       Level: masterLevel.label,
       LevelId: masterLevel.value,
       ApprovalType: masterApprovalType?.label,
-      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(masterApprovalType?.value),
+      ApprovalTypeId: masterApprovalType?.value,
     }
 
     if (checkDuplicacy(masterLevelGrid, masterLevelEditIndex, 'MasterId', master.value, masterApprovalType.value, 'Master', masterLevel.value)) return false

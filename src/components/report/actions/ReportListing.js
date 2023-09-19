@@ -8,7 +8,10 @@ import {
     GET_BENCHMARK_RM_LIST,
     GET_BENCHMARK_MASTER_LIST,
     GET_COST_RATIO_REPORT,
-    GET_REPORT_FORM_GRID_DATA
+    GET_REPORT_FORM_GRID_DATA,
+    GET_PRODUCT_LIST,
+    GET_PRODUCT_PART_DATA_LIST,
+    GET_STAGE_OF_PART_DETAILS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper';
 
@@ -429,6 +432,119 @@ export function getPlantWiseGotAndGivenDetails(data, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
+        })
+    }
+}
+export function getProductlist(callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductlist}`, config(),)
+        request.then((response) => {
+            dispatch({
+                type: GET_PRODUCT_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getProductPartDataList(data, callback) {
+
+    return (dispatch) => {
+        const request = axios.post(`${API.getProductPartDataList}`, data, config(),)
+        request.then((response) => {
+            dispatch({
+                type: GET_PRODUCT_PART_DATA_LIST,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.DataList
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getStageOfPartDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getStageOfPartDetails}?partId=${productId}`, config(),)
+        request.then((response) => {
+            dispatch({
+                type: GET_STAGE_OF_PART_DETAILS,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+export function getTotalPartsDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getTotalPartsDetails}?partId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+export function getProductRolloutCostMovement(partId, partNumber, partType, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductRolloutCostMovement}?partId=${partId}&partNumber=${partNumber}&partType=${partType}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+export function getProductRolloutCostRatio(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getProductRolloutCostRatio}?partId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+export function getUsageRmDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getUsageRmDetails}?partId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
+        })
+    }
+}
+export function getSupplierContributionDetails(productId, callback) {
+
+    return (dispatch) => {
+        const request = axios.get(`${API.getSupplierContributionDetails}?partId=${productId}`, config(),)
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+            callback(error)
         })
     }
 }

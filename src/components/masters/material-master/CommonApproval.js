@@ -58,6 +58,7 @@ function CommonApproval(props) {
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     let master = props?.MasterId
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const netCostHeader = `Net Cost (${initialConfiguration?.BaseCurrency})`
 
     useEffect(() => {
         dispatch(agGridStatus("", ""))
@@ -428,8 +429,8 @@ function CommonApproval(props) {
         return cell != null ? cell : '';
     }
 
-    const viewDetails = (approvalNumber = '', approvalProcessId = '') => {
-        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber })
+    const viewDetails = (approvalNumber = '', approvalProcessId = '', costingTypeId = '') => {
+        setApprovalData({ approvalProcessId: approvalProcessId, approvalNumber: approvalNumber, costingTypeId: costingTypeId })
         setShowApprovalSummary(true)
 
     }
@@ -478,7 +479,7 @@ function CommonApproval(props) {
             <Fragment>
                 {
                     row.Status !== DRAFT ?
-                        <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={row.Status !== DRAFT ? 'link' : ''}>
+                        <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId, row.CostingTypeId)} className={row.Status !== DRAFT ? 'link' : ''}>
                             {row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber}
                         </div> :
                         row.ApprovalNumber === 0 ? row.ApprovalNumber : row.ApprovalNumber
@@ -502,6 +503,7 @@ function CommonApproval(props) {
     const closeApprovalDrawer = (e = '', type) => {
         setApprovalDrawer(false)
         if (type === 'submit') {
+            setSelectedRowData([])
             setLoader(true)
             getTableData(0, 10, true, floatingFilterData)
         }
@@ -597,7 +599,6 @@ function CommonApproval(props) {
 
 
     const sendForApproval = () => {
-
         if (selectedRowData?.length > 0) {
             let levelDetailsTemp = []
             dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, (res) => {
@@ -714,7 +715,7 @@ function CommonApproval(props) {
         basicRateFormatter: basicRateFormatter,
         netCostFormatter: netCostFormatter,
         breakupFormatter: breakupFormatter,
-        technologyFormatter: technologyFormatter
+        technologyFormatter: technologyFormatter,
     };
 
     const isRowSelectable = (rowNode) => {
@@ -824,8 +825,19 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="IncoTermDescriptionAndInfoTerm" headerName='Inco Terms'></AgGridColumn>}
                                     {/* {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>} */}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Currency" headerName="Currency"></AgGridColumn>}
+
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate" cellRenderer='basicRateFormatter'></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost (INR)" cellRenderer='netCostFormatter'></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRateConversion" headerName="Basic Rate Conversion" cellRenderer='basicRateFormatter'></AgGridColumn>}
+
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='basicRateFormatter'></AgGridColumn>}
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetCostWithoutConditionCostConversion" headerName="Basic Price Conversion" cellRenderer='basicRateFormatter'></AgGridColumn>}
+
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='basicRateFormatter'></AgGridColumn>}
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetConditionCostConversion" headerName="Net Condition Cost Conversion" cellRenderer='basicRateFormatter'></AgGridColumn>}
+
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='netCostFormatter'></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer='netCostFormatter'></AgGridColumn>}
+
                                     {/* {props?.MasterId === BOP_MASTER_ID && !props?.isApproval && <AgGridColumn headerClass="justify-content-center" pinned="right" cellClass="text-center" field="DisplayStatus" cellRenderer='statusFormatter' headerName="Status" ></AgGridColumn>} */}
 
 

@@ -7,7 +7,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper/auth'
-import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice, checkFinalUser } from '../../actions/Costing'
+import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
@@ -17,7 +17,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import _, { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import PushSection from '../../../common/PushSection'
@@ -26,11 +26,12 @@ import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 const SendForApproval = (props) => {
-  const { isApprovalisting, selectedRows, mandatoryRemark } = props
+  const { isApprovalisting, selectedRows, mandatoryRemark, dataSelected } = props
   const dispatch = useDispatch()
   const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
     mode: 'onChange',
@@ -70,80 +71,23 @@ const SendForApproval = (props) => {
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
   const [tentativeCost, setTentativeCost] = useState(false);
   const [levelDetails, setLevelDetails] = useState('');
+  const [disableRS, setDisableRS] = useState(false);
+  const [isPFSOrBudgetingDetailsExistWarning, showIsPFSOrBudgetingDetailsExistWarning] = useState(false);
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
 
-  useEffect(() => {
+  const apicall = (technologyId, depart, ApprovalTypeId, isdisable) => {
 
-    if (viewApprovalData?.length > 1) {
-      let disable = 0
-      let count = 0
-      let costingName = ''
-      let errorMessage = ''
-      viewApprovalData && viewApprovalData.map((item, index) => {
-        let requestObject = { costingId: item.costingId }
+    dispatch(getReasonSelectList((res) => { }))
 
-        dispatch(checkHistoryCostingAndSAPPoPrice(requestObject, res => {
-          let status = 200
-          count++
-          if ('response' in res) {
-            status = res && res?.response?.status
-          }
-          if (!(status !== undefined && status === 200)) {
-            disable++
-            errorMessage = <p>{errorMessage} {res?.response?.data?.Message}</p>;
-            costingName = costingName + (costingName === '' ? '' : ', ') + item.costingName
-          }
-          if (disable !== 0) {
-            setIsDisabledSAP(true)
-          } else {
-            setIsDisabledSAP(false)
-          }
-          if (count === viewApprovalData.length) {
-            if (disable !== 0) {
-              setShowErrorMessage(true)
-              Toaster.error(errorMessage)
-            }
-            setWarningMessage(`Costing Number ${costingName} has an error, Please select other costing to send for approval`)
-
-          }
-        }))
-        return null
-      })
-
-    } else {
-
-      let requestObject = { costingId: viewApprovalData[0]?.costingId }
-      dispatch(checkHistoryCostingAndSAPPoPrice(requestObject, res => {
-        let status = 200
-        if ('response' in res) {
-          status = res && res?.response?.status
-        }
-        if (status !== undefined && status === 200) {
-          setIsDisabledSAP(false)
-        } else {
-          setShowErrorMessage(true)
-          setIsDisabledSAP(true)
-          Toaster.error(res?.response?.data?.Message)
-          setWarningMessage(`Costing Number ${viewApprovalData[0]?.costingName} has an error, Please select other costing to send for approval`)
-        }
-      }))
-    }
-
-    let obj = {}
     let regularizationObj = {}
-    obj.TechnologyId = props.technologyId
-    obj.DepartmentId = '00000000-0000-0000-0000-000000000000'
-    obj.LoggedInUserLevelId = userDetails().LoggedInLevelId
-    obj.LoggedInUserId = userDetails().LoggedInUserId
-    obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId)
 
     let drawerDataObj = {}
     drawerDataObj.EffectiveDate = viewApprovalData[0]?.effectiveDate
     drawerDataObj.CostingHead = viewApprovalData[0]?.costingTypeId === ZBCTypeId ? ZBC : VBC
-    drawerDataObj.Technology = props.technologyId
+    drawerDataObj.Technology = technologyId
     setCostingApprovalDrawerData(drawerDataObj);
 
     regularizationObj.technologyId = viewApprovalData[0]?.technologyId
@@ -159,20 +103,10 @@ const SendForApproval = (props) => {
         }
       }))
     }
-    // dispatch(checkFinalUser(obj, res => {
-    //   if (res.data.Result) {
-    //     setIsFinalApproverShow(res.data.Data.IsFinalApprovar)
-    //     if (props?.isRfq) {
-    //       setIsFinalApproverShow(false)
-    //     }
-    //   }
-
-    dispatch(getReasonSelectList((res) => { }))
-    // if (!res.data.Data.IsFinalApprovar || props?.isRfq) {
 
     dispatch(getAllApprovalDepartment((res) => {
       const Data = res?.data?.SelectList
-      const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+      const departObj = Data && Data.filter(item => item.Value === depart)
 
       setSelectedDepartment({ label: departObj[0]?.Text, value: departObj[0]?.Value })
       setValue('dept', { label: departObj[0]?.Text, value: departObj[0]?.Value })
@@ -180,9 +114,9 @@ const SendForApproval = (props) => {
       let requestObject = {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: departObj[0]?.Value,
-        TechnologyId: props.technologyId,
+        TechnologyId: technologyId,
         ReasonId: 0, // key only for minda
-        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(ApprovalTypeId),
       }
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
@@ -196,6 +130,11 @@ const SendForApproval = (props) => {
           return null
         })
         const Data = res.data.DataList[1]
+        if (isdisable) {
+          setDisableRS(true)
+        } else {
+          setDisableRS(false)
+        }
         setApprover(Data.Text)
         setSelectedApprover(Data.Value)
         setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
@@ -207,9 +146,7 @@ const SendForApproval = (props) => {
         setApprovalDropDown(tempDropdownList)
       }))
     }))
-    // }
 
-    // }))
     let levelDetailsTemp = ''
     dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
       levelDetailsTemp = userTechnologyLevelDetails(viewApprovalData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
@@ -217,20 +154,35 @@ const SendForApproval = (props) => {
 
     }))
 
-  }, [])
+  }
 
   useEffect(() => {
-    let requestArray = []
-    let requestObject = {}
-    viewApprovalData && viewApprovalData.map((item) => {
-      let costingObject = {}
-      costingObject.CostingId = item.costingId
-      requestArray.push(costingObject)
-      return null
-    })
-    requestObject.IsCreate = true
-    requestObject.CostingIds = requestArray
-    setCostingIdArray(requestObject)
+    if (initialConfiguration.IsReleaseStrategyConfigured) {
+      let data = []
+      viewApprovalData && viewApprovalData?.map(item => {
+        let obj = {}
+        obj.CostingId = item?.costingId
+        data.push(obj)
+      })
+      let requestObject = {
+        "RequestFor": "COSTING",
+        "TechnologyId": props.technologyId,
+        "LoggedInUserId": loggedInUserId(),
+        "ReleaseStrategyApprovalDetails": data
+      }
+      dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+        if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+          apicall(props.technologyId, res?.data?.Data?.DepartmentId, res.data.Data?.ApprovalTypeId, true)
+        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+          showIsPFSOrBudgetingDetailsExistWarning(true)
+          apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false)
+        } else if (res?.data?.Result === false) {
+        } else {
+        }
+      }))
+    } else {
+      apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false)
+    }
   }, [])
 
   /**
@@ -476,7 +428,7 @@ const SendForApproval = (props) => {
         tempObj.BasicRate = data.basicRate
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
-        tempObj.IsRFQCostingSendForApproval = false
+        tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
         temp.push(tempObj)
         return null
       })
@@ -1029,7 +981,7 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={false}
+                          disabled={disableRS}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
@@ -1047,7 +999,7 @@ const SendForApproval = (props) => {
                           defaultValue={""}
                           options={approvalDropDown}
                           mandatory={true}
-                          disabled={false}
+                          disabled={disableRS}
                           handleChange={handleApproverChange}
                           errors={errors.approver}
                         />
@@ -1228,6 +1180,7 @@ const SendForApproval = (props) => {
                 <Row>
                   <Col md="12" className='text-right my-n1'>
                     <WarningMessage message={"All impacted assemblies will be changed and new versions will be formed"} />
+                    {isPFSOrBudgetingDetailsExistWarning && <WarningMessage message={"Budgeting cost does not exist, common approval flow will run for this part"} />}
                   </Col>
                 </Row>
                 <Row className="mb-4">

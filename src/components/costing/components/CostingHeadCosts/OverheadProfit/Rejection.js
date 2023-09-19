@@ -310,20 +310,16 @@ function Rejection(props) {
         } else {
             setApplicability([])
             checkRejectionApplicability('')
+            dispatch(isOverheadProfitDataChange(true))
+            setValue('RejectionPercentage', '')
+            setValue('RejectionCost', '')
+            setValue('Applicability', '')
+            setValue('RejectionTotalCost', '')
+            setRejectionObj({})
         }
         setPercentageLimit(false)
         dispatch(isOverheadProfitDataChange(true))
     }
-    const resetData = () => {
-        dispatch(isOverheadProfitDataChange(true))
-        setValue('RejectionPercentage', '')
-        setValue('RejectionCost', '')
-        setValue('Applicability', '')
-        setValue('RejectionTotalCost', '')
-        setRejectionObj({})
-        setApplicability([])
-    }
-
     const handleCrmHeadChange = (e) => {
         if (e) {
             setRejectionObj({
@@ -431,7 +427,7 @@ function Rejection(props) {
                                 disabled={CostingViewMode ? true : false}
                                 handleChange={handleApplicabilityChange}
                                 errors={errors.Applicability}
-                                buttonCross={resetData}
+                                isClearable={true}
                             />
                         </Col>
                         <Col md="3">

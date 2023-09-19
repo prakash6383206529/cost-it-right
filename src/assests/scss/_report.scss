@@ -118,130 +118,108 @@
 
 }
 
-.report-btn-back {
-    margin-right: 50px;
+
+
+.master-movement-report {
+    min-height: calc(100vh - 268px);
 }
 
-.goat-given {
-    td {
-        width: 33% !important;
+.padding-top {
+    padding-top: 8px;
+}
 
 
-        .master-movement-report {
-            min-height: calc(100vh - 268px);
-        }
+.report-btn-reset {
+    position: absolute !important;
+    top: 0;
+    right: 6.7%;
+}
 
-        .padding-top {
-            padding-top: 8px;
-        }
+.doughnut-graph {
+    canvas {
+        transform: scale(0.9);
+    }
+
+    @media screen and (max-width: $middleDesktop) {
+        margin-top: - 5px;
+    }
+}
+
+.supplier-back-btn {
+    position: relative;
+    text-align: right;
+    z-index: 2;
+
+    button {
+        position: absolute;
+        right: 0;
+    }
+}
 
 
-        .report-btn-reset {
-            position: absolute !important;
-            top: 0;
-            right: 6.7%;
-        }
+.product-rollout-container {
 
-        .doughnut-graph {
-            canvas {
-                transform: scale(0.9);
+    // background-color: $primaryBackground;
+    .seprate-box {
+        background-color: $white;
+        box-shadow: 0 3px 5px rgba(55, 0, 0, 0.15), 0 0px 0px rgba(0, 0, 0, 0.02);
+        padding: 10px;
+        margin-bottom: 20px;
+        position: relative;
+    }
+
+    .product-rollout-graph {
+        .seprate-box {
+            min-height: 472px;
+
+            .container {
+                height: 432px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
             }
-
-            @media screen and (max-width: $middleDesktop) {
-                margin-top: -5px;
-            }
         }
+    }
 
-        .supplier-back-btn {
+    .cost-movement-chart {
+        min-height: 230px;
+    }
+
+    .stage-of-parts {
+        min-height: 170px;
+    }
+
+    .part-usage-container {
+
+        .inner-container {
+            min-height: 80px;
             position: relative;
-            text-align: right;
-            z-index: 2;
+            border-right: 1px solid $borderColor;
 
-            button {
+            &:last-child {
+                border-right: none;
+            }
+
+            h6 {
+                font-size: 15px;
+            }
+
+            h1 {
                 position: absolute;
+                bottom: 0;
+                margin-bottom: 0;
+                left: 0;
                 right: 0;
             }
         }
+    }
+}
 
-        .goat-given {
-            td {
-                width: 33% !important;
+.got-given-listing {
 
-                span {
-                    font-size: 14px;
-                }
-            }
-        }
-
-        .got-given-container-listing {
-            display: grid;
-            grid-template-columns: 43% 42% 15%;
-
-            .ag-paging-panel {
-                display: none;
-            }
-
-            .given-report {
-                // border-right: 1px solid $agGridBorder;
-                border-left: 1px solid $agGridBorder;
-            }
-
-            .got-report {
-                border-left: 1px solid $agGridBorder;
-            }
-
-            .got-given-header {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                font-weight: 500;
-                min-height: 45px;
-                font-size: 14px;
-                border: 1px solid $agGridBorder;
-                border-bottom: none;
-            }
-        }
-
-        .got-given-summary-container {
-            display: grid;
-            grid-template-columns: 51% 160px 39.5%;
-
-            @media screen and (max-width:$middleDesktop) {
-                grid-template-columns: 46.2% 160px 39.5%;
-            }
-
-            .ag-paging-panel {
-                display: none;
-            }
-
-        }
-
-        .pipd-report-grid {
-            .ag-theme-material {
-                @for $i from 1 through 7 {
-
-                    [row-id~="#{($i * 3) - 1}"] {
-                        [col-id="Name"] {
-                            border-bottom: 1px solid $agGridBorder !important;
-                        }
-                    }
-                }
-            }
-        }
-
-        .highlight-row {
-            font-weight: 600 !important;
-        }
-
-        .product-rollout-container {
-
-            // background-color: $primaryBackground;
-            .seprate-box {
-                background-color: $primaryBackground;
-                box-shadow: 0 3px 5px rgba(55, 0, 0, 0.15), 0 0px 0px rgba(0, 0, 0, 0.02);
-                padding: 10px;
-                margin-bottom: 20px;
-            }
-        }
+    td:nth-child(1),
+    td:nth-child(7),
+    .sub-headers td:nth-child(2) {
+        border-right: 1px solid $headingblack;
     }
 }

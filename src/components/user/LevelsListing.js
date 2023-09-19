@@ -142,7 +142,7 @@ class LevelsListing extends Component {
 	 */
 	getLevelMappingDetail = (Id, levelType, approvalTypeId) => {
 		let obj = {}
-		obj[levelType] = costingTypeIdToApprovalTypeIdFunction(approvalTypeId)
+		obj[levelType] = approvalTypeId
 		this.setState({
 			isEditFlag: true,
 			TechnologyId: Id,

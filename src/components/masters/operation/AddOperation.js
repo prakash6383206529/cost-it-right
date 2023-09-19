@@ -234,8 +234,6 @@ class AddOperation extends Component {
   onPressVendor = (costingHeadFlag) => {
     const fieldsToClear = [
       'technology',
-      'OperationName',
-      'OperationCode',
       'Plant',
       'DestinationPlant',
       'UnitOfMeasurementId',
@@ -1416,7 +1414,7 @@ class AddOperation extends Component {
               anchor={"right"}
               approvalObj={this.state.approvalObj}
               isBulkUpload={false}
-              IsImportEntery={false}
+              IsImportEntry={false}
               costingTypeId={this.state.costingTypeId}
               levelDetails={this.state.levelDetails}
             />
