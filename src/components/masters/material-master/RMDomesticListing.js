@@ -921,7 +921,7 @@ function RMDomesticListing(props) {
                                     >
                                         <AgGridColumn cellClass="has-checkbox" field="CostingHead" headerName='Costing Head' cellRenderer={checkBoxRenderer}></AgGridColumn>
                                         <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
-                                        <AgGridColumn field="RawMaterialName" headerName='RawMaterial'></AgGridColumn>
+                                        <AgGridColumn field="RawMaterialName" headerName='Raw Material'></AgGridColumn>
                                         <AgGridColumn field="RawMaterialGradeName" headerName="Grade"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialSpecificationName" headerName="Spec"></AgGridColumn>
                                         <AgGridColumn field="RawMaterialCode" headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
