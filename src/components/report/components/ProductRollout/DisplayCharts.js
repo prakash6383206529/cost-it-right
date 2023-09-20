@@ -18,12 +18,12 @@ const DisplayCharts = ({ productId }) => {
     const [doughnutObj, setDoughnutObj] = useState({})
     const [chartStates, setChartStates] = useState({
         noContent: {
-            pieChart: false,
-            doughnut: false
+            pieChart: true,
+            doughnut: true
         },
         isLoader: {
-            pieChart: false,
-            doughnut: false
+            pieChart: true,
+            doughnut: true
         }
     });
 
