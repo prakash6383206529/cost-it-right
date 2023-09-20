@@ -370,6 +370,7 @@ class Main extends Component {
                     <Route path="/plant-head-wise" component={AuthMiddleware(PlantWiseCostingGotGiven, PLANT_HEAD_WISE)} />
                     <Route path="/master-cost-movement-report" component={MasterCostMovement} />
                     <Route path="/pipd-report" component={PipdReport} />
+                    <Route path="/product-rollout" component={ProductRollout} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
