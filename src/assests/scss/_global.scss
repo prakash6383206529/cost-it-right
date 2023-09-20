@@ -212,6 +212,17 @@ a:hover {
   border: 1px solid $disabledBorder;
 }
 
+.disabled-background {
+  background-color: $DisabledColor;
+
+  .text-disabled {
+    opacity: 0.7;
+    text-transform: uppercase;
+    font-weight: 500;
+    text-align: center;
+    padding: 20px;
+  }
+}
 
 .zindex-2 {
   z-index: 2;
@@ -1809,7 +1820,9 @@ p {
 .Dashboard-page {
   background-color: transparent;
   padding: 0;
-  box-shadow: none;
+  box-shadow: none !important;
+  border: none !important;
+
 }
 
 /*Footer Content Css*/
