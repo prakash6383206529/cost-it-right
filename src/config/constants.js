@@ -1903,6 +1903,10 @@ export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
 export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
+export const Assembly = '1'
+export const BoughtOutPart = '3'
+export const Component = '2'
+export const Product = '4'
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -2668,6 +2672,6 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.250";
+export const VERSION = "V2.1.251";
 
 
