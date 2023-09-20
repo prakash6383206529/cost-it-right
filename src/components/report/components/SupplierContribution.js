@@ -48,7 +48,7 @@ function SupplierContributionReport(props) {
     useEffect(() => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
-        dispatch(getPlantSelectListByType(ZBC, (res) => {
+        dispatch(getPlantSelectListByType(ZBC, '', (res) => {
             setPlants(res?.data?.DataList)
         }))
         return () => {

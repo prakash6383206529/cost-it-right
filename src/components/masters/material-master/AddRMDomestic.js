@@ -216,7 +216,7 @@ class AddRMDomestic extends Component {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory((res) => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
-      this.props.getPlantSelectListByType(ZBC, () => { })
+      this.props.getPlantSelectListByType(ZBC, '', () => { })
       this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
