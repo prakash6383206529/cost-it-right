@@ -67,10 +67,11 @@ function ApproveRejectDrawer(props) {
   const SAPData = useSelector(state => state.approval.SAPObj)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
-  const approverAPICall = (departObj, technology, approverTypeId) => {
+  const approverAPICall = (departmentId, technology, approverTypeId) => {
+
     let obj = {
       LoggedInUserId: userData.LoggedInUserId,
-      DepartmentId: departObj && departObj[0]?.Value,
+      DepartmentId: departmentId && departmentId,
       TechnologyId: technology,
       ReasonId: reasonId,
       ApprovalTypeId: approverTypeId
@@ -121,6 +122,7 @@ function ApproveRejectDrawer(props) {
 
           const Data = res?.data?.SelectList
           const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
+          console.log('departObj: ', departObj[0]?.Value);
 
           setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
@@ -129,7 +131,7 @@ function ApproveRejectDrawer(props) {
             approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId)
           } else {
             setDisableSR(false)
-            approverAPICall(departObj, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId))
+            approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId))
           }
         }))
 
@@ -152,7 +154,7 @@ function ApproveRejectDrawer(props) {
                   approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId)
                 } else {
                   setDisableSR(false)
-                  approverAPICall(departObj, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId))
+                  approverAPICall(departObj[0].Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId))
                 }
               }))
             } else {
