@@ -726,7 +726,7 @@ class VendorListing extends Component {
                             <AgGridColumn field="Country" headerName="Country" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="State" headerName="State" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="City" headerName="City" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="IsCriticalVendor" headerName="IsCriticalVendor" ></AgGridColumn>}
+                            {getConfigurationKey()?.IsCriticalVendorConfigured && <AgGridColumn field="IsCriticalVendor" headerName="Is Critical Vendor" ></AgGridColumn>}
                             <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                             <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
                         </AgGridReact>
