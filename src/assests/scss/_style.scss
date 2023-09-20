@@ -9117,5 +9117,12 @@ div[col-id="ApprovalNumber"] {
 }
 
 table.table {
-  font-size: 15px;
+  thead {
+    font-size: 15px;
+  }
+
+  tbody {
+    font-size: 14px;
+  }
+
 }
