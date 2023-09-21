@@ -587,7 +587,7 @@ function MasterSendForApproval(props) {
     const showPriceKeysCommonRM = () => {
         return (
             <>
-                <Col md="3">
+                <Col md="6">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                         name={"cutOffPrice"}
@@ -604,7 +604,7 @@ function MasterSendForApproval(props) {
                     />
                 </Col>
 
-                {props?.IsImportEntry && <Col md="3">
+                {props?.IsImportEntry && <Col md="6">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"cutOffPriceBase"}
@@ -624,7 +624,7 @@ function MasterSendForApproval(props) {
 
 
 
-                <Col md="3">
+                <Col md="6">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                         name={"BasicRateCurrency"}
@@ -640,7 +640,7 @@ function MasterSendForApproval(props) {
                         disabled={true}
                     />
                 </Col>
-                {props?.IsImportEntry && <Col md="3">
+                {props?.IsImportEntry && <Col md="6">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"BasicRateBase"}
@@ -663,7 +663,7 @@ function MasterSendForApproval(props) {
                 {/* {(!this.state.showForgingMachiningScrapCost && !this.state.showExtraCost) && */}
                 {showScrapKeys?.showScrap &&
                     <>
-                        <Col md="3">
+                        <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ScrapRateCurrency"}
@@ -679,7 +679,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntry && <Col md="3">
+                        {props?.IsImportEntry && <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"ScrapRateBase"}
@@ -698,7 +698,7 @@ function MasterSendForApproval(props) {
                     </>}
                 {showScrapKeys?.showForging &&
                     <>
-                        <Col md="3">
+                        <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Forging Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ForgingScrap"}
@@ -714,7 +714,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntry && <Col md="3">
+                        {props?.IsImportEntry && <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Forging Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"ForgingScrapBase"}
@@ -733,7 +733,7 @@ function MasterSendForApproval(props) {
 
 
 
-                        <Col md="3">
+                        <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Machining Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"MachiningScrap"}
@@ -749,7 +749,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntry && <Col md="3">
+                        {props?.IsImportEntry && <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Machining Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"MachiningScrapBase"}
@@ -769,7 +769,7 @@ function MasterSendForApproval(props) {
                 }
                 {showScrapKeys?.showCircleJali &&
                     <>
-                        <Col md="3">
+                        <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Circle Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"CircleScrapCost"}
@@ -785,7 +785,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntry && <Col md="3">
+                        {props?.IsImportEntry && <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Circle Scrap Cost Conversion", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"CircleScrapCostBase"}
@@ -804,7 +804,7 @@ function MasterSendForApproval(props) {
 
 
 
-                        <Col md="3">
+                        <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Jali Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"JaliScrapCost"}
@@ -820,7 +820,7 @@ function MasterSendForApproval(props) {
                                 disabled={true}
                             />
                         </Col>
-                        {props?.IsImportEntry && <Col md="3">
+                        {props?.IsImportEntry && <Col md="6">
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Jali Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"JaliScrapCostBase"}
@@ -840,7 +840,7 @@ function MasterSendForApproval(props) {
                 }
 
 
-                <Col md="3">
+                <Col md="6">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"FreightChargeCuurency"}
@@ -856,7 +856,7 @@ function MasterSendForApproval(props) {
                         disabled={true}
                     />
                 </Col>
-                {props?.IsImportEntry && <Col md="3">
+                {props?.IsImportEntry && <Col md="6">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"FreightChargeBase"}
@@ -875,7 +875,7 @@ function MasterSendForApproval(props) {
 
 
 
-                <Col md="3">
+                <Col md="6">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                         name={"ShearingCost"}
@@ -891,7 +891,7 @@ function MasterSendForApproval(props) {
                         disabled={true}
                     />
                 </Col>
-                {props?.IsImportEntry && <Col md="3">
+                {props?.IsImportEntry && <Col md="6">
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"ShearingCostBase"}
@@ -909,7 +909,7 @@ function MasterSendForApproval(props) {
                 </Col>}
 
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && props.costingTypeId === ZBCTypeId && <>
-                    <Col md="3">
+                    <Col md="6">
                         <TextFieldHookForm
                             label={`Basic Price (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
                             name={"BasicPriceCurrency"}
@@ -925,7 +925,7 @@ function MasterSendForApproval(props) {
                             disabled={true}
                         />
                     </Col>
-                    {props?.IsImportEntry && <Col md="3">
+                    {props?.IsImportEntry && <Col md="6">
                         <TextFieldHookForm
                             label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
                             name={"BasicPriceBase"}
@@ -943,7 +943,7 @@ function MasterSendForApproval(props) {
                     </Col>}
 
 
-                    <Col md="3">
+                    <Col md="6">
                         <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                         <TextFieldHookForm
                             label={`Condition Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
@@ -961,7 +961,7 @@ function MasterSendForApproval(props) {
                         />
                     </Col>
 
-                    {props?.IsImportEntry && <Col md="3">
+                    {props?.IsImportEntry && <Col md="6">
                         <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                         <TextFieldHookForm
                             label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
@@ -980,7 +980,7 @@ function MasterSendForApproval(props) {
                     </Col>}
 
                 </>}
-                <Col md="3">
+                <Col md="6">
                     <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
                     <TextFieldHookForm
                         label={`Net Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
@@ -997,7 +997,7 @@ function MasterSendForApproval(props) {
                         disabled={true}
                     />
                 </Col>
-                {props?.IsImportEntry && <Col md="3">
+                {props?.IsImportEntry && <Col md="6">
                     <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
                     <TextFieldHookForm
                         label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
