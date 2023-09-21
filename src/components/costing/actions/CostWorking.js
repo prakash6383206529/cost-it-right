@@ -1373,3 +1373,44 @@ export function wiringHarnessBulkUploadCosting(data, callback) {
     });
   };
 }
+/**
+ * @method getRawMaterialCalculationForMachining
+ * @description Get raw materical calculator data for Machining
+*/
+export function getRawMaterialCalculationForMachining(costingId, rawMaterialId, weightCalculationId, callback) {
+  return (dispatch) => {
+    //dispatch({ type: API_REQUEST });
+    const queryParams = `costingId=${costingId}&rawMaterialId=${rawMaterialId}&weightCalculationId=${weightCalculationId ? weightCalculationId : "0"}`
+    const request = axios.get(`${API.getRawMaterialCalculationForMachining}?${queryParams}`, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      } else {
+        Toaster.error(MESSAGES.SOME_ERROR);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error);
+      apiErrors(error);
+    });
+  };
+}
+
+/**
+ * @method saveRawMaterialCalculationForMachining
+ * @description save raw materical calculator data for Machining
+*/
+export function saveRawMaterialCalculationForMachining(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveRawMaterialCalculationForMachining, data, config());
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
+  };
+}
