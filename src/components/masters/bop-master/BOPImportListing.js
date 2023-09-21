@@ -63,7 +63,7 @@ class BOPImportListing extends Component {
             analyticsDrawer: false,
             selectedRowData: [],
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", PaymentTermDescriptionAndPaymentTerm: "", IncoTermDescriptionAndInfoTerm: "" },
+            floatingFilterData: { CostingHead: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", UOM: "", Specification: "", Plants: "", Vendor: "", BasicRate: "", NetLandedCost: "", EffectiveDateNew: "", Currency: "", DepartmentName: this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", PaymentTermDescriptionAndPaymentTerm: "", IncoTermDescriptionAndInfoTerm: "", IsBreakupBoughtOutPart: "", TechnologyName: "", BasicRateConversion: "", NetCostWithoutConditionCost: "", NetCostWithoutConditionCostConversion: "", NetConditionCost: "", NetConditionCostConversion: "", NetLandedCostConversion: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -812,13 +812,13 @@ class BOPImportListing extends Component {
                                     <AgGridColumn field="Currency"></AgGridColumn>
 
                                     <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="BasicRateConversion" headerName="Basic Rate Conversion" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                    <AgGridColumn field="BasicRateConversion" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
 
-                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
-                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName="Basic Price Conversion" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName="Basic Price (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
 
-                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
-                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCostConversion" headerName="Net Condition Cost Conversion" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                    {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCostConversion" headerName="Net Condition Cost (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
 
                                     <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                                     <AgGridColumn field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer={'commonCostFormatter'}></AgGridColumn>
