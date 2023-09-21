@@ -528,7 +528,7 @@ export const API = {
   getCostingDetailsByCostingId: `${BASE_URL}/costing/get-view-costing`,
 
   getCostingSummaryByplantIdPartNo: `${BASE_URL}/costing/get-costings-list-for-summary-by-part-and-plant`,
-  saveCostingCopy: `${BASE_URL}/costing/copy-costing`,
+  saveCostingCopy: `${BASE_URL}/costing/exact-or-latest-data-copy-costing`,
   getCostingByVendorVendorPlant: `${BASE_URL}/costing/get-vendor-costing-by-vendor-and-plant-select-list`,
   getPartByTechnologyId: `${BASE_URL}/costing/get-part-select-list-by-technology`,
   getCostingSpecificTechnology: `${BASE_URL}/costing/get-technology-select-list-for-costing`,
@@ -729,6 +729,7 @@ export const API = {
 
   // ApproveReject Drawer final approver
   checkFinalUser: `${BASE_URL}/app-approval-system/final-user-check`,
+  getReleaseStrategyApprovalDetails: `${BASE_URL}/app-approval-system/get-release-strategy-approval-details`,
 
   //PRIVILEGE
   createPrivilegePage: `${BASE_URL}/app-privilege-permission/create-privilege-page`,
@@ -1893,11 +1894,19 @@ export const NFR = 'NFR'
 export const PFS1 = 'PFS1'
 export const PFS2 = 'PFS2'
 export const PFS3 = 'PFS3'
+export const ReleaseStrategyB1 = 'RSB1'
+export const ReleaseStrategyB2 = 'RSB2'
+export const ReleaseStrategyB3 = 'RSB3'
+export const ReleaseStrategyB4 = 'RSB4'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
 export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
+export const Assembly = '1'
+export const BoughtOutPart = '3'
+export const Component = '2'
+export const Product = '4'
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -1933,6 +1942,7 @@ export const VIEW_COSTING_DATA = {
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
+  sobPercentageExcel: 'SOB',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
@@ -2060,6 +2070,10 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Status',
     value: 'status'
+  },
+  {
+    label: 'SOB',
+    value: 'sobPercentageExcel'
   },
   {
     label: 'RM-Grade',
@@ -2446,6 +2460,10 @@ export const BUDGET_ID = 5
 export const PROVISIONAL = "Provisional"
 export const NEW_COMPONENT = "New Component"
 export const CUSTOMER_BASED = "Customer Based"
+export const RELEASE_STRATEGY_B1 = "Release Strategy B1"
+export const RELEASE_STRATEGY_B2 = "Release Strategy B2"
+export const RELEASE_STRATEGY_B3 = "Release Strategy B3"
+export const RELEASE_STRATEGY_B4 = "Release Strategy B4"
 
 //default value for page size
 export const defaultPageSize = 10;
@@ -2585,6 +2603,7 @@ export const NCCTypeIdFull = Number(reactLocalStorage.getObject('CostingHeadsLis
 export const PFS1TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS1])
 export const PFS2TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS2])
 export const PFS3TypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[PFS3])
+
 export const ZBCADDMORE = 15
 export const VBCADDMORE = 16
 export const CBCADDMORE = 17
@@ -2609,6 +2628,11 @@ export const NCCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('Approva
 export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[VBC])
 export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
 export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
+
+export const RELEASESTRATEGYTYPEID1 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB1])
+export const RELEASESTRATEGYTYPEID2 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB2])
+export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB3])
+export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
 
 //CONSTANTS FOR MASTER APPROVAL TYPE 
 export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])
@@ -2648,7 +2672,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.246";
+export const VERSION = "V2.1.251";
 
 
 

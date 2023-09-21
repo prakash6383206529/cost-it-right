@@ -4,16 +4,16 @@ import RMDomesticListing from './material-master/RMDomesticListing';
 import BOPDomesticListing from './bop-master/BOPDomesticListing';
 import BOPImportListing from './bop-master/BOPImportListing';
 import Drawer from '@material-ui/core/Drawer';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getMasterApprovalSummary } from './actions/Material';
 import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, FILE_URL, BUDGET_ID, APPROVED_STATUS } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
-import { checkForNull, getConfigurationKey, loggedInUserId, userDetails, userTechnologyDetailByMasterId } from '../../helper';
+import { checkForNull, getConfigurationKey, loggedInUserId, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
@@ -97,7 +97,7 @@ function SummaryDrawer(props) {
                 setFiles(Data.ImpactedMasterDataList.MachineListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             } else if (checkForNull(props.masterId) === BUDGET_ID) {
-                CostingTypeId = Data.ImpactedMasterDataList.BudgetListResponse[0]?.CostingHeadId
+                CostingTypeId = Data.ImpactedMasterDataList.BudgetingListResponse[0]?.CostingHeadId
                 setFiles(Data.ImpactedMasterDataList.BudgetingListResponse[0].Attachements)
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
             }
@@ -195,10 +195,7 @@ function SummaryDrawer(props) {
                                         <MachineRateListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' isDataInMaster={isDataInMaster} approvalStatus={APPROVED_STATUS} />}
                                     {isBudgetApproval &&
                                         <BudgetListing isMasterSummaryDrawer={true} selectionForListingMasterAPI='Master' />}
-
                                 </Col>
-
-
                             </Row>
                         }
                         {

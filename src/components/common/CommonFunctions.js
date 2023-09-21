@@ -1,6 +1,6 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -129,6 +129,18 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
             break;
         case WACTypeId:
             approvalTypeId = WACAPPROVALTYPEID;
+            break;
+        case RELEASESTRATEGYTYPEID1:
+            approvalTypeId = RELEASESTRATEGYTYPEID1;
+            break;
+        case RELEASESTRATEGYTYPEID2:
+            approvalTypeId = RELEASESTRATEGYTYPEID2;
+            break;
+        case RELEASESTRATEGYTYPEID3:
+            approvalTypeId = RELEASESTRATEGYTYPEID3;
+            break;
+        case RELEASESTRATEGYTYPEID4:
+            approvalTypeId = RELEASESTRATEGYTYPEID4;
             break;
         default:
             approvalTypeId = null; // or any default value you prefer

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
+import { Container, Row, Col, Table, } from 'reactstrap';
 import {
     required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
     postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString, number, hashValidation
@@ -19,7 +19,8 @@ import { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
-import { ZBC } from '../../../config/constants';
+import { EMPTY_DATA, ZBC } from '../../../config/constants';
+import NoContentFound from '../../common/NoContentFound';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -44,7 +45,14 @@ class AddVendorDrawer extends Component {
             showPopup: false,
             isCriticalVendor: false,
             Technology: [],
-            technologyList: []
+            technologyList: [],
+            errorObj: {
+                technology: false,
+                plant: false,
+            },
+            technologyPlantGrid: [],
+            isEditIndex: false,
+            disablePlant: false
         }
     }
 
@@ -180,7 +188,7 @@ class AddVendorDrawer extends Component {
     * @description Used show listing of unit of measurement
     */
     renderListing = (label) => {
-        const { Technology, selectedPlants } = this.state
+        const { selectedPlants, technologyPlantGrid } = this.state
         const { countryList, stateList, cityList, vendorTypeList, vendorPlantSelectList, IsVendor, costingSpecifiTechnology, plantSelectList } = this.props;
         const temp = [];
         if (label === 'country') {
@@ -240,28 +248,44 @@ class AddVendorDrawer extends Component {
             return temp;
         }
         if (label === 'technology') {
-            costingSpecifiTechnology &&
-                costingSpecifiTechnology.map((item) => {
-                    if (item?.Value === '0') {
-                        temp.push({ Text: "Select All", Value: item?.Value })
-                    } else if (Technology?.some(item1 => item1?.Text === item?.Text && Number(item1?.Value) === Number(item?.Value))) {
-                    } else {
-                        temp.push({ Text: item?.Text, Value: item?.Value })
-                    }
-                    return null
-                })
-            return temp
+            const temp = [];
+
+            costingSpecifiTechnology?.forEach((item) => {
+                if (item?.Value === '0') {
+                    temp.push({ Text: "Select All", Value: item?.Value });
+                } else {
+                    temp.push({ Text: item?.Text, Value: item?.Value });
+                }
+            });
+
+            const isSelectAllOnly = temp.length === 1 && temp[0]?.Text === "Select All" && temp[0]?.Value === "0";
+
+            if (isSelectAllOnly) {
+                return [];
+            } else {
+                return temp;
+            }
         }
         if (label === 'plant') {
-            plantSelectList && plantSelectList.map((item) => {
-                if (item.PlantId === '0') return false
-                else if (selectedPlants?.some(item1 => item1?.PlantNameCode === item?.PlantNameCode && Number(item1?.PlantId) === Number(item?.PlantId))) {
+            plantSelectList && plantSelectList.forEach(item => {
+                if (item.PlantId === '0') return false;
+                else if (
+                    selectedPlants?.some(
+                        item1 =>
+                            item1?.PlantNameCode === item?.PlantNameCode &&
+                            Number(item1?.PlantId) === Number(item?.PlantId)
+                    ) ||
+                    technologyPlantGrid.some(
+                        gridItem => gridItem.PlantId === item?.PlantId
+                    )
+                ) {
+                    // Skip adding the plant if it is already selected or present in the technologyPlantGrid
                 } else {
-                    temp.push({ Text: item.PlantNameCode, Value: item.PlantId })
+                    temp.push({ Text: item.PlantNameCode, Value: item.PlantId });
                 }
-                return null
-            })
-            return temp
+                return null;
+            });
+            return temp;
         }
     }
 
@@ -295,11 +319,6 @@ class AddVendorDrawer extends Component {
                         tempArr.push({ Text: item.VendorType, Value: (item.VendorTypeId).toString() })
                         return null;
                     })
-                    let plantArray = [];
-                    Data && Data?.VendorPlants.map((item) => {
-                        plantArray.push({ Text: `${item?.PlantName} (${item?.PlantCode})`, Value: item?.PlantId })
-                        return plantArray;
-                    })
                     setTimeout(() => {
                         this.setState({
                             isEditFlag: true,
@@ -310,7 +329,7 @@ class AddVendorDrawer extends Component {
                             city: Data.City !== undefined ? { label: Data.City, value: Data.CityId } : [],
                             Technology: technologyList,
                             isCriticalVendor: Data.IsCriticalVendor,
-                            selectedPlants: plantArray,
+                            technologyPlantGrid: Data.VendorPlants
                         }, () => this.setState({ isLoader: false }))
                     }, 1000)
 
@@ -357,13 +376,16 @@ class AddVendorDrawer extends Component {
         this.setState({ showPopup: false })
     }
     /**
-    * @method onSubmit
-    * @description Used to Submit the form
+     * @method onSubmit
+     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck, isCriticalVendor, Technology, selectedPlants } = this.state;
+        const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck, isCriticalVendor, technologyPlantGrid } = this.state;
         const { supplierData } = this.props;
-
+        if (isCriticalVendor && technologyPlantGrid && technologyPlantGrid.length === 0) {
+            Toaster.warning('Table entry required.');
+            return false;
+        }
 
         let vendorArray = [];
         selectedVendorType && selectedVendorType.map((item) => {
@@ -384,25 +406,14 @@ class AddVendorDrawer extends Component {
             SelectedVendorPlantIds.push(item.Value)
             return null;
         })
-        let technologyList = []
-        Technology && Technology?.map(item => {
-            let obj = {}
-            obj.TechnologyName = item.Text
-            obj.TechnologyId = item.Value
-            technologyList.push(obj)
-        })
-        let plantArray = []
-        selectedPlants && selectedPlants.map((item) => {
-            plantArray.push({ PlantName: item.Text, PlantId: item.Value, PlantCode: '', })
-            return plantArray
-        })
+
         /** Update existing detail of supplier master **/
         if (this.state.isEditFlag) {
 
             if (DropdownChanged && DataToCheck.Email === values.Email && DataToCheck.PhoneNumber === values.PhoneNumber &&
                 DataToCheck.Extension === values.Extension && DataToCheck.MobileNumber === values.MobileNumber &&
                 DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
-                DataToCheck.AddressLine2 === values.AddressLine2 && DataToCheck.IsCriticalVendor === isCriticalVendor) {
+                DataToCheck.AddressLine2 === values.AddressLine2 && DataToCheck.IsCriticalVendor === isCriticalVendor && JSON.stringify(DataToCheck.VendorPlants) === JSON.stringify(technologyPlantGrid)) {
 
                 this.toggleDrawer('', '', 'cancel')
                 return false
@@ -422,8 +433,8 @@ class AddVendorDrawer extends Component {
                 LoggedInUserId: loggedInUserId(),
                 VendorTypes: vendorArray,
                 IsCriticalVendor: isCriticalVendor,
-                VendorTechnologies: isCriticalVendor ? technologyList : [],
-                VendorPlants: isCriticalVendor ? plantArray : []
+                // VendorTechnologies: isCriticalVendor ? technologyList : [],
+                VendorPlants: isCriticalVendor ? this.state.technologyPlantGrid : []
             }
             this.props.reset()
             this.props.updateSupplierAPI(formData, (res) => {
@@ -452,8 +463,9 @@ class AddVendorDrawer extends Component {
                 CityId: city.value,
                 VendorId: VendorId,
                 IsCriticalVendor: isCriticalVendor,
-                VendorTechnologies: technologyList,
-                VendorPlants: plantArray
+                // VendorTechnologies: technologyList,
+                VendorPlants: this.state.technologyPlantGrid
+
             }
             this.props.reset()
             this.props.createSupplierAPI(formData, (res) => {
@@ -475,9 +487,9 @@ class AddVendorDrawer extends Component {
         const { technologyList } = this.state
         this.setState({ DropdownChanged: false })
         if (newValue?.filter(element => element?.Value === '0')?.length > 0) {
-            this.setState({ Technology: technologyList })
+            this.setState({ Technology: technologyList, errorObj: { ...this.state.errorObj, technology: false } })
         } else {
-            this.setState({ Technology: newValue })
+            this.setState({ Technology: newValue, errorObj: { ...this.state.errorObj, technology: false } })
         }
     }
     /**
@@ -486,13 +498,186 @@ class AddVendorDrawer extends Component {
        */
     handlePlantChange = (newValue) => {
         this.setState({ DropdownChanged: false })
-        this.setState({ selectedPlants: newValue })
+        this.setState({ selectedPlants: newValue, errorObj: { ...this.state.errorObj, plant: false } })
     }
     handleKeyDown = function (e) {
         if (e.key === 'Enter' && e.shiftKey === false) {
             e.preventDefault();
         }
     };
+    tableHandler = () => {
+        const { Technology, selectedPlants, technologyPlantGrid } = this.state;
+
+        // Check if both Technology and selectedPlants are not selected
+        if ((!Technology || Technology.length === 0) && (!selectedPlants || selectedPlants.length === 0)) {
+            this.setState({
+                errorObj: { technology: true, plant: true }
+            });
+            return; // Exit the function to prevent further execution
+        }
+
+        // Check if Technology is not selected
+        if (!Technology || Technology.length === 0) {
+            this.setState({ errorObj: { ...this.state.errorObj, technology: true } });
+            return; // Exit the function to prevent further execution
+        }
+
+        // Check if selectedPlants are not selected
+        if (!selectedPlants || selectedPlants.length === 0) {
+            this.setState({ errorObj: { ...this.state.errorObj, plant: true } });
+            return; // Exit the function to prevent further execution
+        }
+        let vendorArray = []
+        Technology && Technology.map(item => {
+            let obj = {
+                TechnologyName: item.Text,
+                TechnologyId: item.Value
+            }
+            vendorArray.push(obj)
+        }
+        )
+        let array = []
+        selectedPlants && selectedPlants.map(item => {
+            let obj = {
+                PlantId: item.Value,
+                PlantName: item.Text.split(' (')[0],
+                PlantCode: item.Text.split('(')[1]?.split(')')[0],
+                VendorTechnologies: vendorArray
+            }
+            array.push(obj)
+        })
+
+
+
+        // Add the new item to the technologyPlantGrid array
+        const updatedGrid = [...technologyPlantGrid, ...array];
+
+        // Update the state with the updated grid
+        this.setState({
+            technologyPlantGrid: updatedGrid,
+            Technology: [],
+            selectedPlants: [],
+            errorObj: { technology: false, plant: false }
+        });
+    };
+    tableReset = () => {
+        this.setState({
+            Technology: [],
+            errorObj: [],
+            selectedPlants: [],
+            isEditIndex: false,
+            disablePlant: false
+        }, () => this.props.change('Technology', ''));
+        this.props.change('SourceSupplierPlantId', '')
+    }
+    /**     
+ * @method deleteItem
+ * @description DELETE ROW ENTRY FROM TABLE 
+ */
+    deleteItem = (index) => {
+        const { technologyPlantGrid } = this.state;
+
+        let tempData = technologyPlantGrid.filter((item, i) => {
+            if (i === index) {
+                return false;
+            }
+            return true;
+        });
+
+        this.setState({
+            technologyPlantGrid: tempData,
+            Technology: [],
+            selectedPlants: [],
+            isEditIndex: false,
+            disablePlant: false
+        })
+    }
+    /**
+* @method editItemDetails
+* @description used to Reset form
+*/
+    editItemDetails = (index) => {
+        const { technologyPlantGrid } = this.state;
+
+        // Get the selected item from the grid
+        const selectedGridItem = technologyPlantGrid[index];
+
+        // Extract the necessary properties for editing
+        const selectedPlants = [
+            {
+                Text: `${selectedGridItem?.PlantName} (${selectedGridItem?.PlantCode})` || '',
+                Value: selectedGridItem?.PlantId || ''
+            }
+        ];
+        const Technology = selectedGridItem?.VendorTechnologies?.map(({ TechnologyName, TechnologyId }) => ({
+            Text: TechnologyName,
+            Value: TechnologyId
+        })) || [];
+
+        // Set the selected technology and plants in the state
+        this.setState({
+            Technology,
+            selectedPlants,
+            selectedIndex: index, // Store the index of the selected item for updating
+            isEditIndex: true,
+            disablePlant: true,
+            errorObj: {
+                technology: false,
+                plant: false
+            }
+        });
+    };
+
+    updateTable = () => {
+        const { technologyPlantGrid, Technology, selectedPlants, selectedIndex } = this.state;
+
+        // Check if both Technology and selectedPlants are not selected
+        if ((!Technology || Technology.length === 0) && (!selectedPlants || selectedPlants.length === 0)) {
+            this.setState({
+                errorObj: { technology: true, plant: true }
+            });
+            return; // Exit the function to prevent further execution
+        }
+
+        // Check if Technology is not selected
+        if (!Technology || Technology.length === 0) {
+            this.setState({ errorObj: { ...this.state.errorObj, technology: true } });
+            return; // Exit the function to prevent further execution
+        }
+
+        // Check if selectedPlants are not selected
+        if (!selectedPlants || selectedPlants.length === 0) {
+            this.setState({ errorObj: { ...this.state.errorObj, plant: true } });
+            return; // Exit the function to prevent further execution
+        }
+        // Create a new item based on the selected technologies and plants
+        const newItem = {
+            PlantId: selectedPlants[0]?.Value || '',
+            PlantName: selectedPlants[0]?.Text.split(' (')[0] || '',
+            PlantCode: selectedPlants[0]?.Text.split('(')[1]?.split(')')[0],
+            VendorTechnologies: Technology.map(({ Text, Value }) => ({
+                VendorTechnologyId: '', // Add the missing property, or replace it with an appropriate value
+                TechnologyName: Text,
+                TechnologyId: Value
+            }))
+        };
+
+
+        // Update the grid by replacing the existing item with the new item
+        const updatedGrid = [...technologyPlantGrid];
+        updatedGrid[selectedIndex] = newItem;
+
+        // Clear the selected technology and plants after updating
+        this.setState({
+            technologyPlantGrid: updatedGrid,
+            Technology: [],
+            selectedPlants: [],
+            selectedIndex: -1, // Reset the selectedIndex
+            isEditIndex: false,
+            disablePlant: false
+        });
+    };
+
     /**
     * @method render
     * @description Renders the component
@@ -739,7 +924,7 @@ class AddVendorDrawer extends Component {
                                     </Col>
                                 </Row>
                                 {initialConfiguration?.IsCriticalVendorConfigured && <Row className="pl-3">
-                                    <Col md="6" className='mt-4'>
+                                    <Col md="6" className='mt-1'>
                                         <label
                                             className={`custom-checkbox`}
                                             onChange={this.criticalityHandleChange}
@@ -758,50 +943,117 @@ class AddVendorDrawer extends Component {
                                         </label>
                                     </Col>
                                 </Row>}
-                                {initialConfiguration?.IsCriticalVendorConfigured && isCriticalVendor && <Row className="pl-3">
+                                {initialConfiguration?.IsCriticalVendorConfigured && isCriticalVendor &&
                                     <>
-                                        <Col md="6">
-                                            <Field
-                                                label="Technology"
-                                                name="Technology"
-                                                placeholder={"Select"}
-                                                title={showDataOnHover(this.state.Technology)}
-                                                selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
-                                                options={this.renderListing("technology")}
-                                                validate={this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                                                required={true}
-                                                selectionChanged={this.handleTechnologyChange}
-                                                optionValue={(option) => option.Value}
-                                                optionLabel={(option) => option.Text}
-                                                component={renderMultiSelectField}
-                                                mendatory={true}
-                                                disabled={isViewMode ? true : false}
-                                                className={`multiselect-with-border ${isViewMode ? "hide-scroll" : ""}`}
-                                            />
-                                        </Col>
-                                        <Col md="6">
-                                            <Field
-                                                label="Plant (Code)"
-                                                name="SourceSupplierPlantId"
-                                                placeholder={"Select"}
-                                                title={showDataOnHover(this.state.selectedPlants)}
-                                                selection={
-                                                    this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
-                                                options={this.renderListing("plant")}
-                                                selectionChanged={this.handlePlantChange}
-                                                validate={
-                                                    this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [required] : []}
-                                                required={true}
-                                                optionValue={(option) => option.Value}
-                                                optionLabel={(option) => option.Text}
-                                                component={renderMultiSelectField}
-                                                mendatory={true}
-                                                disabled={isViewMode ? true : false}
-                                                className={`multiselect-with-border ${isViewMode ? "hide-scroll" : ""}`}
-                                            />
-                                        </Col></>
-                                </Row>}
+                                        <Row className="pl-3">
+                                            <Col md="4">
+                                                <div className='vendor-drawer'>
+                                                    <Field
+                                                        label="Plant (Code)"
+                                                        name="SourceSupplierPlantId"
+                                                        placeholder={"Select"}
+                                                        title={showDataOnHover(this.state.selectedPlants)}
+                                                        selection={
+                                                            this.state.selectedPlants == null || this.state.selectedPlants.length === 0 ? [] : this.state.selectedPlants}
+                                                        options={this.renderListing("plant")}
+                                                        selectionChanged={this.handlePlantChange}
+                                                        required={true}
+                                                        optionValue={(option) => option.Value}
+                                                        optionLabel={(option) => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        disabled={isViewMode || this.state.disablePlant ? true : false}
+                                                        className="multiselect-with-border"
+                                                        vendorMaster={true}
+                                                    />
+                                                    {this.state.errorObj?.plant && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                </div>
+                                            </Col>
 
+                                            <Col md="4">
+                                                <div className='vendor-drawer'>
+                                                    <Field
+                                                        label="Technology"
+                                                        name="Technology"
+                                                        placeholder={"Select"}
+                                                        selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
+                                                        options={this.renderListing("technology")}
+                                                        required={true}
+                                                        selectionChanged={this.handleTechnologyChange}
+                                                        optionValue={(option) => option.Value}
+                                                        optionLabel={(option) => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        disabled={isViewMode ? true : false}
+                                                        className="multiselect-with-border"
+                                                        vendorMaster={true}
+                                                    />
+                                                    {this.state.errorObj?.technology && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                </div>
+                                            </Col>
+                                            <Col md="4" className='pl-0 mb-2 d-flex align-items-center'>
+                                                <div className='d-flex'>
+                                                    {this.state.isEditIndex ?
+                                                        <button
+                                                            type="button"
+                                                            disabled={this.state.isViewMode}
+                                                            className={'btn btn-primary pull-left mr5'}
+                                                            onClick={this.updateTable}
+                                                        >Update</button>
+                                                        :
+                                                        <button
+                                                            type="button"
+                                                            className={`${isViewMode ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                                            disabled={isViewMode ? true : false}
+                                                            onClick={this.tableHandler}
+                                                        >
+                                                            <div className={'plus'}></div>ADD</button>}
+                                                    <button
+                                                        type="button"
+                                                        disabled={isViewMode ? true : false}
+                                                        className={`${isViewMode ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
+                                                        onClick={this.tableReset}
+                                                    >Reset</button>
+                                                </div>
+                                            </Col></Row>
+                                        <Col md="12" className='px-2'>
+                                            <Table className="table border" size="sm" >
+                                                <thead>
+                                                    <tr>
+                                                        <th className='border'>{`Plant (Code)`}</th>
+                                                        <th>{`Technology`}</th>
+                                                        <th className='border text-right'>{`Action`}</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    {
+                                                        this.state.technologyPlantGrid &&
+                                                        this.state.technologyPlantGrid.map((item, index) => {
+                                                            return (
+                                                                <tr key={index}>
+                                                                    <td className='border'>{`${item.PlantName} (${item.PlantCode})`}</td>
+                                                                    <td>{item.VendorTechnologies?.map(technologyItem => technologyItem.TechnologyName).join(', ')}</td>
+                                                                    <td className='border'>
+                                                                        <div className='d-flex justify-content-end'>
+                                                                            <button title='Edit' className="Edit mr-1" type={'button'} disabled={isViewMode} onClick={() => this.editItemDetails(index)} />
+                                                                            <button title='Delete' className="Delete mx-0" type={'button'} disabled={isViewMode} onClick={() => this.deleteItem(index)} />
+                                                                        </div>
+                                                                    </td>
+                                                                </tr>
+                                                            )
+                                                        })
+                                                    }
+                                                    <tr>
+                                                        {this.state.technologyPlantGrid?.length === 0 && <td colSpan={"6"}>
+                                                            <NoContentFound title={EMPTY_DATA} />
+                                                        </td>}
+                                                    </tr>
+                                                </tbody>
+                                            </Table>
+
+                                        </Col>
+                                    </>
+                                }
                                 <Row className="sf-btn-footer no-gutters justify-content-between px-3 mb-3">
                                     <div className="col-sm-12 text-right px-3">
                                         <button

@@ -103,12 +103,6 @@ function AddBudget(props) {
             setTableData(res.data.SelectList)
         }))
 
-        let levelDetailsTemp = []
-
-        levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, BUDGET_ID, userMasterLevelAPI)
-
-        setLevelDetails(levelDetailsTemp)
-
         let obj = {
             TechnologyId: BUDGET_ID,
             DepartmentId: userDetails().DepartmentId,
@@ -143,7 +137,7 @@ function AddBudget(props) {
             setLevelDetails(levelDetailsTemp)
         }
 
-    }, [userMasterLevelAPI])
+    }, [userMasterLevelAPI, costingTypeId])
 
 
     /**
@@ -493,6 +487,7 @@ function AddBudget(props) {
                     setValue('currentPrice', Data.NetPoPrice)
                     setValue('FinancialYear', { label: Data.FinancialYear, value: 0 })
                     setValue('currency', { label: Data.Currency, value: Data.CurrencyId })
+                    setPartType({ label: Data.PartType, value: Data?.PartTypeId })
 
                     setTimeout(() => {
                         setTableData(temp)

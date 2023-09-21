@@ -16,9 +16,8 @@ import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import LoaderCustom from "../common/LoaderCustom";
 import { getApprovalTypeSelectList } from '../../actions/Common'
-import { CUSTOMER_BASED, NEW_COMPONENT, PROVISIONAL } from "../../config/constants";
+import { CUSTOMER_BASED, NEW_COMPONENT, PROVISIONAL, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4 } from "../../config/constants";
 import { reactLocalStorage } from "reactjs-localstorage";
-import { costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
 class Level extends Component {
@@ -211,7 +210,7 @@ class Level extends Component {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
         if (item.Text === PROVISIONAL && this.state.levelType !== 'Simulation') return false
-        if (item.Text === NEW_COMPONENT && this.state.levelType === 'Master') return false
+        if ((item.Text === NEW_COMPONENT || item.Text === RELEASE_STRATEGY_B1 || item.Text === RELEASE_STRATEGY_B2 || item.Text === RELEASE_STRATEGY_B3 || item.Text === RELEASE_STRATEGY_B4) && this.state.levelType === 'Master') return false
         if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('cbcCostingPermission'))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null;
@@ -396,7 +395,7 @@ class Level extends Component {
             Technology: technology.value,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction((Number(approvalTypeObject?.value)))
+            ApprovalTypeId: approvalTypeObject?.value
           }
 
           if (this.state.dataToCheck.label === formReq.Level) {
@@ -425,7 +424,7 @@ class Level extends Component {
             Technology: technology.value,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
+            ApprovalTypeId: approvalTypeObject?.value
           }
           if (this.state.dataToCheck.label === formReq.Level) {
             this.toggleDrawer('')
@@ -448,7 +447,7 @@ class Level extends Component {
             Master: technology.value,
             Level: level.label,
             ModifiedBy: loggedInUserId(),
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
+            ApprovalTypeId: approvalTypeObject?.value
           }
           if (this.state.dataToCheck.label === formReq.Level) {
             this.toggleDrawer('')
@@ -468,7 +467,7 @@ class Level extends Component {
         let formData = {
           LevelId: level.value,
           TechnologyId: technology.value,
-          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
+          ApprovalTypeId: approvalTypeObject?.value
 
         }
 
@@ -507,7 +506,7 @@ class Level extends Component {
             LevelId: level.value,
             MasterId: technology.value,
             UserId: loggedInUserId(),
-            ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(Number(approvalTypeObject?.value))
+            ApprovalTypeId: approvalTypeObject?.value
           }
           // ADD MASTER NEW LEVEL
           this.props.addMasterLevel(masterData, (res) => {

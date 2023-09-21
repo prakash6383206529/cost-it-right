@@ -45,8 +45,11 @@ const ModelLanding = (props) => {
             setSendData({ ...sendData, productId: newValue.value, showData: false })
             props.fetchData(sendData)
             setValue('Part', '')
-            dispatch(getProductPartDataList(newValue.value, (res) => {
-            }))
+            let data = {
+                productId: newValue.value,
+                partType: [1],
+            }
+            dispatch(getProductPartDataList(data, (res) => { }))
         }
     }
     const PartHandler = (newValue) => {
