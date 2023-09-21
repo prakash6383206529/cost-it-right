@@ -773,6 +773,7 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
+    console.log('weightData: ', weightData);
 
     let tempArr = []
     let tempData = gridData[editIndex]
@@ -1392,8 +1393,8 @@ function RawMaterialCost(props) {
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
                                     disabled={(CostingViewMode || IsLocked || isMultiCalculatorData) ? true : false}
                                   />
-                                </div>}
-                              </td>
+                                </div >}
+                              </td >
                                 <td>
                                   {!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) && <div className='costing-error-container'>
                                     <TextFieldHookForm
@@ -1421,8 +1422,8 @@ function RawMaterialCost(props) {
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
                                       disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied)) ? true : false}
                                     />
-                                  </div>}
-                                </td></>}
+                                  </div >}
+                                </td ></>}
                             {costData?.TechnologyId === Ferrous_Casting && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                             {
                               costData?.TechnologyId === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
@@ -1468,27 +1469,29 @@ function RawMaterialCost(props) {
                                 {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}
                               </div>
                             </td>
-                            {initialConfiguration.IsShowCRMHead && <td>
-                              <SearchableSelectHookForm
-                                name={`crmHeadRm${index}`}
-                                type="text"
-                                label="CRM Head"
-                                errors={`${errors.crmHeadRm}${index}`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: false,
-                                }}
-                                defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
-                                placeholder={'Select'}
-                                options={CRMHeads}
-                                customClassName="costing-selectable-dropdown"
-                                required={false}
-                                handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                disabled={CostingViewMode}
-                              /></td>}
+                            {
+                              initialConfiguration.IsShowCRMHead && <td>
+                                <SearchableSelectHookForm
+                                  name={`crmHeadRm${index}`}
+                                  type="text"
+                                  label="CRM Head"
+                                  errors={`${errors.crmHeadRm}${index}`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: false,
+                                  }}
+                                  defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                                  placeholder={'Select'}
+                                  options={CRMHeads}
+                                  customClassName="costing-selectable-dropdown"
+                                  required={false}
+                                  handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                  disabled={CostingViewMode}
+                                /></td>
+                            }
                             <td>
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && !dataInNFRAPI && < button
@@ -1528,21 +1531,22 @@ function RawMaterialCost(props) {
                                 </Popup>
                               </div>
                             </td>
-                          </tr>
+                          </tr >
                         )
                       })
                     }
-                    {gridData && gridData.length === 0 &&
+                    {
+                      gridData && gridData.length === 0 &&
                       <tr>
                         <td colSpan={11}>
                           <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     }
-                  </tbody>
-                </Table>
-              </Col>
-            </Row>
+                  </tbody >
+                </Table >
+              </Col >
+            </Row >
 
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
@@ -1686,9 +1690,9 @@ function RawMaterialCost(props) {
             {
               showPopupDelete && <PopupMsgWrapper isOpen={showPopupDelete} closePopUp={closePopUp} confirmPopup={onPopupConfirmDelete} message={`If you delete RM all the calculations will be reset`} />
             }
-          </form>
-        </div>
-      </div>
+          </form >
+        </div >
+      </div >
       {
         isDrawerOpen && (
           <AddRM

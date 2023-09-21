@@ -9,7 +9,7 @@ import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConf
 import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
 import CorrugatedBoxCalculator from './corrugatedBox/index'
-import RubberCalciTab from '../WeightCalculatorDrawer/rubber/index'
+import RubberCalciTab from './rubber'
 import Machining from './MachiningCalculator'
 
 function OpenWeightCalculator(props) {
