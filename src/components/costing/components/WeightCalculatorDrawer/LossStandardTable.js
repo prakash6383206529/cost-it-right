@@ -36,7 +36,7 @@ function LossStandardTable(props) {
     if (isNonFerrous === true) {
       props.LossDropDown()
     }
-  }, [fieldValues])
+  }, [fieldValues, props.weightValue])
 
   const { dropDownMenu } = props
   const [tableData, setTableData] = useState([])
@@ -90,13 +90,13 @@ function LossStandardTable(props) {
       setPercentage(true)
 
       if (props?.isLossStandard) {
-        setLossWeightTooltip(`Loss Weight = (Percentage * Forged Weight / 100)`)
+        setLossWeightTooltip(`Loss Weight = (Loss (%) * Forged Weight / 100)`)
       }
       else if (props?.isFerrous || props?.isNonFerrous) {
-        setLossWeightTooltip(`Loss Weight = (Percentage * Casting Weight / 100)`)
+        setLossWeightTooltip(`Loss Weight = (Loss (%) * Casting Weight / 100)`)
       }
       else {
-        setLossWeightTooltip(`Loss Weight = (Percentage * Gross Weight / 100)`)
+        setLossWeightTooltip(`Loss Weight = (Loss (%) * Gross Weight / 100)`)
       }
     }
     reset({
