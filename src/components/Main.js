@@ -214,12 +214,14 @@ class Main extends Component {
         location.pathname === SIMULATION_PATH ||
         location.pathname === SIMULATION_HISTORY_PATH ||
         location.pathname === USER_PATH ||
-        location.pathname === RFQ_LISTING ? 'w-100' : '' ||
-          location.pathname === NFR_LISTING ? 'w-100' : ''
+        location.pathname === RFQ_LISTING ||
+        location.pathname === PRODUCT_ROLLOUT ||
+        location.pathname === NFR_LISTING ? 'w-100' : ''
+
 
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
     const DashboardPage = location.pathname === DASHBOARDWITHGRAPH_PATH ? 'Dashboard-page' : '';
-    const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND ? 'Dashboard-page' : ''
+    const DashboardMainPage = location.pathname === DASHBOARD_PATH || location.pathname === DASHBOARD_PATH_SECOND || location.pathname === PRODUCT_ROLLOUT ? 'Dashboard-page' : ''
     //  ADD DASHBPOARD CLASS FOR DASHBOARD PAGE ONLY
 
 
@@ -273,6 +275,7 @@ class Main extends Component {
                 location.pathname !== USER_PATH &&
                 location.pathname !== RFQ_LISTING &&
                 location.pathname !== NFR_LISTING &&
+                location.pathname !== PRODUCT_ROLLOUT &&
                 (
                   <LeftMenu {...this.props} />
                 )}
@@ -370,6 +373,7 @@ class Main extends Component {
                     <Route path="/plant-head-wise" component={AuthMiddleware(PlantWiseCostingGotGiven, PLANT_HEAD_WISE)} />
                     <Route path="/master-cost-movement-report" component={MasterCostMovement} />
                     <Route path="/pipd-report" component={PipdReport} />
+                    <Route path="/product-rollout" component={ProductRollout} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
                     <Route path="/simulation-insights" component={SimulationInsights} />
                     <Route path="/rfq-listing" component={AuthMiddleware(RfqListing, RFQ)} />
