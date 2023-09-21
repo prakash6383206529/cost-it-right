@@ -8,14 +8,14 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { EMPTY_DATA, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID, VBC_VENDOR_TYPE } from '../../../config/constants';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
-import { createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { checkFinalUser, createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
 import { dataLiist } from '../../../config/masterData';
@@ -71,6 +71,8 @@ function AddNfr(props) {
     const [OutsourcingCostingData, setOutsourcingCostingData] = useState({});
     const [indexOuter, setIndexOuter] = useState('');
     const [indexInside, setIndexInside] = useState('');
+    const [count, setCount] = useState(0);
+    const [showCreateButton, setShowCreateButton] = useState(true);
 
 
     const [costingObj, setCostingObj] = useState({
@@ -94,6 +96,7 @@ function AddNfr(props) {
     const [NFRNumber, setNFRNumber] = useState('')
     const [nfrPartNumber, setNfrPartNumber] = useState('')
     const [partName, setPartName] = useState('')
+    const [isFinalLevelApprover, setIsFinalLevelApprover] = useState('')
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -112,6 +115,9 @@ function AddNfr(props) {
     useEffect(() => {
         let rowtemp = rowData.filter(element => element?.groupName === existingGroupNameVersion)
         let dataList = _.map(rowtemp[0]?.data, 'SelectedCostingVersion')
+        if (existingGroupNameVersion === 'PFS2' || existingGroupNameVersion === 'PFS3') {
+            setShowCreateButton(false)
+        }
         if (dataList?.length === 0 || dataList.includes(undefined)) {
             // if (dataList.every(value => value === undefined)) {
             setAllCostingNotSelected(true)
@@ -126,6 +132,35 @@ function AddNfr(props) {
             setDisableSaveButton(true)
         }
     }, [rowData])
+
+    useEffect(() => {
+        if (count === 0 && isFinalLevelApprover !== '') {
+            setCount(count + 1)
+            getDetails(false)
+        }
+    }, [isFinalLevelApprover])
+
+    const checkFinalUserAPI = () => {
+        let obj = {}
+        obj.DepartmentId = userDetails().DepartmentId
+        obj.UserId = loggedInUserId()
+        obj.TechnologyId = nfrData?.TechnologyId
+        obj.Mode = 'costing'
+        obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+        dispatch(checkFinalUser(obj, (res) => {
+            if (res?.data?.Result) {
+                if (res?.data?.Data?.IsFinalApprover) {
+                    setIsFinalLevelApprover(res?.data?.Data?.IsFinalApprover)
+                    setEditWarning(true)
+                    setFilterStatus('This user is final level user cannot send NFR for approval')
+                } else {
+                    setIsFinalLevelApprover(false)
+                    setEditWarning(false)
+                    setFilterStatus('')
+                }
+            }
+        }))
+    }
 
     const getDetails = (isFromOutsourcing) => {
         setLoader(true)
@@ -186,7 +221,7 @@ function AddNfr(props) {
                             setDisableSaveButton(false)
                         }
                     }
-                    if (newArray[0]?.statusId === DRAFTID || newArray[0]?.statusId === REJECTEDID) {
+                    if ((newArray[0]?.statusId === DRAFTID || newArray[0]?.statusId === REJECTEDID) && !isFinalLevelApprover) {
                         setEditWarning(true)
                         setFilterStatus('Select all costings to send for approval')
                         setSendForApprovalButtonDisable(false)
@@ -217,6 +252,9 @@ function AddNfr(props) {
                 setLoader(false)
             }, 200);
         }))
+    }
+
+    useEffect(() => {
         reactLocalStorage.setObject('isFromDiscountObj', false)
         let levelDetailsTemp = ''
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId, (res) => {
@@ -226,29 +264,10 @@ function AddNfr(props) {
                 setEditWarning(true)
                 setSendForApprovalButtonDisable(true)
             } else {
-                // let obj = {}
-                // obj.DepartmentId = userDetails().DepartmentId
-                // obj.UserId = loggedInUserId()
-                // obj.TechnologyId = nfrData?.TechnologyId
-                // obj.Mode = 'costing'
-                // obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
-                // dispatch(checkFinalUser(obj, (res) => {
-                //     if (res?.data?.Result) {
-                //         if (res?.data?.Data?.IsFinalApprover) {
-                //             setIsFinalApproverShowButton(false)
-                //             setEditWarning(true)
-                //             setFilterStatus("You are a final level user and cannot send NFR for approval.")
-                //         }
-                //     }
-                // }))
+                checkFinalUserAPI()
             }
             setLevelDetails(levelDetailsTemp)
-
         }))
-    }
-
-    useEffect(() => {
-        getDetails(false)
     }, [])
 
     // Sets the initial values of the form fields based on the nfrData prop.
@@ -698,19 +717,20 @@ function AddNfr(props) {
         temprowDataInside = Object.assign([...temprowDataInside], { [indexInside]: tempData })
         let tempSelectedCostingList = _.map(temprowDataInside, 'SelectedCostingVersion')
         const allStatusDraft = _.map(tempSelectedCostingList, 'StatusId').every(item => item === DRAFTID);
-
-        if (tempSelectedCostingList?.includes(undefined)) {
-            setEditWarning(true)
-            setFilterStatus('Select all costings to send for approval')
-            setSendForApprovalButtonDisable(true)
-        } else if (allStatusDraft) {
-            setEditWarning(false)
-            setFilterStatus('')
-            setSendForApprovalButtonDisable(false)
-        } else {
-            setEditWarning(true)
-            setFilterStatus('Please select draft costing to send for approval')
-            setSendForApprovalButtonDisable(true)
+        if (!isFinalLevelApprover) {
+            if (tempSelectedCostingList?.includes(undefined)) {
+                setEditWarning(true)
+                setFilterStatus('Select all costings to send for approval')
+                setSendForApprovalButtonDisable(true)
+            } else if (allStatusDraft) {
+                setEditWarning(false)
+                setFilterStatus('')
+                setSendForApprovalButtonDisable(false)
+            } else {
+                setEditWarning(true)
+                setFilterStatus('Please select draft costing to send for approval')
+                setSendForApprovalButtonDisable(true)
+            }
         }
 
         let newObj = {
@@ -961,7 +981,7 @@ function AddNfr(props) {
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.isRejectedBySAP === false) &&
                                                     <>
-                                                        {!isViewEstimation && item?.IsShowEditButtonForPFS && item?.isShowCreateCostingButton && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
+                                                        {!isViewEstimation && item?.IsShowEditButtonForPFS && item?.isShowCreateCostingButton && showCreateButton && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
                                                     </>}
 
                                                 {item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
@@ -1012,7 +1032,7 @@ function AddNfr(props) {
                                     className='user-btn'
                                     type='button'
                                     onClick={sendForApproval}
-                                    disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
+                                    disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded || isFinalLevelApprover}
                                 >
                                     <div className="send-for-approval"></div>
                                     Send for Approval
