@@ -103,12 +103,6 @@ function AddBudget(props) {
             setTableData(res.data.SelectList)
         }))
 
-        let levelDetailsTemp = []
-
-        levelDetailsTemp = userTechnologyDetailByMasterId(costingTypeId, BUDGET_ID, userMasterLevelAPI)
-
-        setLevelDetails(levelDetailsTemp)
-
         let obj = {
             TechnologyId: BUDGET_ID,
             DepartmentId: userDetails().DepartmentId,
@@ -143,7 +137,7 @@ function AddBudget(props) {
             setLevelDetails(levelDetailsTemp)
         }
 
-    }, [userMasterLevelAPI])
+    }, [userMasterLevelAPI, costingTypeId])
 
 
     /**

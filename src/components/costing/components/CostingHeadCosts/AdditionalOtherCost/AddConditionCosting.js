@@ -140,9 +140,15 @@ function AddConditionCosting(props) {
 
     // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
-        if (!getValues('Condition') || !getValues('Type') || !getValues('Percentage')) {
-            Toaster.warning("Please enter all details to add row.")
-            return false
+        if (!getValues('Condition') || !getValues('Type')) {
+            if (getValues('Type') === 'Fixed' && !getValues('CostBase')) {
+
+                Toaster.warning("Please enter all details to add row.")
+                return false
+            } else if (getValues('Type') === 'Percentage' && !getValues('Percentage')) {
+                Toaster.warning("Please enter all details to add row.")
+                return false
+            }
         }
         if (errors.Percentage) {
             return false

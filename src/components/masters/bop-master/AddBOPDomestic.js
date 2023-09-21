@@ -798,7 +798,7 @@ class AddBOPDomestic extends Component {
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces)
+      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
       const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostBase)
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
@@ -826,7 +826,7 @@ class AddBOPDomestic extends Component {
     }
 
     //  IF: APPROVAL FLOW
-    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
