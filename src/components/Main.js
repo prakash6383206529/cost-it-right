@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -374,6 +374,7 @@ class Main extends Component {
                     <Route path="/cost-ratio-report" component={AuthMiddleware(CostRatioReport, COST_RATIO_REPORT)} />
                     <Route path="/master-benchmarking-report" component={AuthMiddleware(CostingBenchmarkReport, MASTER_BENCHMARK_REPORT)} />
                     <Route path="/cost-movement-report" component={AuthMiddleware(CostMovementReport, COST_MOVEMENT_REPORT)} />
+                    <Route path="/master-cost-movement-report" component={AuthMiddleware(MasterCostMovement, MASTER_COST_MOVEMENT_REPORT)} />
                     <Route path="/supplier-contribution-report" component={AuthMiddleware(SupplierContributionReport, SUPPLIER_CONTRIBUTION_REPORT)} />
                     <Route path="/sale-provision-report" component={AuthMiddleware(SaleProvisionReport, SALE_PROVISION_REPORT)} />
                     <Route path="/purchase-provision-report" component={AuthMiddleware(PurchaseProvisionReport, PURCHASE_PROVISION_REPORT)} />
