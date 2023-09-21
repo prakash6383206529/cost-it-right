@@ -216,7 +216,7 @@ class AddRMDomestic extends Component {
       this.setState({ inputLoader: true })
       this.props.getRawMaterialCategory((res) => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
-      this.props.getPlantSelectListByType(ZBC, () => { })
+      this.props.getPlantSelectListByType(ZBC, '', () => { })
       this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -497,6 +497,18 @@ class AddRMDomestic extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
 
+  recalculateConditions = (basicPriceBase) => {
+    const { conditionTableData } = this.state;
+    let tempList = conditionTableData && conditionTableData?.map(item => {
+      if (item?.ConditionType === "Percentage") {
+        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBase)
+        item.ConditionCost = costBase
+      }
+      return item
+    })
+    return tempList
+  }
+
   /**
    * @method calculateNetCost
    * @description CALCUALTION NET COST
@@ -508,10 +520,16 @@ class AddRMDomestic extends Component {
     const { FinalConditionCostCurrency, DataToChange, isEditFlag } = this.state
 
     const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
-    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice));
+    let conditionList = this.recalculateConditions(basicPriceCurrency)
+
+    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    console.log('sumBase: ', sumBase);
+    let netLandedCostCurrency = checkForNull(sumBase) + checkForNull(basicPriceCurrency)
+
+    this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
 
     if (isEditFlag && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
       && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
@@ -549,6 +567,8 @@ class AddRMDomestic extends Component {
       FinalConditionCostCurrency: FinalConditionCostCurrency,
 
       NetLandedCostCurrency: netLandedCostCurrency,
+
+      conditionTableData: conditionList,
 
     })
   }

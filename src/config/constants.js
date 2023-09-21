@@ -1849,6 +1849,7 @@ export const COSTING_DETAIL = 'Costing Details'
 export const COST_RATIO_REPORT = 'Cost Ratio'
 export const COST_MOVEMENT_REPORT = 'Cost Movement'
 export const MASTER_BENCHMARK_REPORT = 'Master Benchmark'
+export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
 export const SUPPLIER_CONTRIBUTION_REPORT = 'Supplier Contribution'
 export const SALE_PROVISION_REPORT = 'Sale Provision'
 export const CUSTOMER_POAM_REPORT = 'Customer POAM Summary'
@@ -1919,6 +1920,10 @@ export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
 export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
+export const Assembly = '1'
+export const BoughtOutPart = '3'
+export const Component = '2'
+export const Product = '4'
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -2692,6 +2697,6 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.251.1";
+export const VERSION = "V2.1.252";
 
 
