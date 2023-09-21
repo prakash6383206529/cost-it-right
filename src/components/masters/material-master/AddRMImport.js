@@ -2542,7 +2542,7 @@ class AddRMImport extends Component {
                             buttonName={"Cancel"}
                           />
                           {!isViewFlag && <>
-                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !CostingTypePermission) ?
                               <Button
                                 id="addRMImport_sendForApproval"
                                 type="submit"
