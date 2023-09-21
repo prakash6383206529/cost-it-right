@@ -176,15 +176,17 @@ const SendForApproval = (props) => {
           setApprovalTypeId(res.data.Data?.ApprovalTypeId)
           apicall(props.technologyId, res?.data?.Data?.DepartmentId, res.data.Data?.ApprovalTypeId, true)
         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-          setApprovalTypeId(res.data.Data?.ApprovalTypeId)
           showIsPFSOrBudgetingDetailsExistWarning(true)
+          console.log('viewApprovalData: ', viewApprovalData);
           apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false)
+          setApprovalTypeId(viewApprovalData[0]?.costingTypeId)
         } else if (res?.data?.Result === false) {
         } else {
         }
       }))
     } else {
       apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false)
+      setApprovalTypeId(viewApprovalData[0]?.costingTypeId)
     }
   }, [])
 
