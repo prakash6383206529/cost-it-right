@@ -573,7 +573,7 @@ function AddBudget(props) {
             const finalYear = year?.label && year?.label?.slice(0, 4);
             let date = (`${finalYear}-04-01`);
 
-            dispatch(getExchangeRateByCurrency(newValue.label, costingTypeId, date, '', '', true, res => {
+            dispatch(getExchangeRateByCurrency(newValue.label, costingTypeId, date, vendorName?.value, client?.value, true, res => {
                 if (res && res.data && res.data.Result) {
                     let Data = res.data.Data;
                     setCurrencyExchangeRate(Data.CurrencyExchangeRate)
