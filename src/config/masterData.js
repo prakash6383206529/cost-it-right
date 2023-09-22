@@ -7395,10 +7395,11 @@ export const DETAILED_BOP_ID = "3"
 //Status dropdown for RFQ and NFR
 export const statusDropdownforRfq = [
     { label: "Approved", value: "1" },
-    { label: "Open", value: "2" },
+    { label: "Draft", value: "2" },
     { label: "Received", value: "3" },
     { label: "UnderRevision", value: "4" },
-    { label: "Submitted", value: "5" },
+    { label: "Sent", value: "5" },
+    { label: "Cancelled", value: "6" },
 ]
 
 export const statusDropdownforNfr = [
