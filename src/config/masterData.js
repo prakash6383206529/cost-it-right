@@ -1945,6 +1945,7 @@ export const BOP_VBC_DOMESTIC = [
     { label: 'Specification', value: 'Specification', },
     { label: 'UnitOfMeasurement', value: 'UnitOfMeasurement', }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
+    { label: 'IsBreakupBoughtOutPart', value: 'IsBreakupBoughtOutPart', }, //*
     { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'VendorCode', value: 'VendorCode', }, //NOUI
     // { label: 'VendorPlantCode', value: 'VendorPlantCode', }, //NOUI
@@ -1967,6 +1968,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
+        'IsBreakupBoughtOutPart': "No",
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
@@ -1984,6 +1986,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "IsClientVendorBOP": "NO",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
+        'IsBreakupBoughtOutPart': "No",
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
@@ -2001,6 +2004,7 @@ export const BOP_VBC_DOMESTIC_TempData = [
         "IsClientVendorBOP": "YES",
         'VendorCode': 'Sys01',
         'VendorPlant': 'VPlant',
+        'IsBreakupBoughtOutPart': "No",
         'Source': 'VPlant01',
         'VendorSourceName': 'TATA Steel',
         'SourceLocation': 'Jamshedpur',
