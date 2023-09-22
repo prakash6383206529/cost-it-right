@@ -1421,7 +1421,7 @@ function RawMaterialCost(props) {
 
               <Col md="12">
                 <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
-                  <thead className={`${headerPinned ? 'sticky-headers' : ''} rm-table-header`}>
+                  <thead className={`${headerPinned ? 'sticky-headers' : ''} ${costData?.TechnologyId === MACHINING ? "" : "rm-table-header"}`}>
                     <tr>
                       <th className='rm-name-head'>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
