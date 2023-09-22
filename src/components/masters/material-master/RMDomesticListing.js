@@ -70,7 +70,7 @@ function RMDomesticListing(props) {
     const [dataCount, setDataCount] = useState(0)
     const [inRangeDate, setinRangeDate] = useState([])
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "" })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", RawMaterialCode: "", Category: "", MaterialType: "", DestinationPlantName: "", UnitOfMeasurementName: "", VendorName: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", DepartmentName: isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", NetConditionCost: "", NetCostWithoutConditionCost: "", MachiningScrapRate: "", })
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
     var filterParams = {
@@ -990,8 +990,9 @@ function RMDomesticListing(props) {
                                         {props.isMasterSummaryDrawer && rmDataList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
                                         <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
-                                        {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>}
+
+                                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>}
+                                        {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
                                         <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer='costFormatter'></AgGridColumn>
 
                                         <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

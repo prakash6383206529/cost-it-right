@@ -9,7 +9,7 @@ import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../common/Tooltip'
-import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, positiveAndDecimalNumber, decimalAndNumberValidation } from "../../../../helper/validation";
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -31,6 +31,7 @@ function Ferrous(props) {
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
     const [percentage, setPercentage] = useState(0)
+    const [inputFinishWeight, setInputFinishWeight] = useState(0)
     const { rmRowData, rmData, CostingViewMode, item } = props
 
     const rmGridFields = 'rmGridFields';
@@ -40,7 +41,13 @@ function Ferrous(props) {
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
     })
-
+    useEffect(() => {
+        const castingWeight = checkForNull(getValues("castingWeight"))
+        if (inputFinishWeight > castingWeight) {
+            Toaster.warning('Finish Weight should not be greater than casting weight')
+            setValue('finishedWeight', '')
+        }
+    }, [inputFinishWeight])
     useEffect(() => {
         if (ferrousCalculatorReset === true) {
             reset({
@@ -159,11 +166,6 @@ function Ferrous(props) {
         const finishedWeight = checkForNull(getValues('finishedWeight'))
         const NetRMRate = checkForNull(dataToSend.NetRMRate)
         const NetScrapRate = checkForNull(dataToSend.NetScrapRate)
-        if (finishedWeight > castingWeight) {
-            Toaster.warning('Finish Weight should not be greater than casting weight')
-            setValue('finishedWeight', 0)
-            return false
-        }
         if (finishedWeight !== 0) {
             scrapWeight = checkForNull(castingWeight) - checkForNull(finishedWeight) //FINAL Casting Weight - FINISHED WEIGHT
         }
@@ -251,7 +253,9 @@ function Ferrous(props) {
             e.preventDefault();
         }
     };
-
+    const handleFinishedWeight = (e) => {
+        setInputFinishWeight(e)
+    }
     return (
         <Fragment>
             <Row>
@@ -364,10 +368,7 @@ function Ferrous(props) {
                                         mandatory={false}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
-                                            },
+                                            validate: { positiveAndDecimalNumber, checkWhiteSpaces, decimalAndNumberValidation },
 
                                         }}
                                         handleChange={() => { }}
@@ -432,13 +433,10 @@ function Ferrous(props) {
                                         mandatory={false}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
-                                            },
+                                            validate: { positiveAndDecimalNumber, checkWhiteSpaces, decimalAndNumberValidation },
 
                                         }}
-                                        handleChange={() => { }}
+                                        handleChange={(e) => { handleFinishedWeight(e?.target?.value) }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
