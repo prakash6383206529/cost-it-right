@@ -773,7 +773,6 @@ function RawMaterialCost(props) {
    * @description SET WEIGHT IN RM
    */
   const setWeight = (weightData, originalWeight) => {
-    console.log('weightData: ', weightData);
 
     let tempArr = []
     let tempData = gridData[editIndex]
@@ -1325,7 +1324,7 @@ function RawMaterialCost(props) {
 
               <Col md="12">
                 <Table className="table cr-brdr-main costing-raw-material-section" size="sm">
-                  <thead className={`${headerPinned ? 'sticky-headers' : ''} ${costData?.TechnologyId === MACHINING ? "" : "rm-table-header"}`}>
+                  <thead className={`${headerPinned ? 'sticky-headers' : ''} ${machiningUICheck ? "" : "rm-table-header"}`}>
                     <tr>
                       <th className='rm-name-head'>{`RM Name`}</th>
                       <th>{`RM Rate`}</th>
