@@ -1,7 +1,7 @@
 import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import { NumberFieldHookForm } from '../../../layout/HookFormInputs'
 import { checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import { saveRawMaterialCalculationForMachining } from '../../actions/CostWorking'
@@ -22,10 +22,8 @@ function Machining(props) {
         netLength: WeightCalculatorRequest && WeightCalculatorRequest.NetLength !== undefined ? WeightCalculatorRequest.NetLength : '',
         grossLength: WeightCalculatorRequest && WeightCalculatorRequest.GrossLength !== undefined ? WeightCalculatorRequest.GrossLength : '',
         piecePerMeter: WeightCalculatorRequest && WeightCalculatorRequest.PiecePerMeter !== undefined ? WeightCalculatorRequest.PiecePerMeter : '',
-        rmPerPiece: WeightCalculatorRequest && WeightCalculatorRequest.RmPerPiece !== undefined ? WeightCalculatorRequest.RmPerPiece : '',
+        rmPerPiece: WeightCalculatorRequest && WeightCalculatorRequest.RMPerPiece !== undefined ? WeightCalculatorRequest.RMPerPiece : '',
     }
-
-    const [isDisable, setIsDisable] = useState(false)
     const [grossLength, setGrossLength] = useState(0)
     const [piecePerMeter, setPiecePerMeter] = useState(0)
     const [rmPerPiece, setRmPerPiece] = useState(0)
@@ -43,14 +41,16 @@ function Machining(props) {
 
 
     useEffect(() => {
-        calculateAll()
+        if (!CostingViewMode) {
+            calculateAll()
+        }
     }, [fieldValues])
 
 
     const calculateAll = () => {
         const netLength = getValues('netLength')
         const partingMargin = getValues('partingMargin')
-        const grossLength = checkForNull(netLength + partingMargin)
+        const grossLength = checkForNull(netLength) + checkForNull(partingMargin)
         setValue('grossLength', checkForDecimalAndNull(grossLength, getConfigurationKey().NoOfDecimalForInputOutput))
         setGrossLength(grossLength)
         const piecePerMeter = 1000 / grossLength
@@ -71,7 +71,6 @@ function Machining(props) {
         props.toggleDrawer('')
     }
     const onSubmit = debounce(handleSubmit((values) => {
-        console.log('rmRowData: ', rmRowData);
         let obj = {
             MachiningCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.MachiningCalculatorId ? WeightCalculatorRequest.MachiningCalculatorId : "0",
             BaseCostingIdRef: item.CostingId,
@@ -214,7 +213,7 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-length-machining'} tooltipText={'Total Gross Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-length-machining'} tooltipText={'Gross Length (mm) = (Net Length (mm) + Parting Margin (mm))'} />
                                     <NumberFieldHookForm
                                         label={`Gross Length (mm)`}
                                         name={'grossLength'}
@@ -232,7 +231,7 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3" >
-                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'piece-per-meter-length'} tooltipText={'Total Gross Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
+                                    <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'piece-per-meter-length'} tooltipText={'Pc/meter = (1000/Gross Length (mm))'} />
                                     <NumberFieldHookForm
                                         label={`Pc/meter`}
                                         name={'piecePerMeter'}
@@ -251,7 +250,7 @@ function Machining(props) {
                                 </Col>
                                 <Col md="3" >
                                     <NumberFieldHookForm
-                                        label={`R.M Rate`}
+                                        label={`RM Rate(INR)`}
                                         name={'rmRate'}
                                         Controller={Controller}
                                         control={control}
@@ -266,7 +265,7 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={'Scrap Weight = (Total Gross weight - Finish Weight)'} />
+                                    <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={'RM/Pc = RM Rate(INR)/(Pc/meter)'} />
                                     <NumberFieldHookForm
                                         label={`RM/Pc`}
                                         name={'rmPerPiece'}
@@ -284,11 +283,13 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'net-rm-cost'} tooltipText={'Net RM Cost = RM/Pc'} />
                                     <NumberFieldHookForm
                                         label={`Net RM Cost`}
                                         name={'netRm'}
                                         Controller={Controller}
                                         control={control}
+                                        id={'net-rm-cost'}
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
@@ -314,7 +315,7 @@ function Machining(props) {
                         <button
                             type="button"
                             onClick={onSubmit}
-                            disabled={props.CostingViewMode || isDisable ? true : false}
+                            disabled={props.CostingViewMode ? true : false}
                             className="submit-button save-btn">
                             <div className={'save-icon'}></div>
                             {'Save'}
