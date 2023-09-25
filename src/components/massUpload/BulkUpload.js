@@ -261,6 +261,7 @@ class BulkUpload extends Component {
 
                             if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_DOMESTIC, VBCTypeId), fileHeads)
+                                console.log('fileHeads: ', fileHeads);
                             }
                             else if (this.state.costingTypeId === ZBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_ZBC_DOMESTIC), fileHeads)
@@ -459,6 +460,9 @@ class BulkUpload extends Component {
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })
+                            if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && this.state.costingTypeId === VBCTypeId && this.state.bopType !== DETAILED_BOP) {
+                                obj.IsBreakupBoughtOutPart = "No"
+                            }
                             fileData.push(obj)
                             obj = {}
                         }
