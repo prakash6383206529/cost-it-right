@@ -1,17 +1,7 @@
-@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@100;300;400;500;700&display=swap");
 @import "../../../node_modules/ag-grid-community/src/styles/ag-grid.scss";
 @import "../../../node_modules/ag-grid-community/src/styles/ag-theme-material/sass/ag-theme-material-mixin";
 
-
-@font-face {
-    font-family: "icomoon";
-    src: url("fonts/icomoon.eot?mx6nlh");
-    src: url("fonts/icomoon.eot?mx6nlh#iefix") format("embedded-opentype"),
-        url("fonts/icomoon.ttf?mx6nlh") format("truetype"), url("fonts/icomoon.woff?mx6nlh") format("woff"),
-        url("fonts/icomoon.svg?mx6nlh#icomoon") format("svg");
-    font-weight: normal;
-    font-style: normal;
-}
+@import "./fonts/font";
 
 @import "./abstracts/typography";
 
