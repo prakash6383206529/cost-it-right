@@ -1363,7 +1363,7 @@ function RawMaterialCost(props) {
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
-                      {(getTechnology.includes(costData?.TechnologyId) || (costData?.TechnologyId === MACHINING && item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.UOM === "Meter")) && <th className="text-center weight-calculator">{`Weight Calculator`}</th>}
+                      {(getTechnology.includes(costData?.TechnologyId) || (costData?.TechnologyId === MACHINING && item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.UOM === "Meter")) && <th className={`text-center ${costData?.TechnologyId === MACHINING ? "" : "weight-calculator"}`}>{`Weight Calculator`}</th>}
                       {!(costData?.TechnologyId === MACHINING && item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.UOM === "Meter") && <th>{`Gross Weight`}</th>}
                       {!(costData?.TechnologyId === MACHINING && item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.UOM === "Meter") && <th>{`Finish Weight`}</th>}
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
@@ -1371,8 +1371,8 @@ function RawMaterialCost(props) {
                       {costData?.TechnologyId === PLASTIC && <th>{'Burning Loss Weight'}</th>}
                       {!(costData?.TechnologyId === MACHINING && item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.UOM === "Meter") && <th className='scrap-weight'>Scrap Weight </th>}
                       {/* //Add i here for MB+ */}
-                      <th className='net-rm-cost'>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
-                      {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
+                      <th className='net-rm-cost' width={costData?.TechnologyId === MACHINING ? "150px" : ""}>{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
+                      {initialConfiguration.IsShowCRMHead && <th width={costData?.TechnologyId === MACHINING ? "160px" : ""}>{'CRM Head'}</th>}
                       <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
 
                     </tr>
