@@ -100,13 +100,11 @@ export function getCostingForMultiTechnology(data, callback) {
     const queryParams = `partId=${data?.partId}&plantId=${data?.plantId}&costingTypeId=${data?.costingTypeId}&isRequestForWAC=${data?.isRequestForWAC}`
     const request = axios.get(`${API.getCostingForMultiTechnology}?${queryParams}`, config());
     request.then((response) => {
-      if (response?.data?.Result) {
-        dispatch({
-          type: GET_COSTING_FOR_MULTI_TECHNOLOGY,
-          payload: response?.data?.DataList,
-        })
-        callback(response);
-      }
+      dispatch({
+        type: GET_COSTING_FOR_MULTI_TECHNOLOGY,
+        payload: response?.status === 204 ? [] : response?.data?.DataList,
+      })
+      callback(response);
     }).catch((error) => {
       dispatch({ type: API_FAILURE });
       callback(error);
