@@ -1683,7 +1683,7 @@ function TabDiscountOther(props) {
                         closeDrawer={openAndCloseAddConditionCosting}
                         anchor={'right'}
                         netPOPrice={netPOPrice}
-                        basicRate={getValues('BasicRateINR')}
+                        basicRateCurrency={getValues('BasicRateINR')}
                       />}
                     </Col>
                     {/* {initialConfiguration?.IsShowNpvCost && <Row>
