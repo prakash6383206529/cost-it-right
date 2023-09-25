@@ -44,6 +44,7 @@ import { TextFieldHookForm } from '../../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
 import { number, percentageLimitValidation, decimalNumberLimit6 } from '../../../helper/validation'
 import Button from '../../layout/Button'
+import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
@@ -940,6 +941,7 @@ const CostingSummaryTable = (props) => {
         "ReleaseStrategyApprovalDetails": dataList
       }
       dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+
         setReleaseStrategyDetails(res?.data?.Data)
         if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover === false) {
           if (list?.length === 0) {
@@ -970,7 +972,14 @@ const CostingSummaryTable = (props) => {
               Toaster.warning('Plant should be same for sending multiple costing for approval')
             } else {
               sendForApprovalData(multipleCostings)
-              setShowApproval(true)
+              dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+                if (res?.data?.Data?.TechnologyLevels?.length === 0) {
+                  setShowApproval(false)
+                  Toaster.warning('User is not in the approval flow')
+                } else {
+                  setShowApproval(true)
+                }
+              }))
             }
           } else {
             Toaster.warning('This is final level user')
@@ -1000,7 +1009,14 @@ const CostingSummaryTable = (props) => {
         Toaster.warning('Plant should be same for sending multiple costing for approval')
       } else {
         sendForApprovalData(multipleCostings)
-        setShowApproval(true)
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+          if (res?.data?.Data?.TechnologyLevels?.length === 0) {
+            setShowApproval(false)
+            Toaster.warning('User is not in the approval flow')
+          } else {
+            setShowApproval(true)
+          }
+        }))
       }
     }
 
