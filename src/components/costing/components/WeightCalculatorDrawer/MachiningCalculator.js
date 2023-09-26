@@ -23,6 +23,7 @@ function Machining(props) {
         grossLength: WeightCalculatorRequest && WeightCalculatorRequest.GrossLength !== undefined ? WeightCalculatorRequest.GrossLength : '',
         piecePerMeter: WeightCalculatorRequest && WeightCalculatorRequest.PiecePerMeter !== undefined ? WeightCalculatorRequest.PiecePerMeter : '',
         rmPerPiece: WeightCalculatorRequest && WeightCalculatorRequest.RMPerPiece !== undefined ? WeightCalculatorRequest.RMPerPiece : '',
+        netRm: WeightCalculatorRequest && WeightCalculatorRequest.RMPerPiece !== undefined ? WeightCalculatorRequest.RMPerPiece : '',
     }
     const [grossLength, setGrossLength] = useState(0)
     const [piecePerMeter, setPiecePerMeter] = useState(0)
