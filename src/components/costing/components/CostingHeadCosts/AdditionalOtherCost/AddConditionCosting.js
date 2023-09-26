@@ -270,13 +270,6 @@ function AddConditionCosting(props) {
         }
     }
 
-    const basicPriceTitle = () => {
-        const { initialConfiguration } = this.props
-        if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
-            return `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
-        }
-    }
-
     return (
 
         <div>
@@ -302,7 +295,6 @@ function AddConditionCosting(props) {
                                 <Row>
 
                                     <Col md="3" className='pr-1'>
-                                        <TooltipCustom id="rm-basic-price" tooltipText={basicPriceTitle()} />
                                         <SearchableSelectHookForm
                                             label={`Condition`}
                                             name={'Condition'}
