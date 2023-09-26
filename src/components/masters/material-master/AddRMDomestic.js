@@ -526,7 +526,6 @@ class AddRMDomestic extends Component {
     let conditionList = this.recalculateConditions(basicPriceCurrency)
 
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    console.log('sumBase: ', sumBase);
     let netLandedCostCurrency = checkForNull(sumBase) + checkForNull(basicPriceCurrency)
 
     this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
@@ -1683,7 +1682,7 @@ class AddRMDomestic extends Component {
                                   <h5>{"Vendor:"}</h5>
                                   {costingTypeId !== VBCTypeId && (
                                     <label
-                                      className={`custom-checkbox w-auto mb-0 ${costingTypeId === VBCTypeId ? "disabled" : ""
+                                      className={`custom-checkbox w-auto mb-0 ${(costingTypeId === VBCTypeId || isViewFlag) ? "disabled" : ""
                                         }`}
                                       onChange={this.onPressDifferentSource}
                                     >
@@ -1691,7 +1690,7 @@ class AddRMDomestic extends Component {
                                       <input
                                         type="checkbox"
                                         checked={this.state.HasDifferentSource}
-                                        disabled={costingTypeId === VBCTypeId ? true : false}
+                                        disabled={(costingTypeId === VBCTypeId || isViewFlag) ? true : false}
                                       />
                                       <span
                                         className=" before-box p-0"
@@ -1984,8 +1983,8 @@ class AddRMDomestic extends Component {
                                     id="addRMDomestic_conditionToggle"
                                     onClick={this.conditionToggle}
                                     className={"right mt-0 mb-2"}
-                                    variant="plus-icon-square"
-
+                                    variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
+                                    title={isViewFlag ? "View" : "Add"}
                                   />
                                 </div>
                               </Col>
