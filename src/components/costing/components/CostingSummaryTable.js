@@ -349,7 +349,7 @@ const CostingSummaryTable = (props) => {
       }
       return null
     })
-
+    setDataSelected([])
   }, [viewCostingData])
 
 
@@ -928,10 +928,14 @@ const CostingSummaryTable = (props) => {
 
     list && list?.map((item) => {
       vendorArray.push(item.vendorId)
-      effectiveDateArray.push(item.EffectiveDate)
+      effectiveDateArray.push(item.effectiveDate)
       plantArray.push(item.PlantCode)
       return null
     })
+    if (effectiveDateArray.includes('')) {
+      Toaster.warning('Please select the effective date.')
+      return false
+    }
     if (initialConfiguration.IsReleaseStrategyConfigured) {
       let dataList = costingIdObj(dataSelected)
       let requestObject = {
