@@ -503,6 +503,7 @@ function CommonApproval(props) {
     const closeApprovalDrawer = (e = '', type) => {
         setApprovalDrawer(false)
         if (type === 'submit') {
+            setSelectedRowData([])
             setLoader(true)
             getTableData(0, 10, true, floatingFilterData)
         }
@@ -598,7 +599,6 @@ function CommonApproval(props) {
 
 
     const sendForApproval = () => {
-
         if (selectedRowData?.length > 0) {
             let levelDetailsTemp = []
             dispatch(getUsersMasterLevelAPI(loggedInUserId(), props?.MasterId, (res) => {
@@ -830,10 +830,10 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRateConversion" headerName="Basic Rate Conversion" cellRenderer='basicRateFormatter'></AgGridColumn>}
 
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='basicRateFormatter'></AgGridColumn>}
-                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetCostWithoutConditionCostConversion" headerName="Basic Price Conversion" cellRenderer='basicRateFormatter'></AgGridColumn>}
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetCostWithoutConditionCostConversion" headerName="Basic Price (Currency)" cellRenderer='basicRateFormatter'></AgGridColumn>}
 
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='basicRateFormatter'></AgGridColumn>}
-                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetConditionCostConversion" headerName="Net Condition Cost Conversion" cellRenderer='basicRateFormatter'></AgGridColumn>}
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetConditionCostConversion" headerName="Net Condition Cost (Currency)" cellRenderer='basicRateFormatter'></AgGridColumn>}
 
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='netCostFormatter'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer='netCostFormatter'></AgGridColumn>}

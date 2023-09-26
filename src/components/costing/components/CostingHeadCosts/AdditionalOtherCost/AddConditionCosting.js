@@ -140,9 +140,15 @@ function AddConditionCosting(props) {
 
     // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
-        if (!getValues('Condition') || !getValues('Type') || !getValues('Percentage')) {
-            Toaster.warning("Please enter all details to add row.")
-            return false
+        if (!getValues('Condition') || !getValues('Type')) {
+            if (getValues('Type') === 'Fixed' && !getValues('CostBase')) {
+
+                Toaster.warning("Please enter all details to add row.")
+                return false
+            } else if (getValues('Type') === 'Percentage' && !getValues('Percentage')) {
+                Toaster.warning("Please enter all details to add row.")
+                return false
+            }
         }
         if (errors.Percentage) {
             return false
@@ -263,6 +269,13 @@ function AddConditionCosting(props) {
         }
     }
 
+    const basicPriceTitle = () => {
+        const { initialConfiguration } = this.props
+        if (initialConfiguration?.IsBasicRateAndCostingConditionVisible) {
+            return `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+        }
+    }
+
     return (
 
         <div>
@@ -288,6 +301,7 @@ function AddConditionCosting(props) {
                                 <Row>
 
                                     <Col md="3" className='pr-1'>
+                                        <TooltipCustom id="rm-basic-price" tooltipText={basicPriceTitle()} />
                                         <SearchableSelectHookForm
                                             label={`Condition`}
                                             name={'Condition'}

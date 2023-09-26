@@ -1905,6 +1905,10 @@ export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
 export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
+export const Assembly = '1'
+export const BoughtOutPart = '3'
+export const Component = '2'
+export const Product = '4'
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -1940,6 +1944,7 @@ export const VIEW_COSTING_DATA = {
   customer: 'Customer (Code)',
   plantExcel: 'Plant (Code)',
   status: 'Status',
+  sobPercentageExcel: 'SOB',
   rm: 'RM-Grade',
   rmRate: 'RM Rate',
   scrapRate: 'Scrap Rate',
@@ -2067,6 +2072,10 @@ export const VIEW_COSTING_DATA_TEMPLATE = [
   {
     label: 'Status',
     value: 'status'
+  },
+  {
+    label: 'SOB',
+    value: 'sobPercentageExcel'
   },
   {
     label: 'RM-Grade',
@@ -2453,6 +2462,10 @@ export const BUDGET_ID = 5
 export const PROVISIONAL = "Provisional"
 export const NEW_COMPONENT = "New Component"
 export const CUSTOMER_BASED = "Customer Based"
+export const RELEASE_STRATEGY_B1 = "Release Strategy B1"
+export const RELEASE_STRATEGY_B2 = "Release Strategy B2"
+export const RELEASE_STRATEGY_B3 = "Release Strategy B3"
+export const RELEASE_STRATEGY_B4 = "Release Strategy B4"
 
 //default value for page size
 export const defaultPageSize = 10;
@@ -2661,6 +2674,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.246";
+export const VERSION = "V2.1.253";
+
 
 

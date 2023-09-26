@@ -716,8 +716,8 @@ class AddBOPImport extends Component {
 
     let basicRateBase = this.convertIntoBase(fieldsObj?.BasicRateCurrency)
     this.props.change('BasicRateBase', checkForDecimalAndNull(basicRateBase, initialConfiguration.NoOfDecimalForPrice));
-
-    let basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces)
+    console.log(fieldsObj?.NumberOfPieces, "fieldsObj?.NumberOfPieces");
+    let basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
     this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
 
     let basicPriceBase = this.convertIntoBase(basicPriceCurrency)
@@ -1007,7 +1007,7 @@ class AddBOPImport extends Component {
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces)
+      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
       const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
@@ -1040,7 +1040,7 @@ class AddBOPImport extends Component {
     }
 
     //  IF: APPROVAL FLOW
-    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar) {
+    if (CheckApprovalApplicableMaster(BOP_MASTER_ID) === true && !this.state.isFinalApprovar && !isTechnologyVisible) {
       formData.IsSendForApproval = true
       this.setState({ approveDrawer: true, approvalObj: formData })
     }
@@ -1125,6 +1125,14 @@ class AddBOPImport extends Component {
     })
   }
 
+  showBasicRate = () => {
+    const { isEditFlag } = this.state
+    let value = false
+    if (isEditFlag) {
+      value = this.props?.data?.showPriceFields ? true : false
+    }
+    return value
+  }
 
   /**
   * @method render
