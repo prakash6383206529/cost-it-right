@@ -224,3 +224,9 @@
     bottom: 1px;
   }
 }
+
+div[class$="MenuList"] {
+  div {
+    font-size: 14px !important;
+  }
+}
