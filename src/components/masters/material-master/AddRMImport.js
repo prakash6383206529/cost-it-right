@@ -1415,7 +1415,7 @@ class AddRMImport extends Component {
       RawMaterialFreightCostConversion: FinalFreightCostBase,
 
       RMShearingCost: FinalShearingCostCurrency,
-      RawMaterialShearingCostConvrsion: FinalShearingCostBase,
+      RawMaterialShearingCostConversion: FinalShearingCostBase,
 
       JaliScrapCost: jaliRateCurrency,
       JaliScrapCostConversion: jaliRateBase,
