@@ -557,7 +557,6 @@ function RMSimulation(props) {
                                     </div>
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        {console.log(list, "list")}
                                         {list && <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
