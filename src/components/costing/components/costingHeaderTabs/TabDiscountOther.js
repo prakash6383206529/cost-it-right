@@ -1684,6 +1684,7 @@ function TabDiscountOther(props) {
                         anchor={'right'}
                         netPOPrice={netPOPrice}
                         basicRateCurrency={getValues('BasicRateINR')}
+                        ViewMode={CostingViewMode}
                       />}
                     </Col>
                     {/* {initialConfiguration?.IsShowNpvCost && <Row>
