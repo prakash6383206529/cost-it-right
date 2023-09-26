@@ -601,7 +601,7 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' editable={!isImpactedMaster} headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
-                                                <AgGridColumn width={120} field={"ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={"ScrapRate"} ></AgGridColumn>
+                                                <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn width={150} field="RMFreightCost" tooltipField='RMFreightCost' editable='false' cellRenderer={'CostFormatter'} headerName="Freight Cost"></AgGridColumn>

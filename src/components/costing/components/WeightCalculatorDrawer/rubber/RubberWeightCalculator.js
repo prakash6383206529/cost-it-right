@@ -203,7 +203,7 @@ function RubberWeightCalculator(props) {
         let temp = [...rmData]
         temp && temp.map((item, index) => {
             item.GrossWeight = calculatePercentageValue(getValues('grossWeight'), getValues(`rmGridFields.${index}.Percentage`))
-            item.ScrapWeight = calculatePercentageValue(dataToSend?.scrapCost, getValues(`rmGridFields.${index}.Percentage`))
+            item.ScrapWeight = calculatePercentageValue(dataToSend?.RawMaterialScrapWeight, getValues(`rmGridFields.${index}.Percentage`))
             item.FinishWeight = calculatePercentageValue(getValues('finishedWeight'), getValues(`rmGridFields.${index}.Percentage`))
             return item
         })
@@ -212,7 +212,7 @@ function RubberWeightCalculator(props) {
 
     const onSubmit = debounce(handleSubmit((values) => {
 
-        if (totalPercentageValue() > 100) {
+        if (totalPercentageValue() !== 100) {
             Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
             return false
         }

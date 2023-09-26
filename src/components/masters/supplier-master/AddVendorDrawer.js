@@ -383,7 +383,7 @@ class AddVendorDrawer extends Component {
     onSubmit = debounce((values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck, isCriticalVendor, technologyPlantGrid } = this.state;
         const { supplierData } = this.props;
-        if (technologyPlantGrid && technologyPlantGrid.length === 0) {
+        if (isCriticalVendor && technologyPlantGrid && technologyPlantGrid.length === 0) {
             Toaster.warning('Table entry required.');
             return false;
         }
@@ -621,7 +621,11 @@ class AddVendorDrawer extends Component {
             selectedPlants,
             selectedIndex: index, // Store the index of the selected item for updating
             isEditIndex: true,
-            disablePlant: true
+            disablePlant: true,
+            errorObj: {
+                technology: false,
+                plant: false
+            }
         });
     };
 
@@ -946,27 +950,6 @@ class AddVendorDrawer extends Component {
                                             <Col md="4">
                                                 <div className='vendor-drawer'>
                                                     <Field
-                                                        label="Technology"
-                                                        name="Technology"
-                                                        placeholder={"Select"}
-                                                        selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
-                                                        options={this.renderListing("technology")}
-                                                        required={true}
-                                                        selectionChanged={this.handleTechnologyChange}
-                                                        optionValue={(option) => option.Value}
-                                                        optionLabel={(option) => option.Text}
-                                                        component={renderMultiSelectField}
-                                                        mendatory={true}
-                                                        disabled={isViewMode ? true : false}
-                                                        className="multiselect-with-border"
-                                                        vendorMaster={true}
-                                                    />
-                                                    {this.state.errorObj?.technology && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
-                                                </div>
-                                            </Col>
-                                            <Col md="4">
-                                                <div className='vendor-drawer'>
-                                                    <Field
                                                         label="Plant (Code)"
                                                         name="SourceSupplierPlantId"
                                                         placeholder={"Select"}
@@ -985,6 +968,28 @@ class AddVendorDrawer extends Component {
                                                         vendorMaster={true}
                                                     />
                                                     {this.state.errorObj?.plant && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                </div>
+                                            </Col>
+
+                                            <Col md="4">
+                                                <div className='vendor-drawer'>
+                                                    <Field
+                                                        label="Technology"
+                                                        name="Technology"
+                                                        placeholder={"Select"}
+                                                        selection={this.state.Technology == null || this.state.Technology.length === 0 ? [] : this.state.Technology}
+                                                        options={this.renderListing("technology")}
+                                                        required={true}
+                                                        selectionChanged={this.handleTechnologyChange}
+                                                        optionValue={(option) => option.Value}
+                                                        optionLabel={(option) => option.Text}
+                                                        component={renderMultiSelectField}
+                                                        mendatory={true}
+                                                        disabled={isViewMode ? true : false}
+                                                        className="multiselect-with-border"
+                                                        vendorMaster={true}
+                                                    />
+                                                    {this.state.errorObj?.technology && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                                                 </div>
                                             </Col>
                                             <Col md="4" className='pl-0 mb-2 d-flex align-items-center'>

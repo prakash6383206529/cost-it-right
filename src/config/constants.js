@@ -571,6 +571,8 @@ export const API = {
   getSimulationRmFerrousCastingCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-ferrous-casting-calculation-details`,
   saveRawMaterialCalculationForRubberCompound: `${BASE_URL}/costing/save-raw-material-rubber-calculation-details`,
   getSimulationRmRubberCalculation: `${BASE_URL}/simulation/get-simulation-raw-material-rubber-calculation-details`,
+  saveRawMaterialCalculationForMachining: `${BASE_URL}/costing/save-raw-material-machining-calculation-details`,
+  getRawMaterialCalculationForMachining: `${BASE_URL}/costing/get-raw-material-machining-calculation-details`,
 
   // YOY
   getYOYCostList: `${BASE_URL}/rfq-costing/rfq-get-yoy-details`,
@@ -1943,6 +1945,10 @@ export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
 export const BOUGHTOUTPART = 'BoughtOutPart'
 export const BOUGHTOUTPARTSPACING = 'Bought Out Part'
+export const Assembly = '1'
+export const BoughtOutPart = '3'
+export const Component = '2'
+export const Product = '4'
 
 export const COSTING_PATH = '/costing'
 export const COSTING_SUMMARY = '/costing-summary'
@@ -2709,6 +2715,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.250";
+export const VERSION = "V2.1.255";
+
 
 

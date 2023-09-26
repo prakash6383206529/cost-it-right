@@ -499,6 +499,18 @@ class AddRMDomestic extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
 
+  recalculateConditions = (basicPriceBase) => {
+    const { conditionTableData } = this.state;
+    let tempList = conditionTableData && conditionTableData?.map(item => {
+      if (item?.ConditionType === "Percentage") {
+        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBase)
+        item.ConditionCost = costBase
+      }
+      return item
+    })
+    return tempList
+  }
+
   /**
    * @method calculateNetCost
    * @description CALCUALTION NET COST
@@ -510,10 +522,15 @@ class AddRMDomestic extends Component {
     const { FinalConditionCostCurrency, DataToChange, isEditFlag } = this.state
 
     const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
-    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice));
+    let conditionList = this.recalculateConditions(basicPriceCurrency)
+
+    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    let netLandedCostCurrency = checkForNull(sumBase) + checkForNull(basicPriceCurrency)
+
+    this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
 
     if (isEditFlag && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
       && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
@@ -551,6 +568,8 @@ class AddRMDomestic extends Component {
       FinalConditionCostCurrency: FinalConditionCostCurrency,
 
       NetLandedCostCurrency: netLandedCostCurrency,
+
+      conditionTableData: conditionList,
 
     })
   }
@@ -1663,7 +1682,7 @@ class AddRMDomestic extends Component {
                                   <h5>{"Vendor:"}</h5>
                                   {costingTypeId !== VBCTypeId && (
                                     <label
-                                      className={`custom-checkbox w-auto mb-0 ${costingTypeId === VBCTypeId ? "disabled" : ""
+                                      className={`custom-checkbox w-auto mb-0 ${(costingTypeId === VBCTypeId || isViewFlag) ? "disabled" : ""
                                         }`}
                                       onChange={this.onPressDifferentSource}
                                     >
@@ -1671,7 +1690,7 @@ class AddRMDomestic extends Component {
                                       <input
                                         type="checkbox"
                                         checked={this.state.HasDifferentSource}
-                                        disabled={costingTypeId === VBCTypeId ? true : false}
+                                        disabled={(costingTypeId === VBCTypeId || isViewFlag) ? true : false}
                                       />
                                       <span
                                         className=" before-box p-0"
@@ -1964,8 +1983,8 @@ class AddRMDomestic extends Component {
                                     id="addRMDomestic_conditionToggle"
                                     onClick={this.conditionToggle}
                                     className={"right mt-0 mb-2"}
-                                    variant="plus-icon-square"
-
+                                    variant={isViewFlag ? "view-icon-primary" : "plus-icon-square"}
+                                    title={isViewFlag ? "View" : "Add"}
                                   />
                                 </div>
                               </Col>
@@ -2124,7 +2143,7 @@ class AddRMDomestic extends Component {
                             buttonName={"Cancel"}
                           />
                           {!isViewFlag && <>
-                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
+                            {(!isViewFlag && (CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true && !CostingTypePermission) ?
 
 
 
