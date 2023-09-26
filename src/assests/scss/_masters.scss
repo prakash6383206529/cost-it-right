@@ -202,7 +202,9 @@
 
 [id^="AddVendorDrawer"] {
   .select__value-container--has-value {
-    .css-b8ldur-Input {
+
+    .css-b8ldur-Input,
+    .css-1g6gooi {
       width: 100% !important;
     }
   }
