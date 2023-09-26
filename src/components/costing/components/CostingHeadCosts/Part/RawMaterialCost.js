@@ -937,6 +937,8 @@ function RawMaterialCost(props) {
           item.WeightCalculatorRequest = weightData
           item.WeightCalculationId = weightData.WeightCalculationId
           item.RawMaterialCalculatorId = weightData.WeightCalculationId
+          item.IsCalculatedEntry = true
+          item.IsCalculaterAvailable = true
           return item
         })
         setGridData(gridData)
