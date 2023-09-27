@@ -634,6 +634,8 @@ export const API = {
   register: `${BASE_URL}/user/register`,
   getLoginPageInit: `${BASE_URL}/user/page-init`,
   registerRfqUser: `${BASE_URL}/rfq-user/register-rfq-user`,
+  updatePassword: `${BASE_URL}/rfq-user/rfq-users-reset-or-forget-password`,
+  forgetPassword: `${BASE_URL}/user/users-forget-mail-send`,
 
   //USERS API
   getUserSelectList: `${BASE_URL}/configuration/select-list-get-user`,
@@ -1925,6 +1927,8 @@ export const USER_PATH = '/users'
 export const RFQ_LISTING = '/rfq-listing'
 export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
+export const RESET_PASSWORD = '/reset-password'
+export const FORGET_PASSWORD = '/forget-password'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"

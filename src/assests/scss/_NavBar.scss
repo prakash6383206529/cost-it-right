@@ -948,7 +948,6 @@ label.btn.btn-link.align-middle.checkbox-label {
     }
   }
 
-
   .dropdown_menu {
     position: absolute;
     top: 100%;
@@ -1029,4 +1028,11 @@ label.btn.btn-link.align-middle.checkbox-label {
   .navbar {
     border-bottom: none !important;
   }
+}
+
+.user-name {
+  text-transform: uppercase;
+  color: $colorPrimary;
+  margin-left: 12px;
+  font-size: 15px;
 }
