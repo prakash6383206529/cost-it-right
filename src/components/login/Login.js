@@ -1,12 +1,12 @@
 
 import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+import { Field, formValueSelector, reduxForm } from "redux-form";
 import {
   renderPasswordInputField, renderEmailInputField, focusOnError,
   renderText
 } from "../layout/FormInputs";
 import { connect } from "react-redux";
-import { loginUserAPI, getMenuByUser, TokenAPI } from "../../actions/auth/AuthActions";
+import { loginUserAPI, getMenuByUser, TokenAPI, forgetPassword } from "../../actions/auth/AuthActions";
 import { maxLength70, maxLength25, required, email } from "../../helper/validation";
 import "./Login.scss";
 import { Loader } from "../common/Loader";
@@ -15,11 +15,13 @@ import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import logo from '../../assests/images/logo/company-logo.png'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
+import CheckIcon from '../../assests/images/mail-sent.png'
 import errorImg from '../../assests/images/box.png'
 import { IV, KEY, VERSION } from '../../config/constants'
 import LoaderCustom from "../common/LoaderCustom";
 var CryptoJS = require('crypto-js')
 
+const selector = formValueSelector('Login')
 class Login extends Component {
   constructor(props) {
     super(props);
@@ -27,8 +29,11 @@ class Login extends Component {
       isLoader: false,
       isSubmitted: false,
       isRedirect: false,
-      flag: false,
-      inputLoader: false
+      inputLoader: false,
+      mailSent: false,
+      userNotFound: false,
+      buttonFlag: true,
+      forgetIsCalled: false
     };
   }
 
@@ -52,7 +57,24 @@ class Login extends Component {
   /**
    * @method FORGOT CONFIRM
    */
-  forgotConfirm = () => this.setState({ flag: true })
+  forgotConfirm = () => {
+    const { fieldsObj } = this.props;
+    if (this.state.forgetIsCalled) {
+      return false
+    } else {
+      this.setState({ forgetIsCalled: true })
+      this.props.forgetPassword(fieldsObj, (res) => {
+        if (res && res.status === 200) {
+          this.setState({ mailSent: true, userNotFound: false, buttonFlag: false, forgetIsCalled: false })
+        } else if (res && res.status === 204) {
+          this.setState({ userNotFound: true, mailSent: false, buttonFlag: false, forgetIsCalled: false })
+        }
+      })
+    }
+
+
+
+  }
 
   /**
    * Submit the login form
@@ -115,7 +137,7 @@ class Login extends Component {
 
   render() {
     const { handleSubmit, initialConfiguration } = this.props;
-    const { isLoader, isSubmitted, isRedirect, } = this.state;
+    const { isLoader, isSubmitted, isRedirect, mailSent, userNotFound, buttonFlag } = this.state;
 
     if (isRedirect === true) {
       return <Redirect
@@ -132,7 +154,6 @@ class Login extends Component {
 
             <div className="row shadow-lg">
               <div className="col-md-5 form-section">
-
                 <div className="text-center">
                   <img className="logo-first" src={logo} alt="Minda" />
                 </div>
@@ -151,7 +172,7 @@ class Login extends Component {
                         component={renderEmailInputField}
                         isDisabled={false}
                         placeholder={"Email"}
-                        onClickCapture={(e) => this.setState({ flag: false })}
+                        onClickCapture={(e) => this.setState({ buttonFlag: true, userNotFound: false, mailSent: false, forgetIsCalled: false })}
                         validate={[required, email, maxLength70]}
                         required={true}
                       // maxLength={71}
@@ -166,13 +187,13 @@ class Login extends Component {
                           validate={[required, maxLength70]}
                           component={renderText}
                           required={true}
-                          onClickCapture={(e) => this.setState({ flag: false })}
+                          onClickCapture={(e) => this.setState({ buttonFlag: true, userNotFound: false, mailSent: false, forgetIsCalled: false })}
                           // maxLength={26}
                           className={'withBorder'}
                         /></span>
                     }
                   </div>
-                  <div className="input-group phone" onClickCapture={(e) => this.setState({ flag: false })}>
+                  <div className="input-group phone" onClickCapture={(e) => this.setState({ buttonFlag: true, userNotFound: false, mailSent: false, forgetIsCalled: false })}>
                     <Field
                       name="Password"
                       // label="Password"
@@ -193,18 +214,24 @@ class Login extends Component {
                       className="btn login-btn w-100 dark-pinkbtn"
                     />
                   </div>
-                  <div className="form-group forgot-link d-flex pt-2 justify-content-center">
-                    {/* <Field name="RememberMe" label="Remember Me" id="remember" component={renderCheckboxInputField} type="checkbox" /> */}
-                    <a className="forgotpwd-field" onClick={() => this.forgotConfirm()}>{'Forgot Password ?'}</a>
-                  </div>
-                  {this.state.flag && (
-                    <div className="text-help mb-2 text-center">Please contact your IT Administrator</div>
+                </form>
+                {buttonFlag && <div className="forgot-link  d-flex pt-2 justify-content-center">
+                  <span id="userNotFound" className="btn btn-link" onClick={this.forgotConfirm}>{'Forgot Password ?'}</span>
+                </div>}
+                <div className="forget-wrapper">
+                  {userNotFound && (
+                    <div className="text-help userNotFound text-center">The provided user does not exist.</div>
                   )
                   }
-                </form>
-                <div className="bottomlogo_con">
-                  <span>Powered By</span>
+                  {mailSent && (
+                    <div className="mail-sent"><img src={CheckIcon} alt="check" />Password reset email sent successfully! Please check your inbox.</div>
+                  )}
+                </div>
+
+                <div className="bottomlogo_con mt-3">
+                  <span className="mt-0">Powered By</span>
                   <img className="logo-second" src={secondLogo} alt="Cost It Right" />
+
                 </div>
               </div>
               <div className="col-md-7 p-0 right-sideimg">
@@ -235,9 +262,10 @@ const validate = values => {
  * @desc map state containing organisation details from the api to props
  * @return object{}
  */
-function mapStateToProps({ auth }) {
-  const { menusData, leftMenuData, initialConfiguration } = auth
-  return { menusData, leftMenuData, initialConfiguration }
+function mapStateToProps(state) {
+  const fieldsObj = selector(state, 'UserName')
+  const { menusData, leftMenuData, initialConfiguration } = state.auth
+  return { menusData, leftMenuData, initialConfiguration, fieldsObj }
 }
 
 /**
@@ -256,4 +284,5 @@ export default reduxForm({
   loginUserAPI,
   getMenuByUser,
   TokenAPI,
+  forgetPassword
 })(Login));
