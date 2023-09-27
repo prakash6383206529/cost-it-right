@@ -671,3 +671,10 @@
     }
   }
 }
+
+@for $i from 1 through 10 {
+  .pie-chart-wrapper-#{$i} {
+    min-width: inherit;
+    min-height: inherit;
+  }
+}
