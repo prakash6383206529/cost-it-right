@@ -1837,7 +1837,7 @@ const CostingSummaryTable = (props) => {
                 </>}
 
               <Col md="12">
-                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive`}>
+                <div className={`${viewCostingData[0]?.technologyId !== LOGISTICS ? '' : `overflow-y-hidden ${props?.isRfqCosting ? 'layout-min-height-440px' : ''}`} table-responsive `}>
                   <table style={{ minWidth: cssObj.tableWidth }} className={`table table-bordered costing-summary-table mb-0 ${approvalMode ? 'costing-approval-summary' : ''}`}>
                     {props.isRfqCosting && <thead>
                       <tr>
@@ -1976,7 +1976,7 @@ const CostingSummaryTable = (props) => {
                                           {(data?.bestCost === true) ? ' ' : ` (${(data?.effectiveDate && data?.effectiveDate !== '') ? DayTime(data?.effectiveDate).format('DD-MM-YYYY') : "-"})`}
                                         </span>
                                         {(!pdfHead && !drawerDetailPDF && data.totalCost !== 0 && !simulationDrawer) && (
-                                          <span className={`pie-chart-wrapper`}>
+                                          <span className={`pie-chart-wrapper pie-chart-wrapper-${index}`}>
                                             {isPieChartVisible ? (
                                               <button type="button" className="CancelIcon" title="Discard" onClick={() => pieChartCloseHandler(index)}></button>
                                             ) : (
