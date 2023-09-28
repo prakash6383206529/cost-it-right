@@ -202,7 +202,9 @@
 
 [id^="AddVendorDrawer"] {
   .select__value-container--has-value {
-    .css-b8ldur-Input {
+
+    .css-b8ldur-Input,
+    .css-1g6gooi {
       width: 100% !important;
     }
   }
@@ -220,5 +222,11 @@
 
   .text-help.p-absolute.bottom-7 {
     bottom: 1px;
+  }
+}
+
+div[class$="MenuList"] {
+  div {
+    font-size: 14px !important;
   }
 }
