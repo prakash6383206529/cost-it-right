@@ -456,10 +456,10 @@ function RawMaterialCost(props) {
 
   }
 
-  const removeErrorGrossFinishWeight = (grossValue, finishWeight) => {
+  const removeErrorGrossFinishWeight = (grossValue, finishWeight, index) => {
     if (checkForNull(grossValue) > checkForNull(finishWeight) && errors?.rmGridFields) {
-      delete errors?.rmGridFields[0].FinishWeight
-      delete errors?.rmGridFields[0].GrossWeight
+      delete errors?.rmGridFields[index].FinishWeight
+      delete errors?.rmGridFields[index].GrossWeight
     }
   }
 
@@ -531,7 +531,7 @@ function RawMaterialCost(props) {
       }
       dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
       setGridData(tempArr)
-      removeErrorGrossFinishWeight(grossValue, FinishWeight)
+      removeErrorGrossFinishWeight(grossValue, FinishWeight, index)
     }
     for (let i = 0; i < gridData.length; i++) {
       if (forgingInfoIcon[i] === undefined) {
@@ -627,7 +627,7 @@ function RawMaterialCost(props) {
 
   const handleFinishWeightChange = (event, index) => {
     let grossWeight = gridData[index]?.GrossWeight
-    removeErrorGrossFinishWeight(grossWeight, event)
+    removeErrorGrossFinishWeight(grossWeight, event, index)
     setInputValue({ event: event, index: index })
     let tempArr = []
     let tempData = gridData[index]
@@ -692,7 +692,7 @@ function RawMaterialCost(props) {
       }
       dispatch(setRMCutOff({ IsCutOffApplicable: tempData.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
       setGridData(tempArr)
-      removeErrorGrossFinishWeight(GrossWeight, FinishWeight)
+      removeErrorGrossFinishWeight(GrossWeight, FinishWeight, index)
 
     }
   }
