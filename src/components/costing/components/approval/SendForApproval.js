@@ -1191,7 +1191,7 @@ const SendForApproval = (props) => {
                       <div className={'cancel-icon'}></div>
                       {"Cancel"}
                     </button>
-                    {viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
+                    {initialConfiguration.IsLastRevisionDataVisible && viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
                     </button>
