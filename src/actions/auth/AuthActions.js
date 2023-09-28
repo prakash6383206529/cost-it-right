@@ -1826,3 +1826,37 @@ export function activeInactiveRole(requestData, callback) {
             });
     };
 }
+
+export function updatePassword(requestData, callback) {
+    return (dispatch) => {
+        dispatch({ type: AUTH_API_REQUEST });
+        axios.put(API.updatePassword, requestData, config())
+            .then((response) => {
+                dispatch({ type: API_SUCCESS });
+                callback(response);
+            })
+            .catch((error) => {
+                callback(error);
+                dispatch({ type: AUTH_API_FAILURE });
+                apiErrors(error);
+            });
+    };
+}
+
+
+export function forgetPassword(UserName, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.get(`${API.forgetPassword}/${UserName}`, config());
+        request.then((response) => {
+            dispatch({ type: API_SUCCESS });
+            if (response) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error);
+        });
+    };
+}
