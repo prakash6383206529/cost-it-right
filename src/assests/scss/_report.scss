@@ -264,19 +264,11 @@
 
     .given-report {
         // border-right: 1px solid $agGridBorder;
-        border-left: 1px solid $disabledFont;
-        border-bottom: 1px solid $disabledFont;
+        border-left: 1px solid $agGridBorder;
     }
 
     .got-report {
-        border-left: 1px solid $disabledFont;
-        border-bottom: 1px solid $disabledFont;
-    }
-
-    .variance-report {
-        border-left: 1px solid $disabledFont;
-        border-right: 1px solid $disabledFont;
-        border-bottom: 1px solid $disabledFont;
+        border-left: 1px solid $agGridBorder;
     }
 
     .got-given-header {
@@ -285,9 +277,9 @@
         align-items: center;
         font-weight: 500;
         min-height: 45px;
-        font-size: 16px;
-        border: 1px solid $disabledFont;
-        // border-bottom: none;
+        font-size: 14px;
+        border: 1px solid $agGridBorder;
+        border-bottom: none;
     }
 }
 
