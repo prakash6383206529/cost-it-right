@@ -382,7 +382,7 @@ class AddVendorDrawer extends Component {
     onSubmit = debounce((values) => {
         const { selectedVendorType, selectedVendorPlants, existedVendorPlants, city, VendorId, DropdownChanged, DataToCheck, isCriticalVendor, technologyPlantGrid } = this.state;
         const { supplierData } = this.props;
-        if (technologyPlantGrid && technologyPlantGrid.length === 0) {
+        if (isCriticalVendor && technologyPlantGrid && technologyPlantGrid.length === 0) {
             Toaster.warning('Table entry required.');
             return false;
         }
@@ -620,7 +620,11 @@ class AddVendorDrawer extends Component {
             selectedPlants,
             selectedIndex: index, // Store the index of the selected item for updating
             isEditIndex: true,
-            disablePlant: true
+            disablePlant: true,
+            errorObj: {
+                technology: false,
+                plant: false
+            }
         });
     };
 
