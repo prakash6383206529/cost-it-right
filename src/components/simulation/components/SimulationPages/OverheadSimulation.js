@@ -636,7 +636,6 @@ function OverheadSimulation(props) {
     };
 
     const cancel = () => {
-        // props.cancelEditPage()
         setShowMainSimulation(true)
     }
 

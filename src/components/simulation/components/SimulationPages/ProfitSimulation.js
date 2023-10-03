@@ -743,7 +743,6 @@ function ProfitSimulation(props) {
     };
 
     const cancel = () => {
-        // props.cancelEditPage()
         setShowMainSimulation(true)
     }
 

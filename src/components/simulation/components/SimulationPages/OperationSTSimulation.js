@@ -39,7 +39,6 @@ function OperationSTSimulation(props) {
     const [token, setToken] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [isDisable, setIsDisable] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
@@ -215,7 +214,7 @@ function OperationSTSimulation(props) {
             item.NewRate = undefined
             return null
         })
-        setShowMainSimulation(true)
+        props.backToSimulation()
     }
 
     const closeDrawer = (e = '') => {
@@ -389,8 +388,7 @@ function OperationSTSimulation(props) {
     return (
         <div>
             <div className={`ag-grid-react`}>
-                {
-                    (!showverifyPage && !showMainSimulation) &&
+                {!showverifyPage &&
                     <Fragment>
                         {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised net rate please double click on the field."}</Tooltip>}
                         <form>
@@ -559,9 +557,6 @@ function OperationSTSimulation(props) {
                     <VerifySimulation master={selectedMasterForSimulation.value} token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
-                {
-                    showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
-                }
                 {
                     showRunSimulationDrawer &&
                     <RunSimulationDrawer

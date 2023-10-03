@@ -480,7 +480,6 @@ function OPSImulation(props) {
     };
 
     const cancel = () => {
-        // props.cancelEditPage()
         setShowMainSimulation(true)
     }
 
