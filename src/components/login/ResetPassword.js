@@ -1,7 +1,6 @@
 import React from 'react'
-import Logo from '../../assests/images/logo/company-logo.svg'
+import Logo from '../../assests/images/logo/company-logo.png'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
-import logoutImg from '../../assests/images/logout.svg'
 import { Nav } from 'reactstrap'
 import { PasswordFieldHookForm } from '../layout/HookFormInputs'
 import { Controller, useForm } from 'react-hook-form'
