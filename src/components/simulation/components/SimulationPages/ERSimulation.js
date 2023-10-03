@@ -123,7 +123,6 @@ function ERSimulation(props) {
 
 
     const cancel = () => {
-        // props.cancelEditPage()
         setShowMainSimulation(true)
     }
 

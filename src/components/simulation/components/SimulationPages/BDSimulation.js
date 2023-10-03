@@ -40,7 +40,6 @@ function BDSimulation(props) {
     const [token, setToken] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [isDisable, setIsDisable] = useState(false)
     const gridRef = useRef();
     const [effectiveDate, setEffectiveDate] = useState('');
@@ -307,8 +306,7 @@ function BDSimulation(props) {
             return null
         })
 
-        // props.cancelEditPage()
-        setShowMainSimulation(true)
+        props.backToSimulation(true)
     }
 
     const closeDrawer = (e = '') => {
@@ -412,8 +410,7 @@ function BDSimulation(props) {
 
         <div>
             <div className={`ag-grid-react`}>
-                {
-                    (!showverifyPage && !showMainSimulation) &&
+                {!showverifyPage &&
                     <Fragment>
                         {!isImpactedMaster && showTooltip && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         <Row>
@@ -581,9 +578,6 @@ function BDSimulation(props) {
                     <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
                 }
 
-                {
-                    showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
-                }
                 {
                     showRunSimulationDrawer &&
                     <RunSimulationDrawer
