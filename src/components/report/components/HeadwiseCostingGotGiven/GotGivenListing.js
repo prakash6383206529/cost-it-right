@@ -3,15 +3,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Table } from 'reactstrap';
 import { checkForDecimalAndNull } from '../../../../helper';
 import DayTime from '../../../common/DayTimeWrapper';
-import { DATE_TYPE, EMPTY_DATA } from '../../../../config/constants';
+import { DATE_TYPE, EMPTY_DATA, HEAD_WISE_COSTING_GOT_GIVEN } from '../../../../config/constants';
 import { useState } from 'react';
 import { useEffect } from 'react';
 import { getCostingGotAndGivenDetails } from '../../actions/ReportListing';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-
+import ReactExport from 'react-export-excel';
+const ExcelFile = ReactExport.ExcelFile;
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const mainHeaders = ["Month", "Part Number", "Part Name", "Revision Number", "Plant(Code)", "Plant Address", "Vendor(Code)", "Customer(Code)", "Budgeted Quantity", "Approved Quantity", "Effective Date"]
-
+const gotHeader = ['', '', 'Got Details', '', '', '', 'Given Details']
 function GotGivenListing(props) {
     const formData = useSelector(state => state.report.costReportFormGridData);
     const { initialConfiguration } = useSelector(state => state.auth)
@@ -19,7 +21,7 @@ function GotGivenListing(props) {
     const [gotDetails, setGotDetails] = useState([]);
     const [givenDetails, setGivenDetails] = useState([]);
     const [isLoader, setIsLoader] = useState('')
-    const [topHeaderData, setTopHeaderData] = useState({})
+    const [topHeaderData, setTopHeaderData] = useState([])
     const dispatch = useDispatch()
 
     const cancelReport = () => {
@@ -368,8 +370,7 @@ function GotGivenListing(props) {
                         GivenDetails?.ActualHeadWiseCostingDetails?.Amortization
                     ]
                 }]
-
-                setTopHeaderData({
+                let obj = {
                     Month: Data.Month,
                     PartNumber: Data.PartNumber,
                     PartName: Data.PartName,
@@ -381,8 +382,8 @@ function GotGivenListing(props) {
                     BudgetedQuantity: Data.CBCBudgetedQuantity,
                     ApprovedQuantity: Data.CBCApprovedQuantity,
                     EffectiveDate: Data.SelectedEffectiveDate ? DayTime(Data.SelectedEffectiveDate).format('DD/MM/YYYY') : '-',
-
-                })
+                }
+                setTopHeaderData([obj]);
                 setIsLoader(false)
                 setTableData(DataTemplate)
             } else {
@@ -392,10 +393,64 @@ function GotGivenListing(props) {
 
     }, [])
 
+    const renderexcel = () => {
+        const detailHeaders = [gotDetails?.HeaderName?.CRMHeader, gotDetails?.HeaderName?.Part, gotDetails?.HeaderName?.TotalOfPartAndSurfaceTreatment, gotDetails?.HeaderName?.BudgetedHeadWiseCosting, gotDetails?.HeaderName?.ActualHeadWiseCosting, givenDetails?.HeaderName?.Part, givenDetails?.HeaderName?.TotalOfPartAndSurfaceTreatment, givenDetails?.HeaderName?.BudgetedHeadWiseCosting, givenDetails?.HeaderName?.ActualHeadWiseCosting]
+        let mainArray = []
+        let tableArray = []
+        topHeaderData?.map((item) => {
+            let tempArray = []
+            tempArray?.push(item?.Month)
+            tempArray?.push(item?.PartNumber)
+            tempArray?.push(item?.PartName)
+            tempArray?.push(item?.RevisionNumber)
+            tempArray?.push(item?.PlantName)
+            tempArray?.push(item?.PlantAddress)
+            tempArray?.push(item?.VendorName)
+            tempArray?.push(item?.CustomerName)
+            tempArray?.push(item?.BudgetedQuantity)
+            tempArray?.push(item?.ApprovedQuantity)
+            tempArray?.push(item?.EffectiveDate)
+            mainArray.push(tempArray)
+            return null
+        })
+        tableData?.map((item) => {
+            const fieldsArray = item?.fields?.map(field => field ?? '-');
+            tableArray.push([item?.label, ...fieldsArray]);
+            return null;
+        });
+        const multiDataSet = [
+            {
+                columns: mainHeaders,
+                data: mainArray
+            },
+            {
+                ySteps: 2, //will put space of 2 rows,
+                columns: gotHeader,
+                data: []
+            },
+            {
+                ySteps: 0, //will put space of 0 rows,
+                columns: detailHeaders,
+                data: tableArray
+            }
+        ];
+        return multiDataSet
+    }
+
+
+    const returnExcelColumn = () => {
+        let multiDataSet = renderexcel()
+        return (
+            <ExcelSheet dataSet={multiDataSet} name={HEAD_WISE_COSTING_GOT_GIVEN} />
+        );
+    }
 
     return <>
         {isLoader && <LoaderCustom />}
         <div className='d-flex justify-content-end'>
+            <ExcelFile filename={HEAD_WISE_COSTING_GOT_GIVEN} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                {returnExcelColumn()}
+            </ExcelFile>
             <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
         </div>
         <div>
@@ -407,7 +462,7 @@ function GotGivenListing(props) {
                 </thead>
                 <thead>
                     <tr>
-                        {renderTableCells([topHeaderData.Month, topHeaderData.PartNumber, topHeaderData.PartName, topHeaderData.RevisionNumber, topHeaderData.PlantName, topHeaderData.PlantAddress, topHeaderData.VendorName, topHeaderData.CustomerName, topHeaderData.BudgetedQuantity, topHeaderData.ApprovedQuantity, topHeaderData.EffectiveDate])}
+                        {renderTableCells([topHeaderData[0]?.Month, topHeaderData[0]?.PartNumber, topHeaderData[0]?.PartName, topHeaderData[0]?.RevisionNumber, topHeaderData[0]?.PlantName, topHeaderData[0]?.PlantAddress, topHeaderData[0]?.VendorName, topHeaderData[0]?.CustomerName, topHeaderData[0]?.BudgetedQuantity, topHeaderData[0]?.ApprovedQuantity, topHeaderData[0]?.EffectiveDate])}
                     </tr>
                 </thead>
             </Table>
