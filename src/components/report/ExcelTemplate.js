@@ -163,3 +163,19 @@ export const OUTSOURCING_EXCEL_DOWNLOAD = [
     { label: 'Outsourcing Short Name', value: 'OutSourcingShortName' },
     { label: "Status", value: "status", }
 ]
+export const CUSTOMER_POAM_IMPACT_EXCEL_TEMPLATE = [
+    { label: 'Customer (Code)', value: 'CustomerName', },
+    { label: 'Part no.', value: 'PartNumber', },
+    { label: 'Part Description', value: 'PartDescription', },
+    { label: 'Dispatch Quantity', value: 'TotalDispatchQuantity', },
+    { label: 'Total Impact', value: 'TotalImpact', },
+    { label: 'Purchase Doc', value: 'PurchaseDocumentNumber', },
+    { label: 'Poam status', value: 'POAMStatus', },
+    { label: 'Dispatch Quantity (No.)', value: 'DispatchQuantity', },
+    { label: 'Old Effective Date', value: 'FromDate', },
+    { label: 'New Effective Date', value: 'ToDate', },
+    { label: 'Old Rate (INR)', value: 'OldRate', },
+    { label: 'New Rate (INR)', value: 'NewRate', },
+    { label: 'Variance', value: 'Variance', },
+    { label: 'Impact', value: 'Impact', },
+]
