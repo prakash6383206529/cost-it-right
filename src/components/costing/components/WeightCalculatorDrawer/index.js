@@ -4,13 +4,14 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from './sheetMetal'
 import ForgingCalculator from './forging'
 import Plastic from './Plastic'
-import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting, MACHINING } from '../../../../config/masterData'
+import { SHEETMETAL, RUBBER, PLASTIC, FORGING, DIE_CASTING, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING } from '../../../../config/masterData'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper'
 import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
 import CorrugatedBoxCalculator from './corrugatedBox/index'
 import RubberCalciTab from './rubber'
 import Machining from './MachiningCalculator'
+import Pipe from './sheetMetal/Pipe'
 
 function OpenWeightCalculator(props) {
   const { rmRowData, item, isSummary, rmMBDetail, CostingViewMode, rmData, technology, DisableMasterBatchCheckbox } = props
@@ -152,6 +153,16 @@ function OpenWeightCalculator(props) {
             CostingViewMode={CostingViewMode ? CostingViewMode : false}
             item={item}
             rmData={rmData}
+          />
+        )
+      case WIREFORMING:
+        return (
+          <Pipe
+            rmRowData={props.rmRowData}
+            isEditFlag={props.isEditFlag}
+            toggleDrawer={toggleDrawer}
+            CostingViewMode={CostingViewMode ? CostingViewMode : false}
+            item={item}
           />
         )
       default:

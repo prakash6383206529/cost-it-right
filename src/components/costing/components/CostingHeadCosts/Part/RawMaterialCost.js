@@ -18,7 +18,7 @@ import Popup from 'reactjs-popup';
 import 'reactjs-popup/dist/index.css';
 import { setFerrousCalculatorReset } from '../../../actions/CostWorking'
 import { gridDataAdded, isDataChange, setMasterBatchObj, setRMCCErrors, setRMCutOff } from '../../../actions/Costing'
-import { getTechnology, technologyForDensity, isMultipleRMAllow, STRINGMAXLENGTH, REMARKMAXLENGTH, } from '../../../../../config/masterData'
+import { getTechnology, technologyForDensity, isMultipleRMAllow, STRINGMAXLENGTH, REMARKMAXLENGTH, WIREFORMING, } from '../../../../../config/masterData'
 import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING } from '../../../../../config/masterData'
 import _, { debounce } from 'lodash'
@@ -297,6 +297,7 @@ function RawMaterialCost(props) {
 
     switch ((Number(costData?.TechnologyId))) {
       case SHEETMETAL:
+      case WIREFORMING:
         dispatch(getRawMaterialCalculationForSheetMetal(item.CostingId, tempData.RawMaterialId, tempData.RawMaterialCalculatorId, res => {
           setCalculatorData(res, index)
         }))
@@ -718,16 +719,16 @@ function RawMaterialCost(props) {
 
     // GROSS WEIGHT WILL ALWAYS BE KG ON THIS TAB, SO CONVERTING OTHER UNIT INTO KG
     if (Object.keys(weightData).length > 0) {
-      if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === DISPLAY_G) {
+      if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_G) {
         grossWeight = weightData.GrossWeight / 1000
         finishWeight = weightData.FinishWeight / 1000
         netLandedCost = weightData.RawMaterialCost / 1000
-      } else if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === DISPLAY_KG) {
+      } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_KG) {
         grossWeight = weightData.GrossWeight
         finishWeight = weightData.FinishWeight
         netLandedCost = weightData.RawMaterialCost
 
-      } else if (costData?.TechnologyId === SHEETMETAL && weightData.UOMForDimension === DISPLAY_MG) {
+      } else if ((costData?.TechnologyId === SHEETMETAL || costData?.TechnologyId === WIREFORMING) && weightData.UOMForDimension === DISPLAY_MG) {
         grossWeight = weightData.GrossWeight / 1000000
         finishWeight = weightData.FinishWeight / 1000000
         netLandedCost = weightData.RawMaterialCost / 1000000
@@ -756,7 +757,8 @@ function RawMaterialCost(props) {
         CutOffRMC: CutOffRMC,
         ScrapRecoveryPercentage: RecoveryPercentage,
         BurningLossWeight: weightData.BurningValue,
-        ScrapWeight: scrapWeight
+        ScrapWeight: scrapWeight,
+        IsCalculaterAvailable: true
       }
       tempArr = Object.assign([...gridData], { [editIndex]: tempData })
       setTimeout(() => {
