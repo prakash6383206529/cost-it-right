@@ -267,35 +267,38 @@ function CopyCosting(props) {
                 </Col>
               </Row>
               <Row className="pl-3">
-                <div className="input-group form-group col-md-12 input-withouticon">
-                  {(type === VBCTypeId || type === NCCTypeId) && <TextFieldHookForm
-                    label={"Vendor (Code)"}
-                    name={"Vendor"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={copyCostingData.VendorName}
-                    className=""
-                    customClassName={"withBorder"}
-                    errors={errors.Vendor}
-                    disabled={true}
-                  />}
-                  {(type === CBCTypeId) && <TextFieldHookForm
-                    label={"Customer (Code)"}
-                    name={"customer"}
-                    Controller={Controller}
-                    control={control}
-                    register={register}
-                    mandatory={false}
-                    handleChange={() => { }}
-                    defaultValue={copyCostingData.Customer}
-                    className=""
-                    customClassName={"withBorder"}
-                    errors={errors.customer}
-                    disabled={true}
-                  />}
+                {(type === VBCTypeId || type === NCCTypeId) && <Col md="12"> <TextFieldHookForm
+                  label={"Vendor (Code)"}
+                  name={"Vendor"}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={copyCostingData.VendorName}
+                  className=""
+                  customClassName={"withBorder mb-0"}
+                  errors={errors.Vendor}
+                  disabled={true}
+                />
+                </Col>}
+                {(type === CBCTypeId) && <Col md="12"> <TextFieldHookForm
+                  label={"Customer (Code)"}
+                  name={"customer"}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={copyCostingData.Customer}
+                  className=""
+                  customClassName={"withBorder mb-0"}
+                  errors={errors.customer}
+                  disabled={true}
+                />
+                </Col>}
+
+                <Col md="12">
                   <TextFieldHookForm
                     label={`${costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}`}
                     name={"plant"}
@@ -306,12 +309,12 @@ function CopyCosting(props) {
                     handleChange={() => { }}
                     defaultValue={type === ZBCTypeId ? copyCostingData.PlantName : copyCostingData.DestinationPlantName}
                     className=""
-                    customClassName={"withBorder"}
+                    customClassName={"withBorder mb-0"}
                     errors={errors.plant}
                     disabled={true}
                   />
-                </div>
-                <div className="input-group form-group col-md-12 input-withouticon">
+                </Col>
+                <Col md="12">
                   <TextFieldHookForm
                     label={"Costing Id"}
                     name={"costingId"}
@@ -322,14 +325,13 @@ function CopyCosting(props) {
                     handleChange={() => { }}
                     defaultValue={copyCostingData.SelectedCostingVersion.label}
                     className=""
-                    customClassName={"withBorder"}
+                    customClassName={"withBorder mb-0"}
                     errors={errors.costingId}
                     disabled={true}
                   />
-                </div>
+                </Col>
               </Row>
               <hr />
-
               <Row className="pl-3 align-items-center">
                 <Col md="6">
                   <div className="left-border">{"To:"}</div>
@@ -400,7 +402,7 @@ function CopyCosting(props) {
 
               {(costingTypeId === VBCTypeId || costingTypeId === NCCTypeId) && (
                 <Row className="pl-3">
-                  <div className="input-group form-group col-md-12 input-withouticon">
+                  <div className="form-group mb-1 col-md-12">
                     <SearchableSelectHookForm
                       label={"Vendor (Code)"}
                       name={"toVendor"}
@@ -421,25 +423,27 @@ function CopyCosting(props) {
               )}
               {costingTypeId === CBCTypeId && (
                 <Row className="pl-3">
-                  <SearchableSelectHookForm
-                    label={"Customer (Code)"}
-                    name={"toCustomer"}
-                    placeholder={"Select"}
-                    Controller={Controller}
-                    control={control}
-                    rules={{ required: false }}
-                    register={register}
-                    // defaultValue={customer.length !== 0 ? customer : ""}
-                    options={customer}
-                    mandatory={false}
-                    handleChange={handleCustomerChange}
-                    errors={errors.toCustomer}
-                  />
+                  <div className="form-group mb-1 col-md-12">
+                    <SearchableSelectHookForm
+                      label={"Customer (Code)"}
+                      name={"toCustomer"}
+                      placeholder={"Select"}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: false }}
+                      register={register}
+                      // defaultValue={customer.length !== 0 ? customer : ""}
+                      options={customer}
+                      mandatory={false}
+                      handleChange={handleCustomerChange}
+                      errors={errors.toCustomer}
+                    />
+                  </div>
                 </Row>
               )}
               {((costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === VBCTypeId || costingTypeId === NCCTypeId || costingTypeId === ZBCTypeId)) && (
                 <Row className="pl-3">
-                  <div className="input-group form-group col-md-12 input-withouticon">
+                  <div className="form-group mb-1 col-md-12">
                     <SearchableSelectHookForm
                       label={`${costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}`}
                       name={"toPlant"}
@@ -476,7 +480,7 @@ function CopyCosting(props) {
                     dateFormat="DD/MM/YYYY"
                     minDate={new Date(minDate)}
                     //maxDate={new Date()}
-                    placeholderText="Select date"
+                    placeholder="Select date"
                     customClassName="withBorder"
                     className="withBorder"
                     autoComplete={"off"}
