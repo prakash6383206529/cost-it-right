@@ -349,7 +349,7 @@ const CostingSummaryTable = (props) => {
       }
       return null
     })
-    setDataSelected([])
+    // setDataSelected([])
   }, [viewCostingData])
 
 
@@ -781,7 +781,7 @@ const CostingSummaryTable = (props) => {
     if (check === 'top') {                                                            // WHEN USER CLICK ON TOP SEND FOR APPROVAL
       let temp = multipleCostings
 
-      if (temp.includes(id)) {                                                        // WHEN DESELECT THE CHECKBOX  
+      if (temp.includes(id)) {                                                        // WHEN DESELECT THE CHECKBOX
         temp = multipleCostings.filter((item) => item !== id)                         // FILTER DESELECTED ID 
         const filteredData = dataSelected.filter((item) => item.costingId !== id)     // FLTER DATA TO SET IN ARRAY LIST 
         setDataSelected(filteredData)
