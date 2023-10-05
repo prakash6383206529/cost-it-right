@@ -227,9 +227,9 @@ export function getMultipleCostingDetails(selectedRows, callback) {
 
 
 
-export function getCommunicationHistory(id, callback) {
+export function getCommunicationHistory(data, callback) {
     return (dispatch) => {
-        axios.get(`${API.getCommunicationHistory}?costingId=${id}`, config())
+        axios.get(`${API.getCommunicationHistory}?quotationId=${data.quotationId}&partId=${data.partId}&vendorId=${data.vendorId}`, config())
             .then((response) => {
                 callback(response)
             }).catch((error) => {
