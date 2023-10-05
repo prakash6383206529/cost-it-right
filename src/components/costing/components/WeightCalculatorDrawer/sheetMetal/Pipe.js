@@ -765,7 +765,7 @@ function Pipe(props) {
                       onChange={onSideToggle}
                       checked={isOneSide}
                       id="normal-switch"
-                      disabled={false}
+                      disabled={CostingViewMode ? true : false}
                       background="#4DC771"
                       onColor="#4DC771"
                       onHandleColor="#ffffff"
