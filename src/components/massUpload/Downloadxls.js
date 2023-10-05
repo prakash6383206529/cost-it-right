@@ -62,7 +62,7 @@ export const checkLabourRateConfigure = (excelData) => {
 * @method checkVendorPlantConfig
 * @description CONDITION TO CHECK:- TO AVOID VENDOR PLANT IF NOT CONFIGURABLE FROM INITIALIZER
 */
-export const checkVendorPlantConfig = (excelData, type = '', isBop = false) => {
+export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVendor = false) => {
     return excelData.filter((el) => {
         if (checkVendorPlantConfigurable() === false) {
             if (el.value === 'VendorPlant') return false;
@@ -105,7 +105,7 @@ export const checkVendorPlantConfig = (excelData, type = '', isBop = false) => {
             if (el.value === "Technology") return false;
             if (el.value === "PlantCode") return false;
         }
-        if (!getConfigurationKey().IsCriticalVendorConfigured) {
+        if (isVendor && !getConfigurationKey().IsCriticalVendorConfigured) {
             if (el.value === "IsCriticalVendor") return false;
             if (el.value === "Technology") return false;
             if (el.value === "PlantCode") return false;
@@ -123,7 +123,7 @@ class Downloadxls extends React.Component {
             case 'RM Specification':
                 return this.returnExcelColumn(RMSpecification, RMSpecificationXLTempData);
             case 'Vendor':
-                return this.returnExcelColumn(checkVendorPlantConfig(Vendor), VendorTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(Vendor, '', false, true), VendorTempData);
             case 'Overhead':
                 return this.returnExcelColumn(Overhead, OverheadTempData);
             case 'Fuel':
