@@ -1,64 +1,58 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useForm, Controller } from "react-hook-form";
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useDispatch } from 'react-redux';
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
-import { NumberFieldHookForm, SearchableSelectHookForm, TextAreaHookForm, } from '.././layout/HookFormInputs'
-import { getVendorWithVendorCodeSelectList, getReporterList } from '../.././actions/Common';
-import { getCostingSpecificTechnology, getPartSelectListByTechnology, } from '../costing/actions/Costing'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../.././helper';
-import { EMPTY_DATA, FILE_URL } from '../.././config/constants';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import Dropzone from 'react-dropzone-uploader'
+import { getReporterList } from '../.././actions/Common';
+import { getCostingSpecificTechnology, } from '../costing/actions/Costing'
+import { loggedInUserId } from '../.././helper';
 import 'react-dropzone-uploader/dist/styles.css'
-import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { createRfqQuotation, fileDeleteQuotation, fileUploadQuotation, getQuotationById, updateRfqQuotation, getContactPerson, getCommunicationHistory } from './actions/rfq';
+import { getCommunicationHistory } from './actions/rfq';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
-import LoaderCustom from '../common/LoaderCustom';
-import redcrossImg from '../../assests/images/red-cross.png'
-import NoContentFound from '../common/NoContentFound';
-import HeaderTitle from '../common/HeaderTitle';
-import { BubbleGroup, ChatFeed, Message } from 'react-chat-ui'
-import { custom } from 'joi';
 
-const gridOptions = {};
+import NoContentFound from '../common/NoContentFound';
+import { ChatFeed, Message } from 'react-chat-ui'
+
+
+
 
 function RemarkHistoryDrawer(props) {
 
-    const dropzone = useRef(null);
-    const { register, handleSubmit, setValue, getValues, reset, formState: { errors }, control } = useForm();
-
     const [showPopup, setShowPopup] = useState(false)
-    const [messages, setMessages] = useState([
-
-    ])
+    const [messages, setMessages] = useState([])
 
 
-    const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
-    const partSelectListByTechnology = useSelector(state => state.costing.partSelectListByTechnology)
+
     const dispatch = useDispatch()
-    const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
-    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    // const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
-    const plantList = useSelector(state => state.comman.plantList)
+
 
 
     useEffect(() => {
+        console.log(props.data, "props.data");
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getReporterList(() => { }))
-        dispatch(getCommunicationHistory(props.data.CostingId, (res) => {
+        const { data } = props
+        let reqData = {
+            quotationId: data.QuotationId,
+            partId: data.PartId,
+            vendorId: data.VendorId
+
+        }
+        dispatch(getCommunicationHistory(reqData, (res) => {
 
             if (res && res.data) {
                 let temp = []
                 let responseMessageArray = res?.data?.DataList
                 responseMessageArray && responseMessageArray.map((item) => {
-
+                    const dateObject = new Date(item.SentDate);
                     let obj = new Message({
                         id: 1,
-                        message: `(${item.SenderName}) : ${item.Message ? item.Message : '-'} `,
+                        message: (
+                            <div className='chat-container'>
+                                <div className='sender-name'> {item.SenderName}</div> {item.Message ? <div className='sender-message'>{item.Message}</div> : '-'}
+                                <div className='sender-date'>{dateObject.toLocaleDateString()}<span className='sender-time'>{dateObject.toLocaleTimeString()}</span></div>
+                            </div>
+                        ),
                     })
 
                     temp.push(obj)
