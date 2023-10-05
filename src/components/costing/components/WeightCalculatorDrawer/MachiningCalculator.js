@@ -7,7 +7,7 @@ import { checkForNull, getConfigurationKey, loggedInUserId } from '../../../../h
 import { saveRawMaterialCalculationForMachining } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
-import { checkForDecimalAndNull, nonZero } from '../../../../helper/validation'
+import { checkForDecimalAndNull, nonZero, decimalNumberLimit, positiveAndDecimalNumber } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
 
 function Machining(props) {
@@ -128,11 +128,7 @@ function Machining(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, positiveAndDecimalNumber, decimalNumberLimit },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -152,10 +148,7 @@ function Machining(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { positiveAndDecimalNumber, decimalNumberLimit },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -175,10 +168,7 @@ function Machining(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { positiveAndDecimalNumber, decimalNumberLimit },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -200,10 +190,7 @@ function Machining(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { positiveAndDecimalNumber, decimalNumberLimit },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
