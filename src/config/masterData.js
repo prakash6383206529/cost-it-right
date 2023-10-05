@@ -3596,7 +3596,7 @@ export const ProductComponent = [
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
-    { label: 'IsConsideredForMBOM', value: "IsConsideredForMBOM" },
+    { label: 'PreferredForImpactCalculation', value: "IsConsideredForMBOM" },
 ]
 
 export const ProductComponentTempData = [
