@@ -209,6 +209,8 @@ class Level extends Component {
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
+        if ((item.Text === RELEASE_STRATEGY_B3 || item.Text === RELEASE_STRATEGY_B4) && this.state.levelType === 'Costing') return false
+        if ((item.Text === RELEASE_STRATEGY_B1 || item.Text === RELEASE_STRATEGY_B2) && this.state.levelType === 'Simulation') return false
         if (item.Text === PROVISIONAL && this.state.levelType !== 'Simulation') return false
         if ((item.Text === NEW_COMPONENT || item.Text === RELEASE_STRATEGY_B1 || item.Text === RELEASE_STRATEGY_B2 || item.Text === RELEASE_STRATEGY_B3 || item.Text === RELEASE_STRATEGY_B4) && this.state.levelType === 'Master') return false
         if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('cbcCostingPermission'))) return false
