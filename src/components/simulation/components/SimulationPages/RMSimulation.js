@@ -41,7 +41,6 @@ function RMSimulation(props) {
     const [token, setToken] = useState('')
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [isDisable, setIsDisable] = useState(false)
     const [effectiveDate, setEffectiveDate] = useState('');
@@ -374,7 +373,7 @@ function RMSimulation(props) {
             item.NewScrapRate = undefined
             return null
         })
-        setShowMainSimulation(true)
+        props.backToSimulation()
     }
 
     const closeDrawer = (e = '') => {
@@ -477,8 +476,7 @@ function RMSimulation(props) {
 
         <div>
             <div className={`ag-grid-react ${props.customClass}`}>
-                {
-                    (!showverifyPage && !showMainSimulation) &&
+                {!showverifyPage &&
                     <Fragment>
                         {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"basicRate-tooltip"} >{"To edit revised basic rate please double click on the field."}</Tooltip>}
                         {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={scrapRateviewTooltip} toggle={scrapRatetooltipToggle} target={"scrapRate-tooltip"} >{"To edit revised scrap rate please double click on the field."}</Tooltip>}
@@ -671,9 +669,6 @@ function RMSimulation(props) {
                     showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={popupMessage} />
                 }
 
-                {
-                    showMainSimulation && <Simulation isMasterSummaryDrawer={false} isCancelClicked={true} isRMPage={true} />
-                }
                 {
                     showRunSimulationDrawer &&
                     <RunSimulationDrawer

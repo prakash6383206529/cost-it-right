@@ -670,7 +670,7 @@ function AddRfq(props) {
             Toaster.warning("Please select part number and SOP date");
             return false;
         } else {
-            if (nfrId) {
+            if (nfrId && nfrId.value !== null) {
                 dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
                     Data = res.data.Data
                 }));
@@ -715,7 +715,7 @@ function AddRfq(props) {
                         newObjTemp.RMSpecification = rmspecification?.label ?? '-';
                         newObjTemp.RMSpecificationId = rmspecification?.value ?? '-';
                     }
-                    if (nfrId) {
+                    if (nfrId && nfrId.value !== null) {
                         if (index === 0) {
                             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
                             newObjTemp.YearName = Data.FirstYear
@@ -737,6 +737,7 @@ function AddRfq(props) {
                     } else {
                         newObjTemp.Quantity = 0
                         newObjTemp.YearName = fiveyearList[index]
+                        newObjTemp.isEdit = true
                     }
                     arrTemp.push(newObjTemp);
                     return null;
