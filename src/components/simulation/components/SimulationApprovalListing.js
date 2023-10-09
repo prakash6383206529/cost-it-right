@@ -16,12 +16,12 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import LoaderCustom from '../../common/LoaderCustom'
 import { MESSAGES } from '../../../config/message'
 import { allEqual, checkForNull, getConfigurationKey, searchNocontentFilter } from '../../../helper'
-import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
+import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import WarningMessage from '../../common/WarningMessage'
 import ScrollToTop from '../../common/ScrollToTop'
 import { PaginationWrapper } from '../../common/commonPagination'
-import { checkFinalUser } from '../../costing/actions/Costing'
+import { checkFinalUser, getReleaseStrategyApprovalDetails } from '../../costing/actions/Costing'
 import SingleDropdownFloationFilter from '../../masters/material-master/SingleDropdownFloationFilter'
 import { agGridStatus, isResetClick, getGridHeight, dashboardTabLock } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -66,6 +66,7 @@ function SimulationApprovalListing(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPrice: "", OldPOPrice: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
     const [noData, setNoData] = useState(false)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
+    const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
 
     const { handleSubmit } = useForm({
         mode: 'onBlur',
@@ -509,7 +510,7 @@ function SimulationApprovalListing(props) {
         let tempArrTechnology = []
         let tempArrSimulationTechnologyHead = []
 
-        selectedRows.map(item => {
+        selectedRows && selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
             tempArrDepartmentId.push(item.DepartmentId)
             tempArrIsFinalLevelButtonShow.push(item.IsFinalLevelButtonShow)
@@ -519,6 +520,7 @@ function SimulationApprovalListing(props) {
             tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
             return null
         })
+        selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
 
         if (!allEqual(arr)) {
             Toaster.warning('Status should be same for sending multiple costing for approval')
@@ -575,31 +577,76 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
-        let obj = {
-            DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
-            UserId: loggedInUserId(),
-            TechnologyId: selectedRowData[0].SimulationTechnologyId,
-            Mode: 'simulation',
-            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0].SimulationHeadId),
-        }
-        dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
-
-        dispatch(checkFinalUser(obj, res => {
-            if (res && res.data && res.data.Result) {
-                if (selectedRowData[0].Status === DRAFT) {
+        if (getConfigurationKey().IsReleaseStrategyConfigured) {
+            let data = []
+            selectedRowData && selectedRowData?.map(item => {
+                let obj = {}
+                obj.SimulationId = item?.SimulationId
+                data.push(obj)
+            })
+            let requestObject = {
+                "RequestFor": "SIMULATION",
+                "TechnologyId": selectedRowData[0]?.SimulationTechnologyId,
+                "LoggedInUserId": loggedInUserId(),
+                "ReleaseStrategyApprovalDetails": data
+            }
+            dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+                setReleaseStrategyDetails(res?.data?.Data)
+                if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
                     setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
-                    if (res.data.Data.IsFinalApprover) {
-                        Toaster.warning("Final level approver can not send draft token for approval")
-                        gridApi.deselectAll()
+                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === true && res?.data?.Data?.IsUserInApprovalFlow === false) {
+                    Toaster.warning("This user is not in the approval cycle")
+                    return false
+                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+                    let obj = {
+                        DepartmentId: res?.data?.Data?.DepartmentId,
+                        UserId: loggedInUserId(),
+                        TechnologyId: approvalData?.SimulationTechnologyId,
+                        Mode: 'simulation',
+                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId)
+                    }
+                    dispatch(checkFinalUser(obj, res => {
+                        if (res && res.data && res.data.Result) {
+                            if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                                setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                            }
+                        }
+                    }))
+                } else if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover) {
+                    setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
+                    setApproveDrawer(true)
+                } else if (res?.data?.Result === false) {
+                    return false
+                } else {
+                }
+            }))
+        } else {
+            let obj = {
+                DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: selectedRowData[0].SimulationTechnologyId,
+                Mode: 'simulation',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0].SimulationHeadId),
+            }
+            setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
+            dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
+
+            dispatch(checkFinalUser(obj, res => {
+                if (res && res.data && res.data.Result) {
+                    if (selectedRowData[0].Status === DRAFT) {
+                        setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                        if (res.data.Data.IsFinalApprover) {
+                            Toaster.warning("Final level approver can not send draft token for approval")
+                            gridApi.deselectAll()
+                        }
+                    }
+                    else {
+                        setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+                        setApproveDrawer(true)
                     }
                 }
-                else {
-                    setShowFinalLevelButton(res.data.Data.IsFinalApprover)
-                    setApproveDrawer(true)
-                }
-            }
-        }))
+            }))
+        }
     }
 
     const closeDrawer = (e = '', type) => {
@@ -791,7 +838,7 @@ function SimulationApprovalListing(props) {
                                     </div>
                                 </div>
                                 {approveDrawer &&
-                                    <ApproveRejectDrawer
+                                    <SimulationApproveReject
                                         isOpen={approveDrawer}
                                         anchor={'right'}
                                         approvalData={[]}
@@ -803,6 +850,10 @@ function SimulationApprovalListing(props) {
                                         simulationDetail={simulationDetail}
                                         IsFinalLevel={showFinalLevelButtons}
                                         costingTypeId={selectedRowData[0].SimulationHeadId}
+                                        approvalTypeIdValue={selectedRowData[0].SimulationHeadId}
+
+                                        releaseStrategyDetails={releaseStrategyDetails}
+                                        technologyId={selectedRowData ? selectedRowData[0].SimulationTechnologyId : approvalData?.SimulationTechnologyId}
                                     />
                                 }
                             </div>

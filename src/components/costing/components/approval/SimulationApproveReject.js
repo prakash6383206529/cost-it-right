@@ -62,10 +62,10 @@ function SimulationApproveReject(props) {
     dispatch(getReasonSelectList((res) => { }))
 
     dispatch(getSimulationApprovalByDepartment(res => {
-      const Data = res.data.SelectList
-      const departObj = Data && Data.filter(item => item.Value === (type === 'Sender' ? userData.DepartmentId : simulationDetail.DepartmentId))
+      const Data = res?.data?.SelectList
+      const departObj = Data && Data.filter(item => item?.Value === (type === 'Sender' ? userData?.DepartmentId : simulationDetail?.DepartmentId))
       let dataInFieldTemp = {
-        ...dataInFields, Department: { label: departObj[0].Text, value: departObj[0].Value },
+        ...dataInFields, Department: { label: departObj[0]?.Text, value: departObj[0]?.Value },
         ApprovalType: { label: approvalTypeIdValue, value: approvalTypeIdValue }
       }
       setDataInFields(dataInFieldTemp)
