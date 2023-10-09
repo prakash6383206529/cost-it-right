@@ -11,6 +11,8 @@ import {
 import classnames from 'classnames'
 import CorrugatedBox from './CorrugatedBox'
 import MeshCalculation from './MeshCalculation'
+import BodySeperate from './BodySeperate'
+import Flap from './Flap'
 
 function CorrugatedBoxCalculator(props) {
     const { rmRowData, item } = props
@@ -21,6 +23,10 @@ function CorrugatedBoxCalculator(props) {
                 return '1'
             case 'Mesh':
                 return '2'
+            case 'BodySeparator':
+                return '3'
+            case 'Flap':
+                return '4'
             default:
                 break;
         }
@@ -64,6 +70,28 @@ function CorrugatedBoxCalculator(props) {
                                 Mesh Calculation
                             </NavLink>
                         </NavItem>
+                        <NavItem>
+                            <NavLink
+                                className={classnames({ active: activeTab === '3' })}
+                                onClick={() => {
+                                    toggle('3')
+                                }}
+                                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '3' ? true : false}
+                            >
+                                Body Separator
+                            </NavLink>
+                        </NavItem>
+                        <NavItem>
+                            <NavLink
+                                className={classnames({ active: activeTab === '4' })}
+                                onClick={() => {
+                                    toggle('4')
+                                }}
+                                disabled={rmRowData && Object.keys(rmRowData.WeightCalculatorRequest).length === 0 ? false : rmRowData.WeightCalculatorRequest.LayoutType !== null && getTabno(rmRowData.WeightCalculatorRequest.LayoutType) !== '4' ? true : false}
+                            >
+                                Flap
+                            </NavLink>
+                        </NavItem>
                     </Nav>
                     <TabContent activeTab={activeTab}>
                         {activeTab === '1' && (
@@ -86,7 +114,28 @@ function CorrugatedBoxCalculator(props) {
                                     item={item}
                                     CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
                                 />
-
+                            </TabPane>
+                        )}
+                        {activeTab === '3' && (
+                            <TabPane tabId="3">
+                                <BodySeperate
+                                    rmRowData={props.rmRowData}
+                                    isEditFlag={props.isEditFlag}
+                                    toggleDrawer={props.toggleDrawer}
+                                    item={item}
+                                    CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
+                                />
+                            </TabPane>
+                        )}
+                        {activeTab === '4' && (
+                            <TabPane tabId='4'>
+                                <Flap
+                                    rmRowData={props.rmRowData}
+                                    isEditFlag={props.isEditFlag}
+                                    toggleDrawer={props.toggleDrawer}
+                                    item={item}
+                                    CostingViewMode={props.CostingViewMode ? props.CostingViewMode : false}
+                                />
                             </TabPane>
                         )}
                     </TabContent>
