@@ -53,6 +53,7 @@ import {
   SET_BREAKUP_BOP,
   SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
   SET_COSTING_MODE,
+  CORRUGATED_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2724,5 +2725,14 @@ export function updateCostingIdFromRfqToNfrPfs(requestData, callback) {
         apiErrors(error)
         dispatch({ type: API_FAILURE })
       })
+  }
+}
+
+export function corrugatedData(data) {
+  return (dispatch) => {
+    dispatch({
+      type: CORRUGATED_DATA,
+      payload: data,
+    });
   }
 }
