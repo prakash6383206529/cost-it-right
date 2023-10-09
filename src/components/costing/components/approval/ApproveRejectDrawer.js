@@ -122,7 +122,6 @@ function ApproveRejectDrawer(props) {
 
           const Data = res?.data?.SelectList
           const departObj = Data && Data.filter(item => item.Value === userData.DepartmentId)
-          console.log('departObj: ', departObj[0]?.Value);
 
           setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 

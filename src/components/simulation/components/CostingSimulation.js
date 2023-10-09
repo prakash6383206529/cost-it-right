@@ -7,7 +7,7 @@ import { BOPDOMESTIC, BOPIMPORT, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIO
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getAllSimulatedMultiTechnologyCosting, getAllMultiTechnologyCostings, getAllSimulatedBoughtOutPart, emptyCostingSimulationList } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -31,10 +31,10 @@ import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'
 import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getUsersSimulationTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage';
 import { costingTypeIdToApprovalTypeIdFunction, hideColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
 
 const gridOptions = {};
 
@@ -199,8 +199,8 @@ function CostingSimulation(props) {
                         showIsPFSOrBudgetingDetailsExistWarning(true)
                         setWarningMessage("This user is not in the approval cycle")
                     } else {
-                        showIsPFSOrBudgetingDetailsExistWarning(true)
-                        setWarningMessage("This user is not in the approval cycle")
+                        // showIsPFSOrBudgetingDetailsExistWarning(true)
+                        // setWarningMessage("This user is not in the approval cycle")
                     }
                 }))
             } else {
@@ -1653,10 +1653,10 @@ function CostingSimulation(props) {
                                     </div>
                                 </div>
                             </Row>
-                        </div>
+                        </div >
                         {
                             isApprovalDrawer &&
-                            <ApproveRejectDrawer
+                            <SimulationApproveReject
                                 isOpen={isApprovalDrawer}
                                 vendorId={vendorIdState}
                                 SimulationTechnologyId={SimulationTechnologyIdState}
@@ -1672,8 +1672,11 @@ function CostingSimulation(props) {
                                 closeDrawer={closeDrawer}
                                 isSimulation={true}
                                 apiData={apiData}
-                                costingTypeId={amendmentDetails.SimulationHeadId}
+                                costingTypeId={amendmentDetails?.SimulationHeadId}
                                 releaseStrategyDetails={releaseStrategyDetails}
+                                technologyId={SimulationTechnologyIdState}
+                                showApprovalTypeDropdown={true}
+                                approvalTypeIdValue={amendmentDetails?.SimulationHeadId}
                             // isSaveDone={isSaveDone}
                             />
                         }

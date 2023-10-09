@@ -251,7 +251,6 @@ const UOMMaster = (props) => {
                 </Col> */}
             </>
           )}
-          {console.log('DownloadAccessibility: ', DownloadAccessibility)}
           <Col md={6} className="text-right search-user-block pr-0">
             {
               DownloadAccessibility &&
