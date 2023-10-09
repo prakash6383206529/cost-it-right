@@ -398,7 +398,6 @@ function OverheadProfit(props) {
                             }
                             dispatch(gridDataAdded(true))
                         }
-                        console.log(showWarning, "warnin");
                         if (showWarning) {
                             setShowWarning(true)
                         } else {

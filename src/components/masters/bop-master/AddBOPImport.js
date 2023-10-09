@@ -716,7 +716,6 @@ class AddBOPImport extends Component {
 
     let basicRateBase = this.convertIntoBase(fieldsObj?.BasicRateCurrency)
     this.props.change('BasicRateBase', checkForDecimalAndNull(basicRateBase, initialConfiguration.NoOfDecimalForPrice));
-    console.log(fieldsObj?.NumberOfPieces, "fieldsObj?.NumberOfPieces");
     let basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
     this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
 

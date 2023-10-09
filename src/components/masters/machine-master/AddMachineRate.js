@@ -122,8 +122,6 @@ class AddMachineRate extends Component {
    */
   componentDidMount() {
     const { data, editDetails, initialConfiguration } = this.props;
-    console.log('data: ', data);
-    console.log('editDetails: ', editDetails);
 
 
     // For Showing form in view mode if data is added in add more detail form
