@@ -49,7 +49,7 @@ function RemarkHistoryDrawer(props) {
                         message: (
                             <div className='chat-container'>
                                 <div className='sender-name'> {item.SenderName}</div> {item.Message ? <div className='sender-message'>{item.Message}</div> : '-'}
-                                <div className='sender-date'>{dateObject.toLocaleDateString()}<span className='sender-time'>{dateObject.toLocaleTimeString()}</span></div>
+                                <div className='sender-date'>{dateObject.toLocaleDateString()}<span className='sender-time'>{dateObject.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</span></div>
                             </div>
                         ),
                     })
@@ -94,7 +94,7 @@ function RemarkHistoryDrawer(props) {
             >
                 <Container>
                     <div className={`drawer-wrapper drawer-700px min-320`}>
-                        <Row className="drawer-heading">
+                        <Row className="drawer-heading mb-0">
                             <Col className='pl-0'>
                                 <div className={"header-wrapper d-flex justify-content-between right"}>
                                     <h3>{"Remark history"}</h3>
