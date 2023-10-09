@@ -3,13 +3,13 @@ import Drawer from '@material-ui/core/Drawer'
 import WeightCalculator from '../WeightCalculatorDrawer';
 import { useDispatch, useSelector } from 'react-redux';
 import Toaster from '../../../common/Toaster';
-import { checkForDecimalAndNull } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper';
 import { Container, Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
-import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
+import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmCorrugatedBoxCalculation, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
 import TooltipCustom from '../../../common/Tooltip';
 
 function ViewRM(props) {
@@ -66,9 +66,30 @@ function ViewRM(props) {
             }
           }))
           break;
+        case MACHINING:
+          dispatch(getSimulationRmMachiningCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, res => {
+
+            if (Number(res.status) === Number(204)) {
+              Toaster.warning('Data is not available for calculator')
+            } else {
+              setCalculatorData(res, index)
+            }
+          }))
+          break;
+        case CORRUGATEDBOX:
+          dispatch(getSimulationRmCorrugatedBoxCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, tempData.netRMCostView[index].RawMaterialId, res => {
+
+            if (Number(res.status) === Number(204)) {
+              Toaster.warning('Data is not available for calculator')
+            } else {
+              setCalculatorData(res, index)
+            }
+          }))
+          break;
         default:
           return "none";
       }
+
 
     }
     else {
@@ -143,6 +164,7 @@ function ViewRM(props) {
     setWeightCalculatorDrawer(false)
   }
   const tableData = () => {
+    const machiningUICheck = (viewCostingData[props.index].technologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && viewCostingData[props.index].CostingPartDetails.CostingRawMaterialsCost[0].UOM === 'Meter')
     return <>
       <Col md="6" className='mt-1'>
         <div className="left-border">Raw Material</div>
@@ -170,7 +192,7 @@ function ViewRM(props) {
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
-              {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && <th>{`Calculator`}</th>}
+              {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && machiningUICheck && < th > {`Calculator`}</th>}
               <th>{`Freight Cost`}</th>
               <th>{`Shearing Cost`}</th>
               <th>{`Burning Loss Weight`}</th>
@@ -194,7 +216,7 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && <td><button
+                  {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && machiningUICheck && <td><button
                     className="CalculatorIcon cr-cl-icon mr-auto ml-0"
                     type={"button"}
                     disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
@@ -223,9 +245,10 @@ function ViewRM(props) {
             )}
           </tbody>
         </Table>
-      </Col>
+      </Col >
 
-      {viewCostingData[props.index].isApplyMasterBatch && !isAssemblyCosting &&
+      {
+        viewCostingData[props.index].isApplyMasterBatch && !isAssemblyCosting &&
         <>
           < Col md="12">
             <div className="left-border mt-4 mb-3">Master Batch</div>
@@ -257,7 +280,8 @@ function ViewRM(props) {
               </tbody>
             </Table>
           </Col>
-        </>}
+        </>
+      }
 
       {
         isAssemblyCosting && masterBatchList.length > 0 && (!isSimulationDone === false ? isSimulationDone : (simulationMode ? simulationMode : false)) &&
