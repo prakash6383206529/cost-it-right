@@ -247,7 +247,7 @@ function RMSimulation(props) {
     const newBasicRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell, props)
+        const value = beforeSaveCell(cell, props, "basicRate")
         return (
             <>
                 {
@@ -279,7 +279,7 @@ function RMSimulation(props) {
     const newScrapRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const value = beforeSaveCell(cell, props)
+        const value = beforeSaveCell(cell, props, "scrapRate")
         return (
             <>
                 {
@@ -318,13 +318,16 @@ function RMSimulation(props) {
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
   */
-    const beforeSaveCell = (cell, props) => {
+    const beforeSaveCell = (cell, props, type) => {
         const cellValue = cell
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         if ((row?.NewBasicRate === undefined || row?.NewBasicRate === '' ? Number(row?.BasicRatePerUOM) : Number(row?.NewBasicRate)) <
             (row?.NewScrapRate === undefined || row?.NewScrapRate === '' ? Number(row?.ScrapRate) : Number(row?.NewScrapRate))) {
-            row.NewBasicRate = row?.BasicRatePerUOM
-            row.NewScrapRate = row?.ScrapRate
+            if (type === "basicRate") {
+                row.NewBasicRate = row?.BasicRatePerUOM
+            } else if (type === "scrapRate") {
+                row.NewScrapRate = row?.ScrapRate
+            }
             Toaster.warning('Scrap Rate should be less than Basic Rate')
             return false
         }
