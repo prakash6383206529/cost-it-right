@@ -7,7 +7,7 @@ import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
-import ApproveRejectDrawer from './ApproveRejectDrawer'
+import CostingApproveReject from './CostingApproveReject'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
@@ -1103,7 +1103,7 @@ function ApprovalListing(props) {
         // /> //TODO list
       }
       {approveDrawer && (
-        <ApproveRejectDrawer
+        <CostingApproveReject
           type={'Approve'}
           isOpen={approveDrawer}
           reasonId={reasonId}
@@ -1111,7 +1111,7 @@ function ApprovalListing(props) {
           //tokenNo={approvalNumber}
           approvalData={selectedRowData}
           anchor={'right'}
-          IsFinalLevel={!showFinalLevelButtons}
+          IsNotFinalLevel={showFinalLevelButtons}
           costingTypeId={selectedRowData[0]?.CostingTypeId}
           TechnologyId={selectedRowData[0]?.TechnologyId}
           releaseStrategyDetails={releaseStrategyDetails}

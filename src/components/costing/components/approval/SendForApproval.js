@@ -18,16 +18,16 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { EMPTY_GUID, FILE_URL, NCC, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, NCCAPPROVALTYPEID, NFRAPPROVALTYPEID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
-import PushSection from '../../../common/PushSection'
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
-import { reactLocalStorage } from 'reactjs-localstorage'
+import { getApprovalTypeSelectList } from '../../../../actions/Common'
+import PushSection from '../../../common/PushSection'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -76,8 +76,11 @@ const SendForApproval = (props) => {
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+  const [approvalType, setApprovalType] = useState({});
+  const [technologyLevelsList, setTechnologyLevelsList] = useState({});
+  const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
-  const apicall = (technologyId, depart, ApprovalTypeId, isdisable) => {
+  const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
 
     dispatch(getReasonSelectList((res) => { }))
 
@@ -145,49 +148,62 @@ const SendForApproval = (props) => {
         setApprovalDropDown(tempDropdownList)
       }))
     }))
-
-    let levelDetailsTemp = ''
-    dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
-      console.log('viewApprovalData[0]?.costingTypeId: ', viewApprovalData[0]?.costingTypeId);
-      levelDetailsTemp = userTechnologyLevelDetails(viewApprovalData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
-      console.log('levelDetailsTemp: ', levelDetailsTemp);
-      setLevelDetails(levelDetailsTemp)
-
-    }))
-
+    let approvalTypeId = ApprovalTypeId
+    if (initialConfiguration.IsReleaseStrategyConfigured && viewApprovalData[0]?.costingTypeId === VBCTypeId) {
+      approvalTypeId = ApprovalTypeId
+    }
+    userTechnology(approvalTypeId, levelsList)
   }
 
+  const userTechnology = (approvalTypeId, levelsList) => {
+    let levelDetailsTemp = ''
+    levelDetailsTemp = userTechnologyLevelDetails(approvalTypeId, levelsList?.TechnologyLevels)
+    setLevelDetails(levelDetailsTemp)
+  }
+
+  const getApprovalTypeName = (approvalType, departmentList) => {
+    let approvalTypeName = departmentList && departmentList?.filter(element => Number(element?.Value) === Number(approvalType))[0]
+
+    return approvalTypeName?.Text
+  }
+
+
   useEffect(() => {
-    if (initialConfiguration.IsReleaseStrategyConfigured && !props.isRfq) {
-      let data = []
-      viewApprovalData && viewApprovalData?.map(item => {
-        let obj = {}
-        obj.CostingId = item?.costingId
-        data.push(obj)
-      })
-      let requestObject = {
-        "RequestFor": viewApprovalData[0]?.costingTypeId === NCCTypeId ? "RFQ" : "COSTING",
-        "TechnologyId": props.technologyId,
-        "LoggedInUserId": loggedInUserId(),
-        "ReleaseStrategyApprovalDetails": data
+    dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+      setTechnologyLevelsList(res?.data?.Data)
+      if (initialConfiguration.IsReleaseStrategyConfigured && !props.isRfq) {
+        dispatch(getApprovalTypeSelectList((departmentRes) => {
+          let data = []
+          viewApprovalData && viewApprovalData?.map(item => {
+            let obj = {}
+            obj.CostingId = item?.costingId
+            data.push(obj)
+          })
+          let requestObject = {
+            "RequestFor": "COSTING",
+            "TechnologyId": props.technologyId,
+            "LoggedInUserId": loggedInUserId(),
+            "ReleaseStrategyApprovalDetails": data
+          }
+          dispatch(getReleaseStrategyApprovalDetails(requestObject, (response) => {
+            if (response?.data?.Data?.IsUserInApprovalFlow && !response?.data?.Data?.IsFinalApprover) {
+              const approvalType = { label: getApprovalTypeName(response.data.Data?.ApprovalTypeId, departmentRes?.data?.SelectList), value: response.data.Data?.ApprovalTypeId }
+              setValue("ApprovalType", approvalType)
+              setApprovalType(approvalType?.value)
+              apicall(props.technologyId, response?.data?.Data?.DepartmentId, response.data.Data?.ApprovalTypeId, true, res?.data?.Data)
+            } else if (response?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+              showIsPFSOrBudgetingDetailsExistWarning(true)
+              apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false, res?.data?.Data)
+            } else if (response?.data?.Result === false) {
+            } else {
+            }
+          }))
+        }))
+      } else {
+        apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false, res?.data?.Data)
+        setApprovalType(viewApprovalData[0]?.costingTypeId)
       }
-      dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-        if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
-          setApprovalTypeId(res.data.Data?.ApprovalTypeId)
-          apicall(props.technologyId, res?.data?.Data?.DepartmentId, res.data.Data?.ApprovalTypeId, true)
-        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-          showIsPFSOrBudgetingDetailsExistWarning(true)
-          console.log('viewApprovalData: ', viewApprovalData);
-          apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false)
-          setApprovalTypeId(viewApprovalData[0]?.costingTypeId)
-        } else if (res?.data?.Result === false) {
-        } else {
-        }
-      }))
-    } else {
-      apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false)
-      setApprovalTypeId(viewApprovalData[0]?.costingTypeId)
-    }
+    }))
   }, [])
 
   /**
@@ -198,24 +214,40 @@ const SendForApproval = (props) => {
     const tempDropdownList = []
 
     if (label === 'Reason') {
-      reasonsList &&
-        reasonsList.map((item) => {
-          if (item.Value === '0') return false
-          tempDropdownList.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      reasonsList && reasonsList.map((item) => {
+        if (item.Value === '0') return false
+        tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return tempDropdownList
     }
 
     if (label === 'Dept') {
-      deptList &&
-        deptList.map((item) => {
-          if (item.Value === '0') return false
-          tempDropdownList.push({ label: item.Text, value: item.Value })
-          return null
-        })
+      deptList && deptList.map((item) => {
+        if (item.Value === '0') return false
+        tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+      })
       return tempDropdownList
     }
+
+    if (label === 'ApprovalType') {
+      approvalTypeSelectList && approvalTypeSelectList.map((item) => {
+        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return tempDropdownList
+    }
+  }
+
+  /**
+   * @method handleApprovalTypeChange
+   * @description  Approval Type Change
+   */
+  const handleApprovalTypeChange = (newValue) => {
+    setApprovalType(newValue.value)
+    setValue('dept', '')
+    userTechnology(newValue.value, technologyLevelsList)
   }
 
   /**
@@ -232,12 +264,13 @@ const SendForApproval = (props) => {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue.value,
         TechnologyId: props.technologyId,
-        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(viewApprovalData[0]?.costingTypeId),
+        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalType),
       }
       let Data = []
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
+        Data = res.data.DataList[1] ? res.data.DataList[1] : []
+        setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
         res.data.DataList && res.data.DataList.map((item) => {
-          Data = res.data.DataList[1] ? res.data.DataList[1] : []
           if (item.Value === '0') return false;
           if (item.Value === EMPTY_GUID) return false;
           tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
@@ -562,6 +595,7 @@ const SendForApproval = (props) => {
       obj.CostingsList = temp
       obj.MaterialGroup = SAPData.MaterialGroup?.label
       obj.DecimalOption = SAPData.DecimalOption?.value
+      obj.ApprovalTypeId = approvalType
 
       // debounce_fun()
       // 
@@ -975,6 +1009,23 @@ const SendForApproval = (props) => {
                       </Col>
                     </Row>
                     <Row className="px-3">
+                      {initialConfiguration.IsReleaseStrategyConfigured && <Col md="6">
+                        <SearchableSelectHookForm
+                          label={"Approval Type"}
+                          name={"ApprovalType"}
+                          placeholder={"Select"}
+                          Controller={Controller}
+                          control={control}
+                          rules={{ required: true }}
+                          register={register}
+                          defaultValue={""}
+                          options={renderDropdownListing("ApprovalType")}
+                          disabled={disableRS}
+                          mandatory={true}
+                          handleChange={handleApprovalTypeChange}
+                          errors={errors.ApprovalType}
+                        />
+                      </Col>}
                       <Col md="6">
                         <SearchableSelectHookForm
                           label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
@@ -1182,7 +1233,7 @@ const SendForApproval = (props) => {
                 <Row>
                   <Col md="12" className='text-right my-n1'>
                     <WarningMessage message={"All impacted assemblies will be changed and new versions will be formed"} />
-                    {isPFSOrBudgetingDetailsExistWarning && <WarningMessage message={"Budgeting cost does not exist, common approval flow will run for this part"} />}
+                    {isPFSOrBudgetingDetailsExistWarning && <WarningMessage message={"Budgeting cost does not exist for this part"} />}
                   </Col>
                 </Row>
                 <Row className="mb-4">
