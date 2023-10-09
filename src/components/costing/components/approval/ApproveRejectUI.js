@@ -3,14 +3,13 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { approvalRequestByApprove, getReasonSelectList, rejectRequestByApprove } from '../../../costing/actions/Approval'
+import { getReasonSelectList } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
+import { getConfigurationKey } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { EMPTY_GUID, FILE_URL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4 } from '../../../../config/constants'
-import { simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
+import { FILE_URL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4 } from '../../../../config/constants'
+import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
-import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
@@ -18,15 +17,13 @@ import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
-import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import WarningMessage from '../../../common/WarningMessage'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
-import { element } from 'prop-types'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
-  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails } = props
+  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails } = props
 
   const { TokensList } = useSelector(state => state.simulation)
 
@@ -309,7 +306,7 @@ function ApproveRejectUI(props) {
                     errors={errors.ApprovalType}
                   />
                 </Col>}
-                {type === 'Approve' && IsFinalLevel && !isSimulation && (
+                {type === 'Approve' && IsNotFinalLevel && !isSimulation && (
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
@@ -350,7 +347,7 @@ function ApproveRejectUI(props) {
                 )}
                 {
                   // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
-                  isSimulation && (type === 'Approve' || type === 'Sender') && !IsFinalLevel &&
+                  isSimulation && (type === 'Approve' || type === 'Sender') && !IsNotFinalLevel &&
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
