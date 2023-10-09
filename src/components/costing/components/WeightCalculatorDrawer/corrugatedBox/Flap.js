@@ -142,7 +142,7 @@ const Flap = (props) => {
                 onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
                 <RMSection WeightCalculatorRequest={WeightCalculatorRequest} CostingViewMode={CostingViewMode} />
                 <BoxDetails CostingViewMode={CostingViewMode} WeightCalculatorRequest={WeightCalculatorRequest} />
-                <Row className="mt-3">
+                <Row className="mt-3 corrugated-box-label-wrapper">
                     <Col md="12" className={''}>
                         <HeaderTitle className="border-bottom"
                             title={'Flap Details'}
@@ -297,9 +297,9 @@ const Flap = (props) => {
                             Controller={Controller}
                             control={control}
                             register={register}
-                            mandatory={true}
+                            mandatory={false}
                             rules={{
-                                required: true,
+                                required: false,
                                 pattern: {
                                     value: /^\d{0,4}(\.\d{0,6})?$/i,
                                     message: 'Maximum length for integer is 4 and for decimal is 6',
@@ -340,7 +340,7 @@ const Flap = (props) => {
                         />
                     </Col>
 
-                    <Col md="3">
+                    <Col md="3" className='mt-2'>
                         <TextFieldHookForm
                             label={`Cutting Allowance`}
                             name={'cuttingAllowanceForLength'}
@@ -402,9 +402,9 @@ const Flap = (props) => {
                             id={'quarter-length-calculator'}
                             control={control}
                             register={register}
-                            mandatory={true}
+                            mandatory={false}
                             rules={{
-                                required: true,
+                                required: false,
                                 pattern: {
                                     value: /^\d{0,4}(\.\d{0,6})?$/i,
                                     message: 'Maximum length for integer is 4 and for decimal is 6',
@@ -419,7 +419,7 @@ const Flap = (props) => {
                             disabled={true}
                         />
                     </Col>
-                    <Col md="3">
+                    <Col md="3" className='mt-2'>
                         <NumberFieldHookForm
                             label={`Flute Type Percentage`}
                             name={'fluteTypePercent'}

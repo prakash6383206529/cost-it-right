@@ -653,7 +653,7 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
 
-                                <Col md="3">
+                                <Col md="3" className='mt-2'>
                                     <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet = (2 * (Length Box + Width Box) + Length Sheet) / 25.4'} />
                                     <NumberFieldHookForm
                                         label={`Length(Sheet)(inch)`}
