@@ -975,12 +975,12 @@ const CostingSummaryTable = (props) => {
             } else if (!allEqual(plantArray)) {
               Toaster.warning('Plant should be same for sending multiple costing for approval')
             } else {
-              sendForApprovalData(multipleCostings)
               dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
-                if (res?.data?.Data?.TechnologyLevels?.length === 0) {
+                if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
                   setShowApproval(false)
                   Toaster.warning('User is not in the approval flow')
                 } else {
+                  sendForApprovalData(multipleCostings)
                   setShowApproval(true)
                 }
               }))
@@ -1012,12 +1012,12 @@ const CostingSummaryTable = (props) => {
       } else if (!allEqual(plantArray)) {
         Toaster.warning('Plant should be same for sending multiple costing for approval')
       } else {
-        sendForApprovalData(multipleCostings)
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
-          if (res?.data?.Data?.TechnologyLevels?.length === 0) {
+          if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
           } else {
+            sendForApprovalData(multipleCostings)
             setShowApproval(true)
           }
         }))

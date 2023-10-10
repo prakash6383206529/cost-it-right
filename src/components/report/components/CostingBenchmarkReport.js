@@ -201,7 +201,6 @@ function CostingBenchmarkReport(props) {
                                 <div className="d-inline-flex justify-content-start align-items-center mr-3">
                                     <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">
-                                        {console.log(master, "master")}
                                         <SearchableSelectHookForm
                                             label={''}
                                             name={'Masters'}

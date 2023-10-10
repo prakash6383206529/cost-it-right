@@ -1,0 +1,590 @@
+import React, { useEffect, useRef, useState } from 'react'
+import { Container, Row, Col } from 'reactstrap'
+import { useForm, Controller } from 'react-hook-form'
+import Drawer from '@material-ui/core/Drawer'
+import { useDispatch, useSelector } from 'react-redux'
+import { getReasonSelectList } from '../../../costing/actions/Approval'
+import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
+import { getConfigurationKey } from '../../../../helper'
+import PushButtonDrawer from './PushButtonDrawer'
+import { FILE_URL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4 } from '../../../../config/constants'
+import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
+import DayTime from '../../../common/DayTimeWrapper'
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import Dropzone from 'react-dropzone-uploader';
+import 'react-dropzone-uploader/dist/styles.css';
+import redcrossImg from '../../../../assests/images/red-cross.png'
+import LoaderCustom from '../../../common/LoaderCustom';
+import Toaster from '../../../common/Toaster'
+import WarningMessage from '../../../common/WarningMessage'
+import { getApprovalTypeSelectList } from '../../../../actions/Common'
+
+function ApproveRejectUI(props) {
+  // ********* INITIALIZE REF FOR DROPZONE ********
+  const dropzone = useRef(null);
+  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails } = props
+
+  const { TokensList } = useSelector(state => state.simulation)
+
+  const { register, control, formState: { errors }, setValue } = useForm({
+    mode: 'onChange', reValidateMode: 'onChange',
+  })
+
+  const dispatch = useDispatch()
+  const [openPushButton, setOpenPushButton] = useState(false)
+  const [linkingTokenDropDown, setLinkingTokenDropDown] = useState('')
+  const [showError, setShowError] = useState(false)
+  const [tokenDropdown, setTokenDropdown] = useState(true)
+  const [files, setFiles] = useState([]);
+  const [IsOpen, setIsOpen] = useState(false);
+  const [loader, setLoader] = useState(false)
+  const [isDisable, setIsDisable] = useState(false)
+  const [attachmentLoader, setAttachmentLoader] = useState(false)
+  const [showWarningMessage, setShowWarningMessage] = useState(props?.showWarningMessage)
+  const [approvalType, setApprovalType] = useState('');   // change 
+
+  const deptList = useSelector((state) => state.approval.approvalDepartmentList)
+  const reasonsList = useSelector((state) => state.approval.reasonsList)
+  const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
+
+  useEffect(() => {
+    dispatch(getReasonSelectList((res) => { }))
+    dispatch(getApprovalTypeSelectList(() => { }))
+  }, [])
+
+  useEffect(() => {
+    setShowWarningMessage(props?.showWarningMessage)
+  }, [props?.showWarningMessage])
+
+  useEffect(() => {
+    if (getConfigurationKey().IsReleaseStrategyConfigured && (!setDataFromSummary || disableReleaseStrategy)) {
+
+      let appTypeId = approvalTypeSelectList && approvalTypeSelectList?.filter(element => Number(element?.Value) === Number(dataInFields?.ApprovalType?.value))[0]
+      setValue('ApprovalType', appTypeId ? { label: appTypeId?.Text, value: appTypeId?.Value } : '')
+      setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+      setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
+
+    } else {
+      setValue('dept', dataInFields?.Department ? dataInFields?.Department : '')
+      setValue('approver', dataInFields?.Approver ? dataInFields?.Approver : '')
+    }
+  }, [dataInFields])
+
+  const handleTokenDropDownChange = (value) => {
+    setLinkingTokenDropDown(value)
+  }
+
+  const toggleDrawer = (event, type = 'cancel') => {
+    if (isDisable) {
+      return false
+    }
+    if (
+      event.type === 'keydown' &&
+      (event.key === 'Tab' || event.key === 'Shift')
+    ) {
+      return
+    }
+    props.closeDrawer('', type)
+  }
+
+  const closePushButton = () => {
+    setOpenPushButton(false)
+    props.closeDrawer('', 'Cancel')
+  }
+
+  const renderDropdownListing = (label) => {
+    const tempDropdownList = []
+    if (label === 'Dept') {
+      deptList &&
+        deptList.map((item) => {
+          if (item.Value === '0') return false
+          tempDropdownList.push({ label: item.Text, value: item.Value })
+          return null
+        })
+      return tempDropdownList
+    }
+    if (label === 'reasons') {
+      reasonsList && reasonsList.map((item) => {
+        if (item.Value === '0') return false
+        tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return tempDropdownList
+    }
+
+    if (label === 'Link') {
+      TokensList && TokensList.map((item) => {
+
+        if (item.Value === '0') return false
+        tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return tempDropdownList
+    }
+    if (label === 'ApprovalType') {
+      approvalTypeSelectList && approvalTypeSelectList.map((item) => {
+        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return tempDropdownList
+    }
+  }
+
+  const handleRemark = (e) => {
+    if (e) {
+      let obj = { ...dataInFields, Remark: e?.target?.value }
+      callbackSetDataInFields(obj)
+      setShowError(false)
+    } else {
+      setShowError(true)
+    }
+  }
+
+  const handleReason = (value) => {
+    if (value) {
+      let obj = { ...dataInFields, Reason: value }
+      callbackSetDataInFields(obj)
+    }
+  }
+
+  /**
+   * @method handleApprovalTypeChange
+   * @description  Approval Type Change
+   */
+  const handleApprovalTypeChange = (newValue) => {
+    setApprovalType(newValue?.value)
+    let obj = {
+      ...dataInFields, Department: { label: '', value: '' },
+      Approver: { label: '', value: '', levelId: '', levelName: '' },
+      ApprovalType: newValue
+    }
+    delete obj.Department
+    delete obj.Approver
+    callbackSetDataInFields(obj)
+    // userTechnology(newValue.value)
+  }
+
+  /**
+ * @method setDisableFalseFunction
+ * @description setDisableFalseFunction
+ */
+  const setDisableFalseFunction = () => {
+    const loop = Number(dropzone.current.files.length) - Number(files.length)
+    if (Number(loop) === 1 || Number(dropzone.current.files.length) === Number(files.length)) {
+      setIsDisable(false)
+      setAttachmentLoader(false)
+    }
+  }
+
+  // called every time a file's `status` changes
+  const handleChangeStatus = ({ meta, file }, status) => {
+    setIsDisable(true)
+    setAttachmentLoader(true)
+    if (status === 'removed') {
+      const removedFileName = file.name;
+      let tempArr = files && files.filter(item => item.OriginalFileName !== removedFileName)
+      setFiles(tempArr)
+      setTimeout(() => {
+        setIsOpen(!IsOpen)
+      }, 500);
+    }
+
+    if (status === 'done') {
+      let data = new FormData()
+      data.append('file', file)
+      setIsDisable(true)
+      dispatch(uploadSimulationAttachment(data, (res) => {
+        setDisableFalseFunction()
+        let Data = res?.data[0]
+        files.push(Data)
+        setFiles(files)
+        setTimeout(() => {
+          setIsOpen(!IsOpen)
+        }, 500);
+      }))
+    }
+
+    if (status === 'rejected_file_type') {
+      setDisableFalseFunction()
+      Toaster.warning('Allowed only xls, doc, jpeg, pdf files.')
+    } else if (status === 'error_file_size') {
+      setDisableFalseFunction()
+      dropzone.current.files.pop()
+      Toaster.warning("File size greater than 5mb not allowed")
+    } else if (status === 'error_validation'
+      || status === 'error_upload_params' || status === 'exception_upload'
+      || status === 'aborted' || status === 'error_upload') {
+      setDisableFalseFunction()
+      dropzone.current.files.pop()
+      Toaster.warning("Something went wrong")
+    }
+  }
+
+  const Preview = ({ meta }) => {
+    return (
+      <span style={{ alignSelf: 'flex-start', margin: '10px 3%', fontFamily: 'Helvetica' }}>
+        {/* {Math.round(percent)}% */}
+      </span>
+    )
+  }
+
+  const deleteFile = (FileId, OriginalFileName) => {
+    if (FileId != null) {
+      let tempArr = files && files.filter(item => item.FileId !== FileId)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+    if (FileId == null) {
+      let tempArr = files && files.filter(item => item.FileName !== OriginalFileName)
+      setFiles(tempArr)
+      setIsOpen(!IsOpen)
+    }
+
+    // ********** DELETE FILES THE DROPZONE'S PERSONAL DATA STORE **********
+    if (dropzone?.current !== null) {
+      dropzone.current.files.pop()
+    }
+  }
+
+  return (
+    <>
+      <Drawer
+        anchor={props.anchor}
+        open={props.isOpen}
+      //onClose={(e) => toggleDrawer(e)}
+      >
+        <Container>
+          <div className={'drawer-wrapper'}>
+            {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
+            <form
+            >
+              <Row className="drawer-heading">
+                <Col>
+                  <div className={'header-wrapper left'}>
+                    <h3>{`${isSimulation ? `${type === 'Sender' ? 'Send For Approval' : `${type} Simulation`}` : `${props?.isRFQApproval ? 'Return' : type} Costing`} `}</h3>
+                  </div>
+
+                  <div
+                    onClick={(e) => toggleDrawer(e)}
+                    disabled={isDisable}
+                    className={'close-button right'}
+                  ></div>
+                </Col>
+              </Row>
+
+              <Row className="ml-0">
+                {getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown && <Col md="6">
+                  <SearchableSelectHookForm
+                    label={"Approval Type"}
+                    name={"ApprovalType"}
+                    placeholder={"Select"}
+                    Controller={Controller}
+                    control={control}
+                    rules={{ required: true }}
+                    register={register}
+                    defaultValue={""}
+                    options={renderDropdownListing("ApprovalType")}
+                    disabled={disableReleaseStrategy}
+                    mandatory={true}
+                    handleChange={handleApprovalTypeChange}
+                    errors={errors.ApprovalType}
+                  />
+                </Col>}
+                {type === 'Approve' && IsNotFinalLevel && !isSimulation && (
+                  <>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                        name={"dept"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={renderDropdownListing("Dept")}
+                        mandatory={true}
+                        handleChange={handleDepartmentChange}
+                        errors={errors.dept}
+                        disabled={disableReleaseStrategy}
+                      />
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
+                    </div>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={'Approver'}
+                        name={'approver'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        //defaultValue={isEditFlag ? plantName : ''}
+                        options={approvalDropDown}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        disabled={disableReleaseStrategy}
+                        errors={errors.approver}
+                      />
+                    </div>
+                  </>
+                )}
+                {
+                  // REMOVE IT AFTER FUNCTIONING IS DONE FOR SIMUALTION, NEED TO MAKE CHANGES FROM BACKEND FOR SIMULATION TODO
+                  isSimulation && (type === 'Approve' || type === 'Sender') && !IsNotFinalLevel &&
+                  <>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                        name={"dept"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={renderDropdownListing("Dept")}
+                        mandatory={true}
+                        handleChange={handleDepartmentChange}
+                        errors={errors.dept}
+                        disabled={disableReleaseStrategy}
+                      />
+                      {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
+                    </div>
+                    <div className="input-group form-group col-md-12 input-withouticon">
+                      <SearchableSelectHookForm
+                        label={'Approver'}
+                        name={'approver'}
+                        placeholder={'Select'}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        //defaultValue={isEditFlag ? plantName : ''}
+                        options={approvalDropDown}
+                        mandatory={true}
+                        handleChange={() => { }}
+                        errors={errors.approver}
+                        disabled={disableReleaseStrategy}
+                      />
+                    </div>
+                    {
+                      type === 'Sender' &&
+                      <>
+                        <div className="input-group form-group col-md-12">
+                          <SearchableSelectHookForm
+                            label={'Reason'}
+                            name={'reason'}
+                            placeholder={'Select'}
+                            Controller={Controller}
+                            control={control}
+                            rules={{ required: true }}
+                            register={register}
+                            //defaultValue={isEditFlag ? plantName : ''}
+                            options={renderDropdownListing('reasons')}
+                            mandatory={true}
+                            handleChange={handleReason}
+                            errors={errors.reason}
+                          />
+                        </div>
+                        {!isSimulationApprovalListing &&
+                          <div className="input-group form-group col-md-12">
+                            <label>Effective Date<span className="asterisk-required">*</span></label>
+                            <div className="inputbox date-section">
+                              <DatePicker
+                                name="EffectiveDate"
+                                selected={simulationDetail?.EffectiveDate && DayTime(simulationDetail.EffectiveDate).isValid() ? new Date(simulationDetail.EffectiveDate) : ''}
+                                // onChange={handleEffectiveDateChange}
+                                showMonthDropdown
+                                showYearDropdown
+                                dropdownMode='select'
+                                dateFormat="dd/MM/yyyy"
+                                //maxDate={new Date()}
+                                placeholderText="Select date"
+                                className="withBorder"
+                                autoComplete={"off"}
+                                disabledKeyboardNavigation
+                                onChangeRaw={(e) => e.preventDefault()}
+                                disabled={true}
+                              />
+                            </div>
+                          </div>
+                        }
+                      </>
+                    }
+
+
+                  </>
+                }
+
+
+                {getConfigurationKey().IsProvisionalSimulation && tokenDropdown && type === 'Sender' && !isSimulationApprovalListing &&
+                  < div className="input-group form-group col-md-12">
+                    <SearchableSelectHookForm
+                      label={'Link Token Number'}
+                      name={'Link'}
+                      placeholder={'select'}
+                      Controller={Controller}
+                      control={control}
+                      rules={{ required: false }}
+                      register={register}
+                      // defaultValue={technology.length !== 0 ? technology : ''}
+                      options={renderDropdownListing('Link')}
+                      mandatory={false}
+                      handleChange={handleTokenDropDownChange}
+                      errors={errors.Masters}
+                      customClassName="mb-0"
+                    />
+                  </div>
+                }
+
+                <div className="input-group form-group col-md-12">
+                  <TextAreaHookForm
+                    label="Remark"
+                    name={'remark'}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={type === 'Approve' ? false : true}
+                    rules={{
+                      required: type === 'Approve' ? false : true,
+                      maxLength: {
+                        value: 255,
+                        message: "Remark should be less than 255 words"
+                      },
+                    }}
+                    handleChange={handleRemark}
+                    //defaultValue={viewRM.RMRate}
+                    className=""
+                    customClassName={'withBorder'}
+                    errors={errors.remark}
+                    disabled={false}
+                  />
+                  {/* {showError && <span className="text-help">This is required field</span>} */}
+                </div>
+                {
+                  isSimulation && type === 'Sender' &&
+                  <div className="col-md-12 drawer-attachment">
+                    <div className="d-flex w-100 flex-wrap">
+                      <Col md="8" className="p-0"><h6 className="mb-0">Attachments</h6></Col>
+                    </div>
+                    <div className="d-flex w-100 flex-wrap pt-2">
+                      {<>
+                        <Col md="12" className="p-0">
+                          <label>Upload Attachment (upload up to 2 files)</label>
+                          <div className={`alert alert-danger mt-2 ${files.length === 2 ? '' : 'd-none'}`} role="alert">
+                            Maximum file upload limit reached.
+                          </div>
+                          <div className={`${files.length >= 2 ? 'd-none' : ''}`}>
+                            <Dropzone
+                              ref={dropzone}
+                              onChangeStatus={handleChangeStatus}
+                              PreviewComponent={Preview}
+                              // onSubmit={handleImapctSubmit}
+                              accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                              initialFiles={[]}
+                              maxFiles={2}
+                              maxSizeBytes={5000000}
+                              inputContent={(files, extra) =>
+                                extra.reject ? (
+                                  "Image, audio and video files only"
+                                ) : (
+                                  <div className="text-center">
+                                    <i className="text-primary fa fa-cloud-upload"></i>
+                                    <span className="d-block">
+                                      Drag and Drop or{" "}
+                                      <span className="text-primary">Browse</span>
+                                      <br />
+                                      file to upload
+                                    </span>
+                                  </div>
+                                )
+                              }
+                              styles={{
+                                dropzoneReject: {
+                                  borderColor: "red",
+                                  backgroundColor: "#DAA",
+                                },
+                                inputLabel: (files, extra) =>
+                                  extra.reject ? { color: "red" } : {},
+                              }}
+                              classNames="draper-drop"
+                              disabled={type === 'Sender' ? false : true}
+                            />
+                          </div>
+                        </Col>
+                        <div className="w-100">
+                          <div className={"attachment-wrapper mt-0 mb-3"}>
+                            {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                            {files &&
+                              files.map((f) => {
+                                const withOutTild = f.FileURL.replace("~", "");
+                                const fileURL = `${FILE_URL}${withOutTild}`;
+                                return (
+                                  <div className={"attachment images"} >
+                                    <a href={fileURL} target="_blank" rel="noreferrer">
+                                      {f.OriginalFileName}
+                                    </a>
+                                    {(type === 'Sender' ? true : false) &&
+                                      <img
+
+                                        alt={""}
+                                        className="float-right"
+                                        onClick={() => deleteFile(f.FileId, f.FileName)} src={redcrossImg}
+                                      ></img>
+                                    }
+                                  </div>
+                                );
+                              })}
+                          </div>
+                        </div>
+                      </>
+                      }
+                    </div>
+                  </div>
+                }
+              </Row>
+              <Row className="sf-btn-footer no-gutters justify-content-between">
+                <div className="col-sm-12 text-right bluefooter-butn">
+                  <button
+                    type={'button'}
+                    className="reset mr15 cancel-btn"
+                    onClick={toggleDrawer}
+                    disabled={isDisable}
+                  >
+                    <div className={'cancel-icon'}></div>
+                    {'Cancel'}
+                  </button>
+
+                  <button
+                    type="button"
+                    className="submit-button  save-btn"
+                    onClick={onSubmit}
+                    disabled={isDisable}
+                  >
+                    <div className={'save-icon'}></div>
+                    {'Submit'}
+                  </button>
+                </div>
+              </Row>
+            </form>
+          </div>
+        </Container>
+      </Drawer>
+      {
+        openPushButton && (
+          <PushButtonDrawer
+            isOpen={openPushButton}
+            closeDrawer={closePushButton}
+            approvalData={[approvalData]}
+            dataSend={dataSend}
+            anchor={'right'}
+          />
+        )
+      }
+    </>
+  )
+}
+
+export default React.memo(ApproveRejectUI)
