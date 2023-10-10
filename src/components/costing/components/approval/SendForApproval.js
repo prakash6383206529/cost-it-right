@@ -145,11 +145,7 @@ const SendForApproval = (props) => {
         setApprovalDropDown(tempDropdownList)
       }))
     }))
-    let approvalTypeId = ApprovalTypeId
-    if (initialConfiguration.IsReleaseStrategyConfigured && viewApprovalData[0]?.costingTypeId === VBCTypeId) {
-      approvalTypeId = ApprovalTypeId
-    }
-    userTechnology(approvalTypeId, levelsList)
+    userTechnology(ApprovalTypeId, levelsList)
   }
 
   const userTechnology = (approvalTypeId, levelsList) => {
@@ -160,7 +156,6 @@ const SendForApproval = (props) => {
 
   const getApprovalTypeName = (approvalType, departmentList) => {
     let approvalTypeName = departmentList && departmentList?.filter(element => Number(element?.Value) === Number(approvalType))[0]
-
     return approvalTypeName?.Text
   }
 
@@ -266,6 +261,7 @@ const SendForApproval = (props) => {
       let Data = []
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         Data = res.data.DataList[1] ? res.data.DataList[1] : []
+        setSelectedApprover(Data?.Value)
         setSelectedApproverLevelId({ levelName: Data.LevelName, levelId: Data.LevelId })
         res.data.DataList && res.data.DataList.map((item) => {
           if (item.Value === '0') return false;
@@ -527,7 +523,7 @@ const SendForApproval = (props) => {
 
         let tempObj = {}
         tempObj.ApprovalProcessId = "00000000-0000-0000-0000-000000000000"
-        tempObj.TypeOfCosting = (data.typeOfCosting === 0 || data.typeOfCosting === ZBC) ? ZBC : checkForNull(data.typeOfCosting) === checkForNull(NCCTypeId) ? NCC : VBC
+        tempObj.TypeOfCosting = data.typeOfCosting
         tempObj.PlantId =
           (data.costingTypeId === ZBCTypeId) ? data.plantId : ''
         tempObj.PlantNumber =

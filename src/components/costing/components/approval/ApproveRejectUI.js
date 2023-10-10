@@ -124,7 +124,7 @@ function ApproveRejectUI(props) {
     }
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map((item) => {
-        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
+        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
         return null
       })
       return tempDropdownList
@@ -146,21 +146,6 @@ function ApproveRejectUI(props) {
       let obj = { ...dataInFields, Reason: value }
       callbackSetDataInFields(obj)
     }
-  }
-
-  const userTechnology = (approvalTypeId) => {
-    // let levelDetailsTemp = ''
-    // if (isSimulation) {
-    //   dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), isSimulationApprovalListing ? selectedRowData[0].SimulationTechnologyId : simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value, (res) => {
-    //     levelDetailsTemp = userTechnologyLevelDetails(approvalTypeId, res?.data?.Data?.TechnologyLevels)
-    //     setLevelDetails(levelDetailsTemp)
-    //   }))
-    // } else {
-    //   dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
-    //     levelDetailsTemp = userTechnologyLevelDetails(approvalTypeId, res?.data?.Data?.TechnologyLevels)
-    //     setLevelDetails(levelDetailsTemp)
-    //   }))
-    // }
   }
 
   /**
@@ -579,7 +564,7 @@ function ApproveRejectUI(props) {
                     disabled={isDisable}
                   >
                     <div className={'save-icon'}></div>
-                    {'Submidt'}
+                    {'Submit'}
                   </button>
                 </div>
               </Row>
