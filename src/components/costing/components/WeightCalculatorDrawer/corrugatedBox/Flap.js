@@ -58,10 +58,10 @@ const Flap = (props) => {
         if (corrugatedDataObj) {
             const { RMData, BoxData } = corrugatedDataObj
             if (RMData) {
-                let getWeightSheet = (Math.round(widthOfCuttingAllowance) * Math.round(heightOfCuttingAllowance) * RMData.noOfPly * Number(getValues('fluteTypePercent')) * RMData.gsm / 1550) / 1000
+                let getWeightSheet = (Math.round(widthOfCuttingAllowance) * Math.round(heightOfCuttingAllowance) * RMData?.noOfPly * Number(getValues('fluteTypePercent')) * RMData?.gsm / 1550) / 1000
                 setGrossWeight(prevState => ({ ...prevState, paperWithDecimal: getWeightSheet }))
             }
-            let widthOfFlap = (Number(getValues('NoOfFlap') * (Number(getValues('MaxFlapSize')) + Number(getValues('ToungeLengthSize'))) + BoxData.heightBox) / 25.4);
+            let widthOfFlap = (Number(getValues('NoOfFlap') * (Number(getValues('MaxFlapSize')) + Number(getValues('ToungeLengthSize'))) + BoxData?.heightBox) / 25.4);
             setTimeout(() => {
                 setValue('width_sheet_body', checkForDecimalAndNull(widthOfFlap, initialConfiguration.NoOfDecimalForInputOutput))
                 setValue('width_inc_cutting_body', checkForDecimalAndNull(widthOfCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput))
@@ -75,7 +75,7 @@ const Flap = (props) => {
         if (corrugatedDataObj) {
             const { BoxData } = corrugatedDataObj
             if (BoxData) {
-                let LengthOfBody = (BoxData.lengthBox + (BoxData.heightBox * 2)) / 25.4;
+                let LengthOfBody = (BoxData?.lengthBox + (BoxData?.heightBox * 2)) / 25.4;
                 setTimeout(() => {
                     setValue('length_sheet_body', checkForDecimalAndNull(LengthOfBody, initialConfiguration.NoOfDecimalForInputOutput))
                 }, 50);
@@ -97,14 +97,14 @@ const Flap = (props) => {
             FinishWeight: grossWeight.paperWithDecimal,
             CuttingAllowanceWidth: Values.cutting_allowance,
             CuttingAllowanceLength: Values.cuttingAllowanceForLength,
-            NoOfPly: RMData.noOfPly,
-            GSM: RMData.gsm,
-            BurstingFactor: RMData.burstingFactor,
+            NoOfPly: RMData?.noOfPly,
+            GSM: RMData?.gsm,
+            BurstingFactor: RMData?.burstingFactor,
             BurstingStrength: corrugatedDataObj.burstingStrengthWithDecimal,
-            LengthBox: BoxData.lengthBox,
-            WidthBox: BoxData.widthBox,
-            HeightBox: BoxData.heightBox,
-            StitchingLengthInchperJoint: BoxData.stichingLength,
+            LengthBox: BoxData?.lengthBox,
+            WidthBox: BoxData?.widthBox,
+            HeightBox: BoxData?.heightBox,
+            StitchingLengthInchperJoint: BoxData?.stichingLength,
             PaperWeightAndProcessRejectionSum: grossWeight.paperWithDecimal,
             WidthSheet: Values.width_sheet_body,
             NoOfFlap: Values.NoOfFlap,
@@ -454,7 +454,6 @@ const Flap = (props) => {
                             className="my-0 mr-2 cancel-btn"
                             variant="reset"
                             icon="cancel-icon"
-                            disabled={CostingViewMode ? true : false}
                         >
                             Cancel
                         </Button>
