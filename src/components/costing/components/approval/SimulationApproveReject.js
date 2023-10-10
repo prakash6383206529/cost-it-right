@@ -522,12 +522,9 @@ function SimulationApproveReject(props) {
         approvalData={[]}
         type={type}
         simulationDetail={simulationDetail}
-        selectedRowData={selectedRowData}
-        costingArr={costingArr}
         master={props?.master}
         closeDrawer={props?.closeDrawer}
         isSimulation={true}
-        apiData={apiData}
         releaseStrategyDetails={releaseStrategyDetails}
 
         technologyId={technologyId}
