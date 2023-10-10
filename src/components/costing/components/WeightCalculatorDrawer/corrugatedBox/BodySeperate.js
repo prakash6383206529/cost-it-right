@@ -223,9 +223,9 @@ const BodySeperate = (props) => {
                             Controller={Controller}
                             control={control}
                             register={register}
-                            mandatory={true}
+                            mandatory={false}
                             rules={{
-                                required: true,
+                                required: false,
                                 pattern: {
                                     value: /^\d{0,4}(\.\d{0,6})?$/i,
                                     message: 'Maximum length for integer is 4 and for decimal is 6',
@@ -240,7 +240,7 @@ const BodySeperate = (props) => {
                         />
                     </Col>
 
-                    <Col md="3">
+                    <Col md="3" className='mt-2'>
                         <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet =  (Length Box + (Height Box * 2)) / 25.4'} />
                         <NumberFieldHookForm
                             label={`Length (inch)`}
@@ -266,7 +266,7 @@ const BodySeperate = (props) => {
                         />
                     </Col>
 
-                    <Col md="3">
+                    <Col md="3" className='mt-2'>
                         <TextFieldHookForm
                             label={`Cutting Allowance`}
                             name={'cuttingAllowanceForLength'}
@@ -328,9 +328,9 @@ const BodySeperate = (props) => {
                             id={'quarter-length-calculator'}
                             control={control}
                             register={register}
-                            mandatory={true}
+                            mandatory={false}
                             rules={{
-                                required: true,
+                                required: false,
                                 pattern: {
                                     value: /^\d{0,4}(\.\d{0,6})?$/i,
                                     message: 'Maximum length for integer is 4 and for decimal is 6',
