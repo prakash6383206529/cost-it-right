@@ -197,7 +197,7 @@ function Sheet(props) {
         const componentPerStrip = dataToSend.ComponentsPerStrip
         const cavity = getValues('Cavity')
         const noOfComponent = stripNo * componentPerStrip * cavity
-        setValue('NoOfComponent', checkForNull(noOfComponent))
+        setValue('NoOfComponent', checkForDecimalAndNull(noOfComponent, localStorage.NoOfDecimalForInputOutput))
     }
 
 
