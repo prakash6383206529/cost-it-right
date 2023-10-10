@@ -851,7 +851,7 @@ function SimulationApprovalListing(props) {
                                         IsFinalLevel={showFinalLevelButtons}
                                         costingTypeId={selectedRowData[0].SimulationHeadId}
                                         approvalTypeIdValue={selectedRowData[0].SimulationHeadId}
-
+                                        showApprovalTypeDropdown={selectedRowData && selectedRowData[0]?.Status === "Draft"}
                                         releaseStrategyDetails={releaseStrategyDetails}
                                         technologyId={selectedRowData ? selectedRowData[0].SimulationTechnologyId : approvalData?.SimulationTechnologyId}
                                     />
