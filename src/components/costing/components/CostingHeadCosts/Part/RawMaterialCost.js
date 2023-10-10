@@ -1189,7 +1189,7 @@ function RawMaterialCost(props) {
    * @method render
    * @description Renders the component
    */
-  const machiningUICheck = (costData?.TechnologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && item?.CostingPartDetails?.CostingRawMaterialsCost[0]?.UOM === "Meter")
+  const machiningUICheck = (costData?.TechnologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && item?.CostingPartDetails?.CostingRawMaterialsCost.some(material => material.UOM === 'Meter'))
 
   return (
     <>
