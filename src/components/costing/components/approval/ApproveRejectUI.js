@@ -165,7 +165,6 @@ function ApproveRejectUI(props) {
     }
   }
 
-
   /**
    * @method handleApprovalTypeChange
    * @description  Approval Type Change
