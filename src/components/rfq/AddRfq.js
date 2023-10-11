@@ -182,6 +182,7 @@ function AddRfq(props) {
                     objFinal.RawMaterialGradeId = itemRM?.RawMaterialGradeId
                     objFinal.RMSpecification = itemRM?.RawMaterialSpecification
                     objFinal.RawMaterialSpecificationId = itemRM?.RawMaterialSpecificationId
+                    objFinal.IsRMAdded = itemRM?.RawMaterialSpecificationId
                     if (indexRM > listWithSOPData?.length - 1) {
                         listWithSOPData.push(objFinal)
                     } else {
@@ -201,7 +202,29 @@ function AddRfq(props) {
                 listtt = [...listtt, ...item]
             })
             tempArr = listtt
-            setRMAPIList(listtt)
+            let rmListTemp = listtt && listtt?.filter(item => item.IsRMAdded)
+            let ListTemp = []
+            rmListTemp && rmListTemp?.map(item => {
+                let obj = {
+                    "partName": {
+                        "label": item?.PartNo,
+                        "value": item?.PartId,
+                        "RevisionNumber": null
+                    },
+                    "RmList": [
+                        {
+                            "RawMaterialChildId": item?.RawMaterialChildId,
+                            "RawMaterialName": item?.RMName,
+                            "RawMaterialGradeId": item?.RawMaterialGradeId,
+                            "RawMaterialGrade": item?.RMGrade,
+                            "RawMaterialSpecificationId": item?.RawMaterialSpecificationId,
+                            "RawMaterialSpecification": item?.RMSpecification,
+                        }
+                    ]
+                }
+                ListTemp.push(obj)
+            })
+            setRMAPIList(ListTemp)
         } else {
             partListTemp && partListTemp?.map((item) => {
                 item.SOPQuantity.map((ele, ind) => {
@@ -746,7 +769,7 @@ function AddRfq(props) {
                     Toaster.warning("Please select part number and SOP date");
                     return false;
                 } else {
-                    if (nfrId) {
+                    if (nfrId && nfrId.value !== null) {
                         dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
                             Data = res.data.Data
                         }));
@@ -786,7 +809,7 @@ function AddRfq(props) {
                                 newObjTemp.VendorListExisting = vendorListFinal.join(',') ?? '-';
 
                             }
-                            if (nfrId) {
+                            if (nfrId && nfrId.value !== null) {
                                 if (index === 0) {
                                     newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
                                     newObjTemp.YearName = Data.FirstYear
@@ -808,6 +831,7 @@ function AddRfq(props) {
                             } else {
                                 newObjTemp.Quantity = 0
                                 newObjTemp.YearName = fiveyearList[index]
+                                newObjTemp.isEdit = true
                             }
                             arrTemp.push(newObjTemp);
                             return null;
