@@ -258,9 +258,14 @@ function TabRMCC(props) {
 
   const setOperationCostForAssembly = (tempArr) => {
     const total = tempArr && tempArr.reduce((accummlator, item) => {
-      if (item.PartType === 'Sub Assembly')
-        return accummlator + (checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity) * checkForNull(item.Quantity))
+
+
+      if (item.PartType === 'Sub Assembly') {
+
+        return checkForNull(accummlator) + (checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity) * checkForNull(item.Quantity))
+      }
     }, 0)
+
     return total
   }
 
@@ -390,6 +395,7 @@ function TabRMCC(props) {
    * @description SUBASSEMBLY CALCULATION WITH THE HELP OF ALL PART/SUBASSEMBLIES RECEIVED IN TEMPARR PARAMETER (CHILDS TO UPDATE PARENT CALCULATION)
   */
   const calculationForSubAssembly = (obj = {}, quantity, type = '', tempArr = []) => {
+
     let subAssemObj = { ...obj }
     switch (type) {
       case 'RM':
@@ -1223,6 +1229,7 @@ function TabRMCC(props) {
                 let GrandTotalCost = checkForNull(subAssembObj?.CostingPartDetails?.TotalRawMaterialsCost) + checkForNull(subAssembObj?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(subAssembObj?.CostingPartDetails?.TotalConversionCost)
                 subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCost = GrandTotalCost;
                 subAssembObj.CostingPartDetails.TotalCalculatedRMBOPCCCostWithQuantity = subAssembObj?.CostingPartDetails?.TotalCalculatedRMBOPCCCost * subAssembObj?.CostingPartDetails?.Quantity
+
                 tempArrForCosting = Object.assign([...tempArrForCosting], { [subAssemblyIndex]: subAssembObj })
                 initialPartNo = item.AssemblyPartNumber //ASSEMBLY PART NO OF SUBASSEMBLY
                 quant = item?.CostingPartDetails?.Quantity
@@ -1233,6 +1240,7 @@ function TabRMCC(props) {
                   let tempArr = _.filter(tempArrForCosting, ['AssemblyPartNumber', initialPartNo]);
                   initialPartNo = objectToUpdate.AssemblyPartNumber
                   let subAssemObj = calculationForSubAssembly(objectToUpdate, quant, 'Sub Assembly Operation', tempArr)
+
 
                   quant = objectToUpdate?.CostingPartDetails?.Quantity
                   tempArrForCosting = Object.assign([...tempArrForCosting], { [indexForUpdate]: subAssemObj })
