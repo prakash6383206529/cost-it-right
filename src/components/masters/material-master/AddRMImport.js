@@ -1314,7 +1314,7 @@ class AddRMImport extends Component {
 
     if (showScrapKeys?.showCircleJali) {
 
-      if (FinalBasicRateCurrency <= FinalJaliScrapCostCurrency || FinalBasicRateCurrency <= FinalCircleScrapCostCurrency) {
+      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalJaliScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalCircleScrapCostCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
@@ -1326,7 +1326,7 @@ class AddRMImport extends Component {
       jaliRateBase = FinalCircleScrapCostBase
     } else if (showScrapKeys?.showForging) {
 
-      if (FinalBasicRateCurrency <= FinalForgingScrapCostCurrency || FinalBasicRateCurrency <= FinalMachiningScrapCostCurrency) {
+      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalForgingScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalMachiningScrapCostCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
@@ -1338,7 +1338,7 @@ class AddRMImport extends Component {
       machiningRateBase = FinalMachiningScrapCostBase
     } else if (showScrapKeys?.showScrap) {
 
-      if (FinalBasicRateCurrency <= FinalScrapRateCurrency) {
+      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalScrapRateCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
