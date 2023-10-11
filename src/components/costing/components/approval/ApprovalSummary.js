@@ -5,7 +5,7 @@ import { checkForDecimalAndNull, checkVendorPlantConfigurable, formViewData, get
 import { approvalPushedOnSap, getApprovalSummary } from '../../actions/Approval'
 import { checkFinalUser, getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingViewData, storePartNumber } from '../../actions/Costing'
 import ApprovalWorkFlow from './ApprovalWorkFlow'
-import ApproveRejectDrawer from './ApproveRejectDrawer'
+import SimulationApproveReject from './SimulationApproveReject'
 import CostingSummaryTable from '../CostingSummaryTable'
 import DayTime from '../../../common/DayTimeWrapper'
 import { Fragment } from 'react'
@@ -27,6 +27,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import { getMultipleCostingDetails, rfqGetBestCostingDetails, setQuotationIdForRFQ } from '../../../rfq/actions/rfq'
 import _ from 'lodash'
+import CostingApproveReject from './CostingApproveReject'
 
 
 function ApprovalSummary(props) {
@@ -53,7 +54,6 @@ function ApprovalSummary(props) {
   const [fgWiseAcc, setFgWiseAcc] = useState(false)
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [editWarning, setEditWarning] = useState(false)
-  const [finalLevelUser, setFinalLevelUser] = useState(false)
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [IsRegularizationLimit, setIsRegularizationLimit] = useState(false)
@@ -186,7 +186,7 @@ function ApprovalSummary(props) {
       setApprovalDetails(ApprovalDetails[0])
       setApprovalLevelStep(ApprovalLevelStep)
       setIsApprovalDone(IsSent)
-      setShowFinalLevelButton(IsFinalLevelButtonShow)
+      setShowFinalLevelButton(!IsFinalLevelButtonShow)
       setShowPushButton(IsPushedButtonShow)
       setApprovalData({
         DepartmentId: DepartmentId,
@@ -213,6 +213,7 @@ function ApprovalSummary(props) {
         dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
           setReleaseStrategyDetails(res?.data?.Data)
           if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+            setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
           } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
             let obj = {
               DepartmentId: DepartmentId,
@@ -223,11 +224,11 @@ function ApprovalSummary(props) {
             }
             dispatch(checkFinalUser(obj, res => {
               if (res && res.data && res.data.Result) {
-                setFinalLevelUser(res.data.Data.IsFinalApprover)
+                setShowFinalLevelButton(res.data.Data.IsFinalApprover)
               }
             }))
           } else if (res?.data?.Data?.IsFinalApprover) {
-            setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+            setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
             return false
           } else if (res?.data?.Result === false) {
           } else {
@@ -243,7 +244,7 @@ function ApprovalSummary(props) {
         }
         dispatch(checkFinalUser(obj, res => {
           if (res && res.data && res.data.Result) {
-            setFinalLevelUser(res.data.Data.IsFinalApprover)
+            setShowFinalLevelButton(res.data.Data.IsFinalApprover)
           }
         }))
       }
@@ -756,9 +757,8 @@ function ApprovalSummary(props) {
 
         </>
       }
-
       {approveDrawer && (
-        <ApproveRejectDrawer
+        <CostingApproveReject
           type={'Approve'}
           isOpen={approveDrawer}
           closeDrawer={closeDrawer}
@@ -766,27 +766,29 @@ function ApprovalSummary(props) {
           approvalData={[approvalData]}
           anchor={'right'}
           reasonId={approvalDetails.ReasonId}
-          IsFinalLevel={!finalLevelUser}
+          // IsFinalLevel={!finalLevelUser}
+          IsNotFinalLevel={!showFinalLevelButtons}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}
-          showFinalLevelButtons={showFinalLevelButtons}
+          // showFinalLevelButtons={showFinalLevelButtons}
           costingTypeId={costingTypeId}
           approvalTypeId={approvalTypeId}
           TechnologyId={approvalData?.TechnologyId}
           conditionInfo={conditionInfo}
           vendorCodeForSAP={vendorCodeForSap}
           releaseStrategyDetails={releaseStrategyDetails}
+          showApprovalTypeDropdown={false}
         />
       )}
       {rejectDrawer && (
-        <ApproveRejectDrawer
+        <CostingApproveReject
           type={'Reject'}
           isOpen={rejectDrawer}
           approvalData={[approvalData]}
           closeDrawer={closeDrawer}
           //  tokenNo={approvalNumber}
           anchor={'right'}
-          IsFinalLevel={!showFinalLevelButtons}
+          IsNotFinalLevel={!showFinalLevelButtons}
           reasonId={approvalDetails.ReasonId}
           IsPushDrawer={showPushDrawer}
           dataSend={[approvalDetails, partDetail]}

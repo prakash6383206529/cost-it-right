@@ -18,7 +18,7 @@ import {
   getPartInfo, checkPartWithTechnology,
   storePartNumber, getBriefCostingById, deleteDraftCosting, getPartSelectListByTechnology,
   setOverheadProfitData, setComponentOverheadItemData, setPackageAndFreightData, setComponentPackageFreightItemData, setToolTabData,
-  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData
+  setComponentToolItemData, setComponentDiscountOtherItemData, gridDataAdded, getCostingSpecificTechnology, setRMCCData, setComponentItemData, createNCCCosting, saveAssemblyBOPHandlingCharge, setProcessGroupGrid, savePartNumber, saveBOMLevel, setPartNumberArrayAPICALL, isDataChange, setSurfaceCostData, saveAssemblyNumber, createCosting, getExistingCosting, createMultiTechnologyCosting, setRMCCErrors, setOverheadProfitErrors, setToolsErrors, setDiscountErrors, isDiscountDataChange, setCostingDataList, emptyCostingData, setRMCCBOPCostData, updateSOBDetail, checkPartNoExistInBop, setBreakupBOP, setIsBreakupBoughtOutPartCostingFromAPI, setIncludeOverheadProfitIcc, setOtherCostData, setCostingEffectiveDate
 } from '../actions/Costing'
 import CopyCosting from './Drawers/CopyCosting'
 import { MESSAGES } from '../../../config/message';
@@ -1225,6 +1225,7 @@ function CostingDetails(props) {
       let tempData = zbcPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1236,6 +1237,7 @@ function CostingDetails(props) {
       let tempData = wacPlantGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1247,7 +1249,7 @@ function CostingDetails(props) {
       let tempData = vbcVendorGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
-
+        dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
 
         setTimeout(() => {
           setStepTwo(true)
@@ -1260,6 +1262,7 @@ function CostingDetails(props) {
       let tempData = nccGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1270,6 +1273,7 @@ function CostingDetails(props) {
       let tempData = cbcGrid[index]
       setCostingData({ costingId: tempData.SelectedCostingVersion.value, type })
       dispatch(getBriefCostingById(tempData.SelectedCostingVersion.value, (res) => {
+        dispatch(setCostingEffectiveDate(res?.data?.Data?.EffectiveDate !== null ? DayTime(res?.data?.Data?.EffectiveDate).format('YYYY-MM-DD') : null))
         setTimeout(() => {
           setStepTwo(true)
           setStepOne(false)
@@ -1620,6 +1624,7 @@ function CostingDetails(props) {
       dispatch(setToolsErrors({}))
       dispatch(setDiscountErrors({}))
       dispatch(setIncludeOverheadProfitIcc(false, () => { }))
+      dispatch(setCostingEffectiveDate(null))
     }
   }
 

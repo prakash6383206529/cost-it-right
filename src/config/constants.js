@@ -653,7 +653,7 @@ export const API = {
   getLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-technology`,
   getSimulationLevelByTechnology: `${BASE_URL}/configuration/select-list-get-level-by-simulation-technology`,
   getMasterLevelByMasterId: `${BASE_URL}/configuration/select-list-get-level-by-master`,
-  getUserSimulationTechnologyLevelForCosting: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
+  getUserSimulationTechnologyLevel: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
   getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
 
 

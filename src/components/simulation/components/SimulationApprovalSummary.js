@@ -19,7 +19,6 @@ import Toaster from '../../common/Toaster';
 import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails } from '../../../helper';
-import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { checkFinalUser, getReleaseStrategyApprovalDetails, setCostingViewData } from '../../costing/actions/Costing';
@@ -42,10 +41,10 @@ import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import _ from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 import { hideColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
 
 const gridOptions = {};
 const ExcelFile = ReactExport.ExcelFile;
@@ -142,7 +141,7 @@ function SimulationApprovalSummary(props) {
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
                 SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting } = res.data.Data
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
             let uniqueArr
             if (IsSimulationWithOutCosting) {
                 uniqueArr = SimulatedCostingList
@@ -167,7 +166,7 @@ function SimulationApprovalSummary(props) {
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
                 ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements, DepartmentId: DepartmentId
                 , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
-                , PartType: PartType
+                , PartType: PartType, ApprovalTypeId: ApprovalTypeId
             })
             setFiles(Attachements)
             setIsApprovalDone(IsSent)
@@ -1616,7 +1615,7 @@ function SimulationApprovalSummary(props) {
             }
 
             {
-                approveDrawer && <ApproveRejectDrawer
+                approveDrawer && <SimulationApproveReject
                     type={'Approve'}
                     isOpen={approveDrawer}
                     closeDrawer={closeApproveDrawer}
@@ -1630,13 +1629,15 @@ function SimulationApprovalSummary(props) {
                     Attachements={simulationDetail.Attachements}
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     releaseStrategyDetails={releaseStrategyDetails}
+                    technologyId={SimulationTechnologyId}
+                    approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
             }
 
             {
-                rejectDrawer && <ApproveRejectDrawer
+                rejectDrawer && <SimulationApproveReject
                     type={'Reject'}
                     isOpen={rejectDrawer}
                     simulationDetail={simulationDetail}
@@ -1650,6 +1651,7 @@ function SimulationApprovalSummary(props) {
                     // dataSend={[approvalDetails, partDetail]}
                     Attachements={simulationDetail.Attachements}
                     costingTypeId={simulationDetail?.SimulationHeadId}
+                    technologyId={SimulationTechnologyId}
                 />
             }
 

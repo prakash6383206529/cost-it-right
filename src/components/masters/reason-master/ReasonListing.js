@@ -184,7 +184,6 @@ const ReasonListing = (props) => {
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     if (rowData.UserId === loggedInUserId()) return null;
     showTitleForActiveToggle(props?.rowIndex)
-    console.log('ActivateAccessibility: ', ActivateAccessibility);
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch">
