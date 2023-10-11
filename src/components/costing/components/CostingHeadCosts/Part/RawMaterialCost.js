@@ -1358,17 +1358,17 @@ function RawMaterialCost(props) {
                             {
                               getTechnology.includes(costData?.TechnologyId) &&
                               <td className="text-center">
-                                {(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) && <button
+                                <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
                                   onClick={() => toggleWeightCalculator(index)}
-                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
-                                />}
+                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : (costData?.TechnologyId === MACHINING && item?.UOM !== "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter)}
+                                />
                               </td>
                             }
                             {
                               <><td>
-                                {!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) && <div className='costing-error-container'>
+                                {!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ? <div className='costing-error-container'>
                                   <TextFieldHookForm
                                     label=""
                                     name={`${rmGridFields}.${index}.GrossWeight`}
@@ -1394,10 +1394,10 @@ function RawMaterialCost(props) {
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
                                     disabled={(CostingViewMode || IsLocked || isMultiCalculatorData) ? true : false}
                                   />
-                                </div >}
-                              </td >
+                                </div> : '-'}
+                              </td>
                                 <td>
-                                  {!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) && <div className='costing-error-container'>
+                                  {!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ? <div className='costing-error-container'>
                                     <TextFieldHookForm
                                       label=""
                                       name={`${rmGridFields}.${index}.FinishWeight`}
@@ -1423,8 +1423,8 @@ function RawMaterialCost(props) {
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
                                       disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied)) ? true : false}
                                     />
-                                  </div >}
-                                </td ></>}
+                                  </div> : '-'}
+                                </td></>}
                             {costData?.TechnologyId === Ferrous_Casting && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                             {
                               costData?.TechnologyId === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
@@ -1432,7 +1432,7 @@ function RawMaterialCost(props) {
                             {
                               isScrapRecoveryPercentageApplied &&
                               <td>
-                                {!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) && <div className='costing-error-container'>
+                                {!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ? <div className='costing-error-container'>
                                   <TextFieldHookForm
                                     label=""
                                     name={`${rmGridFields}.${index}.ScrapRecoveryPercentage`}
@@ -1458,10 +1458,10 @@ function RawMaterialCost(props) {
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].ScrapRecoveryPercentage : ''}
                                     disabled={CostingViewMode || IsLocked || (gridData[index].FinishWeight === 0) || (gridData[index].FinishWeight === "") || (gridData[index].FinishWeight === null) || (gridData[index].FinishWeight === undefined) || gridData[index].IsCalculatedEntry ? true : false}
                                   />
-                                </div>}
+                                </div> : '-'}
                               </td>
                             }
-                            <td>{!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) && <div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div>}</td>
+                            <td>{!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ? <div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> : '-'}</td>
                             <td>
                               <div className='d-flex'>
                                 <div className='w-fit' id={`net-rm-cost${index}`}>{!(costData?.TechnologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) && <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
