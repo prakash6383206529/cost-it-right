@@ -502,7 +502,7 @@ function Icc(props) {
                                                 {ICCapplicability.label === 'Fixed' && InterestRateFixedLimit && <WarningMessage dClass={"error-message fixed-error"} message={errorMessage} />}           {/* //MANUAL CSS FOR ERROR VALIDATION MESSAGE */}
                                             </div>}
                                     </Col>
-                                    {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && < Col md="2" className="switch mt-2">
+                                    {ICCapplicability?.label?.includes('RM') && !(costData.IsAssemblyPart) && IsShowRmcAndNetWeightToggleForIcc && <Col md="2" className="switch mb-2 d-flex justify-content-center pl-4">
                                         <label className="switch-level">
                                             <div className={'right-title mr-2'}>RMC</div>
                                             <Switch
