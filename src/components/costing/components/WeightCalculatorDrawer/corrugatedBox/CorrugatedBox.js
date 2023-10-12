@@ -546,35 +546,16 @@ function CorrugatedBox(props) {
 
                             <Row>
 
-                                <label
-                                    className="custom-checkbox mb-4 ml-2"
-                                >
-                                    Body Separator
-                                    <input
-                                        type="checkbox"
-                                        value={"All"}
-                                        className='mr-2 mt-1'
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                        checked={bodySeparator}
-                                        onClick={() => {
-                                            setBodySeparator(!bodySeparator)
-                                            bodySeparatorCalculations(!bodySeparator)
-                                        }
-                                        }
-                                    />
-                                    <span
-                                        className=" before-box"
-                                    />
-                                </label>
+
                                 <Col md="12" className={''}>
                                     <HeaderTitle className="border-bottom"
-                                        title={bodySeparator ? 'Body Separator Details' : 'Sheet Details'}
+                                        title={'Sheet Details'}
                                         customClass={'underLine-title'}
                                     />
 
                                 </Col>
                             </Row>
-                            {!bodySeparator && <Row className={'mt15 corrugated-box-label-wrapper'}>
+                            <Row className={'mt15 corrugated-box-label-wrapper'}>
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'sheet-width'} tooltipText={'Width Sheet = (Width Box + Height Box) / 25.4'} />
@@ -672,7 +653,7 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
 
-                                <Col md="3">
+                                <Col md="3" className='mt-2'>
                                     <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet = (2 * (Length Box + Width Box) + Length Sheet) / 25.4'} />
                                     <NumberFieldHookForm
                                         label={`Length(Sheet)(inch)`}
@@ -775,213 +756,7 @@ function CorrugatedBox(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                            </Row>}
-
-                            {bodySeparator && <Row className={'mt15 corrugated-box-label-wrapper'}>
-
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-width'} tooltipText={'Width  = (Width Box + (Height Box * 2)) / 25.4'} />
-                                    <NumberFieldHookForm
-                                        label={`Width (inch)`}
-                                        name={'width_sheet_body'}
-                                        Controller={Controller}
-                                        control={control}
-                                        id={'sheet-width'}
-                                        register={register}
-                                        mandatory={false}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.width_sheet}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Cutting Allowance`}
-                                        name={'cutting_allowance'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.cutting_allowance}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width + (2 * Cutting Allowance))'} />
-                                    <NumberFieldHookForm
-                                        label={`Width + Cutting allowance`}
-                                        name={'width_inc_cutting_body'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        id={'sheet-width-cutting'}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.width_inc_cutting}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Round Off (Width + Cutting Allowance)`}
-                                        name={'round_off_width_body'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.round_off_width}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet =  (Length Box + (Height Box * 2)) / 25.4'} />
-                                    <NumberFieldHookForm
-                                        label={`Length (inch)`}
-                                        name={'length_sheet_body'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        id={'length-sheet'}
-                                        mandatory={false}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.length_sheet}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-                                <Col md="3">
-                                    <TextFieldHookForm
-                                        label={`Cutting Allowance`}
-                                        name={'cuttingAllowanceForLength'}
-                                        Controller={Controller}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.cutting_allowance}
-                                        disabled={props.CostingViewMode ? props.CostingViewMode : false}
-                                    />
-                                </Col>
-
-                                <Col md="3" className='mt-2'>
-                                    <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length + (2 * Cutting Allowance)) '} />
-                                    <NumberFieldHookForm
-                                        label={`Length + Cutting allowance`}
-                                        name={'length_inc_cutting_allowance_body'}
-                                        Controller={Controller}
-                                        control={control}
-                                        id={'length-cutting-al'}
-                                        register={register}
-                                        mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.length_inc_cutting_allowance}
-                                        disabled={true}
-                                    />
-                                </Col>
-
-
-                                <Col md="3" className='mt-2'>
-                                    <TooltipCustom disabledIcon={true} id={'quarter-length-calculator'} tooltipClass={'weight-of-sheet'} tooltipText={'Quarter Round Off (Length + Cutting Allowance) = 0.25 * Sheet Length + Cutting Allowance'} />
-                                    <TextFieldHookForm
-                                        label={`Quarter Round Off (Length + Cutting Allowance)`}
-                                        name={'round_off_length_body'}
-                                        Controller={Controller}
-                                        id={'quarter-length-calculator'}
-                                        control={control}
-                                        register={register}
-                                        mandatory={true}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
-                                        }}
-                                        handleChange={() => { }}
-                                        defaultValue={''}
-                                        className=""
-                                        customClassName={'withBorder'}
-                                        errors={errors.round_off_length}
-                                        disabled={true}
-                                    />
-                                </Col>
-                            </Row>}
-
+                            </Row>
                             <Col md="3">
                                 <NumberFieldHookForm
                                     label={`Flute Type Percentage`}
