@@ -899,16 +899,16 @@ function RawMaterialCost(props) {
         }, 500)
       }
       if (Number(costData?.TechnologyId) === Number(MACHINING) && gridData?.some(material => material.UOM === 'Meter')) {
-        const updatedGridData = gridData.map((item, index) => {
-          item.NetLandedCost = item.UOM === 'Meter' ? weightData.RMPerPiece : 0;
-          item.WeightCalculatorRequest = weightData;
-          item.WeightCalculationId = weightData.WeightCalculationId;
-          item.RawMaterialCalculatorId = weightData.WeightCalculationId;
-          item.IsCalculatedEntry = true;
-          item.IsCalculaterAvailable = true;
-          return item;
-        });
-        setGridData(updatedGridData);
+        tempData = {
+          ...tempData,
+          NetLandedCost: weightData.RMPerPiece,
+          WeightCalculatorRequest: weightData,
+          WeightCalculationId: weightData.WeightCalculationId,
+          RawMaterialCalculatorId: weightData.WeightCalculationId,
+          IsCalculatedEntry: true,
+        }
+        tempArr = Object.assign([...gridData], { [editIndex]: tempData })
+        setGridData(tempArr);
       }
     }
   }
@@ -1253,7 +1253,7 @@ function RawMaterialCost(props) {
    * @method render
    * @description Renders the component
    */
-  const machiningUICheck = (costData?.TechnologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && item?.CostingPartDetails?.CostingRawMaterialsCost.some(material => material.UOM === 'Meter'))
+  const machiningUICheck = (costData?.TechnologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && item?.CostingPartDetails?.CostingRawMaterialsCost?.some(material => material.UOM === 'Meter'))
 
   return (
     <>
@@ -1358,12 +1358,12 @@ function RawMaterialCost(props) {
                             {
                               getTechnology.includes(costData?.TechnologyId) &&
                               <td className="text-center">
-                                <button
+                                {!(costData?.TechnologyId === MACHINING && item?.UOM !== "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ? <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
                                   onClick={() => toggleWeightCalculator(index)}
-                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : (costData?.TechnologyId === MACHINING && item?.UOM !== "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter)}
-                                />
+                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
+                                /> : '-'}
                               </td>
                             }
                             {
