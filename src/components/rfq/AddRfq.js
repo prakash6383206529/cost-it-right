@@ -670,7 +670,7 @@ function AddRfq(props) {
             Toaster.warning("Please select part number and SOP date");
             return false;
         } else {
-            if (nfrId) {
+            if (nfrId && nfrId.value !== null) {
                 dispatch(getNfrAnnualForecastQuantity(nfrId.value, getValues('partNumber')?.value, sopdate, (res) => {
                     Data = res.data.Data
                 }));
@@ -715,7 +715,7 @@ function AddRfq(props) {
                         newObjTemp.RMSpecification = rmspecification?.label ?? '-';
                         newObjTemp.RMSpecificationId = rmspecification?.value ?? '-';
                     }
-                    if (nfrId) {
+                    if (nfrId && nfrId.value !== null) {
                         if (index === 0) {
                             newObjTemp.Quantity = checkForDecimalAndNull(Data.FirstYearQuantity, initialConfiguration.NoOfDecimalForInputOutput);
                             newObjTemp.YearName = Data.FirstYear
@@ -737,6 +737,7 @@ function AddRfq(props) {
                     } else {
                         newObjTemp.Quantity = 0
                         newObjTemp.YearName = fiveyearList[index]
+                        newObjTemp.isEdit = true
                     }
                     arrTemp.push(newObjTemp);
                     return null;
@@ -1375,13 +1376,13 @@ function AddRfq(props) {
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
+                                                    <div className={`ag-grid-wrapper without-filter-grid rfq-grid height-width-wrapper ${partList && partList.length <= 0 ? "overlay-contain border" : ""} `}>
 
                                                         <div className={`ag-theme-material ${!state ? "custom-min-height-208px" : ''}`}>
                                                             {!state ? <LoaderCustom customClass={""} /> :
                                                                 <AgGridReact
                                                                     defaultColDef={defaultColDef}
-                                                                    //floatingFilter={true}
+                                                                    floatingFilter={false}
                                                                     domLayout='autoHeight'
                                                                     // columnDefs={c}
                                                                     rowData={partList}
@@ -1760,7 +1761,7 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-                                            {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"
+                                            {<button type="button" className="submit-button save-btn mr-2" value="save"
                                                 onClick={(data, e) => handleSubmitClick(data, e, false)}
                                                 disabled={isViewFlag}>
                                                 <div className={"save-icon"}></div>

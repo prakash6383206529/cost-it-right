@@ -174,7 +174,7 @@ function GotGivenListing(props) {
 
                 <div className="ag-grid-react">
                     <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className='got-given-header'>
+                        <div className='got-given-header border-end-0'>
                             Got Cost Details
                         </div>
                         <div
@@ -229,7 +229,7 @@ function GotGivenListing(props) {
 
                 <div className="ag-grid-react">
                     <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
-                        <div className='got-given-header'>
+                        <div className='got-given-header border-end-0'>
                             Given Cost Details
                         </div>
                         <div
@@ -285,9 +285,10 @@ function GotGivenListing(props) {
                 <div className="ag-grid-react 400px">
                     <div className={`ag-grid-wrapper height-width-wrapper ${gotCost && gotCost?.length <= 0 ? "overlay-contain" : ""}`}>
                         <div className='got-given-header'>
+                            Variance
                         </div>
                         <div
-                            className="ag-theme-material">
+                            className="ag-theme-material variance-report">
                             <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}

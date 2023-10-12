@@ -9056,3 +9056,11 @@ table.table {
   }
 
 }
+
+.without-filter-grid {
+  .ag-overlay {
+    .imagClass {
+      margin-top: 0 !important;
+    }
+  }
+}

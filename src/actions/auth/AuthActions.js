@@ -375,9 +375,7 @@ export function getUsersTechnologyLevelAPI(UserId, technologyId, callback) {
         const request = axios.get(`${API.getUserTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
-            if (response && response.data && response.data.Result) {
-                callback(response);
-            }
+            callback(response);
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
@@ -1603,7 +1601,7 @@ export function getSimualationLevelByTechnology(isAPICall, technologyId, approva
 export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());
+        const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}`, config());
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {

@@ -3581,7 +3581,7 @@ export const ProductComponent = [
     { label: 'DrawingNo', value: 'DrawingNo', },
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
-    { label: 'IsConsideredForMBOM', value: "IsConsideredForMBOM" },
+    { label: 'PreferredForImpactCalculation', value: "IsConsideredForMBOM" },
 ]
 
 export const ProductComponentTempData = [
@@ -4732,7 +4732,7 @@ export const ENDMILL = 'End Mill'
 export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
-export const getTechnology = [1, 8, 2, 4, 20, 23, 25]
+export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25]
 export const technologyForDensity = [1, 2, 25]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']

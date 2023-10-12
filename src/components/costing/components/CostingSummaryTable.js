@@ -349,7 +349,7 @@ const CostingSummaryTable = (props) => {
       }
       return null
     })
-    setDataSelected([])
+    // setDataSelected([])
   }, [viewCostingData])
 
 
@@ -781,7 +781,7 @@ const CostingSummaryTable = (props) => {
     if (check === 'top') {                                                            // WHEN USER CLICK ON TOP SEND FOR APPROVAL
       let temp = multipleCostings
 
-      if (temp.includes(id)) {                                                        // WHEN DESELECT THE CHECKBOX  
+      if (temp.includes(id)) {                                                        // WHEN DESELECT THE CHECKBOX
         temp = multipleCostings.filter((item) => item !== id)                         // FILTER DESELECTED ID 
         const filteredData = dataSelected.filter((item) => item.costingId !== id)     // FLTER DATA TO SET IN ARRAY LIST 
         setDataSelected(filteredData)
@@ -975,12 +975,12 @@ const CostingSummaryTable = (props) => {
             } else if (!allEqual(plantArray)) {
               Toaster.warning('Plant should be same for sending multiple costing for approval')
             } else {
-              sendForApprovalData(multipleCostings)
               dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
-                if (res?.data?.Data?.TechnologyLevels?.length === 0) {
+                if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
                   setShowApproval(false)
                   Toaster.warning('User is not in the approval flow')
                 } else {
+                  sendForApprovalData(multipleCostings)
                   setShowApproval(true)
                 }
               }))
@@ -1012,12 +1012,12 @@ const CostingSummaryTable = (props) => {
       } else if (!allEqual(plantArray)) {
         Toaster.warning('Plant should be same for sending multiple costing for approval')
       } else {
-        sendForApprovalData(multipleCostings)
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
-          if (res?.data?.Data?.TechnologyLevels?.length === 0) {
+          if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
           } else {
+            sendForApprovalData(multipleCostings)
             setShowApproval(true)
           }
         }))

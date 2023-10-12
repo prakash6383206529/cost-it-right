@@ -25,7 +25,6 @@ function YOYCost(props) {
 
     useEffect(() => {
         if (outside && props.activeTab === '6') {
-            console.log('quotationIDForRFQ: ', quotationIDForRFQ);
             let requestObject = {
                 quotationId: quotationIDForRFQ,
                 partId: patId,
