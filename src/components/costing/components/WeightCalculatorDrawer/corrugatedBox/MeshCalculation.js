@@ -588,7 +588,7 @@ function MeshCalculation(props) {
                                 </Col>
 
 
-                                <Col md="3">
+                                <Col md="3" className='mt-2'>
                                     <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet = (No.of mesh in Length * Length Box ) / 25.4'} />
                                     <NumberFieldHookForm
                                         label={`Length(Sheet)(Inch/Mesh)`}
@@ -668,7 +668,7 @@ function MeshCalculation(props) {
                                     />
                                 </Col>
 
-                                <Col md="3">
+                                <Col md="3" className='mt-2'>
                                     <TooltipCustom disabledIcon={true} id={'quarter-length-calculator'} tooltipClass={'weight-of-sheet'} tooltipText={'Quarter Round Off (Length + Cutting Allowance) = 0.25 * Sheet Length + Cutting Allowance'} />
                                     <NumberFieldHookForm
                                         label={`Quarter Round Off (Length + Cutting Allowance)`}
