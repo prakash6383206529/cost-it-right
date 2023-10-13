@@ -67,6 +67,7 @@ function CostingSimulation(props) {
     const [SimulationTechnologyIdState, setSimulationTechnologyIdState] = useState("")
     const [tableData, setTableData] = useState([])
     const [status, setStatus] = useState('')
+    const [isMasterLoader, setMasterLoader] = useState(false)
     const [isSimulationWithCosting, setIsSimulationWithCosting] = useState(isMasterAssociatedWithCosting)
     const [hideDataColumn, setHideDataColumn] = useState({
         hideOverhead: true,
@@ -434,39 +435,52 @@ function CostingSimulation(props) {
                 //  ***** WHEN SAME BLOCK OF CODE IS FOR TWO DIFFERENT CASES | WE WRITE TWO CASES TOGETHER *****
                 case Number(RMDOMESTIC):
                 case Number(RMIMPORT):
+                    setMasterLoader(true)
                     dispatch(getCostingSimulationList(simulationId, plantId, rawMatrialId, res => {
+                        setMasterLoader(false)
                         setCommonStateForList(res)
                     }))
                     break;
                 case Number(SURFACETREATMENT):
+                    setMasterLoader(true)
                     dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
+                        setMasterLoader(false)
                         setCommonStateForList(res)
                     }))
                     break;
                 case Number(OPERATIONS):
+                    setMasterLoader(true)
                     dispatch(getCostingSurfaceTreatmentSimulationList(simulationId, plantId, rawMatrialId, (res) => {
+                        setMasterLoader(false)
                         setCommonStateForList(res)
                     }))
                     break;
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
+                    setMasterLoader(true)
                     if (isMasterAssociatedWithCosting) {
                         dispatch(getCostingBoughtOutPartSimulationList(simulationId, (res) => {
+                            setMasterLoader(false)
                             setCommonStateForList(res)
                         }))
                     } else {
                         dispatch(getAllSimulatedBoughtOutPart(simulationId, (res) => {
+                            setMasterLoader(false)
                             setCommonStateForList(res)
                         }))
                     }
                     break;
                 case Number(EXCHNAGERATE):
+                    setMasterLoader(true)
                     dispatch(getExchangeCostingSimulationList(simulationId, (res) => {
+                        setMasterLoader(false)
                         setCommonStateForList(res)
                     }))
                     break;
                 case Number(MACHINERATE):
+                    setMasterLoader(true)
                     dispatch(getMachineRateCostingSimulationList(simulationId, (res) => {
+                        setMasterLoader(false)
                         setCommonStateForList(res)
                     }))
                     break;
@@ -1364,7 +1378,7 @@ function CostingSimulation(props) {
     return (
         <>
             {
-                false ? <LoaderCustom customClass={`center-loader`} /> :
+                isMasterLoader ? <LoaderCustom customClass={`center-loader`} /> :
 
                     !showApprovalHistory &&
                         loader ? <LoaderCustom customClass={`center-loader`} /> :
