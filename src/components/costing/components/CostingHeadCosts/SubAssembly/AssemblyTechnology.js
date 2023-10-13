@@ -441,7 +441,7 @@ function AssemblyTechnology(props) {
                             type="button"
                             className={'user-btn add-oprn-btn mr-1'}
                             onClick={labourHandlingDrawer}>
-                            <div className={'plus'}></div>{`LABOUR`}</button>
+                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button>
                         </>}
 
                         {isBOPExists && <>
