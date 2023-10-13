@@ -609,9 +609,11 @@ function ApprovalListing(props) {
       setSelectedRowData([])
       return false
     } else if (temp.length === 1) {
-      Toaster.warning(selectedRows[0].ApprovalLockedMessage)
-      gridApi.deselectAll()
-      return false
+      if (selectedRows[0]?.ApprovalLockedMessage && selectedRows[0]?.Status !== "PendingForApproval") {
+        Toaster.warning(selectedRows[0]?.ApprovalLockedMessage)
+        gridApi.deselectAll()
+        return false
+      }
     }
 
     let reasonArray = []
@@ -844,7 +846,7 @@ function ApprovalListing(props) {
           }
         }
         else {
-          setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+          setShowFinalLevelButton(!res.data.Data.IsFinalApprover)
           setApproveDrawer(true)
         }
       }
