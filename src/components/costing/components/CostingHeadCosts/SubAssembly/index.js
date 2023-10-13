@@ -306,7 +306,7 @@ function AssemblyPart(props) {
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={labourHandlingDrawer}>
-                <div className={'plus'}></div>{`LABOUR`}</button>
+                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button>
               </>}
               {isBOPExists && item?.CostingPartDetails?.IsOpen && <><button
                 type="button"
