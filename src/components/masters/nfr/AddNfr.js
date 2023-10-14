@@ -44,6 +44,7 @@ import OutsourcingDrawer from './OutsourcingDrawer';
 //     }]
 function AddNfr(props) {
     const { nfrData, nfrIdsList, isViewEstimation } = props;
+    console.log('isViewEstimation: ', isViewEstimation);
     const dispatch = useDispatch();
     const [rowData, setRowData] = useState([])
     const [vendorName, setVendorname] = useState([])
@@ -134,6 +135,7 @@ function AddNfr(props) {
     }, [rowData])
 
     useEffect(() => {
+        console.log('isFinalLevelApprover: ', isFinalLevelApprover);
         if (count === 0 && isFinalLevelApprover !== '') {
             setCount(count + 1)
             getDetails(false)
@@ -263,6 +265,8 @@ function AddNfr(props) {
                 setFilterStatus("You don't have permission to send NFR for approval.")
                 setEditWarning(true)
                 setSendForApprovalButtonDisable(true)
+                getDetails(false)
+                setDisableSaveButton(false)
             } else {
                 checkFinalUserAPI()
             }
@@ -1022,7 +1026,7 @@ function AddNfr(props) {
                                 type="button"
                                 className="user-btn mr5 save-btn"
                                 onClick={() => saveEstimation()}
-                                disabled={isViewEstimation || disableSaveButton}
+                                disabled={isViewEstimation || disableSaveButton || sendForApprovalButtonDisable}
                             >
                                 <div className={"save-icon"}></div>
                                 Save
