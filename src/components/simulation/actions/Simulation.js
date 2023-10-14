@@ -581,6 +581,7 @@ export function runSimulationOnSelectedExchangeCosting(data, callback) {
 
 export function getExchangeCostingSimulationList(token, callback) {
     return (dispatch) => {
+
         const request = axios.get(`${API.getExchangeCostingSimulationList}?simulationId=${token}&plantId=''`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
@@ -1454,5 +1455,15 @@ export function getAllSimulatedBoughtOutPart(token, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
+    }
+}
+export function emptyCostingSimulationList(callback) {
+    return (dispatch) => {
+
+        dispatch({
+            type: GET_COSTING_SIMULATION_LIST,
+            payload: []
+        })
+        callback([])
     }
 }
