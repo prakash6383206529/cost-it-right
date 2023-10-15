@@ -175,7 +175,6 @@ function ApprovalSummary(props) {
           }
         }))
       }
-      console.log('CostingTypeId: ', ApprovalTypeId);
       setCostingTypeId(ApprovalTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)

@@ -155,7 +155,6 @@ const SendForApproval = (props) => {
   const userTechnology = (approvalTypeId, levelsList) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(approvalTypeId, levelsList?.TechnologyLevels)
-    console.log('levelDetailsTemp: ', levelDetailsTemp);
     setLevelDetails(levelDetailsTemp)
   }
 

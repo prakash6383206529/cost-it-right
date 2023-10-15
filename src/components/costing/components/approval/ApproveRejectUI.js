@@ -28,7 +28,6 @@ function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
   const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
-  console.log('reasonId: ', reasonId);
 
   const { TokensList } = useSelector(state => state.simulation)
 
@@ -281,7 +280,6 @@ function ApproveRejectUI(props) {
     onSubmit()
     setShowPopup(false)
   }
-  console.log(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID), "hhh", disableReleaseStrategy || (userData.Department.length > 1 && reasonId !== REASON_ID, "disableReleaseStrategy", disableReleaseStrategy, "Deppy", userData.Department.length > 1 && reasonId !== REASON_ID))
   return (
     <>
       <Drawer
