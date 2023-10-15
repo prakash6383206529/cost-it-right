@@ -78,6 +78,7 @@ const SendForApproval = (props) => {
   const userData = userDetails()
   const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
   const [approvalType, setApprovalType] = useState({});
+
   const [technologyLevelsList, setTechnologyLevelsList] = useState({});
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
@@ -241,17 +242,28 @@ const SendForApproval = (props) => {
    * @description  Approval Type Change
    */
   const handleApprovalTypeChange = (newValue) => {
+
     setApprovalType(newValue.value)
-    setValue('dept', '')
+
     setValue('approver', '')
     userTechnology(newValue.value, technologyLevelsList)
+
+
+
   }
+
+  useEffect(() => {
+    if (approvalType.length > 0) {
+      handleDepartmentChange(getValues('dept'))
+    }
+  }, [approvalType])
 
   /**
    * @method handleDepartmentChange
    * @description  USED TO HANDLE DEPARTMENT CHANGE
    */
   const handleDepartmentChange = (newValue) => {
+
     const tempDropdownList = []
     if (newValue && newValue !== '') {
       setValue('approver', '')
@@ -1025,6 +1037,7 @@ const SendForApproval = (props) => {
                         />
                       </Col>}
                       <Col md="6">
+
                         <SearchableSelectHookForm
                           label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
                           name={"dept"}
@@ -1035,7 +1048,7 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={disableRS}
+                          disabled={disableRS || !(userData.Department.length > 1)}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
@@ -1053,7 +1066,7 @@ const SendForApproval = (props) => {
                           defaultValue={""}
                           options={approvalDropDown}
                           mandatory={true}
-                          disabled={disableRS}
+                          disabled={disableRS || !(userData.Department.length > 1)}
                           handleChange={handleApproverChange}
                           errors={errors.approver}
                         />

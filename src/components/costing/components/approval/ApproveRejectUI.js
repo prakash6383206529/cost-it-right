@@ -161,11 +161,11 @@ function ApproveRejectUI(props) {
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue?.value)
     let obj = {
-      ...dataInFields, Department: { label: '', value: '' },
+      ...dataInFields,
       Approver: { label: '', value: '', levelId: '', levelName: '' },
       ApprovalType: newValue
     }
-    delete obj.Department
+    // delete obj.Department
     delete obj.Approver
     callbackSetDataInFields(obj)
     // userTechnology(newValue.value)

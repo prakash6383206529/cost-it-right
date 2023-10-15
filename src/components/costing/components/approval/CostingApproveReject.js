@@ -244,7 +244,7 @@ function CostingApproveReject(props) {
       dispatch(approvalRequestByApprove(Data, res => {
         if (res?.data?.Result) {
           setIsDisable(false)
-          console.log('IsNotFinalLevel: ', IsNotFinalLevel);
+
           if (!IsNotFinalLevel) {
             Toaster.success('The costing approved successfully')
             if (!props.isApprovalListing) {
