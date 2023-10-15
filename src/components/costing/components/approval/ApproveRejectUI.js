@@ -7,7 +7,7 @@ import { getReasonSelectList } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { FILE_URL, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4 } from '../../../../config/constants'
+import { FILE_URL, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
@@ -131,7 +131,7 @@ function ApproveRejectUI(props) {
     }
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map((item) => {
-        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
+        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) tempDropdownList.push({ label: item.Text, value: item.Value })
         return null
       })
       return tempDropdownList

@@ -1919,6 +1919,7 @@ export const ReleaseStrategyB1 = 'RSB1'
 export const ReleaseStrategyB2 = 'RSB2'
 export const ReleaseStrategyB3 = 'RSB3'
 export const ReleaseStrategyB4 = 'RSB4'
+export const ReleaseStrategyB6 = 'RSB6'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2490,6 +2491,7 @@ export const RELEASE_STRATEGY_B1 = "Release Strategy B1"
 export const RELEASE_STRATEGY_B2 = "Release Strategy B2"
 export const RELEASE_STRATEGY_B3 = "Release Strategy B3"
 export const RELEASE_STRATEGY_B4 = "Release Strategy B4"
+export const RELEASE_STRATEGY_B6 = "Release Strategy B6"
 
 //default value for page size
 export const defaultPageSize = 10;
@@ -2665,6 +2667,7 @@ export const RELEASESTRATEGYTYPEID1 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID2 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB2])
 export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB3])
 export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
+export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 
 //CONSTANTS FOR MASTER APPROVAL TYPE 
 export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])

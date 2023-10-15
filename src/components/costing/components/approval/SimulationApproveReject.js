@@ -265,7 +265,7 @@ function SimulationApproveReject(props) {
           //NEED TO MAKE THIS 2   
           TechnologyId: technologyId,
           ReasonId: 0,
-          ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(appTypeId)
+          ApprovalTypeId: appTypeId
         }
         dispatch(getAllSimulationApprovalList(obj, (res) => {
           const Data = res?.data?.DataList[1] ? res?.data?.DataList[1] : []
@@ -428,7 +428,7 @@ function SimulationApproveReject(props) {
       senderObj.SenderRemark = remark
       senderObj.EffectiveDate = DayTime(simulationDetail?.EffectiveDate).format('YYYY/MM/DD HH:mm')
       senderObj.LoggedInUserId = userLoggedIn
-      senderObj.ApprovalTypeId = costingTypeIdToApprovalTypeIdFunction(dataInFields?.ApprovalType?.value)
+      senderObj.ApprovalTypeId = dataInFields?.ApprovalType?.value
       let temp = []
       if (isSimulationApprovalListing === true) {
         selectedRowData && selectedRowData.map(item => {
@@ -494,7 +494,7 @@ function SimulationApproveReject(props) {
         UserId: loggedInUserId(),
         TechnologyId: technologyId,
         Mode: 'simulation',
-        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(levelDetails?.ApprovalTypeId)
+        approvalTypeId: levelDetails?.ApprovalTypeId
       }
       dispatch(checkFinalUser(requestObj, res => {
         if (res && res.data && res.data.Result) {
@@ -533,7 +533,7 @@ function SimulationApproveReject(props) {
         handleDepartmentChange={handleDepartmentChange}
         onSubmit={onSubmit}
         callbackSetDataInFields={callbackSetDataInFields}
-        IsFinalLevel={IsFinalLevel}
+        IsNotFinalLevel={IsFinalLevel}
         showApprovalTypeDropdown={props?.showApprovalTypeDropdown}
         showWarningMessage={showWarningMessage}
         setDataFromSummary={true}

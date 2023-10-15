@@ -18,7 +18,7 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, NCCAPPROVALTYPEID, NFRAPPROVALTYPEID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, NCCAPPROVALTYPEID, NFRAPPROVALTYPEID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBC, VBCTypeId, ZBC, ZBCTypeId, RELEASESTRATEGYTYPEID6 } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import LoaderCustom from '../../../common/LoaderCustom'
@@ -230,7 +230,7 @@ const SendForApproval = (props) => {
 
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map((item) => {
-        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
+        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) tempDropdownList.push({ label: item.Text, value: item.Value })
         return null
       })
       return tempDropdownList

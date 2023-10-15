@@ -601,14 +601,15 @@ function SimulationApprovalListing(props) {
                     let obj = {
                         DepartmentId: res?.data?.Data?.DepartmentId,
                         UserId: loggedInUserId(),
-                        TechnologyId: approvalData?.SimulationTechnologyId,
+                        TechnologyId: selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId,
                         Mode: 'simulation',
-                        approvalTypeId: costingTypeIdToApprovalTypeIdFunction(res?.data?.Data?.ApprovalTypeId)
+                        approvalTypeId: selectedRowData[0]?.ApprovalTypeId
                     }
                     dispatch(checkFinalUser(obj, res => {
                         if (res && res.data && res.data.Result) {
-                            if (res.data?.Data?.IsUserInApprovalFlow === false) {
-                                setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                            if (res.data?.Data?.IsUserInApprovalFlow === true) {
+                                setApproveDrawer(true)
+                                setShowFinalLevelButton(res.data.Data.IsFinalApprover)
                             }
                         }
                     }))
@@ -626,7 +627,7 @@ function SimulationApprovalListing(props) {
                 UserId: loggedInUserId(),
                 TechnologyId: selectedRowData[0].SimulationTechnologyId,
                 Mode: 'simulation',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0].SimulationHeadId),
+                approvalTypeId: selectedRowData[0].ApprovalTypeId,
             }
             setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
             dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
@@ -850,7 +851,7 @@ function SimulationApprovalListing(props) {
                                         simulationDetail={simulationDetail}
                                         IsFinalLevel={showFinalLevelButtons}
                                         costingTypeId={selectedRowData[0].SimulationHeadId}
-                                        approvalTypeIdValue={selectedRowData[0].SimulationHeadId}
+                                        approvalTypeIdValue={selectedRowData[0].ApprovalTypeId}
                                         showApprovalTypeDropdown={selectedRowData && selectedRowData[0]?.Status === "Draft"}
                                         releaseStrategyDetails={releaseStrategyDetails}
                                         technologyId={selectedRowData ? selectedRowData[0].SimulationTechnologyId : approvalData?.SimulationTechnologyId}

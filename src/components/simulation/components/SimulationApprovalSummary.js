@@ -239,7 +239,7 @@ function SimulationApprovalSummary(props) {
                             UserId: loggedInUserId(),
                             TechnologyId: SimulationTechnologyId,
                             Mode: 'simulation',
-                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
+                            approvalTypeId: ApprovalTypeId,
                         }
                         dispatch(checkFinalUser(obj, res => {
                             if (res && res.data && res.data.Result) {
@@ -1073,7 +1073,7 @@ function SimulationApprovalSummary(props) {
                 effectiveDate: DayTime(simulationDetail?.EffectiveDate).format('YYYY-MM-DD'),
                 vendorCode: vendor?.split(')')[0],
                 materialNumber: item?.PartNo,
-                netPrice: item?.NewPOPrice,
+                netPrice: item?.NewBasicRate,
                 plant: item?.PlantCode ? item?.PlantCode : null,
                 currencyKey: INR,
                 basicUOM: 'NO',
