@@ -2583,7 +2583,7 @@ function CostingDetails(props) {
                                         <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
                                         <td>
                                           <div className='action-btn-wrapper pr-2'>
-                                            {AddAccessibility && actionPermission.addVBC && displayAddButton && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} />}
+                                            {AddAccessibility && actionPermission.addVBC && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} />}
                                             {ViewAccessibility && actionPermission.viewVBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBCTypeId)} />)}
                                             {EditAccessibility && actionPermission.editVBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBCTypeId)} />)}
                                             {String(partType.label) !== BOUGHTOUTPARTSPACING && CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} />)}

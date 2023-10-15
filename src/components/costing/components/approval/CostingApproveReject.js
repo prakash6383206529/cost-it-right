@@ -1,10 +1,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { approvalRequestByApprove, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, getReasonSelectList, rejectRequestByApprove, } from '../../../costing/actions/Approval'
+import { approvalPushedOnSap, approvalRequestByApprove, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, getReasonSelectList, rejectRequestByApprove, } from '../../../costing/actions/Approval'
 import { loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { EMPTY_GUID } from '../../../../config/constants'
+import { EMPTY_GUID, INR } from '../../../../config/constants'
 import { debounce } from 'lodash'
 import "react-datepicker/dist/react-datepicker.css";
 import 'react-dropzone-uploader/dist/styles.css';
@@ -12,8 +12,11 @@ import { PROVISIONAL } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import ApproveRejectUI from './ApproveRejectUI'
-import { checkFinalUser } from '../../actions/Costing'
+import { checkFinalUser, updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
+import DayTime from '../../../common/DayTimeWrapper'
+import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
+import { MESSAGES } from '../../../../config/message'
 
 function CostingApproveReject(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -23,7 +26,7 @@ function CostingApproveReject(props) {
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
 
-  const { formState: { }, handleSubmit, setValue } = useForm({
+  const { formState: { }, handleSubmit, setValue, reset } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
   })
 
@@ -167,6 +170,27 @@ function CostingApproveReject(props) {
     setOpenPushButton(false)
     props.closeDrawer('', 'Cancel')
   }
+  const pushTonfr = () => {
+    let nfrobj = {
+      "CostingId": approvalData[0]?.CostingId,
+      "NfrId": approvalData[0]?.NfrId,
+      "LoggedInUserId": loggedInUserId(),
+      "IsRegularized": props?.IsRegularized
+    }
+
+    dispatch(updateCostingIdFromRfqToNfrPfs(nfrobj, res => {
+      let pushRequest = {
+        nfrGroupId: res.data.Data.NfrGroupIdForPFS3,
+        costingId: approvalData[0].CostingId
+      }
+      dispatch(pushNfrOnSap(pushRequest, res => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.NFR_PUSHED)
+          onSubmit()
+        }
+      }))
+    }))
+  }
 
   const onSubmit = debounce(handleSubmit(() => {
     const remark = dataInFields?.Remark
@@ -216,12 +240,62 @@ function CostingApproveReject(props) {
       return null;
     })
     if (type === 'Approve') {
+      reset()
       dispatch(approvalRequestByApprove(Data, res => {
-        setIsDisable(false)
         if (res?.data?.Result) {
-          if (IsPushDrawer) {
+          setIsDisable(false)
+          console.log('IsNotFinalLevel: ', IsNotFinalLevel);
+          if (!IsNotFinalLevel) {
             Toaster.success('The costing approved successfully')
-            setOpenPushButton(true)
+            if (!props.isApprovalListing) {
+              let pushdata = {
+                effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
+                vendorCode: props?.vendorCodeForSAP ? props?.vendorCodeForSAP : '',
+                materialNumber: dataSend[1].PartNumber,
+                netPrice: dataSend[0].NewPOPrice,
+                plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+                currencyKey: INR,
+                materialGroup: approvalData[0]?.MaterialGroup?.label ? approvalData[0]?.MaterialGroup.label.split('(')[0] : '',
+                taxCode: 'YW',
+                basicUOM: "NO",
+                purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
+                purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+                CostingId: approvalData[0].CostingId,
+                DecimalOption: approvalData[0].DecimalOption,
+                InfoToConditions: props.conditionInfo,
+                TokenNumber: approvalData[0]?.ApprovalNumber,
+                IsRequestForCosting: true
+                // Quantity: quantity
+                // effectiveDate: '11/30/2021',
+                // vendorCode: '203670',
+                // materialNumber: 'S07004-003A0Y',
+                // materialGroup: 'M089',
+                // taxCode: 'YW',
+                // plant: '1401',
+                // netPrice: '30.00',
+                // currencyKey: 'INR',
+                // basicUOM: 'NO',
+                // purchasingOrg: 'MRPL',
+                // purchasingGroup: 'O02'
+
+              }
+              let obj = {
+                LoggedInUserId: loggedInUserId(),
+                Request: [pushdata]
+              }
+              dispatch(approvalPushedOnSap(obj, res => {
+                if (res && res.status && (res.status === 200 || res.status === 204)) {
+                  Toaster.success('Approval pushed successfully.')
+                }
+              }))
+              if (approvalData[0].IsNFRPFS3PushedButtonShow && approvalData[0].NfrGroupIdForPFS3 === null && props.IsRegularized) {
+                pushTonfr()
+
+              }
+            }
+
+            props.closeDrawer('', 'submit')
+            // setOpenPushButton(true)
 
           } else {
             Toaster.success(!IsNotFinalLevel ? 'The costing approved successfully' : 'The costing has been sent to next level for approval')
@@ -229,7 +303,8 @@ function CostingApproveReject(props) {
           }
         }
       }))
-    } else {
+    }
+    else {
       // REJECT CONDITION
       dispatch(rejectRequestByApprove(Data, res => {
         setIsDisable(false)
@@ -287,7 +362,7 @@ function CostingApproveReject(props) {
         isSimulation={false}
         apiData={apiData}
         releaseStrategyDetails={releaseStrategyDetails}
-
+        reasonId={reasonId}
         technologyId={technologyId}
         dataInFields={dataInFields}
         approvalDropDown={approvalDropDown}
@@ -300,6 +375,7 @@ function CostingApproveReject(props) {
         setDataFromSummary={true}
         showMessage={showMessage}
         disableReleaseStrategy={disableReleaseStrategy}
+        isShowNFRPopUp={props.isShowNFRPopUp}
       />
 
       {

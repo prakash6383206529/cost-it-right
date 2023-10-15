@@ -65,7 +65,6 @@ function ApprovalSummary(props) {
   const [nccPartQuantity, setNccPartQuantity] = useState("")
   const [IsRegularized, setIsRegularized] = useState("")
   const [costingTypeId, setCostingTypeId] = useState("")
-  console.log('costingTypeIdstate: ', costingTypeId);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
   const [costingIdList, setCostingIdList] = useState([])
@@ -369,14 +368,14 @@ function ApprovalSummary(props) {
     return <Redirect to="/approval-listing" />
   }
 
-  const callPushAPI = debounce(() => {
+  const callPushAPI = debounce((currency) => {
     let pushdata = {
       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
       vendorCode: vendorCodeForSap,
       materialNumber: dataSend[1].PartNumber,
-      netPrice: dataSend[0].NewPOPrice,
+      netPrice: dataSend[0].BasicRate,
       plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
-      currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+      currencyKey: currency,
       materialGroup: '',
       taxCode: 'YW',
       basicUOM: "NO",
@@ -486,7 +485,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           {isLoader && <LoaderCustom />}
-          <ErrorMessage approvalNumber={approvalNumber} />
+          <ErrorMessage approvalNumber={approvalNumber} isCosting={true} />
           <div className="container-fluid approval-summary-page">
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
@@ -817,7 +816,7 @@ function ApprovalSummary(props) {
                   {
 
                     showPushButton &&
-                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
+                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI(INR)}>
                       <div className={"save-icon"}></div>
                       {"Repush"}
                     </button>

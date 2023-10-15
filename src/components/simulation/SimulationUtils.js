@@ -285,7 +285,7 @@ export const ErrorMessage = (props) => {
                 if (IsAmmendentDone) {
                     setAmendentstatus(`Amendment Number: ${AmmendentNumber},\u00A0 ${ErrorStatus}`)
                 } else {
-                    setAmendentstatus(`Amendment Status: \u00A0 ${(ErrorStatus && ErrorStatus !== null && ErrorStatus !== "") ? ErrorStatus : "-"
+                    setAmendentstatus(`${props?.isCosting ? 'Costing Status' : 'Amendment Status:'} \u00A0 ${(ErrorStatus && ErrorStatus !== null && ErrorStatus !== "") ? ErrorStatus : "-"
                         } `)
                 }
                 setAmmendmentButton(amendentStatus.length > 245 ? true : false)

@@ -5,9 +5,9 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { getConfigurationKey } from '../../../../helper'
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { FILE_URL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4 } from '../../../../config/constants'
+import { FILE_URL, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
@@ -19,17 +19,23 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import WarningMessage from '../../../common/WarningMessage'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
+import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
+import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
+import { MESSAGES } from '../../../../config/message'
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
-  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails } = props
+  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
+  console.log('reasonId: ', reasonId);
 
   const { TokensList } = useSelector(state => state.simulation)
 
   const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
   })
+  const userData = userDetails()
 
   const dispatch = useDispatch()
   const [openPushButton, setOpenPushButton] = useState(false)
@@ -43,6 +49,7 @@ function ApproveRejectUI(props) {
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [showWarningMessage, setShowWarningMessage] = useState(props?.showWarningMessage)
   const [approvalType, setApprovalType] = useState('');   // change 
+  const [showPopup, setShowPopup] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
@@ -246,7 +253,35 @@ function ApproveRejectUI(props) {
       dropzone.current.files.pop()
     }
   }
-
+  const showPopupWrapper = () => {
+    setShowPopup(true)
+  }
+  const onPopupConfirm = () => {
+    let obj = {
+      "CostingId": approvalData[0]?.CostingId,
+      "NfrId": approvalData[0]?.NfrId,
+      "LoggedInUserId": loggedInUserId(),
+      "IsRegularized": props?.IsRegularized
+    }
+    dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
+      let pushRequest = {
+        nfrGroupId: res.data.Data.NfrGroupIdForPFS2,
+        costingId: approvalData[0].CostingId
+      }
+      dispatch(pushNfrOnSap(pushRequest, res => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.NFR_PUSHED)
+          onSubmit()
+        }
+      }))
+    }))
+    setShowPopup(false)
+  }
+  const closePopUp = () => {
+    onSubmit()
+    setShowPopup(false)
+  }
+  console.log(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID), "hhh", disableReleaseStrategy || (userData.Department.length > 1 && reasonId !== REASON_ID, "disableReleaseStrategy", disableReleaseStrategy, "Deppy", userData.Department.length > 1 && reasonId !== REASON_ID))
   return (
     <>
       <Drawer
@@ -307,7 +342,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={disableReleaseStrategy}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
@@ -324,7 +359,7 @@ function ApproveRejectUI(props) {
                         options={approvalDropDown}
                         mandatory={true}
                         handleChange={() => { }}
-                        disabled={disableReleaseStrategy}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                         errors={errors.approver}
                       />
                     </div>
@@ -348,7 +383,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={disableReleaseStrategy}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
@@ -366,7 +401,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         errors={errors.approver}
-                        disabled={disableReleaseStrategy}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
                     </div>
                     {
@@ -556,21 +591,24 @@ function ApproveRejectUI(props) {
                     <div className={'cancel-icon'}></div>
                     {'Cancel'}
                   </button>
-
                   <button
                     type="button"
                     className="submit-button  save-btn"
-                    onClick={onSubmit}
+                    onClick={props.isShowNFRPopUp ? showPopupWrapper : onSubmit}
                     disabled={isDisable}
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}
                   </button>
+
                 </div>
               </Row>
             </form>
           </div>
         </Container>
+        {
+          (showPopup && props.isShowNFRPopUp) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Do you want to push this vendor's costing to SAP for PFS2`} nfrPopup={true} />
+        }
       </Drawer>
       {
         openPushButton && (

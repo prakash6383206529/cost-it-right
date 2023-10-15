@@ -69,6 +69,7 @@ const SendForApproval = (props) => {
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
   const [tentativeCost, setTentativeCost] = useState(false);
   const [levelDetails, setLevelDetails] = useState('');
+
   const [disableRS, setDisableRS] = useState(false);
   const [isPFSOrBudgetingDetailsExistWarning, showIsPFSOrBudgetingDetailsExistWarning] = useState(false);
   const [approvalTypeId, setApprovalTypeId] = useState('')
@@ -154,6 +155,7 @@ const SendForApproval = (props) => {
   const userTechnology = (approvalTypeId, levelsList) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(approvalTypeId, levelsList?.TechnologyLevels)
+    console.log('levelDetailsTemp: ', levelDetailsTemp);
     setLevelDetails(levelDetailsTemp)
   }
 
@@ -242,6 +244,7 @@ const SendForApproval = (props) => {
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue.value)
     setValue('dept', '')
+    setValue('approver', '')
     userTechnology(newValue.value, technologyLevelsList)
   }
 

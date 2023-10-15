@@ -664,6 +664,7 @@ function ApprovalListing(props) {
       Toaster.warning('Vendor and Plant should be different against a Part number')
     }
 
+
     setSelectedRowData(uniqeArray)
   }
 
@@ -831,7 +832,7 @@ function ApprovalListing(props) {
       UserId: loggedInUserId(),
       TechnologyId: selectedRowData[0].TechnologyId,
       Mode: 'costing',
-      approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.CostingTypeId)
+      approvalTypeId: selectedRowData[0]?.ApprovalTypeId
     }
     dispatch(checkFinalUser(obj, res => {
       if (res && res.data && res.data.Result) {
@@ -1111,10 +1112,11 @@ function ApprovalListing(props) {
           //tokenNo={approvalNumber}
           approvalData={selectedRowData}
           anchor={'right'}
-          IsNotFinalLevel={showFinalLevelButtons}
-          costingTypeId={selectedRowData[0]?.CostingTypeId}
+          IsNotFinalLevel={!showFinalLevelButtons}
+          costingTypeId={selectedRowData[0]?.ApprovalTypeId}
           TechnologyId={selectedRowData[0]?.TechnologyId}
           releaseStrategyDetails={releaseStrategyDetails}
+          isApprovalListing={true}
         />
       )}
       {
