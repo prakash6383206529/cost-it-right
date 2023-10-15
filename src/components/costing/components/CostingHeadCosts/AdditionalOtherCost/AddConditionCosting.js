@@ -155,7 +155,6 @@ function AddConditionCosting(props) {
         }
 
         // Get the current data in the table and set some initial variables.
-        console.log(getValues('Condition'), "getValues('Condition')")
         let table = [...tableData]
         let indexOfNpvType
         let condition = getValues('Condition') ? getValues('Condition').CostingConditionNumber : ''

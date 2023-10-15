@@ -10,7 +10,7 @@ import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../he
 import { setCostingApprovalData, setCostingViewData, fileUploadCosting, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails, } from '../../../../helper'
 import DayTime from '../../../common/DayTimeWrapper'
 import WarningMessage from '../../../common/WarningMessage'
 import DatePicker from "react-datepicker";
@@ -259,7 +259,7 @@ const SendForApproval = (props) => {
         LoggedInUserId: userData.LoggedInUserId,
         DepartmentId: newValue.value,
         TechnologyId: props.technologyId,
-        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(approvalType),
+        ApprovalTypeId: approvalType,
       }
       let Data = []
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {

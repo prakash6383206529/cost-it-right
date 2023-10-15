@@ -2497,7 +2497,6 @@ export function setNPVData(data) {
   }
 };
 export function setOtherCostData(data) {
-  console.log('data: ', data);
   return (dispatch) => {
     dispatch({
       type: SET_OTHER_COST,

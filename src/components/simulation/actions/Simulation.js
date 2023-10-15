@@ -1451,7 +1451,6 @@ export function getAllSimulatedBoughtOutPart(token, callback) {
                 callback(response)
             }
         }).catch((error) => {
-            console.log('error: ', error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })

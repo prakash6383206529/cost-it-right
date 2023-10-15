@@ -662,7 +662,6 @@ function PipdReportListing(props) {
         effectiveDateRenderer: effectiveDateFormatter,
         BoldCellRenderer: BoldCellRenderer
     };
-    console.log(gridData, "gridData")
     return (
         <>
             <div className={"container-fluid"}>

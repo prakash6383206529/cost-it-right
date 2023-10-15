@@ -391,7 +391,6 @@ function CostingSimulation(props) {
             setAPIData(tempArrayCosting)
             setCostingArr(tempArrayCosting)
             setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
-            console.log("In list function");
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
@@ -415,7 +414,6 @@ function CostingSimulation(props) {
             setDownloadList(downloadList)
 
         } else {
-            console.log("n else");
             setLoader(false)
         }
     }
@@ -1074,7 +1072,6 @@ function CostingSimulation(props) {
             costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true || costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ||
             costingSimulationListAllKeys?.IsMachineProcessSimulation === true)
         setTimeout(() => {
-            console.log("In hide column", costingList);
             if (costingList && costingList.length > 0) {
 
                 setLoader(false)

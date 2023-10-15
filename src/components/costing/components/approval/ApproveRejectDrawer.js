@@ -30,7 +30,6 @@ import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
 function ApproveRejectDrawer(props) {
-  console.log('props: ', props);
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
@@ -883,18 +882,15 @@ function ApproveRejectDrawer(props) {
     }
   }, [showListingPage])
   const showPopupWrapper = () => {
-    console.log("POPUP");
     setShowPopup(true)
   }
   const onPopupConfirm = () => {
-    console.log('approvalData: ', approvalData);
     let obj = {
       "CostingId": approvalData[0]?.CostingId,
       "NfrId": approvalData[0]?.NfrId,
       "LoggedInUserId": loggedInUserId(),
       "IsRegularized": props?.IsRegularized
     }
-    console.log(obj, "obj");
     dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
       let pushRequest = {
         nfrGroupId: res.data.Data.NfrGroupIdForPFS2,

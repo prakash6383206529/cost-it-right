@@ -44,7 +44,6 @@ import OutsourcingDrawer from './OutsourcingDrawer';
 //     }]
 function AddNfr(props) {
     const { nfrData, nfrIdsList, isViewEstimation } = props;
-    console.log('isViewEstimation: ', isViewEstimation);
     const dispatch = useDispatch();
     const [rowData, setRowData] = useState([])
     const [vendorName, setVendorname] = useState([])
@@ -135,7 +134,6 @@ function AddNfr(props) {
     }, [rowData])
 
     useEffect(() => {
-        console.log('isFinalLevelApprover: ', isFinalLevelApprover);
         if (count === 0 && isFinalLevelApprover !== '') {
             setCount(count + 1)
             getDetails(false)

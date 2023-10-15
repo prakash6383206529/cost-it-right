@@ -1402,7 +1402,6 @@ function ProcessCost(props) {
                 <tbody>
                   {processGroupGrid &&
                     processGroupGrid.map((item, index) => {
-                      console.log('item: ', item);
                       return (
                         <>
                           <tr key={index}>

@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { loggedInUserId, userDetails, } from '../../helper/auth'
 import NoContentFound from '../common/NoContentFound'
 import { EMPTY_DATA } from '../../config/constants'
-import { REPORT_DOWNLOAD_EXCEl,REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
+import { REPORT_DOWNLOAD_EXCEl, REPORT_DOWNLOAD_SAP_EXCEl } from '../../config/masterData';
 import { GridTotalFormate } from '../common/TableGridFunctions'
 import { getReportListing } from '../report/actions/ReportListing'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -183,7 +183,6 @@ function ReportListing(props) {
 
 
             // var t1 = performance.now();
-            // console.log("Call to doSomething took " + (t1 - t0) + " milliseconds.");
         }))
 
     }
@@ -326,7 +325,7 @@ function ReportListing(props) {
         //     setRowData(data);
         // };
 
-    
+
 
 
         // fetch('https://www.ag-grid.com/example-assets/olympic-winners.json')
@@ -349,7 +348,7 @@ function ReportListing(props) {
     //     return returnExcelColumn(CONSTANT.REPORT_DOWNLOAD_EXCEL, reportListingData)
     // }
 
- 
+
 
     /**
     * @method resetHandler
@@ -391,7 +390,6 @@ function ReportListing(props) {
     }
 
     const returnExcelColumn = (data = [], TempData) => {
-        // console.log('TempData: ', TempData);
         let temp = []
 
 
@@ -437,7 +435,6 @@ function ReportListing(props) {
 
     const returnExcelColumnSAP = (data = [], TempData) => {
 
-        // console.log('TempData: ', TempData);
         let temp = []
 
         return (<ExcelSheet data={TempData} name={ReportSAPMaster}>
@@ -448,7 +445,6 @@ function ReportListing(props) {
 
     const returnExcelColumnSAPEncoded = (data = [], TempData) => {
 
-        // console.log('TempData: ', TempData);
         let temp = []
 
 
@@ -500,7 +496,7 @@ function ReportListing(props) {
         revisionFormatter: revisionFormatter,
         requestterFormatter: requestterFormatter
     };
-  
+
 
 
     return (

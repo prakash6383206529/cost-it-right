@@ -71,7 +71,7 @@ function CostingApproveReject(props) {
           approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId, dataInFieldTemp)
         } else {
           setDisableReleaseStrategy(false)
-          approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId), dataInFieldTemp)
+          approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, props?.costingTypeId, dataInFieldTemp)
         }
       }))
 
@@ -251,7 +251,7 @@ function CostingApproveReject(props) {
       LoggedInUserId: loggedInUserId(), // user id
       DepartmentId: value.value,
       TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
-      ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
+      ApprovalTypeId: props?.costingTypeId,
     }
     dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
       res.data.DataList && res.data.DataList.map((item) => {

@@ -111,6 +111,8 @@ export const hideMultipleColumnFromExcel = (data, value) => {
 
 export const costingTypeIdToApprovalTypeIdFunction = (value) => {
     let approvalTypeId;
+
+
     switch (Number(value)) {
         case ZBCTypeId:
             approvalTypeId = ZBCAPPROVALTYPEID;
@@ -132,18 +134,6 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
             break;
         case WACTypeId:
             approvalTypeId = WACAPPROVALTYPEID;
-            break;
-        case RELEASESTRATEGYTYPEID1:
-            approvalTypeId = RELEASESTRATEGYTYPEID1;
-            break;
-        case RELEASESTRATEGYTYPEID2:
-            approvalTypeId = RELEASESTRATEGYTYPEID2;
-            break;
-        case RELEASESTRATEGYTYPEID3:
-            approvalTypeId = RELEASESTRATEGYTYPEID3;
-            break;
-        case RELEASESTRATEGYTYPEID4:
-            approvalTypeId = RELEASESTRATEGYTYPEID4;
             break;
         default:
             approvalTypeId = null; // or any default value you prefer

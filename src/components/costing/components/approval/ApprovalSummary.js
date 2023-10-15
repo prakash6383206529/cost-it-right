@@ -65,6 +65,7 @@ function ApprovalSummary(props) {
   const [nccPartQuantity, setNccPartQuantity] = useState("")
   const [IsRegularized, setIsRegularized] = useState("")
   const [costingTypeId, setCostingTypeId] = useState("")
+  console.log('costingTypeIdstate: ', costingTypeId);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [uniqueShouldCostingId, setUniqueShouldCostingId] = useState([])
   const [costingIdList, setCostingIdList] = useState([])
@@ -133,7 +134,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, CostingTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
 
       dispatch(setQuotationIdForRFQ(QuotationId))
       // let BestCostAndShouldCostDetails = {
@@ -175,7 +176,8 @@ function ApprovalSummary(props) {
           }
         }))
       }
-      setCostingTypeId(CostingTypeId)
+      console.log('CostingTypeId: ', ApprovalTypeId);
+      setCostingTypeId(ApprovalTypeId)
       setNccPartQuantity(NCCPartQuantity)
       setIsRegularized(IsRegularized)
       setCostingHead(CostingHead)
@@ -226,7 +228,7 @@ function ApprovalSummary(props) {
               UserId: loggedInUserId(),
               TechnologyId: technologyId,
               Mode: 'costing',
-              approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+              approvalTypeId: ApprovalTypeId
             }
             dispatch(checkFinalUser(obj, res => {
               if (res && res.data && res.data.Result) {
@@ -246,7 +248,7 @@ function ApprovalSummary(props) {
           UserId: loggedInUserId(),
           TechnologyId: technologyId,
           Mode: 'costing',
-          approvalTypeId: costingTypeIdToApprovalTypeIdFunction(CostingTypeId)
+          approvalTypeId: ApprovalTypeId
         }
         dispatch(checkFinalUser(obj, res => {
           if (res && res.data && res.data.Result) {
@@ -866,7 +868,7 @@ function ApprovalSummary(props) {
           vendorCodeForSAP={vendorCodeForSap}
           releaseStrategyDetails={releaseStrategyDetails}
           IsRegularized={IsRegularized}
-          isShowNFRPopUp={!IsRegularized && approvalData.NfrId !== null && finalLevelUser ? true : false}
+          isShowNFRPopUp={!IsRegularized && approvalData.NfrId !== null && showFinalLevelButtons ? true : false}
           showApprovalTypeDropdown={false}
         />
       )}
