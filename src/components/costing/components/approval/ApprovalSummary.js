@@ -29,6 +29,7 @@ import { getMultipleCostingDetails, rfqGetBestCostingDetails, setQuotationIdForR
 import _ from 'lodash'
 import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
+import { ErrorMessage } from '../../../simulation/SimulationUtils'
 
 
 function ApprovalSummary(props) {
@@ -482,7 +483,7 @@ function ApprovalSummary(props) {
         showListing === false &&
         <>
           {isLoader && <LoaderCustom />}
-          {/* <ErrorMessage approvalNumber={approvalNumber} /> */}
+          <ErrorMessage approvalNumber={approvalNumber} />
           <div className="container-fluid approval-summary-page">
             <h2 className="heading-main">Approval Summary</h2>
             <Row>
