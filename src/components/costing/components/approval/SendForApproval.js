@@ -414,9 +414,9 @@ const SendForApproval = (props) => {
         "NetPOPrice": tempData?.nPOPrice,
         "NetPOPriceOtherCurrency": tempData?.nPoPriceCurrency
       }
-
+      setIsLoader(true)
       dispatch(rfqSaveBestCosting(data, res => {
-
+        setIsLoader(false)
       }))
 
       let temp = []
