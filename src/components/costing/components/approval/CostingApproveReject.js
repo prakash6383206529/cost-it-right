@@ -262,7 +262,7 @@ function CostingApproveReject(props) {
                 purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
                 CostingId: approvalData[0].CostingId,
                 DecimalOption: approvalData[0].DecimalOption,
-                InfoToConditions: props.conditionInfo,
+                InfoToConditions: props?.conditionInfo,
                 TokenNumber: approvalData[0]?.ApprovalNumber,
                 IsRequestForCosting: true
                 // Quantity: quantity

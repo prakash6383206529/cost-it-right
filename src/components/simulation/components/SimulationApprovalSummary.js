@@ -1083,7 +1083,8 @@ function SimulationApprovalSummary(props) {
                 taxCode: 'YW',
                 TokenNumber: simulationDetail?.Token,
                 DecimalOption: simulationDetail?.DecimalOption,
-                IsRequestForCosting: false
+                IsRequestForCosting: false,
+                InfoToConditions: []
             })
         })
 
