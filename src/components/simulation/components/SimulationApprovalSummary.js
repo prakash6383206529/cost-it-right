@@ -222,51 +222,51 @@ function SimulationApprovalSummary(props) {
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
 
-            if (initialConfiguration.IsReleaseStrategyConfigured) {
-                let requestObject = {
-                    "RequestFor": "SIMULATION",
-                    "TechnologyId": SimulationTechnologyId,
-                    "LoggedInUserId": loggedInUserId(),
-                    "ReleaseStrategyApprovalDetails": [{ SimulationId: SimulationId }]
-                }
-                dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-                    setReleaseStrategyDetails(res?.data?.Data)
-                    if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+            // if (initialConfiguration.IsReleaseStrategyConfigured) {
+            //     let requestObject = {
+            //         "RequestFor": "SIMULATION",
+            //         "TechnologyId": SimulationTechnologyId,
+            //         "LoggedInUserId": loggedInUserId(),
+            //         "ReleaseStrategyApprovalDetails": [{ SimulationId: SimulationId }]
+            //     }
+            //     dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+            //         setReleaseStrategyDetails(res?.data?.Data)
+            //         if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
 
-                    } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-                        let obj = {
-                            DepartmentId: DepartmentId,
-                            UserId: loggedInUserId(),
-                            TechnologyId: SimulationTechnologyId,
-                            Mode: 'simulation',
-                            approvalTypeId: ApprovalTypeId,
-                        }
-                        dispatch(checkFinalUser(obj, res => {
-                            if (res && res.data && res.data.Result) {
-                                setFinalLevelUser(res.data.Data.IsFinalApprover)
-                            }
-                        }))
-                    } else if (res?.data?.Data?.IsFinalApprover) {
-                        setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
-                        return false
-                    } else if (res?.data?.Result === false) {
-                    } else {
-                    }
-                }))
-            } else {
-                let obj = {
-                    DepartmentId: DepartmentId,
-                    UserId: loggedInUserId(),
-                    TechnologyId: SimulationTechnologyId,
-                    Mode: 'simulation',
-                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
-                }
-                dispatch(checkFinalUser(obj, res => {
-                    if (res && res.data && res.data.Result) {
-                        setFinalLevelUser(res.data.Data.IsFinalApprover)
-                    }
-                }))
+            //         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+            //             let obj = {
+            //                 DepartmentId: DepartmentId,
+            //                 UserId: loggedInUserId(),
+            //                 TechnologyId: SimulationTechnologyId,
+            //                 Mode: 'simulation',
+            //                 approvalTypeId: ApprovalTypeId,
+            //             }
+            //             dispatch(checkFinalUser(obj, res => {
+            //                 if (res && res.data && res.data.Result) {
+            //                     setFinalLevelUser(res.data.Data.IsFinalApprover)
+            //                 }
+            //             }))
+            //         } else if (res?.data?.Data?.IsFinalApprover) {
+            //             setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+            //             return false
+            //         } else if (res?.data?.Result === false) {
+            //         } else {
+            //         }
+            //     }))
+            // } else {
+            let obj = {
+                DepartmentId: DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: SimulationTechnologyId,
+                Mode: 'simulation',
+                approvalTypeId: ApprovalTypeId,
             }
+            dispatch(checkFinalUser(obj, res => {
+                if (res && res.data && res.data.Result) {
+                    setFinalLevelUser(res.data.Data.IsFinalApprover)
+                }
+            }))
+            // }
 
         }))
 

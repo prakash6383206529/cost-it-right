@@ -573,11 +573,11 @@ function SimulationApprovalListing(props) {
     }
 
     const sendForApproval = () => {
-        if (selectedRowData.length === 0) {
+        if (selectedRowData?.length === 0) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        if (getConfigurationKey().IsReleaseStrategyConfigured) {
+        if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
             let data = []
             selectedRowData && selectedRowData?.map(item => {
                 let obj = {}

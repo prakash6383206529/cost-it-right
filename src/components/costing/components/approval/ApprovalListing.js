@@ -683,7 +683,7 @@ function ApprovalListing(props) {
       Toaster.warning("Please select at least one costing to send for approval.")
       return false
     }
-    if (initialConfiguration.IsReleaseStrategyConfigured) {
+    if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
       let dataList = costingIdObj(selectedRowData)
       let requestObject = {
         "RequestFor": "COSTING",
