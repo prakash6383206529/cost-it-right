@@ -374,6 +374,7 @@ function CostingApproveReject(props) {
         showWarningMessage={showWarningMessage}
         setDataFromSummary={true}
         showMessage={showMessage}
+        isDisable={isDisable}
         disableReleaseStrategy={disableReleaseStrategy}
         isShowNFRPopUp={props.isShowNFRPopUp}
       />

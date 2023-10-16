@@ -64,6 +64,7 @@ const SendForApproval = (props) => {
   const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
   const [costingApprovalDrawerData, setCostingApprovalDrawerData] = useState({})
   const [attachmentLoader, setAttachmentLoader] = useState(false)
+  const [isLoader, setIsLoader] = useState(false)
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
@@ -613,7 +614,9 @@ const SendForApproval = (props) => {
       // debounce_fun()
       // 
       // props.closeDrawer()
+      setIsLoader(true)
       dispatch(sendForApprovalBySender(obj, (res) => {
+        setIsLoader(false)
         setIsDisable(false)
         Toaster.success(viewApprovalData.length === 1 ? `Costing Id ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
@@ -790,11 +793,12 @@ const SendForApproval = (props) => {
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
-                  disabled={isDisable}
+                  disabled={isLoader}
                   className={"close-button right"}
                 ></div>
               </Col>
             </Row>
+            {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 

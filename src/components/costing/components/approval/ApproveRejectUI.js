@@ -83,7 +83,7 @@ function ApproveRejectUI(props) {
   }
 
   const toggleDrawer = (event, type = 'cancel') => {
-    if (isDisable) {
+    if (props?.isDisable) {
       return false
     }
     if (
@@ -290,7 +290,7 @@ function ApproveRejectUI(props) {
       >
         <Container>
           <div className={'drawer-wrapper'}>
-            {loader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
+            {props?.isDisable && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             <form
             >
               <Row className="drawer-heading">
@@ -301,7 +301,7 @@ function ApproveRejectUI(props) {
 
                   <div
                     onClick={(e) => toggleDrawer(e)}
-                    disabled={isDisable}
+                    disabled={props?.isDisable}
                     className={'close-button right'}
                   ></div>
                 </Col>

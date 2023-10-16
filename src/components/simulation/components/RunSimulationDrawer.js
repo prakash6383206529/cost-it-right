@@ -22,6 +22,7 @@ import DatePicker from "react-datepicker";
 import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
+import LoaderCustom from '../../common/LoaderCustom';
 
 function RunSimulationDrawer(props) {
     const { objs, masterId, date } = props
@@ -500,6 +501,7 @@ function RunSimulationDrawer(props) {
                                     </Row>
 
                                     <Row className="ml-0 pt-2">
+                                        {runSimulationDisable && <LoaderCustom customClass="approve-reject-drawer-loader" />}
                                         <Col md="12" className="mb-3 pr-0">
                                             <Row>
                                                 {
