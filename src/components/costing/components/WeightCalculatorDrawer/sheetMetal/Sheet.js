@@ -188,7 +188,7 @@ function Sheet(props) {
         const componentPerStrip = parseInt(checkForNull(getValues('SheetWidth')) / blankSize)
         setValue('ComponentPerStrip', checkForNull(componentPerStrip))
         const updatedValue = dataToSend
-        updatedValue.ComponentsPerStrip = checkForNull(getValues('SheetWidth')) / blankSize
+        updatedValue.ComponentsPerStrip = componentPerStrip
         setDataToSend(updatedValue)
     }
 

@@ -448,24 +448,26 @@ const Flap = (props) => {
                 <ProcessAndRejection WeightCalculatorRequest={WeightCalculatorRequest} CostingViewMode={CostingViewMode} data={grossWeight} />
                 <Row>
                     <Col md="12" className="d-flex justify-content-end pb-4">
-                        <Button
-                            id="BoxSeparate_cancel"
-                            onClick={cancel}
-                            className="my-0 mr-2 cancel-btn"
-                            variant="reset"
-                            icon="cancel-icon"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            id="BoxSeparate_submit"
-                            onClick={onSubmit}
-                            className="svae-btn"
-                            icon="save-icon"
-                            disabled={CostingViewMode ? true : false}
-                        >
-                            Save
-                        </Button>
+                        {!CostingViewMode && <>
+                            <Button
+                                id="BoxSeparate_cancel"
+                                onClick={cancel}
+                                className="my-0 mr-2 cancel-btn"
+                                variant="reset"
+                                icon="cancel-icon"
+                            >
+                                Cancel
+                            </Button>
+                            <Button
+                                id="BoxSeparate_submit"
+                                onClick={onSubmit}
+                                className="svae-btn"
+                                icon="save-icon"
+                                disabled={CostingViewMode ? true : false}
+                            >
+                                Save
+                            </Button>
+                        </>}
                     </Col>
                 </Row>
             </form>

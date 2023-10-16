@@ -758,20 +758,22 @@ function MeshCalculation(props) {
                         </div>
 
                         {<div className="col-sm-12 text-right mt-4">
-                            <button
-                                type={'button'}
-                                className="reset mr15 cancel-btn"
-                                onClick={cancel} >
-                                <div className={'cancel-icon'}></div> {'Cancel'}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={onSubmit}
-                                disabled={props.CostingViewMode || isDisable ? true : false}
-                                className="submit-button save-btn">
-                                <div className={'save-icon'}></div>
-                                {'Save'}
-                            </button>
+                            {!CostingViewMode && <>
+                                <button
+                                    type={'button'}
+                                    className="reset mr15 cancel-btn"
+                                    onClick={cancel} >
+                                    <div className={'cancel-icon'}></div> {'Cancel'}
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={onSubmit}
+                                    disabled={props.CostingViewMode || isDisable ? true : false}
+                                    className="submit-button save-btn">
+                                    <div className={'save-icon'}></div>
+                                    {'Save'}
+                                </button>
+                            </>}
                         </div>}
 
                     </form>
