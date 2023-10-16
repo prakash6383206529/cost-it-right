@@ -57,6 +57,7 @@ function SimulationApproveReject(props) {
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const SAPData = useSelector(state => state.approval.SAPObj)
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
@@ -442,6 +443,9 @@ function SimulationApproveReject(props) {
       } else {
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
       }
+      senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
+      senderObj.MaterialGroup = SAPData.MaterialGroup?.label
+      senderObj.DecimalOption = SAPData.DecimalOption?.value
       senderObj.Attachements = updatedFiles
       senderObj.LinkedTokenNumber = linkingTokenDropDown.value
       senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false      // IF WE SEND MULTIPLE TOKENS FOR SIMULATION THEN THIS WILL BE TRUE (requirement)

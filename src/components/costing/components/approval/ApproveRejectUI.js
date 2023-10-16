@@ -23,6 +23,7 @@ import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
 import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
+import PushSection from '../../../common/PushSection'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -443,6 +444,23 @@ function ApproveRejectUI(props) {
                               />
                             </div>
                           </div>
+                        }
+                        {
+                          type === 'Sender' && isSimulation &&
+                          <Row className="px-3">
+                            <Col md="12">
+                              <div className="left-border">{"SAP-Push Details"}</div>
+                            </Col>
+                            <div className="w-100">
+                              <PushSection
+                                errors={errors}
+                                register={register}
+                                control={control}
+                                Controller={Controller}
+                              />
+                            </div>
+
+                          </Row>
                         }
                       </>
                     }
