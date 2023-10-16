@@ -265,7 +265,7 @@ function ApprovalSummary(props) {
             Matnr: responseData.PartNumber,
             Kschl: item.CostingConditionNumber,
             Datab: DayTime(responseData.EffectiveDate).format('YYYY-MM-DD'),
-            Datbi: DayTime(responseData.CostingDate).format('YYYY-MM-DD'),
+            Datbi: DayTime('9999-12-31').format('YYYY-MM-DD'),
             Kbetr: item.ConditionCost,
             Konwa: INR,
             Kpein: "1",
