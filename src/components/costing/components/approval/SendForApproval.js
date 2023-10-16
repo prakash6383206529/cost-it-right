@@ -83,6 +83,7 @@ const SendForApproval = (props) => {
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
+    console.log('ApprovalTypeId: ', ApprovalTypeId);
 
     dispatch(getReasonSelectList((res) => { }))
 
@@ -120,8 +121,9 @@ const SendForApproval = (props) => {
         DepartmentId: departObj[0]?.Value,
         TechnologyId: technologyId,
         ReasonId: 0, // key only for minda
-        ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(ApprovalTypeId),
+        ApprovalTypeId: ApprovalTypeId,
       }
+      console.log('requestObject: ', requestObject);
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
         if (res.data.DataList.length === 1) {
