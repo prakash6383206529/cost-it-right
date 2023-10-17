@@ -102,7 +102,7 @@ function NfrListing(props) {
             }
             setloader(false)
         }))
-        setloader(false)
+        // setloader(false)
     }
 
     const resetState = () => {
