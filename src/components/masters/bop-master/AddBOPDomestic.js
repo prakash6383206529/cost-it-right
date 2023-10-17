@@ -1345,7 +1345,7 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && <>
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) &&
                             < Col md="3">
                               <Field
                                 label={`Minimum Order Quantity`}
@@ -1359,7 +1359,8 @@ class AddBOPDomestic extends Component {
                                 customClassName=" withBorder"
                                 disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               />
-                            </Col>
+                            </Col>}
+                          {(!isTechnologyVisible || this.showBasicRate()) && <>
                             <Col md="3">
                               <Field
                                 label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
@@ -1373,54 +1374,12 @@ class AddBOPDomestic extends Component {
                                 className=" "
                                 customClassName=" withBorder"
                               />
-                            </Col>
-                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
-                              <Col md="3">
-                                <Field
-                                  label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                  name={"BasicPriceBase"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderTextInputField}
-                                  required={false}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <div className='d-flex align-items-center'>
-                                  <div className="w-100">
-                                    <Field
-                                      label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                      name={"ConditionCost"}
-                                      type="text"
-                                      placeholder={"-"}
-                                      validate={[]}
-                                      component={renderText}
-                                      required={false}
-                                      disabled={true}
-                                      isViewFlag={true}
-                                      className=" "
-                                      customClassName=" withBorder"
-                                    />
-                                  </div>
-                                  <Button
-                                    id="addBOPDomestic_condition"
-                                    onClick={this.conditionToggle}
-                                    className={"right mt-0 mb-2"}
-                                    variant="plus-icon-square"
-                                  />
-
-                                </div>
-                              </Col>
-                            </>}
+                            </Col></>}
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                             <Col md="3">
-                              <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
                               <Field
-                                label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCostBase"}`}
+                                label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                name={"BasicPriceBase"}
                                 type="text"
                                 placeholder={"-"}
                                 validate={[]}
@@ -1431,7 +1390,49 @@ class AddBOPDomestic extends Component {
                                 customClassName=" withBorder"
                               />
                             </Col>
+                            <Col md="3">
+                              <div className='d-flex align-items-center'>
+                                <div className="w-100">
+                                  <Field
+                                    label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                    name={"ConditionCost"}
+                                    type="text"
+                                    placeholder={"-"}
+                                    validate={[]}
+                                    component={renderText}
+                                    required={false}
+                                    disabled={true}
+                                    isViewFlag={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </div>
+                                <Button
+                                  id="addBOPDomestic_condition"
+                                  onClick={this.conditionToggle}
+                                  className={"right mt-0 mb-2"}
+                                  variant="plus-icon-square"
+                                />
+
+                              </div>
+                            </Col>
                           </>}
+                          <Col md="3">
+                            <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
+                            <Field
+                              label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                              name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCostBase"}`}
+                              type="text"
+                              placeholder={"-"}
+                              validate={[]}
+                              component={renderTextInputField}
+                              required={false}
+                              disabled={true}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+
 
                         </Row>
                         {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
