@@ -42,6 +42,7 @@ function SimulationApprovalListing(props) {
     const [isPendingForApproval, setIsPendingForApproval] = useState(false);
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+    const userData = userDetails()
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
@@ -577,77 +578,78 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Please select atleast one approval to send for approval.')
             return false
         }
-        if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
-            let data = []
-            selectedRowData && selectedRowData?.map(item => {
-                let obj = {}
-                obj.SimulationId = item?.SimulationId
-                data.push(obj)
-            })
-            let requestObject = {
-                "RequestFor": "SIMULATION",
-                "TechnologyId": selectedRowData[0]?.SimulationTechnologyId,
-                "LoggedInUserId": loggedInUserId(),
-                "ReleaseStrategyApprovalDetails": data
-            }
-            dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-                setReleaseStrategyDetails(res?.data?.Data)
-                if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
-                    setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
-                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === true && res?.data?.Data?.IsUserInApprovalFlow === false) {
-                    Toaster.warning("This user is not in the approval cycle")
-                    return false
-                } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-                    let obj = {
-                        DepartmentId: res?.data?.Data?.DepartmentId,
-                        UserId: loggedInUserId(),
-                        TechnologyId: selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId,
-                        Mode: 'simulation',
-                        approvalTypeId: selectedRowData[0]?.ApprovalTypeId
-                    }
-                    dispatch(checkFinalUser(obj, res => {
-                        if (res && res.data && res.data.Result) {
-                            if (res.data?.Data?.IsUserInApprovalFlow === true) {
-                                setApproveDrawer(true)
-                                setShowFinalLevelButton(res.data.Data.IsFinalApprover)
-                            }
-                        }
-                    }))
-                } else if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover) {
-                    setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
-                    setApproveDrawer(true)
-                } else if (res?.data?.Result === false) {
-                    return false
-                } else {
-                }
-            }))
-        } else {
-            let obj = {
-                DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
-                UserId: loggedInUserId(),
-                TechnologyId: selectedRowData[0].SimulationTechnologyId,
-                Mode: 'simulation',
-                approvalTypeId: selectedRowData[0].ApprovalTypeId,
-            }
-            setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
-            dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
-
-            dispatch(checkFinalUser(obj, res => {
-                if (res && res.data && res.data.Result) {
-                    if (selectedRowData[0].Status === DRAFT) {
-                        setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
-                        if (res.data.Data.IsFinalApprover) {
-                            Toaster.warning("Final level approver can not send draft token for approval")
-                            gridApi.deselectAll()
-                        }
-                    }
-                    else {
-                        setShowFinalLevelButton(res.data.Data.IsFinalApprover)
-                        setApproveDrawer(true)
-                    }
-                }
-            }))
+        // if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
+        //     let data = []
+        //     selectedRowData && selectedRowData?.map(item => {
+        //         let obj = {}
+        //         obj.SimulationId = item?.SimulationId
+        //         data.push(obj)
+        //     })
+        //     let requestObject = {
+        //         "RequestFor": "SIMULATION",
+        //         "TechnologyId": selectedRowData[0]?.SimulationTechnologyId,
+        //         "LoggedInUserId": loggedInUserId(),
+        //         "ReleaseStrategyApprovalDetails": data
+        //     }
+        //     dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+        //         setReleaseStrategyDetails(res?.data?.Data)
+        //         if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+        //             setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+        //         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === true && res?.data?.Data?.IsUserInApprovalFlow === false) {
+        //             Toaster.warning("This user is not in the approval cycle")
+        //             return false
+        //         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+        //             let obj = {
+        //                 DepartmentId: userData.DepartmentId,
+        //                 UserId: loggedInUserId(),
+        //                 TechnologyId: selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId,
+        //                 Mode: 'simulation',
+        //                 approvalTypeId: selectedRowData[0]?.ApprovalTypeId
+        //             }
+        //             dispatch(checkFinalUser(obj, res => {
+        //                 if (res && res.data && res.data.Result) {
+        //                     if (res.data?.Data?.IsUserInApprovalFlow === true) {
+        //                         setApproveDrawer(true)
+        //                         setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+        //                     }
+        //                 }
+        //             }))
+        //         } else if (res?.data?.Data?.IsUserInApprovalFlow && res?.data?.Data?.IsFinalApprover) {
+        //             setShowFinalLevelButton(res?.data?.Data?.IsFinalApprover)
+        //             setApproveDrawer(true)
+        //         } else if (res?.data?.Result === false) {
+        //             return false
+        //         } else {
+        //         }
+        //     }))
+        // }
+        //  else {
+        let obj = {
+            DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+            UserId: loggedInUserId(),
+            TechnologyId: selectedRowData[0].SimulationTechnologyId,
+            Mode: 'simulation',
+            approvalTypeId: selectedRowData[0].ApprovalTypeId,
         }
+        setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
+        dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
+
+        dispatch(checkFinalUser(obj, res => {
+            if (res && res.data && res.data.Result) {
+                if (selectedRowData[0].Status === DRAFT) {
+                    setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
+                    if (res.data.Data.IsFinalApprover) {
+                        Toaster.warning("Final level approver can not send draft token for approval")
+                        gridApi.deselectAll()
+                    }
+                }
+                else {
+                    setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+                    setApproveDrawer(true)
+                }
+            }
+        }))
+        // }
     }
 
     const closeDrawer = (e = '', type) => {
