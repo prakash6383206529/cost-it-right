@@ -757,6 +757,7 @@ const SendForApproval = (props) => {
       setIsVerifyImpactDrawer(false);
     }
   }
+  const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
 
   return (
     <Fragment>
@@ -1052,14 +1053,15 @@ const SendForApproval = (props) => {
                           defaultValue={""}
                           options={approvalDropDown}
                           mandatory={true}
+                          customClassName={"mb-0 approver-wrapper"}
                           disabled={disableRS}
                           handleChange={handleApproverChange}
                           errors={errors.approver}
                         />
+                        {
+                          showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
+                        }
                       </Col>
-                      {
-                        showValidation && <span className="warning-top"><WarningMessage dClass="mt-2" message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} /></span>
-                      }
 
                       {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
                         <NumberFieldHookForm
@@ -1228,10 +1230,9 @@ const SendForApproval = (props) => {
                   </Row>
                 ) : null}
                 <Row>
-                  <Col md="12" className='text-right my-n1'>
-                    <WarningMessage message={"All impacted assemblies will be changed and new versions will be formed"} />
-                    {isPFSOrBudgetingDetailsExistWarning && <WarningMessage message={"Budgeting cost does not exist for this part"} />}
-                  </Col>
+
+                  <WarningMessage dClass={'justify-content-end'} message={"All impacted assemblies will be changed and new versions will be formed"} />
+                  {isPFSOrBudgetingDetailsExistWarning && <WarningMessage dClass={'justify-content-end'} message={"Budgeting cost does not exist for this part"} />}
                 </Row>
                 <Row className="mb-4">
                   <Col
