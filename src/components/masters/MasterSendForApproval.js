@@ -18,6 +18,7 @@ import { REMARKMAXLENGTH, SHEETMETAL } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { masterApprovalAPI, masterApprovalRequestBySenderBudget } from './actions/Budget';
 import TooltipCustom from '../common/Tooltip';
+import LoaderCustom from '../common/LoaderCustom';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
@@ -31,6 +32,7 @@ function MasterSendForApproval(props) {
 
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [isDisable, setIsDisable] = useState(false)
+    const [isLoader, setIsLoader] = useState(false)
 
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
@@ -199,8 +201,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = RMTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('Raw Material has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -225,8 +229,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = BOPTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('BOP has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -253,8 +259,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = OPERATIONTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('Operation has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -306,8 +314,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = MACHINETYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('Machine has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -357,8 +367,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = BUDGETTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalRequestBySender(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('Budget has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -391,8 +403,10 @@ function MasterSendForApproval(props) {
             obj.IsFinalApprovalProcess = false
             if (type === 'Approve') {
                 reset()
+                setIsLoader(true)
                 dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
                     setIsDisable(false)
+                    setIsLoader(false)
                     if (res?.data?.Result) {
                         if (IsPushDrawer) {
                             Toaster.success('The token has been approved')
@@ -405,7 +419,9 @@ function MasterSendForApproval(props) {
                 }))
             } else {
                 // REJECT CONDITION
+                setIsLoader(true)
                 dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
+                    setIsLoader(false)
                     if (res.data.Result) {
                         Toaster.success('Token Rejected')
                         props.closeDrawer('', 'submit')
@@ -1033,7 +1049,7 @@ function MasterSendForApproval(props) {
                                     ></div>
                                 </Col>
                             </Row>
-
+                            {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
                             <Row className="ml-0">
                                 {(!IsFinalLevelButtonShow && (type === 'Approve' || type === 'Sender')) && (
                                     <>

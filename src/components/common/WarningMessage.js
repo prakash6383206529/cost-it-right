@@ -12,6 +12,10 @@ const WarningMessage = ({ message, dClass, textClass, title }) => {
         </>
     );
 }
-
+WarningMessage.defaultProps = {
+    dClass: '',
+    message: '',
+    title: ''
+}
 
 export default WarningMessage;
