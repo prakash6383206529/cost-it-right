@@ -170,7 +170,7 @@ const SendForApproval = (props) => {
   useEffect(() => {
     dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
       setTechnologyLevelsList(res?.data?.Data)
-      if (initialConfiguration.IsReleaseStrategyConfigured && !props.isRfq) {
+      if (initialConfiguration.IsReleaseStrategyConfigured) {
         dispatch(getApprovalTypeSelectList((departmentRes) => {
           let data = []
           viewApprovalData && viewApprovalData?.map(item => {
@@ -232,7 +232,8 @@ const SendForApproval = (props) => {
 
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map((item) => {
-        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) tempDropdownList.push({ label: item.Text, value: item.Value })
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && !props?.isRfq) tempDropdownList.push({ label: item.Text, value: item.Value })
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && props?.isRfq) tempDropdownList.push({ label: item.Text, value: item.Value })
         return null
       })
       return tempDropdownList
