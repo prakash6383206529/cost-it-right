@@ -1642,6 +1642,8 @@ class AddBOPImport extends Component {
                                 disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               />
                             </Col>
+                          </>}
+                          {(!isTechnologyVisible || this.showBasicRate()) && <>
                             <Col md="3">
                               <Field
                                 label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
@@ -1670,113 +1672,110 @@ class AddBOPImport extends Component {
                                 customClassName=" withBorder"
                               />
                             </Col>
+                          </>}
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
+                            <Col md="3">
+                              <Field
+                                label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                name={"BasicPriceCurrency"}
+                                type="text"
+                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
+                                name={"BasicPriceBase"}
+                                type="text"
+                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                name={"FinalConditionCostCurrency"}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderText}
+                                required={false}
+                                disabled={true}
+                                isViewFlag={true}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
 
-                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
-                              <Col md="3">
-                                <Field
-                                  label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={"BasicPriceCurrency"}
-                                  type="text"
-                                  placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                                  validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                  component={renderTextInputField}
-                                  required={true}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <Field
-                                  label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
-                                  name={"BasicPriceBase"}
-                                  type="text"
-                                  placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                                  validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                  component={renderTextInputField}
-                                  required={true}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-
-
-                              <Col md="3">
-                                <Field
-                                  label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={"FinalConditionCostCurrency"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderText}
-                                  required={false}
-                                  disabled={true}
-                                  isViewFlag={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-
-                              <Col md="3">
-                                <div className='d-flex align-items-center'>
-                                  <div className='w-100'>
-                                    <Field
-                                      label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
-                                      name={"FinalConditionCostBase"}
-                                      type="text"
-                                      placeholder={"-"}
-                                      validate={[]}
-                                      component={renderText}
-                                      required={false}
-                                      disabled={true}
-                                      isViewFlag={true}
-                                      className=" "
-                                      customClassName=" withBorder"
-                                    />
-                                  </div>
-                                  <Button
-                                    id="addBOPImport_condition"
-                                    onClick={this.conditionToggle}
-                                    className={"right mt-0 mb-2"}
-                                    variant="plus-icon-square"
+                            <Col md="3">
+                              <div className='d-flex align-items-center'>
+                                <div className='w-100'>
+                                  <Field
+                                    label={`Condition Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
+                                    name={"FinalConditionCostBase"}
+                                    type="text"
+                                    placeholder={"-"}
+                                    validate={[]}
+                                    component={renderText}
+                                    required={false}
+                                    disabled={true}
+                                    isViewFlag={true}
+                                    className=" "
+                                    customClassName=" withBorder"
                                   />
                                 </div>
-                              </Col>
+                                <Button
+                                  id="addBOPImport_condition"
+                                  onClick={this.conditionToggle}
+                                  className={"right mt-0 mb-2"}
+                                  variant="plus-icon-square"
+                                />
+                              </div>
+                            </Col>
 
-                            </>}
-                            {this.state.showCurrency && !isTechnologyVisible && <>
-                              <Col md="3">
-                                <TooltipCustom id="bop-net-cost-currency" tooltipText={toolTipTextNetCost?.toolTipTextNetCostSelectedCurrency} />
-                                <Field
-                                  label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderTextInputField}
-                                  required={false}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder mb-0"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <TooltipCustom id="bop-net-cost-base" tooltipText={toolTipTextNetCost?.toolTipTextNetCostBaseCurrency} />
-                                <Field
-                                  label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
-                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBase"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderTextInputField}
-                                  required={false}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder mb-0"
-                                />
-                              </Col>
-                            </>}
+                          </>}
+                          {this.state.showCurrency && !isTechnologyVisible && <>
+                            <Col md="3">
+                              <TooltipCustom id="bop-net-cost-currency" tooltipText={toolTipTextNetCost?.toolTipTextNetCostSelectedCurrency} />
+                              <Field
+                                label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderTextInputField}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder mb-0"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <TooltipCustom id="bop-net-cost-base" tooltipText={toolTipTextNetCost?.toolTipTextNetCostBaseCurrency} />
+                              <Field
+                                label={`Net Cost/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
+                                name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBase"}
+                                type="text"
+                                placeholder={"-"}
+                                validate={[]}
+                                component={renderTextInputField}
+                                required={false}
+                                disabled={true}
+                                className=" "
+                                customClassName=" withBorder mb-0"
+                              />
+                            </Col>
                           </>}
 
 
