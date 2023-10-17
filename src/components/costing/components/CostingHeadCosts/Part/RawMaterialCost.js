@@ -1485,7 +1485,7 @@ function RawMaterialCost(props) {
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData?.TechnologyId === PLASTIC &&
-                <Col md="2" className="py-3 pr-0 apply-mb">
+                <Col md="2" className="py-3 pr-0 d-flex align-items-center apply-mb">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
@@ -1502,7 +1502,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
-                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n3 " tooltipText="Can only be added with 1 RM" />
+                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n2 mt-3 " tooltipText="Can only be added with 1 RM" />
                 </Col>
               }
 
