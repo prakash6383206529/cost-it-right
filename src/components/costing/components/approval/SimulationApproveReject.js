@@ -533,11 +533,12 @@ function SimulationApproveReject(props) {
         handleDepartmentChange={handleDepartmentChange}
         onSubmit={onSubmit}
         callbackSetDataInFields={callbackSetDataInFields}
-        IsFinalLevel={IsFinalLevel}
+        IsNotFinalLevel={IsFinalLevel}
         showApprovalTypeDropdown={props?.showApprovalTypeDropdown}
         showWarningMessage={showWarningMessage}
         setDataFromSummary={true}
         showMessage={showMessage}
+        isDisable={isDisable}
         disableReleaseStrategy={disableReleaseStrategy}
       />
 
