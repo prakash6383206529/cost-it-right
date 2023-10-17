@@ -678,3 +678,17 @@
     min-height: inherit;
   }
 }
+
+.approver-wrapper {
+  min-height: 75px !important;
+}
+
+.approver-warning {
+  max-width: 100%;
+  white-space: nowrap;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+}
