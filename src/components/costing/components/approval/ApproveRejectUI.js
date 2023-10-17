@@ -165,6 +165,7 @@ function ApproveRejectUI(props) {
     }
   }
 
+
   /**
    * @method handleApprovalTypeChange
    * @description  Approval Type Change
@@ -172,7 +173,7 @@ function ApproveRejectUI(props) {
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue?.value)
     let obj = {
-      ...dataInFields, ...fieldDataStore,
+      ...fieldDataStore, Department: { label: '', value: '' },
       Approver: { label: '', value: '', levelId: '', levelName: '' },
       ApprovalType: newValue
     }
