@@ -50,6 +50,7 @@ function ApproveRejectUI(props) {
   const [showWarningMessage, setShowWarningMessage] = useState(props?.showWarningMessage)
   const [approvalType, setApprovalType] = useState('');   // change 
   const [showPopup, setShowPopup] = useState(false)
+  const [fieldDataStore, setFieldDataStore] = useState({})
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
@@ -140,7 +141,8 @@ function ApproveRejectUI(props) {
 
   const handleRemark = (e) => {
     if (e) {
-      let obj = { ...dataInFields, Remark: e?.target?.value }
+      let obj = { ...fieldDataStore, ...dataInFields, Remark: e?.target?.value }
+      setFieldDataStore(obj)
       callbackSetDataInFields(obj)
       setShowError(false)
     } else {
@@ -150,10 +152,19 @@ function ApproveRejectUI(props) {
 
   const handleReason = (value) => {
     if (value) {
-      let obj = { ...dataInFields, Reason: value }
+      let obj = { ...fieldDataStore, ...dataInFields, Reason: value }
+      setFieldDataStore(obj)
       callbackSetDataInFields(obj)
     }
   }
+  const handleApproverChange = (value) => {
+    if (value) {
+      let obj = { ...fieldDataStore, ...dataInFields, Approver: value }
+      setFieldDataStore(obj)
+      callbackSetDataInFields(obj)
+    }
+  }
+
 
   /**
    * @method handleApprovalTypeChange
@@ -162,12 +173,13 @@ function ApproveRejectUI(props) {
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue?.value)
     let obj = {
-      ...dataInFields,
+      ...dataInFields, ...fieldDataStore, Department: { label: '', value: '' },
       Approver: { label: '', value: '', levelId: '', levelName: '' },
       ApprovalType: newValue
     }
     // delete obj.Department
     delete obj.Approver
+    setFieldDataStore(obj)
     callbackSetDataInFields(obj)
     // userTechnology(newValue.value)
   }
@@ -357,7 +369,7 @@ function ApproveRejectUI(props) {
                         //defaultValue={isEditFlag ? plantName : ''}
                         options={approvalDropDown}
                         mandatory={true}
-                        handleChange={() => { }}
+                        handleChange={handleApproverChange}
                         disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                         errors={errors.approver}
                       />
@@ -398,7 +410,7 @@ function ApproveRejectUI(props) {
                         //defaultValue={isEditFlag ? plantName : ''}
                         options={approvalDropDown}
                         mandatory={true}
-                        handleChange={() => { }}
+                        handleChange={handleApproverChange}
                         errors={errors.approver}
                         disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
