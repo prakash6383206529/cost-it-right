@@ -24,7 +24,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
-// const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
+// const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -247,7 +247,7 @@ export const API = {
   getRMGradeSelectListByRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade`,
   bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
   getRawMaterialChildById: `${BASE_URL}/masters-raw-material/get-raw-material-child-by-id`,
-  updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name-child`,
+  updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name`,
 
   //PLANT MASTER
   //createPlantAPI: `${BASE_URL}/plant/create`,
