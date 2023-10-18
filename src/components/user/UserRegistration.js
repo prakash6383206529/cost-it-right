@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SearchableSelectHookForm, TextFieldHookForm, PasswordFieldHookForm, AsyncSearchableSelectHookForm } from '../../components/layout/HookFormInputs'
 import { useForm, Controller } from "react-hook-form";
-import { langs } from "../../config/localization";
 import Toaster from "../common/Toaster";
 import { Loader } from "../common/Loader";
 import {
@@ -16,7 +15,7 @@ import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectLis
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, VBC_VENDOR_TYPE, searchCount } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4, VBC_VENDOR_TYPE, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -24,7 +23,7 @@ import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
+import { autoCompleteDropdown } from "../common/CommonFunctions";
 import _ from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
@@ -41,11 +40,6 @@ const gridOptions = {
 };
 function UserRegistration(props) {
 
-  let child = React.createRef();
-
-  const [token, setToken] = useState("");
-  const [maxLength, setMaxLength] = useState(maxLength11);
-  const [countryCode, setCountryCode] = useState(false);
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
   const [upperCaseCheck, setUpperCaseCheck] = useState(false);
   const [numberCheck, setNumberCheck] = useState(false);
@@ -391,10 +385,12 @@ function UserRegistration(props) {
       })
       return temp;
     }
-    if (label === 'approvalType') {
-
+    if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) && label === 'approvalTypeCosting') return false
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2)) && label === 'approvalTypeSimulation') return false
+        if (((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2)) || (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4))) && label === 'approvalTypeMaster') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -2269,7 +2265,7 @@ function UserRegistration(props) {
                                 control={control}
                                 register={register}
                                 mandatory={true}
-                                options={searchableSelectType('approvalType')}
+                                options={searchableSelectType('approvalTypeCosting')}
                                 handleChange={costingApprovalTypeHandler}
                                 defaultValue={costingApprovalType}
                                 errors={errors.ApprovalType}
@@ -2414,7 +2410,7 @@ function UserRegistration(props) {
                                 control={control}
                                 register={register}
                                 mandatory={true}
-                                options={searchableSelectType('approvalType')}
+                                options={searchableSelectType('approvalTypeSimulation')}
                                 handleChange={simulationApprovalTypeHandler}
                                 defaultValue={simulationApprovalType}
                                 errors={errors.ApprovalType}
@@ -2554,7 +2550,7 @@ function UserRegistration(props) {
                                     control={control}
                                     register={register}
                                     mandatory={true}
-                                    options={searchableSelectType('approvalType')}
+                                    options={searchableSelectType('approvalTypeMaster')}
                                     handleChange={masterApprovalTypeHandler}
                                     defaultValue={masterApprovalType}
                                     errors={errors.ApprovalType}
