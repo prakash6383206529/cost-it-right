@@ -481,6 +481,7 @@ const SendForApproval = (props) => {
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
+        tempObj.ApprovalTypeId = approvalType
         temp.push(tempObj)
         return null
       })

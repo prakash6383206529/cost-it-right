@@ -173,7 +173,7 @@ function ApproveRejectUI(props) {
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue?.value)
     let obj = {
-      ...dataInFields, ...fieldDataStore, Department: { label: '', value: '' },
+      ...dataInFields, ...fieldDataStore,
       Approver: { label: '', value: '', levelId: '', levelName: '' },
       ApprovalType: newValue
     }
@@ -269,24 +269,7 @@ function ApproveRejectUI(props) {
     setShowPopup(true)
   }
   const onPopupConfirm = () => {
-    let obj = {
-      "CostingId": approvalData[0]?.CostingId,
-      "NfrId": approvalData[0]?.NfrId,
-      "LoggedInUserId": loggedInUserId(),
-      "IsRegularized": props?.IsRegularized
-    }
-    dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
-      let pushRequest = {
-        nfrGroupId: res.data.Data.NfrGroupIdForPFS2,
-        costingId: approvalData[0].CostingId
-      }
-      dispatch(pushNfrOnSap(pushRequest, res => {
-        if (res?.data?.Result) {
-          Toaster.success(MESSAGES.NFR_PUSHED)
-          onSubmit()
-        }
-      }))
-    }))
+    onSubmit()
     setShowPopup(false)
   }
   const closePopUp = () => {

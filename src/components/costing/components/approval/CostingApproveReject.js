@@ -170,6 +170,32 @@ function CostingApproveReject(props) {
     setOpenPushButton(false)
     props.closeDrawer('', 'Cancel')
   }
+
+
+  const pushtoNFrForPFS2 = () => {
+    let obj = {
+      "CostingId": approvalData[0]?.CostingId,
+      "NfrId": approvalData[0]?.NfrId,
+      "LoggedInUserId": loggedInUserId(),
+      "IsRegularized": props?.IsRegularized
+    }
+    dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
+      let pushRequest = {
+        nfrGroupId: res.data.Data.NfrGroupIdForPFS2,
+        costingId: approvalData[0].CostingId
+      }
+      dispatch(pushNfrOnSap(pushRequest, res => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.NFR_PUSHED)
+          onSubmit()
+        }
+      }))
+    }))
+  }
+
+
+
+
   const pushTonfr = () => {
     let nfrobj = {
       "CostingId": approvalData[0]?.CostingId,
@@ -219,6 +245,7 @@ function CostingApproveReject(props) {
     /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
     let Data = []
 
+    console.log('approvalData: ', approvalData);
     approvalData.map(ele => {
       Data.push({
         ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
@@ -235,6 +262,7 @@ function CostingApproveReject(props) {
         IsApproved: type === 'Approve' ? true : false,
         IsFinalApprovalProcess: false,
         IsRFQCostingSendForApproval: false,
+        ApprovalTypeId: ele.ApprovalTypeId
 
       })
       return null;
@@ -288,10 +316,15 @@ function CostingApproveReject(props) {
                   Toaster.success('Approval pushed successfully.')
                 }
               }))
+              if (approvalData[0].IsNFRPFS2PushedButtonShow && approvalData[0].NfrGroupIdForPFS2 === null && !props.IsRegularized) {
+                pushtoNFrForPFS2()
+
+              }
               if (approvalData[0].IsNFRPFS3PushedButtonShow && approvalData[0].NfrGroupIdForPFS3 === null && props.IsRegularized) {
                 pushTonfr()
 
               }
+
             }
 
             props.closeDrawer('', 'submit')
@@ -353,7 +386,7 @@ function CostingApproveReject(props) {
         isOpen={props?.isOpen}
         vendorId={props?.vendorId}
         anchor={'right'}
-        approvalData={[]}
+        approvalData={approvalData}
         type={type}
         selectedRowData={selectedRowData}
         costingArr={costingArr}
