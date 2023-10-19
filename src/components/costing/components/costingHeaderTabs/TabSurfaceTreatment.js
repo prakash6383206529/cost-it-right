@@ -42,7 +42,9 @@ function TabSurfaceTreatment(props) {
       dispatch(getSurfaceTreatmentTabData(data, true, res => {
         let tempArr = [];
         tempArr.push(res?.data?.DataList[0]);
-        tempArr.push(...res?.data?.DataList[0]?.CostingChildPartDetails);
+        if (!partType) {
+          tempArr.push(...res?.data?.DataList[0]?.CostingChildPartDetails);
+        }
         reactLocalStorage.setObject('surfaceCostingArray', tempArr)
       }))
     }

@@ -28,7 +28,6 @@ function RemarkHistoryDrawer(props) {
 
 
     useEffect(() => {
-        console.log(props.data, "props.data");
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getReporterList(() => { }))
         const { data } = props
