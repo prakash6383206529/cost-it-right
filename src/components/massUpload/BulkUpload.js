@@ -440,9 +440,6 @@ class BulkUpload extends Component {
                                 if (fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
                                 }
-                                if (fileHeads[i] === 'PlantCode') {
-                                    fileHeads[i] = 'Plants'
-                                }
                                 if (fileHeads[i] === 'InsertVendor') {
                                     fileHeads[i] = 'BOPVendor'
                                 }

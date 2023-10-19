@@ -84,8 +84,8 @@ function SurfaceTreatment(props) {
 
         totalCost = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
-          + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
-          + checkForNull(DiscountCostData?.AnyOtherCost)
+          + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost) +
+          checkForNull(DiscountCostData?.totalConditionCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
 
         if (props.IsAssemblyCalculation) {
           if (item?.PartType === "Part") {
@@ -98,8 +98,9 @@ function SurfaceTreatment(props) {
         } else {
           totalCost = ((checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
             checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) + checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost)
-            + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
-            + checkForNull(DiscountCostData?.AnyOtherCost)
+            + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(DiscountCostData?.AnyOtherCost) +
+            checkForNull(DiscountCostData?.totalConditionCost)) - checkForNull(DiscountCostData?.HundiOrDiscountValue))
+
           totalCostAPI = checkForNull(totalCost)
           mergedAPI(totalCostAPI, false, false)
         }
@@ -110,7 +111,7 @@ function SurfaceTreatment(props) {
           checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
           checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
           checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
           checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
         mergedAPI(totalCostAPI, false, false)
@@ -257,8 +258,10 @@ function SurfaceTreatment(props) {
     if (partType) {
       // WILL GET EXECUTE WHEN TECHNOLOGY OF COSTING WILL BE ASSEMBLY
 
+      setTimeout(() => {
+        setCallAPI(true)
+      }, 200);
       props.setSurfaceTreatmentCostAssemblyTechnology(surfaceTreatmentData?.gridData, transportObj, surfaceTreatmentData.Params)
-      // callApi()
     }
     if (transportationObject.UOM === "Percentage" && transportationObject.Rate !== null && transportationObject.Rate > 100) {
       return false
@@ -268,13 +271,11 @@ function SurfaceTreatment(props) {
         props.setAssemblySurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false, props.item)
         props.setAssemblyTransportationCost(transportObj, transportationObject.Params, item)
         setCallAPI(true)
-        // callApi()
       } else {
         props.setSurfaceCost(surfaceTreatmentData.gridData, surfaceTreatmentData.Params, JSON.stringify(surfaceTreatmentData.gridData) !== JSON.stringify(surfaceTreatmentData.OldGridData) ? true : false)
         props.setTransportationCost(transportObj, transportationObject.Params)
         setCallAPI(true)
 
-        // callApi()
       }
     }
 
@@ -298,9 +299,14 @@ function SurfaceTreatment(props) {
 
 
     let basicRate = 0
-    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
+    if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY && !partType) {
       basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
         checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
+        checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
+    } else if (partType) {
+      let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
+      basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(totalOverheadPrice) +
+        checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
         checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
     } else {
       basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
