@@ -58,7 +58,7 @@ function NfrListing(props) {
     }
     useEffect(() => {
         setloader(true)
-        getDataList()
+        // getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
 
