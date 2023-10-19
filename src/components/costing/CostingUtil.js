@@ -319,12 +319,19 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       let subAssemblyObj = {
         "CostingId": item?.CostingId,
         "TotalCostINR": item?.CostingPartDetails?.NetPOPrice,
-        "NetChildPartsCostWithQuantity": item?.CostingPartDetails?.NetChildPartsCostWithQuantity
+        "NetChildPartsCostWithQuantity": item?.CostingPartDetails?.NetChildPartsCostWithQuantity,
+        "BasicRate": item?.CostingPartDetails?.NetPOPrice,
       }
       assemblyWorkingRow.push(subAssemblyObj)
     }
     return ''
   })
+
+  let basicRate = 0
+  let totalOverheadPrice = checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.OverheadCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ProfitCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.RejectionCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.PaymentTermCost) + checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.ICCCost)
+  basicRate = checkForNull(tabData?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) + checkForNull(totalOverheadPrice) +
+    checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
+    checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
   let temp = {
     "BOPHandlingCharges": {
@@ -345,7 +352,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "NetConversionCostPerAssembly": checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
       "NetRMBOPCCCost": checkForNull(tabData?.CostingPartDetails?.NetChildPartsCost) + checkForNull(tabData?.CostingPartDetails?.TotalBoughtOutPartCost) + checkForNull(tabData?.CostingPartDetails?.TotalOperationCost) + checkForNull(tabData?.CostingPartDetails?.TotalProcessCost) + checkForNull(tabData?.NetLabourCost) + checkForNull(tabData?.IndirectLaborCost) + checkForNull(tabData?.StaffCost),
       "NetSurfaceTreatmentCost": surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost,
-      "NetOverheadAndProfits": overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost,
+      "NetOverheadAndProfits": totalOverheadPrice,
       "NetPackagingAndFreightCost": packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost,
       "NetToolCost": toolTabData?.CostingPartDetails?.TotalToolCost,
       "NetOtherCost": DiscountCostData?.AnyOtherCost,
@@ -369,6 +376,7 @@ export const formatMultiTechnologyUpdate = (tabData, totalCost = 0, surfaceTabDa
       "IndirectLabourCRMHead": tabData?.CostingPartDetails?.IndirectLabourCRMHead,
       "StaffCostPercentage": tabData?.StaffCostPercentage,
       "IndirectLaborCostPercentage": tabData?.IndirectLaborCostPercentage,
+      "BasicRate": basicRate,
     },
     "WorkingRows": assemblyWorkingRow,
     "LoggedInUserId": loggedInUserId()
