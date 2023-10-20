@@ -42,6 +42,7 @@ function SimulationApprovalListing(props) {
     const [isPendingForApproval, setIsPendingForApproval] = useState(false);
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+    const userData = userDetails()
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
@@ -599,7 +600,7 @@ function SimulationApprovalListing(props) {
                     return false
                 } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
                     let obj = {
-                        DepartmentId: res?.data?.Data?.DepartmentId,
+                        DepartmentId: userData.DepartmentId,
                         UserId: loggedInUserId(),
                         TechnologyId: selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId,
                         Mode: 'simulation',
@@ -621,7 +622,8 @@ function SimulationApprovalListing(props) {
                 } else {
                 }
             }))
-        } else {
+        }
+        else {
             let obj = {
                 DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
                 UserId: loggedInUserId(),

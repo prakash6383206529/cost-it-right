@@ -683,59 +683,59 @@ function ApprovalListing(props) {
       Toaster.warning("Please select at least one costing to send for approval.")
       return false
     }
-    if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
-      let dataList = costingIdObj(selectedRowData)
-      let requestObject = {
-        "RequestFor": "COSTING",
-        "TechnologyId": selectedRowData[0].TechnologyId,
-        "LoggedInUserId": loggedInUserId(),
-        "ReleaseStrategyApprovalDetails": dataList
-      }
-      dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-        setReleaseStrategyDetails(res?.data?.Data)
-        if (res?.data?.Data?.IsUserInApprovalFlow) {
-          if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one approval to send for approval.')
-            return false
-          }
-          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-            setShowPopup(true)
-          } else {
-            sendForApprovalDrawer()
-          }
-        } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+    // if (initialConfiguration.IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
+    //   let dataList = costingIdObj(selectedRowData)
+    //   let requestObject = {
+    //     "RequestFor": "COSTING",
+    //     "TechnologyId": selectedRowData[0].TechnologyId,
+    //     "LoggedInUserId": loggedInUserId(),
+    //     "ReleaseStrategyApprovalDetails": dataList
+    //   }
+    //   dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+    //     setReleaseStrategyDetails(res?.data?.Data)
+    //     if (res?.data?.Data?.IsUserInApprovalFlow) {
+    //       if (selectedRowData.length === 0) {
+    //         Toaster.warning('Please select atleast one approval to send for approval.')
+    //         return false
+    //       }
+    //       if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+    //         setShowPopup(true)
+    //       } else {
+    //         sendForApprovalDrawer()
+    //       }
+    //     } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
 
-          if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one approval to send for approval.')
-            return false
-          }
-          if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-            setShowPopup(true)
-          } else {
-            sendForApprovalDrawer()
-          }
+    //       if (selectedRowData.length === 0) {
+    //         Toaster.warning('Please select atleast one approval to send for approval.')
+    //         return false
+    //       }
+    //       if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+    //         setShowPopup(true)
+    //       } else {
+    //         sendForApprovalDrawer()
+    //       }
 
-        } else if (res?.data?.Data?.IsFinalApprover === true) {
-          Toaster.warning('This is final level user')
-        } else if (res?.data?.Result === false) {
-          Toaster.warning(res?.data?.Message)
-        } else {
-          Toaster.warning('This user is not in approval cycle')
-        }
-      }))
-    } else {
+    //     } else if (res?.data?.Data?.IsFinalApprover === true) {
+    //       Toaster.warning('This is final level user')
+    //     } else if (res?.data?.Result === false) {
+    //       Toaster.warning(res?.data?.Message)
+    //     } else {
+    //       Toaster.warning('This user is not in approval cycle')
+    //     }
+    //   }))
+    // } else {
 
-      if (selectedRowData.length === 0) {
-        Toaster.warning('Please select atleast one approval to send for approval.')
-        return false
-      }
-      if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
-        setShowPopup(true)
-      } else {
-        sendForApprovalDrawer()
-      }
-
+    if (selectedRowData.length === 0) {
+      Toaster.warning('Please select atleast one approval to send for approval.')
+      return false
     }
+    if (selectedRowData && selectedRowData[0]?.IsRegularizationLimitCrossed !== 'No') {
+      setShowPopup(true)
+    } else {
+      sendForApprovalDrawer()
+    }
+
+    // }
   }
 
   const sendForApprovalDrawer = () => {

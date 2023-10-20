@@ -190,7 +190,7 @@ const SendForApproval = (props) => {
               const approvalType = { label: getApprovalTypeName(response.data.Data?.ApprovalTypeId, departmentRes?.data?.SelectList), value: response.data.Data?.ApprovalTypeId }
               setValue("ApprovalType", approvalType)
               setApprovalType(approvalType?.value)
-              apicall(props.technologyId, response?.data?.Data?.DepartmentId, response.data.Data?.ApprovalTypeId, true, res?.data?.Data)
+              apicall(props.technologyId, userData.DepartmentId, response.data.Data?.ApprovalTypeId, true, res?.data?.Data)
             } else if (response?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
               showIsPFSOrBudgetingDetailsExistWarning(true)
               apicall(props.technologyId, userData.DepartmentId, viewApprovalData[0]?.costingTypeId, false, res?.data?.Data)
@@ -481,6 +481,7 @@ const SendForApproval = (props) => {
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
+        tempObj.ApprovalTypeId = approvalType
         temp.push(tempObj)
         return null
       })

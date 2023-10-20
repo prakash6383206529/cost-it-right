@@ -206,7 +206,8 @@ function ApprovalSummary(props) {
         NfrGroupIdForPFS2: NfrGroupIdForPFS2,
         NfrGroupIdForPFS3: NfrGroupIdForPFS3,
         IsNFRPFS2PushedButtonShow: IsNFRPFS2PushedButtonShow,
-        IsNFRPFS3PushedButtonShow: IsNFRPFS3PushedButtonShow
+        IsNFRPFS3PushedButtonShow: IsNFRPFS3PushedButtonShow,
+        ApprovalTypeId: ApprovalTypeId
       })
 
       // if (initialConfiguration.IsReleaseStrategyConfigured) {
