@@ -790,7 +790,7 @@ export const Vendor = [
     { label: 'ZipCode', value: 'ZipCode', },//*
     { label: 'AddressLine1', value: 'AddressLine1', },
     { label: 'AddressLine2', value: 'AddressLine2', },
-    { label: 'IsCriticalVendor', value: 'IsCriticalVendor' },
+    { label: 'Potential Vendor', value: 'IsCriticalVendor' },
     { label: 'Technology', value: 'Technology' },
     { label: 'PlantCode', value: 'PlantCode' }
 ]
@@ -5433,7 +5433,7 @@ export const VENDOR_DOWNLOAD_EXCEl = [
     { label: "Country", value: "Country", },
     { label: "State", value: "State", },
     { label: "City", value: "City", },
-    { label: "IsCriticalVendor", value: "IsCriticalVendor", },
+    { label: "Potential Vendor", value: "IsCriticalVendor", },
     { label: "ZipCode", value: "ZipCode", },
     { label: "Address 1", value: "AddressLine1", },
     { label: "Address 2", value: "AddressLine2", },
