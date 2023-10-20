@@ -825,7 +825,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit8 }
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
                       }}
                       defaultValue={''}
                       className=""
