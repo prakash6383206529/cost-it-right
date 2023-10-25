@@ -3,20 +3,23 @@ import { checkForDecimalAndNull } from '../../../../helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
-import { BOUGHTOUTPART, EMPTY_DATA } from '../../../../config/constants'
+import { BOUGHTOUTPART, CBCTypeId, EMPTY_DATA, VBCTypeId } from '../../../../config/constants'
 import { useDispatch, useSelector } from 'react-redux'
 import EditPartCost from '../CostingHeadCosts/SubAssembly/EditPartCost'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { setCostingViewData } from '../../actions/Costing'
 
 function ViewMultipleTechnology(props) {
+    console.log(props?.costingTypeId, "props?.costingTypeId");
     const { multipleTechnologyData, isPDFShow } = props
     const [viewMultiCost, setViewMultiCost] = useState([])
+
     const [costingDetailId, setCostingDetailId] = useState('')
     const [openDrawer, setOpemDrawer] = useState(false)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const partNumber = useSelector(state => state.costing.partNo);
+    const [costingTypeId, setCostingTypeId] = useState(props?.costingTypeId)
     const dispatch = useDispatch()
 
     useEffect(() => {
@@ -57,11 +60,18 @@ function ViewMultipleTechnology(props) {
                     <Table className="table cr-brdr-main" size="sm">
                         <thead>
                             <tr>
+                                {props?.costingTypeId === VBCTypeId &&
+                                    <th>{`Vendor (Code)`}</th>
+                                }
+                                {props?.costingTypeId === CBCTypeId &&
+                                    <th>{`Customer (Code)`}</th>
+                                }
                                 <th>{`Costing Number`}</th>
                                 <th>{`Part Number`}</th>
                                 <th>{`Name`}</th>
                                 <th>{`Part Type`}</th>
                                 <th>{`Technology`}</th>
+
                                 <th>{`Quantity`}</th>
                                 <th>{`Part Cost/Pc`}</th>
                                 <th>{`BOP Cost`}</th>
@@ -74,25 +84,32 @@ function ViewMultipleTechnology(props) {
                                 viewMultiCost.map((item, index) => {
                                     return (
                                         <tr key={index}>
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.CostingNumber}>{item.CostingNumber}</span></td>
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.PartNumber}>{item.PartNumber}</span></td>
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.PartName}>{item.PartName}</span></td>
-                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item.PartTypeName}>{item.PartTypeName}</span></td>
+                                            {props?.costingTypeId === VBCTypeId &&
+                                                <th>{`${item?.VendorName} (${item?.VendorCode})`}</th>
+                                            }
+                                            {props?.costingTypeId === CBCTypeId &&
+                                                <td>{`${item?.CustomerName} (${item?.CustomerCode})`}</td>
+                                            }
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.CostingNumber}>{item?.CostingNumber}</span></td>
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartNumber}>{item?.PartNumber}</span></td>
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartName}>{item?.PartName}</span></td>
+                                            <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartTypeName}>{item?.PartTypeName}</span></td>
 
                                             <td className={`${isPDFShow ? '' : ''}`}>
-                                                {(item.PartTypeName === 'BoughtOutPart') ? <span >{'-'}</span> : <span title={item.TechnologyName}>{item.TechnologyName}</span>}
+                                                {(item?.PartTypeName === 'BoughtOutPart') ? <span >{'-'}</span> : <span title={item?.TechnologyName}>{item?.TechnologyName}</span>}
                                             </td>
-                                            <td> {item.Quantity}</td>
+
+                                            <td> {item?.Quantity}</td>
                                             <td>
-                                                {checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
-                                            </td>
-                                            <td>
-                                                {checkForDecimalAndNull(item.NetBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
+                                                {checkForDecimalAndNull(item?.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
                                             </td>
                                             <td>
-                                                {checkForDecimalAndNull(item.NetChildPartsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
+                                                {checkForDecimalAndNull(item?.NetBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
                                             </td>
-                                            <td> {item.PartTypeName !== BOUGHTOUTPART && <button
+                                            <td>
+                                                {checkForDecimalAndNull(item?.NetChildPartsCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}
+                                            </td>
+                                            <td> {item?.PartTypeName !== BOUGHTOUTPART && <button
                                                 type="button"
                                                 title='View'
                                                 className="float-right mb-0 View "
@@ -148,6 +165,7 @@ function ViewMultipleTechnology(props) {
                 anchor={'right'}
                 tabAssemblyIndividualPartDetail={costingDetailId}
                 costingSummary={true}
+                costingTypeId={costingTypeId}
             />}
 
         </Fragment>

@@ -3109,6 +3109,7 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             index={index}
             isPDFShow={false}
+            costingTypeId={viewCostingData[index]?.costingTypeId}
           />
         )
       }
