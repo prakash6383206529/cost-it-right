@@ -34,7 +34,7 @@ function EditPartCost(props) {
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
-    const { ToolTabData, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, SurfaceTabData, RMCCTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge, CostingEffectiveDate } = useSelector(state => state.costing)
+    const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
 
     const { register, handleSubmit, control, setValue, getValues } = useForm({
@@ -398,6 +398,7 @@ function EditPartCost(props) {
                 tempObject.Delta = item?.DeltaValue
                 tempObject.DeltaSign = item?.DeltaSign?.label
                 tempObject.NetCost = item?.NetCost
+                tempObject.BasicRate = item?.NetCost
                 tempArray.push(tempObject)
             })
 
@@ -405,16 +406,19 @@ function EditPartCost(props) {
             let obj = {
                 "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
                 "NetPOPrice": weightedCost,
+                "BasicRate": weightedCost,
                 "CostingSettledDetails": tempArray
             }
             dispatch(saveSettledCostingDetails(obj, res => { }))
-
+            let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
+                checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) +
+                checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
             let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
                 checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
                 checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
                 checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
-                checkForNull(OverHeadAndProfitTabData && OverHeadAndProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
-                checkForNull(DiscountCostData?.AnyOtherCost)) -
+                checkForNull(totalOverheadPrice) +
+                checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
