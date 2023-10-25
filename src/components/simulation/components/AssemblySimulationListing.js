@@ -33,8 +33,6 @@ function AssemblySimulationListing(props) {
     const [isDisable, setIsDisable] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([])
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
-    console.log('selectedVendorForSimulation: ', selectedVendorForSimulation);
-    console.log(props?.isCustomer, " props?.isCustomer");
     const { multiTechnologyCostinig } = useSelector(state => state.simulation)
     const [effectiveDate, setEffectiveDate] = useState({})
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
@@ -54,7 +52,6 @@ function AssemblySimulationListing(props) {
     const { selectedMasterForSimulation, selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     useEffect(() => {
-        console.log(selectedVendorForSimulation, "selectedVendorForSimulation");
         let obj = {
             technologyId: selectedTechnologyForSimulation?.value,
             vendorId: props?.isCustomer ? null : selectedVendorForSimulation?.value,

@@ -19,6 +19,7 @@ import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../he
 import TooltipCustom from '../../../../common/Tooltip';
 import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
+import WarningMessage from '../../../../common/WarningMessage';
 
 let counter = 0;
 
@@ -92,6 +93,7 @@ function OverheadProfit(props) {
   const [modelType, setModelType] = useState((data?.CostingPartDetails && data?.CostingPartDetails.ModelType !== null) ? { label: data?.CostingPartDetails?.ModelType, value: data?.CostingPartDetails?.ModelTypeId } : [])
 
   const [IsSurfaceTreatmentAdded, setIsSurfaceTreatmentAdded] = useState(false)
+  const [showRefreshWarningMessage, setShowRefreshWarningMessage] = useState(false)
 
   //INITIAL CALLED EFFECT TO SET VALUES
   useEffect(() => {
@@ -349,6 +351,7 @@ function OverheadProfit(props) {
 
     if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate)) {
       dispatch(isOverheadProfitDataChange(true))
+      setShowRefreshWarningMessage(true)
 
       setOverheadObj({})
       setProfitObj({})
@@ -810,6 +813,7 @@ function OverheadProfit(props) {
     } else {
       totalToolCost = 0
     }
+    setShowRefreshWarningMessage(false)
 
     if (!CostingViewMode) {
       let RM_CC_BOP = 0
@@ -1401,6 +1405,7 @@ function OverheadProfit(props) {
                   errors={errors.ModelType}
                   isClearable={true}
                 />
+                {showRefreshWarningMessage && <WarningMessage message={'Press refresh button to get updated values'} />}
               </Col>
 
               <Col md="3" className='pl-0'>
