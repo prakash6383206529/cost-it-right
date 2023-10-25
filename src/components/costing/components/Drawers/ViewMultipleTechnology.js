@@ -10,7 +10,6 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { setCostingViewData } from '../../actions/Costing'
 
 function ViewMultipleTechnology(props) {
-    console.log(props?.costingTypeId, "props?.costingTypeId");
     const { multipleTechnologyData, isPDFShow } = props
     const [viewMultiCost, setViewMultiCost] = useState([])
 
