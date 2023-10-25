@@ -131,7 +131,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, PartNumber, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId } = res?.data?.Data?.Costings[0];
       setApprovalTypeId(ApprovalTypeId)
 
       dispatch(setQuotationIdForRFQ(QuotationId))
@@ -181,7 +181,7 @@ function ApprovalSummary(props) {
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
       setIsLoader(false)
-      dispatch(storePartNumber({ partId: PartId }))
+      dispatch(storePartNumber({ partId: PartId, partNumber: PartNumber }))
       setPartDetail(PartDetails)
       setApprovalDetails(ApprovalDetails[0])
       setApprovalLevelStep(ApprovalLevelStep)
