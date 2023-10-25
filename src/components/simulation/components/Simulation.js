@@ -36,6 +36,7 @@ import { autoCompleteDropdown, hideColumnFromExcel } from '../../common/CommonFu
 import { MESSAGES } from '../../../config/message';
 import BDNonAssociatedSimulation from './SimulationPages/BDNonAssociatedSimulation';
 import TooltipCustom from '../../common/Tooltip';
+import { getClientSelectList } from '../../masters/actions/Client';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -75,6 +76,7 @@ function Simulation(props) {
     const partType = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const [bopLoader, setBopLoader] = useState(false)
+    const [isCustomer, setIsCustomer] = useState(false)
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -113,6 +115,7 @@ function Simulation(props) {
     const bopImportList = useSelector(state => state.material.bopImportList)
     const exchangeRateDataList = useSelector(state => state.material.exchangeRateDataList)
     const operationList = useSelector(state => state.material.operationList)
+    const customerList = useSelector(state => state.client.clientSelectList)
 
     const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     useEffect(() => {
@@ -197,6 +200,8 @@ function Simulation(props) {
             setShowTokenDropdown(false)
             setVendor({ label: '', value: '' })
             setValue('Vendor', { label: '', value: '' })
+            dispatch(getClientSelectList((res) => {
+            }))
         } else {
             dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
             setTechnology(value)
@@ -240,6 +245,7 @@ function Simulation(props) {
         setVendor(value)
 
     }
+
 
     const backToSimulation = (value) => {
         setShowEditTable(false)
@@ -367,8 +373,9 @@ function Simulation(props) {
             SimulationIds: tempValue
         }
         if (partType) {
+
             // return <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} assemblyTechnology={true} technology={technology} closeSimulation={closeSimulation} />
-            return <AssemblySimulationListing isOperation={true} cancelRunSimulation={cancelRunSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology} master={master.value} rowCount={rowCount} tokenForMultiSimulation={{}} cancelViewPage={cancelViewPage} showHide={showHide} cancelSimulationListingPage={cancelSimulationListingPage} />
+            return <AssemblySimulationListing isOperation={true} cancelRunSimulation={cancelRunSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology} master={master.value} rowCount={rowCount} tokenForMultiSimulation={{}} cancelViewPage={cancelViewPage} showHide={showHide} cancelSimulationListingPage={cancelSimulationListingPage} isCustomer={isCustomer} />
         } else {
             switch (value.value) {
                 case RMDOMESTIC:
@@ -500,6 +507,15 @@ function Simulation(props) {
             tempList && tempList.map((item) => {
                 if (item.value === '0') return false
                 temp.push({ label: item.label, value: item.value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'customer') {
+
+            customerList && customerList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
                 return null
             })
             return temp
@@ -997,6 +1013,23 @@ function Simulation(props) {
         setIsHide(true)
     }
 
+    const handleCustomerChange = (value) => {
+        setShowMasterList(false)
+        setToken([])
+        setValue('token', '')
+        setSelectionForListingMasterAPI('Master')
+        setTimeout(() => {
+            if (value !== '') {
+                setShowMasterList(true)
+            }
+        }, 50);                // ASSEMBLY TECHNOLOGY    }, 500);       
+
+        // ASSEMBLY TECHNOLOGY
+        dispatch(setVendorForSimulation(value))
+        // setVendor(value)
+        setIsCustomer(true)
+
+    }
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (props?.isFromApprovalListing === true) {
         const simulationId = props?.approvalProcessId;
@@ -1100,6 +1133,28 @@ function Simulation(props) {
                                                 handleChange={handleVendorChange}
                                                 errors={errors.Masters}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                            />
+                                        </div>
+                                    </div>
+                                }
+                                {partType &&
+                                    < div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                        <div className="flex-fills label">Customer:</div>
+                                        <div className="flex-fills hide-label pl-0 p-relative">
+                                            <SearchableSelectHookForm
+                                                label={''}
+                                                name={'customer'}
+                                                placeholder={'customer'}
+                                                valueDescription={token}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                // defaultValue={technology.length !== 0 ? technology : ''}
+                                                options={renderListing('customer')}
+                                                mandatory={false}
+                                                handleChange={handleCustomerChange}
+                                                errors={errors.Masters}
                                             />
                                         </div>
                                     </div>
