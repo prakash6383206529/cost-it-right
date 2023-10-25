@@ -74,6 +74,7 @@ function ApprovalSummary(props) {
   const [vendorCodeForSap, setVendorCodeForSap] = useState('')
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
 
+
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
   const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
@@ -133,7 +134,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, PartNumber, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, BestCostAndShouldCostDetails, QuotationId, NfrId, NfrGroupIdForPFS2, NfrGroupIdForPFS3, IsNFRPFS2PushedButtonShow, IsNFRPFS3PushedButtonShow } = res?.data?.Data?.Costings[0];
 
       dispatch(setQuotationIdForRFQ(QuotationId))
       // let BestCostAndShouldCostDetails = {
@@ -182,7 +183,7 @@ function ApprovalSummary(props) {
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
       setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
       setIsLoader(false)
-      dispatch(storePartNumber({ partId: PartId }))
+      dispatch(storePartNumber({ partId: PartId, partNumber: PartNumber }))
       setPartDetail(PartDetails)
       setApprovalDetails(ApprovalDetails[0])
       setApprovalLevelStep(ApprovalLevelStep)
