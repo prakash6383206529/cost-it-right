@@ -19,6 +19,7 @@ import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../he
 import TooltipCustom from '../../../../common/Tooltip';
 import Popup from 'reactjs-popup';
 import Toaster from '../../../../common/Toaster';
+import WarningMessage from '../../../../common/WarningMessage';
 
 let counter = 0;
 
@@ -84,6 +85,7 @@ function OverheadProfit(props) {
     const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
     const [totalToolCost, setTotalToolCost] = useState(0)
     const [showWarning, setShowWarning] = useState(false)
+    const [showRefreshWarningMessage, setShowRefreshWarningMessage] = useState(false)
 
     // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
     const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -349,6 +351,7 @@ function OverheadProfit(props) {
         if (IsDropdownClicked && !CostingViewMode && !CheckIsCostingDateSelected(CostingEffectiveDate)) {
             dispatch(isOverheadProfitDataChange(true))
 
+            setShowRefreshWarningMessage(true)
             setOverheadObj({})
             setProfitObj({})
             setOverheadValues({}, true)
@@ -811,6 +814,7 @@ function OverheadProfit(props) {
             totalToolCost = 0
         }
 
+        setShowRefreshWarningMessage(false)
         if (!CostingViewMode) {
             let RM_CC_BOP = 0
             let RM_CC = 0
@@ -1414,6 +1418,7 @@ function OverheadProfit(props) {
                                     errors={errors.ModelType}
                                     isClearable={true}
                                 />
+                                {showRefreshWarningMessage && <WarningMessage message={'Press refresh button to get updated values'} />}
                             </Col>
 
                             <Col md="3" className='pl-0'>
