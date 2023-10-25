@@ -7,7 +7,6 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { BootstrapTable, TableHeaderColumn, ExportCSVButton } from 'react-bootstrap-table';
 import Switch from "react-switch";
 import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
