@@ -991,53 +991,54 @@ class AddBOPImport extends Component {
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: BOPID }
     })
-    const formData = {
-      IsSendForApproval: this.state.IsSendForApproval,
-      BoughtOutPartId: BOPID,
-      Currency: currency.label,
-      CostingTypeId: costingTypeId,
-      BoughtOutPartNumber: values?.BoughtOutPartNumber,
-      BoughtOutPartName: values?.BoughtOutPartName,
-      CategoryId: BOPCategory.value,
-      Specification: values?.Specification,
-      Vendor: vendorName.value,
-      Source: values?.Source,
-      SourceLocation: sourceLocation.value,
-      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values?.NumberOfPieces : 1,
-      Remark: values?.Remark,
-      IsActive: true,
-      LoggedInUserId: loggedInUserId(),
-      Plant: [plantArray],
-      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
-      Attachements: isEditFlag ? updatedFiles : files,
-      UnitOfMeasurementId: UOM.value,
-      VendorPlant: [],
-      IsFinancialDataChanged: isDateChange ? true : false,
-      CustomerId: client.value,
-      BoughtOutPartIncoTermId: incoTerm.value,
-      BoughtOutPartPaymentTermId: paymentTerm.value,
-      EntryType: checkForNull(ENTRY_TYPE_IMPORT),
-      IsClientVendorBOP: isClientVendorBOP,
-      TechnologyName: Technology?.label,
-      TechnologyId: Technology?.value,
-      IsBreakupBoughtOutPart: isTechnologyVisible,
+    const formData = {}
+    formData.IsSendForApproval = this.state.IsSendForApproval
+    formData.BoughtOutPartId = BOPID
+    formData.Currency = currency.label
+    formData.CostingTypeId = costingTypeId
+    formData.BoughtOutPartNumber = values?.BoughtOutPartNumber
+    formData.BoughtOutPartName = values?.BoughtOutPartName
+    formData.CategoryId = BOPCategory.value
+    formData.Specification = values?.Specification
+    formData.Vendor = vendorName.value
+    formData.Source = values?.Source
+    formData.SourceLocation = sourceLocation.value
+    formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+    formData.NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? values?.NumberOfPieces : 1
+    formData.Remark = values?.Remark
+    formData.IsActive = true
+    formData.LoggedInUserId = loggedInUserId()
+    formData.Plant = [plantArray]
+    formData.DestinationPlantId = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId
+    formData.Attachements = isEditFlag ? updatedFiles : files
+    formData.UnitOfMeasurementId = UOM.value
+    formData.VendorPlant = []
+    formData.IsFinancialDataChanged = isDateChange ? true : false
+    formData.CustomerId = client.value
+    formData.BoughtOutPartIncoTermId = incoTerm.value
+    formData.BoughtOutPartPaymentTermId = paymentTerm.value
+    formData.EntryType = checkForNull(ENTRY_TYPE_IMPORT)
+    formData.IsClientVendorBOP = isClientVendorBOP
+    formData.TechnologyName = Technology?.label
+    formData.TechnologyId = Technology?.value
+    formData.IsBreakupBoughtOutPart = isTechnologyVisible
 
-      BasicRate: FinalBasicRateCurrency,
-      BasicRateConversion: FinalBasicRateBase,
 
-      NetLandedCost: FinalNetCostCurrency,
-      NetLandedCostConversion: FinalNetCostBase,
+    formData.BasicRate = FinalBasicRateCurrency
+    formData.BasicRateConversion = FinalBasicRateBase
 
-      NetCostWithoutConditionCost: FinalBasicPriceCurrency,
-      NetCostWithoutConditionCostConversion: FinalBasicPriceBase,
+    formData.NetLandedCost = FinalNetCostCurrency
+    formData.NetLandedCostConversion = FinalNetCostBase
 
-      NetConditionCost: FinalConditionCostCurrency,
-      NetConditionCostConversion: FinalConditionCostBase,
-
-      BoughtOutPartConditionsDetails: conditionTableData,
-      CurrencyExchangeRate: currencyValue
+    if (costingTypeId === ZBCTypeId) {
+      formData.NetCostWithoutConditionCost = FinalBasicPriceCurrency
+      formData.NetCostWithoutConditionCostConversion = FinalBasicPriceBase
+      formData.NetConditionCost = FinalConditionCostCurrency
+      formData.NetConditionCostConversion = FinalConditionCostBase
     }
+
+    formData.BoughtOutPartConditionsDetails = conditionTableData
+    formData.CurrencyExchangeRate = currencyValue
 
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE

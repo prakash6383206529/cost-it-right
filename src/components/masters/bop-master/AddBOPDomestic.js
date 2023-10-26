@@ -767,42 +767,44 @@ class AddBOPDomestic extends Component {
       return { ...file, ContextId: BOPID }
     })
     // if (isEditFlag && this.state.isFinalApprovar) {
-    const formData = {
-      IsSendForApproval: this.state.IsSendForApproval,
-      IsFinancialDataChanged: isDateChange ? true : false,
-      BoughtOutPartId: BOPID,
-      CostingTypeId: costingTypeId,
-      BoughtOutPartNumber: values.BoughtOutPartNumber,
-      BoughtOutPartName: values.BoughtOutPartName,
-      CategoryId: BOPCategory.value,
-      Specification: values.Specification,
-      UnitOfMeasurementId: UOM.value,
-      Vendor: vendorName.value,
-      Source: values.Source,
-      SourceLocation: sourceLocation.value,
-      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1,
-      Remark: values.Remark,
-      IsActive: true,
-      LoggedInUserId: loggedInUserId(),
-      Plant: [plantArray],
-      VendorPlant: [],
-      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
-      Attachements: isEditFlag ? updatedFiles : files,
-      CustomerId: client.value,
-      EntryType: checkForNull(ENTRY_TYPE_DOMESTIC),
-      CategoryName: BOPCategory.label,
-      IsClientVendorBOP: isClientVendorBOP,
-      TechnologyName: Technology?.label,
-      TechnologyId: Technology?.value,
-      IsBreakupBoughtOutPart: isTechnologyVisible,
+    const formData = {}
+    formData.IsFinancialDataChanged = isDateChange ? true : false
+    formData.BoughtOutPartId = BOPID
+    formData.CostingTypeId = costingTypeId
+    formData.BoughtOutPartNumber = values.BoughtOutPartNumber
+    formData.BoughtOutPartName = values.BoughtOutPartName
+    formData.CategoryId = BOPCategory.value
+    formData.Specification = values.Specification
+    formData.UnitOfMeasurementId = UOM.value
+    formData.Vendor = vendorName.value
+    formData.Source = values.Source
+    formData.SourceLocation = sourceLocation.value
+    formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+    formData.NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1
+    formData.Remark = values.Remark
+    formData.IsActive = true
+    formData.LoggedInUserId = loggedInUserId()
+    formData.Plant = [plantArray]
+    formData.VendorPlant = []
+    formData.DestinationPlantId = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId
+    formData.Attachements = isEditFlag ? updatedFiles : files
+    formData.CustomerId = client.value
+    formData.EntryType = checkForNull(ENTRY_TYPE_DOMESTIC)
+    formData.CategoryName = BOPCategory.label
+    formData.IsClientVendorBOP = isClientVendorBOP
+    formData.TechnologyName = Technology?.label
+    formData.TechnologyId = Technology?.value
+    formData.IsBreakupBoughtOutPart = isTechnologyVisible
 
-      BasicRate: FinalBasicRateBase,
-      NetLandedCost: FinalNetLandedCostBase,
-      NetCostWithoutConditionCost: FinalBasicPriceBase,
-      NetConditionCost: FinalConditionCostBase,
-      BoughtOutPartConditionsDetails: conditionTableData,
+    formData.BasicRate = FinalBasicRateBase
+    formData.NetLandedCost = FinalNetLandedCostBase
+
+    if (costingTypeId === ZBCTypeId) {
+      formData.NetCostWithoutConditionCost = FinalBasicPriceBase
+      formData.NetConditionCost = FinalConditionCostBase
     }
+
+    formData.BoughtOutPartConditionsDetails = conditionTableData
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {

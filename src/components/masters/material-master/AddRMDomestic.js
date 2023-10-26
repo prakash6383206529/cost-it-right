@@ -1272,8 +1272,10 @@ class AddRMDomestic extends Component {
     formData.RMShearingCost = FinalShearingCostCurrency
     formData.JaliScrapCost = jaliRateCurrency
     formData.NetLandedCost = NetLandedCostCurrency
-    formData.NetCostWithoutConditionCost = FinalBasicPriceCurrency
-    formData.NetConditionCost = FinalConditionCostCurrency
+    if (costingTypeId === ZBCTypeId) {
+      formData.NetCostWithoutConditionCost = FinalBasicPriceCurrency
+      formData.NetConditionCost = FinalConditionCostCurrency
+    }
     formData.RawMaterialConditionsDetails = conditionTableData
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE

@@ -1374,68 +1374,68 @@ class AddRMImport extends Component {
     let updatedFiles = files.map((file) => {
       return { ...file, ContextId: RawMaterialID }
     })
-    const formData = {
-      RawMaterialId: RawMaterialID,
-      IsFinancialDataChanged: isDateChange ? true : false,
-      CostingTypeId: costingTypeId,
-      RawMaterial: RawMaterial.value,
-      RMGrade: RMGrade.value,
-      RMSpec: RMSpec.value,
-      Category: Category.value,
-      TechnologyId: Technology.value,// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
-      Vendor: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : "",
-      HasDifferentSource: HasDifferentSource,
-      Source: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source,
-      SourceLocation: (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value,
-      UOM: UOM.value,
-      Remark: remarks,
-      LoggedInUserId: loggedInUserId(),
-      Plant: costingTypeId === CBCTypeId ? cbcPlantArray : plantArray,
-      VendorCode: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : '',
-      Attachements: isEditFlag ? updatedFiles : files,
-      Currency: currency.label,
-      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      IsCutOffApplicable: values.cutOffPrice < netCost ? true : false,
-      RawMaterialCode: values.Code,
-      IsSendForApproval: false,
-      VendorPlant: [],
-      CustomerId: client.value,
-      RawMaterialEntryType: checkForNull(ENTRY_TYPE_IMPORT),
+    const formData = {}
+    formData.RawMaterialId = RawMaterialID
+    formData.IsFinancialDataChanged = isDateChange ? true : false
+    formData.CostingTypeId = costingTypeId
+    formData.RawMaterial = RawMaterial.value
+    formData.RMGrade = RMGrade.value
+    formData.RMSpec = RMSpec.value
+    formData.Category = Category.value
+    formData.TechnologyId = Technology.value// NEED TO UNCOMMENT AFTER KEY ADDED IN BACKEND
+    formData.Vendor = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? vendorName.value : ""
+    formData.HasDifferentSource = HasDifferentSource
+    formData.Source = (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : values.Source
+    formData.SourceLocation = (costingTypeId !== VBCTypeId && !HasDifferentSource) ? '' : sourceLocation.value
+    formData.UOM = UOM.value
+    formData.Remark = remarks
+    formData.LoggedInUserId = loggedInUserId()
+    formData.Plant = costingTypeId === CBCTypeId ? cbcPlantArray : plantArray
+    formData.VendorCode = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? VendorCode : ''
+    formData.Attachements = isEditFlag ? updatedFiles : files
+    formData.Currency = currency.label
+    formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+    formData.IsCutOffApplicable = values.cutOffPrice < netCost ? true : false
+    formData.RawMaterialCode = values.Code
+    formData.IsSendForApproval = false
+    formData.VendorPlant = []
+    formData.CustomerId = client.value
+    formData.RawMaterialEntryType = checkForNull(ENTRY_TYPE_IMPORT)
 
-      CutOffPrice: FinalCutOffCurrency,
-      CutOffPriceInINR: FinalCutOffBase,
+    formData.CutOffPrice = FinalCutOffCurrency
+    formData.CutOffPriceInINR = FinalCutOffBase
 
-      BasicRatePerUOM: FinalBasicRateCurrency,
-      BasicRatePerUOMConversion: FinalBasicRateBase,
+    formData.BasicRatePerUOM = FinalBasicRateCurrency
+    formData.BasicRatePerUOMConversion = FinalBasicRateBase
 
-      ScrapRate: scrapRateCurrency,
-      ScrapRateInINR: scrapRateBase,
+    formData.ScrapRate = scrapRateCurrency
+    formData.ScrapRateInINR = scrapRateBase
 
-      MachiningScrapRate: machiningRateCurrency,
-      MachiningScrapRateInINR: machiningRateBase,
+    formData.MachiningScrapRate = machiningRateCurrency
+    formData.MachiningScrapRateInINR = machiningRateBase
 
-      RMFreightCost: FinalFreightCostCurrency,
-      RawMaterialFreightCostConversion: FinalFreightCostBase,
+    formData.RMFreightCost = FinalFreightCostCurrency
+    formData.RawMaterialFreightCostConversion = FinalFreightCostBase
 
-      RMShearingCost: FinalShearingCostCurrency,
-      RawMaterialShearingCostConvrsion: FinalShearingCostBase,
+    formData.RMShearingCost = FinalShearingCostCurrency
+    formData.RawMaterialShearingCostConversion = FinalShearingCostBase
 
-      JaliScrapCost: jaliRateCurrency,
-      JaliScrapCostConversion: jaliRateBase,
+    formData.JaliScrapCost = jaliRateCurrency
+    formData.JaliScrapCostConversion = jaliRateBase
 
-      NetLandedCost: FinalNetCostCurrency,
-      NetLandedCostConversion: FinalNetCostBase,
+    formData.NetLandedCost = FinalNetCostCurrency
+    formData.NetLandedCostConversion = FinalNetCostBase
 
-      NetCostWithoutConditionCost: FinalBasicPriceCurrency,
-      NetCostWithoutConditionCostConversion: FinalBasicPriceBase,
-
-      NetConditionCost: FinalConditionCostCurrency,
-      NetConditionCostConversion: FinalConditionCostBase,
-
-      CurrencyExchangeRate: currencyValue,
-      RawMaterialConditionsDetails: conditionTableData,
-
+    if (costingTypeId === ZBCTypeId) {
+      formData.NetCostWithoutConditionCost = FinalBasicPriceCurrency
+      formData.NetCostWithoutConditionCostConversion = FinalBasicPriceBase
+      formData.NetConditionCost = FinalConditionCostCurrency
+      formData.NetConditionCostConversion = FinalConditionCostBase
     }
+
+    formData.CurrencyExchangeRate = currencyValue
+    formData.RawMaterialConditionsDetails = conditionTableData
+
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
