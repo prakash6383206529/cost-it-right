@@ -1129,7 +1129,8 @@ class AddMachineRate extends Component {
           EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
           MachineProcessGroup: this.props.processGroupApiData,
           VendorPlant: [],
-          CustomerId: client.value
+          CustomerId: client.value,
+          DestinationPlantId: costingTypeId === VBCTypeId ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsMachine.Plants[0].PlantId,
         }
 
         if (IsFinancialDataChanged) {
