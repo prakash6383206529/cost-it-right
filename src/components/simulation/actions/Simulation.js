@@ -1277,7 +1277,7 @@ export function getAllMultiTechnologyCostings(obj, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId}&costingTypeId=${obj?.costingTypeId}`, config());
+        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId}&costingTypeId=${obj?.costingTypeId}&customerId=${obj?.customerId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

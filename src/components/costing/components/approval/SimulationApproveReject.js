@@ -54,7 +54,7 @@ function SimulationApproveReject(props) {
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
-  const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+  const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -75,7 +75,7 @@ function SimulationApproveReject(props) {
       }
     }))
 
-    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedMasterForSimulation?.value, (res) => {
+    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedTechnologyForSimulation?.value, (res) => {
       if (res?.data?.Data) {
         setTechnologyLevelsList(res?.data?.Data)
       }
