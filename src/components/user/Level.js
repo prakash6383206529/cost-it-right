@@ -16,7 +16,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { Container, Row, Col, Label, } from 'reactstrap';
 import LoaderCustom from "../common/LoaderCustom";
 import { getApprovalTypeSelectList } from '../../actions/Common'
-import { CUSTOMER_BASED, NEW_COMPONENT, PROVISIONAL, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B4 } from "../../config/constants";
+import { CUSTOMER_BASED, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONAL, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, WACAPPROVALTYPEID } from "../../config/constants";
 import { reactLocalStorage } from "reactjs-localstorage";
 
 /**************************************THIS FILE IS FOR ADDING LEVEL MAPPING*****************************************/
@@ -209,10 +209,9 @@ class Level extends Component {
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
-        // if ((item.Text === RELEASE_STRATEGY_B3 || item.Text === RELEASE_STRATEGY_B4) && this.state.levelType === 'Costing') return false
-        if ((item.Text === RELEASE_STRATEGY_B1 || item.Text === RELEASE_STRATEGY_B2) && this.state.levelType === 'Simulation') return false
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && this.state.levelType === 'Simulation') return false
         if (item.Text === PROVISIONAL && this.state.levelType !== 'Simulation') return false
-        if ((item.Text === NEW_COMPONENT || item.Text === RELEASE_STRATEGY_B1 || item.Text === RELEASE_STRATEGY_B2 || item.Text === RELEASE_STRATEGY_B3 || item.Text === RELEASE_STRATEGY_B4) && this.state.levelType === 'Master') return false
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && this.state.levelType === 'Master') return false
         if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('cbcCostingPermission'))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null;
