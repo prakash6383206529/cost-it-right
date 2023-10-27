@@ -85,7 +85,7 @@ function OverheadProfit(props) {
   const [tempProfitObj, setTempProfitObj] = useState(CostingProfitDetail)
   const [applicabilityList, setApplicabilityList] = useState(CostingProfitDetail)
   const [totalToolCost, setTotalToolCost] = useState(0)
-  const [showWarning, setShowWarning] = useState(false)
+  const [showWarning, setShowWarning] = useState('')
 
   // partType USED FOR MANAGING CONDITION IN CASE OF NORMAL COSTING AND ASSEMBLY TECHNOLOGY COSTING (TRUE FOR ASSEMBLY TECHNOLOGY)
   const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
@@ -1713,6 +1713,7 @@ function OverheadProfit(props) {
                           errors={errors.OverheadBOPCost}
                           disabled={true}
                         />
+                        {OverheadAndProfitTooltip("OverheadBOPCost", "", CostingDataList, showWarning, initialConfiguration.NoOfDecimalForPrice)}
                       </Col>
                       <Col md="3">
                         <TextFieldHookForm
@@ -1982,8 +1983,7 @@ function OverheadProfit(props) {
                             errors={errors.ProfitCombinedCost}
                             disabled={true}
                           />
-                          {(profitObj && profitObj?.ProfitApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) &&
-                            <TooltipCustom id="ProfitCombinedCost" customClass="mt-2" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
+                          {(profitObj && profitObj?.ProfitApplicability.includes('RM') && CostingDataList[0]?.IsRMCutOffApplicable === true) && false && <TooltipCustom id="ProfitCombinedCost" disabledIcon={true} customClass="mt-2 d-none" tooltipText={`RM cut-off price ${checkForDecimalAndNull(CostingDataList && CostingDataList[0]?.RawMaterialCostWithCutOff, initialConfiguration.NoOfDecimalForPrice)} applied`} />}
                         </div>
                       </Col>
                       <Col md="3">
@@ -2108,6 +2108,7 @@ function OverheadProfit(props) {
                           errors={errors.ProfitBOPCost}
                           disabled={true}
                         />
+                        {OverheadAndProfitTooltip("ProfitBOPCost", "", CostingDataList, showWarning, initialConfiguration.NoOfDecimalForPrice)}
                       </Col>
                       <Col md="3">
                         <TextFieldHookForm
