@@ -7,7 +7,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
 import { Row, Col, Table } from 'reactstrap'
 import NoContentFound from '../../../common/NoContentFound';
 import { AWAITING_APPROVAL_ID, EMPTY_DATA, PENDING_FOR_APPROVAL_ID, REJECTEDID } from '../../../../config/constants';
-import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING } from '../../../../config/masterData'
+import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING, WIREFORMING, getTechnology } from '../../../../config/masterData'
 import 'reactjs-popup/dist/index.css'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, getSimulationRmFerrousCastingCalculation, getSimulationRmMachiningCalculation, getSimulationRmRubberCalculation, } from '../../actions/CostWorking'
 import TooltipCustom from '../../../common/Tooltip';
@@ -164,7 +164,6 @@ function ViewRM(props) {
     setWeightCalculatorDrawer(false)
   }
   const tableData = () => {
-    const machiningUICheck = viewCostingData[props.index].technologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && viewCostingData[props.index].CostingPartDetails.CostingRawMaterialsCost.some(material => material.UOM === 'Meter');
     return <>
       <Col md="6" className='mt-1'>
         <div className="left-border">Raw Material</div>
@@ -192,7 +191,7 @@ function ViewRM(props) {
               <th>{`Gross Weight (Kg)`}</th>
               <th>{`Finish Weight (Kg)`}</th>
               <th>{`Scrap Weight`}</th>
-              {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && (machiningUICheck || viewCostingData[props.index].technologyId === CORRUGATEDBOX) && < th > {`Calculator`}</th>}
+              {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index].technologyId)) && < th > {`Calculator`}</th>}
               <th>{`Freight Cost`}</th>
               <th>{`Shearing Cost`}</th>
               <th>{`Burning Loss Weight`}</th>
@@ -216,12 +215,14 @@ function ViewRM(props) {
                   <td>{checkForDecimalAndNull(item.GrossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.FinishWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
                   <td>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                  {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && (machiningUICheck || viewCostingData[props.index].technologyId === CORRUGATEDBOX) && <td><button
-                    className="CalculatorIcon cr-cl-icon mr-auto ml-0"
-                    type={"button"}
-                    disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
-                    onClick={() => { getWeightData(index) }}
-                  /></td>}
+                  {!isPDFShow && viewCostingData[props.index].technologyId !== Ferrous_Casting && viewCostingData[props.index].technologyId !== RUBBER && (getTechnology.includes(viewCostingData[props.index].technologyId)) &&
+                    <td>{!(viewCostingData[props.index]?.technologyId === MACHINING && item?.UOM !== "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ?
+                      <button
+                        className="CalculatorIcon cr-cl-icon mr-auto ml-0"
+                        type={"button"}
+                        disabled={(item.RawMaterialCalculatorId === 0 || item.RawMaterialCalculatorId === null) ? true : false}
+                        onClick={() => { getWeightData(index) }}
+                      /> : '-'}</td>}
                   <td>{item.FreightCost ? checkForDecimalAndNull(item.FreightCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                   <td>{item.ShearingCost ? checkForDecimalAndNull(item.ShearingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}</td>
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
