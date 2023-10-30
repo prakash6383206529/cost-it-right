@@ -530,7 +530,6 @@ class BulkUpload extends Component {
             Toaster.warning('Please select a file to upload.')
             return false
         }
-
         let uploadData = {
             Records: fileData,
             LoggedInUserId: loggedInUserId(),
@@ -629,14 +628,8 @@ class BulkUpload extends Component {
                 this.responseHandler(res)
             });
 
-        } else if (fileName === 'Actual Volume' && costingTypeId === ZBCTypeId) {
-            this.props.bulkUploadVolumeActualZBC(uploadData, (res) => {
-                this.setState({ setDisable: false })
-                this.responseHandler(res)
-            });
-
-        } else if (fileName === 'Budgeted Volume' || fileName === 'Budgeted Volume') {
-            this.props.bulkUploadVolumeBudgeted(uploadData, (res) => {
+        } else if (fileName === 'Actual Volume' || fileName === 'Budgeted Volume') {
+            this.props.volumeBulkUpload(uploadData, (res) => {
                 this.setState({ setDisable: false })
                 this.responseHandler(res)
             });
