@@ -1759,4 +1759,3 @@ function CostingSimulation(props) {
 }
 
 export default CostingSimulation;
-// @mahak
