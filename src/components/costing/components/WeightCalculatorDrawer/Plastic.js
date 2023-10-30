@@ -10,7 +10,7 @@ import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { debounce } from 'lodash'
-import { nonZero } from '../../../../helper/validation'
+import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
 
 function Plastic(props) {
@@ -133,11 +133,6 @@ function Plastic(props) {
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
-    if (finishedWeight > grossWeight) {
-      setValue('finishedWeight', 0)
-      Toaster.warning('Finish Weight should not be greater than gross weight')
-      return false
-    }
     if (finishedWeight !== 0) {
       scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
@@ -171,6 +166,10 @@ function Plastic(props) {
     props.toggleDrawer('')
   }
   const onSubmit = debounce(handleSubmit((values) => {
+    if (Number(getValues('finishedWeight')) > Number(getValues('grossWeight'))) {
+      Toaster.warning('Finish weight cannot be greater than gross weight')
+      return false
+    }
     DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}
@@ -252,12 +251,7 @@ function Plastic(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
-                      validate: { nonZero }
-                      // maxLength: 4,
+                      validate: { nonZero, number, decimalAndNumberValidation }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -278,10 +272,7 @@ function Plastic(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
+                      validate: { number, decimalAndNumberValidation }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -335,14 +326,10 @@ function Plastic(props) {
                     Controller={Controller}
                     control={control}
                     register={register}
-                    mandatory={false}
+                    mandatory={true}
                     rules={{
-                      required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,7})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 7',
-                      },
-
+                      required: false,
+                      validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}

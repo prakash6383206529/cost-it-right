@@ -9,7 +9,7 @@ import { saveRawMaterialCalculationForDieCasting } from '../../../actions/CostWo
 import Toaster from '../../../../common/Toaster'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
-import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalAndNumberValidation } from "../../../../../helper/validation";
 
 
 function NonFerrous(props) {
@@ -125,21 +125,13 @@ function NonFerrous(props) {
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostSum
         const finishedWeight = checkForNull(Number(getValues('finishedWeight')))
 
-        if (finishedWeight > grossWeight) {
-            Toaster.warning('Finish Weight should not be greater than gross weight')
-            setValue('finishedWeight', 0)
-            return false
-        }
         if (finishedWeight !== 0) {
 
             scrapWeight = checkForNull(castingWeight) - checkForNull(finishedWeight) //FINAL Casting Weight - FINISHED WEIGHT
+            setValue('scrapWeight', checkForDecimalAndNull(scrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
 
         }
 
-        if (scrapWeight < 0) {
-            Toaster.warning('Scrap weight cannot be negative')
-            scrapWeight = 0
-        }
         const recovery = checkForNull(Number(getValues('recovery')) / 100)
         const rmCost = checkForNull(grossWeight) * checkForNull(rmRowData.RMRate) //FINAL GROSS WEIGHT - RMRATE
         const scrapCost = checkForNull(checkForNull(scrapWeight) * checkForNull(rmRowData.ScrapRate) * recovery)
@@ -172,6 +164,14 @@ function NonFerrous(props) {
     }
 
     const onSubmit = debounce(handleSubmit((values) => {
+        if (Number(getValues('finishedWeight')) > Number(getValues('grossWeight'))) {
+            Toaster.warning('Finish weight cannot be greater than gross weight')
+            return false
+        }
+        if (Number(getValues('scrapWeight')) < 0) {
+            Toaster.warning('Scrap weight cannot be negative')
+            return false
+        }
         setIsDisable(true)
         let obj = {}
         obj.LayoutType = activeTab === '1' ? 'GDC' : activeTab === '2' ? 'LPDC' : 'HPDC'
@@ -251,11 +251,7 @@ function NonFerrous(props) {
                                                 mandatory={true}
                                                 rules={{
                                                     required: true,
-                                                    pattern: {
-                                                        value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                    },
-
+                                                    validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -275,10 +271,7 @@ function NonFerrous(props) {
                                                 mandatory={false}
                                                 rules={{
                                                     required: false,
-                                                    pattern: {
-                                                        value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                        message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                    },
+                                                    validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
@@ -342,10 +335,7 @@ function NonFerrous(props) {
                                         mandatory={false}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
-                                            },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -386,15 +376,6 @@ function NonFerrous(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            },
-
-                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -413,10 +394,7 @@ function NonFerrous(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
-                                            },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
 
                                         }}
                                         handleChange={() => { }}
@@ -466,7 +444,6 @@ function NonFerrous(props) {
                                             },
                                         }}
                                         handleChange={() => { }}
-
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.recovery}

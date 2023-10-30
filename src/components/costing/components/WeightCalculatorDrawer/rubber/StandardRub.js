@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment, useContext } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, decimalAndNumberValidation } from '../../../../../helper'
 import Toaster from '../../../../common/Toaster'
 import { costingInfoContext } from '../../CostingDetailStepTwo'
 import { KG, EMPTY_DATA } from '../../../../../config/constants'
@@ -144,7 +144,7 @@ function StandardRub(props) {
             const Length = Number(getValues('Length'))
             const CuttingAllowance = Number(getValues('CuttingAllowance'))
             let Volume = 0.7857 * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
-            let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
+            let GrossWeight = Volume * (checkForNull(10) / 1000000)
 
 
             setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
@@ -158,14 +158,6 @@ function StandardRub(props) {
     const calculateScrapWeight = () => {
 
         const FinishWeight = Number(getValues('FinishWeight'))
-        if (FinishWeight > dataToSend.GrossWeight) {
-            Toaster.warning('Finish weight cannot be greater than gross weight')
-            setTimeout(() => {
-                setValue('FinishWeight', 0)
-            }, 300);
-            return false
-        }
-
 
         if (Number(getValues('GrossWeight'))) {
             let ScrapWeight = checkForNull(dataToSend.GrossWeight) - checkForNull(FinishWeight)
@@ -314,6 +306,13 @@ function StandardRub(props) {
     };
 
     const addRow = () => {
+        if (Object.keys(errors).length > 0) {
+            return false
+        }
+        if (Number(getValues('FinishWeight')) > dataToSend.GrossWeight) {
+            Toaster.warning('Finish weight cannot be greater than gross weight')
+            return false
+        }
         let obj = {
             RmName: rmRowDataState.RMName,
             InnerDiameter: Number(getValues('InnerDiameter')),
@@ -328,7 +327,6 @@ function StandardRub(props) {
             NetRmCost: dataToSend.NetRmCost,
 
         }
-
 
         if (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0 || obj.FinishWeight === 0) {
 
@@ -513,18 +511,13 @@ function StandardRub(props) {
                                                 mandatory={false}
                                                 rules={{
                                                     required: false,
-                                                    pattern: {
-                                                        //value: /^[0-9]*$/i,
-                                                        value: /^[0-9]\d*(\.\d+)?$/i,
-                                                        message: 'Invalid Number.',
-                                                    },
-                                                    // maxLength: 4,
+                                                    validate: { number, decimalAndNumberValidation },
                                                 }}
                                                 handleChange={(e) => handleInnerDiameter(e.target.value)}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.shotWeight}
+                                                errors={errors.InnerDiameter}
                                                 disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
                                             />
                                         </Col>
@@ -536,20 +529,15 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, decimalAndNumberValidation },
+                                                }}
                                                 handleChange={(e) => handleOuterDiameter(e.target.value)}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.noOfCavity}
+                                                errors={errors.OuterDiameter}
                                                 disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
                                             />
                                         </Col>
@@ -561,20 +549,15 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, decimalAndNumberValidation },
+                                                }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.finishWeight}
+                                                errors={errors.Length}
                                                 disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
                                             />
                                         </Col>
@@ -587,20 +570,15 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, decimalAndNumberValidation },
+                                                }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.grossWeight}
+                                                errors={errors.CuttingAllowance}
                                                 disabled={(props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true) || ((tableData.length > 0 && disableCondition) ? true : false)}
                                             />
                                         </Col>
@@ -616,15 +594,6 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -644,20 +613,11 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.grossWeight}
+                                                errors={errors.Volume}
                                                 disabled={true}
                                             />
                                         </Col>
@@ -672,15 +632,6 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
@@ -698,20 +649,15 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, decimalAndNumberValidation },
+                                                }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.grossWeight}
+                                                errors={errors.FinishWeight}
                                                 disabled={props.isEditFlag && Object.keys(rmRowDataState).length > 0 ? false : true}
                                             />
                                         </Col>
@@ -726,20 +672,11 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.grossWeight}
+                                                errors={errors.ScrapWeight}
                                                 disabled={true}
                                             />
                                         </Col>
@@ -754,20 +691,11 @@ function StandardRub(props) {
                                                 control={control}
                                                 register={register}
                                                 mandatory={false}
-                                                //   rules={{
-                                                //     required: true,
-                                                //     pattern: {
-                                                //       //value: /^[0-9]*$/i,
-                                                //       value: /^[0-9]\d*(\.\d+)?$/i,
-                                                //       message: 'Invalid Number.',
-                                                //     },
-                                                //     // maxLength: 4,
-                                                //   }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.grossWeight}
+                                                errors={errors.NetRmCost}
                                                 disabled={true}
                                             />
                                         </Col>

@@ -132,7 +132,7 @@ export const checkSpacesInString = value => {
 
 export const number = value =>
     value && (isNaN(Number(value)) || Number(value) < 0)
-        ? 'Please enter number only.' : undefined;
+        ? 'Please enter positive number only.' : undefined;
 
 export const postiveNumber = value =>
     value && !/^\+?(0|[0-9]\d*)$/.test(value)
