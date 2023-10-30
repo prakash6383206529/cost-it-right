@@ -1066,6 +1066,7 @@ function RfqListing(props) {
                                 checkCostingSelected={checkCostingSelected}
                                 disableApproveRejectButton={disableApproveRejectButton}
                                 compareButtonPressed={compareButtonPressed}
+                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
                             />
                         )}
                     </div>
