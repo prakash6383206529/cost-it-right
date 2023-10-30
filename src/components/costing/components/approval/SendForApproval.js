@@ -84,9 +84,6 @@ const SendForApproval = (props) => {
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
-    console.log('ApprovalTypeId: ', ApprovalTypeId);
-
-    dispatch(getReasonSelectList((res) => { }))
 
     let regularizationObj = {}
 
@@ -124,7 +121,6 @@ const SendForApproval = (props) => {
         ReasonId: 0, // key only for minda
         ApprovalTypeId: ApprovalTypeId,
       }
-      console.log('requestObject: ', requestObject);
       dispatch(getAllApprovalUserFilterByDepartment(requestObject, (res) => {
         let tempDropdownList = []
         if (res.data.DataList.length === 1) {
@@ -169,6 +165,7 @@ const SendForApproval = (props) => {
 
 
   useEffect(() => {
+    dispatch(getReasonSelectList((res) => { }))
     dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
       setTechnologyLevelsList(res?.data?.Data)
       if (initialConfiguration.IsReleaseStrategyConfigured) {

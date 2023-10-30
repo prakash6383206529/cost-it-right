@@ -245,7 +245,6 @@ function CostingApproveReject(props) {
     /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
     let Data = []
 
-    console.log('approvalData: ', approvalData);
     approvalData.map(ele => {
       Data.push({
         ApprovalProcessSummaryId: ele.ApprovalProcessSummaryId,
