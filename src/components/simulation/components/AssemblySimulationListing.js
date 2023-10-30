@@ -53,7 +53,7 @@ function AssemblySimulationListing(props) {
 
     useEffect(() => {
         let obj = {
-            technologyId: selectedTechnologyForSimulation?.value,
+            technologyId: technology?.value,
             vendorId: props?.isCustomer ? null : selectedVendorForSimulation?.value,
             costingTypeId: props?.isCustomer ? CBCTypeId : VBCTypeId,
             customerId: props?.isCustomer ? selectedVendorForSimulation?.value : null,
