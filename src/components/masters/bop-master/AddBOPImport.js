@@ -1141,23 +1141,23 @@ class AddBOPImport extends Component {
     const { initialConfiguration } = this.props
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
+      const sumBase = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+      const sumCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+      let netLandedCostINR = checkForNull(sumBase) + checkForNull(this.state.FinalBasicPriceBase)
+      let netLandedCostCurrency = checkForNull(sumCurrency) + checkForNull(this.state.FinalBasicPriceCurrency)
+      this.props.change('FinalConditionCostBase', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostINR, initialConfiguration.NoOfDecimalForPrice))
+      this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice))
+      this.setState({
+        conditionTableData: data,
+        FinalConditionCostBase: sumBase,
+        FinalConditionCostCurrency: sumCurrency,
+        FinalNetCostBase: netLandedCostINR,
+        FinalNetCostCurrency: netLandedCostCurrency,
+      })
     }
-    const sumBase = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
-    const sumCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCostINR = checkForNull(sumBase) + checkForNull(this.state.FinalBasicPriceBase)
-    let netLandedCostCurrency = checkForNull(sumCurrency) + checkForNull(this.state.FinalBasicPriceCurrency)
-    this.props.change('FinalConditionCostBase', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostINR, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.setState({
-      isOpenConditionDrawer: false,
-      conditionTableData: data,
-      FinalConditionCostBase: sumBase,
-      FinalConditionCostCurrency: sumCurrency,
-      FinalNetCostBase: netLandedCostINR,
-      FinalNetCostCurrency: netLandedCostCurrency,
-    })
+    this.setState({ isOpenConditionDrawer: false })
   }
 
   showBasicRate = () => {
