@@ -4,7 +4,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import NoContentFound from '../../../../common/NoContentFound';
-import { CRMHeads, EMPTY_DATA, MASS } from '../../../../../config/constants';
+import { ASSEMBLYNAME, CRMHeads, EMPTY_DATA, MASS } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import AddSurfaceTreatment from '../../Drawers/AddSurfaceTreatment';
@@ -86,11 +86,13 @@ function SurfaceTreatmentCost(props) {
 
       let rowArray = rowData && rowData.map(el => {
         let finalQuantity = 1
-        let rmFinishWeight = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingRawMaterialsCost && RMCCTabData[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight
-        if (el?.UOMType === MASS) {
-          finalQuantity = rmFinishWeight ? rmFinishWeight : 1
-        } else {
-          finalQuantity = 1
+        if (RMCCTabData[0]?.PartType !== ASSEMBLYNAME) {
+          let rmFinishWeight = RMCCTabData && RMCCTabData[0]?.CostingPartDetails?.CostingRawMaterialsCost && RMCCTabData[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight
+          if (el?.UOMType === MASS) {
+            finalQuantity = rmFinishWeight ? rmFinishWeight : 1
+          } else {
+            finalQuantity = 1
+          }
         }
         return {
           OperationId: el.OperationId,
