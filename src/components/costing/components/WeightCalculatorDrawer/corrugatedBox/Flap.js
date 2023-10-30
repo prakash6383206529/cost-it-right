@@ -362,7 +362,7 @@ const Flap = (props) => {
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
-                            errors={errors.cutting_allowance}
+                            errors={errors.cuttingAllowanceForLength}
                             disabled={CostingViewMode ? CostingViewMode : false}
                         />
                     </Col>
