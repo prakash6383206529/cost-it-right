@@ -115,7 +115,7 @@ function SimulationApproveReject(props) {
 
   const checkPermission = (costingTypeId) => {
     let levelDetailsTemp = ''
-    levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels)
+    levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels ? technologyLevelsList?.TechnologyLevels : [])
     setLevelDetails(levelDetailsTemp)
     if (levelDetailsTemp?.length !== 0) {
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
