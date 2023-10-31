@@ -428,9 +428,9 @@ const Flap = (props) => {
                             Controller={Controller}
                             control={control}
                             register={register}
-                            mandatory={false}
+                            mandatory={true}
                             rules={{
-                                required: false,
+                                required: true,
                                 validate: { maxPercentValue },
                                 pattern: {
                                     value: /^\d{0,4}(\.\d{0,6})?$/i,
