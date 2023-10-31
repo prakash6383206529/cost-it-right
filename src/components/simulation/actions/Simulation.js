@@ -203,16 +203,17 @@ export function getSimulationApprovalList(filterData, skip, take, isPagination, 
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
 
         request.then((response) => {
-            if (response) {
-                if (filterData?.isDashboard) {
+
+            if (response.data.Result || response.status === 204) {
+                if (filterData.isDashboard) {
                     dispatch({
                         type: GET_SIMULATION_APPROVAL_LIST,
-                        payload: response?.status === 204 ? [] : response?.data?.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList,
                     })
                 } else {
                     dispatch({
                         type: GET_SIMULATION_APPROVAL_LIST_DRAFT,
-                        payload: response?.status === 204 ? [] : response?.data?.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList,
                     })
                 }
                 callback(response)
