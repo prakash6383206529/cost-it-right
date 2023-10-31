@@ -1192,8 +1192,38 @@ const CostingSummaryTable = (props) => {
       if (data) {
         let temp = moduleHandler(data[0]?.costingId, 'down', data)
         if (!temp) {
-          sendForApprovalData([data[0]?.costingId], index)
-          setShowApproval(true)
+          dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+            if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
+              setShowApproval(false)
+              Toaster.warning('User is not in the approval flow')
+            } else {
+              let levelDetailsTemp
+              levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+              if (levelDetailsTemp?.length === 0) {
+                Toaster.warning("You don't have permission to send costing for approval.")
+              } else {
+                let obj = {}
+                obj.DepartmentId = userDetails().DepartmentId
+                obj.UserId = loggedInUserId()
+                obj.TechnologyId = partInfo.TechnologyId
+                obj.Mode = 'costing'
+                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+                dispatch(checkFinalUser(obj, res => {
+                  if (res?.data?.Result) {
+                    setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                      sendForApprovalData([data[0]?.costingId], index)
+                      setShowApproval(true)
+                    } else if (res?.data?.Data?.IsFinalApprover === true) {
+                      Toaster.warning("Final level user cannot send costing for approval.")
+                    } else {
+                      Toaster.warning("User does not have permission to send costing for approval.")
+                    }
+                  }
+                }))
+              }
+            }
+          }))
         } else {
           Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
         }
