@@ -105,7 +105,7 @@ function OperationSTSimulation(props) {
                 {
                     isImpactedMaster ?
                         valueShow ://NewNetOperationCost
-                        <span className={`${true ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
+                        <span id={`newOperationRate-${props.rowIndex}`} className={`${true ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.Rate)}>{cell && value ? Number(cell) : Number(row.Rate)} </span>
                 }
 
             </>
