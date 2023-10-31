@@ -360,7 +360,7 @@ export const ProcessAndRejection = (props) => {
                 />
             </Col>
             <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'paper-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Paper wt. + Process Rejection = (Width Cutting Allowance * Length Cutting Allowance * Flute Type Percentage * No of Ply * GSM / 1500) / 1000'} />
+                <TooltipCustom disabledIcon={true} id={'paper-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Paper wt. + Process Rejection = (Width Cutting Allowance * Length Cutting Allowance * Flute Type Percentage * No of Ply * GSM / 1550) / 1000'} />
                 <NumberFieldHookForm
                     label={'Paper wt.+ Process Rejection(Kg)'}
                     name={'paper_process'}

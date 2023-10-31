@@ -178,7 +178,6 @@ function CorrugatedBox(props) {
             round_length_inc_cutting_allowance: dataSend.round_length_inc_cutting_allowance,
             no_of_ply: getValues('no_of_ply'),
             gsm: getValues('gsm'),
-            ftp: Number(getValues('fluteTypePercent')), //FTP
             cuttingAllowance: getValues('cutting_allowance'),
             widthSheet: dataSend.widthSheetWithDecimal
         }
@@ -190,13 +189,12 @@ function CorrugatedBox(props) {
         const round_width_inc_cutting = Math.ceil(widthCuttingAllowance)
 
         if (round_length_inc_cutting_allowance) {
-            const fluteTypePercent = checkForNull(data.ftp)
             const WidthIncCuttingAllowance = Number(round_width_inc_cutting);
             const LengthIncCuttingAllowance = checkForNull(round_length_inc_cutting_allowance);
             const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
 
-            const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm * fluteTypePercent) / 1550;
+            const gross = (WidthIncCuttingAllowance * LengthIncCuttingAllowance * NoOfPly * Gsm) / 1550;
             const finalGross = gross / 1000;
             setDataSend(prevState => ({ ...prevState, PaperWeightAndProcessRejectionSum: finalGross }))
 
@@ -226,12 +224,12 @@ function CorrugatedBox(props) {
                 stichingLength: getValues('stiching_length'),
                 no_of_ply: getValues('no_of_ply'),
                 gsm: getValues('gsm'),
-                ftp: Number(getValues('fluteTypePercent')), //FTP
+                // ftp: Number(getValues('fluteTypePercent')), //FTP
                 cutting_allowance: Number(getValues('cutting_allowance')),
                 cutting_allowance_length: Number(getValues('cuttingAllowanceForLength'))
             }
 
-            const fluteTypePercent = checkForNull(data.ftp)
+            // const fluteTypePercent = checkForNull(data.ftp)
             let widthSheet = (Number(data.widthBox) + (parseInt(data.heightBox) * 2)) / 25.4;
             let width_inc_cutting = widthSheet + (2 * (data.cutting_allowance))
 
@@ -246,7 +244,7 @@ function CorrugatedBox(props) {
             const NoOfPly = parseInt(data.no_of_ply);
             const Gsm = parseInt(data.gsm);
 
-            const gross = (width_RoundOff * length_RoundOff * NoOfPly * Gsm * fluteTypePercent) / 1550;
+            const gross = (width_RoundOff * length_RoundOff * NoOfPly * Gsm) / 1550;
             const finalGross = gross / 1000;
 
             setDataSend(prevState => ({ ...prevState, PaperWeightAndProcessRejectionSum: finalGross }))
@@ -757,7 +755,7 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
                             </Row>
-                            <Col md="3">
+                            {/* <Col md="3">   //This field is no more in the RM calculator Sheet
                                 <NumberFieldHookForm
                                     label={`Flute Type Percentage`}
                                     name={'fluteTypePercent'}
@@ -780,7 +778,7 @@ function CorrugatedBox(props) {
                                     errors={errors.fluteTypePercent}
                                     disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                 />
-                            </Col>
+                            </Col> */}
 
                             <hr className="mx-n4 w-auto" />
                             <Row>
@@ -791,7 +789,7 @@ function CorrugatedBox(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'paper-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Paper wt. + Process Rejection = (Width Cutting Allowance * Length Cutting Allowance * No. of Ply * GSM / 1500) / 1000'} />
+                                    <TooltipCustom disabledIcon={true} id={'paper-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Paper wt. + Process Rejection = (Width Cutting Allowance * Length Cutting Allowance * No. of Ply * GSM / 1550) / 1000'} />
                                     <NumberFieldHookForm
                                         label={'Paper wt.+ Process Rejection(Kg)'}
                                         name={'paper_process'}
