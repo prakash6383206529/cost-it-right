@@ -38,6 +38,7 @@ function NonFerrous(props) {
     const [dataToSend, setDataToSend] = useState({})
     const [nonFerrousDropDown, setNonFerrousDropDown] = useState(false)
     const [isDisable, setIsDisable] = useState(false)
+    const [reRender, setRerender] = useState(false)
     const { rmRowData, activeTab, isHpdc, CostingViewMode, item } = props
 
     const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
@@ -109,7 +110,12 @@ function NonFerrous(props) {
             calculateRemainingCalculation(lostWeight)
         }
     }, [fieldValues])
-
+    useEffect(() => {
+        if (Number(getValues('finishedWeight')) < Number(getValues('grossWeight'))) {
+            delete errors.finishedWeight
+            setRerender(!reRender)
+        }
+    }, [getValues('castingWeight'), lostWeight])
     const handlGrossWeight = () => {
         const grossWeight = checkForNull(Number(getValues('castingWeight'))) + dataToSend.burningValue + lostWeight
         const updatedValue = dataToSend
@@ -164,14 +170,6 @@ function NonFerrous(props) {
     }
 
     const onSubmit = debounce(handleSubmit((values) => {
-        if (Number(getValues('finishedWeight')) > Number(getValues('grossWeight'))) {
-            Toaster.warning('Finish weight cannot be greater than gross weight')
-            return false
-        }
-        if (Number(getValues('scrapWeight')) < 0) {
-            Toaster.warning('Scrap weight cannot be negative')
-            return false
-        }
         setIsDisable(true)
         let obj = {}
         obj.LayoutType = activeTab === '1' ? 'GDC' : activeTab === '2' ? 'LPDC' : 'HPDC'
@@ -395,6 +393,10 @@ function NonFerrous(props) {
                                         rules={{
                                             required: false,
                                             validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            max: {
+                                                value: getValues('grossWeight'),
+                                                message: 'Finish weight should not be greater than gross weight.'
+                                            },
 
                                         }}
                                         handleChange={() => { }}

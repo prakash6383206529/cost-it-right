@@ -494,33 +494,23 @@ function RubberWeightCalculator(props) {
     }
 
     const handleFinishWeight = (e) => {
-
         if (e) {
             let finishWeight = checkForNull(Number(e?.target?.value))
             let grossWeight = checkForNull(Number(getValues('grossWeight')))
 
-            if (finishWeight > grossWeight) {
-                Toaster.warning('Finish weight cannot be greater than gross weight')
-                setTimeout(() => {
-                    setValue('finishedWeight', 0)
-                }, 100);
-                return false
+            if (finishWeight < grossWeight) {
+                delete errors.grossWeight
             }
         }
     }
 
     const handleGrossWeight = (e) => {
-
         if (e) {
             let grossWeight = Number(checkForNull(e.target.value))
             let finishedWeight = checkForNull(Number(getValues('finishedWeight')))
 
-            if (finishedWeight > grossWeight) {
-                Toaster.warning('Finish weight cannot be greater than gross weight')
-                setTimeout(() => {
-                    setValue('finishedWeight', 0)
-                }, 100);
-                return false
+            if (grossWeight > finishedWeight) {
+                delete errors.finishedWeight
             }
         }
     }
@@ -887,6 +877,10 @@ function RubberWeightCalculator(props) {
                                         rules={{
                                             required: true,
                                             validate: { number, decimalAndNumberValidation },
+                                            min: {
+                                                value: getValues('finishedWeight'),
+                                                message: 'Gross weight should not be lesser than finish weight.'
+                                            },
                                         }}
                                         handleChange={handleGrossWeight}
                                         className=""
@@ -908,6 +902,10 @@ function RubberWeightCalculator(props) {
                                         rules={{
                                             required: true,
                                             validate: { number, decimalAndNumberValidation },
+                                            max: {
+                                                value: getValues('grossWeight'),
+                                                message: 'Finish weight should not be greater than gross weight.'
+                                            },
                                         }}
                                         handleChange={handleFinishWeight}
                                         className=""

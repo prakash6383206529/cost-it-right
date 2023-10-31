@@ -30,7 +30,6 @@ function Ferrous(props) {
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
-    const [percentage, setPercentage] = useState(0)
     const [inputFinishWeight, setInputFinishWeight] = useState(0)
     const { rmRowData, rmData, CostingViewMode, item } = props
 
@@ -41,13 +40,7 @@ function Ferrous(props) {
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
     })
-    useEffect(() => {
-        const castingWeight = checkForNull(getValues("castingWeight"))
-        if (inputFinishWeight > castingWeight) {
-            Toaster.warning('Finish Weight should not be greater than casting weight')
-            setValue('finishedWeight', '')
-        }
-    }, [inputFinishWeight])
+
     useEffect(() => {
         if (ferrousCalculatorReset === true) {
             reset({
@@ -118,19 +111,13 @@ function Ferrous(props) {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
-        setPercentage(sum)
+
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
     const percentageChange = (e) => {
-        setTimeout(() => {
-            if (totalPercentageValue() > 100) {
-                Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
-                return false
-            }
-            calculateNetSCrapRate()
-            calculateNetRmRate()
-        }, 300);
+        calculateNetSCrapRate()
+        calculateNetRmRate()
     }
     const calculateNetRmRate = () => {
 
@@ -201,7 +188,7 @@ function Ferrous(props) {
     const onSubmit = debounce(handleSubmit((values) => {
 
         if (totalPercentageValue() !== 100) {
-            Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
+            Toaster.warning(`Total percentage is ${totalPercentageValue()}%, must be 100% to save the values`)
             return false
         }
         let obj = {}
@@ -434,7 +421,10 @@ function Ferrous(props) {
                                         rules={{
                                             required: true,
                                             validate: { positiveAndDecimalNumber, checkWhiteSpaces, decimalAndNumberValidation },
-
+                                            max: {
+                                                value: getValues("castingWeight"),
+                                                message: 'Finish weight should not be greater than casting weight.'
+                                            },
                                         }}
                                         handleChange={(e) => { handleFinishedWeight(e?.target?.value) }}
                                         defaultValue={''}

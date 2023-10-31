@@ -149,7 +149,7 @@ function StandardRub(props) {
             const Length = Number(getValues('Length'))
             const CuttingAllowance = Number(getValues('CuttingAllowance'))
             let Volume = 0.7857 * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
-            let GrossWeight = Volume * (checkForNull(10) / 1000000)
+            let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
 
 
             setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
@@ -657,6 +657,10 @@ function StandardRub(props) {
                                                 rules={{
                                                     required: false,
                                                     validate: { number, decimalAndNumberValidation },
+                                                    max: {
+                                                        value: getValues('GrossWeight'),
+                                                        message: 'Finish weight should not be greater than gross weight.'
+                                                    },
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}

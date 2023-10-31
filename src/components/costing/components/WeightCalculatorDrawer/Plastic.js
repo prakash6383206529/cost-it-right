@@ -167,10 +167,6 @@ function Plastic(props) {
     props.toggleDrawer('')
   }
   const onSubmit = debounce(handleSubmit((values) => {
-    if (Number(getValues('finishedWeight')) > Number(getValues('grossWeight'))) {
-      Toaster.warning('Finish weight cannot be greater than gross weight')
-      return false
-    }
     DisableMasterBatchCheckbox(!item?.CostingPartDetails?.IsApplyMasterBatch ? true : false)
     setIsDisable(true)
     let obj = {}
@@ -330,6 +326,10 @@ function Plastic(props) {
                     rules={{
                       required: false,
                       validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                      max: {
+                        value: getValues('grossWeight'),
+                        message: 'Finish weight should not be greater than gross weight.'
+                      },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}

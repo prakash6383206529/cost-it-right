@@ -5,7 +5,7 @@ import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, setValueAccToUOM, } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
@@ -75,6 +75,7 @@ function Coil(props) {
     const [FinishWeight, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     const [isDisable, setIsDisable] = useState(false)
+    const [reRender, setRerender] = useState(false)
 
     const fieldValues = useWatch({
         control,
@@ -106,17 +107,17 @@ function Coil(props) {
         }))
     }, [])
 
+    useEffect(() => {
+        console.log('errors: ', errors);
+        if (Number(getValues('FinishWeight')) < Number(getValues('GrossWeight'))) {
+            delete errors.FinishWeight
+            setRerender(!reRender)
+        }
+    }, [getValues('GrossWeight'), fieldValues])
+
     const setFinishWeight = (e) => {
         const FinishWeight = e.target.value
-        const grossWeight = checkForNull(getValues('GrossWeight'))
-        if (e.target.value > grossWeight) {
-            setTimeout(() => {
-                setValue('FinishWeight', 0)
-            }, 200);
 
-            Toaster.warning('Finish Weight should not be greater than gross weight')
-            return false
-        }
         switch (UOMDimension.label) {
             case G:
                 setTimeout(() => {
@@ -307,11 +308,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -331,11 +328,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -355,11 +348,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -379,11 +368,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -407,10 +392,7 @@ function Coil(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -448,9 +430,6 @@ function Coil(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        rules={{
-                                            required: false,
-                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -469,9 +448,10 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            max: {
+                                                value: getValues('GrossWeight'),
+                                                message: 'Finish weight should not be greater than gross weight.'
                                             },
                                         }}
                                         handleChange={setFinishWeight}

@@ -7,7 +7,7 @@ import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
-  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm, setValueAccToUOM,
+  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation
 } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -157,17 +157,16 @@ function Pipe(props) {
       }
     }
   }, [isOneSide])
+
+  useEffect(() => {
+    if (Number(getValues('FinishWeightOfSheet')) < Number(getValues('GrossWeight'))) {
+      delete errors.FinishWeightOfSheet
+    }
+  }, [getValues('GrossWeight'), fieldValues])
+
   const setFinishWeight = (e) => {
     const FinishWeightOfSheet = e.target.value
-    const grossWeight = checkForNull(getValues('GrossWeight'))
-    if (e.target.value > grossWeight) {
-      setTimeout(() => {
-        setValue('FinishWeightOfSheet', 0)
-      }, 200);
 
-      Toaster.warning('Finish Weight should not be greater than gross weight')
-      return false
-    }
     switch (UOMDimension.label) {
       case G:
         setTimeout(() => {
@@ -196,10 +195,6 @@ function Pipe(props) {
   const calculateInnerDiameter = () => {
     let ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(convertmmTocm(fieldValues.Thickness));
 
-    if (ID < 0) {
-      Toaster.warning('Inner diameter cannot be negative')
-      ID = 0
-    }
     setValue('InnerDiameter', checkForDecimalAndNull(ID, localStorage.NoOfDecimalForInputOutput))
     const updatedValue = dataToSend
     updatedValue.InnerDiameter = ID
@@ -401,10 +396,10 @@ function Pipe(props) {
    */
   const onSubmit = debounce(handleSubmit((values) => {
     setIsDisable(true)
-    if (Number(getValues('FinishWeightOfSheet')) === Number(0)) {
-      Toaster.warning('Finish Weight can not be zero')
+
+    if (Number(getValues('InnerDiameter') < 0)) {
+      Toaster.warning('Inner diameter cannot be negative')
       setIsDisable(false)
-      setValue('FinishWeightOfSheet', '')
       return false
     }
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
@@ -513,11 +508,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
-                      validate: { nonZero }
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -537,11 +528,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
-                      validate: { nonZero }
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -582,10 +569,7 @@ function Pipe(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
+                      validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -605,11 +589,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
-                      validate: { nonZero }
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -629,13 +609,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'length-of-part'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -655,13 +628,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'length-of-scrap'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -680,13 +646,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'weight-of-sheet'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -705,13 +664,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'weight-of-part'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -730,13 +682,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'weight-of-scrap'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -852,9 +797,10 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      max: {
+                        value: getValues('GrossWeight'),
+                        message: 'Finish weight should not be greater than gross weight.'
                       },
                     }}
                     handleChange={setFinishWeight}
