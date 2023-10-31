@@ -1031,11 +1031,13 @@ const CostingSummaryTable = (props) => {
               dispatch(checkFinalUser(obj, res => {
                 if (res?.data?.Result) {
                   setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
-                  if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                  if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
                     sendForApprovalData(multipleCostings)
                     setShowApproval(true)
-                  } else {
+                  } else if (res?.data?.Data?.IsFinalApprover === true) {
                     Toaster.warning("Final level user cannot send costing for approval.")
+                  } else {
+                    Toaster.warning("User does not have permission to send costing for approval.")
                   }
                 }
               }))
