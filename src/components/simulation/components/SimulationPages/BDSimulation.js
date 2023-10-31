@@ -175,7 +175,7 @@ function BDSimulation(props) {
                 {
                     isImpactedMaster ?
                         Number(row.NewBOPRate) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRate)}>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRate)}>{cell && value ? Number(cell) : Number(row.BasicRate)} </span>
                 }
 
             </>
