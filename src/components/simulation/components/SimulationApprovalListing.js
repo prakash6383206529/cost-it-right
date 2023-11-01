@@ -189,7 +189,7 @@ function SimulationApprovalListing(props) {
             isDashboard: isDashboard ?? false
         }
         setIsLoader(true)
-        isDashboard && dispatch(dashboardTabLock(true))
+        isDashboard && dispatch(dashboardTabLock(true))     // LOCK DASHBOARD TAB WHEN LOADING
         let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
 
@@ -201,11 +201,12 @@ function SimulationApprovalListing(props) {
                 setTotalRecordCount(0)
                 setPageNo(0)
                 setIsLoader(false)
+                dispatch(dashboardTabLock(false))                // UNLOCK DASHBOARD TAB AFTER LOADING
             }
             if (res?.data?.Result) {
 
                 setIsLoader(false)
-                dispatch(dashboardTabLock(false))
+                dispatch(dashboardTabLock(false))                 // UNLOCK DASHBOARD TAB AFTER LOADING         
                 let isReset = true
                 if (res) {
 
