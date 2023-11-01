@@ -9,7 +9,7 @@ import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConf
 import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
 import CorrugatedBoxCalculator from './corrugatedBox/index'
-import RubberCalciTab from './rubber'
+import RubberCalciTab from './rubber/Rubber'
 import Machining from './MachiningCalculator'
 import Pipe from './sheetMetal/Pipe'
 
