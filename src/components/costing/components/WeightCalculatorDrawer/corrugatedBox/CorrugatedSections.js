@@ -14,15 +14,15 @@ export const RMSection = (props) => {
     const dispatch = useDispatch()
     const { corrugatedDataObj } = useSelector(state => state.costing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const { WeightCalculatorRequest } = props
+    const { WeightCalculatorRequest, errors, control, Controller, register } = props
     const defaultValues = {
         no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? WeightCalculatorRequest.NoOfPly : '',
         gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? WeightCalculatorRequest.GSM : '',
-        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
         bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForInputOutput) : '',
     }
     const {
-        register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
+        setValue, getValues } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues
@@ -153,7 +153,7 @@ export const RMSection = (props) => {
 };
 
 export const BoxDetails = (props) => {
-    const { CostingViewMode, WeightCalculatorRequest } = props
+    const { CostingViewMode, WeightCalculatorRequest, errors, control, Controller, register } = props
     const { corrugatedDataObj } = useSelector(state => state.costing)
     const dispatch = useDispatch()
     const defaultValues = {
@@ -167,7 +167,7 @@ export const BoxDetails = (props) => {
         // width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
     }
     const {
-        register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
+        setValue, getValues, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues
