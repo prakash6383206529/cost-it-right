@@ -55,6 +55,7 @@ function RMSimulation(props) {
     const [showTooltip, setShowTooltip] = useState(false)
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [scrapRateviewTooltip, setScrapRateViewTooltip] = useState(false)
+    const [isLoader, setIsLoader] = useState(false)
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -100,7 +101,7 @@ function RMSimulation(props) {
         }
         let tempArr = []
         list && list.map(item => {
-            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined) && ((item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || (item.NewScrapRate !== undefined ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && (((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
                 let tempObj = {}
                 tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.RawMaterialName = item.RawMaterialName
@@ -110,7 +111,7 @@ function RMSimulation(props) {
                 tempObj.RawMaterialCategory = item.Category
                 tempObj.UOM = item.UnitOfMeasurementName
                 tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
-                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.BasicRate
+                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate
                 tempObj.OldScrapRate = item.ScrapRate
                 tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
                 tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
@@ -152,7 +153,7 @@ function RMSimulation(props) {
         let scrapRateChangeArr = [];
         list && list.map((li) => {
 
-            if (Number(li.BasicRate) === Number(li.NewBasicRate) || li?.NewBasicRate === undefined) {
+            if (Number(li.BasicRate) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
                 basicRateCount = basicRateCount + 1
             }
 
@@ -160,14 +161,16 @@ function RMSimulation(props) {
                 scrapRateChangeArr.push(li)
 
             }
-            if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
-                isScrapRateGreaterThanBasiRate = true
-            }
-            if (isScrapRateGreaterThanBasiRate && !(basicRateCount === list.length)) {
-                li.NewBasicRate = li?.BasicRate
-                li.NewScrapRate = li?.ScrapRate
-                Toaster.warning('Scrap Rate should be less than Basic Rate')
-                return false
+            if (li.NewBasicrateFromPercentage === undefined || li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                    isScrapRateGreaterThanBasiRate = true
+                }
+                if (isScrapRateGreaterThanBasiRate && !(basicRateCount === list.length)) {
+                    li.NewBasicRate = li?.BasicRate
+                    li.NewScrapRate = li?.ScrapRate
+                    Toaster.warning('Scrap Rate should be less than Basic Rate')
+                    return false
+                }
             }
             return null;
         })
@@ -248,12 +251,19 @@ function RMSimulation(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const value = beforeSaveCell(cell, props, "basicRate")
+        let PercentageCalc = 0
+        if (row.Percentage) {
+            PercentageCalc = (row?.BasicRatePerUOM + (Number(row?.BasicRatePerUOM) * Number(row?.Percentage) / 100))
+            if (isNaN(PercentageCalc)) {
+                PercentageCalc = row?.BasicRatePerUOM
+            }
+        }
         return (
             <>
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : Number(row.BasicRatePerUOM)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : Number(row.BasicRatePerUOM)} </span>
                 }
 
             </>
@@ -285,7 +295,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.ScrapRate)} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.ScrapRate)} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
                 }
             </>
         )
@@ -337,8 +347,11 @@ function RMSimulation(props) {
                 return false
             }
             return true
-        } else if (cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        } else if (cellValue && !/^[+-]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
+            if (type === "Percentage") {
+                row.Percentage = 0
+            }
             return false
         }
 
@@ -347,10 +360,18 @@ function RMSimulation(props) {
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
-        const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
+        // if (!row.NewBasicRate || Number(row.BasicRate) === Number(row.NewBasicRate) || row.NewBasicRate === '') return ''
+        let NewBasicRate = '';
+        if (row.NewBasicRate) {
+            NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
+        }
+        else if ((row.Percentage)) {
+            let percentageCalc = (row?.BasicRatePerUOM + (row?.BasicRatePerUOM * row?.Percentage / 100))
+            row.NewBasicrateFromPercentage = percentageCalc
+            NewBasicRate = percentageCalc + row.RMFreightCost + row.RMShearingCost
+        }
         const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-        return row.NewBasicRate != null ? <span className={classGreen} title={checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return NewBasicRate ? <span className={classGreen} title={checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
         // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
     }
     const revisedBasicRateHeader = (props) => {
@@ -418,7 +439,84 @@ function RMSimulation(props) {
         setIsEffectiveDateSelected(true)
         setIsWarningMessageShow(false)
     }
+    const EditableCallbackForPercentage = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if (!rowData?.NewBasicRate) {
+            value = true
+        } else {
+            value = false
+        }
+        return value
+    }
+    const EditableCallbackForNewBasicRate = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if (rowData?.Percentage && Number(rowData?.Percentage) !== 0 && !rowData?.NewBasicRate) {
+            value = false
+        } else {
+            value = true
+        }
+        return value
+    }
 
+    const ageValueGetterPer = (params) => {
+        let row = params.data
+        if (!row.Percentage) {
+            if (row.NewBasicRate) {
+                return 0
+            }
+            return row?.BasicRatePerUOM * 0;
+        } else {
+            return row?.Percentage
+        }
+    };
+
+    const percentageFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let cellValue = cell
+        if (cell && cell > 100) {
+            Toaster.warning("Percentage should be less than or equal to 100")
+            list[props.rowIndex].Percentage = 0
+            cellValue = 0
+        }
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cellValue, props, 'Percentage')
+        return (
+            <>
+                {
+                    <span id={`percentage${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.NewBasicRate ? 'disabled' : ''}`} >{cell && value ? row.NewBasicRate ? 0 : Number(cellValue) : (row?.Percentage ? row?.Percentage : 0)} </span>
+                }
+            </>
+        )
+    }
+
+    const changeList = (value) => {
+        setIsLoader(true)
+        list && list?.map(item => {
+            item.Percentage = value;
+            return null;
+        })
+        setTimeout(() => {
+            setIsLoader(false)
+        }, 100);
+    }
+    const handleKeyPress = (e) => {
+        if (e.key === 'Enter') {
+            changeList(e.target.value);
+        }
+    };
+
+    const percentageHeader = () => {
+        let value = '';
+        const onHandler = (e) => {
+            value = e.target.value
+        }
+        return (<div>
+            <input type="text" className="form-control ag-grid-input" onChange={onHandler} onKeyPress={handleKeyPress} onBlur={() => changeList(value)} />
+        </div>
+        )
+    }
 
     const frameworkComponents = {
         effectiveDateFormatter: effectiveDateFormatter,
@@ -437,8 +535,23 @@ function RMSimulation(props) {
         plantFormatter: plantFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
         revisedScrapRateHeader: revisedScrapRateHeader,
+        ageValueGetterPer: ageValueGetterPer,
+        percentageFormatter: percentageFormatter,
+        percentageHeader: percentageHeader,
         nullHandler: props.nullHandler && props.nullHandler
 
+    };
+
+    const ageValueGetterLanded = (params) => {
+        let row = params.data
+        let valueReturn = ''
+        if ((row?.Percentage !== '') && (checkForNull(row?.Percentage) !== 0) && checkForNull(row?.Percentage) <= 100) {
+            valueReturn = (row?.BasicRatePerUOM + (row?.BasicRatePerUOM * row?.Percentage / 100)) + row.RMFreightCost + row.RMShearingCost
+        } else {
+            valueReturn = (row?.NewBasicRate + row.RMFreightCost + row.RMShearingCost)
+        }
+
+        return valueReturn;
     };
 
     const closePopUp = () => {
@@ -558,7 +671,7 @@ function RMSimulation(props) {
                                     </div>
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        {list && <AgGridReact
+                                        {list && !isLoader && <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
@@ -602,8 +715,11 @@ function RMSimulation(props) {
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >
                                                 <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' editable={!isImpactedMaster} headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
+                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={"Percentage"} marryChildren={true} width={240}>
+                                                <AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
+                                            </AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
                                                 <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
@@ -613,7 +729,7 @@ function RMSimulation(props) {
                                             {technologyId === String(FORGING) && <AgGridColumn width={170} field="MachiningScrapRate" tooltipField='MachiningScrapRate' editable='false' headerName="Machining Scrap Cost" cellRenderer={'CostFormatter'}></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Net Cost (Currency)" : "Net Cost (INR)"}>
                                                 <AgGridColumn width={120} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
-                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate + data.RMFreightCost+data.RMShearingCost' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
                                             </AgGridColumn>
                                             }
                                             {props.children}
