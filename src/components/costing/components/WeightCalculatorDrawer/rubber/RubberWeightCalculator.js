@@ -8,7 +8,7 @@ import { saveRawMaterialCalculationForRubberCompound } from '../../../actions/Co
 import Toaster from '../../../../common/Toaster'
 import { debounce, trim } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
-import { number, checkWhiteSpaces, percentageLimitValidation } from "../../../../../helper/validation";
+import { number, checkWhiteSpaces, percentageLimitValidation, decimalAndNumberValidation } from "../../../../../helper/validation";
 import NoContentFound from '../../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../../config/constants'
 import { toast } from 'react-toastify'
@@ -39,6 +39,7 @@ function RubberWeightCalculator(props) {
     const [rejectionCostType, setRejectionCostType] = useState('')
     const [disablePercentFields, setDisablePercentFields] = useState(false)
     const [percentage, setPercentage] = useState(0)
+    const [reRender, setRerender] = useState(false)
 
     const rmGridFields = 'rmGridFields';
     const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors }, } = useForm({
@@ -211,7 +212,6 @@ function RubberWeightCalculator(props) {
     }
 
     const onSubmit = debounce(handleSubmit((values) => {
-
         if (totalPercentageValue() !== 100) {
             Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
             return false
@@ -421,15 +421,19 @@ function RubberWeightCalculator(props) {
     }
 
     const resetTable = (e) => {
+        delete errors.valueAdditional
         setValue('description', '')
         setValue('additionalCostType', '')
         setValue('valueAdditional', '')
         setValue('netCostAdditional', '')
         setIsEdit(false)
+        setRerender(!reRender)
     }
 
     const addRow = () => {
-
+        if (Object.keys(errors).length > 0) {
+            return false
+        }
         let temp = tableData ? [...tableData] : []
         let obj = {}
 
@@ -666,10 +670,7 @@ function RubberWeightCalculator(props) {
                                             mandatory={true}
                                             rules={{
                                                 required: false,
-                                                pattern: {
-                                                    value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                    message: 'Maximum length for integer is 4 and for decimal is 7',
-                                                },
+                                                validate: { number, decimalAndNumberValidation },
                                             }}
                                             handleChange={handleValueChange}
                                             defaultValue={''}
@@ -690,15 +691,6 @@ function RubberWeightCalculator(props) {
                                             control={control}
                                             register={register}
                                             mandatory={false}
-                                            rules={{
-                                                required: false,
-                                                pattern: {
-
-                                                    value: /^[0-9]\d*(\.\d+)?$/i,
-                                                    message: 'Invalid Number.',
-                                                },
-
-                                            }}
                                             handleChange={() => { }}
                                             defaultValue={''}
                                             className=""
@@ -718,15 +710,6 @@ function RubberWeightCalculator(props) {
                                             control={control}
                                             register={register}
                                             mandatory={false}
-                                            rules={{
-                                                required: false,
-                                                pattern: {
-
-                                                    value: /^[0-9]\d*(\.\d+)?$/i,
-                                                    message: 'Invalid Number.',
-                                                },
-
-                                            }}
                                             handleChange={() => { }}
                                             defaultValue={''}
                                             className=""
@@ -884,14 +867,6 @@ function RubberWeightCalculator(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        rules={{
-                                            required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
-                                            },
-
-                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -911,10 +886,7 @@ function RubberWeightCalculator(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
-                                            },
+                                            validate: { number, decimalAndNumberValidation },
                                         }}
                                         handleChange={handleGrossWeight}
                                         className=""
@@ -935,10 +907,7 @@ function RubberWeightCalculator(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
-                                            },
+                                            validate: { number, decimalAndNumberValidation },
                                         }}
                                         handleChange={handleFinishWeight}
                                         className=""
@@ -1064,10 +1033,7 @@ function RubberWeightCalculator(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
-                                            },
+                                            validate: { number, decimalAndNumberValidation },
                                         }}
                                         handleChange={handleValueChangeRejection}
                                         defaultValue={''}

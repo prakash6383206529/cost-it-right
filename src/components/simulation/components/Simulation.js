@@ -104,6 +104,7 @@ function Simulation(props) {
             setShowEditTable(false)
         }
         return () => {
+            dispatch(setMasterForSimulation({ label: '', value: '' }))
             reactLocalStorage?.setObject('vendorData', [])
         }
     }, [])
@@ -196,7 +197,6 @@ function Simulation(props) {
         if (checkForNull(value?.value) === ASSEMBLY) {
             setTechnology(value)
             setShowMasterList(false)
-            dispatch(setTechnologyForSimulation(value))
             setShowTokenDropdown(false)
             setVendor({ label: '', value: '' })
             setValue('Vendor', { label: '', value: '' })

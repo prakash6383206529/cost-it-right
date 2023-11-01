@@ -28,6 +28,7 @@ import DayTime from '../common/DayTimeWrapper';
 import { hyphenFormatter } from '../masters/masterUtil';
 import _, { isNumber } from 'lodash';
 import CostingDetailSimulationDrawer from '../simulation/components/CostingDetailSimulationDrawer';
+import CostingApproveReject from '../costing/components/approval/CostingApproveReject';
 const gridOptions = {};
 
 
@@ -1014,7 +1015,7 @@ function RfqListing(props) {
                     />
                 }
                 {rejectDrawer && (
-                    <ApproveRejectDrawer
+                    <CostingApproveReject
                         type={'Reject'}
                         isOpen={rejectDrawer}
                         approvalData={rejectedList}
@@ -1065,6 +1066,7 @@ function RfqListing(props) {
                                 checkCostingSelected={checkCostingSelected}
                                 disableApproveRejectButton={disableApproveRejectButton}
                                 compareButtonPressed={compareButtonPressed}
+                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
                             />
                         )}
                     </div>

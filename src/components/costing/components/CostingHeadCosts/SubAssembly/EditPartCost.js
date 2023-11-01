@@ -17,10 +17,9 @@ import CostingDetailSimulationDrawer from '../../../../simulation/components/Cos
 import { ViewCostingContext } from '../../CostingDetails';
 import { CBCTypeId, EMPTY_DATA, VBCTypeId, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
 
 function EditPartCost(props) {
-    console.log('props: ', props);
-    console.log('props: ', props.costingTypeId);
 
     const [gridData, setGridData] = useState([])
     const { settledCostingDetails, settledCostingDetailsView } = useSelector(state => state.subAssembly)
@@ -39,7 +38,7 @@ function EditPartCost(props) {
     const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
 
-    const { register, handleSubmit, control, setValue, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -506,7 +505,7 @@ function EditPartCost(props) {
                                             <th>Costing Number</th>
                                             <th>Settled Price</th>
                                             <th>SOB%</th>
-                                            {(costData?.CostingTypeId !== WACTypeId || props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
+                                            {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
                                             <th>Net Cost</th>
                                             <th>Action</th>
                                         </tr>
@@ -552,7 +551,7 @@ function EditPartCost(props) {
                                                             />
                                                         </td>
 
-                                                        {(costData?.CostingTypeId !== WACTypeId || props?.costingTypeId !== WACTypeId) && <td >
+                                                        {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <td >
                                                             <div className='delta-warpper'>
                                                                 <SearchableSelectHookForm
                                                                     name={`${PartCostFields}.${index}.DeltaSign`}
@@ -576,6 +575,7 @@ function EditPartCost(props) {
                                                                     mandatory={false}
                                                                     rules={{
                                                                         required: false,
+                                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                         pattern: {
                                                                             value: /^\d*\.?\d*$/,
                                                                             message: 'Invalid Number.'
@@ -586,6 +586,7 @@ function EditPartCost(props) {
                                                                     className=""
                                                                     customClassName={'withBorder'}
                                                                     disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                    errors={errors?.PartCostFields && errors?.PartCostFields[index]?.DeltaValue}
                                                                 />
                                                             </div>
                                                         </td>}

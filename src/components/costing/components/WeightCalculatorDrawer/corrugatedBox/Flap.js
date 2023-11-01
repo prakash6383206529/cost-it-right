@@ -53,22 +53,24 @@ const Flap = (props) => {
         setFlapData();
     }, [corrugatedDataObj])
     useEffect(() => {
-        let widthOfCuttingAllowance = Number(getValues('width_sheet_body')) + (2 * Number(getValues('cutting_allowance')));
-        let heightOfCuttingAllowance = Number(getValues('length_sheet_body')) + (2 * Number(getValues('cuttingAllowanceForLength')));
-        if (corrugatedDataObj) {
-            const { RMData, BoxData } = corrugatedDataObj
-            if (RMData) {
-                let getWeightSheet = (Math.round(widthOfCuttingAllowance) * Math.round(heightOfCuttingAllowance) * RMData?.noOfPly * Number(getValues('fluteTypePercent')) * RMData?.gsm / 1550) / 1000
-                setGrossWeight(prevState => ({ ...prevState, paperWithDecimal: getWeightSheet }))
+        if (!CostingViewMode) {
+            let widthOfCuttingAllowance = Number(getValues('width_sheet_body')) + (2 * Number(getValues('cutting_allowance')));
+            let heightOfCuttingAllowance = Number(getValues('length_sheet_body')) + (2 * Number(getValues('cuttingAllowanceForLength')));
+            if (corrugatedDataObj) {
+                const { RMData, BoxData } = corrugatedDataObj
+                if (RMData) {
+                    let getWeightSheet = (Math.round(widthOfCuttingAllowance) * Math.round(heightOfCuttingAllowance) * RMData?.noOfPly * Number(getValues('fluteTypePercent')) * RMData?.gsm / 1550) / 1000
+                    setGrossWeight(prevState => ({ ...prevState, paperWithDecimal: getWeightSheet }))
+                }
+                let widthOfFlap = (Number(getValues('NoOfFlap') * (Number(getValues('MaxFlapSize')) + Number(getValues('ToungeLengthSize'))) + BoxData?.heightBox) / 25.4);
+                setTimeout(() => {
+                    setValue('width_sheet_body', checkForDecimalAndNull(widthOfFlap, initialConfiguration.NoOfDecimalForInputOutput))
+                    setValue('width_inc_cutting_body', checkForDecimalAndNull(widthOfCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput))
+                    setValue('round_off_width_body', checkForDecimalAndNull(Math.round(widthOfCuttingAllowance), initialConfiguration.NoOfDecimalForInputOutput))
+                    setValue('length_inc_cutting_allowance_body', checkForDecimalAndNull(heightOfCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput))
+                    setValue('round_off_length_body', checkForDecimalAndNull(Math.round(heightOfCuttingAllowance), initialConfiguration.NoOfDecimalForInputOutput))
+                }, 50);
             }
-            let widthOfFlap = (Number(getValues('NoOfFlap') * (Number(getValues('MaxFlapSize')) + Number(getValues('ToungeLengthSize'))) + BoxData?.heightBox) / 25.4);
-            setTimeout(() => {
-                setValue('width_sheet_body', checkForDecimalAndNull(widthOfFlap, initialConfiguration.NoOfDecimalForInputOutput))
-                setValue('width_inc_cutting_body', checkForDecimalAndNull(widthOfCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput))
-                setValue('round_off_width_body', checkForDecimalAndNull(Math.round(widthOfCuttingAllowance), initialConfiguration.NoOfDecimalForInputOutput))
-                setValue('length_inc_cutting_allowance_body', checkForDecimalAndNull(heightOfCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput))
-                setValue('round_off_length_body', checkForDecimalAndNull(Math.round(heightOfCuttingAllowance), initialConfiguration.NoOfDecimalForInputOutput))
-            }, 50);
         }
     }, [fieldValues])
     const setFlapData = () => {
@@ -360,7 +362,7 @@ const Flap = (props) => {
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
-                            errors={errors.cutting_allowance}
+                            errors={errors.cuttingAllowanceForLength}
                             disabled={CostingViewMode ? CostingViewMode : false}
                         />
                     </Col>
