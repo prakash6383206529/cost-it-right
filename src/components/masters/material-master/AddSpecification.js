@@ -43,6 +43,7 @@ class AddSpecification extends Component {
       rmCode: '',
       showPopup: false,
       isDropDownChanged: false,
+      specificationId: ''
     }
   }
 
@@ -51,6 +52,7 @@ class AddSpecification extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
+    console.log(this.state.Id, "Id");
     this.props.getRawMaterialNameChild(() => { })
     // this.props.getMaterialTypeSelectList(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', false, res => { })
@@ -99,6 +101,7 @@ class AddSpecification extends Component {
             this.setState({
               RawMaterial: rawMaterialObj && rawMaterialObj !== undefined ? { label: rawMaterialObj.Text, value: rawMaterialObj.Value } : [],
               RMGrade: Data.GradeName !== undefined ? { label: Data.GradeName, value: Data.GradeId } : [],
+              specificationId: Data?.SpecificationId
             })
           }, 500)
 
@@ -713,6 +716,7 @@ class AddSpecification extends Component {
             RawMaterial={this.state.RawMaterial}
             ID={this.state.Id}
             anchor={"right"}
+            specificationId={this.state.specificationId}
           />
         )}
         {isOpenMaterialDrawer && (

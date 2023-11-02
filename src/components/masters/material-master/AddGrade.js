@@ -58,7 +58,7 @@ class AddGrade extends Component {
   * @description Used to Submit the form
   */
   onSubmit = (values) => {
-    const { ID, isEditFlag, RawMaterial } = this.props;
+    const { ID, isEditFlag, RawMaterial, } = this.props;
 
     if (isEditFlag) {
       let formData = {
@@ -67,6 +67,7 @@ class AddGrade extends Component {
         IsActive: true,
         CreatedDate: '',
         CreatedBy: loggedInUserId(),
+        RawMaterialSpecificationId: this.props?.specificationId
       }
       this.props.reset()
       this.props.updateRMGradeAPI(formData, (res) => {
