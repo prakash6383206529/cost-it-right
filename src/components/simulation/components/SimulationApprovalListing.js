@@ -501,6 +501,15 @@ function SimulationApprovalListing(props) {
 
     }
 
+    /**
+  * @method effectiveDateFormatter
+  * @description Renders buttons
+  */
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+    }
+
     const onRowSelect = (row, isSelected, e) => {
 
         let arr = []
@@ -724,7 +733,7 @@ function SimulationApprovalListing(props) {
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
-        // effectiveDateRenderer: this.effectiveDateFormatter,
+        effectiveDateRenderer: effectiveDateFormatter,
         // costingHeadRenderer: this.costingHeadFormatter,
         linkableFormatter: linkableFormatter,
         requestedByFormatter: requestedByFormatter,
@@ -817,6 +826,8 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn width={200} field="CustomerName" headerName="Customer (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    <AgGridColumn width={200} field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>
+
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
