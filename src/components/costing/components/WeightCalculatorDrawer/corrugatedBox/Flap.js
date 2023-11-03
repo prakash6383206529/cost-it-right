@@ -23,9 +23,9 @@ const Flap = (props) => {
     const dispatch = useDispatch()
     const [grossWeight, setGrossWeight] = useState(0)
     const defaultValues = {
-        NoOfFlap: WeightCalculatorRequest && WeightCalculatorRequest.NoOfFlap !== null ? WeightCalculatorRequest.NoOfFlap : '',
-        MaxFlapSize: WeightCalculatorRequest && WeightCalculatorRequest.MaxFlapSize !== null ? checkForDecimalAndNull(WeightCalculatorRequest.MaxFlapSize, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        ToungeLengthSize: WeightCalculatorRequest && WeightCalculatorRequest.ToungeLengthSize !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ToungeLengthSize, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        NoOfFlap: WeightCalculatorRequest && WeightCalculatorRequest.NoOfFlap ? WeightCalculatorRequest.NoOfFlap : '',
+        MaxFlapSize: WeightCalculatorRequest && WeightCalculatorRequest.MaxFlapSize ? checkForDecimalAndNull(WeightCalculatorRequest.MaxFlapSize, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        ToungeLengthSize: WeightCalculatorRequest && WeightCalculatorRequest.ToungeLengthSize ? checkForDecimalAndNull(WeightCalculatorRequest.ToungeLengthSize, initialConfiguration.NoOfDecimalForInputOutput) : '',
         width_sheet_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
         cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
         width_inc_cutting_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
@@ -33,7 +33,7 @@ const Flap = (props) => {
         cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? WeightCalculatorRequest.CuttingAllowanceLength : '',
         length_inc_cutting_allowance_body: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
         round_length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         round_off_length_body: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         round_width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
@@ -142,8 +142,8 @@ const Flap = (props) => {
         <>
             <form noValidate className="form"
                 onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
-                <RMSection WeightCalculatorRequest={WeightCalculatorRequest} CostingViewMode={CostingViewMode} />
-                <BoxDetails CostingViewMode={CostingViewMode} WeightCalculatorRequest={WeightCalculatorRequest} />
+                <RMSection WeightCalculatorRequest={WeightCalculatorRequest} CostingViewMode={CostingViewMode} errors={errors} Controller={Controller} register={register} control={control} />
+                <BoxDetails CostingViewMode={CostingViewMode} WeightCalculatorRequest={WeightCalculatorRequest} errors={errors} Controller={Controller} register={register} control={control} />
                 <Row className="mt-3 corrugated-box-label-wrapper">
                     <Col md="12" className={''}>
                         <HeaderTitle className="border-bottom"
