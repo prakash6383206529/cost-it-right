@@ -329,7 +329,7 @@ class AddBOPImport extends Component {
   * @description Used to get Details
   */
   getDetails = () => {
-    const { data } = this.props;
+    const { data, initialConfiguration } = this.props;
     if (data && data.isEditFlag) {
       this.setState({
         isLoader: true,
@@ -342,17 +342,17 @@ class AddBOPImport extends Component {
           const Data = res.data.Data;
           this.setState({ DataToChange: Data, })
 
-          this.props.change('BasicRateBase', Data?.BasicRateConversion)
-          this.props.change('BasicRateCurrency', Data?.BasicRate)
+          this.props.change('BasicRateBase', checkForDecimalAndNull(Data?.BasicRateConversion, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('BasicRateCurrency', checkForDecimalAndNull(Data?.BasicRate, initialConfiguration.NoOfDecimalForPrice))
 
-          this.props.change('BasicPriceBase', Data?.NetCostWithoutConditionCostConversion)
-          this.props.change('BasicPriceCurrency', Data?.NetCostWithoutConditionCost)
+          this.props.change('BasicPriceBase', checkForDecimalAndNull(Data?.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('BasicPriceCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice))
 
-          this.props.change('FinalConditionCostBase', Data?.NetConditionCostConversion)
-          this.props.change('FinalConditionCostCurrency', Data?.NetConditionCost)
+          this.props.change('FinalConditionCostBase', checkForDecimalAndNull(Data?.NetConditionCostConversion, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
 
-          this.props.change('NetLandedCostBase', Data?.NetLandedCostConversion)
-          this.props.change('NetLandedCostCurrency', Data?.NetLandedCost)
+          this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
 
           this.setState({
             FinalBasicRateBase: Data?.BasicRateConversion,
