@@ -224,12 +224,12 @@ function ApprovalListing(props) {
       isDashboard: isDashboard ?? false
     }
     setloader(true)
-    isDashboard && dispatch(dashboardTabLock(true))
+    isDashboard && dispatch(dashboardTabLock(true))        // LOCK DASHBOARD TAB WHEN LOADING
     dispatch(
       getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
         if (res.status === 204 && res.data === '') {
           setloader(false)
-          dispatch(dashboardTabLock(false))
+          dispatch(dashboardTabLock(false))      // UNLOCK DASHBOARD TAB AFTER LOADING  
           setTotalRecordCount(0)
           setPageNo(0)
           let isReset = true
