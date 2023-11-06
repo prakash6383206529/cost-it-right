@@ -621,7 +621,7 @@ class AddRMDomestic extends Component {
           // this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
           setTimeout(() => {
 
-            this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('BasicRateCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('ScrapRateCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('ForgingScrap', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
@@ -631,7 +631,7 @@ class AddRMDomestic extends Component {
             this.props.change('FreightCharge', checkForDecimalAndNull(Data?.RMFreightCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('ShearingCost', checkForDecimalAndNull(Data?.RMShearingCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('BasicPriceCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('FinalConditionCostCurrency', Data?.NetConditionCost)
+            this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice));
 
             this.setState({

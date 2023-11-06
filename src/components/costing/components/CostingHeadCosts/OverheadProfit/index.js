@@ -1115,7 +1115,7 @@ function OverheadProfit(props) {
                     case 'RM + CC + BOP':
                     case 'Part Cost + CC + BOP':
 
-                        if ((partType && OverheadApplicability === 'Part Cost + CC + BOP') || (!partType && OverheadApplicability === 'RM + CC + BOP')) {
+                        if ((partType && ProfitApplicability === 'Part Cost + CC + BOP') || (!partType && ProfitApplicability === 'RM + CC + BOP')) {
                             profitCombinedCost = checkForNull(RM_CC_BOP) + checkForNull(NetSurfaceTreatmentCost)
                             profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
 
@@ -1133,7 +1133,7 @@ function OverheadProfit(props) {
                     case 'RM + CC':
                     case 'Part Cost + CC':
 
-                        if ((partType && OverheadApplicability === 'Part Cost + CC') || (!partType && OverheadApplicability === 'RM + CC')) {
+                        if ((partType && ProfitApplicability === 'Part Cost + CC') || (!partType && ProfitApplicability === 'RM + CC')) {
                             profitCombinedCost = checkForNull(RM_CC) + checkForNull(NetSurfaceTreatmentCost)
                             profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
                             setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
@@ -1165,7 +1165,7 @@ function OverheadProfit(props) {
                     case 'RM + BOP':
                     case 'Part Cost + BOP':
 
-                        if ((partType && OverheadApplicability === 'Part Cost + BOP') || (!partType && OverheadApplicability === 'RM + BOP')) {
+                        if ((partType && ProfitApplicability === 'Part Cost + BOP') || (!partType && ProfitApplicability === 'RM + BOP')) {
                             profitCombinedCost = checkForNull(RM_BOP)
                             profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
 
@@ -1189,7 +1189,7 @@ function OverheadProfit(props) {
                     case 'RM + CC + BOP':
                     case 'Part Cost + CC + BOP':
 
-                        if ((partType && OverheadApplicability === 'Part Cost + CC + BOP') || (!partType && OverheadApplicability === 'RM + CC + BOP')) {
+                        if ((partType && ProfitApplicability === 'Part Cost + CC + BOP') || (!partType && ProfitApplicability === 'RM + CC + BOP')) {
                             profitCombinedCost = checkForNull(RM_CC_BOP)
                             profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
                             setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))
@@ -1207,7 +1207,7 @@ function OverheadProfit(props) {
                     case 'RM + CC':
                     case 'Part Cost + CC':
 
-                        if ((partType && OverheadApplicability === 'Part Cost + CC') || (!partType && OverheadApplicability === 'RM + CC')) {
+                        if ((partType && ProfitApplicability === 'Part Cost + CC') || (!partType && ProfitApplicability === 'RM + CC')) {
                             profitCombinedCost = checkForNull(RM_CC)
                             profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
 
@@ -1242,7 +1242,7 @@ function OverheadProfit(props) {
                     case 'RM + BOP':
                     case 'Part Cost + BOP':
 
-                        if ((partType && OverheadApplicability === 'Part Cost + BOP') || (!partType && OverheadApplicability === 'RM + BOP')) {
+                        if ((partType && ProfitApplicability === 'Part Cost + BOP') || (!partType && ProfitApplicability === 'RM + BOP')) {
                             profitCombinedCost = checkForNull(RM_BOP)
                             profitTotalCost = checkForNull(profitCombinedCost) * calculatePercentage(checkForNull(ProfitPercentage))
                             setValue('ProfitPercentage', checkForDecimalAndNull(ProfitPercentage, initialConfiguration.NoOfDecimalForPrice))

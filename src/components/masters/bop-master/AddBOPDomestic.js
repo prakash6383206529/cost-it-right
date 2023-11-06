@@ -261,7 +261,7 @@ class AddBOPDomestic extends Component {
   * @description Used to get Details
   */
   getDetails = () => {
-    const { data } = this.props;
+    const { data, initialConfiguration } = this.props;
     if (data && data.isEditFlag) {
       this.setState({
         isLoader: true,
@@ -272,10 +272,10 @@ class AddBOPDomestic extends Component {
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.props.change('BasicRateBase', Data.BasicRate)
-          this.props.change('BasicPriceBase', Data.NetCostWithoutConditionCost)
-          this.props.change('ConditionCost', Data.NetConditionCost)
-          this.props.change('NetLandedCostBase', Data.NetLandedCost)
+          this.props.change('BasicRateBase', checkForDecimalAndNull(Data.BasicRate, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('BasicPriceBase', checkForDecimalAndNull(Data.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('ConditionCost', checkForDecimalAndNull(Data.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data.NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {

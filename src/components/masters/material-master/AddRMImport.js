@@ -704,7 +704,7 @@ class AddRMImport extends Component {
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
 
-            this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice))
+            this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('cutOffPriceBase', checkForDecimalAndNull(Data?.CutOffPriceInINR, initialConfiguration.NoOfDecimalForPrice));
 
             this.props.change('BasicRateCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice));
@@ -734,8 +734,8 @@ class AddRMImport extends Component {
             this.props.change('BasicPriceCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('BasicPriceBase', checkForDecimalAndNull(Data?.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('FinalConditionCostCurrency', Data?.NetConditionCost)
-            this.props.change('FinalConditionCostBase', Data?.NetConditionCostConversion)
+            this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('FinalConditionCostBase', checkForDecimalAndNull(Data?.NetConditionCostConversion, initialConfiguration.NoOfDecimalForPrice));
 
             this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice));
