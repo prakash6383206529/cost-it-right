@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Col, Row, Tooltip } from 'reactstrap'
+import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
   checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation
@@ -499,7 +499,7 @@ function Pipe(props) {
               </Row>
               <Row className={''}>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Outer Diameter(cm)`}
                     name={'OuterDiameter'}
                     Controller={Controller}
@@ -519,7 +519,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Thickness(mm)`}
                     name={'Thickness'}
                     Controller={Controller}
@@ -540,7 +540,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness / 10)" />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Inner Diameter(cm)`}
                     name={'InnerDiameter'}
                     Controller={Controller}
@@ -560,7 +560,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Length of Sheet(cm)`}
                     name={'SheetLength'}
                     Controller={Controller}
@@ -580,7 +580,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Length of Part(cm)`}
                     name={'PartLength'}
                     Controller={Controller}
@@ -601,7 +601,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = (Length(Sheet) / Length(Part))" />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label="No. of Parts/Sheet"
                     name={'NumberOfPartsPerSheet'}
                     Controller={Controller}
@@ -620,7 +620,7 @@ function Pipe(props) {
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
 
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Length of Scrap(cm)`}
                     name={'ScrapLength'}
                     Controller={Controller}
@@ -638,7 +638,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-sheet'} tooltipText={tooltipMessageForSheetWeight('Sheet')} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Weight of Sheet(g)`}
                     name={'WeightofSheet'}
                     Controller={Controller}
@@ -656,7 +656,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-part'} tooltipText={tooltipMessageForSheetWeight('Part')} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Weight of Part(g)`}
                     name={'WeightofPart'}
                     Controller={Controller}
@@ -674,7 +674,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-scrap'} tooltipText={tooltipMessageForSheetWeight('Scrap')} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Weight of Scrap(g)`}
                     name={'WeightofScrap'}
                     Controller={Controller}
@@ -729,7 +729,7 @@ function Pipe(props) {
               <Row>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'surface-area'} tooltipText={surfaceaAreaTooltipMessage} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={UnitFormat()}
                     name={'NetSurfaceArea'}
                     Controller={Controller}
@@ -768,7 +768,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Weight of Part"} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}
                     Controller={Controller}
@@ -788,7 +788,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeightOfSheet'}
                     Controller={Controller}
@@ -797,7 +797,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                      validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                       max: {
                         value: getValues('GrossWeight'),
                         message: 'Finish weight should not be greater than gross weight.'

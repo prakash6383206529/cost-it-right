@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -108,7 +108,6 @@ function Coil(props) {
     }, [])
 
     useEffect(() => {
-        console.log('errors: ', errors);
         if (Number(getValues('FinishWeight')) < Number(getValues('GrossWeight'))) {
             delete errors.FinishWeight
             setRerender(!reRender)
@@ -205,12 +204,7 @@ function Coil(props) {
      */
     const onSubmit = debounce(handleSubmit((values) => {
         setIsDisable(true)
-        if (Number(getValues('FinishWeight')) === Number(0)) {
-            Toaster.warning('Finish Weight can not be zero')
-            setIsDisable(false)
-            setValue('FinishWeight', '')
-            return false
-        }
+
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
@@ -299,7 +293,7 @@ function Coil(props) {
                             </Row>
                             <Row className={''}>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Strip Width(cm)`}
                                         name={'StripWidth'}
                                         Controller={Controller}
@@ -319,7 +313,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Thickness(mm)`}
                                         name={'Thickness'}
                                         Controller={Controller}
@@ -339,7 +333,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Pitch(cm)`}
                                         name={'Pitch'}
                                         Controller={Controller}
@@ -359,7 +353,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Cavity`}
                                         name={'Cavity'}
                                         Controller={Controller}
@@ -383,7 +377,7 @@ function Coil(props) {
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={UnitFormat()}
                                         name={'NetSurfaceArea'}
                                         Controller={Controller}
@@ -422,7 +416,7 @@ function Coil(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * (Thickness * Strip Width * Pitch) / 10)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
                                         id={'coil-gross-weight'}
@@ -439,7 +433,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
                                         name={'FinishWeight'}
                                         Controller={Controller}
@@ -448,7 +442,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                             max: {
                                                 value: getValues('GrossWeight'),
                                                 message: 'Finish weight should not be greater than gross weight.'
