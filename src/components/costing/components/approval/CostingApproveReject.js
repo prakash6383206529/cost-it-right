@@ -276,46 +276,8 @@ function CostingApproveReject(props) {
           if (!IsNotFinalLevel) {
             Toaster.success('The costing approved successfully')
             if (!props.isApprovalListing) {
-              let pushdata = {
-                effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
-                vendorCode: props?.vendorCodeForSAP ? props?.vendorCodeForSAP : '',
-                materialNumber: dataSend[1].PartNumber,
-                netPrice: dataSend[0].NewPOPrice,
-                plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
-                currencyKey: INR,
-                materialGroup: approvalData[0]?.MaterialGroup?.label ? approvalData[0]?.MaterialGroup.label.split('(')[0] : '',
-                taxCode: 'YW',
-                basicUOM: "NO",
-                purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
-                purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
-                CostingId: approvalData[0].CostingId,
-                DecimalOption: approvalData[0].DecimalOption,
-                InfoToConditions: props?.conditionInfo,
-                TokenNumber: approvalData[0]?.ApprovalNumber,
-                IsRequestForCosting: true
-                // Quantity: quantity
-                // effectiveDate: '11/30/2021',
-                // vendorCode: '203670',
-                // materialNumber: 'S07004-003A0Y',
-                // materialGroup: 'M089',
-                // taxCode: 'YW',
-                // plant: '1401',
-                // netPrice: '30.00',
-                // currencyKey: 'INR',
-                // basicUOM: 'NO',
-                // purchasingOrg: 'MRPL',
-                // purchasingGroup: 'O02'
 
-              }
-              let obj = {
-                LoggedInUserId: loggedInUserId(),
-                Request: [pushdata]
-              }
-              dispatch(approvalPushedOnSap(obj, res => {
-                if (res && res.status && (res.status === 200 || res.status === 204)) {
-                  Toaster.success('Approval pushed successfully.')
-                }
-              }))
+
               if (approvalData[0].IsNFRPFS2PushedButtonShow && approvalData[0].NfrGroupIdForPFS2 === null && !props.IsRegularized) {
                 pushtoNFrForPFS2()
 
