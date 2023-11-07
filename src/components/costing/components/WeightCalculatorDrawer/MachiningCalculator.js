@@ -2,12 +2,12 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { NumberFieldHookForm } from '../../../layout/HookFormInputs'
+import { TextFieldHookForm } from '../../../layout/HookFormInputs'
 import { checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import { saveRawMaterialCalculationForMachining } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
-import { checkForDecimalAndNull, nonZero, decimalNumberLimit, positiveAndDecimalNumber } from '../../../../helper/validation'
+import { checkForDecimalAndNull, decimalNumberLimit, positiveAndDecimalNumber, number } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
 
 function Machining(props) {
@@ -119,7 +119,7 @@ function Machining(props) {
 
                             <Row className={''}>
                                 <Col md="3" >
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Outer Diameter (mm)`}
                                         name={'outerDiameter'}
                                         Controller={Controller}
@@ -128,7 +128,7 @@ function Machining(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, positiveAndDecimalNumber, decimalNumberLimit },
+                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -139,7 +139,7 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Thickness (mm)`}
                                         name={'thickness'}
                                         Controller={Controller}
@@ -148,7 +148,7 @@ function Machining(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            validate: { positiveAndDecimalNumber, decimalNumberLimit },
+                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -159,7 +159,7 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Net Length (mm)`}
                                         name={'netLength'}
                                         Controller={Controller}
@@ -168,7 +168,7 @@ function Machining(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            validate: { positiveAndDecimalNumber, decimalNumberLimit },
+                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -181,7 +181,7 @@ function Machining(props) {
                             </Row>
                             <Row className={'mt25'}>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Parting Margin (mm)`}
                                         name={'partingMargin'}
                                         Controller={Controller}
@@ -190,7 +190,7 @@ function Machining(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            validate: { positiveAndDecimalNumber, decimalNumberLimit },
+                                            validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -202,7 +202,7 @@ function Machining(props) {
                                 </Col>
                                 <Col md="3" >
                                     <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-length-machining'} tooltipText={'Gross Length (mm) = (Net Length (mm) + Parting Margin (mm))'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Gross Length (mm)`}
                                         name={'grossLength'}
                                         id={'gross-length-machining'}
@@ -220,7 +220,7 @@ function Machining(props) {
                                 </Col>
                                 <Col md="3" >
                                     <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'piece-per-meter-length'} tooltipText={'Pc/meter = (1000/Gross Length (mm))'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Pc/meter`}
                                         name={'piecePerMeter'}
                                         id={'piece-per-meter-length'}
@@ -237,7 +237,7 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3" >
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`RM Rate(INR)`}
                                         name={'rmRate'}
                                         Controller={Controller}
@@ -254,7 +254,7 @@ function Machining(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'rm-per-piece'} tooltipText={'RM/Pc = RM Rate(INR)/(Pc/meter)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`RM/Pc`}
                                         name={'rmPerPiece'}
                                         Controller={Controller}
@@ -272,7 +272,7 @@ function Machining(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'net-rm-cost'} tooltipText={'Net RM Cost = RM/Pc'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Net RM Cost`}
                                         name={'netRm'}
                                         Controller={Controller}
