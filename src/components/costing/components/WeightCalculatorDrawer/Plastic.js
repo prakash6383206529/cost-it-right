@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
-import { NumberFieldHookForm } from '../../../layout/HookFormInputs'
+import { TextFieldHookForm } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
@@ -62,7 +62,7 @@ function Plastic(props) {
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
   })
   const [isDisable, setIsDisable] = useState(false)
-
+  const [reRender, setRerender] = useState(false)
 
   const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
     mode: 'onChange',
@@ -105,7 +105,12 @@ function Plastic(props) {
 
   }, [])
 
-
+  useEffect(() => {
+    if (Number(getValues('finishedWeight')) < Number(dataToSend.grossWeight)) {
+      delete errors.finishedWeight
+      setRerender(!reRender)
+    }
+  }, [dataToSend.grossWeight])
 
   /**
    * @method calculateGrossWeight
@@ -239,7 +244,7 @@ function Plastic(props) {
 
               <Row className={''}>
                 <Col md="3" >
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Gross Weight(Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
@@ -259,7 +264,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Runner Weight`}
                     name={'runnerWeight'}
                     Controller={Controller}
@@ -299,7 +304,7 @@ function Plastic(props) {
               <Row className={'mt25'}>
                 <Col md="3" >
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Total Gross Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Total Gross Weight(Kg)`}
                     name={'grossWeight'}
                     id={'gross-weight-plastic'}
@@ -316,7 +321,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3" >
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Finished Weight(Kg)`}
                     name={'finishedWeight'}
                     Controller={Controller}
@@ -324,7 +329,7 @@ function Plastic(props) {
                     register={register}
                     mandatory={true}
                     rules={{
-                      required: false,
+                      required: true,
                       validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                       max: {
                         value: getValues('grossWeight'),
@@ -341,7 +346,7 @@ function Plastic(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Total Gross weight - Finish Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
                     Controller={Controller}
@@ -362,7 +367,7 @@ function Plastic(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = (RM Rate * Burning Loss Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Burning Allowance`}
                     name={'burningAllownace'}
                     Controller={Controller}
@@ -380,7 +385,7 @@ function Plastic(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = (Total Gross Weight * RM Rate + Burning Allowance)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`RM Cost`}
                     name={'rmCost'}
                     Controller={Controller}
@@ -398,7 +403,7 @@ function Plastic(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-plastic'} tooltipText={'Scrap Cost = (Scrap Rate * Scrap Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Scrap Cost`}
                     name={'scrapCost'}
                     Controller={Controller}
@@ -417,7 +422,7 @@ function Plastic(props) {
 
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = (RM Cost + Scrap Cost)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     // Confirm this name from tanmay sir
                     label={`Net RM Cost`}
                     name={'materialCost'}

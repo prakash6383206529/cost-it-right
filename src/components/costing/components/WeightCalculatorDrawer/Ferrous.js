@@ -2,14 +2,14 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Col, Row, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../common/Tooltip'
-import { number, percentageLimitValidation, checkWhiteSpaces, positiveAndDecimalNumber, decimalAndNumberValidation } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalAndNumberValidation } from "../../../../helper/validation";
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -31,6 +31,7 @@ function Ferrous(props) {
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
     const [inputFinishWeight, setInputFinishWeight] = useState(0)
+    const [reRender, setRerender] = useState(false)
     const { rmRowData, rmData, CostingViewMode, item } = props
 
     const rmGridFields = 'rmGridFields';
@@ -105,13 +106,19 @@ function Ferrous(props) {
         }
     }, [fieldValues])
 
+    useEffect(() => {
+        if (Number(getValues('finishedWeight')) < Number(getValues("castingWeight"))) {
+            delete errors.finishedWeight
+            setRerender(!reRender)
+        }
+    }, [getValues('castingWeight')])
+
     const totalPercentageValue = () => {
         let sum = 0
         rmData && rmData.map((item, index) => {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
-
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
@@ -276,7 +283,7 @@ function Ferrous(props) {
                                                     <td>{item.RMRate}</td>
                                                     <td>{item.ScrapRate}</td>
                                                     <td>
-                                                        <NumberFieldHookForm
+                                                        <TextFieldHookForm
                                                             label=""
                                                             name={`${rmGridFields}.${index}.Percentage`}
                                                             Controller={Controller}
@@ -284,10 +291,7 @@ function Ferrous(props) {
                                                             register={register}
                                                             rules={{
                                                                 required: true,
-                                                                pattern: {
-                                                                    value: /^[0-9]\d*(\.\d+)?$/i,
-                                                                    message: 'Invalid Number.',
-                                                                },
+                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                 max: {
                                                                     value: 100,
                                                                     message: 'Percentage should be less than 100'
@@ -311,7 +315,7 @@ function Ferrous(props) {
                             <Row className={"mx-0"}>
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = (RM1 Rate * Percentage / 100) + (RM2 Rate * Percentage / 100) + ....'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Net RM Rate`}
                                         name={'NetRMRate'}
                                         Controller={Controller}
@@ -329,7 +333,7 @@ function Ferrous(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'srape-rate-ferrous'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Net Scrap Rate`}
                                         name={'NetScrapRate'}
                                         id={'srape-rate-ferrous'}
@@ -346,16 +350,16 @@ function Ferrous(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Casting Weight(kg)`}
                                         name={'castingWeight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { positiveAndDecimalNumber, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
 
                                         }}
                                         handleChange={() => { }}
@@ -385,7 +389,7 @@ function Ferrous(props) {
                             <Row className={'mt25 mx-0'}>
                                 <Col md="3" >
                                     <TooltipCustom disabledIcon={true} id={'gross-weight-ferrous'} tooltipText={'Gross Weight = (Casting Weight + Net Loss Weight)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Gross Weight(Kg)`}
                                         id={'gross-weight-ferrous'}
                                         name={'grossWeight'}
@@ -393,15 +397,6 @@ function Ferrous(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        rules={{
-                                            required: false,
-                                            pattern: {
-
-                                                value: /^[0-9]\d*(\.\d+)?$/i,
-                                                message: 'Invalid Number.',
-                                            },
-
-                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -411,16 +406,16 @@ function Ferrous(props) {
                                     />
                                 </Col>
                                 <Col md="3" >
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Finished Weight(Kg)`}
                                         name={'finishedWeight'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
-                                        mandatory={false}
+                                        mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { positiveAndDecimalNumber, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                             max: {
                                                 value: getValues("castingWeight"),
                                                 message: 'Finish weight should not be greater than casting weight.'
@@ -437,7 +432,7 @@ function Ferrous(props) {
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'scrap-weight-ferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Scrap Weight(Kg)`}
                                         name={'scrapWeight'}
                                         id={'scrap-weight-ferrous'}
@@ -465,7 +460,7 @@ function Ferrous(props) {
                                         register={register}
                                         mandatory={false}
                                         rules={{
-                                            required: true,
+                                            required: false,
                                             validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                             max: {
                                                 value: 100,
@@ -484,7 +479,7 @@ function Ferrous(props) {
 
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-ferrous'} tooltipText={'Scrap Cost = (Scrap Weight * Scrap Recovery Percentage * Scrap Rate / 100)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Scrap Cost`}
                                         name={'scrapCost'}
                                         id={'scrap-cost-ferrous'}
@@ -504,7 +499,7 @@ function Ferrous(props) {
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         // Confirm this name from tanmay sir
                                         label={`Net RM Cost`}
                                         name={'NetRMCost'}

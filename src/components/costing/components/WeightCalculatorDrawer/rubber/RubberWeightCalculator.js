@@ -38,7 +38,6 @@ function RubberWeightCalculator(props) {
     const [totalAdditionalRmCost, setTotalAdditionalRmCost] = useState('')
     const [rejectionCostType, setRejectionCostType] = useState('')
     const [disablePercentFields, setDisablePercentFields] = useState(false)
-    const [percentage, setPercentage] = useState(0)
     const [reRender, setRerender] = useState(false)
 
     const rmGridFields = 'rmGridFields';
@@ -155,19 +154,12 @@ function RubberWeightCalculator(props) {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
-        setPercentage(sum)
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
     const percentageChange = (e) => {
-        setTimeout(() => {
-            if (totalPercentageValue() > 100) {
-                Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
-                return false
-            }
-            calculateNetSCrapRate()
-            calculateNetRmRate()
-        }, 300);
+        calculateNetSCrapRate()
+        calculateNetRmRate()
     }
     const calculateNetRmRate = () => {
 
@@ -213,7 +205,7 @@ function RubberWeightCalculator(props) {
 
     const onSubmit = debounce(handleSubmit((values) => {
         if (totalPercentageValue() !== 100) {
-            Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
+            Toaster.warning(`Total percentage is ${totalPercentageValue()}%, must be 100% to save the values`)
             return false
         }
 
@@ -431,7 +423,7 @@ function RubberWeightCalculator(props) {
     }
 
     const addRow = () => {
-        if (Object.keys(errors).length > 0) {
+        if (errors.valueAdditional) {
             return false
         }
         let temp = tableData ? [...tableData] : []
@@ -470,6 +462,7 @@ function RubberWeightCalculator(props) {
             }
         })
         setTableData(temp)
+        resetTable()
     }
 
 
@@ -548,7 +541,7 @@ function RubberWeightCalculator(props) {
                                                     <td>{item.RMRate}</td>
                                                     <td>{item.ScrapRate}</td>
                                                     <td>
-                                                        <NumberFieldHookForm
+                                                        <TextFieldHookForm
                                                             label=""
                                                             name={`${rmGridFields}.${index}.Percentage`}
                                                             Controller={Controller}
@@ -556,10 +549,7 @@ function RubberWeightCalculator(props) {
                                                             register={register}
                                                             rules={{
                                                                 required: true,
-                                                                pattern: {
-                                                                    value: /^[0-9]\d*(\.\d+)?$/i,
-                                                                    message: 'Invalid Number.',
-                                                                },
+                                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                                 max: {
                                                                     value: 100,
                                                                     message: 'Percentage should be less than 100'
@@ -583,7 +573,7 @@ function RubberWeightCalculator(props) {
                             <Row className={"mx-0"}>
                                 <Col md="3">
                                     <TooltipCustom width={"240px"} disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = (RM1 Rate * Percentage / 100) + (RM2 Rate * Percentage / 100) + ....'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Gross RM Rate`}
                                         name={'grossRMRate'}
                                         Controller={Controller}
@@ -650,7 +640,7 @@ function RubberWeightCalculator(props) {
                                     </Col>
 
                                     <Col md="3">
-                                        <NumberFieldHookForm
+                                        <TextFieldHookForm
                                             label={`Value`}
                                             id={'valueAdditional'}
                                             name={'valueAdditional'}
@@ -673,7 +663,7 @@ function RubberWeightCalculator(props) {
 
                                     <Col md="3">
                                         <TooltipCustom disabledIcon={true} width={"230px"} id={'applicablityAdditional'} tooltipText={`Applicablity Cost = Gross RM Rate`} />
-                                        <NumberFieldHookForm
+                                        <TextFieldHookForm
                                             label={`Applicablity Cost`}
                                             id={'applicablityAdditional'}
                                             name={'applicablityAdditional'}
@@ -692,7 +682,7 @@ function RubberWeightCalculator(props) {
 
                                     <Col md="3">
                                         <TooltipCustom disabledIcon={true} id={'netCostAdditional'} tooltipText={`Net Cost = Value${additionalCostType.label === 'Fixed' ? "" : " * Applicablity Cost / 100"}`} />
-                                        <NumberFieldHookForm
+                                        <TextFieldHookForm
                                             label={`Net Cost`}
                                             id={'netCostAdditional'}
                                             name={'netCostAdditional'}
@@ -718,7 +708,7 @@ function RubberWeightCalculator(props) {
                                                         className={'btn btn-primary pull-left mr5'}
                                                         onClick={() => addRow()}
                                                     >
-                                                        <div className={"plus"}></div>Update
+                                                        Update
                                                     </button>
 
                                                     <button
@@ -821,7 +811,7 @@ function RubberWeightCalculator(props) {
                             <Row className={'mt25 mx-0'}>
                                 <Col md="3" >
                                     <TooltipCustom disabledIcon={true} width={"240px"} id={'netTotalRmRate'} tooltipText={`Net RM Rate = Gross RM Rate + Total Additional RM Cost`} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Net RM Rate`}
                                         name={'netTotalRmRate'}
                                         id={'netTotalRmRate'}
@@ -849,7 +839,7 @@ function RubberWeightCalculator(props) {
 
                                 <Col md="3" >
                                     <TooltipCustom width={"240px"} disabledIcon={true} id={'NetScrapRate'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Net Scrap Rate`}
                                         name={'NetScrapRate'}
                                         id={'NetScrapRate'}
@@ -867,7 +857,7 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Gross Weight (Kg)`}
                                         name={'grossWeight'}
                                         Controller={Controller}
@@ -917,7 +907,7 @@ function RubberWeightCalculator(props) {
 
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap weight = (Gross weight - Finish weight)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Scrap Weight (Kg)`}
                                         name={'scrapWeight'}
                                         id={'scrap-weight'}
@@ -934,7 +924,7 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Scrap Recovery Percentage`}
                                         name={'scrapRecoveryPercentage'}
                                         Controller={Controller}
@@ -959,7 +949,7 @@ function RubberWeightCalculator(props) {
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'scrapcost'} tooltipText={'Scrap cost = (Net Scrap Rate*Scrap Weight*Scrap Recovery Percentage)/100'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Scrap Cost`}
                                         name={'scrapCost'}
                                         id={'scrapcost'}
@@ -977,7 +967,7 @@ function RubberWeightCalculator(props) {
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'rmcost'} tooltipText={'RM Cost = (Gross Weight *Net RM Rate)-Scrap Cost '} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`RM Cost`}
                                         name={'rmCost'}
                                         id={'rmcost'}
@@ -1021,7 +1011,7 @@ function RubberWeightCalculator(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Rejection value`}
                                         id={'rejectionValue'}
                                         name={'rejectionValue'}
@@ -1045,7 +1035,7 @@ function RubberWeightCalculator(props) {
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'rejectionCost'} tooltipText={`Rejection Cost = Rejection Value${rejectionCostType === 'Fixed' ? "" : " * RM Cost / 100"}`} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Rejection Cost`}
                                         id={'rejectionCost'}
                                         name={'rejectionCost'}
@@ -1072,7 +1062,7 @@ function RubberWeightCalculator(props) {
 
                                 <Col md="3">
                                     <TooltipCustom width={"240px"} disabledIcon={true} id={'netRmc'} tooltipText={'Net RMC = RM Cost + Rejection Cost'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Net RMC`}
                                         id={'netRmc'}
                                         name={'netRmc'}
