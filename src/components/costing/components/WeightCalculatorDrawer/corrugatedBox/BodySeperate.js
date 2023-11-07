@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Col, Row } from "reactstrap";
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import TooltipCustom from "../../../../common/Tooltip";
-import { NumberFieldHookForm, TextFieldHookForm } from "../../../../layout/HookFormInputs";
+import { TextFieldHookForm } from "../../../../layout/HookFormInputs";
 import { checkForDecimalAndNull, maxPercentValue } from '../../../../../helper/validation'
 import { BoxDetails, ProcessAndRejection, RMSection } from "./CorrugatedSections";
 import HeaderTitle from "../../../../common/HeaderTitle";
@@ -11,7 +11,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { debounce } from "lodash";
 import Toaster from "../../../../common/Toaster";
 import { saveRawMaterialCalculationForCorrugatedBox } from "../../../actions/CostWorking";
-import { loggedInUserId } from "../../../../../helper";
+import { loggedInUserId, number, checkWhiteSpaces, decimalAndNumberValidation } from "../../../../../helper";
 
 const BodySeperate = (props) => {
     const { corrugatedDataObj } = useSelector(state => state.costing)
@@ -22,13 +22,13 @@ const BodySeperate = (props) => {
     const [grossWeight, setGrossWeight] = useState(0)
     const defaultValues = {
         width_sheet_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
-        cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
+        cuttingAllowanceForWidth: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
         width_inc_cutting_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
         length_sheet_body: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '',
         cuttingAllowanceForLength: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceLength !== null ? WeightCalculatorRequest.CuttingAllowanceLength : '',
         length_inc_cutting_allowance_body: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheetIncCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheetIncCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         paper_process: WeightCalculatorRequest && WeightCalculatorRequest.PaperWeightAndProcessRejectionSum !== null ? checkForDecimalAndNull(WeightCalculatorRequest.PaperWeightAndProcessRejectionSum, initialConfiguration.NoOfDecimalForInputOutput) : '',
-        fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage !== null ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        fluteTypePercent: WeightCalculatorRequest && WeightCalculatorRequest.FluteTypePercentage ? checkForDecimalAndNull(WeightCalculatorRequest.FluteTypePercentage, initialConfiguration.NoOfDecimalForInputOutput) : '',
         round_length_inc_cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         round_off_length_body: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffLengthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
         round_width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance !== null ? checkForDecimalAndNull(WeightCalculatorRequest.RoundOffWidthSheetInchCuttingAllowance, initialConfiguration.NoOfDecimalForInputOutput) : '',
@@ -43,13 +43,13 @@ const BodySeperate = (props) => {
     const dispatch = useDispatch()
     const fieldValues = useWatch({
         control,
-        name: ['cutting_allowance', 'cuttingAllowanceForLength', 'fluteTypePercent', 'width_sheet_body', 'length_sheet_body'],
+        name: ['cuttingAllowanceForWidth', 'cuttingAllowanceForLength', 'fluteTypePercent', 'width_sheet_body', 'length_sheet_body'],
     })
     useEffect(() => {
         setBodySeparateData();
     }, [corrugatedDataObj])
     useEffect(() => {
-        let widthOfCuttingAllowance = Number(getValues('width_sheet_body')) + (2 * Number(getValues('cutting_allowance')));
+        let widthOfCuttingAllowance = Number(getValues('width_sheet_body')) + (2 * Number(getValues('cuttingAllowanceForWidth')));
         let heightOfCuttingAllowance = Number(getValues('length_sheet_body')) + (2 * Number(getValues('cuttingAllowanceForLength')));
         if (corrugatedDataObj) {
             const { RMData } = corrugatedDataObj
@@ -93,7 +93,7 @@ const BodySeperate = (props) => {
             RawMaterialCost: grossWeight.paperWithDecimal * rmRowData.RMRate,  //(GROSS WEIGHT * RM RATE)
             GrossWeight: grossWeight.paperWithDecimal,
             FinishWeight: grossWeight.paperWithDecimal,
-            CuttingAllowanceWidth: Values.cutting_allowance,
+            CuttingAllowanceWidth: Values.cuttingAllowanceForWidth,
             CuttingAllowanceLength: Values.cuttingAllowanceForLength,
             NoOfPly: RMData.noOfPly,
             GSM: RMData.gsm,
@@ -135,8 +135,8 @@ const BodySeperate = (props) => {
         <>
             <form noValidate className="form"
                 onKeyDown={(e) => { handleKeyDown(e, onSubmit.bind(this)); }}>
-                <RMSection WeightCalculatorRequest={WeightCalculatorRequest} CostingViewMode={CostingViewMode} />
-                <BoxDetails CostingViewMode={CostingViewMode} WeightCalculatorRequest={WeightCalculatorRequest} />
+                <RMSection WeightCalculatorRequest={WeightCalculatorRequest} CostingViewMode={CostingViewMode} errors={errors} Controller={Controller} register={register} control={control} />
+                <BoxDetails CostingViewMode={CostingViewMode} WeightCalculatorRequest={WeightCalculatorRequest} errors={errors} Controller={Controller} register={register} control={control} />
                 <Row className={'mt15 corrugated-box-label-wrapper'}>
                     <Col md="12" className={''}>
                         <HeaderTitle className="border-bottom"
@@ -146,7 +146,7 @@ const BodySeperate = (props) => {
                     </Col>
                     <Col md="3">
                         <TooltipCustom disabledIcon={true} id={'sheet-width'} tooltipText={'Width  = (Width Box + (Height Box * 2)) / 25.4'} />
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                             label={`Width (inch)`}
                             name={'width_sheet_body'}
                             Controller={Controller}
@@ -167,31 +167,27 @@ const BodySeperate = (props) => {
                     <Col md="3">
                         <TextFieldHookForm
                             label={`Cutting Allowance`}
-                            name={'cutting_allowance'}
+                            name={'cuttingAllowanceForWidth'}
                             Controller={Controller}
                             control={control}
                             register={register}
                             mandatory={true}
                             rules={{
                                 required: true,
-                                pattern: {
-                                    value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                    message: 'Maximum length for integer is 4 and for decimal is 6',
-                                },
-
+                                validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                             }}
                             handleChange={() => { }}
                             defaultValue={''}
                             className=""
                             customClassName={'withBorder'}
-                            errors={errors.cutting_allowance}
+                            errors={errors.cuttingAllowanceForWidth}
                             disabled={CostingViewMode ? CostingViewMode : false}
                         />
                     </Col>
 
                     <Col md="3">
                         <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width + (2 * Cutting Allowance))'} />
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                             label={`Width + Cutting allowance`}
                             name={'width_inc_cutting_body'}
                             Controller={Controller}
@@ -199,13 +195,6 @@ const BodySeperate = (props) => {
                             register={register}
                             id={'sheet-width-cutting'}
                             mandatory={false}
-                            rules={{
-                                required: false,
-                                pattern: {
-                                    value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                    message: 'Maximum length for integer is 4 and for decimal is 6',
-                                },
-                            }}
                             handleChange={() => { }}
                             defaultValue={''}
                             className=""
@@ -224,13 +213,6 @@ const BodySeperate = (props) => {
                             control={control}
                             register={register}
                             mandatory={false}
-                            rules={{
-                                required: false,
-                                pattern: {
-                                    value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                    message: 'Maximum length for integer is 4 and for decimal is 6',
-                                },
-                            }}
                             handleChange={() => { }}
                             defaultValue={''}
                             className=""
@@ -242,7 +224,7 @@ const BodySeperate = (props) => {
 
                     <Col md="3" className='mt-2'>
                         <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet =  (Length Box + (Height Box * 2)) / 25.4'} />
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                             label={`Length (inch)`}
                             name={'length_sheet_body'}
                             Controller={Controller}
@@ -250,13 +232,6 @@ const BodySeperate = (props) => {
                             register={register}
                             id={'length-sheet'}
                             mandatory={false}
-                            rules={{
-                                required: true,
-                                pattern: {
-                                    value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                    message: 'Maximum length for integer is 4 and for decimal is 6',
-                                },
-                            }}
                             handleChange={() => { }}
                             defaultValue={''}
                             className=""
@@ -276,11 +251,7 @@ const BodySeperate = (props) => {
                             mandatory={true}
                             rules={{
                                 required: true,
-                                pattern: {
-                                    value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                    message: 'Maximum length for integer is 4 and for decimal is 6',
-                                },
-
+                                validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                             }}
                             handleChange={() => { }}
                             defaultValue={''}
@@ -293,7 +264,7 @@ const BodySeperate = (props) => {
 
                     <Col md="3" className='mt-2'>
                         <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length + (2 * Cutting Allowance)) '} />
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                             label={`Length + Cutting allowance`}
                             name={'length_inc_cutting_allowance_body'}
                             Controller={Controller}
@@ -301,14 +272,6 @@ const BodySeperate = (props) => {
                             id={'length-cutting-al'}
                             register={register}
                             mandatory={false}
-                            rules={{
-                                required: false,
-                                pattern: {
-                                    value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                    message: 'Maximum length for integer is 4 and for decimal is 6',
-                                },
-
-                            }}
                             handleChange={() => { }}
                             defaultValue={''}
                             className=""
@@ -329,14 +292,6 @@ const BodySeperate = (props) => {
                             control={control}
                             register={register}
                             mandatory={false}
-                            rules={{
-                                required: false,
-                                pattern: {
-                                    value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                    message: 'Maximum length for integer is 4 and for decimal is 6',
-                                },
-
-                            }}
                             handleChange={() => { }}
                             defaultValue={''}
                             className=""
@@ -346,7 +301,7 @@ const BodySeperate = (props) => {
                         />
                     </Col>
                     <Col md="3">
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                             label={`Flute Type Percentage`}
                             name={'fluteTypePercent'}
                             Controller={Controller}
@@ -355,7 +310,7 @@ const BodySeperate = (props) => {
                             mandatory={true}
                             rules={{
                                 required: true,
-                                validate: { maxPercentValue },
+                                validate: { number, maxPercentValue },
                                 pattern: {
                                     value: /^\d{0,4}(\.\d{0,6})?$/i,
                                     message: 'Maximum length for integer is 4 and for decimal is 6',

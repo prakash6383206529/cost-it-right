@@ -4,13 +4,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForCorrugatedBox } from '../../../actions/CostWorking'
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, number, checkWhiteSpaces, decimalAndNumberValidation, noDecimal, maxLength7 } from '../../../../../helper'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../../common/Tooltip'
-import { maxPercentValue } from '../../../../../helper/validation'
 import { ceilByMultiple } from '../../../../../helper/util'
 
 function CorrugatedBox(props) {
@@ -26,7 +25,7 @@ function CorrugatedBox(props) {
     const defaultValues = {
         no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? WeightCalculatorRequest.NoOfPly : '',
         gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? WeightCalculatorRequest.GSM : '',
-        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
         bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForInputOutput) : '',
         length_box: WeightCalculatorRequest && WeightCalculatorRequest.LengthBox !== null ? WeightCalculatorRequest.LengthBox : '',
         width_box: WeightCalculatorRequest && WeightCalculatorRequest.WidthBox !== null ? WeightCalculatorRequest.WidthBox : '',
@@ -34,7 +33,7 @@ function CorrugatedBox(props) {
         stiching_length: WeightCalculatorRequest && WeightCalculatorRequest.StitchingLengthInchPerJoint !== null ? WeightCalculatorRequest.StitchingLengthInchPerJoint : '',
         width_sheet: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
         width_sheet_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.WidthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '', //
-        cutting_allowance: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
+        cuttingAllowanceForWidth: WeightCalculatorRequest && WeightCalculatorRequest.CuttingAllowanceWidth !== undefined ? WeightCalculatorRequest.CuttingAllowanceWidth : '',
         width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
         width_inc_cutting_body: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
         length_sheet: WeightCalculatorRequest && WeightCalculatorRequest.LengthSheet !== null ? checkForDecimalAndNull(WeightCalculatorRequest.LengthSheet, initialConfiguration.NoOfDecimalForInputOutput) : '',
@@ -72,7 +71,7 @@ function CorrugatedBox(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'width_box', 'cutting_allowance', 'cuttingAllowanceForLength', 'fluteTypePercent'],
+        name: ['no_of_ply', 'gsm', 'bursting_factor', 'length_box', 'height_box', 'width_box', 'cuttingAllowanceForWidth', 'cuttingAllowanceForLength', 'fluteTypePercent'],
     })
 
     useEffect(() => {
@@ -131,7 +130,7 @@ function CorrugatedBox(props) {
 
     const setWidthCuttingAllowance = () => {
         let data1 = {
-            cuttingAllowance: getValues('cutting_allowance'),
+            cuttingAllowance: getValues('cuttingAllowanceForWidth'),
             widthSheet: dataSend.widthSheetWithDecimal
 
         }
@@ -178,7 +177,7 @@ function CorrugatedBox(props) {
             round_length_inc_cutting_allowance: dataSend.round_length_inc_cutting_allowance,
             no_of_ply: getValues('no_of_ply'),
             gsm: getValues('gsm'),
-            cuttingAllowance: getValues('cutting_allowance'),
+            cuttingAllowance: getValues('cuttingAllowanceForWidth'),
             widthSheet: dataSend.widthSheetWithDecimal
         }
 
@@ -208,7 +207,7 @@ function CorrugatedBox(props) {
     const bodySeparatorCalculations = (value) => {
 
         if (value === false) {
-            setValue('cutting_allowance', "")
+            setValue('cuttingAllowanceForWidth', "")
             setTimeout(() => {
                 setValue('fluteTypePercent', "")
                 setValue('cuttingAllowanceForLength', "")
@@ -225,13 +224,13 @@ function CorrugatedBox(props) {
                 no_of_ply: getValues('no_of_ply'),
                 gsm: getValues('gsm'),
                 // ftp: Number(getValues('fluteTypePercent')), //FTP
-                cutting_allowance: Number(getValues('cutting_allowance')),
+                cuttingAllowanceForWidth: Number(getValues('cuttingAllowanceForWidth')),
                 cutting_allowance_length: Number(getValues('cuttingAllowanceForLength'))
             }
 
             // const fluteTypePercent = checkForNull(data.ftp)
             let widthSheet = (Number(data.widthBox) + (parseInt(data.heightBox) * 2)) / 25.4;
-            let width_inc_cutting = widthSheet + (2 * (data.cutting_allowance))
+            let width_inc_cutting = widthSheet + (2 * (data.cuttingAllowanceForWidth))
 
             const lengthSheet = (Number(data.lengthBox) + (parseInt(data.heightBox) * 2)) / 25.4;
             let length_inc_cutting_allowance = lengthSheet + (2 * (data.cutting_allowance_length))
@@ -285,7 +284,7 @@ function CorrugatedBox(props) {
             FinishWeight: dataSend.PaperWeightAndProcessRejectionSum,
             BurstingFactor: Values.bursting_factor,
             BurstingStrength: dataSend.burstingStrengthWithDecimal,
-            CuttingAllowanceWidth: Values.cutting_allowance,
+            CuttingAllowanceWidth: Values.cuttingAllowanceForWidth,
             CuttingAllowanceLength: Values.cuttingAllowanceForLength,
             GSM: Values.gsm,
             HeightBox: Values.height_box,
@@ -348,10 +347,7 @@ function CorrugatedBox(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -371,11 +367,7 @@ function CorrugatedBox(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -396,11 +388,7 @@ function CorrugatedBox(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -412,7 +400,7 @@ function CorrugatedBox(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'bursting-strength'} tooltipText={'Bursting Strength = (No. of Ply * GSM * Busting Factor) / 1000'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Bursting Strength`}
                                         name={'bursting_strength'}
                                         Controller={Controller}
@@ -451,11 +439,7 @@ function CorrugatedBox(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -475,11 +459,7 @@ function CorrugatedBox(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -501,11 +481,7 @@ function CorrugatedBox(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -526,12 +502,8 @@ function CorrugatedBox(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
-
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -557,7 +529,7 @@ function CorrugatedBox(props) {
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'sheet-width'} tooltipText={'Width Sheet = (Width Box + Height Box) / 25.4'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Width(Sheet)(inch)`}
                                         name={'width_sheet'}
                                         Controller={Controller}
@@ -577,31 +549,27 @@ function CorrugatedBox(props) {
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Cutting Allowance`}
-                                        name={'cutting_allowance'}
+                                        name={'cuttingAllowanceForWidth'}
                                         Controller={Controller}
                                         control={control}
                                         register={register}
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
-                                        errors={errors.cutting_allowance}
+                                        errors={errors.cuttingAllowanceForWidth}
                                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
                                     />
                                 </Col>
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Width Cutting Allowance = (Width Sheet + (2 * Cutting Allowance))'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Width + Cutting Allowance`}
                                         name={'width_inc_cutting'}
                                         Controller={Controller}
@@ -611,10 +579,7 @@ function CorrugatedBox(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -627,7 +592,7 @@ function CorrugatedBox(props) {
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'round_sheet-width-cutting'} tooltipClass={'weight-of-sheet'} tooltipText={'Round Off (Width Cutting Allowance)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Round Off (Width + Cutting Allowance)`}
                                         name={'round_width_inc_cutting'}
                                         Controller={Controller}
@@ -637,10 +602,7 @@ function CorrugatedBox(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -653,7 +615,7 @@ function CorrugatedBox(props) {
 
                                 <Col md="3" className='mt-2'>
                                     <TooltipCustom disabledIcon={true} id={'length-sheet'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Sheet = (2 * (Length Box + Width Box) + Length Sheet) / 25.4'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Length(Sheet)(inch)`}
                                         name={'length_sheet'}
                                         Controller={Controller}
@@ -663,10 +625,7 @@ function CorrugatedBox(props) {
                                         mandatory={false}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -686,11 +645,7 @@ function CorrugatedBox(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -703,7 +658,7 @@ function CorrugatedBox(props) {
 
                                 <Col md="3" className='mt-2'>
                                     <TooltipCustom disabledIcon={true} id={'length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Length Cutting Allowance = (Length Sheet + (2 * Cutting Allowance))'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Length + Cutting allowance`}
                                         name={'length_inc_cutting_allowance'}
                                         Controller={Controller}
@@ -713,11 +668,7 @@ function CorrugatedBox(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -730,7 +681,7 @@ function CorrugatedBox(props) {
 
                                 <Col md="3" className='mt-2'>
                                     <TooltipCustom disabledIcon={true} id={'round_length-cutting-al'} tooltipClass={'weight-of-sheet'} tooltipText={'Quarter Round Off (Length + Cutting Allowance)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Quarter Round Off (Length + Cutting Allowance)`}
                                         name={'round_length_inc_cutting_allowance'}
                                         Controller={Controller}
@@ -740,11 +691,7 @@ function CorrugatedBox(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -756,7 +703,7 @@ function CorrugatedBox(props) {
                                 </Col>
                             </Row>
                             {/* <Col md="3">   //This field is no more in the RM calculator Sheet
-                                <NumberFieldHookForm
+                                <TextFieldHookForm
                                     label={`Flute Type Percentage`}
                                     name={'fluteTypePercent'}
                                     Controller={Controller}
@@ -790,7 +737,7 @@ function CorrugatedBox(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'paper-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Paper wt. + Process Rejection = (Width Cutting Allowance * Length Cutting Allowance * No. of Ply * GSM / 1550) / 1000'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={'Paper wt.+ Process Rejection(Kg)'}
                                         name={'paper_process'}
                                         Controller={Controller}
@@ -800,11 +747,7 @@ function CorrugatedBox(props) {
                                         id={'paper-width'}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
