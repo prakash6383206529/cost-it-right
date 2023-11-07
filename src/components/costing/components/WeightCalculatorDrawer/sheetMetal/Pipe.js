@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { Col, Row, Tooltip } from 'reactstrap'
+import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
-  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm, setValueAccToUOM,
+  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation
 } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -157,17 +157,16 @@ function Pipe(props) {
       }
     }
   }, [isOneSide])
+
+  useEffect(() => {
+    if (Number(getValues('FinishWeightOfSheet')) < Number(getValues('GrossWeight'))) {
+      delete errors.FinishWeightOfSheet
+    }
+  }, [getValues('GrossWeight'), fieldValues])
+
   const setFinishWeight = (e) => {
     const FinishWeightOfSheet = e.target.value
-    const grossWeight = checkForNull(getValues('GrossWeight'))
-    if (e.target.value > grossWeight) {
-      setTimeout(() => {
-        setValue('FinishWeightOfSheet', 0)
-      }, 200);
 
-      Toaster.warning('Finish Weight should not be greater than gross weight')
-      return false
-    }
     switch (UOMDimension.label) {
       case G:
         setTimeout(() => {
@@ -196,10 +195,6 @@ function Pipe(props) {
   const calculateInnerDiameter = () => {
     let ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(convertmmTocm(fieldValues.Thickness));
 
-    if (ID < 0) {
-      Toaster.warning('Inner diameter cannot be negative')
-      ID = 0
-    }
     setValue('InnerDiameter', checkForDecimalAndNull(ID, localStorage.NoOfDecimalForInputOutput))
     const updatedValue = dataToSend
     updatedValue.InnerDiameter = ID
@@ -401,10 +396,10 @@ function Pipe(props) {
    */
   const onSubmit = debounce(handleSubmit((values) => {
     setIsDisable(true)
-    if (Number(getValues('FinishWeightOfSheet')) === Number(0)) {
-      Toaster.warning('Finish Weight can not be zero')
+
+    if (Number(getValues('InnerDiameter') < 0)) {
+      Toaster.warning('Inner diameter cannot be negative')
       setIsDisable(false)
-      setValue('FinishWeightOfSheet', '')
       return false
     }
     if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
@@ -504,7 +499,7 @@ function Pipe(props) {
               </Row>
               <Row className={''}>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Outer Diameter(cm)`}
                     name={'OuterDiameter'}
                     Controller={Controller}
@@ -513,11 +508,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
-                      validate: { nonZero }
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -528,7 +519,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Thickness(mm)`}
                     name={'Thickness'}
                     Controller={Controller}
@@ -537,11 +528,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
-                      validate: { nonZero }
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -553,7 +540,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness / 10)" />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Inner Diameter(cm)`}
                     name={'InnerDiameter'}
                     Controller={Controller}
@@ -573,7 +560,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Length of Sheet(cm)`}
                     name={'SheetLength'}
                     Controller={Controller}
@@ -582,10 +569,7 @@ function Pipe(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
+                      validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -596,7 +580,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Length of Part(cm)`}
                     name={'PartLength'}
                     Controller={Controller}
@@ -605,11 +589,7 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
-                      validate: { nonZero }
+                      validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -621,7 +601,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = (Length(Sheet) / Length(Part))" />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label="No. of Parts/Sheet"
                     name={'NumberOfPartsPerSheet'}
                     Controller={Controller}
@@ -629,13 +609,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'length-of-part'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -647,7 +620,7 @@ function Pipe(props) {
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
 
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Length of Scrap(cm)`}
                     name={'ScrapLength'}
                     Controller={Controller}
@@ -655,13 +628,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'length-of-scrap'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -672,7 +638,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-sheet'} tooltipText={tooltipMessageForSheetWeight('Sheet')} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Weight of Sheet(g)`}
                     name={'WeightofSheet'}
                     Controller={Controller}
@@ -680,13 +646,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'weight-of-sheet'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -697,7 +656,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-part'} tooltipText={tooltipMessageForSheetWeight('Part')} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Weight of Part(g)`}
                     name={'WeightofPart'}
                     Controller={Controller}
@@ -705,13 +664,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'weight-of-part'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -722,7 +674,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-scrap'} tooltipText={tooltipMessageForSheetWeight('Scrap')} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Weight of Scrap(g)`}
                     name={'WeightofScrap'}
                     Controller={Controller}
@@ -730,13 +682,6 @@ function Pipe(props) {
                     register={register}
                     mandatory={false}
                     id={'weight-of-scrap'}
-                    rules={{
-                      required: false,
-                      pattern: {
-                        value: /^[0-9]\d*(\.\d+)?$/i,
-                        message: 'Invalid Number.',
-                      },
-                    }}
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -784,7 +729,7 @@ function Pipe(props) {
               <Row>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'surface-area'} tooltipText={surfaceaAreaTooltipMessage} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={UnitFormat()}
                     name={'NetSurfaceArea'}
                     Controller={Controller}
@@ -823,7 +768,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={"Weight of Part"} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Gross Weight(${UOMDimension.label})`}
                     name={'GrossWeight'}
                     Controller={Controller}
@@ -843,7 +788,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeightOfSheet'}
                     Controller={Controller}
@@ -852,9 +797,10 @@ function Pipe(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
+                      validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                      max: {
+                        value: getValues('GrossWeight'),
+                        message: 'Finish weight should not be greater than gross weight.'
                       },
                     }}
                     handleChange={setFinishWeight}
