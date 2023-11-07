@@ -125,7 +125,9 @@ class AddBOPImport extends Component {
       FinalConditionCostBase: '',
       FinalConditionCostCurrency: '',
       DropdownChanged: true,
+      toolTipTextObject: {},
       toolTipTextNetCost: {},
+      toolTipTextBasicPrice: {},
     }
   }
   /**
@@ -140,13 +142,19 @@ class AddBOPImport extends Component {
     }
   }
 
-  toolTipCommon = (currency) => {
+  toolTipNetCost = (currency) => {
+    const { costingTypeId } = this.state
     const { initialConfiguration } = this.props
     let obj = {}
-    if (initialConfiguration.IsBasicRateAndCostingConditionVisible) {
+    if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       obj = {
         toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Price (${currency?.label})  + Condition Cost (${currency?.label})`,
         toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
+      }
+    } else if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
+      obj = {
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency?.label}) = Basic Rate (${currency?.label}) / Minimum Order Quantity`,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
       }
     } else {
       obj = {
@@ -155,6 +163,21 @@ class AddBOPImport extends Component {
       }
     }
     this.setState({ toolTipTextNetCost: obj })
+    return obj
+  }
+
+  toolTipBasicPrice = (currency) => {
+    const { initialConfiguration } = this.props
+    const { costingTypeId, currencyValue } = this.state
+    let obj = {}
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      obj = {
+        toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) / Minimum Order Quantity) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})  `,
+        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+      }
+    }
+    this.setState({ toolTipTextBasicPrice: obj })
+    return obj
   }
 
   /**
@@ -169,7 +192,6 @@ class AddBOPImport extends Component {
         this.props.getCityByCountry(cityId, 0, () => { })
       })
     }
-    this.toolTipCommon(currency)
     this.props.getIncoTermSelectList(() => { })
     // this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
@@ -217,10 +239,23 @@ class AddBOPImport extends Component {
 
   }
 
+  setInStateToolTip() {
+    const { currency, currencyValue } = this.state
+    const { initialConfiguration } = this.props
+
+    const obj = {
+      ...this.state.toolTipTextObject, netCostCurrency: this.toolTipNetCost(currency)?.toolTipTextNetCostSelectedCurrency, netCostBaseCurrency: this.toolTipNetCost(currency)?.toolTipTextNetCostBaseCurrency,
+      basicPriceCurrency: this.toolTipBasicPrice(currency)?.toolTipTextBasicPriceSelectedCurrency, basicPriceBaseCurrency: this.toolTipBasicPrice(currency)?.toolTipTextBasicPriceBaseCurrency
+      , toolTipTextBasicRateSelectedCurrency: `Basic Rate (${initialConfiguration?.BaseCurrency}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})`
+    }
+    this.setState({ toolTipTextObject: obj })
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (!this.props.data.isViewMode && !this.state.isCallCalculation) {
       if (this.props.fieldsObj !== prevProps.fieldsObj) {
+        this.setInStateToolTip()
         this.handleCalculation()
       }
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
@@ -408,6 +443,8 @@ class AddBOPImport extends Component {
             }, () => {
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
+                this.toolTipNetCost({ label: Data.Currency, value: Data.CurrencyId })
+                this.toolTipBasicPrice({ label: Data.Currency, value: Data.CurrencyId })
                 if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
                   this.commonFunction()
                 }
@@ -680,7 +717,8 @@ class AddBOPImport extends Component {
           this.setState({ currencyValue: checkForNull(res.data.Data.CurrencyExchangeRate) });
         });
       }
-      this.toolTipCommon(newValue)
+      this.toolTipNetCost(newValue)
+      this.toolTipBasicPrice(newValue)
       this.setState({ showCurrency: true })
       this.setState({ currency: newValue, }, () => {
         setTimeout(() => {
@@ -713,21 +751,29 @@ class AddBOPImport extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props;
+    const { costingTypeId } = this.state;
 
     let basicRateBase = this.convertIntoBase(fieldsObj?.BasicRateCurrency)
     this.props.change('BasicRateBase', checkForDecimalAndNull(basicRateBase, initialConfiguration.NoOfDecimalForPrice));
-    let basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
-    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
+    const basicPriceCurrencyTemp = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
+    const basicPriceBaseCurrencyTemp = this.convertIntoBase(basicPriceCurrencyTemp)
 
-    let basicPriceBase = this.convertIntoBase(basicPriceCurrency)
-    this.props.change('BasicPriceBase', checkForDecimalAndNull(basicPriceBase, initialConfiguration.NoOfDecimalForPrice));
+    let basicPriceCurrency
+    let basicPriceBase
+    if (costingTypeId === ZBCTypeId) {
+      basicPriceCurrency = checkForNull(basicPriceCurrencyTemp)
+      this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
+
+      basicPriceBase = basicPriceBaseCurrencyTemp
+      this.props.change('BasicPriceBase', checkForDecimalAndNull(basicPriceBase, initialConfiguration.NoOfDecimalForPrice));
+    }
 
     let conditionList = this.recalculateConditions(basicPriceCurrency, basicPriceBase)
 
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
     const sumCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCostBase = checkForNull(sumBase) + checkForNull(basicPriceBase)
-    let netLandedCostCurrency = checkForNull(sumCurrency) + checkForNull(basicPriceCurrency)
+    let netLandedCostBase = checkForNull(sumBase) + checkForNull(basicPriceBaseCurrencyTemp)
+    let netLandedCostCurrency = checkForNull(sumCurrency) + checkForNull(basicPriceCurrencyTemp)
     this.props.change('FinalConditionCostBase', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice))
@@ -1006,8 +1052,13 @@ class AddBOPImport extends Component {
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
-      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
+      let basicPriceCurrency
+      let basicPriceCurrencyTemp = checkForNull(fieldsObj?.BasicRateCurrency) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
+      if (costingTypeId === ZBCTypeId) {
+        basicPriceCurrency = basicPriceCurrencyTemp
+      }
+      const netLandedCostCurrency = checkForNull(basicPriceCurrencyTemp) + checkForNull(FinalConditionCostCurrency)
+
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
 
@@ -1022,7 +1073,7 @@ class AddBOPImport extends Component {
 
         checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost) && DropdownChanged) {
         this.setState({ isEditBuffer: true })
-        Toaster.warning('Please change data to send RM for approval')
+        Toaster.warning('Please change data to send BOP for approval')
         return false
       }
       //  ELSE: CHANGE
@@ -1140,7 +1191,7 @@ class AddBOPImport extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceCurrency, FinalBasicPriceBase, toolTipTextNetCost } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceCurrency, FinalBasicPriceBase, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1622,6 +1673,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom id="bop-basic-rate-currency" tooltipText={toolTipTextObject?.toolTipTextBasicRateSelectedCurrency} />
                               <Field
                                 label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
                                 name={"BasicRateBase"}
@@ -1638,6 +1690,7 @@ class AddBOPImport extends Component {
                           </>}
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                             <Col md="3">
+                              <TooltipCustom id="bop-basic-currency" tooltipText={toolTipTextBasicPrice?.toolTipTextBasicPriceSelectedCurrency} />
                               <Field
                                 label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                 name={"BasicPriceCurrency"}
@@ -1652,6 +1705,7 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom id="bop-basic-base-currency" tooltipText={toolTipTextBasicPrice?.toolTipTextBasicPriceBaseCurrency} />
                               <Field
                                 label={`Basic Price/${this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label} (${initialConfiguration?.BaseCurrency})`}
                                 name={"BasicPriceBase"}
@@ -1973,6 +2027,8 @@ class AddBOPImport extends Component {
                 costingTypeId={this.state.costingTypeId}
                 levelDetails={this.state.levelDetails}
                 isFromImport={true}
+                toolTipTextObject={this.state.toolTipTextObject}
+                UOM={this.state.UOM}
               />
             )
           }

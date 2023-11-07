@@ -160,6 +160,7 @@ class AddRMDomestic extends Component {
       FinalJaliScrapCostCurrency: '',
       FinalFreightCostCurrency: '',
       FinalShearingCostCurrency: '',
+      toolTipTextObject: {}
 
     }
   }
@@ -177,11 +178,13 @@ class AddRMDomestic extends Component {
   netCostTitle() {
     const { initialConfiguration } = this.props
     const { costingTypeId } = this.state
+    let text = ''
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-      return `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
+      text = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
     } else {
-      return `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+      text = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
     }
+    return text
   }
 
   basicPriceTitle() {
@@ -229,14 +232,21 @@ class AddRMDomestic extends Component {
     }
   }
 
+  setInStateToolTip() {
+    const obj = { ...this.state.toolTipTextObject, netCostCurrency: this.netCostTitle(), basicPriceCurrency: this.basicPriceTitle() }
+    this.setState({ toolTipTextObject: obj })
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
 
 
     if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
+      this.setInStateToolTip()
       this.calculateNetCost()
     }
     if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isEditFlag && this.state.isEditBuffer) {
+      this.setInStateToolTip()
       this.calculateNetCost()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -518,14 +528,18 @@ class AddRMDomestic extends Component {
 
 
     const { fieldsObj, initialConfiguration } = this.props;
-    const { FinalConditionCostCurrency, DataToChange, isEditFlag } = this.state
+    const { FinalConditionCostCurrency, DataToChange, isEditFlag, costingTypeId } = this.state
 
-    const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
+    const basicPriceCurrencyTemp = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
+    let basicPriceCurrency
+    if (costingTypeId === ZBCTypeId) {
+      basicPriceCurrency = basicPriceCurrencyTemp
+    }
 
     let conditionList = this.recalculateConditions(basicPriceCurrency)
 
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCostCurrency = checkForNull(sumBase) + checkForNull(basicPriceCurrency)
+    let netLandedCostCurrency = checkForNull(sumBase) + checkForNull(basicPriceCurrencyTemp)
 
     this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice))
@@ -1281,8 +1295,12 @@ class AddRMDomestic extends Component {
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
-      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
+      const basicPriceCurrencyTemp = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
+      let basicPriceCurrency
+      if (costingTypeId === ZBCTypeId) {
+        basicPriceCurrency = basicPriceCurrencyTemp
+      }
+      const netLandedCostCurrency = checkForNull(basicPriceCurrencyTemp) + checkForNull(FinalConditionCostCurrency)
 
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
@@ -2300,6 +2318,7 @@ class AddRMDomestic extends Component {
                 currency={{ label: initialConfiguration?.BaseCurrency, value: initialConfiguration?.BaseCurrency }}
                 Technology={this.state.Technology}
                 showScrapKeys={showScrapKeys}
+                toolTipTextObject={this.state.toolTipTextObject}
               />
             )
           }

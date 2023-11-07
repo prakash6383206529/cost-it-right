@@ -155,6 +155,7 @@ class AddRMImport extends Component {
       FinalFreightCostCurrency: '',
       FinalShearingCostBase: '',
       FinalShearingCostCurrency: '',
+      toolTipTextObject: {}
     }
   }
 
@@ -176,7 +177,7 @@ class AddRMImport extends Component {
     const { initialConfiguration } = this.props
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       let obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Price (${currency.label === undefined ? 'Currency' : currency?.label})  + Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) + Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
         toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
       }
       return obj
@@ -184,8 +185,8 @@ class AddRMImport extends Component {
     } else {
 
       let obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})) * Currency Rate (${currency.label === undefined ? '-' : currencyValue}) `,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
       }
       return obj
     }
@@ -193,17 +194,52 @@ class AddRMImport extends Component {
 
   basicPriceTitle() {
     const { initialConfiguration } = this.props
-    const { costingTypeId, currency, currencyValue } = this.state
+    const { costingTypeId, currency } = this.state
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       let obj = {
-        toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})  `,
-        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+        toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
+        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
       }
       return obj
 
     }
   }
 
+  allFieldsInfoIcon(setData) {
+    const { initialConfiguration } = this.props
+    const { currency, showScrapKeys, currencyValue, toolTipTextObject } = this.state
+    let obj = {
+      toolTipTextCutOffBaseCurrency: `Cut Off Price (${initialConfiguration?.BaseCurrency}) = Cut Off Price (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextBasicRateBaseCurrency: `Basic Rate (${initialConfiguration?.BaseCurrency}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextFreightCostBaseCurrency: `Freight Cost (${initialConfiguration?.BaseCurrency}) = Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextShearingCostBaseCurrency: `Shearing Cost (${initialConfiguration?.BaseCurrency}) = Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextConditionCostBaseCurrency: `Condition Cost (${initialConfiguration?.BaseCurrency}) = Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+    }
+    if (showScrapKeys?.showCircleJali) {
+      obj = {
+        ...obj,
+        toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) = Circle Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextJaliScrapCostBaseCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Jali Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      }
+    } else if (showScrapKeys?.showForging) {
+      obj = {
+        ...obj,
+        toolTipTextForgingScrapCostBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}) = Forging Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) = Machining Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      }
+    } else if (showScrapKeys?.showScrap) {
+      obj = {
+        ...obj,
+        toolTipTextScrapCostBaseCurrency: `Scrap Rate (${initialConfiguration?.BaseCurrency}) = Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      }
+    }
+    if (setData) {
+      setTimeout(() => {
+        this.setState({ toolTipTextObject: { ...toolTipTextObject, ...obj } })
+      }, 100);
+    }
+    return obj
+  }
 
   /**
    * @method componentDidMount
@@ -282,13 +318,25 @@ class AddRMImport extends Component {
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 
+  setInStateToolTip() {
+    const obj = {
+      ...this.state.toolTipTextObject, netCostCurrency: this.netCostTitle()?.toolTipTextNetCostSelectedCurrency, netCostBaseCurrency: this.netCostTitle()?.toolTipTextNetCostBaseCurrency,
+      basicPriceCurrency: this.basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency, basicPriceBaseCurrency: this.basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency
+    }
+    this.setState({ toolTipTextObject: obj })
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && !this.state.isCallCalculation) {
       if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
+        this.allFieldsInfoIcon(true)
+        this.setInStateToolTip()
         this.handleNetCost()
       }
       if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isEditFlag && this.state.isEditBuffer) {
+        this.allFieldsInfoIcon(true)
+        this.setInStateToolTip()
         this.handleNetCost()
       }
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -369,6 +417,9 @@ class AddRMImport extends Component {
   handleTechnologyChange = (newValue) => {
     this.checkTechnology(newValue)
     this.setState({ RawMaterial: [], isDropDownChanged: true, Technology: newValue })
+    setTimeout(() => {
+      this.allFieldsInfoIcon(true)
+    }, 300);
   }
   /**
 * @method handleClient
@@ -570,7 +621,7 @@ class AddRMImport extends Component {
   handleNetCost = () => {
 
     const { fieldsObj, initialConfiguration } = this.props;
-    const { FinalConditionCostCurrency, DataToChange, isEditFlag } = this.state
+    const { FinalConditionCostCurrency, DataToChange, isEditFlag, costingTypeId } = this.state
 
 
     const cutOffPriceBase = this.convertIntoBase(fieldsObj?.cutOffPrice)
@@ -600,10 +651,18 @@ class AddRMImport extends Component {
     const shearingCost = this.convertIntoBase(fieldsObj?.ShearingCost)
     this.props.change('ShearingCostBase', checkForDecimalAndNull(shearingCost, initialConfiguration.NoOfDecimalForPrice));
 
-    const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
-    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
+    const basicPriceCurrencyTemp = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
+    const basicPriceBaseTemp = this.convertIntoBase(basicPriceCurrencyTemp)
 
-    const basicPriceBase = this.convertIntoBase(basicPriceCurrency)
+    let basicPriceCurrency
+    let basicPriceBase
+
+    if (costingTypeId === ZBCTypeId) {
+      basicPriceCurrency = basicPriceCurrencyTemp
+      basicPriceBase = basicPriceBaseTemp
+    }
+
+    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
     this.props.change('BasicPriceBase', checkForDecimalAndNull(basicPriceBase, initialConfiguration.NoOfDecimalForPrice));
 
     let conditionList = this.recalculateConditions(basicPriceCurrency, basicPriceBase)
@@ -614,15 +673,16 @@ class AddRMImport extends Component {
     const sumCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
     this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
 
-    const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(sumCurrency)
-    const netLandedCostBase = checkForNull(basicPriceBase) + checkForNull(sumBase)
+    const netLandedCostCurrency = checkForNull(basicPriceCurrencyTemp) + checkForNull(sumCurrency)
+    const netLandedCostBase = checkForNull(basicPriceBaseTemp) + checkForNull(sumBase)
     this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice));
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice));
 
     if (isEditFlag && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
       && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
       && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
-      && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
+      && checkForNull(fieldsObj?.cutOffPrice) === checkForNull(DataToChange?.CutOffPrice) && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) &&
+      checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
     } else {
@@ -814,9 +874,11 @@ class AddRMImport extends Component {
               showCurrency: true,
               currencyValue: Data.CurrencyExchangeRate,
             }, () => {
+              this.setInStateToolTip()
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
                 if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+                  this.allFieldsInfoIcon(true)
                   this.commonFunction()
                 }
               }, 500)
@@ -1436,8 +1498,12 @@ class AddRMImport extends Component {
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
-      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
+      const basicPriceCurrencyTemp = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
+      let basicPriceCurrency
+      if (costingTypeId === ZBCTypeId) {
+        basicPriceCurrency = basicPriceCurrencyTemp
+      }
+      const netLandedCostCurrency = checkForNull(basicPriceCurrencyTemp) + checkForNull(FinalConditionCostCurrency)
 
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
@@ -1549,7 +1615,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval,
-      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceCurrency, FinalBasicPriceBase, showScrapKeys, } = this.state;
+      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceCurrency, FinalBasicPriceBase, showScrapKeys, toolTipTextObject } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -2032,6 +2098,7 @@ class AddRMImport extends Component {
                             </Col>
 
                             <Col md="3">
+                              <TooltipCustom id="rm-cut-off-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCutOffBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                 name={"cutOffPriceBase"}
@@ -2061,6 +2128,7 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom id="rm-basic-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                 name={"BasicRateBase"}
@@ -2095,6 +2163,7 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-scrap-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"ScrapRateBase"}
@@ -2129,6 +2198,7 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-forging-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"ForgingScrapBase"}
@@ -2162,6 +2232,7 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-machining-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextMachiningScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"MachiningScrapBase"}
@@ -2195,6 +2266,7 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-circle-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCircleScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"CircleScrapCostBase"}
@@ -2226,6 +2298,7 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-jali-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"JaliScrapCostBase"}
@@ -2259,6 +2332,7 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom id="rm-freight-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                 name={"FreightChargeBase"}
@@ -2292,6 +2366,7 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom id="rm-shearing-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                 name={"ShearingCostBase"}
@@ -2363,6 +2438,7 @@ class AddRMImport extends Component {
                               <Col md="3">
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
+                                    <TooltipCustom id="rm-condition-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextConditionCostBaseCurrency} />
                                     <Field
                                       label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
                                       name={"FinalConditionCostBase"}
@@ -2679,6 +2755,8 @@ class AddRMImport extends Component {
                 showExtraCost={this.state.showExtraCost}
                 Technology={this.state.Technology}
                 showScrapKeys={showScrapKeys}
+                toolTipTextObject={this.state.toolTipTextObject}
+                currency={this.state.currency}
               />
             )
           }
