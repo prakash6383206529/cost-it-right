@@ -2013,7 +2013,7 @@ class AddBOPImport extends Component {
               currency={this.state.currency}
               currencyValue={this.state.currencyValue}
               basicRateCurrency={FinalBasicPriceSelectedCurrency}
-              basicRateBaseCurrency={FinalBasicPriceBaseCurrency}
+              basicRateBase={FinalBasicPriceBaseCurrency}
               isFromImport={true}
             />
           }

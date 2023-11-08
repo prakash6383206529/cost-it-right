@@ -2732,7 +2732,7 @@ class AddRMImport extends Component {
               anchor={'right'}
               basicRate={BasicPriceINR}
               basicRateCurrency={FinalBasicPriceSelectedCurrency}
-              basicRateBaseCurrency={FinalBasicPriceBaseCurrency}
+              basicRateBase={FinalBasicPriceBaseCurrency}
               ViewMode={((isEditFlag && isRMAssociated) || isViewFlag)}
               isFromMaster={true}
               currency={this.state.currency}
