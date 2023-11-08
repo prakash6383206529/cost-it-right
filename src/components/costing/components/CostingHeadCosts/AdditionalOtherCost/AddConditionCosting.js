@@ -373,7 +373,7 @@ function AddConditionCosting(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.Cost}
+                                            errors={errors.CostCurrency}
                                             disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                         />
                                     </Col>
@@ -395,7 +395,7 @@ function AddConditionCosting(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.Cost}
+                                            errors={errors.CostBase}
                                             disabled={props.ViewMode || disableTotalCost || disableBase}
                                         />
                                     </Col>}
