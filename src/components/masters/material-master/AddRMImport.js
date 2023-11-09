@@ -1939,7 +1939,7 @@ class AddRMImport extends Component {
                                       <input
                                         type="checkbox"
                                         checked={this.state.HasDifferentSource}
-                                        disabled={costingTypeId === VBCTypeId ? true : false}
+                                        disabled={(costingTypeId === VBCTypeId || isViewFlag) ? true : false}
                                       />
                                       <span
                                         className=" before-box"
