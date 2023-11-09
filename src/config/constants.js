@@ -1963,6 +1963,7 @@ export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
 export const FORGET_PASSWORD = '/forget-password'
+export const SAP_PUSH_DETAIL = '/sap-push-detail'
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
