@@ -18,7 +18,7 @@ import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helpe
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, INR, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE } from '../../../config/constants';
+import { FILE_URL, ZBC, BOP_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, BOP_VENDOR_TYPE } from '../../../config/constants';
 import AddBOPCategory from './AddBOPCategory';
 import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
@@ -422,7 +422,6 @@ class AddBOPImport extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-            const { costingTypeId, vendorName, client } = this.state
 
             this.setState({
               IsFinancialDataChanged: false,
@@ -987,7 +986,7 @@ class AddBOPImport extends Component {
   */
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, costingTypeId, client, vendorName, currency, sourceLocation, BOPID, isEditFlag, files, effectiveDate, oldDate,
-      UOM, DataToChange, DropdownChange, uploadAttachements, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
+      UOM, DataToChange, isDateChange, IsFinancialDataChanged, incoTerm, paymentTerm, isClientVendorBOP, isTechnologyVisible,
       Technology, FinalConditionCostBaseCurrency, FinalConditionCostSelectedCurrency, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, FinalNetCostSelectedCurrency, FinalNetCostBaseCurrency,
       FinalBasicRateBaseCurrency, FinalBasicRateSelectedCurrency, currencyValue, DropdownChanged } = this.state;
     const { fieldsObj, isBOPAssociated } = this.props
@@ -1844,12 +1843,12 @@ class AddBOPImport extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to 3 files)
+                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
                             </label>
-                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
@@ -1857,7 +1856,7 @@ class AddBOPImport extends Component {
                                 accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 disabled={isViewMode}
                                 initialFiles={this.state.initialFiles}
-                                maxFiles={3}
+                                maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
                                   extra.reject ? (
