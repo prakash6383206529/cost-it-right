@@ -75,6 +75,8 @@ import OutsourcingListing from './masters/outsourcing-master/OutsourcingListing'
 import CostingForm from './costing/components'
 import SimulationForm from './simulation/components'
 import ResetPassword from './login/ResetPassword'
+
+import SAPDetailList from './masters/sap-detail/SAPDetailList'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -394,6 +396,7 @@ class Main extends Component {
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
                     <Route path="/got-given-summary-details-report" component={GotGivenReport} />
                     <Route path="/out-sourcing-master" component={AuthMiddleware(OutsourcingListing, OUTSOURCING)} />
+                    <Route path="/sap-push-detail" component={SAPDetailList} />
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}

@@ -24,7 +24,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `http://10.10.0.43/RohitCIR/api/v1`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
-// const BASE_URL = `https://apiinsightdev.unominda.com/api/v1`;
+// const BASE_URL = `http://10.10.1.100:10132/api/v1`;
 // const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
@@ -1066,7 +1066,17 @@ export const API = {
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
   getNfrAnnualForecastQuantity: `${BASE_URL}/rfq-quotation/get-nfr-annual-forecast-quantity`,
   getNFRRMList: `${BASE_URL}/rfq-quotation/get-nfr-rm-list`,
-  getNFRPartRMList: `${BASE_URL}/rfq-quotation/get-nfr-part-raw-material-details`
+  getNFRPartRMList: `${BASE_URL}/rfq-quotation/get-nfr-part-raw-material-details`,
+
+
+
+  // SAP PUSH Detail
+  saveSAPDetail: `${BASE_URL}/sap-sync/save-sap-push-details`,
+  updateSAPDetail: `${BASE_URL}/sap-sync/update-sap-push-details`,
+  getPurcahseOrganisationByPlant: `${BASE_URL}/sap-sync/get-purchase-organization-by-plant-id`,
+  getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
+  getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
+  getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 }
 
 //Api constants
@@ -2713,4 +2723,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.265.2";
+export const VERSION = "V2.1.265.3";
