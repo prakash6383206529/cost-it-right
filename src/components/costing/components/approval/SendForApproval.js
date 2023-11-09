@@ -273,6 +273,7 @@ const SendForApproval = (props) => {
         if (tempDropdownList?.length === 0) {
           setShowValidation(true)
         } else {
+          setApprover(Data.Text)
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
         }
         setApprovalDropDown(tempDropdownList)
