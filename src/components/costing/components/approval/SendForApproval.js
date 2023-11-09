@@ -757,7 +757,7 @@ const SendForApproval = (props) => {
       setIsVerifyImpactDrawer(false);
     }
   }
-  const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
+  const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
 
   return (
     <Fragment>
