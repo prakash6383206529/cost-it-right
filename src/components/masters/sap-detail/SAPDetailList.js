@@ -2,15 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import $ from "jquery";
-import Toaster from '../../common/Toaster';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import Switch from "react-switch";
-
 import { searchNocontentFilter, } from '../../../helper/util';
-import { loggedInUserId } from '../../../helper/auth';
 import LoaderCustom from '../../common/LoaderCustom';
-
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
@@ -38,14 +33,12 @@ const SAPDetailList = (props) => {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isLoader, setIsLoader] = useState(false);
     const [renderState, setRenderState] = useState(true);
-    const [showPopup, setShowPopup] = useState(false);
-    const [deletedId, setDeletedId] = useState('');
+
     const [selectedRowData, setSelectedRowData] = useState(false);
-    const [showPopupToggle, setShowPopupToggle] = useState(false);
+
     const [noData, setNoData] = useState(false);
     const [dataCount, setDataCount] = useState(0);
-    const [cellValue, setCellValue] = useState('');
-    const [cellData, setCellData] = useState('');
+
     const [gridLoad, setGridLoad] = useState(false);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const dispatch = useDispatch();
@@ -82,7 +75,7 @@ const SAPDetailList = (props) => {
 
     /**
      * @method getTableListData
-     * @description Get user list data
+     * @description GET SAP DETAIL LIST
      */
     const getTableListData = () => {
         // setIsLoader(true)
@@ -93,7 +86,6 @@ const SAPDetailList = (props) => {
                 setIsLoader(false)
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList
-                console.log('Data: ', Data);
                 setTableData(Data)
                 setIsLoader(false)
                 setRenderState(!renderState)
@@ -110,17 +102,14 @@ const SAPDetailList = (props) => {
      * @description confirm edit item
      */
     const editItemDetails = (cellValue, rowData) => {
-
         setIsEditFlag(true);
         setIsOpenDrawer(true);
         setID(rowData.SapPushDetailId);
-
     }
-
 
     /**
     * @method buttonFormatter
-    * @description Renders buttons
+    * @description Renders Edit buttons
     */
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -129,7 +118,6 @@ const SAPDetailList = (props) => {
         return (
             <>
                 {<button title='Edit' className="Edit" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
-                {/* {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />} */}
             </>
         )
     };
@@ -145,13 +133,14 @@ const SAPDetailList = (props) => {
     }
 
 
-
-
     const formToggle = () => {
         $("html,body").animate({ scrollTop: 0 }, "slow");
         setIsOpenDrawer(true)
     }
-
+    /**
+     * @method closeSAPDetailDrawer
+     * @description Close SAP Detail drawet
+    */
     const closeSAPDetailDrawer = (type) => {
         setIsOpenDrawer(false)
         setIsEditFlag(false)
@@ -191,17 +180,10 @@ const SAPDetailList = (props) => {
     }
 
 
-    const isFirstColumn = (params) => {
-        var displayedColumns = params.columnApi.getAllDisplayedColumns();
-        var thisIsFirstColumn = displayedColumns[0] === params.column;
-        return thisIsFirstColumn;
-
-    }
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: false,
-
         floatingFilter: true
     };
 

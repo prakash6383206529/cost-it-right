@@ -16,12 +16,9 @@ import Toaster from '../../common/Toaster';
 import Button from '../../layout/Button';
 
 function SAPPushDetail(props) {
-
     const { isEditFlag, id } = props
-    console.log('id: ', id);
-    const [vendor, setVendor] = useState([]);
-    const [data, setData] = useState({});
-    const [DestinationPlant, setDestinationPlant] = useState([]);
+
+    const [data, setData] = useState({})
     //dropdown loader 
     const [inputLoader, setInputLoader] = useState(false)
     const [VendorInputLoader, setVendorInputLoader] = useState(false)
@@ -34,18 +31,12 @@ function SAPPushDetail(props) {
 
     })
 
-    const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
     const plantSelectList = useSelector(state => state.comman.plantSelectList);
+    const VendorLoaderObj = { isLoader: VendorInputLoader }
+    const plantLoaderObj = { isLoader: inputLoader }
 
     useEffect(() => {
-        const { vbcVendorGrid } = props;
         dispatch(getPlantSelectListByType(ZBC, '', () => { }))
-
-        let tempArr = [];
-        vbcVendorGrid && vbcVendorGrid.map(el => {
-            tempArr.push(el.VendorId)
-            return null;
-        })
         if (isEditFlag) {
             dispatch(getSAPDetailById(id, res => {
                 if (res?.data?.Result) {
@@ -63,21 +54,14 @@ function SAPPushDetail(props) {
             reactLocalStorage?.setObject('vendorData', [])
             reactLocalStorage?.setObject('partData', [])
         }
-
-
-
     }, []);
-
-
 
     /**
     * @method renderListing
     * @description RENDER LISTING IN DROPDOWN
     */
     const renderListing = (label) => {
-
         const temp = [];
-
         if (label === 'DestinationPlant') {
             plantSelectList && plantSelectList.map((item) => {
                 if (item.PlantId === '0') return false
@@ -88,13 +72,10 @@ function SAPPushDetail(props) {
         }
     }
 
-
-
-
-
-
-    const VendorLoaderObj = { isLoader: VendorInputLoader }
-    const plantLoaderObj = { isLoader: inputLoader }
+    /**
+     * @method filterList
+     * @description For Filtering the vendor from List on the basis of input given in vendor dropdown
+    */
     const filterList = async (inputValue) => {
         if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
             inputValue = inputValue.trim();
@@ -124,6 +105,10 @@ function SAPPushDetail(props) {
         }
     };
 
+    /**
+     * @method partFilterList
+     * @description For Filtering the part from List on the basis of input given in part dropdown
+    */
     const partFilterList = async (inputValue) => {
 
 
@@ -157,21 +142,23 @@ function SAPPushDetail(props) {
         }
     };
 
-
+    /**
+     * @method onSubmit
+     * @description For saving or updation
+    */
     const onSubmit = () => {
 
-        if (getValues('PurcahaseOrganisation') === null || getValues('PurcahaseOrganisation') === '') {
-            Toaster.error('Purcahase Organisation is mandatory')
+        if (getValues('PurcahaseOrganisation') === null || getValues('PurcahaseOrganisation') === '' || getValues('PurcahaseOrganisation') === '-') {
+            Toaster.warning('Purcahase Organisation is mandatory')
         }
 
-        if (getValues('MaterialGroup') === null || getValues('MaterialGroup') === '') {
-            Toaster.error('Material Group is mandatory')
+        if (getValues('MaterialGroup') === null || getValues('MaterialGroup') === '' || getValues('MaterialGroup') === '-') {
+            Toaster.warning('Material Group is mandatory')
         }
         let obj = {}
 
         const vendor = getValues('Vendor').label.split('(')[1]
         const plant = getValues('Plant').label.split('(')[1]
-
 
         obj.PartNumber = getValues('PartNumber').label
         obj.PlantCode = plant?.split(')')[0]
@@ -187,9 +174,7 @@ function SAPPushDetail(props) {
                     props.closeDrawer('submit')
                 }
             }))
-
         } else {
-
             dispatch(saveSAPDetail(obj, res => {
                 if (res?.data?.Result) {
                     Toaster.success('SAP Detail added successfully.')
@@ -197,12 +182,12 @@ function SAPPushDetail(props) {
                 }
             }))
         }
-
-
     }
-
+    /**
+     * @method handlePartName
+     * @description Get Material group from API on change of part
+    */
     const handlePartName = (value) => {
-        console.log('value: ', value);
         dispatch(getMaterialGroupByPart(value.value, res => {
             if (res?.data.Result) {
                 setValue('MaterialGroup', res.data.Data)
@@ -211,10 +196,12 @@ function SAPPushDetail(props) {
                 Toaster.warning('Material group does not exist for this part number.')
             }
         }))
-
     }
+    /**
+    * @method handlePlantNameChange
+    * @description Get Purchase Organisation from API on change of plant
+   */
     const handlePlantNameChange = (value) => {
-        console.log('value: ', value);
         dispatch(getPurcahseOrganisationByPlant(value.value, res => {
             if (res?.data.Result) {
                 setValue('PurcahaseOrganisation', res.data.Data)
@@ -225,7 +212,10 @@ function SAPPushDetail(props) {
         }))
 
     }
-
+    /**
+     * @method cancelHandler
+     * @description For closing of drawer
+    */
     const cancelHandler = () => {
         props.closeDrawer('cancel')
     }
@@ -300,7 +290,6 @@ function SAPPushDetail(props) {
                                         control={control}
                                         rules={{ required: true }}
                                         register={register}
-                                        defaultValue={vendor.length !== 0 ? vendor : ""}
                                         options={renderListing("Vendor")}
                                         mandatory={true}
                                         handleChange={() => { }}
@@ -371,8 +360,6 @@ function SAPPushDetail(props) {
                                         errors={errors.PurcahaseGroup}
                                     />
                                 </Col>
-
-
                             </Row>
 
                             <Row className="justify-content-between">
