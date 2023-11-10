@@ -11,7 +11,8 @@ import {
     GET_REPORT_FORM_GRID_DATA,
     GET_PRODUCT_LIST,
     GET_PRODUCT_PART_DATA_LIST,
-    GET_STAGE_OF_PART_DETAILS
+    GET_STAGE_OF_PART_DETAILS,
+    GET_NFR_INSIGHT_DETAILS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper';
 
@@ -546,6 +547,22 @@ export function getSupplierContributionDetails(productId, callback) {
             dispatch({ type: API_FAILURE })
             apiErrors(error)
             callback(error)
+        })
+    }
+}
+
+export function getNfrInsightsDetails(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNfrInsightsDetails}`, config(),)
+        request.then((response) => {
+            dispatch({
+                type: GET_NFR_INSIGHT_DETAILS,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
         })
     }
 }
