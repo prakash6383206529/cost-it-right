@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD,
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD, NFR_INSIGHT_DETAILS,
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -77,6 +77,8 @@ import SimulationForm from './simulation/components'
 import ResetPassword from './login/ResetPassword'
 
 import SAPDetailList from './masters/sap-detail/SAPDetailList'
+import NFRInsightsReport from './report/components/NFRInsightReportFolder/NFRInsightReport'
+
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -397,6 +399,7 @@ class Main extends Component {
                     <Route path="/got-given-summary-details-report" component={GotGivenReport} />
                     <Route path="/out-sourcing-master" component={AuthMiddleware(OutsourcingListing, OUTSOURCING)} />
                     <Route path="/sap-push-detail" component={SAPDetailList} />
+                    <Route path="/nfr-insights-details" component={AuthMiddleware(NFRInsightsReport, NFR_INSIGHT_DETAILS)} />
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}

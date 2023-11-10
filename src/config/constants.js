@@ -987,6 +987,7 @@ export const API = {
   getRevisionNoFromPartId: `${BASE_URL}/masters-part/select-list-revision-number-by-part-id`,
   getCostMovementReportByPart: `${BASE_URL}/reports/get-cost-movement-report-by-part`,
   getCostRatioReport: `${BASE_URL}/reports/get-cost-ratio-report`,
+  getNfrInsightsDetails: `${BASE_URL}/reports/get-nfr-insights-details`,
 
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
@@ -1746,6 +1747,7 @@ export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
 export const GET_PRODUCT_LIST = 'GET_PRODUCT_LIST'
 export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
 export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
+export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -1879,6 +1881,7 @@ export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
 export const OUTSOURCING = "Outsourcing"
 export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
+export const NFR_INSIGHT_DETAILS = 'NFR Insights'
 
 
 //export const SIMULATION_HISTORY = 'Simulation History'
