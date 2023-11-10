@@ -2706,11 +2706,11 @@ function AddMoreOperation(props) {
                                     />
                                 </Col>
                                 <Col md="4">
-                                    <label>Upload Files (upload up to 3 files)</label>
-                                    <div className={`alert alert-danger mt-2 ${files.length === 3 ? '' : 'd-none'}`} role="alert">
+                                    <label>Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)</label>
+                                    <div className={`alert alert-danger mt-2 ${files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                         Maximum file upload limit reached.
                                     </div>
-                                    <div className={`${files.length >= 3 ? 'd-none' : ''}`}>
+                                    <div className={`${files.length >= initialConfiguration.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                                         <Dropzone
                                             ref={dropzone}
                                             onChangeStatus={handleChangeStatus}
@@ -2718,7 +2718,7 @@ function AddMoreOperation(props) {
                                             disabled={isViewMode}
                                             accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                             initialFiles={[]}
-                                            maxFiles={3}
+                                            maxFiles={initialConfiguration.MaxMasterFilesToUpload}
                                             maxSizeBytes={2000000}
                                             inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">
                                                 <i className="text-primary fa fa-cloud-upload"></i>

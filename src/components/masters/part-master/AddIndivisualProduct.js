@@ -267,11 +267,10 @@ class AddIndivisualProduct extends Component {
     * @description Used to Submit the form
     */
     onSubmit = debounce((values) => {
-        const { ProductId, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck, uploadAttachements } = this.state;
+        const { ProductId, effectiveDate, isEditFlag, files, DropdownChanged, isImpactCalculation, DataToCheck } = this.state;
 
         if (isEditFlag) {
-
-            if (DropdownChanged && uploadAttachements && (DataToCheck.Remark) === (values.Remark)) {
+            if (DropdownChanged && ((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && (DataToCheck.Remark) === (values.Remark)) {
                 this.cancel('cancel')
                 return false;
             }
@@ -566,19 +565,19 @@ class AddIndivisualProduct extends Component {
                                                     </Col>
                                                     <Col md="3">
                                                         <label>
-                                                            Upload Files (upload up to 3 files)
+                                                            Upload Files (upload up to {initialConfiguration.MaxMasterFilesToUpload} files)
                                                         </label>
-                                                        <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                                                        <div className={`alert alert-danger mt-2 ${this.state.files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                                             Maximum file upload limit reached.
                                                         </div>
-                                                        <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                                                        <div className={`${this.state.files.length >= initialConfiguration.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                                                             <Dropzone
                                                                 ref={this.dropzone}
                                                                 onChangeStatus={this.handleChangeStatus}
                                                                 PreviewComponent={this.Preview}
                                                                 accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                                                 initialFiles={this.state.initialFiles}
-                                                                maxFiles={3}
+                                                                maxFiles={initialConfiguration.MaxMasterFilesToUpload}
                                                                 maxSizeBytes={2000000}
                                                                 disabled={isViewMode}
                                                                 inputContent={(files, extra) =>
