@@ -12,6 +12,7 @@ import Toaster from '../../../common/Toaster';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 function CopyCosting(props) {
   const loggedUserId = loggedInUserId()
@@ -43,6 +44,7 @@ function CopyCosting(props) {
   const [toCustomer, setToCustomer] = useState({})
   const [nccVendor, setNccVendor] = useState({})
   const [nccPlant, setNccPlant] = useState({})
+  const [isLoader, setIsLoader] = useState(false)
 
   useEffect(() => {
     setCostingTypeId(type)
@@ -169,8 +171,9 @@ function CopyCosting(props) {
     copyCostingObj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
     copyCostingObj.LoggedInUserId = loggedUserId
     copyCostingObj.IsDuplicate = getConfigurationKey().IsExactCopyCosting
-
+    setIsLoader(true)
     dispatch(checkDataForCopyCosting(checkCostingObj, (res) => {
+      setIsLoader(false)
       setIsDisable(false)
       if ('response' in res) {
         if (res && res?.response?.data?.Result === false) {
@@ -179,8 +182,10 @@ function CopyCosting(props) {
       }
       const Data = res?.data?.Data
       if (Data?.IsRMExist && Data?.IsOperationExist && Data?.IsProcessExist && Data?.IsBOPExist && Data?.IsOtherOperationExist) {
+        setIsLoader(true)
         dispatch(
           saveCopyCosting(copyCostingObj, (res) => {
+            setIsLoader(false)
             setIsDisable(false)
             if ((res.status = 200)) {
               Toaster.success("Copy costing done successfully!")
@@ -201,8 +206,10 @@ function CopyCosting(props) {
   const onPopupConfirm = () => {
     props.setCostingOptionSelect()
     setDisablePopup(true)
+    setIsLoader(true)
     dispatch(
       saveCopyCosting(updatedObj, (res) => {
+        setIsLoader(false)
         setDisablePopup(false)
         if ((res.status = 200)) {
           Toaster.success("Copy costing done successfully!")
@@ -245,8 +252,9 @@ function CopyCosting(props) {
         className={`${showPopup ? 'main-modal-container' : ''}`}
       // onClose={(e) => toggleDrawer(e)}
       >
-        <Container>
+        <Container >
           <div className={"drawer-wrapper"}>
+            {isLoader && <LoaderCustom />}
             <form
             //  onSubmit={handleSubmit(submitForm)}
             >

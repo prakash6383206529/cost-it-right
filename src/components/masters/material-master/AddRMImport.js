@@ -24,8 +24,8 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMIMPORT, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, SHEET_METAL } from '../../../config/constants';
-import { ASSEMBLY, AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE } from '../../../config/constants';
+import { ASSEMBLY, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -128,35 +128,40 @@ class AddRMImport extends Component {
       isOpenConditionDrawer: false,
       conditionTableData: [],
       BasicPriceINR: '',
-      BasicPriceCurrency: '',
+      BasicPriceSelectedCurrency: '',
       totalConditionCost: '',
       NetLandedCostINR: '',
-      NetLandedCostCurrency: '',
+      NetLandedCostSelectedCurrency: '',
 
-      FinalBasicRateCurrency: '',
-      FinalBasicRateBase: '',
-      FinalBasicPriceCurrency: '',
-      FinalBasicPriceBase: '',
-      FinalNetCostBase: '',
-      FinalNetCostCurrency: '',
-      FinalConditionCostBase: '',
-      FinalConditionCostCurrency: '',
-      FinalScrapRateBase: '',
-      FinalScrapRateCurrency: '',
-      FinalForgingScrapCostBase: '',
-      FinalForgingScrapCostCurrency: '',
-      FinalMachiningScrapCostBase: '',
-      FinalMachiningScrapCostCurrency: '',
-      FinalCircleScrapCostBase: '',
-      FinalCircleScrapCostCurrency: '',
-      FinalJaliScrapCostBase: '',
-      FinalJaliScrapCostCurrency: '',
-      FinalFreightCostBase: '',
-      FinalFreightCostCurrency: '',
-      FinalShearingCostBase: '',
-      FinalShearingCostCurrency: '',
+      FinalBasicRateSelectedCurrency: '',
+      FinalBasicRateBaseCurrency: '',
+      FinalBasicPriceSelectedCurrency: '',
+      FinalBasicPriceBaseCurrency: '',
+      FinalNetCostBaseCurrency: '',
+      FinalNetCostSelectedCurrency: '',
+      FinalConditionCostBaseCurrency: '',
+      FinalConditionCostSelectedCurrency: '',
+      FinalScrapRateBaseCurrency: '',
+      FinalScrapRateSelectedCurrency: '',
+      FinalForgingScrapCostBaseCurrency: '',
+      FinalForgingScrapCostSelectedCurrency: '',
+      FinalMachiningScrapCostBaseCurrency: '',
+      FinalMachiningScrapCostSelectedCurrency: '',
+      FinalCircleScrapCostBaseCurrency: '',
+      FinalCircleScrapCostSelectedCurrency: '',
+      FinalJaliScrapCostBaseCurrency: '',
+      FinalJaliScrapCostSelectedCurrency: '',
+      FinalFreightCostBaseCurrency: '',
+      FinalFreightCostSelectedCurrency: '',
+      FinalShearingCostBaseCurrency: '',
+      FinalShearingCostSelectedCurrency: '',
+      toolTipTextObject: {}
     }
   }
+
+  // NOTE ::
+  //  KEY ENDING WITH "BASECURRENCY" CONTAINS VALUE IN BASE CURRENCY (INR) 
+  //  KEY ENDING WITH "SELECTEDCURRENCY" CONTAINS VALUE IN SELECTED CURRENCY (USD OR EUR) 
 
   /**
   * @method componentWillMount
@@ -176,7 +181,7 @@ class AddRMImport extends Component {
     const { initialConfiguration } = this.props
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       let obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Price (${currency.label === undefined ? 'Currency' : currency?.label})  + Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) + Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
         toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
       }
       return obj
@@ -184,8 +189,8 @@ class AddRMImport extends Component {
     } else {
 
       let obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})) * Currency Rate (${currency.label === undefined ? '-' : currencyValue}) `,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
       }
       return obj
     }
@@ -193,17 +198,52 @@ class AddRMImport extends Component {
 
   basicPriceTitle() {
     const { initialConfiguration } = this.props
-    const { costingTypeId, currency, currencyValue } = this.state
+    const { costingTypeId, currency } = this.state
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       let obj = {
-        toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})  `,
-        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+        toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
+        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
       }
       return obj
 
     }
   }
 
+  allFieldsInfoIcon(setData) {
+    const { initialConfiguration } = this.props
+    const { currency, showScrapKeys, currencyValue, toolTipTextObject } = this.state
+    let obj = {
+      toolTipTextCutOffBaseCurrency: `Cut Off Price (${initialConfiguration?.BaseCurrency}) = Cut Off Price (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextBasicRateBaseCurrency: `Basic Rate (${initialConfiguration?.BaseCurrency}) = Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextFreightCostBaseCurrency: `Freight Cost (${initialConfiguration?.BaseCurrency}) = Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextShearingCostBaseCurrency: `Shearing Cost (${initialConfiguration?.BaseCurrency}) = Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      toolTipTextConditionCostBaseCurrency: `Condition Cost (${initialConfiguration?.BaseCurrency}) = Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+    }
+    if (showScrapKeys?.showCircleJali) {
+      obj = {
+        ...obj,
+        toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) = Circle Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextJaliScrapCostBaseCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Jali Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      }
+    } else if (showScrapKeys?.showForging) {
+      obj = {
+        ...obj,
+        toolTipTextForgingScrapCostBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}) = Forging Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) = Machining Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      }
+    } else if (showScrapKeys?.showScrap) {
+      obj = {
+        ...obj,
+        toolTipTextScrapCostBaseCurrency: `Scrap Rate (${initialConfiguration?.BaseCurrency}) = Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      }
+    }
+    if (setData) {
+      setTimeout(() => {
+        this.setState({ toolTipTextObject: { ...toolTipTextObject, ...obj } })
+      }, 100);
+    }
+    return obj
+  }
 
   /**
    * @method componentDidMount
@@ -211,10 +251,9 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
-    const { currency } = this.state
     this.getDetails(data);
     this.props.change('NetLandedCostINR', 0)
-    this.props.change('NetLandedCostCurrency', 0)
+    this.props.change('NetLandedCostSelectedCurrency', 0)
     if (!this.state.isViewFlag) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
@@ -282,13 +321,25 @@ class AddRMImport extends Component {
     this.setState({ CostingTypePermission: false, finalApprovalLoader: false })
   }
 
+  setInStateToolTip() {
+    const obj = {
+      ...this.state.toolTipTextObject, netCostCurrency: this.netCostTitle()?.toolTipTextNetCostSelectedCurrency, netCostBaseCurrency: this.netCostTitle()?.toolTipTextNetCostBaseCurrency,
+      basicPriceSelectedCurrency: this.basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency, basicPriceBaseCurrency: this.basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency
+    }
+    this.setState({ toolTipTextObject: obj })
+  }
+
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (!this.state.isViewFlag && !this.state.isCallCalculation) {
       if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
+        this.allFieldsInfoIcon(true)
+        this.setInStateToolTip()
         this.handleNetCost()
       }
       if (this.props.fieldsObj !== prevProps.fieldsObj && this.state.isEditFlag && this.state.isEditBuffer) {
+        this.allFieldsInfoIcon(true)
+        this.setInStateToolTip()
         this.handleNetCost()
       }
       if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -369,6 +420,9 @@ class AddRMImport extends Component {
   handleTechnologyChange = (newValue) => {
     this.checkTechnology(newValue)
     this.setState({ RawMaterial: [], isDropDownChanged: true, Technology: newValue })
+    setTimeout(() => {
+      this.allFieldsInfoIcon(true)
+    }, 300);
   }
   /**
 * @method handleClient
@@ -553,14 +607,14 @@ class AddRMImport extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
 
-  recalculateConditions = (basicPriceCurrency, basicPriceBase) => {
+  recalculateConditions = (basicPriceSelectedCurrency, basicPriceBaseCurrency) => {
     const { conditionTableData } = this.state;
     let tempList = conditionTableData && conditionTableData?.map(item => {
       if (item?.ConditionType === "Percentage") {
-        let costCurrency = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceCurrency)
-        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBase)
-        item.ConditionCost = costCurrency
-        item.ConditionCostConversion = costBase
+        let costSelectedCurrency = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceSelectedCurrency)
+        let costBaseCurrency = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBaseCurrency)
+        item.ConditionCost = costSelectedCurrency
+        item.ConditionCostConversion = costBaseCurrency
       }
       return item
     })
@@ -570,59 +624,68 @@ class AddRMImport extends Component {
   handleNetCost = () => {
 
     const { fieldsObj, initialConfiguration } = this.props;
-    const { FinalConditionCostCurrency, DataToChange, isEditFlag } = this.state
+    const { FinalConditionCostSelectedCurrency, DataToChange, isEditFlag, costingTypeId } = this.state
 
 
-    const cutOffPriceBase = this.convertIntoBase(fieldsObj?.cutOffPrice)
-    this.props.change('cutOffPriceBase', checkForDecimalAndNull(cutOffPriceBase, initialConfiguration.NoOfDecimalForPrice));
+    const cutOffPriceBaseCurrency = this.convertIntoBase(fieldsObj?.cutOffPriceSelectedCurrency)
+    this.props.change('cutOffPriceBaseCurrency', checkForDecimalAndNull(cutOffPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const basicRateBase = this.convertIntoBase(fieldsObj?.BasicRateCurrency)
-    this.props.change('BasicRateBase', checkForDecimalAndNull(basicRateBase, initialConfiguration.NoOfDecimalForPrice));
+    const basicRateBaseCurrency = this.convertIntoBase(fieldsObj?.BasicRateSelectedCurrency)
+    this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(basicRateBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const scrapRateBase = this.convertIntoBase(fieldsObj?.ScrapRateCurrency)
-    this.props.change('ScrapRateBase', checkForDecimalAndNull(scrapRateBase, initialConfiguration.NoOfDecimalForPrice));
+    const scrapRateBaseCurrency = this.convertIntoBase(fieldsObj?.ScrapRateSelectedCurrency)
+    this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(scrapRateBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const forgingScrapBase = this.convertIntoBase(fieldsObj?.ForgingScrap)
-    this.props.change('ForgingScrapBase', checkForDecimalAndNull(forgingScrapBase, initialConfiguration.NoOfDecimalForPrice));
+    const forgingScrapBaseCurrency = this.convertIntoBase(fieldsObj?.ForgingScrapSelectedCurrency)
+    this.props.change('ForgingScrapBaseCurrency', checkForDecimalAndNull(forgingScrapBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const machiningScrapBase = this.convertIntoBase(fieldsObj?.MachiningScrap)
-    this.props.change('MachiningScrapBase', checkForDecimalAndNull(machiningScrapBase, initialConfiguration.NoOfDecimalForPrice));
+    const machiningScrapBaseCurrency = this.convertIntoBase(fieldsObj?.MachiningScrapSelectedCurrency)
+    this.props.change('MachiningScrapBaseCurrency', checkForDecimalAndNull(machiningScrapBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const circleScrapCostBase = this.convertIntoBase(fieldsObj?.CircleScrapCost)
-    this.props.change('CircleScrapCostBase', checkForDecimalAndNull(circleScrapCostBase, initialConfiguration.NoOfDecimalForPrice));
+    const circleScrapCostBaseCurrency = this.convertIntoBase(fieldsObj?.CircleScrapCostSelectedCurrency)
+    this.props.change('CircleScrapCostBaseCurrency', checkForDecimalAndNull(circleScrapCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const jaliScrapCostBase = this.convertIntoBase(fieldsObj?.JaliScrapCost)
-    this.props.change('JaliScrapCostBase', checkForDecimalAndNull(jaliScrapCostBase, initialConfiguration.NoOfDecimalForPrice));
+    const jaliScrapCostBaseCurrency = this.convertIntoBase(fieldsObj?.JaliScrapCostSelectedCurrency)
+    this.props.change('JaliScrapCostBaseCurrency', checkForDecimalAndNull(jaliScrapCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const freightChargeBase = this.convertIntoBase(fieldsObj?.FreightCharge)
-    this.props.change('FreightChargeBase', checkForDecimalAndNull(freightChargeBase, initialConfiguration.NoOfDecimalForPrice));
+    const freightChargeBaseCurrency = this.convertIntoBase(fieldsObj?.FreightChargeSelectedCurrency)
+    this.props.change('FreightChargeBaseCurrency', checkForDecimalAndNull(freightChargeBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const shearingCost = this.convertIntoBase(fieldsObj?.ShearingCost)
-    this.props.change('ShearingCostBase', checkForDecimalAndNull(shearingCost, initialConfiguration.NoOfDecimalForPrice));
+    const shearingCostSelectedCurrency = this.convertIntoBase(fieldsObj?.ShearingCostSelectedCurrency)
+    this.props.change('ShearingCostBaseCurrency', checkForDecimalAndNull(shearingCostSelectedCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
-    this.props.change('BasicPriceCurrency', checkForDecimalAndNull(basicPriceCurrency, initialConfiguration.NoOfDecimalForPrice));
+    const basicPriceSelectedCurrencyTemp = checkForNull(fieldsObj?.BasicRateSelectedCurrency) + checkForNull(fieldsObj?.FreightChargeSelectedCurrency) + checkForNull(fieldsObj?.ShearingCostSelectedCurrency)
+    const basicPriceBaseCurrencyTemp = this.convertIntoBase(basicPriceSelectedCurrencyTemp)
 
-    const basicPriceBase = this.convertIntoBase(basicPriceCurrency)
-    this.props.change('BasicPriceBase', checkForDecimalAndNull(basicPriceBase, initialConfiguration.NoOfDecimalForPrice));
+    let basicPriceSelectedCurrency
+    let basicPriceBaseCurrency
 
-    let conditionList = this.recalculateConditions(basicPriceCurrency, basicPriceBase)
+    if (costingTypeId === ZBCTypeId) {
+      basicPriceSelectedCurrency = basicPriceSelectedCurrencyTemp
+      basicPriceBaseCurrency = basicPriceBaseCurrencyTemp
+    }
 
-    const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
-    this.props.change('FinalConditionCostBase', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('BasicPriceSelectedCurrency', checkForDecimalAndNull(basicPriceSelectedCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('BasicPriceBaseCurrency', checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
 
-    const sumCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
+    let conditionList = this.recalculateConditions(basicPriceSelectedCurrency, basicPriceBaseCurrency)
 
-    const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(sumCurrency)
-    const netLandedCostBase = checkForNull(basicPriceBase) + checkForNull(sumBase)
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice));
-    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice));
+    const sumBaseCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
 
-    if (isEditFlag && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
-      && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
-      && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
-      && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
+    const sumSelectedCurrency = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration.NoOfDecimalForPrice))
+
+    const netLandedCostSelectedCurrency = checkForNull(basicPriceSelectedCurrencyTemp) + checkForNull(sumSelectedCurrency)
+    const netLandedCostBaseCurrency = checkForNull(basicPriceBaseCurrencyTemp) + checkForNull(sumBaseCurrency)
+    this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, initialConfiguration.NoOfDecimalForPrice));
+    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice));
+
+    if (isEditFlag && checkForNull(fieldsObj?.BasicRateSelectedCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateSelectedCurrency) === checkForNull(DataToChange?.ScrapRate)
+      && checkForNull(fieldsObj?.ForgingScrapSelectedCurrency) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrapSelectedCurrency) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCostSelectedCurrency) === checkForNull(DataToChange?.JaliScrapCostSelectedCurrency)
+      && checkForNull(fieldsObj?.JaliScrapCostSelectedCurrency) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightChargeSelectedCurrency) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCostSelectedCurrency) === checkForNull(DataToChange?.RMShearingCost)
+      && checkForNull(fieldsObj?.cutOffPriceSelectedCurrency) === checkForNull(DataToChange?.CutOffPrice) && checkForNull(basicPriceSelectedCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) &&
+      checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
     } else {
@@ -631,41 +694,41 @@ class AddRMImport extends Component {
 
     this.setState({
 
-      FinalCutOffCurrency: fieldsObj?.cutOffPrice,
-      FinalCutOffBase: cutOffPriceBase,
+      FinalCutOffSelectedCurrency: fieldsObj?.cutOffPriceSelectedCurrency,
+      FinalCutOffBaseCurrency: cutOffPriceBaseCurrency,
 
-      FinalBasicRateCurrency: fieldsObj?.BasicRateCurrency,
-      FinalBasicRateBase: basicRateBase,
+      FinalBasicRateSelectedCurrency: fieldsObj?.BasicRateSelectedCurrency,
+      FinalBasicRateBaseCurrency: basicRateBaseCurrency,
 
-      FinalScrapRateCurrency: fieldsObj?.ScrapRateCurrency,
-      FinalScrapRateBase: scrapRateBase,
+      FinalScrapRateSelectedCurrency: fieldsObj?.ScrapRateSelectedCurrency,
+      FinalScrapRateBaseCurrency: scrapRateBaseCurrency,
 
-      FinalForgingScrapCostCurrency: fieldsObj?.ForgingScrap,
-      FinalForgingScrapCostBase: forgingScrapBase,
+      FinalForgingScrapCostSelectedCurrency: fieldsObj?.ForgingScrapSelectedCurrency,
+      FinalForgingScrapCostBaseCurrency: forgingScrapBaseCurrency,
 
-      FinalMachiningScrapCostCurrency: fieldsObj?.MachiningScrap,
-      FinalMachiningScrapCostBase: machiningScrapBase,
+      FinalMachiningScrapCostSelectedCurrency: fieldsObj?.MachiningScrapSelectedCurrency,
+      FinalMachiningScrapCostBaseCurrency: machiningScrapBaseCurrency,
 
-      FinalCircleScrapCostCurrency: fieldsObj?.CircleScrapCost,
-      FinalCircleScrapCostBase: circleScrapCostBase,
+      FinalCircleScrapCostSelectedCurrency: fieldsObj?.CircleScrapCostSelectedCurrency,
+      FinalCircleScrapCostBaseCurrency: circleScrapCostBaseCurrency,
 
-      FinalJaliScrapCostCurrency: fieldsObj?.JaliScrapCost,
-      FinalJaliScrapCostBase: jaliScrapCostBase,
+      FinalJaliScrapCostSelectedCurrency: fieldsObj?.JaliScrapCostSelectedCurrency,
+      FinalJaliScrapCostBaseCurrency: jaliScrapCostBaseCurrency,
 
-      FinalFreightCostCurrency: fieldsObj?.FreightCharge,
-      FinalFreightCostBase: freightChargeBase,
+      FinalFreightCostSelectedCurrency: fieldsObj?.FreightChargeSelectedCurrency,
+      FinalFreightCostBaseCurrency: freightChargeBaseCurrency,
 
-      FinalShearingCostCurrency: fieldsObj?.ShearingCost,
-      FinalShearingCostBase: shearingCost,
+      FinalShearingCostSelectedCurrency: fieldsObj?.ShearingCostSelectedCurrency,
+      FinalShearingCostBaseCurrency: shearingCostSelectedCurrency,
 
-      FinalBasicPriceCurrency: basicPriceCurrency,
-      FinalBasicPriceBase: basicPriceBase,
+      FinalBasicPriceSelectedCurrency: basicPriceSelectedCurrency,
+      FinalBasicPriceBaseCurrency: basicPriceBaseCurrency,
 
-      FinalConditionCostCurrency: sumCurrency,
-      FinalConditionCostBase: sumBase,
+      FinalConditionCostSelectedCurrency: sumSelectedCurrency,
+      FinalConditionCostBaseCurrency: sumBaseCurrency,
 
-      FinalNetCostCurrency: netLandedCostCurrency,
-      FinalNetCostBase: netLandedCostBase,
+      FinalNetCostSelectedCurrency: netLandedCostSelectedCurrency,
+      FinalNetCostBaseCurrency: netLandedCostBaseCurrency,
 
     })
   }
@@ -704,80 +767,80 @@ class AddRMImport extends Component {
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           setTimeout(() => {
 
-            this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice))
-            this.props.change('cutOffPriceBase', checkForDecimalAndNull(Data?.CutOffPriceInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('cutOffPriceSelectedCurrency', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('cutOffPriceBaseCurrency', checkForDecimalAndNull(Data?.CutOffPriceInINR, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('BasicRateCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('BasicRateBase', checkForDecimalAndNull(Data?.BasicRatePerUOMConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('BasicRateSelectedCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOMConversion, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('ScrapRateCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ScrapRateBase', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('ForgingScrap', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ForgingScrapBase', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ForgingScrapBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('MachiningScrap', checkForDecimalAndNull(Data?.MachiningScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('MachiningScrapBase', checkForDecimalAndNull(Data?.MachiningScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('MachiningScrapSelectedCurrency', checkForDecimalAndNull(Data?.MachiningScrapRate, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('MachiningScrapBaseCurrency', checkForDecimalAndNull(Data?.MachiningScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('CircleScrapCost', checkForDecimalAndNull(Data?.JaliScrapCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('CircleScrapCostBase', checkForDecimalAndNull(Data?.JaliScrapCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('CircleScrapCostSelectedCurrency', checkForDecimalAndNull(Data?.JaliScrapCostSelectedCurrency, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('CircleScrapCostBaseCurrency', checkForDecimalAndNull(Data?.JaliScrapCostConversion, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('JaliScrapCost', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('JaliScrapCostBase', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('JaliScrapCostBaseCurrency', checkForDecimalAndNull(Data?.ScrapRateInINR, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('FreightCharge', checkForDecimalAndNull(Data?.RMFreightCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('FreightChargeBase', checkForDecimalAndNull(Data?.RawMaterialFreightCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('FreightChargeSelectedCurrency', checkForDecimalAndNull(Data?.RMFreightCost, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('FreightChargeBaseCurrency', checkForDecimalAndNull(Data?.RawMaterialFreightCostConversion, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('ShearingCost', checkForDecimalAndNull(Data?.RMShearingCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('ShearingCostBase', checkForDecimalAndNull(Data?.RawMaterialShearingCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ShearingCostSelectedCurrency', checkForDecimalAndNull(Data?.RMShearingCost, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('ShearingCostBaseCurrency', checkForDecimalAndNull(Data?.RawMaterialShearingCostConversion, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('BasicPriceCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('BasicPriceBase', checkForDecimalAndNull(Data?.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('BasicPriceSelectedCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('BasicPriceBaseCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('FinalConditionCostCurrency', Data?.NetConditionCost)
-            this.props.change('FinalConditionCostBase', Data?.NetConditionCostConversion)
+            this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(Data?.NetConditionCostConversion, initialConfiguration.NoOfDecimalForPrice));
 
-            this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice));
+            this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(Data?.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice));
 
 
             this.setState({
 
-              FinalCutOffCurrency: Data?.CutOffPrice,
-              FinalCutOffBase: Data?.CutOffPriceInINR,
+              FinalCutOffSelectedCurrency: Data?.CutOffPrice,
+              FinalCutOffBaseCurrency: Data?.CutOffPriceInINR,
 
-              FinalBasicRateCurrency: Data?.BasicRatePerUOM,
-              FinalBasicRateBase: Data?.BasicRatePerUOMConversion,
+              FinalBasicRateSelectedCurrency: Data?.BasicRatePerUOM,
+              FinalBasicRateBaseCurrency: Data?.BasicRatePerUOMConversion,
 
-              FinalScrapRateCurrency: Data?.ScrapRate,
-              FinalScrapRateBase: Data?.ScrapRateInINR,
+              FinalScrapRateSelectedCurrency: Data?.ScrapRate,
+              FinalScrapRateBaseCurrency: Data?.ScrapRateInINR,
 
-              FinalForgingScrapCostCurrency: Data?.ScrapRate,
-              FinalForgingScrapCostBase: Data?.ScrapRateInINR,
+              FinalForgingScrapCostSelectedCurrency: Data?.ScrapRate,
+              FinalForgingScrapCostBaseCurrency: Data?.ScrapRateInINR,
 
-              FinalMachiningScrapCostCurrency: Data?.MachiningScrapRate,
-              FinalMachiningScrapCostBase: Data?.MachiningScrapRateInINR,
+              FinalMachiningScrapCostSelectedCurrency: Data?.MachiningScrapRate,
+              FinalMachiningScrapCostBaseCurrency: Data?.MachiningScrapRateInINR,
 
-              FinalCircleScrapCostCurrency: Data?.JaliScrapCost,
-              FinalCircleScrapCostBase: Data?.JaliScrapCostConversion,
+              FinalCircleScrapCostSelectedCurrency: Data?.JaliScrapCostSelectedCurrency,
+              FinalCircleScrapCostBaseCurrency: Data?.JaliScrapCostConversion,
 
-              FinalJaliScrapCostCurrency: Data?.ScrapRate,
-              FinalJaliScrapCostBase: Data?.ScrapRateInINR,
+              FinalJaliScrapCostSelectedCurrency: Data?.ScrapRate,
+              FinalJaliScrapCostBaseCurrency: Data?.ScrapRateInINR,
 
-              FinalFreightCostCurrency: Data?.RMFreightCost,
-              FinalFreightCostBase: Data?.RawMaterialFreightCostConversion,
+              FinalFreightCostSelectedCurrency: Data?.RMFreightCost,
+              FinalFreightCostBaseCurrency: Data?.RawMaterialFreightCostConversion,
 
-              FinalShearingCostCurrency: Data?.RMShearingCost,
-              FinalShearingCostBase: Data?.RawMaterialShearingCostConversion,
+              FinalShearingCostSelectedCurrency: Data?.RMShearingCost,
+              FinalShearingCostBaseCurrency: Data?.RawMaterialShearingCostConversion,
 
-              FinalBasicPriceCurrency: Data?.NetCostWithoutConditionCost,
-              FinalBasicPriceBase: Data?.NetCostWithoutConditionCostConversion,
+              FinalBasicPriceSelectedCurrency: Data?.NetCostWithoutConditionCost,
+              FinalBasicPriceBaseCurrency: Data?.NetCostWithoutConditionCostConversion,
 
-              FinalConditionCostCurrency: Data?.NetConditionCost,
-              FinalConditionCostBase: Data?.NetConditionCostConversion,
+              FinalConditionCostSelectedCurrency: Data?.NetConditionCost,
+              FinalConditionCostBaseCurrency: Data?.NetConditionCostConversion,
 
-              FinalNetCostCurrency: Data?.NetLandedCost,
-              FinalNetCostBase: Data?.NetLandedCostConversion,
+              FinalNetCostSelectedCurrency: Data?.NetLandedCost,
+              FinalNetCostBaseCurrency: Data?.NetLandedCostConversion,
 
               conditionTableData: Data?.RawMaterialConditionsDetails,
 
@@ -807,16 +870,18 @@ class AddRMImport extends Component {
               remarks: Data.Remark,
               files: Data.FileList,
               singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
-              // FreightCharge:Data.FreightCharge
+              // FreightChargeSelectedCurrency:Data.FreightChargeSelectedCurrency
               netCurrencyCost: Data.NetLandedCostConversion ? Data.NetLandedCostConversion : '',
               showForgingMachiningScrapCost: showScrapKeys?.showForging,
               showExtraCost: showScrapKeys?.showCircleJali,
               showCurrency: true,
               currencyValue: Data.CurrencyExchangeRate,
             }, () => {
+              this.setInStateToolTip()
               setTimeout(() => {
                 this.setState({ isLoader: false, isCallCalculation: false })
                 if (this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
+                  this.allFieldsInfoIcon(true)
                   this.commonFunction()
                 }
               }, 500)
@@ -857,17 +922,17 @@ class AddRMImport extends Component {
       'SourceSupplierPlantId',
       'DestinationPlant',
       "UnitOfMeasurementId",
-      "cutOffPrice",
+      "cutOffPriceSelectedCurrency",
       "BasicRate",
-      "ScrapRate",
-      "ForgingScrap",
-      "MachiningScrap",
-      "CircleScrapCost",
-      "JaliScrapCost",
+      "ScrapRateSelectedCurrency",
+      "ForgingScrapSelectedCurrency",
+      "MachiningScrapSelectedCurrency",
+      "CircleScrapCostSelectedCurrency",
+      "JaliScrapCostSelectedCurrency",
       "EffectiveDate",
       "clientName",
-      'ShearingCost',
-      'FreightCharge'];
+      'ShearingCostSelectedCurrency',
+      'FreightChargeSelectedCurrency'];
     fieldsToClear.forEach(fieldName => {
       this.props.dispatch(clearFields('AddRMImport', false, false, fieldName));
     });
@@ -1289,10 +1354,10 @@ class AddRMImport extends Component {
   */
   onSubmit = (values) => {
     const { RawMaterial, RMGrade, RMSpec, Category, selectedPlants, vendorName, VendorCode, HasDifferentSource, sourceLocation, UOM, currency, client, effectiveDate, remarks, RawMaterialID, isEditFlag, files,
-      Technology, netCost, costingTypeId, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, currencyValue, IsFinancialDataChanged, conditionTableData, FinalBasicRateCurrency, FinalCutOffBase,
-      FinalCutOffCurrency, FinalBasicRateBase, FinalScrapRateCurrency, FinalScrapRateBase, FinalForgingScrapCostCurrency, FinalForgingScrapCostBase, FinalMachiningScrapCostCurrency, FinalMachiningScrapCostBase,
-      FinalCircleScrapCostCurrency, FinalCircleScrapCostBase, FinalJaliScrapCostCurrency, FinalJaliScrapCostBase, FinalFreightCostCurrency, FinalFreightCostBase, FinalShearingCostCurrency, FinalShearingCostBase,
-      FinalBasicPriceCurrency, FinalBasicPriceBase, FinalConditionCostCurrency, FinalConditionCostBase, FinalNetCostCurrency, FinalNetCostBase, showScrapKeys } = this.state;
+      Technology, netCost, costingTypeId, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, currencyValue, IsFinancialDataChanged, conditionTableData, FinalBasicRateSelectedCurrency, FinalCutOffBaseCurrency,
+      FinalCutOffSelectedCurrency, FinalBasicRateBaseCurrency, FinalScrapRateSelectedCurrency, FinalScrapRateBaseCurrency, FinalForgingScrapCostSelectedCurrency, FinalForgingScrapCostBaseCurrency, FinalMachiningScrapCostSelectedCurrency, FinalMachiningScrapCostBaseCurrency,
+      FinalCircleScrapCostSelectedCurrency, FinalCircleScrapCostBaseCurrency, FinalJaliScrapCostSelectedCurrency, FinalJaliScrapCostBaseCurrency, FinalFreightCostSelectedCurrency, FinalFreightCostBaseCurrency, FinalShearingCostSelectedCurrency, FinalShearingCostBaseCurrency,
+      FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, FinalConditionCostSelectedCurrency, FinalConditionCostBaseCurrency, FinalNetCostSelectedCurrency, FinalNetCostBaseCurrency, showScrapKeys } = this.state;
 
     const { fieldsObj, isRMAssociated } = this.props;
     const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
@@ -1302,47 +1367,47 @@ class AddRMImport extends Component {
     }
 
 
-    let scrapRateCurrency = ''
-    let scrapRateBase = ''
-    let jaliRateCurrency = ''
-    let jaliRateBase = ''
-    let machiningRateCurrency = ''
-    let machiningRateBase = ''
+    let scrapRateSelectedCurrency = ''
+    let scrapRateBaseCurrency = ''
+    let jaliRateSelectedCurrency = ''
+    let jaliRateBaseCurrency = ''
+    let machiningRateSelectedCurrency = ''
+    let machiningRateBaseCurrency = ''
 
     if (showScrapKeys?.showCircleJali) {
 
-      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalJaliScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalCircleScrapCostCurrency)) {
+      if (checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalJaliScrapCostSelectedCurrency) || checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalCircleScrapCostSelectedCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
       }
 
-      scrapRateCurrency = FinalJaliScrapCostCurrency
-      scrapRateBase = FinalJaliScrapCostBase
-      jaliRateCurrency = FinalCircleScrapCostCurrency
-      jaliRateBase = FinalCircleScrapCostBase
+      scrapRateSelectedCurrency = FinalJaliScrapCostSelectedCurrency
+      scrapRateBaseCurrency = FinalJaliScrapCostBaseCurrency
+      jaliRateSelectedCurrency = FinalCircleScrapCostSelectedCurrency
+      jaliRateBaseCurrency = FinalCircleScrapCostBaseCurrency
     } else if (showScrapKeys?.showForging) {
 
-      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalForgingScrapCostCurrency) || checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalMachiningScrapCostCurrency)) {
+      if (checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalForgingScrapCostSelectedCurrency) || checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalMachiningScrapCostSelectedCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
       }
 
-      scrapRateCurrency = FinalForgingScrapCostCurrency
-      scrapRateBase = FinalForgingScrapCostBase
-      machiningRateCurrency = FinalMachiningScrapCostCurrency
-      machiningRateBase = FinalMachiningScrapCostBase
+      scrapRateSelectedCurrency = FinalForgingScrapCostSelectedCurrency
+      scrapRateBaseCurrency = FinalForgingScrapCostBaseCurrency
+      machiningRateSelectedCurrency = FinalMachiningScrapCostSelectedCurrency
+      machiningRateBaseCurrency = FinalMachiningScrapCostBaseCurrency
     } else if (showScrapKeys?.showScrap) {
 
-      if (checkForNull(FinalBasicRateCurrency) <= checkForNull(FinalScrapRateCurrency)) {
+      if (checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalScrapRateSelectedCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
       }
 
-      scrapRateCurrency = FinalScrapRateCurrency
-      scrapRateBase = FinalScrapRateBase
+      scrapRateSelectedCurrency = FinalScrapRateSelectedCurrency
+      scrapRateBaseCurrency = FinalScrapRateBaseCurrency
     }
 
 
@@ -1392,42 +1457,42 @@ class AddRMImport extends Component {
     formData.Attachements = isEditFlag ? updatedFiles : files
     formData.Currency = currency.label
     formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-    formData.IsCutOffApplicable = values.cutOffPrice < netCost ? true : false
+    formData.IsCutOffApplicable = values.cutOffPriceSelectedCurrency < netCost ? true : false
     formData.RawMaterialCode = values.Code
     formData.IsSendForApproval = false
     formData.VendorPlant = []
     formData.CustomerId = client.value
     formData.RawMaterialEntryType = checkForNull(ENTRY_TYPE_IMPORT)
 
-    formData.CutOffPrice = FinalCutOffCurrency
-    formData.CutOffPriceInINR = FinalCutOffBase
+    formData.CutOffPrice = FinalCutOffSelectedCurrency
+    formData.CutOffPriceInINR = FinalCutOffBaseCurrency
 
-    formData.BasicRatePerUOM = FinalBasicRateCurrency
-    formData.BasicRatePerUOMConversion = FinalBasicRateBase
+    formData.BasicRatePerUOM = FinalBasicRateSelectedCurrency
+    formData.BasicRatePerUOMConversion = FinalBasicRateBaseCurrency
 
-    formData.ScrapRate = scrapRateCurrency
-    formData.ScrapRateInINR = scrapRateBase
+    formData.ScrapRate = scrapRateSelectedCurrency
+    formData.ScrapRateInINR = scrapRateBaseCurrency
 
-    formData.MachiningScrapRate = machiningRateCurrency
-    formData.MachiningScrapRateInINR = machiningRateBase
+    formData.MachiningScrapRate = machiningRateSelectedCurrency
+    formData.MachiningScrapRateInINR = machiningRateBaseCurrency
 
-    formData.RMFreightCost = FinalFreightCostCurrency
-    formData.RawMaterialFreightCostConversion = FinalFreightCostBase
+    formData.RMFreightCost = FinalFreightCostSelectedCurrency
+    formData.RawMaterialFreightCostConversion = FinalFreightCostBaseCurrency
 
-    formData.RMShearingCost = FinalShearingCostCurrency
-    formData.RawMaterialShearingCostConversion = FinalShearingCostBase
+    formData.RMShearingCost = FinalShearingCostSelectedCurrency
+    formData.RawMaterialShearingCostConversion = FinalShearingCostBaseCurrency
 
-    formData.JaliScrapCost = jaliRateCurrency
-    formData.JaliScrapCostConversion = jaliRateBase
+    formData.JaliScrapCost = jaliRateSelectedCurrency
+    formData.JaliScrapCostConversion = jaliRateBaseCurrency
 
-    formData.NetLandedCost = FinalNetCostCurrency
-    formData.NetLandedCostConversion = FinalNetCostBase
+    formData.NetLandedCost = FinalNetCostSelectedCurrency
+    formData.NetLandedCostConversion = FinalNetCostBaseCurrency
 
     if (costingTypeId === ZBCTypeId) {
-      formData.NetCostWithoutConditionCost = FinalBasicPriceCurrency
-      formData.NetCostWithoutConditionCostConversion = FinalBasicPriceBase
-      formData.NetConditionCost = FinalConditionCostCurrency
-      formData.NetConditionCostConversion = FinalConditionCostBase
+      formData.NetCostWithoutConditionCost = FinalBasicPriceSelectedCurrency
+      formData.NetCostWithoutConditionCostConversion = FinalBasicPriceBaseCurrency
+      formData.NetConditionCost = FinalConditionCostSelectedCurrency
+      formData.NetConditionCostConversion = FinalConditionCostBaseCurrency
     }
 
     formData.CurrencyExchangeRate = currencyValue
@@ -1436,19 +1501,23 @@ class AddRMImport extends Component {
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
-      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostCurrency)
+      const basicPriceSelectedCurrencyTemp = checkForNull(fieldsObj?.BasicRateSelectedCurrency) + checkForNull(fieldsObj?.FreightChargeSelectedCurrency) + checkForNull(fieldsObj?.ShearingCostSelectedCurrency)
+      let basicPriceSelectedCurrency
+      if (costingTypeId === ZBCTypeId) {
+        basicPriceSelectedCurrency = basicPriceSelectedCurrencyTemp
+      }
+      const netLandedCostSelectedCurrency = checkForNull(basicPriceSelectedCurrencyTemp) + checkForNull(FinalConditionCostSelectedCurrency)
 
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
       if (((files ? JSON.stringify(files) : []) === (DataToChange.FileList ? JSON.stringify(DataToChange.FileList) : [])) && DropdownChanged
-        && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? checkForNull(DataToChange.CutOffPrice) : '') === (values.cutOffPrice ? checkForNull(values.cutOffPrice) : ''))
+        && ((DataToChange.Remark ? DataToChange.Remark : '') === (values.Remark ? values.Remark : '')) && ((DataToChange.CutOffPrice ? checkForNull(DataToChange.CutOffPrice) : '') === (values.cutOffPriceSelectedCurrency ? checkForNull(values.cutOffPriceSelectedCurrency) : ''))
         && String(DataToChange.RawMaterialCode) === String(values.Code) && ((DataToChange.Source ? String(DataToChange.Source) : '-') === (values.Source ? String(values.Source) : '-'))
         && ((DataToChange.SourceLocation ? String(DataToChange.SourceLocation) : '') === (sourceLocationValue ? String(sourceLocationValue) : ''))
-        && checkForNull(fieldsObj?.BasicRateCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateCurrency) === checkForNull(DataToChange?.ScrapRate)
-        && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
-        && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
-        && checkForNull(basicPriceCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
+        && checkForNull(fieldsObj?.BasicRateSelectedCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateSelectedCurrency) === checkForNull(DataToChange?.ScrapRate)
+        && checkForNull(fieldsObj?.ForgingScrapSelectedCurrency) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrapSelectedCurrency) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCostSelectedCurrency) === checkForNull(DataToChange?.JaliScrapCostSelectedCurrency)
+        && checkForNull(fieldsObj?.JaliScrapCostSelectedCurrency) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightChargeSelectedCurrency) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCostSelectedCurrency) === checkForNull(DataToChange?.RMShearingCost)
+        && checkForNull(basicPriceSelectedCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostSelectedCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostSelectedCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
         this.setState({ isEditBuffer: true })
         Toaster.warning('Please change data to send RM for approval')
         return false
@@ -1522,22 +1591,22 @@ class AddRMImport extends Component {
     if (type === 'save') {
       this.setState({ IsFinancialDataChanged: true })
     }
-    const sumBase = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
-    const sumCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCostINR = checkForNull(sumBase) + checkForNull(this.state.FinalBasicPriceBase)
-    let netLandedCostCurrency = checkForNull(sumCurrency) + checkForNull(this.state.FinalBasicPriceCurrency)
-    this.props.change('FinalConditionCostBase', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('FinalConditionCostCurrency', checkForDecimalAndNull(sumCurrency, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostINR, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostCurrency', checkForDecimalAndNull(netLandedCostCurrency, initialConfiguration.NoOfDecimalForPrice))
+    const sumBaseCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCostConversion), 0);
+    const sumSelectedCurrency = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
+    let netLandedCostINR = checkForNull(sumBaseCurrency) + checkForNull(this.state.FinalBasicPriceBaseCurrency)
+    let netLandedCostSelectedCurrency = checkForNull(sumSelectedCurrency) + checkForNull(this.state.FinalBasicPriceSelectedCurrency)
+    this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(sumBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('FinalConditionCostSelectedCurrency', checkForDecimalAndNull(sumSelectedCurrency, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(netLandedCostINR, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostSelectedCurrency', checkForDecimalAndNull(netLandedCostSelectedCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
-      FinalConditionCostBase: sumBase,
-      FinalConditionCostCurrency: sumCurrency,
+      FinalConditionCostBaseCurrency: sumBaseCurrency,
+      FinalConditionCostSelectedCurrency: sumSelectedCurrency,
       // NetLandedCostINR: netLandedCostINR,
-      FinalNetCostBase: netLandedCostINR,
-      FinalNetCostCurrency: netLandedCostCurrency,
+      FinalNetCostBaseCurrency: netLandedCostINR,
+      FinalNetCostSelectedCurrency: netLandedCostSelectedCurrency,
     })
 
   }
@@ -1549,7 +1618,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval,
-      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceCurrency, FinalBasicPriceBase, showScrapKeys, } = this.state;
+      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, showScrapKeys, toolTipTextObject } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1869,7 +1938,7 @@ class AddRMImport extends Component {
                                       <input
                                         type="checkbox"
                                         checked={this.state.HasDifferentSource}
-                                        disabled={costingTypeId === VBCTypeId ? true : false}
+                                        disabled={(costingTypeId === VBCTypeId || isViewFlag) ? true : false}
                                       />
                                       <span
                                         className=" before-box"
@@ -2018,7 +2087,7 @@ class AddRMImport extends Component {
                             <Col md="3">
                               <Field
                                 label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                name={"cutOffPrice"}
+                                name={"cutOffPriceSelectedCurrency"}
                                 type="text"
                                 placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, maxLength15, number]}
@@ -2032,9 +2101,10 @@ class AddRMImport extends Component {
                             </Col>
 
                             <Col md="3">
+                              <TooltipCustom id="rm-cut-off-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCutOffBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                name={"cutOffPriceBase"}
+                                name={"cutOffPriceBaseCurrency"}
                                 type="text"
                                 placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, maxLength15, number]}
@@ -2049,7 +2119,7 @@ class AddRMImport extends Component {
                             <Col md="3">
                               <Field
                                 label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                name={"BasicRateCurrency"}
+                                name={"BasicRateSelectedCurrency"}
                                 type="text"
                                 placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
@@ -2061,9 +2131,10 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom id="rm-basic-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                name={"BasicRateBase"}
+                                name={"BasicRateBaseCurrency"}
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2081,7 +2152,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <Field
                                     label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                    name={"ScrapRateCurrency"}
+                                    name={"ScrapRateSelectedCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2095,9 +2166,10 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-scrap-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                    name={"ScrapRateBase"}
+                                    name={"ScrapRateBaseCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2116,7 +2188,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <Field
                                     label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                    name={"ForgingScrap"}
+                                    name={"ForgingScrapSelectedCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
@@ -2129,9 +2201,10 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-forging-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                    name={"ForgingScrapBase"}
+                                    name={"ForgingScrapBaseCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
@@ -2149,7 +2222,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <Field
                                     label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                    name={"MachiningScrap"}
+                                    name={"MachiningScrapSelectedCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
@@ -2162,9 +2235,10 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-machining-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextMachiningScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                    name={"MachiningScrapBase"}
+                                    name={"MachiningScrapBaseCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
@@ -2183,7 +2257,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <Field
                                     label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                    name={"CircleScrapCost"}
+                                    name={"CircleScrapCostSelectedCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[maxLength15, decimalLengthsix]}
@@ -2195,9 +2269,10 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-circle-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCircleScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                    name={"CircleScrapCostBase"}
+                                    name={"CircleScrapCostBaseCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[maxLength15, decimalLengthsix]}
@@ -2214,7 +2289,7 @@ class AddRMImport extends Component {
                                 <Col md="3">
                                   <Field
                                     label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                    name={"JaliScrapCost"}
+                                    name={"JaliScrapCostSelectedCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, maxLength15, decimalLengthsix]}
@@ -2226,9 +2301,10 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
+                                  <TooltipCustom id="rm-jali-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                    name={"JaliScrapCostBase"}
+                                    name={"JaliScrapCostBaseCurrency"}
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, maxLength15, decimalLengthsix]}
@@ -2246,7 +2322,7 @@ class AddRMImport extends Component {
                             <Col md="3">
                               <Field
                                 label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                name={"FreightCharge"}
+                                name={"FreightChargeSelectedCurrency"}
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2259,9 +2335,10 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom id="rm-freight-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                name={"FreightChargeBase"}
+                                name={"FreightChargeBaseCurrency"}
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2279,7 +2356,7 @@ class AddRMImport extends Component {
                             <Col md="3">
                               <Field
                                 label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                name={"ShearingCost"}
+                                name={"ShearingCostSelectedCurrency"}
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2292,9 +2369,10 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
+                              <TooltipCustom id="rm-shearing-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                name={"ShearingCostBase"}
+                                name={"ShearingCostBaseCurrency"}
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2316,7 +2394,7 @@ class AddRMImport extends Component {
                                 <TooltipCustom id="rm-basic-price-currency" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency} />
                                 <Field
                                   label={`Basic Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={"BasicPriceCurrency"}
+                                  name={"BasicPriceSelectedCurrency"}
                                   type="text"
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
@@ -2331,7 +2409,7 @@ class AddRMImport extends Component {
                                 <TooltipCustom id="rm-basic-price-base" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
                                 <Field
                                   label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
-                                  name={"BasicPriceBase"}
+                                  name={"BasicPriceBaseCurrency"}
                                   type="text"
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
@@ -2347,7 +2425,7 @@ class AddRMImport extends Component {
                               <Col md="3">
                                 <Field
                                   label={`Condition Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={"FinalConditionCostCurrency"}
+                                  name={"FinalConditionCostSelectedCurrency"}
                                   type="text"
                                   placeholder={"-"}
                                   validate={[]}
@@ -2363,9 +2441,10 @@ class AddRMImport extends Component {
                               <Col md="3">
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
+                                    <TooltipCustom id="rm-condition-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextConditionCostBaseCurrency} />
                                     <Field
                                       label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
-                                      name={"FinalConditionCostBase"}
+                                      name={"FinalConditionCostBaseCurrency"}
                                       type="text"
                                       placeholder={"-"}
                                       validate={[]}
@@ -2394,7 +2473,7 @@ class AddRMImport extends Component {
                                 <TooltipCustom id="rm-net-cost-currency" tooltipText={this.netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
                                 <Field
                                   label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostCurrency"}
+                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostSelectedCurrency"}
                                   type="text"
                                   placeholder={"-"}
                                   validate={[]}
@@ -2409,7 +2488,7 @@ class AddRMImport extends Component {
                                 <TooltipCustom id="rm-net-cost-base" tooltipText={this.netCostTitle()?.toolTipTextNetCostBaseCurrency} />
                                 <Field
                                   label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
-                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBase"}
+                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                   type="text"
                                   placeholder={"-"}
                                   validate={[]}
@@ -2449,19 +2528,19 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (Upload up to 3 files)
+                              Upload Files (Upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
                             </label>
-                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
-                                maxFiles={3}
+                                maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
                                   extra.reject ? (
@@ -2651,8 +2730,8 @@ class AddRMImport extends Component {
               closeDrawer={this.openAndCloseAddConditionCosting}
               anchor={'right'}
               basicRate={BasicPriceINR}
-              basicRateCurrency={FinalBasicPriceCurrency}
-              basicRateBase={FinalBasicPriceBase}
+              basicRateCurrency={FinalBasicPriceSelectedCurrency}
+              basicRateBase={FinalBasicPriceBaseCurrency}
               ViewMode={((isEditFlag && isRMAssociated) || isViewFlag)}
               isFromMaster={true}
               currency={this.state.currency}
@@ -2679,6 +2758,8 @@ class AddRMImport extends Component {
                 showExtraCost={this.state.showExtraCost}
                 Technology={this.state.Technology}
                 showScrapKeys={showScrapKeys}
+                toolTipTextObject={this.state.toolTipTextObject}
+                currency={this.state.currency}
               />
             )
           }
@@ -2695,7 +2776,7 @@ class AddRMImport extends Component {
 */
 function mapStateToProps(state) {
   const { comman, material, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'BasicRate', 'FreightCharge', 'ShearingCost', 'ScrapRate', 'CircleScrapCost', 'JaliScrapCost', 'ForgingScrap', 'MachiningScrap', 'EffectiveDate', 'Remark', 'BasicRateCurrency', 'ScrapRateCurrency', 'cutOffPrice');
+  const fieldsObj = selector(state, 'BasicRate', 'FreightChargeSelectedCurrency', 'ShearingCostSelectedCurrency', 'ScrapRateSelectedCurrency', 'CircleScrapCostSelectedCurrency', 'JaliScrapCostSelectedCurrency', 'ForgingScrapSelectedCurrency', 'MachiningScrapSelectedCurrency', 'EffectiveDate', 'Remark', 'BasicRateSelectedCurrency', 'ScrapRateSelectedCurrency', 'cutOffPriceSelectedCurrency');
 
   const { uniOfMeasurementList, rowMaterialList, rmGradeList, rmSpecification, plantList,
     supplierSelectList, filterPlantList, filterCityListBySupplier, cityList, technologyList,
@@ -2713,9 +2794,9 @@ function mapStateToProps(state) {
     initialValues = {
       Source: rawMaterialDetails.Source,
       BasicRate: rawMaterialDetails.BasicRatePerUOM,
-      BasicRateCurrency: rawMaterialDetails.BasicRateCurrency,
-      ScrapRate: rawMaterialDetails.ScrapRate,
-      ScrapRateCurrency: rawMaterialDetails.ScrapRateCurrency,
+      BasicRateSelectedCurrency: rawMaterialDetails.BasicRateSelectedCurrency,
+      ScrapRateBaseCurrency: rawMaterialDetails.ScrapRateBaseCurrency,
+      ScrapRateSelectedCurrency: rawMaterialDetails.ScrapRateSelectedCurrency,
       NetLandedCost: rawMaterialDetails.NetLandedCost,
       Remark: rawMaterialDetails.Remark,
     }

@@ -273,6 +273,7 @@ const SendForApproval = (props) => {
         if (tempDropdownList?.length === 0) {
           setShowValidation(true)
         } else {
+          setApprover(Data.Text)
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
         }
         setApprovalDropDown(tempDropdownList)
@@ -757,7 +758,7 @@ const SendForApproval = (props) => {
       setIsVerifyImpactDrawer(false);
     }
   }
-  const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
+  const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
 
   return (
     <Fragment>

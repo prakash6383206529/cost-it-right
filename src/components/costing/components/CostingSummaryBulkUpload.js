@@ -14,7 +14,6 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { ASSEMBLY } from '../../../config/masterData';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -84,7 +83,7 @@ class CostingSummaryBulkUpload extends Component {
         if (status === PENDING) {
             return (
                 <>
-                    <button className={'user-btn mr5'} disabled={row.IncorrectCostingCount > 0 ? true : false} onClick={() => this.sendForApprovalOrReject(props.value, true, row.TechnologyId)} type={'button'}>Approve</button>
+                    <button className={'user-btn mr5'} disabled={row.IncorrectCostingCount > 0 ? true : false} onClick={() => this.sendForApprovalOrReject(props.value, true)} type={'button'}>Approve</button>
                     <button className={'user-btn mr5'} onClick={() => this.sendForApprovalOrReject(props.value, false)} type={'button'}>Reject</button>
                     {/* {row.IncorrectCostingCount > 0 && <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>} */}
                 </>
@@ -146,13 +145,12 @@ class CostingSummaryBulkUpload extends Component {
      * @method sendForApprovalOrReject
      * @description Send costing for approval or reject
     */
-    sendForApprovalOrReject = (id, flag, technologyId = '') => {
+    sendForApprovalOrReject = (id, flag) => {
 
         let obj = {}
         obj.CostingBulkUploadFileId = id
         obj.IsAccept = flag
         obj.LoggedInUserId = loggedInUserId()
-        obj.IsAssemblyTechnologyCosting = technologyId === ASSEMBLY ? true : false
         this.props.sendForApprovalFromBulkUpload(obj, res => {
             if (res.data.Result) {
                 Toaster.success(res.data.Message)

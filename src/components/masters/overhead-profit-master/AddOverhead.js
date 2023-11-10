@@ -617,8 +617,6 @@ class AddOverhead extends Component {
   // called every time a file's `status` changes
   handleChangeStatus = ({ meta, file, remove }, status) => {
 
-    const { files, } = this.state;
-
     this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
     if (status === 'removed') {
@@ -1292,18 +1290,18 @@ class AddOverhead extends Component {
                           />
                         </Col>
                         <Col md="3">
-                          <label>Upload Files (upload up to 3 files)</label>
-                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                          <label>Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)</label>
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
-                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                          <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                               initialFiles={this.state.initialFiles}
-                              maxFiles={3}
+                              maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
                               disabled={isViewMode}
                               maxSizeBytes={2000000}
                               inputContent={(files, extra) =>
