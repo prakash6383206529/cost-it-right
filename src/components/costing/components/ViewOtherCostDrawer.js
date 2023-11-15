@@ -20,6 +20,7 @@ function ViewOtherCostDrawer(props) {
     const [gridData, setgridData] = useState([]);
     const [totalOtherCost, setTotalOtherCost] = useState(0);
     const [isLoader, setIsLoader] = useState(false)
+    const [discountData, setDiscountData] = useState([])
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -56,6 +57,16 @@ function ViewOtherCostDrawer(props) {
             })
             setTotalOtherCost(totalCost)
             setgridData(tempNew)
+            let discountTable = []
+            viewCostingData && viewCostingData[costingIndex]?.CostingPartDetails?.DiscountCostDetails && viewCostingData[costingIndex].CostingPartDetails.DiscountCostDetails.map((item) => {
+                let obj = {}
+                obj.DiscountDescription = item.Description
+                obj.DiscountApplicability = item.ApplicabilityType
+                obj.Percentage = item.Value ? item.Value : '-'
+                obj.Value = item.NetCost
+                discountTable.push(obj)
+            })
+            setDiscountData(discountTable)
         }
 
     }, [])
@@ -63,10 +74,47 @@ function ViewOtherCostDrawer(props) {
     const cancel = () => {
         props.closeDrawer('Close')
     }
+    const DiscountCost = () => {
+        return (<>
+            <Col md="12">
+                <HeaderTitle className="border-bottom"
+                    title={'Discount Cost'}
+                    customClass={'underLine-title'}
+                />
+            </Col>
+            <Col md="12">
+                <Table className="table cr-brdr-main mb-0 forging-cal-table" size="sm">
+                    <thead>
+                        <tr>
+                            <th className='custom-max-width-220px'>{`Discount Description/Remark`}</th>
+                            <th>{`Discount Applicability`}</th>
+                            <th>{`Percentage (%)`}</th>
+                            <th>{'Value'}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {discountData && discountData.map((item, index) => {
+                            return (
+                                <tr key={index} >
+                                    <td className='custom-max-width-220px'>{item?.DiscountDescription}</td>
+                                    <td>{item?.DiscountApplicability}</td>
+                                    <td>{String(item?.DiscountApplicability) === String('Fixed') ? '-' : item.Percentage}</td>
+                                    <td>{checkForDecimalAndNull(item.Value, initialConfiguration.NoOfDecimalForPrice)}</td>
+                                </tr>
+                            );
+                        })}
+                        {discountData.length === 0 && <tr>
+                            <td colSpan={"4"}> <NoContentFound title={EMPTY_DATA} /></td>
+                        </tr>}
+                    </tbody>
+                </Table>
+            </Col>
+        </>)
+    }
 
     const OtherCost = () => {
         return (<>
-            <Col md="12">
+            <Col md="12" className='mt-4'>
                 <HeaderTitle className="border-bottom"
                     title={'Other Cost'}
                     customClass={'underLine-title'}
@@ -118,7 +166,7 @@ function ViewOtherCostDrawer(props) {
                             <Row className="drawer-heading">
                                 <Col className='pl-0'>
                                     <div className={'header-wrapper left'}>
-                                        <h3>{'Additional Other Cost'}</h3>
+                                        <h3>{'Discount & Other Cost'}</h3>
                                     </div>
                                     <div
                                         onClick={cancel}
@@ -127,6 +175,7 @@ function ViewOtherCostDrawer(props) {
                                 </Col>
                             </Row>
                             <div className='hidepage-size'>
+                                {costingSummary && DiscountCost()}
                                 {costingSummary && OtherCost()}
                                 {/* {initialConfiguration?.IsShowNpvCost && costingSummary &&
                                     <>
