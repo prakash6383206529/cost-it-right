@@ -2975,6 +2975,8 @@ export const CLIENT_DOWNLOAD_EXCEl = [
     { label: "State", value: "StateName", },
     { label: "City", value: "CityName", },
     { label: "ZipCode", value: "ZipCode", },
+    { label: "Address 1", value: "AddressLine1", },
+    { label: "Address 2", value: "AddressLine2", },
 ]
 
 

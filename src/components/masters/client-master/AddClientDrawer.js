@@ -181,7 +181,7 @@ class AddClientDrawer extends Component {
                 if (res && res.data && res.data.Data) {
                     let Data = res.data.Data;
                     let gridArray = Data &&
-                        Data.POSeriesRequestList.map((item) => {
+                        Data?.POSeriesRequestList?.map((item) => {
                             return {
                                 Status: item.Status,
                                 StatusId: item.StatusId,
@@ -194,8 +194,9 @@ class AddClientDrawer extends Component {
                         this.props.fetchStateDataAPI(Data.CountryId, () => { })
                         this.props.fetchCityDataAPI(Data.StateId, () => { })
                     }
-
                     this.props.change('CompanyCode', Data.CompanyCode)
+                    this.props.change('AddressLine1', Data.AddressLine1)
+                    this.props.change('AddressLine2', Data.AddressLine2)
                     setTimeout(() => {
                         this.setState({
                             // isLoader: false,
@@ -256,7 +257,7 @@ class AddClientDrawer extends Component {
     */
     onSubmit = debounce((values) => {
         const { city, DataToCheck, DropdownChanged, statusGrid } = this.state;
-        const { isEditFlag, ID } = this.props;
+        const { isEditFlag, ID, clientData } = this.props;
 
         if (getConfigurationKey().IsShowPOSeriesInCustomerMaster && statusGrid && statusGrid.length === 0) {
             Toaster.warning('PO Series Table entry required.')
@@ -266,7 +267,8 @@ class AddClientDrawer extends Component {
         if (isEditFlag) {
             if (DropdownChanged && DataToCheck.ClientName === values.ClientName && DataToCheck.ClientEmailId === values.ClientEmailId &&
                 DataToCheck.PhoneNumber === values.PhoneNumber && DataToCheck.Extension === values.Extension &&
-                DataToCheck.MobileNumber === values.MobileNumber && DataToCheck.ZipCode === values.ZipCode) {
+                DataToCheck.MobileNumber === values.MobileNumber && DataToCheck.ZipCode === values.ZipCode && DataToCheck.AddressLine1 === values.AddressLine1 &&
+                DataToCheck.AddressLine2 === values.AddressLine2) {
                 this.toggleDrawer('')
                 return false
             }
@@ -284,7 +286,10 @@ class AddClientDrawer extends Component {
                 CityId: city.value,
                 LoggedInUserId: loggedInUserId(),
                 CompanyCode: values.CompanyCode,
-                POSeriesRequestList: statusGrid
+                POSeriesRequestList: getConfigurationKey().IsShowPOSeriesInCustomerMaster ? statusGrid : [],
+                AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
+                AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
+                AddressId: clientData.AddressId,
             }
 
             this.props.updateClient(updateData, (res) => {
@@ -309,7 +314,9 @@ class AddClientDrawer extends Component {
                 CityId: city.value,
                 LoggedInUserId: loggedInUserId(),
                 CompanyCode: values.CompanyCode,
-                POSeriesRequestList: statusGrid
+                POSeriesRequestList: getConfigurationKey().IsShowPOSeriesInCustomerMaster ? statusGrid : [],
+                AddressLine1: values.AddressLine1 ? values.AddressLine1.trim() : values.AddressLine1,
+                AddressLine2: values.AddressLine2 ? values.AddressLine2.trim() : values.AddressLine2,
             }
             this.props.createClient(formData, (res) => {
                 this.setState({ setDisable: false })
@@ -573,9 +580,6 @@ class AddClientDrawer extends Component {
                                             </Col>
                                         </Row>
                                     </Col>
-                                </Row>
-
-                                <Row className="pl-3">
                                     <Col md='6'>
                                         <Field
                                             name="MobileNumber"
@@ -590,6 +594,7 @@ class AddClientDrawer extends Component {
                                             customClassName={'withBorder'}
                                         />
                                     </Col>
+
                                     <Col md='6'>
                                         <Field
                                             name="CountryId"
@@ -606,8 +611,6 @@ class AddClientDrawer extends Component {
                                             disabled={isEditFlag ? true : false}
                                         />
                                     </Col>
-                                </Row>
-                                <Row className="pl-3">
                                     {(country.length === 0 || country.label === 'India') &&
                                         <Col md='6'>
                                             <Field
@@ -656,8 +659,33 @@ class AddClientDrawer extends Component {
                                             disabled={isViewMode}
                                         />
                                     </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label="Address 1"
+                                            name={"AddressLine1"}
+                                            type="text"
+                                            placeholder={isViewMode ? '-' : 'Enter'}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
+                                            component={renderText}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                            disabled={isViewMode}
+                                        />
+                                    </Col>
+                                    <Col md="6">
+                                        <Field
+                                            label="Address 2"
+                                            name={"AddressLine2"}
+                                            type="text"
+                                            placeholder={isViewMode ? '-' : 'Enter'}
+                                            validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, hashValidation]}
+                                            component={renderText}
+                                            className=" "
+                                            customClassName=" withBorder"
+                                            disabled={isViewMode}
+                                        />
+                                    </Col>
                                 </Row>
-
                                 <Row className='pl-3'>
                                     {getConfigurationKey().IsShowPOSeriesInCustomerMaster && (
                                         <>
