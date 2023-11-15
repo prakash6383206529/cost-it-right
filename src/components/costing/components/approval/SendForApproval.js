@@ -458,7 +458,7 @@ const SendForApproval = (props) => {
         tempObj.ImpactOfTheYear = data.yearImpact
         tempObj.Remark = getValues("remarks")
         tempObj.IsApproved = true
-        tempObj.BasicRate = data.basicRate
+        tempObj.BasicRate = data.BasicRate
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
@@ -581,7 +581,7 @@ const SendForApproval = (props) => {
         tempObj.CustomerId = data.customerId
         tempObj.CustomerName = data.customerName
         tempObj.CustomerCode = data.customerCode
-        tempObj.BasicRate = data.basicRate
+        tempObj.BasicRate = data.BasicRate
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
@@ -888,7 +888,7 @@ const SendForApproval = (props) => {
                           <div className="form-group">
                             <label>Basic Price</label>
                             <label className="form-control bg-grey input-form-control">
-                              {data.basicRate && data.basicRate !== '-' ? checkForDecimalAndNull(data.basicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
                           </div>
                         </Col>}

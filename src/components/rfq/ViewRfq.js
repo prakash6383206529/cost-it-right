@@ -432,7 +432,7 @@ function RfqListing(props) {
                     obj.customerId = quotationGrid[index]?.customerId
                     obj.customerCode = quotationGrid[index]?.customerCode
                     obj.customer = quotationGrid[index]?.customer
-                    obj.basicRate = quotationGrid[index]?.BasicRate
+                    obj.BasicRate = quotationGrid[index]?.BasicRate
 
 
                     // if (quotationGrid[index]?.EffectiveDate) {
