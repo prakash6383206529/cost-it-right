@@ -2,17 +2,17 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, } from 'react-redux'
-import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
-import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, } from '../../../../helper'
+import { checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, decimalNumberLimit3 } from '../../../../helper'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { setForgingCalculatorMachiningStockSection } from '../../actions/Costing'
 import TooltipCustom from '../../../common/Tooltip'
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 function LossStandardTable(props) {
-  const { rmRowData, isLossStandard, isNonFerrous, NonFerrousErrors, disableAll, ferrousErrors, isFerrous } = props
+  const { rmRowData, isLossStandard, isNonFerrous, disableAll, isFerrous } = props
   const trimValue = getConfigurationKey()
   const trim = trimValue.NoOfDecimalForInputOutput
   const [lossWeight, setLossWeight] = useState('')
@@ -258,10 +258,7 @@ function LossStandardTable(props) {
 
       return false
     }
-    setIsEdit(false)
-    setDisableLossType(false)
-    setFlashLossType(false)
-    if (Object.keys(errors).length > 0 || (isFerrous && ('rmGridFields.0.Percentage' in ferrousErrors < 100 && Object.keys(ferrousErrors).length > 0)) || (isNonFerrous && ('castingWeight' in NonFerrousErrors > 0 && Object.keys(NonFerrousErrors).length > 0))) {
+    if (Object.keys(errors).length > 0) {
       return false
     }
 
@@ -271,7 +268,7 @@ function LossStandardTable(props) {
     }
     //CONDITION TO CHECK DUPLICATE ENTRY IN GRID
     if (!isEdit) {
-      const isExist = tableData.findIndex(el => (el.LossOfType === LossOfType))
+      const isExist = tableData.findIndex(el => (String(el.LossOfType) === String(LossOfType)))
       if (isExist !== -1) {
         Toaster.warning('Already added, Please select another loss type.')
         return false;
@@ -307,11 +304,16 @@ function LossStandardTable(props) {
       FlashLoss: getValues('FlashLoss')?.label,
       FlashLossId: getValues('FlashLoss')?.value
     }
-
+    setUseformula(false)
+    setFlashLossType(false)
+    setBarCuttingAllowanceLossType(false)
+    setPercentage(true)
+    setDisableLossType(false)
     if (isEdit) {
       tempArray = Object.assign([...tableData], { [editIndex]: obj })
       setTableData(tempArray)
-      //setIsEdit(false)
+      setIsEdit(false)
+
     } else {
       // tempArray = [...tableData, obj]
       tempArray = tableData
@@ -345,17 +347,7 @@ function LossStandardTable(props) {
     })
   }
   const rateTableReset = () => {
-    reset({
-      LossPercentage: '',
-      FlashLength: '',
-      FlashThickness: '',
-      FlashWidth: '',
-      BarDiameter: '',
-      BladeThickness: '',
-      LossOfType: '',
-      LossWeight: '',
-      FlashLoss: '',
-    })
+    cancelUpdate()
   }
 
   /**
@@ -413,18 +405,24 @@ function LossStandardTable(props) {
     setIsEdit(false)
     setEditIndex('')
     setOldNetWeight('')
-    setValue('LossPercentage', '')
-    setValue('FlashLength', '')
-    setValue('FlashThickness', '')
-    setValue('FlashWidth', '')
-    setValue('BarDiameter', '')
-    setValue('BladeThickness', '')
-    setValue('LossOfType', '')
-    setValue('LossWeight', '')
-    setValue('FlashLoss', '')
+    reset({
+      LossPercentage: '',
+      FlashLength: '',
+      FlashThickness: '',
+      FlashWidth: '',
+      BarDiameter: '',
+      BladeThickness: '',
+      LossOfType: '',
+      LossWeight: '',
+      FlashLoss: '',
+    })
     setDisableLossType(false)
     setDisableFlashType(false)
     errors.LossPercentage = {}
+    setUseformula(false)
+    setFlashLossType(false)
+    setBarCuttingAllowanceLossType(false)
+    setPercentage(true)
   }
   /**
    * @method deleteRow
@@ -465,7 +463,7 @@ function LossStandardTable(props) {
     props.tableValue(tempData)
 
     setTableData(tempData)
-
+    cancelUpdate()
   }
 
   const getLossTypeName = (number) => {
@@ -516,7 +514,7 @@ function LossStandardTable(props) {
         {barCuttingAllowanceLossType &&
           <>
             <Col md="2">
-              <NumberFieldHookForm
+              <TextFieldHookForm
                 label={`Bar Diameter(mm)`}
                 name={'BarDiameter'}
                 Controller={Controller}
@@ -525,10 +523,7 @@ function LossStandardTable(props) {
                 mandatory={false}
                 rules={{
                   required: false,
-                  pattern: {
-                    value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for integer is 3 and for decimal is 3',
-                  },
+                  validate: { number, decimalNumberLimit3 },
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
@@ -541,7 +536,7 @@ function LossStandardTable(props) {
 
 
             <Col md="2" className='px-1'>
-              <NumberFieldHookForm
+              <TextFieldHookForm
                 label={`Blade Thickness(mm)`}
                 name={'BladeThickness'}
                 Controller={Controller}
@@ -550,10 +545,7 @@ function LossStandardTable(props) {
                 mandatory={false}
                 rules={{
                   required: false,
-                  pattern: {
-                    value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for integer is 3 and for decimal is 3',
-                  },
+                  validate: { number, decimalNumberLimit3 },
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
@@ -588,7 +580,7 @@ function LossStandardTable(props) {
         {useFormula &&
           <>
             <Col md="3">
-              <NumberFieldHookForm
+              <TextFieldHookForm
                 label={`Flash Length(mm)`}
                 name={'FlashLength'}
                 Controller={Controller}
@@ -597,10 +589,7 @@ function LossStandardTable(props) {
                 mandatory={true}
                 rules={{
                   required: true,
-                  pattern: {
-                    value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for integer is 3 and for decimal is 3',
-                  },
+                  validate: { number, decimalNumberLimit3 },
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
@@ -611,7 +600,7 @@ function LossStandardTable(props) {
               />
             </Col>
             <Col md="3">
-              <NumberFieldHookForm
+              <TextFieldHookForm
                 label={`Flash Thickness(mm)`}
                 name={'FlashThickness'}
                 Controller={Controller}
@@ -620,10 +609,7 @@ function LossStandardTable(props) {
                 mandatory={true}
                 rules={{
                   required: true,
-                  pattern: {
-                    value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for integer is 3 and for decimal is 3',
-                  },
+                  validate: { number, decimalNumberLimit3 },
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
@@ -634,7 +620,7 @@ function LossStandardTable(props) {
               />
             </Col>
             <Col md="3">
-              <NumberFieldHookForm
+              <TextFieldHookForm
                 label={`Flash Width(mm)`}
                 name={'FlashWidth'}
                 Controller={Controller}
@@ -643,10 +629,7 @@ function LossStandardTable(props) {
                 mandatory={true}
                 rules={{
                   required: true,
-                  pattern: {
-                    value: /^\d{1,3}(\.\d{0,3})?$/i,
-                    message: 'Maximum length for integer is 3 and for decimal is 3',
-                  },
+                  validate: { number, decimalNumberLimit3 },
                 }}
                 handleChange={() => { }}
                 defaultValue={''}
@@ -686,7 +669,7 @@ function LossStandardTable(props) {
           </>}
         <Col md="2">
           {lossWeightTooltip && (props.CostingViewMode || isDisable || disableAll) && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'loss-weight'} tooltipText={lossWeightTooltip} />}
-          <NumberFieldHookForm
+          <TextFieldHookForm
             label={`Loss Weight`}
             name={'LossWeight'}
             Controller={Controller}
@@ -716,9 +699,10 @@ function LossStandardTable(props) {
 
                 <button
                   type="button"
-                  className={'reset-btn mt30 pull-left mr5'}
+                  className="mt30 cancel-btn"
                   onClick={() => cancelUpdate()}
                 >
+                  <div className={"cancel-icon"}></div>
                   Cancel
                 </button>
               </>

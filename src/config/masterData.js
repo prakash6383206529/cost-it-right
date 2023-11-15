@@ -5228,6 +5228,7 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Machine Type", value: "MachineTypeName", },
     { label: "Machine Tonnage", value: "MachineTonnage", },
     { label: "Process Name", value: "ProcessName", },
+    { label: "UOM", value: "UOM" },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Customer (Code)", value: "CustomerName", },

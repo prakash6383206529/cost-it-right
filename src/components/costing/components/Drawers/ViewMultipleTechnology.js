@@ -70,7 +70,6 @@ function ViewMultipleTechnology(props) {
                                 <th>{`Name`}</th>
                                 <th>{`Part Type`}</th>
                                 <th>{`Technology`}</th>
-
                                 <th>{`Quantity`}</th>
                                 <th>{`Part Cost/Pc`}</th>
                                 <th>{`BOP Cost`}</th>
@@ -100,7 +99,7 @@ function ViewMultipleTechnology(props) {
 
                                             <td> {item?.Quantity}</td>
                                             <td>
-                                                {checkForDecimalAndNull(item?.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice)}
+                                                {checkForDecimalAndNull(item?.NetChildPartsCost, initialConfiguration.NoOfDecimalForPrice)}
                                             </td>
                                             <td>
                                                 {checkForDecimalAndNull(item?.NetBoughtOutPartCostWithQuantity, initialConfiguration.NoOfDecimalForPrice)}

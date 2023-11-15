@@ -4,7 +4,7 @@ import { Col, Row } from "reactstrap";
 import { NumberFieldHookForm, TextFieldHookForm } from "../../../../layout/HookFormInputs";
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import TooltipCustom from "../../../../common/Tooltip";
-import { ceilByMultiple, checkForDecimalAndNull, checkForNull } from "../../../../../helper";
+import { ceilByMultiple, checkForDecimalAndNull, checkForNull, number, checkWhiteSpaces, decimalAndNumberValidation, noDecimal, maxLength7 } from "../../../../../helper";
 import { useDispatch, useSelector } from "react-redux";
 import { corrugatedData } from "../../../actions/Costing";
 
@@ -14,15 +14,15 @@ export const RMSection = (props) => {
     const dispatch = useDispatch()
     const { corrugatedDataObj } = useSelector(state => state.costing)
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
-    const { WeightCalculatorRequest } = props
+    const { WeightCalculatorRequest, errors, control, Controller, register } = props
     const defaultValues = {
         no_of_ply: WeightCalculatorRequest && WeightCalculatorRequest.NoOfPly !== null ? WeightCalculatorRequest.NoOfPly : '',
         gsm: WeightCalculatorRequest && WeightCalculatorRequest.GSM !== null ? WeightCalculatorRequest.GSM : '',
-        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
+        bursting_factor: WeightCalculatorRequest && WeightCalculatorRequest.BurstingFactor ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingFactor, initialConfiguration.NoOfDecimalForInputOutput) : '',
         bursting_strength: WeightCalculatorRequest && WeightCalculatorRequest.BurstingStrength !== null ? checkForDecimalAndNull(WeightCalculatorRequest.BurstingStrength, initialConfiguration.NoOfDecimalForInputOutput) : '',
     }
     const {
-        register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
+        setValue, getValues } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues
@@ -66,10 +66,7 @@ export const RMSection = (props) => {
                         mandatory={true}
                         rules={{
                             required: true,
-                            pattern: {
-                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                            },
+                            validate: { number, checkWhiteSpaces, noDecimal, maxLength7 },
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
@@ -89,11 +86,7 @@ export const RMSection = (props) => {
                         mandatory={true}
                         rules={{
                             required: true,
-                            pattern: {
-                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                            },
-
+                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
@@ -114,11 +107,7 @@ export const RMSection = (props) => {
                         mandatory={true}
                         rules={{
                             required: true,
-                            pattern: {
-                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                            },
-
+                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                         }}
                         handleChange={() => { }}
                         defaultValue={''}
@@ -130,7 +119,7 @@ export const RMSection = (props) => {
                 </Col>
                 <Col md="3">
                     <TooltipCustom disabledIcon={true} id={'bursting-strength'} tooltipText={'Bursting Strength = (No of Ply * GSM * Busting Factor) / 1000'} />
-                    <NumberFieldHookForm
+                    <TextFieldHookForm
                         label={`Bursting Strength`}
                         name={'bursting_strength'}
                         Controller={Controller}
@@ -153,7 +142,7 @@ export const RMSection = (props) => {
 };
 
 export const BoxDetails = (props) => {
-    const { CostingViewMode, WeightCalculatorRequest } = props
+    const { CostingViewMode, WeightCalculatorRequest, errors, control, Controller, register } = props
     const { corrugatedDataObj } = useSelector(state => state.costing)
     const dispatch = useDispatch()
     const defaultValues = {
@@ -167,7 +156,7 @@ export const BoxDetails = (props) => {
         // width_inc_cutting: WeightCalculatorRequest && WeightCalculatorRequest.WidthSheetIncCuttingAllowance !== null ? WeightCalculatorRequest.WidthSheetIncCuttingAllowance : '',
     }
     const {
-        register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
+        setValue, getValues, } = useForm({
             mode: 'onChange',
             reValidateMode: 'onChange',
             defaultValues: defaultValues
@@ -243,11 +232,7 @@ export const BoxDetails = (props) => {
                     mandatory={true}
                     rules={{
                         required: true,
-                        pattern: {
-                            value: /^\d{0,4}(\.\d{0,6})?$/i,
-                            message: 'Maximum length for integer is 4 and for decimal is 6',
-                        },
-
+                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -267,11 +252,7 @@ export const BoxDetails = (props) => {
                     mandatory={true}
                     rules={{
                         required: true,
-                        pattern: {
-                            value: /^\d{0,4}(\.\d{0,6})?$/i,
-                            message: 'Maximum length for integer is 4 and for decimal is 6',
-                        },
-
+                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -292,11 +273,7 @@ export const BoxDetails = (props) => {
                     mandatory={true}
                     rules={{
                         required: true,
-                        pattern: {
-                            value: /^\d{0,4}(\.\d{0,6})?$/i,
-                            message: 'Maximum length for integer is 4 and for decimal is 6',
-                        },
-
+                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -317,12 +294,8 @@ export const BoxDetails = (props) => {
                     mandatory={true}
                     rules={{
                         required: true,
-                        pattern: {
-                            value: /^\d{0,4}(\.\d{0,6})?$/i,
-                            message: 'Maximum length for integer is 4 and for decimal is 6',
-                        },
+                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
-
                     handleChange={() => { }}
                     defaultValue={''}
                     className=""
@@ -361,7 +334,7 @@ export const ProcessAndRejection = (props) => {
             </Col>
             <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'paper-width'} tooltipClass={'weight-of-sheet'} tooltipText={'Paper wt. + Process Rejection = (Width Cutting Allowance * Length Cutting Allowance * Flute Type Percentage * No of Ply * GSM / 1550) / 1000'} />
-                <NumberFieldHookForm
+                <TextFieldHookForm
                     label={'Paper wt.+ Process Rejection(Kg)'}
                     name={'paper_process'}
                     Controller={Controller}
@@ -371,11 +344,7 @@ export const ProcessAndRejection = (props) => {
                     id={'paper-width'}
                     rules={{
                         required: false,
-                        pattern: {
-                            value: /^\d{0,4}(\.\d{0,6})?$/i,
-                            message: 'Maximum length for integer is 4 and for decimal is 6',
-                        },
-
+                        validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                     }}
                     handleChange={() => { }}
                     defaultValue={''}

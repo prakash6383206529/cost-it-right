@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, clearFields, reduxForm } from "redux-form";
 import { Row, Col, } from 'reactstrap';
 import { required, postiveNumber, maxLength5, minValue1, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { renderText } from "../../layout/FormInputs";
@@ -164,11 +164,11 @@ class AddAssemblyForm extends Component {
         this.props.getDrawerAssemblyPartDetail('', res => { })
 
         if (isAddMore) {
-
+            const allInputFieldsName = ['AssemblyPartName', 'Quantity']
+            allInputFieldsName.forEach(fieldName => {
+                this.props.dispatch(clearFields('AddAssemblyForm', false, false, fieldName));
+            });
             this.props.setChildParts(childData)
-            // this.setState({
-            //     assemblyPart: []
-            // })
             this.setState({ updateAsyncDropdown: !this.state.updateAsyncDropdown })       //UPDATING RANDOM STATE FOR RERENDERING OF COMPONENT AFTER CLICKING ON ADD MORE BUTTON
         } else {
             this.props.toggleDrawer('', childData)
