@@ -117,8 +117,8 @@ function SimulationApproveReject(props) {
   const checkPermission = (costingTypeId) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels ? technologyLevelsList?.TechnologyLevels : [])
-    setLevelDetails(levelDetailsTemp)
     if (levelDetailsTemp?.length !== 0) {
+      setLevelDetails(levelDetailsTemp)
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
       Toaster.warning("You don't have permission to send simulation for approval.")
