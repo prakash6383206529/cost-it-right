@@ -898,22 +898,24 @@ function ApprovalListing(props) {
       setPageNo(pageNoNew)
     }
     else if (Number(newPageSize) === 50) {
-      getTableData("", "", "", "", currentRowIndex, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
 
       if (pageNo >= Math.ceil(totalRecordCount / 50)) {
         setPageNo(Math.ceil(totalRecordCount / 50))
         getTableData("", "", "", "", 0, 50, true, floatingFilterData)
+      } else {
+        getTableData("", "", "", "", currentRowIndex, 50, true, floatingFilterData)
       }
     }
     else if (Number(newPageSize) === 100) {
-      getTableData("", "", "", "", currentRowIndex, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
       setGlobalTake(100)
       if (pageNo >= Math.ceil(totalRecordCount / 100)) {
         setPageNo(Math.ceil(totalRecordCount / 100))
         getTableData("", "", "", "", 0, 100, true, floatingFilterData)
+      } else {
+        getTableData("", "", "", "", currentRowIndex, 100, true, floatingFilterData)
       }
     }
 

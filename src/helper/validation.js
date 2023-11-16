@@ -127,10 +127,9 @@ export const checkWhiteSpaces = value => {
 export const checkSpacesInString = value => {
     return value && value.includes('  ') ? 'The field should not contain more than one space.' : undefined;
 }
-
 export const number = value =>
-    value && (isNaN(Number(value)) || Number(value) < 0)
-        ? 'Please enter positive number only.' : undefined;
+    value && (isNaN(Number(value)) || Number(value) < 0 || !/^\d*\.?\d+$/.test(value))
+        ? 'Please enter a positive number.' : undefined;
 
 export const postiveNumber = value =>
     value && !/^\+?(0|[0-9]\d*)$/.test(value)
@@ -460,3 +459,6 @@ export const alphaneumericSpecialAccept = value => {
         ? 'Invalid field' : undefined;
 }
 
+export const decimalNumberLimit3 = value =>
+    value && !/^\d{0,3}(\.\d{0,3})?$/.test(value)
+        ? 'Maximum length for integer is 3 and for decimal is 3' : undefined;

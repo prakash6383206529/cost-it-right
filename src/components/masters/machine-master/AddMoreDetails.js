@@ -2453,7 +2453,7 @@ class AddMoreDetails extends Component {
   }
 
   showDelete = (uniqueProcessId) => {
-    if (this.state.UniqueProcessId?.length === 0 || this.state.UniqueProcessId === []) {
+    if (!this.state.UniqueProcessId || this.state.UniqueProcessId?.length === 0) {
       this.setState({ UniqueProcessId: [...this.state.UniqueProcessId, ...uniqueProcessId] })
     } else {
       this.setState({ UniqueProcessId: [...uniqueProcessId] })
@@ -4266,18 +4266,18 @@ class AddMoreDetails extends Component {
                           />
                         </Col>
                         <Col md="3">
-                          <label>Upload Files (upload up to 3 files)</label>
-                          <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                          <label>Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)</label>
+                          <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
-                          <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                          <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
                               PreviewComponent={this.Preview}
                               accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                               initialFiles={this.state.initialFiles}
-                              maxFiles={3}
+                              maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
                               maxSizeBytes={2000000}
                               disabled={this.state.isViewFlag ? true : isViewMode}
                               inputContent={(files, extra) => (extra.reject ? 'Image, audio and video files only' : (<div className="text-center">

@@ -144,10 +144,10 @@ function CommonApproval(props) {
         dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
 
         setLoader(true)
-        props?.isDashboard && dispatch(dashboardTabLock(true))   // LOCK DASHBOARD TAB WHEN LOADING
+        props?.isDashboard && dispatch(dashboardTabLock(true))
         dispatch(getRMApprovalList(props?.MasterId, skip, take, isPagination, dataObj, (res) => {
             setLoader(false)
-            dispatch(dashboardTabLock(false))     // UNLOCK DASHBOARD TAB AFTER LOADING  
+            dispatch(dashboardTabLock(false))
             let obj = { ...floatingFilterData }
 
             if (res) {

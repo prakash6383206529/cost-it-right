@@ -1866,7 +1866,7 @@ export const ELECTRONICS = 'Electronics';
 export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
-export const FORGING = 'Forging';
+export const FORGINGNAME = 'Forging';
 export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
 export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
@@ -2682,7 +2682,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.265";
+export const VERSION = "V2.1.266";
 
 
 

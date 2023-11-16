@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, clearFields } from "redux-form";
+import { Field, reduxForm } from "redux-form";
 import { Row, Col } from 'reactstrap';
 import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3, hashValidation } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
@@ -708,19 +708,19 @@ class AddIndivisualPart extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to 3 files)
+                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
                             </label>
-                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
-                                maxFiles={3}
+                                maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
                                 disabled={isViewMode}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>

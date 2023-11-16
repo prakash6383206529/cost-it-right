@@ -517,7 +517,7 @@ function SimulationApproveReject(props) {
         vendorId={props?.vendorId}
         SimulationTechnologyId={props?.SimulationTechnologyId}
         SimulationType={props?.SimulationType}
-        isSimulationApprovalListing={props?.isSimulationApprovalListing}
+
         anchor={'right'}
         approvalData={[]}
         type={type}

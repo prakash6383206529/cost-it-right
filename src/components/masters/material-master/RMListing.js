@@ -320,9 +320,9 @@ class RMListing extends Component {
                                 id="rmSpecification_addAssociation"
                                 className="mr5"
                                 onClick={this.openAssociationModel}
-                                title="Connect Material"
-                                icon="plus"
-                                buttonName="C"
+                                title="Add Association"
+                                icon="plus mr-0 ml5"
+                                buttonName="A"
                             />
                         )}
                         {AddAccessibility && (
@@ -332,7 +332,7 @@ class RMListing extends Component {
                                 className="mr5"
                                 onClick={this.openModel}
                                 title="Add Material"
-                                icon={"plus"}
+                                icon={"plus mr-0 ml5"}
                                 buttonName="M"
                             />
                         )}

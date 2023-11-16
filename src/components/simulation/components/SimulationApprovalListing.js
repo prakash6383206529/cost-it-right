@@ -189,7 +189,7 @@ function SimulationApprovalListing(props) {
             isDashboard: isDashboard ?? false
         }
         setIsLoader(true)
-        isDashboard && dispatch(dashboardTabLock(true))     // LOCK DASHBOARD TAB WHEN LOADING
+        isDashboard && dispatch(dashboardTabLock(true))
         let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
 
@@ -201,12 +201,11 @@ function SimulationApprovalListing(props) {
                 setTotalRecordCount(0)
                 setPageNo(0)
                 setIsLoader(false)
-                dispatch(dashboardTabLock(false))                // UNLOCK DASHBOARD TAB AFTER LOADING
             }
             if (res?.data?.Result) {
 
                 setIsLoader(false)
-                dispatch(dashboardTabLock(false))                 // UNLOCK DASHBOARD TAB AFTER LOADING         
+                dispatch(dashboardTabLock(false))
                 let isReset = true
                 if (res) {
 
@@ -502,15 +501,6 @@ function SimulationApprovalListing(props) {
 
     }
 
-    /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-    const effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-    }
-
     const onRowSelect = (row, isSelected, e) => {
 
         let arr = []
@@ -734,7 +724,7 @@ function SimulationApprovalListing(props) {
 
     const frameworkComponents = {
         // totalValueRenderer: this.buttonFormatter,
-        effectiveDateRenderer: effectiveDateFormatter,
+        // effectiveDateRenderer: this.effectiveDateFormatter,
         // costingHeadRenderer: this.costingHeadFormatter,
         linkableFormatter: linkableFormatter,
         requestedByFormatter: requestedByFormatter,
@@ -827,8 +817,6 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn width={200} field="CustomerName" headerName="Customer (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
-                                    <AgGridColumn width={200} field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer'></AgGridColumn>
-
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>

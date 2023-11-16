@@ -10,7 +10,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { ASSEMBLYNAME } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
-import _ from 'lodash'
+import _, { debounce } from 'lodash'
 import LoaderCustom from '../../common/LoaderCustom';
 
 class BOMViewer extends Component {
@@ -53,7 +53,8 @@ class BOMViewer extends Component {
     const { isEditFlag, PartId, NewAddedLevelOneChilds, avoidAPICall } = this.props;
     if (isEditFlag && !avoidAPICall) {
       this.setState({ isLoader: true })
-      this.props.getBOMViewerTree(PartId, res => {
+      const debouncedGetBOMViewerTree = debounce(this.props.getBOMViewerTree, 500); // Adjust the delay as per your needs
+      debouncedGetBOMViewerTree(PartId, res => {
         if (res && res.status === 200) {
           let Data = res.data.Data;
           this.setState({ bomFromAPI: Data.FlowPoints })

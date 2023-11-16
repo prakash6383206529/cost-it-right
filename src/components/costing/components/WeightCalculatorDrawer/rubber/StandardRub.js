@@ -25,7 +25,6 @@ function StandardRub(props) {
     const [tableData, setTableData] = useState([])
     const [disableCondition, setDisableCondition] = useState(true)
     const [agGridTable, setAgGridTable] = useState(true)
-    const [timeOutId, setTimeoutId] = useState([])
     const [totalRMCost, setTotalRMCost] = useState("")
     const [rmDropDownData, setRmDropDownData] = useState([])
     const [rmRowDataState, setRmRowDataState] = useState({})
@@ -33,6 +32,7 @@ function StandardRub(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [dataToSend, setDataToSend] = useState({ ...WeightCalculatorRequest })
     const [isDisable, setIsDisable] = useState(false)
+    const [reRender, setRerender] = useState(false)
 
     const defaultValues = {
         shotWeight: WeightCalculatorRequest && WeightCalculatorRequest.ShotWeight !== null ? WeightCalculatorRequest.ShotWeight : '',
@@ -81,43 +81,26 @@ function StandardRub(props) {
 
     }, [tableData])
 
+    useEffect(() => {
+        if (Number(getValues('FinishWeight') < dataToSend.GrossWeight)) {
+            delete errors.FinishWeight
+            setRerender(!reRender)
+        }
+    }, [dataToSend.GrossWeight])
     const handleInnerDiameter = (e) => {
-
-        clearTimeout(timeOutId);
-        let timeout = setTimeout(() => {
-
-            const InnerDiameter = e
-            const OuterDiameter = Number(getValues('OuterDiameter'))
-            if (InnerDiameter && OuterDiameter && InnerDiameter > OuterDiameter) {
-                Toaster.warning('Inner diameter cannot be greater than outer diameter')
-                setTimeout(() => {
-                    setValue('InnerDiameter', 0)
-                }, 300);
-                return false
-            }
-        }, 1000)
-
-        setTimeoutId(timeout)
+        const InnerDiameter = e
+        const OuterDiameter = Number(getValues('OuterDiameter'))
+        if (OuterDiameter > InnerDiameter) {
+            delete errors.OuterDiameter
+        }
     }
 
     const handleOuterDiameter = (e) => {
-
-        clearTimeout(timeOutId);
-        let timeout = setTimeout(() => {
-
-            const InnerDiameter = Number(getValues('InnerDiameter'))
-            const OuterDiameter = e
-            if (InnerDiameter && OuterDiameter && InnerDiameter > OuterDiameter) {
-                Toaster.warning('Inner diameter cannot be greater than outer diameter')
-                setTimeout(() => {
-                    setValue('OuterDiameter', 0)
-                }, 300);
-                return false
-            }
-
-        }, 1000);
-        setTimeoutId(timeout)
-
+        const InnerDiameter = Number(getValues('InnerDiameter'))
+        const OuterDiameter = e
+        if (InnerDiameter < OuterDiameter) {
+            delete errors.InnerDiameter
+        }
     }
 
     const calculateTotalLength = () => {
@@ -136,20 +119,11 @@ function StandardRub(props) {
         const InnerDiameter = Number(getValues('InnerDiameter'))
         const OuterDiameter = Number(getValues('OuterDiameter'))
 
-        if (InnerDiameter && OuterDiameter && InnerDiameter > OuterDiameter) {
-            // Toaster.warning('Inner diameter cannot be greater than outer diameter')
-            // setTimeout(() => {
-            //     setValue('OuterDiameter', 0)
-            // }, 300);
-            return false
-
-        }
-
         if (InnerDiameter && OuterDiameter) {
             const Length = Number(getValues('Length'))
             const CuttingAllowance = Number(getValues('CuttingAllowance'))
             let Volume = 0.7857 * (Math.pow(checkForNull(OuterDiameter), 2) - Math.pow(checkForNull(InnerDiameter), 2)) * checkForNull(Length + CuttingAllowance)
-            let GrossWeight = Volume * (checkForNull(10) / 1000000)
+            let GrossWeight = Volume * (checkForNull(rmRowDataState.Density) / 1000000)
 
 
             setDataToSend(prevState => ({ ...prevState, Volume: Volume, GrossWeight: GrossWeight }))
@@ -333,7 +307,7 @@ function StandardRub(props) {
 
         }
 
-        if (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0 || obj.FinishWeight === 0) {
+        if (obj.InnerDiameter === 0 || obj.OuterDiameter === 0 || obj.Length === 0 || obj.CuttingAllowance === 0) {
 
             Toaster.warning("Please fill all the mandatory fields first.")
             return false;
@@ -517,6 +491,10 @@ function StandardRub(props) {
                                                 rules={{
                                                     required: false,
                                                     validate: { number, decimalAndNumberValidation },
+                                                    max: {
+                                                        value: getValues('OuterDiameter') - 0.00000001, // adjust the threshold here acc to decimal validation above,
+                                                        message: 'Inner Diameter should not be greater than outer diameter.'
+                                                    },
                                                 }}
                                                 handleChange={(e) => handleInnerDiameter(e.target.value)}
                                                 defaultValue={''}
@@ -537,6 +515,10 @@ function StandardRub(props) {
                                                 rules={{
                                                     required: false,
                                                     validate: { number, decimalAndNumberValidation },
+                                                    min: {
+                                                        value: parseFloat(getValues('InnerDiameter')) + 0.00000001, // adjust the threshold here acc to decimal validation above
+                                                        message: 'Outer Diameter should be greater than the inner diameter.'
+                                                    },
                                                 }}
                                                 handleChange={(e) => handleOuterDiameter(e.target.value)}
                                                 defaultValue={''}
@@ -657,6 +639,10 @@ function StandardRub(props) {
                                                 rules={{
                                                     required: false,
                                                     validate: { number, decimalAndNumberValidation },
+                                                    max: {
+                                                        value: getValues('GrossWeight'),
+                                                        message: 'Finish weight should not be greater than gross weight.'
+                                                    },
                                                 }}
                                                 handleChange={() => { }}
                                                 defaultValue={''}

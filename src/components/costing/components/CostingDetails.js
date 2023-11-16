@@ -489,15 +489,15 @@ function CostingDetails(props) {
           let cbcArray = []
           let wacArray = []
           Data && Data.map((item) => {
-            if (item.CostingTypeId === NCCTypeId) {
+            if (Number(item.CostingTypeId) === NCCTypeId) {
               nccArray.push(item)
-            } else if (item.CostingTypeId === VBCTypeId) {
+            } else if (Number(item.CostingTypeId) === VBCTypeId) {
               vbcArray.push(item)
-            } else if (item.CostingTypeId === ZBCTypeId) {
+            } else if (Number(item.CostingTypeId) === ZBCTypeId) {
               zbvArray.push(item)
-            } else if (item.CostingTypeId === CBCTypeId) {
+            } else if (Number(item.CostingTypeId) === CBCTypeId) {
               cbcArray.push(item)
-            } else if (item.CostingTypeId === WACTypeId) {
+            } else if (Number(item.CostingTypeId) === WACTypeId) {
               wacArray.push(item)
             }
             return null
