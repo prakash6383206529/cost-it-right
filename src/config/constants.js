@@ -988,6 +988,7 @@ export const API = {
   getCostMovementReportByPart: `${BASE_URL}/reports/get-cost-movement-report-by-part`,
   getCostRatioReport: `${BASE_URL}/reports/get-cost-ratio-report`,
   getNfrInsightsDetails: `${BASE_URL}/reports/get-nfr-insights-details`,
+  getNfrInsightsStatusDetails: `${BASE_URL}/reports/get-nfr-insights-status-details`,
 
   //RFQ
   getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
@@ -1748,6 +1749,7 @@ export const GET_PRODUCT_LIST = 'GET_PRODUCT_LIST'
 export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
 export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
 export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
+export const GET_NFR_INSIGHT_STATUS_DETAILS = 'GET_NFR_INSIGHT_STATUS_DETAILS'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -2727,4 +2729,4 @@ export const RAW_MATERIAL_VENDOR_TYPE = Number(reactLocalStorage.getObject('vend
 export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[VENDOR_TYPE_VBC])
 
 //VERSION 
-export const VERSION = "V2.1.265.4";
+export const VERSION = "V2.1.265.5";

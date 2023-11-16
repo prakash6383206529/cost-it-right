@@ -12,7 +12,8 @@ import {
     GET_PRODUCT_LIST,
     GET_PRODUCT_PART_DATA_LIST,
     GET_STAGE_OF_PART_DETAILS,
-    GET_NFR_INSIGHT_DETAILS
+    GET_NFR_INSIGHT_DETAILS,
+    GET_NFR_INSIGHT_STATUS_DETAILS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper';
 
@@ -557,6 +558,22 @@ export function getNfrInsightsDetails(callback) {
         request.then((response) => {
             dispatch({
                 type: GET_NFR_INSIGHT_DETAILS,
+                payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
+            })
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+export function getNfrInsightsStatusDetails(data, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNfrInsightsStatusDetails}?plantCode=${data?.plantCode}&nfrVersion=${data?.nfrVersion}`, config())
+        request.then((response) => {
+            dispatch({
+                type: GET_NFR_INSIGHT_STATUS_DETAILS,
                 payload: response.status === 204 || response.data.Result === false ? [] : response.data.Data
             })
             callback(response);
