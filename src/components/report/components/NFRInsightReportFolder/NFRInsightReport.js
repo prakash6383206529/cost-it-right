@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row } from 'reactstrap';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { getNfrInsightsDetails } from '../../actions/ReportListing';
+import { getNfrInsightsDetails, getNfrInsightsStatusDetails } from '../../actions/ReportListing';
 import { loggedInUserId, searchNocontentFilter } from '../../../../helper';
-import { EMPTY_DATA, defaultPageSize } from '../../../../config/constants';
+import { EMPTY_DATA } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
 import ScrollToTop from '../../../common/ScrollToTop';
 import { PaginationWrapper } from '../../../common/commonPagination';
-import { reactLocalStorage } from 'reactjs-localstorage';
 import ReactExport from 'react-export-excel';
-import { hideCustomerFromExcel } from '../../../common/CommonFunctions';
 import { NFR_INSIGHT_REPORT } from '../../../../config/masterData';
+import NFRInsightStatusDetailsDrawer from './NFRInsightStatusDetailsDrawer';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -28,6 +27,7 @@ function NFRInsightsReport(props) {
     const [selectedRowData, setSelectedRowData] = useState(false);
     const [noData, setNoData] = useState(false);
     const [dataCount, setDataCount] = useState(0);
+    const [showDrawer, setShowDrawer] = useState(false);
     const { reasonDataList } = useSelector(state => state.reason);
     const { nfrInsightDetails } = useSelector(state => state.report);
     const dispatch = useDispatch();
@@ -89,24 +89,70 @@ function NFRInsightsReport(props) {
         gridApi.deselectAll()
     }
 
+    const callAPI = (props) => {
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let data = {
+            plantCode: rowData?.PlantCode,
+            nfrVersion: ''
+        }
+        switch (props?.column?.colId) {
+            case "TotalOEQA1Count":
+                data.nfrVersion = "OEQA1"
+                break;
+            case "TotalOEQA2Count":
+                data.nfrVersion = "OEQA2"
+                break;
+            case "TotalOEQA3Count":
+                data.nfrVersion = "OEQA3"
+                break;
+            case "TotalOEQA4Count":
+                data.nfrVersion = "OEQA4"
+                break;
+            case "TotalPFS1Count":
+                data.nfrVersion = "PFS1"
+                break;
+            case "TotalPFS2Count":
+                data.nfrVersion = "PFS2"
+                break;
+            case "TotalPFS3Count":
+                data.nfrVersion = "PFS3"
+                break;
 
-    const isFirstColumn = (params) => {
-        var displayedColumns = params.columnApi.getAllDisplayedColumns();
-        var thisIsFirstColumn = displayedColumns[0] === params.column;
-        return thisIsFirstColumn;
-
+            default:
+                break;
+        }
+        if (cell) {
+            dispatch(getNfrInsightsStatusDetails(data, (res) => {
+                setShowDrawer(true)
+            }))
+        }
     }
+
+    /**
+  * @method linkableTotalOEQA1Formatter
+  * @description Renders Name link
+  */
+    const linkableTotalOEQA1Formatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return (
+            <Fragment>{<div onClick={() => callAPI(props)} className={props?.rowIndex !== 0 && cell ? 'link' : ''}>
+                {cell ? cell : "-"}
+            </div>}</Fragment>
+        )
+    }
+
     const defaultColDef = {
         resizable: true,
         filter: true,
         sortable: false,
         headerCheckboxSelectionFilteredOnly: true,
-        // checkboxSelection: isFirstColumn
     };
 
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
-        statusButtonFormatter: statusButtonFormatter
+        statusButtonFormatter: statusButtonFormatter,
+        linkableTotalOEQA1Formatter: linkableTotalOEQA1Formatter
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -120,10 +166,13 @@ function NFRInsightsReport(props) {
 
     const onBtExport = () => {
         let tempArr = []
-        //tempArr = gridApi && gridApi?.getSelectedRows()
         tempArr = nfrInsightDetails
         return returnExcelColumn(NFR_INSIGHT_REPORT, tempArr)
     };
+
+    const closeDrawer = () => {
+        setShowDrawer(false)
+    }
 
     return (
         <>
@@ -177,15 +226,15 @@ function NFRInsightsReport(props) {
                             onRowSelected={onRowSelect}
                         >
                             <AgGridColumn field="Company" width={"240px"} headerName="Company"></AgGridColumn>
-                            <AgGridColumn field="PlantCode" width={"240px"} headerName="Plant Code"></AgGridColumn>
+                            <AgGridColumn field="PlantName" width={"240px"} headerName="Plant (Code)"></AgGridColumn>
                             <AgGridColumn field="TotalNfrCount" headerName="Total Nfr Count"></AgGridColumn>
-                            <AgGridColumn field="TotalOEQA1Count" headerName="Total OEQA1 Count"></AgGridColumn>
-                            <AgGridColumn field="TotalOEQA2Count" headerName="Total OEQA2 Count"></AgGridColumn>
-                            <AgGridColumn field="TotalOEQA3Count" headerName="Total OEQA3 Count"></AgGridColumn>
-                            <AgGridColumn field="TotalOEQA4Count" headerName="Total OEQA4 Count"></AgGridColumn>
-                            <AgGridColumn field="TotalPFS1Count" headerName="Total PFS1 Count"></AgGridColumn>
-                            <AgGridColumn field="TotalPFS2Count" headerName="Total PFS2 Count"></AgGridColumn>
-                            <AgGridColumn field="TotalPFS3Count" headerName="Total PFS3 Count"></AgGridColumn>
+                            <AgGridColumn field="TotalOEQA1Count" headerName="Total OEQA1 Count" cellRenderer='linkableTotalOEQA1Formatter'></AgGridColumn>
+                            <AgGridColumn field="TotalOEQA2Count" headerName="Total OEQA2 Count" cellRenderer='linkableTotalOEQA1Formatter'></AgGridColumn>
+                            <AgGridColumn field="TotalOEQA3Count" headerName="Total OEQA3 Count" cellRenderer='linkableTotalOEQA1Formatter'></AgGridColumn>
+                            <AgGridColumn field="TotalOEQA4Count" headerName="Total OEQA4 Count" cellRenderer='linkableTotalOEQA1Formatter'></AgGridColumn>
+                            <AgGridColumn field="TotalPFS1Count" headerName="Total PFS1 Count" cellRenderer='linkableTotalOEQA1Formatter'></AgGridColumn>
+                            <AgGridColumn field="TotalPFS2Count" headerName="Total PFS2 Count" cellRenderer='linkableTotalOEQA1Formatter'></AgGridColumn>
+                            <AgGridColumn field="TotalPFS3Count" headerName="Total PFS3 Count" cellRenderer='linkableTotalOEQA1Formatter'></AgGridColumn>
                             <AgGridColumn field="OEQA1DraftCount" headerName="OEQA1 Draft Count"></AgGridColumn>
                             <AgGridColumn field="OEQA1PendingForApprovalCount" headerName="OEQA1 Pending For Approval Count"></AgGridColumn>
                             <AgGridColumn field="OEQA1ApprovedCount" headerName="OEQA1 Approved Count"></AgGridColumn>
@@ -239,9 +288,13 @@ function NFRInsightsReport(props) {
                     </div>
                 </div>}
             </div >
+            {showDrawer && <NFRInsightStatusDetailsDrawer
+                anchor={"right"}
+                isOpen={showDrawer}
+                closeDrawer={closeDrawer}
+            />}
         </>
     )
 }
-
 
 export default NFRInsightsReport
