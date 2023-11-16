@@ -99,13 +99,16 @@ class AddBOPDomestic extends Component {
       isOpenConditionDrawer: false,
       conditionTableData: [],
 
-      FinalBasicRateBase: '',
-      FinalBasicPriceBase: '',
-      FinalConditionCostBase: '',
-      FinalNetLandedCostBase: '',
+      FinalBasicRateBaseCurrency: '',
+      FinalBasicPriceBaseCurrency: '',
+      FinalConditionCostBaseCurrency: '',
+      FinalNetLandedCostBaseCurrency: '',
       toolTipTextNetCost: {},
+      toolTipTextBasicPrice: '',
     }
   }
+
+  // NOTE :: ALL COST KEYS ARE OF BASE CURRENCY IRRESPECTIVE OF THEIR NAME IN DOMESTIC
 
   /**
   * @method componentWillMount
@@ -119,13 +122,36 @@ class AddBOPDomestic extends Component {
     }
   }
 
+  toolTipNetCost() {
+    const { initialConfiguration } = this.props
+    const { costingTypeId } = this.state
+    let netCostText = ''
+    let basicPriceText = ''
+    if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
+        basicPriceText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+      } else {
+        basicPriceText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+      }
+      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
+      this.setState({ toolTipTextNetCost: netCostText, toolTipTextBasicPrice: basicPriceText })
+    } else if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
+      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+      this.setState({ toolTipTextNetCost: netCostText })
+    } else {
+      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+      this.setState({ toolTipTextNetCost: netCostText })
+    }
+    const obj = { ...this.state.toolTipTextObject, netCostCurrency: netCostText, basicPriceSelectedCurrency: basicPriceText }
+    this.setState({ toolTipTextObject: obj })
+  }
+
   /**
    * @method componentDidMount
    * @description Called after rendering the component
    */
   componentDidMount() {
     const { initialConfiguration } = this.props
-    const { costingTypeId } = this.state
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
@@ -134,11 +160,6 @@ class AddBOPDomestic extends Component {
     setTimeout(() => {
       this.getDetails()
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
-      if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-        this.setState({ toolTipTextNetCost: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})` })
-      } else {
-        this.setState({ toolTipTextNetCost: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})` })
-      }
       if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
       }
@@ -183,6 +204,7 @@ class AddBOPDomestic extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      this.toolTipNetCost()
       this.handleCalculation()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
@@ -261,7 +283,7 @@ class AddBOPDomestic extends Component {
   * @description Used to get Details
   */
   getDetails = () => {
-    const { data } = this.props;
+    const { data, initialConfiguration } = this.props;
     if (data && data.isEditFlag) {
       this.setState({
         isLoader: true,
@@ -272,10 +294,10 @@ class AddBOPDomestic extends Component {
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.props.change('BasicRateBase', Data.BasicRate)
-          this.props.change('BasicPriceBase', Data.NetCostWithoutConditionCost)
-          this.props.change('ConditionCost', Data.NetConditionCost)
-          this.props.change('NetLandedCostBase', Data.NetLandedCost)
+          this.props.change('BasicRateBase', checkForDecimalAndNull(Data.BasicRate, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('BasicPriceBase', checkForDecimalAndNull(Data.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('ConditionCost', checkForDecimalAndNull(Data.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data.NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {
@@ -301,10 +323,13 @@ class AddBOPDomestic extends Component {
               isClientVendorBOP: Data.IsClientVendorBOP,
               isTechnologyVisible: Data.IsBreakupBoughtOutPart,
               Technology: { label: Data.TechnologyName, value: Data.TechnologyId },
-              FinalConditionCostBase: Data.NetConditionCost,
+              FinalConditionCostBaseCurrency: Data.NetConditionCost,
               conditionTableData: Data.BoughtOutPartConditionsDetails,
-              FinalBasicPriceBase: Data.NetCostWithoutConditionCost,
-            }, () => this.setState({ isLoader: false }))
+              FinalBasicPriceBaseCurrency: Data.NetCostWithoutConditionCost,
+            }, () => {
+              this.toolTipNetCost()
+              this.setState({ isLoader: false })
+            })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
@@ -558,31 +583,36 @@ class AddBOPDomestic extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    const { FinalConditionCostBase, NetLandedCost } = this.state
+    const { FinalConditionCostBaseCurrency, costingTypeId } = this.state
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
 
-    const basicRateBase = checkForNull(fieldsObj?.BasicRateBase)
-    const basicPriceBase = checkForNull(basicRateBase) / checkForNull(NoOfPieces)
-    const conditionCostBase = checkForNull(FinalConditionCostBase)
+    const basicRateBaseCurrency = checkForNull(fieldsObj?.BasicRateBase)
+    const basicPriceBaseTemp = checkForNull(basicRateBaseCurrency) / checkForNull(NoOfPieces)
+    let basicPriceBaseCurrency
+    if (costingTypeId === ZBCTypeId) {
+      basicPriceBaseCurrency = basicPriceBaseTemp
+    }
+    const conditionCostBaseCurrency = checkForNull(FinalConditionCostBaseCurrency)
 
-    let conditionList = this.recalculateConditions(basicPriceBase)
+    let conditionList = this.recalculateConditions(basicPriceBaseCurrency)
 
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCostBase = checkForNull(sumBase) + checkForNull(basicPriceBase)
+    let netLandedCostBaseCurrency = checkForNull(sumBase) + checkForNull(basicPriceBaseTemp)
 
-    this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
 
     this.setState({
-      FinalBasicRateBase: basicRateBase,
-      FinalBasicPriceBase: basicPriceBase,
-      FinalConditionCostBase: conditionCostBase,
-      FinalNetLandedCostBase: netLandedCostBase,
+      FinalBasicRateBaseCurrency: basicRateBaseCurrency,
+      FinalBasicPriceBaseCurrency: basicPriceBaseCurrency,
+      FinalConditionCostBaseCurrency: conditionCostBaseCurrency,
+      FinalNetLandedCostBaseCurrency: netLandedCostBaseCurrency,
       conditionTableData: conditionList,
     })
 
-    if (this.state.isEditFlag && checkForNull(basicPriceBase) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) && checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces)) {
+    if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) &&
+      checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostBaseCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
 
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
@@ -742,7 +772,7 @@ class AddBOPDomestic extends Component {
   */
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
-      isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBase, FinalBasicPriceBase, FinalNetLandedCostBase, FinalBasicRateBase, conditionTableData, isBOPAssociated } = this.state;
+      isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBaseCurrency, FinalBasicPriceBaseCurrency, FinalNetLandedCostBaseCurrency, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated } = this.state;
     const { fieldsObj } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -760,54 +790,60 @@ class AddBOPDomestic extends Component {
       return { ...file, ContextId: BOPID }
     })
     // if (isEditFlag && this.state.isFinalApprovar) {
-    const formData = {
-      IsFinancialDataChanged: isDateChange ? true : false,
-      BoughtOutPartId: BOPID,
-      CostingTypeId: costingTypeId,
-      BoughtOutPartNumber: values.BoughtOutPartNumber,
-      BoughtOutPartName: values.BoughtOutPartName,
-      CategoryId: BOPCategory.value,
-      Specification: values.Specification,
-      UnitOfMeasurementId: UOM.value,
-      Vendor: vendorName.value,
-      Source: values.Source,
-      SourceLocation: sourceLocation.value,
-      EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      NumberOfPieces: getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1,
-      Remark: values.Remark,
-      IsActive: true,
-      LoggedInUserId: loggedInUserId(),
-      Plant: [plantArray],
-      VendorPlant: [],
-      DestinationPlantId: (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId,
-      Attachements: isEditFlag ? updatedFiles : files,
-      CustomerId: client.value,
-      EntryType: checkForNull(ENTRY_TYPE_DOMESTIC),
-      CategoryName: BOPCategory.label,
-      IsClientVendorBOP: isClientVendorBOP,
-      TechnologyName: Technology?.label,
-      TechnologyId: Technology?.value,
-      IsBreakupBoughtOutPart: isTechnologyVisible,
+    const formData = {}
+    formData.IsFinancialDataChanged = isDateChange ? true : false
+    formData.BoughtOutPartId = BOPID
+    formData.CostingTypeId = costingTypeId
+    formData.BoughtOutPartNumber = values.BoughtOutPartNumber
+    formData.BoughtOutPartName = values.BoughtOutPartName
+    formData.CategoryId = BOPCategory.value
+    formData.Specification = values.Specification
+    formData.UnitOfMeasurementId = UOM.value
+    formData.Vendor = vendorName.value
+    formData.Source = values.Source
+    formData.SourceLocation = sourceLocation.value
+    formData.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+    formData.NumberOfPieces = getConfigurationKey().IsMinimumOrderQuantityVisible ? values.NumberOfPieces : 1
+    formData.Remark = values.Remark
+    formData.IsActive = true
+    formData.LoggedInUserId = loggedInUserId()
+    formData.Plant = [plantArray]
+    formData.VendorPlant = []
+    formData.DestinationPlantId = (costingTypeId === VBCTypeId || costingTypeId === ZBCTypeId) ? selectedPlants.value : (costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) ? selectedPlants.value : userDetailsBop.Plants[0].PlantId
+    formData.Attachements = isEditFlag ? updatedFiles : files
+    formData.CustomerId = client.value
+    formData.EntryType = checkForNull(ENTRY_TYPE_DOMESTIC)
+    formData.CategoryName = BOPCategory.label
+    formData.IsClientVendorBOP = isClientVendorBOP
+    formData.TechnologyName = Technology?.label
+    formData.TechnologyId = Technology?.value
+    formData.IsBreakupBoughtOutPart = isTechnologyVisible
 
-      BasicRate: FinalBasicRateBase,
-      NetLandedCost: FinalNetLandedCostBase,
-      NetCostWithoutConditionCost: FinalBasicPriceBase,
-      NetConditionCost: FinalConditionCostBase,
-      BoughtOutPartConditionsDetails: conditionTableData,
+    formData.BasicRate = FinalBasicRateBaseCurrency
+    formData.NetLandedCost = FinalNetLandedCostBaseCurrency
+
+    if (costingTypeId === ZBCTypeId) {
+      formData.NetCostWithoutConditionCost = FinalBasicPriceBaseCurrency
+      formData.NetConditionCost = FinalConditionCostBaseCurrency
     }
+
+    formData.BoughtOutPartConditionsDetails = conditionTableData
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
-      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostBase)
+      let basicPriceBaseCurrency
+      if (costingTypeId === ZBCTypeId) {
+        basicPriceBaseCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
+      }
+      const netLandedCostBaseCurrency = checkForNull(checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)) + checkForNull(FinalConditionCostBaseCurrency)
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
 
       if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) &&
         ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
         ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
-        checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
-        checkForNull(netLandedCostCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBase) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
+        checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
+        checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
         this.setState({ isEditBuffer: true })
         Toaster.warning('Please change data to send RM for approval')
         return false
@@ -903,14 +939,14 @@ class AddBOPDomestic extends Component {
       this.setState({ IsFinancialDataChanged: true })
     }
     const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCost = checkForNull(sum) + checkForNull(this.state.FinalBasicPriceBase)
+    let netLandedCost = checkForNull(sum) + checkForNull(this.state.FinalBasicPriceBaseCurrency)
     this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
-      FinalConditionCostBase: sum,
-      FinalNetLandedCostBase: netLandedCost
+      FinalConditionCostBaseCurrency: sum,
+      FinalNetLandedCostBaseCurrency: netLandedCost
     })
   }
 
@@ -925,7 +961,7 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBase, IsFinancialDataChanged, toolTipTextNetCost } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1345,7 +1381,8 @@ class AddBOPDomestic extends Component {
                               />
                             </div>
                           </Col>
-                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) && <>
+                          {console.log('getConfigurationKey().IsMinimumOrderQuantityVisible: ', getConfigurationKey().IsMinimumOrderQuantityVisible)}
+                          {getConfigurationKey().IsMinimumOrderQuantityVisible && (!isTechnologyVisible || this.showBasicRate()) &&
                             < Col md="3">
                               <Field
                                 label={`Minimum Order Quantity`}
@@ -1359,7 +1396,8 @@ class AddBOPDomestic extends Component {
                                 customClassName=" withBorder"
                                 disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                               />
-                            </Col>
+                            </Col>}
+                          {(!isTechnologyVisible || this.showBasicRate()) && <>
                             <Col md="3">
                               <Field
                                 label={this.labelWithUOM(this.state.UOM.label ? this.state.UOM.label : 'UOM')}
@@ -1373,54 +1411,13 @@ class AddBOPDomestic extends Component {
                                 className=" "
                                 customClassName=" withBorder"
                               />
-                            </Col>
-                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
-                              <Col md="3">
-                                <Field
-                                  label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                  name={"BasicPriceBase"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderTextInputField}
-                                  required={false}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <div className='d-flex align-items-center'>
-                                  <div className="w-100">
-                                    <Field
-                                      label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                      name={"ConditionCost"}
-                                      type="text"
-                                      placeholder={"-"}
-                                      validate={[]}
-                                      component={renderText}
-                                      required={false}
-                                      disabled={true}
-                                      isViewFlag={true}
-                                      className=" "
-                                      customClassName=" withBorder"
-                                    />
-                                  </div>
-                                  <Button
-                                    id="addBOPDomestic_condition"
-                                    onClick={this.conditionToggle}
-                                    className={"right mt-0 mb-2"}
-                                    variant="plus-icon-square"
-                                  />
-
-                                </div>
-                              </Col>
-                            </>}
+                            </Col></>}
+                          {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                             <Col md="3">
-                              <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
+                              <TooltipCustom id="bop-basic-price" tooltipText={this.state.toolTipTextObject?.basicPriceSelectedCurrency} />
                               <Field
-                                label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCostBase"}`}
+                                label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                name={"BasicPriceBase"}
                                 type="text"
                                 placeholder={"-"}
                                 validate={[]}
@@ -1431,7 +1428,49 @@ class AddBOPDomestic extends Component {
                                 customClassName=" withBorder"
                               />
                             </Col>
+                            <Col md="3">
+                              <div className='d-flex align-items-center'>
+                                <div className="w-100">
+                                  <Field
+                                    label={`Condition Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                    name={"ConditionCost"}
+                                    type="text"
+                                    placeholder={"-"}
+                                    validate={[]}
+                                    component={renderText}
+                                    required={false}
+                                    disabled={true}
+                                    isViewFlag={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </div>
+                                <Button
+                                  id="addBOPDomestic_condition"
+                                  onClick={this.conditionToggle}
+                                  className={"right mt-0 mb-2"}
+                                  variant="plus-icon-square"
+                                />
+
+                              </div>
+                            </Col>
                           </>}
+                          {!isTechnologyVisible && <Col md="3">
+                            <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
+                            <Field
+                              label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                              name={`${this.state.NetLandedCost === 0 ? '' : "NetLandedCostBase"}`}
+                              type="text"
+                              placeholder={"-"}
+                              validate={[]}
+                              component={renderTextInputField}
+                              required={false}
+                              disabled={true}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>}
+
 
                         </Row>
                         {getConfigurationKey().IsShowClientVendorBOP && <Col md="3" className="d-flex align-items-center mb-3">
@@ -1475,12 +1514,12 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to 3 files)
+                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
                             </label>
-                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
+                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
@@ -1488,7 +1527,7 @@ class AddBOPDomestic extends Component {
                                 disabled={isViewMode}
                                 accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
-                                maxFiles={3}
+                                maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
                                   extra.reject ? (
@@ -1646,7 +1685,7 @@ class AddBOPDomestic extends Component {
               tableData={conditionTableData}
               closeDrawer={this.openAndCloseAddConditionCosting}
               anchor={'right'}
-              basicRateCurrency={FinalBasicPriceBase}
+              basicRateCurrency={FinalBasicPriceBaseCurrency}
               ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
               isFromMaster={true}
             />
@@ -1668,6 +1707,7 @@ class AddBOPDomestic extends Component {
                 levelDetails={this.state.levelDetails}
                 isFromImport={false}
                 currency={{ label: initialConfiguration?.BaseCurrency, value: initialConfiguration?.BaseCurrency }}
+                toolTipTextObject={this.state.toolTipTextObject}
               />
             )
           }

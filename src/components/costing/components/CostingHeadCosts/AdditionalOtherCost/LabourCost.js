@@ -73,7 +73,7 @@ function LabourCost(props) {
 
                         <tfoot>
                             <tr className='table-footer'>
-                                <td colSpan={"8"} className="text-right">{'Total Cost:'}</td>
+                                <td colSpan={"7"} className="text-right">{'Total Cost:'}</td>
                                 <td colSpan={"2"}>{totalCost}</td>
                             </tr>
                         </tfoot>

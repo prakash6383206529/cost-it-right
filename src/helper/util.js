@@ -6,15 +6,13 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
-import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
 import TooltipCustom from '../components/common/Tooltip';
-import { SHEETMETAL } from '../config/masterData';
+import { FORGING, SHEETMETAL } from '../config/masterData';
 
 /**
  * @method  apiErrors
@@ -898,8 +896,8 @@ export function getTechnologyPermission(technology) {
       return NON_FERROUS_HPDC;
     case RUBBER:
       return RUBBER;
-    case FORGING:
-      return FORGING;
+    case FORGINGNAME:
+      return FORGINGNAME;
     default:
       break;
   }
@@ -1209,18 +1207,21 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
   let text = ""
 
   if (id.includes("RM")) {
-    text = <>{arr && arr[0]?.IsRMCutOffApplicable && <p>{`RM cut-off price ${applyValue} applied`}</p>}{conditon && <p>BOP cost is not included for BOP part type</p>}</>;
-    return (arr && arr[0]?.IsRMCutOffApplicable) || conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
+    text = <>{arr && arr[0]?.IsRMCutOffApplicable && <p>{`RM cut-off price ${applyValue} applied`}</p>}</>;
+    return (arr && arr[0]?.IsRMCutOffApplicable) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
 
+  } else if (id.includes("BOP")) {
+    text = conditon && <p>BOP cost is not included for BOP part type</p>;
+    return conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
   } else if (id.includes("Combined")) {
-    text = <>{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('RM') && arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{conditon && <p>BOP cost is not included for BOP part type</p>}</>;
-    return (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('RM') && arr[0]?.IsRMCutOffApplicable === true) || conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
+    text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>BOP cost is not included for BOP part type</p>}</>;
+    return (arr[0]?.IsRMCutOffApplicable === true) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
 }
 
 export function showRMScrapKeys(technology) {
   let obj = {}
-  switch (Number(technology.value)) {
+  switch (Number(technology)) {
     case FORGING:
       obj.showForging = true
       obj.showCircleJali = false

@@ -205,51 +205,51 @@ function SimulationApprovalSummary(props) {
             // }
             setdataForAssemblyImpactForFg(SimulatedCostingList)
 
-            if (initialConfiguration.IsReleaseStrategyConfigured) {
-                let requestObject = {
-                    "RequestFor": "SIMULATION",
-                    "TechnologyId": SimulationTechnologyId,
-                    "LoggedInUserId": loggedInUserId(),
-                    "ReleaseStrategyApprovalDetails": [{ SimulationId: SimulationId }]
-                }
-                dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
-                    setReleaseStrategyDetails(res?.data?.Data)
-                    if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
+            // if (initialConfiguration.IsReleaseStrategyConfigured) {
+            //     let requestObject = {
+            //         "RequestFor": "SIMULATION",
+            //         "TechnologyId": SimulationTechnologyId,
+            //         "LoggedInUserId": loggedInUserId(),
+            //         "ReleaseStrategyApprovalDetails": [{ SimulationId: SimulationId }]
+            //     }
+            //     dispatch(getReleaseStrategyApprovalDetails(requestObject, (res) => {
+            //         setReleaseStrategyDetails(res?.data?.Data)
+            //         if (res?.data?.Data?.IsUserInApprovalFlow && !res?.data?.Data?.IsFinalApprover) {
 
-                    } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
-                        let obj = {
-                            DepartmentId: DepartmentId,
-                            UserId: loggedInUserId(),
-                            TechnologyId: SimulationTechnologyId,
-                            Mode: 'simulation',
-                            approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
-                        }
-                        dispatch(checkFinalUser(obj, res => {
-                            if (res && res.data && res.data.Result) {
-                                setFinalLevelUser(res.data.Data.IsFinalApprover)
-                            }
-                        }))
-                    } else if (res?.data?.Data?.IsFinalApprover) {
-                        setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
-                        return false
-                    } else if (res?.data?.Result === false) {
-                    } else {
-                    }
-                }))
-            } else {
-                let obj = {
-                    DepartmentId: DepartmentId,
-                    UserId: loggedInUserId(),
-                    TechnologyId: SimulationTechnologyId,
-                    Mode: 'simulation',
-                    approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
-                }
-                dispatch(checkFinalUser(obj, res => {
-                    if (res && res.data && res.data.Result) {
-                        setFinalLevelUser(res.data.Data.IsFinalApprover)
-                    }
-                }))
+            //         } else if (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === false) {
+            //             let obj = {
+            //                 DepartmentId: DepartmentId,
+            //                 UserId: loggedInUserId(),
+            //                 TechnologyId: SimulationTechnologyId,
+            //                 Mode: 'simulation',
+            //                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
+            //             }
+            //             dispatch(checkFinalUser(obj, res => {
+            //                 if (res && res.data && res.data.Result) {
+            //                     setFinalLevelUser(res.data.Data.IsFinalApprover)
+            //                 }
+            //             }))
+            //         } else if (res?.data?.Data?.IsFinalApprover) {
+            //             setFinalLevelUser(res?.data?.Data?.IsFinalApprover)
+            //             return false
+            //         } else if (res?.data?.Result === false) {
+            //         } else {
+            //         }
+            //     }))
+            // } else {
+            let obj = {
+                DepartmentId: DepartmentId,
+                UserId: loggedInUserId(),
+                TechnologyId: SimulationTechnologyId,
+                Mode: 'simulation',
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
             }
+            dispatch(checkFinalUser(obj, res => {
+                if (res && res.data && res.data.Result) {
+                    setFinalLevelUser(res.data.Data.IsFinalApprover)
+                }
+            }))
+            // }
 
         }))
     }, [])
@@ -1314,6 +1314,9 @@ function SimulationApprovalSummary(props) {
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Existing Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="Revised Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="Net Bought Out Part Cost Variance"></AgGridColumn>}
+                                                                {isMultiTechnology && <AgGridColumn width={140} field="OldPOPrice" headerName="Old PO Price" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {isMultiTechnology && <AgGridColumn width={140} field="NewPOPrice" headerName="New PO Price" cellRenderer='decimalFormatter' ></AgGridColumn>}
+                                                                {isMultiTechnology && <AgGridColumn width={140} field="POVariance" headerName="Variance (w.r.t. Existing)" cellRenderer='decimalFormatter' ></AgGridColumn>}
 
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
                                                                     keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation) &&

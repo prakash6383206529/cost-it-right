@@ -16,6 +16,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { checkFinalUser } from '../../costing/actions/Costing';
 import WarningMessage from '../../common/WarningMessage';
+import LoaderCustom from '../../common/LoaderCustom';
 
 
 const ApprovalDrawer = (props) => {
@@ -33,6 +34,7 @@ const ApprovalDrawer = (props) => {
     const { initialConfiguration } = useSelector(state => state.auth)
     const [approver, setApprover] = useState('')
     const [selectedApprover, setSelectedApprover] = useState('')
+    const [isLoader, setIsLoader] = useState(false)
     const [selectedApproverLevelId, setSelectedApproverLevelId] = useState('')
     const [isDisable, setIsDisable] = useState('')
     const [editWarning, setEditWarning] = useState(false)
@@ -139,7 +141,9 @@ const ApprovalDrawer = (props) => {
     }
 
     const toggleDrawer = (type) => {
-        props.closeDrawer(type, 'Cancel')
+        if (!isLoader) {
+            props.closeDrawer(type, 'Cancel')
+        }
     }
 
     /**
@@ -230,8 +234,9 @@ const ApprovalDrawer = (props) => {
                 nfrGroupId: props?.nfrData?.NfrGroupId,
                 costingId: props?.pushData?.CostingId
             }
-
+            setIsLoader(true)
             dispatch(approvedCostingByApprover(req, (res) => {
+                setIsLoader(false)
                 if (res?.data?.Result === true) {
                     if (type === 'Approve') {
                         Toaster.success(MESSAGES.NFR_APPROVED)
@@ -312,11 +317,12 @@ const ApprovalDrawer = (props) => {
                                 </div>
                                 <div
                                     onClick={(e) => toggleDrawer('cancel')}
-                                    // disabled={isDisable}
+                                    disabled={isLoader}
                                     className={"close-button right"}
                                 ></div>
                             </Col>
                         </Row>
+                        {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
                         {(!props.rejectDrawer && !isFinalLevelUser) && <> <Row>
                             <Col md={props.hideTable ? 12 : 6}>
                                 <SearchableSelectHookForm

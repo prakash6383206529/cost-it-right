@@ -7104,7 +7104,7 @@ body {
 
 // FG-Wise table css End
 .approve-reject-drawer-loader {
-  min-height: 75rem;
+  min-height: 100vh;
 }
 
 .warning-text-container {
@@ -9063,4 +9063,28 @@ table.table {
       margin-top: 0 !important;
     }
   }
+}
+
+.double-string-label {
+  .asterisk-required {
+    margin-bottom: 15px;
+  }
+}
+
+iframe {
+
+  display: none !important;
+
+}
+
+.ag-grid-input {
+  padding: 4px 8px !important;
+  height: 26px !important;
+  min-height: auto;
+  line-height: initial;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  border: 1px solid $borderColor !important;
 }

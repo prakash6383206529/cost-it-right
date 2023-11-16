@@ -835,16 +835,16 @@ function RawMaterialCost(props) {
         }, 500)
       }
       if (Number(costData?.TechnologyId) === Number(MACHINING) && gridData?.some(material => material.UOM === 'Meter')) {
-        const updatedGridData = gridData.map((item, index) => {
-          item.NetLandedCost = item.UOM === 'Meter' ? weightData.RMPerPiece : 0;
-          item.WeightCalculatorRequest = weightData;
-          item.WeightCalculationId = weightData.WeightCalculationId;
-          item.RawMaterialCalculatorId = weightData.WeightCalculationId;
-          item.IsCalculatedEntry = true;
-          item.IsCalculaterAvailable = true;
-          return item;
-        });
-        setGridData(updatedGridData);
+        tempData = {
+          ...tempData,
+          NetLandedCost: weightData.RMPerPiece,
+          WeightCalculatorRequest: weightData,
+          WeightCalculationId: weightData.WeightCalculationId,
+          RawMaterialCalculatorId: weightData.WeightCalculationId,
+          IsCalculatedEntry: true,
+        }
+        tempArr = Object.assign([...gridData], { [editIndex]: tempData })
+        setGridData(tempArr);
       }
     }
   }
@@ -1189,7 +1189,7 @@ function RawMaterialCost(props) {
    * @method render
    * @description Renders the component
    */
-  const machiningUICheck = (costData?.TechnologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && item?.CostingPartDetails?.CostingRawMaterialsCost.some(material => material.UOM === 'Meter'))
+  const machiningUICheck = (costData?.TechnologyId === MACHINING && getConfigurationKey().IsShowMachiningCalculatorForMeter && item?.CostingPartDetails?.CostingRawMaterialsCost?.some(material => material.UOM === 'Meter'))
 
   return (
     <>
@@ -1294,12 +1294,12 @@ function RawMaterialCost(props) {
                             {
                               getTechnology.includes(costData?.TechnologyId) &&
                               <td className="text-center">
-                                <button
+                                {!(costData?.TechnologyId === MACHINING && item?.UOM !== "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) ? <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
                                   onClick={() => toggleWeightCalculator(index)}
-                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : (costData?.TechnologyId === MACHINING && item?.UOM !== "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter)}
-                                />
+                                  disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
+                                /> : '-'}
                               </td>
                             }
                             {
@@ -1485,7 +1485,7 @@ function RawMaterialCost(props) {
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
               {costData?.TechnologyId === PLASTIC &&
-                <Col md="2" className="py-3 pr-0 apply-mb">
+                <Col md="2" className="py-3 pr-0 d-flex align-items-center apply-mb">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyMasterBatch}
@@ -1502,7 +1502,7 @@ function RawMaterialCost(props) {
                       onChange={onPressApplyMasterBatch}
                     />
                   </label>
-                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n3 " tooltipText="Can only be added with 1 RM" />
+                  <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n2 mt-3 " tooltipText="Can only be added with 1 RM" />
                 </Col>
               }
 

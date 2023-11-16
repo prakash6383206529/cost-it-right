@@ -237,7 +237,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
             checkForNull(i?.CostingPartDetails?.ICCCost) +
             checkForNull(i?.CostingPartDetails?.PaymentTermCost);
-          i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
+          i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
 
@@ -252,7 +252,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
             checkForNull(i?.CostingPartDetails?.ICCCost) +
             checkForNull(i?.CostingPartDetails?.PaymentTermCost);
-          i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
+          i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
           i.CostingPartDetails.ModelType = modelType.label;
           i.CostingPartDetails.ModelTypeId = modelType.value;
 
@@ -304,7 +304,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
             checkForNull(i?.CostingPartDetails?.ICCCost) +
             checkForNull(i?.CostingPartDetails?.PaymentTermCost);
-          i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
+          i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
 
           formatData(data, params, i.CostingChildPartDetails)
 
@@ -315,7 +315,7 @@ function TabOverheadProfit(props) {
           i.CostingPartDetails.NetOverheadAndProfitCost = checkForNull(OverheadCost) + checkForNull(ProfitCost) + checkForNull(i?.CostingPartDetails?.RejectionCost) +
             checkForNull(i?.CostingPartDetails?.ICCCost) +
             checkForNull(i?.CostingPartDetails?.PaymentTermCost);
-          i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = OverheadCost + ProfitCost;
+          i.CostingPartDetails.TotalOverheadAndProfitPerAssembly = checkForNull(OverheadCost) + checkForNull(ProfitCost);
 
         } else {
           i.IsOpen = false;

@@ -65,7 +65,7 @@ class MachineRateListing extends Component {
             selectedRowData: [],
 
             //states for pagination purpose
-            floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "" },
+            floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: this.props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "" },
             warningMessage: false,
             filterModel: {},
             pageNo: 1,
@@ -836,6 +836,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="MachineTonnage" cellRenderer={'hyphenFormatter'} headerName="Machine Tonnage"></AgGridColumn>
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
+                                    <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>

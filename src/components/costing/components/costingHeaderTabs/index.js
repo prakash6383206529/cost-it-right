@@ -272,7 +272,7 @@ function CostingHeaderTabs(props) {
   const InjectDiscountAPICall = () => {
     if (!CostingViewMode && activeTab !== '6') {
 
-      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1 }, res => { }))
+      dispatch(saveDiscountOtherCostTab({ ...ComponentItemDiscountData, CallingFrom: 1, BasicRate: DiscountCostData?.BasicRateINR }, res => { }))
     }
   }
 

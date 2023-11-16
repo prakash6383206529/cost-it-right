@@ -46,37 +46,38 @@ function CostingApproveReject(props) {
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
-    let levelDetailsTemp = ''
-    setTimeout(() => {
-      dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
-        levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
-        setLevelDetails(levelDetailsTemp)
-        if (levelDetailsTemp?.length === 0) {
-          Toaster.warning("You don't have permission to send costing for approval.")
-        }
-      }))
+    if (!props?.isRFQApproval) {
+      let levelDetailsTemp = ''
+      setTimeout(() => {
+        dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), TechnologyId, (res) => {
+          levelDetailsTemp = userTechnologyLevelDetails(props?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+          setLevelDetails(levelDetailsTemp)
+          if (levelDetailsTemp?.length === 0) {
+            Toaster.warning("You don't have permission to send costing for approval.")
+          }
+        }))
 
-      dispatch(getAllApprovalDepartment((res) => {
+        dispatch(getAllApprovalDepartment((res) => {
 
-        const Data = res?.data?.SelectList
-        const departObj = Data && Data.filter(item => item?.Value === userData?.DepartmentId)
-        let dataInFieldTemp = {
-          ...dataInFields, Department: { label: departObj[0]?.Text, value: departObj[0]?.Value },
-        }
-        setDataInFields(dataInFieldTemp)
-        setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
+          const Data = res?.data?.SelectList
+          const departObj = Data && Data.filter(item => item?.Value === userData?.DepartmentId)
+          let dataInFieldTemp = {
+            ...dataInFields, Department: { label: departObj[0]?.Text, value: departObj[0]?.Value },
+          }
+          setDataInFields(dataInFieldTemp)
+          setValue('dept', { label: departObj && departObj[0].Text, value: departObj && departObj[0].Value })
 
-        if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
-          setDisableReleaseStrategy(true)
-          approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId, dataInFieldTemp)
-        } else {
-          setDisableReleaseStrategy(false)
-          approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId), dataInFieldTemp)
-        }
-      }))
+          if (initialConfiguration.IsReleaseStrategyConfigured && releaseStrategyDetails?.IsPFSOrBudgetingDetailsExist === true) {
+            setDisableReleaseStrategy(true)
+            approverAPICall(releaseStrategyDetails?.DepartmentId, releaseStrategyDetails?.TechnologyId, releaseStrategyDetails?.ApprovalTypeId, dataInFieldTemp)
+          } else {
+            setDisableReleaseStrategy(false)
+            approverAPICall(departObj[0]?.Value, approvalData && approvalData[0]?.TechnologyId, costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId), dataInFieldTemp)
+          }
+        }))
 
-    }, 300);
-
+      }, 300);
+    }
   }, [])
 
   const approverAPICall = (departmentId, technology, approverTypeId, dataInFieldObj) => {
@@ -253,16 +254,30 @@ function CostingApproveReject(props) {
       TechnologyId: approvalData[0] && approvalData[0].TechnologyId ? approvalData[0].TechnologyId : '00000000-0000-0000-0000-000000000000',
       ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
     }
+    let dataInFieldTemp = {
+      ...dataInFields,
+      Department: { label: value.label ? value.label : '', value: value.value ? value.value : '' }
+    }
+    setDataInFields(dataInFieldTemp)
     dispatch(getAllApprovalUserFilterByDepartment(obj, (res) => {
       res.data.DataList && res.data.DataList.map((item) => {
         const Data = res.data.DataList[1] ? res.data.DataList[1] : []
         if (item.Value === '0') return false;
         if (item.Value === EMPTY_GUID) {
+          let dataInFieldObjTemp = {
+            Department: { label: value.label ? value.label : '', value: value.value ? value.value : '' },
+            Approver: { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' }
+          }
+          setDataInFields(dataInFieldObjTemp)
           setShowWarningMessage(true)
           return false
         } else {
           setShowWarningMessage(false)
-          setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+          let dataInFieldObjTemp = {
+            Department: { label: value.label ? value.label : '', value: value.value ? value.value : '' },
+            Approver: { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' }
+          }
+          setDataInFields(dataInFieldObjTemp)
         }
         tempDropdownList.push({ label: item.Text, value: item.Value, levelId: item.LevelId, levelName: item.LevelName })
         return null
@@ -299,6 +314,7 @@ function CostingApproveReject(props) {
         showWarningMessage={showWarningMessage}
         setDataFromSummary={true}
         showMessage={showMessage}
+        isDisable={isDisable}
         disableReleaseStrategy={disableReleaseStrategy}
       />
 

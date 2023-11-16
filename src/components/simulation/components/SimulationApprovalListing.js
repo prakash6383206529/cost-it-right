@@ -192,19 +192,23 @@ function SimulationApprovalListing(props) {
         isDashboard && dispatch(dashboardTabLock(true))
         let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
+
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
                 setPageNo(0)
             }
+            if (res && res.status === 204) {
+                setTotalRecordCount(0)
+                setPageNo(0)
+                setIsLoader(false)
+            }
             if (res?.data?.Result) {
+
                 setIsLoader(false)
                 dispatch(dashboardTabLock(false))
                 let isReset = true
                 if (res) {
-                    if (res && res.status === 204) {
-                        setTotalRecordCount(0)
-                        setPageNo(0)
-                    }
+
                     setTimeout(() => {
 
                         for (var prop in obj) {
@@ -812,6 +816,7 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>
                                     <AgGridColumn width={130} field="TechnologyName" headerName="Technology"></AgGridColumn>
                                     <AgGridColumn width={200} field="VendorName" headerName="Vendor (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
+                                    <AgGridColumn width={200} field="CustomerName" headerName="Customer (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn width={170} field="ImpactCosting" headerName="Impacted Costing" ></AgGridColumn>
                                     <AgGridColumn width={154} field="ImpactParts" headerName="Impacted Parts"></AgGridColumn>
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>

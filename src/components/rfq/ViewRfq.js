@@ -28,6 +28,7 @@ import DayTime from '../common/DayTimeWrapper';
 import { hyphenFormatter } from '../masters/masterUtil';
 import _, { isNumber } from 'lodash';
 import CostingDetailSimulationDrawer from '../simulation/components/CostingDetailSimulationDrawer';
+import CostingApproveReject from '../costing/components/approval/CostingApproveReject';
 const gridOptions = {};
 
 
@@ -127,12 +128,13 @@ function RfqListing(props) {
             let requestObject = {}
             requestObject.PartIdList = _.uniq(_.map(res?.data?.DataList, 'PartId'))
             requestObject.PlantId = res?.data?.DataList[0]?.PlantId
-            let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                           // GROUPING OF THE ROWS FOR SEPERATE PARTS
+            let grouped_data = _.groupBy(res?.data?.DataList, 'PartNumber')                                        // GROUPING OF THE ROWS FOR SEPERATE PARTS
             let data = []
             for (let x in grouped_data) {
                 let seprateData = grouped_data[x]
-                seprateData[Math.round(seprateData.length / 2) - 1].PartNo = x;                      // SHOWING PART NUMBER IN MIDDLE
-                seprateData[seprateData.length - 1].LastRow = true;                                 // ADDING LASTROW KEY FOR SHOWING SEPERATE BORDER
+                seprateData[Math.round(seprateData.length / 2) - 1].PartNo = x;                                   // SHOWING PART NUMBER IN MIDDLE
+                seprateData[Math.round(seprateData.length / 2) - 1].NfrNo = seprateData[0].NfrNumber;             // SHOWING PART NUMBER IN MIDDLE
+                seprateData[seprateData.length - 1].LastRow = true;                                               // ADDING LASTROW KEY FOR SHOWING SEPERATE BORDER
                 seprateData[Math.round(seprateData.length / 2) - 1].RowMargin = seprateData.length >= 2 && seprateData.length % 2 === 0 && 'margin-top';    // ADDING ROWMARGIN KEY IN THE GRID FOR EVEN ROW AND AS WELL AS PARTS HAVE TWO OR MORE COSTING
                 data.push(seprateData)
             }
@@ -430,7 +432,7 @@ function RfqListing(props) {
                     obj.customerId = quotationGrid[index]?.customerId
                     obj.customerCode = quotationGrid[index]?.customerCode
                     obj.customer = quotationGrid[index]?.customer
-                    obj.basicRate = quotationGrid[index]?.BasicRate
+                    obj.BasicRate = quotationGrid[index]?.BasicRate
 
 
                     // if (quotationGrid[index]?.EffectiveDate) {
@@ -839,13 +841,17 @@ function RfqListing(props) {
         }
         return cellValue ? cellValue : ''
     }
-
+    const seperateHyphenFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue === null ? '-' : cellValue
+    }
     const frameworkComponents = {
         totalValueRenderer: buttonFormatter,
         linkableFormatter: linkableFormatter,
         dateFormatter: dateFormatter,
         partNumberFormatter: partNumberFormatter,
-        customNoRowsOverlay: NoContentFound
+        customNoRowsOverlay: NoContentFound,
+        seperateHyphenFormatter: seperateHyphenFormatter
     }
 
     const closeSendForApproval = (e = '', type) => {
@@ -954,7 +960,7 @@ function RfqListing(props) {
                                             enableBrowserTooltips={true}
                                         >
                                             <AgGridColumn cellClass={cellClass} field="PartNo" tooltipField="PartNo" headerName='Part No' cellRenderer={'partNumberFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="NfrNumber" headerName='NFR No.' ></AgGridColumn>
+                                            <AgGridColumn cellClass={cellClass} field="NfrNo" headerName='NFR No.' cellRenderer={seperateHyphenFormatter}></AgGridColumn>
                                             <AgGridColumn field="TechnologyName" headerName='Technology'></AgGridColumn>
                                             <AgGridColumn field="VendorName" tooltipField="VendorName" headerName='Vendor (Code)'></AgGridColumn>
                                             <AgGridColumn field="PlantName" tooltipField="PlantName" headerName='Plant (Code)'></AgGridColumn>
@@ -1009,7 +1015,7 @@ function RfqListing(props) {
                     />
                 }
                 {rejectDrawer && (
-                    <ApproveRejectDrawer
+                    <CostingApproveReject
                         type={'Reject'}
                         isOpen={rejectDrawer}
                         approvalData={rejectedList}
@@ -1060,6 +1066,7 @@ function RfqListing(props) {
                                 checkCostingSelected={checkCostingSelected}
                                 disableApproveRejectButton={disableApproveRejectButton}
                                 compareButtonPressed={compareButtonPressed}
+                                showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
                             />
                         )}
                     </div>

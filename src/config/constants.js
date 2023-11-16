@@ -24,7 +24,7 @@ const BASE_URL = `${process.env.REACT_APP_BASE_URL}`;
 // const BASE_URL = `https://demov3api.costitright.com/api/v1`;
 // const BASE_URL = `http://10.10.8.120:81/api/v1`;
 // const BASE_URL = `http://10.10.1.100:1002/api/v1`;
-// const BASE_URL = `https://upsapi.costitright.com/api/v1`; 
+// const BASE_URL = `https://upsapi.costitright.com/api/v1`;
 //FILE URL
 export const FILE_URL = `${process.env.REACT_APP_FILE_URL}`;
 
@@ -247,7 +247,7 @@ export const API = {
   getRMGradeSelectListByRawMaterial: `${BASE_URL}/masters-raw-material/select-list-raw-material-grade`,
   bulkUploadRMSpecification: `${BASE_URL}/masters-raw-material/bulk-upload-for-raw-material-spec-json`,
   getRawMaterialChildById: `${BASE_URL}/masters-raw-material/get-raw-material-child-by-id`,
-  updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name-child`,
+  updateRawMaterialChildName: `${BASE_URL}/masters-raw-material/update-raw-material-name`,
 
   //PLANT MASTER
   //createPlantAPI: `${BASE_URL}/plant/create`,
@@ -1866,7 +1866,7 @@ export const ELECTRONICS = 'Electronics';
 export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
-export const FORGING = 'Forging';
+export const FORGINGNAME = 'Forging';
 export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
 export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
@@ -1904,6 +1904,7 @@ export const ReleaseStrategyB1 = 'RSB1'
 export const ReleaseStrategyB2 = 'RSB2'
 export const ReleaseStrategyB3 = 'RSB3'
 export const ReleaseStrategyB4 = 'RSB4'
+export const ReleaseStrategyB6 = 'RSB6'
 //PART TYPE'S USED AT ASSEMBLY CHILD DRAWER
 export const ASSEMBLYNAME = 'Assembly'
 export const COMPONENT_PART = 'Component'
@@ -2641,6 +2642,7 @@ export const RELEASESTRATEGYTYPEID1 = Number(reactLocalStorage.getObject('Approv
 export const RELEASESTRATEGYTYPEID2 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB2])
 export const RELEASESTRATEGYTYPEID3 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB3])
 export const RELEASESTRATEGYTYPEID4 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB4])
+export const RELEASESTRATEGYTYPEID6 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB6])
 
 //CONSTANTS FOR MASTER APPROVAL TYPE 
 export const RMTYPE = Number(reactLocalStorage.getObject('masterType')[RAW_MATERIAL])
@@ -2680,7 +2682,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.259";
+export const VERSION = "V2.1.265";
 
 
 

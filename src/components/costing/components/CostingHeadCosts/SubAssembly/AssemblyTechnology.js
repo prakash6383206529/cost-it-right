@@ -232,7 +232,7 @@ function AssemblyTechnology(props) {
             checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
             checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) +
             checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-            checkForNull(DiscountCostData?.AnyOtherCost)) -
+            checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
             checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
 
@@ -282,11 +282,11 @@ function AssemblyTechnology(props) {
             let stCostingData = findSurfaceTreatmentData(item)
             let basicRate = 0
             if (Number(isPartType?.value) === PART_TYPE_ASSEMBLY) {
-                basicRate = checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
+                basicRate = checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
                     checkForNull(SurfaceTabData[0]?.CostingPartDetails?.TotalCalculatedSurfaceTreatmentCostWithQuantitys) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
                     checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
             } else {
-                basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(RMCCTabData[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
+                basicRate = checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) + checkForNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
                     checkForNull(SurfaceTabData[0]?.CostingPartDetails?.NetSurfaceTreatmentCost) + checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
                     checkForNull(ToolTabData[0]?.CostingPartDetails?.TotalToolCost) + checkForNull(DiscountCostData?.AnyOtherCost) - checkForNull(DiscountCostData?.HundiOrDiscountValue)
             }
@@ -367,7 +367,7 @@ function AssemblyTechnology(props) {
                 checkForNull(packageAndFreightTabData?.CostingPartDetails?.NetFreightPackagingCost) +
                 checkForNull(toolTabData?.CostingPartDetails?.TotalToolCost) +
                 checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-                checkForNull(DiscountCostData?.AnyOtherCost)) -
+                checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             item.TotalOperationCost = item?.CostingPartDetails?.TotalOperationCost
@@ -445,10 +445,10 @@ function AssemblyTechnology(props) {
                             type="button"
                             className={'user-btn add-oprn-btn mr-1'}
                             onClick={labourHandlingDrawer}>
-                            <div className={'plus'}></div>{`LABOUR`}</button>
+                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button>
                         </>}
 
-                        {isBOPExists && <>
+                        {isBOPExists && IsOpen && <>
                             <button
                                 type="button"
                                 className={'user-btn add-oprn-btn'}
@@ -521,6 +521,7 @@ function AssemblyTechnology(props) {
                         anchor={'right'}
                         // ccData={subAssemblyTechnologyArray[0]?.CostingPartDetails !== null && subAssemblyTechnologyArray[0]?.CostingPartDetails?.CostingProcessCostResponse}
                         item={item}
+                        isAssemblyTechnology={true}
                     />
                 )
             }

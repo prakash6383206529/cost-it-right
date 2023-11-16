@@ -62,6 +62,7 @@ const SendForApproval = (props) => {
   const [isVerifyImpactDrawer, setIsVerifyImpactDrawer] = useState(false)
   const [costingApprovalDrawerData, setCostingApprovalDrawerData] = useState({})
   const [attachmentLoader, setAttachmentLoader] = useState(false)
+  const [isLoader, setIsLoader] = useState(false)
   const [effectiveDate, setEffectiveDate] = useState('')
   const [dataToChange, setDataToChange] = useState([]);
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
@@ -272,6 +273,7 @@ const SendForApproval = (props) => {
         if (tempDropdownList?.length === 0) {
           setShowValidation(true)
         } else {
+          setApprover(Data.Text)
           setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
         }
         setApprovalDropDown(tempDropdownList)
@@ -413,9 +415,9 @@ const SendForApproval = (props) => {
         "NetPOPrice": tempData?.nPOPrice,
         "NetPOPriceOtherCurrency": tempData?.nPoPriceCurrency
       }
-
+      setIsLoader(true)
       dispatch(rfqSaveBestCosting(data, res => {
-
+        setIsLoader(false)
       }))
 
       let temp = []
@@ -456,7 +458,7 @@ const SendForApproval = (props) => {
         tempObj.ImpactOfTheYear = data.yearImpact
         tempObj.Remark = getValues("remarks")
         tempObj.IsApproved = true
-        tempObj.BasicRate = data.basicRate
+        tempObj.BasicRate = data.BasicRate
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
@@ -579,7 +581,7 @@ const SendForApproval = (props) => {
         tempObj.CustomerId = data.customerId
         tempObj.CustomerName = data.customerName
         tempObj.CustomerCode = data.customerCode
-        tempObj.BasicRate = data.basicRate
+        tempObj.BasicRate = data.BasicRate
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         temp.push(tempObj)
@@ -593,7 +595,9 @@ const SendForApproval = (props) => {
       // debounce_fun()
       // 
       // props.closeDrawer()
+      setIsLoader(true)
       dispatch(sendForApprovalBySender(obj, (res) => {
+        setIsLoader(false)
         setIsDisable(false)
         Toaster.success(viewApprovalData.length === 1 ? `Costing Id ${viewApprovalData[0].costingName} has been sent for approval to ${approver.split('(')[0]}.` : `Costings has been sent for approval to ${approver.split('(')[0]}.`)
         props.closeDrawer('', 'Submit')
@@ -754,6 +758,7 @@ const SendForApproval = (props) => {
       setIsVerifyImpactDrawer(false);
     }
   }
+  const approverMessage = `This user is not in approval cycle for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type, please contact admin to add approver for "${getValues('ApprovalType')?.label ? getValues('ApprovalType')?.label : viewApprovalData && viewApprovalData[0]?.CostingHead}" approval type and ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}.`;
 
   return (
     <Fragment>
@@ -770,11 +775,12 @@ const SendForApproval = (props) => {
                 </div>
                 <div
                   onClick={(e) => toggleDrawer(e)}
-                  disabled={isDisable}
+                  disabled={isLoader}
                   className={"close-button right"}
                 ></div>
               </Col>
             </Row>
+            {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
             {viewApprovalData &&
               viewApprovalData.map((data, index) => {
 
@@ -882,7 +888,7 @@ const SendForApproval = (props) => {
                           <div className="form-group">
                             <label>Basic Price</label>
                             <label className="form-control bg-grey input-form-control">
-                              {data.basicRate && data.basicRate !== '-' ? checkForDecimalAndNull(data.basicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
+                              {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
                             </label>
                           </div>
                         </Col>}
@@ -1048,14 +1054,15 @@ const SendForApproval = (props) => {
                           defaultValue={""}
                           options={approvalDropDown}
                           mandatory={true}
+                          customClassName={"mb-0 approver-wrapper"}
                           disabled={disableRS}
                           handleChange={handleApproverChange}
                           errors={errors.approver}
                         />
+                        {
+                          showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
+                        }
                       </Col>
-                      {
-                        showValidation && <span className="warning-top"><WarningMessage dClass="mt-2" message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} /></span>
-                      }
 
                       {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
                         <NumberFieldHookForm
@@ -1224,10 +1231,9 @@ const SendForApproval = (props) => {
                   </Row>
                 ) : null}
                 <Row>
-                  <Col md="12" className='text-right my-n1'>
-                    <WarningMessage message={"All impacted assemblies will be changed and new versions will be formed"} />
-                    {isPFSOrBudgetingDetailsExistWarning && <WarningMessage message={"Budgeting cost does not exist for this part"} />}
-                  </Col>
+
+                  <WarningMessage dClass={'justify-content-end'} message={"All impacted assemblies will be changed and new versions will be formed"} />
+                  {isPFSOrBudgetingDetailsExistWarning && <WarningMessage dClass={'justify-content-end'} message={"Budgeting cost does not exist for this part"} />}
                 </Row>
                 <Row className="mb-4">
                   <Col

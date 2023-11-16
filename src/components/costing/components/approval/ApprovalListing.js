@@ -224,12 +224,12 @@ function ApprovalListing(props) {
       isDashboard: isDashboard ?? false
     }
     setloader(true)
-    isDashboard && dispatch(dashboardTabLock(true))
+    isDashboard && dispatch(dashboardTabLock(true))        // LOCK DASHBOARD TAB WHEN LOADING
     dispatch(
       getApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
         if (res.status === 204 && res.data === '') {
           setloader(false)
-          dispatch(dashboardTabLock(false))
+          dispatch(dashboardTabLock(false))      // UNLOCK DASHBOARD TAB AFTER LOADING  
           setTotalRecordCount(0)
           setPageNo(0)
           let isReset = true
@@ -608,9 +608,11 @@ function ApprovalListing(props) {
       setSelectedRowData([])
       return false
     } else if (temp.length === 1) {
-      Toaster.warning(selectedRows[0].ApprovalLockedMessage)
-      gridApi.deselectAll()
-      return false
+      if (selectedRows[0]?.ApprovalLockedMessage && selectedRows[0]?.Status !== "PendingForApproval") {
+        Toaster.warning(selectedRows[0]?.ApprovalLockedMessage)
+        gridApi.deselectAll()
+        return false
+      }
     }
 
     let reasonArray = []
@@ -842,7 +844,7 @@ function ApprovalListing(props) {
           }
         }
         else {
-          setShowFinalLevelButton(res.data.Data.IsFinalApprover)
+          setShowFinalLevelButton(!res.data.Data.IsFinalApprover)
           setApproveDrawer(true)
         }
       }
@@ -896,22 +898,24 @@ function ApprovalListing(props) {
       setPageNo(pageNoNew)
     }
     else if (Number(newPageSize) === 50) {
-      getTableData("", "", "", "", currentRowIndex, 50, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize50: true, pageSize10: false, pageSize100: false }))
       setGlobalTake(50)
 
       if (pageNo >= Math.ceil(totalRecordCount / 50)) {
         setPageNo(Math.ceil(totalRecordCount / 50))
         getTableData("", "", "", "", 0, 50, true, floatingFilterData)
+      } else {
+        getTableData("", "", "", "", currentRowIndex, 50, true, floatingFilterData)
       }
     }
     else if (Number(newPageSize) === 100) {
-      getTableData("", "", "", "", currentRowIndex, 100, true, floatingFilterData)
       setPageSize(prevState => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false }))
       setGlobalTake(100)
       if (pageNo >= Math.ceil(totalRecordCount / 100)) {
         setPageNo(Math.ceil(totalRecordCount / 100))
         getTableData("", "", "", "", 0, 100, true, floatingFilterData)
+      } else {
+        getTableData("", "", "", "", currentRowIndex, 100, true, floatingFilterData)
       }
     }
 

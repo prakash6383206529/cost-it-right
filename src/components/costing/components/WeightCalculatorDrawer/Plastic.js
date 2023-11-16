@@ -3,14 +3,14 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
-import { NumberFieldHookForm } from '../../../layout/HookFormInputs'
+import { TextFieldHookForm } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { setPlasticArray } from '../../actions/Costing'
 import { debounce } from 'lodash'
-import { nonZero } from '../../../../helper/validation'
+import { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
 
 function Plastic(props) {
@@ -62,7 +62,7 @@ function Plastic(props) {
     grossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? WeightCalculatorRequest.GrossWeight : '',
   })
   const [isDisable, setIsDisable] = useState(false)
-
+  const [reRender, setRerender] = useState(false)
 
   const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
     mode: 'onChange',
@@ -105,7 +105,12 @@ function Plastic(props) {
 
   }, [])
 
-
+  useEffect(() => {
+    if (Number(getValues('finishedWeight')) < Number(dataToSend.grossWeight)) {
+      delete errors.finishedWeight
+      setRerender(!reRender)
+    }
+  }, [dataToSend.grossWeight])
 
   /**
    * @method calculateGrossWeight
@@ -134,11 +139,6 @@ function Plastic(props) {
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     const grossWeight = checkForNull(netWeight) + checkForNull(runnerWeight) + Number(findLostWeight(getPlasticData && getPlasticData.length > 0 ? getPlasticData : WeightCalculatorRequest.LossOfTypeDetails ? WeightCalculatorRequest.LossOfTypeDetails : [])) //THIS IS FINAL GROSS WEIGHT -> FIRST GROSS WEIGHT + RUNNER WEIGHT +NET LOSS WEIGHT
 
-    if (finishedWeight > grossWeight) {
-      setValue('finishedWeight', 0)
-      Toaster.warning('Finish Weight should not be greater than gross weight')
-      return false
-    }
     if (finishedWeight !== 0) {
       scrapWeight = (checkForNull(grossWeight) - checkForNull(finishedWeight)).toFixed(9) //FINAL GROSS WEIGHT - FINISHED WEIGHT
 
@@ -244,7 +244,7 @@ function Plastic(props) {
 
               <Row className={''}>
                 <Col md="3" >
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Gross Weight(Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
@@ -253,12 +253,7 @@ function Plastic(props) {
                     mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
-                      validate: { nonZero }
-                      // maxLength: 4,
+                      validate: { nonZero, number, decimalAndNumberValidation }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -269,7 +264,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Runner Weight`}
                     name={'runnerWeight'}
                     Controller={Controller}
@@ -278,10 +273,7 @@ function Plastic(props) {
                     mandatory={false}
                     rules={{
                       required: false,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,6})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 6',
-                      },
+                      validate: { number, decimalAndNumberValidation }
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -312,7 +304,7 @@ function Plastic(props) {
               <Row className={'mt25'}>
                 <Col md="3" >
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'gross-weight-plastic'} tooltipText={'Total Gross Weight = (Gross Weight + Runner Weight + Other Loss Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Total Gross Weight(Kg)`}
                     name={'grossWeight'}
                     id={'gross-weight-plastic'}
@@ -329,20 +321,20 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3" >
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Finished Weight(Kg)`}
                     name={'finishedWeight'}
                     Controller={Controller}
                     control={control}
                     register={register}
-                    mandatory={false}
+                    mandatory={true}
                     rules={{
                       required: true,
-                      pattern: {
-                        value: /^\d{0,4}(\.\d{0,7})?$/i,
-                        message: 'Maximum length for integer is 4 and for decimal is 7',
+                      validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                      max: {
+                        value: getValues('grossWeight'),
+                        message: 'Finish weight should not be greater than gross weight.'
                       },
-
                     }}
                     handleChange={() => { }}
                     defaultValue={''}
@@ -354,7 +346,7 @@ function Plastic(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'scrap-weight-plastic'} tooltipText={'Scrap Weight = (Total Gross weight - Finish Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Scrap Weight(Kg)`}
                     name={'scrapWeight'}
                     Controller={Controller}
@@ -375,7 +367,7 @@ function Plastic(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'burning-allowance'} tooltipText={'Burning Allowance = (RM Rate * Burning Loss Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Burning Allowance`}
                     name={'burningAllownace'}
                     Controller={Controller}
@@ -393,7 +385,7 @@ function Plastic(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'rm-cost-plactic'} tooltipText={'RM Cost = (Total Gross Weight * RM Rate + Burning Allowance)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`RM Cost`}
                     name={'rmCost'}
                     Controller={Controller}
@@ -411,7 +403,7 @@ function Plastic(props) {
                 </Col>
                 <Col md="3">
                   <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'scrap-cost-plastic'} tooltipText={'Scrap Cost = (Scrap Rate * Scrap Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Scrap Cost`}
                     name={'scrapCost'}
                     Controller={Controller}
@@ -430,7 +422,7 @@ function Plastic(props) {
 
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} id={'net-rm-cost-plastic'} tooltipText={'Net RM Cost = (RM Cost + Scrap Cost)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     // Confirm this name from tanmay sir
                     label={`Net RM Cost`}
                     name={'materialCost'}

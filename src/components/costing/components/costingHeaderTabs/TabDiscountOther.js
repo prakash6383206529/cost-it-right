@@ -21,13 +21,13 @@ import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
 import { createToprowObjAndSave, errorCheckObject, formatMultiTechnologyUpdate } from '../../CostingUtil';
-import { IdForMultiTechnology, STRINGMAXLENGTH } from '../../../../config/masterData';
+import { IdForMultiTechnology } from '../../../../config/masterData';
 
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
 import { updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
 import TooltipCustom from '../../../common/Tooltip';
-import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6, hashValidation, maxLength80 } from "../../../../helper/validation";
 import NpvCost from '../CostingHeadCosts/AdditionalOtherCost/NpvCost';
 import AddNpvCost from '../CostingHeadCosts/AdditionalOtherCost/AddNpvCost';
 import ConditionCosting from '../CostingHeadCosts/AdditionalOtherCost/ConditionCosting';
@@ -133,7 +133,6 @@ function TabDiscountOther(props) {
         setValue('HundiOrDiscountPercentage', discountObj !== undefined && discountObj?.HundiOrDiscountPercentage !== null ? discountObj?.HundiOrDiscountPercentage : '')
         setValue('HundiOrDiscountValue', discountObj !== undefined && discountObj?.DiscountCostType === 'Percentage' ? discountObj !== undefined && (netPOPrice * calculatePercentage(discountObj?.HundiOrDiscountPercentage)) : discountObj?.HundiOrDiscountValue)
         setValue('AnyOtherCost', discountObj !== undefined && checkForDecimalAndNull(discountObj?.AnyOtherCost, initialConfiguration.NoOfDecimalForPrice))
-
         let topHeaderData = {
           DiscountsAndOtherCost: checkForNull(discountObj?.HundiOrDiscountValue),
           HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
@@ -423,6 +422,7 @@ function TabDiscountOther(props) {
             setValue('NetPOPriceOtherCurrency', Data.NetPOPriceInOtherCurrency !== null ? checkForDecimalAndNull(Data.NetPOPriceInOtherCurrency, initialConfiguration?.NoOfDecimalForPrice) : '')
             setNetPoPriceCurrencyState(Data.NetPOPriceInOtherCurrency !== null ? Data.NetPOPriceInOtherCurrency : '')
             setValue('Remarks', Data.Remark !== null ? Data.Remark : '')
+            setValue('discountDescriptionRemark', Data !== undefined && Data?.CostingPartDetails?.DiscountCostDetails[0]?.Description)
 
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let temp = []
@@ -933,14 +933,12 @@ function TabDiscountOther(props) {
         "Type": 'Discount',
         "ApplicabilityType": discountCostApplicability?.label,
         "ApplicabilityIdRef": discountCostApplicability?.value,
-        "Description": '',
+        "Description": getValues('discountDescriptionRemark'),
         "NetCost": DiscountCostData?.HundiOrDiscountValue,
         "Value": getValues('HundiOrDiscountPercentage'),
         "CRMHead": getValues('crmHeadDiscount') ? getValues('crmHeadDiscount').label : '',
-
       }
     ]
-
 
     let data = {
       "CostingId": costData?.CostingId,
@@ -974,7 +972,7 @@ function TabDiscountOther(props) {
         "TotalCost": checkForNull(netPOPrice),
         "NetOtherCost": DiscountCostData?.AnyOtherCost,
         "OtherCostDetails": otherCostFinalArray,
-        "DiscountCostDetails": discountArray,
+        "DiscountCostDetails": (discountCostApplicability?.label || discountCostApplicability?.value) && DiscountCostData?.HundiOrDiscountValue !== 0 ? discountArray : [],
         "NetNpvCost": checkForNull(totalNpvCost),
         "NetConditionCost": checkForNull(totalConditionCost),
       },
@@ -1013,13 +1011,13 @@ function TabDiscountOther(props) {
         let tempsubAssemblyTechnologyArray = subAssemblyTechnologyArray[0]
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetOtherCost = DiscountCostData.AnyOtherCost
         tempsubAssemblyTechnologyArray.CostingPartDetails.NetDiscounts = DiscountCostData.HundiOrDiscountValue
-
+        const totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
         let totalCost = (checkForNull(tempsubAssemblyTechnologyArray?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
           checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
           checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
           checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
-          checkForNull(overHeadAndProfitTabData?.CostingPartDetails?.NetOverheadAndProfitCost) +
-          checkForNull(DiscountCostData?.AnyOtherCost)) -
+          checkForNull(totalOverheadPrice) +
+          checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
           checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
         let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray, totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
@@ -1548,7 +1546,25 @@ function TabDiscountOther(props) {
                           disabled={CostingViewMode}
                         />
                       </Col>}
-
+                    <Col md="3">
+                      <TextFieldHookForm
+                        label="Discount Description/Remark"
+                        name={"discountDescriptionRemark"}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                          validate: { hashValidation, checkWhiteSpaces, maxLength80, }
+                        }}
+                        handleChange={() => { }}
+                        placeholder={'Enter'}
+                        customClassName={'withBorder'}
+                        disabled={CostingViewMode}
+                        errors={errors.discountDescriptionRemark}
+                      />
+                    </Col>
                     <Col md="3">
                       <SearchableSelectHookForm
                         label={'Discount Applicability'}

@@ -171,16 +171,17 @@ export function getSimulationApprovalList(filterData, skip, take, isPagination, 
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
 
         request.then((response) => {
-            if (response.data.Result) {
+
+            if (response.data.Result || response.status === 204) {
                 if (filterData.isDashboard) {
                     dispatch({
                         type: GET_SIMULATION_APPROVAL_LIST,
-                        payload: response.data.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList,
                     })
                 } else {
                     dispatch({
                         type: GET_SIMULATION_APPROVAL_LIST_DRAFT,
-                        payload: response.data.DataList,
+                        payload: response.status === 204 ? [] : response.data.DataList,
                     })
                 }
                 callback(response)
@@ -1277,7 +1278,7 @@ export function getAllMultiTechnologyCostings(obj, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId}&costingTypeId=${obj?.costingTypeId}`, config());
+        const request = axios.get(`${API.getAllMultiTechnologyCostings}?technologyId=${obj?.technologyId}&vendorId=${obj?.vendorId}&costingTypeId=${obj?.costingTypeId}&customerId=${obj?.customerId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

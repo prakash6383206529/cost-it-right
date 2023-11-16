@@ -4,8 +4,8 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, NumberFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, } from '../../../../../helper'
+import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
@@ -86,7 +86,7 @@ function Sheet(props) {
     const [FinishWeightOfSheet, setFinishWeights] = useState(WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? convert(WeightCalculatorRequest.FinishWeight, WeightCalculatorRequest.UOMForDimension) : '')
     const UOMSelectList = useSelector((state) => state.comman.UOMSelectList)
     const [isDisable, setIsDisable] = useState(false)
-    // const localStorage = reactLocalStorage.getObject('InitialConfiguration');
+    const [reRender, setRerender] = useState(false)
 
 
     const fieldValues = useWatch({
@@ -130,17 +130,15 @@ function Sheet(props) {
         }
     }, [fieldValues])
 
+    useEffect(() => {
+        if (Number(getValues('FinishWeightOfSheet')) < Number(GrossWeight)) {
+            delete errors.FinishWeightOfSheet
+            setRerender(!reRender)
+        }
+    }, [GrossWeight, fieldValues])
+
     const setFinishWeight = (e) => {
         const FinishWeightOfSheet = e.target.value
-        const grossWeight = checkForNull(getValues('GrossWeight'))
-        if (e.target.value > grossWeight) {
-            setTimeout(() => {
-                setValue('FinishWeightOfSheet', 0)
-            }, 200);
-
-            Toaster.warning('Finish Weight should not be greater than gross weight')
-            return false
-        }
         switch (UOMDimension.label) {
             case G:
                 setTimeout(() => {
@@ -188,7 +186,7 @@ function Sheet(props) {
         const componentPerStrip = parseInt(checkForNull(getValues('SheetWidth')) / blankSize)
         setValue('ComponentPerStrip', checkForNull(componentPerStrip))
         const updatedValue = dataToSend
-        updatedValue.ComponentsPerStrip = checkForNull(getValues('SheetWidth')) / blankSize
+        updatedValue.ComponentsPerStrip = componentPerStrip
         setDataToSend(updatedValue)
     }
 
@@ -261,12 +259,7 @@ function Sheet(props) {
      */
     const onSubmit = debounce(handleSubmit((values) => {
         setIsDisable(true)
-        if (Number(getValues('FinishWeightOfSheet')) === Number(0)) {
-            Toaster.warning('Finish Weight can not be zero')
-            setIsDisable(false)
-            setValue('FinishWeightOfSheet', '')
-            return false
-        }
+
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
@@ -358,7 +351,7 @@ function Sheet(props) {
                             </Row>
                             <Row className={'mt15'}>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Thickness(mm)`}
                                         name={'SheetThickness'}
                                         Controller={Controller}
@@ -367,11 +360,7 @@ function Sheet(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -382,7 +371,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Width(mm)`}
                                         name={'SheetWidth'}
                                         Controller={Controller}
@@ -391,11 +380,7 @@ function Sheet(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -407,7 +392,7 @@ function Sheet(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Length(mm)`}
                                         name={'SheetLength'}
                                         Controller={Controller}
@@ -416,11 +401,7 @@ function Sheet(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -432,7 +413,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-weight'} tooltipText={'Weight of Sheet = (Density * (Thickness * Width * Length)) / 1000'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Weight of Sheet(g)`}
                                         name={'SheetWeight'}
                                         id={'sheet-weight'}
@@ -459,7 +440,7 @@ function Sheet(props) {
                             </Row>
                             <Row className={'mt15'}>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Strip Width(mm)`}
                                         name={'StripWidth'}
                                         Controller={Controller}
@@ -468,10 +449,7 @@ function Sheet(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -483,7 +461,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'sheet-strips'} tooltipText={'No. of Strips = (Sheet Length / Strip Width)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`No. of Strips`}
                                         id={'sheet-strips'}
                                         name={'StripsNumber'}
@@ -501,7 +479,7 @@ function Sheet(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Blank Size(mm)`}
                                         name={'BlankSize'}
                                         Controller={Controller}
@@ -510,11 +488,7 @@ function Sheet(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -526,7 +500,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'sheet-component-per-strip'} tooltipText={'Components/Strip = (Sheet Width / Blank Size)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Components/Strip`}
                                         name={'ComponentPerStrip'}
                                         id={'sheet-component-per-strip'}
@@ -543,7 +517,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Cavity`}
                                         name={'Cavity'}
                                         Controller={Controller}
@@ -552,11 +526,7 @@ function Sheet(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
-                                            validate: { nonZero }
+                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -568,7 +538,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Total Components/Sheet`}
                                         name={'NoOfComponent'}
                                         id={'total-component'}
@@ -589,7 +559,7 @@ function Sheet(props) {
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={UnitFormat()}
                                         name={'NetSurfaceArea'}
                                         Controller={Controller}
@@ -598,10 +568,7 @@ function Sheet(props) {
                                         mandatory={false}
                                         rules={{
                                             required: false,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,6})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 6',
-                                            },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}
@@ -631,7 +598,7 @@ function Sheet(props) {
                                 </Col>
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'sheet-gross-weight'} tooltipText={'Gross Weight = (Weight of Sheet / Total Components per Sheet / Cavity)'} />
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}
                                         id={'sheet-gross-weight'}
@@ -639,9 +606,6 @@ function Sheet(props) {
                                         control={control}
                                         register={register}
                                         mandatory={false}
-                                        rules={{
-                                            required: false,
-                                        }}
                                         handleChange={() => { }}
                                         defaultValue={''}
                                         className=""
@@ -651,7 +615,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <NumberFieldHookForm
+                                    <TextFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
                                         name={'FinishWeightOfSheet'}
                                         Controller={Controller}
@@ -660,9 +624,10 @@ function Sheet(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            pattern: {
-                                                value: /^\d{0,4}(\.\d{0,7})?$/i,
-                                                message: 'Maximum length for integer is 4 and for decimal is 7',
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            max: {
+                                                value: GrossWeight,
+                                                message: 'Finish weight should not be greater than gross weight.'
                                             },
                                         }}
                                         handleChange={setFinishWeight}

@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -49,7 +49,7 @@ import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions'
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
 
 const CostingSummaryTable = (props) => {
-  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed } = props
+  const { viewMode, showDetail, technologyId, costingID, showWarningMsg, simulationMode, isApproval, simulationDrawer, customClass, selectedTechnology, master, isSimulationDone, approvalMode, drawerViewMode, costingSummaryMainPage, costingIdExist, costingIdList, notSelectedCostingId, isFromViewRFQ, compareButtonPressed, showEditSOBButton } = props
 
   let history = useHistory();
   const ExcelFile = ReactExport.ExcelFile;
@@ -1017,8 +1017,31 @@ const CostingSummaryTable = (props) => {
             setShowApproval(false)
             Toaster.warning('User is not in the approval flow')
           } else {
-            sendForApprovalData(multipleCostings)
-            setShowApproval(true)
+            let levelDetailsTemp
+            levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+            if (levelDetailsTemp?.length === 0) {
+              Toaster.warning("You don't have permission to send costing for approval.")
+            } else {
+              let obj = {}
+              obj.DepartmentId = userDetails().DepartmentId
+              obj.UserId = loggedInUserId()
+              obj.TechnologyId = partInfo.TechnologyId
+              obj.Mode = 'costing'
+              obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+              dispatch(checkFinalUser(obj, res => {
+                if (res?.data?.Result) {
+                  setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                  if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                    sendForApprovalData(multipleCostings)
+                    setShowApproval(true)
+                  } else if (res?.data?.Data?.IsFinalApprover === true) {
+                    Toaster.warning("Final level user cannot send costing for approval.")
+                  } else {
+                    Toaster.warning("User does not have permission to send costing for approval.")
+                  }
+                }
+              }))
+            }
           }
         }))
       }
@@ -1169,8 +1192,38 @@ const CostingSummaryTable = (props) => {
       if (data) {
         let temp = moduleHandler(data[0]?.costingId, 'down', data)
         if (!temp) {
-          sendForApprovalData([data[0]?.costingId], index)
-          setShowApproval(true)
+          dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
+            if (!res?.data?.Data?.TechnologyLevels?.length || res?.data?.Data?.TechnologyLevels?.length === 0) {
+              setShowApproval(false)
+              Toaster.warning('User is not in the approval flow')
+            } else {
+              let levelDetailsTemp
+              levelDetailsTemp = userTechnologyLevelDetails(viewCostingData[0]?.costingTypeId, res?.data?.Data?.TechnologyLevels)
+              if (levelDetailsTemp?.length === 0) {
+                Toaster.warning("You don't have permission to send costing for approval.")
+              } else {
+                let obj = {}
+                obj.DepartmentId = userDetails().DepartmentId
+                obj.UserId = loggedInUserId()
+                obj.TechnologyId = partInfo.TechnologyId
+                obj.Mode = 'costing'
+                obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(viewCostingData[0]?.costingTypeId)
+                dispatch(checkFinalUser(obj, res => {
+                  if (res?.data?.Result) {
+                    setIsFinalCommonApproval(res?.data?.Data?.IsFinalApprover)
+                    if (res?.data?.Data?.IsUserInApprovalFlow === true && res?.data?.Data?.IsFinalApprover === false) {
+                      sendForApprovalData([data[0]?.costingId], index)
+                      setShowApproval(true)
+                    } else if (res?.data?.Data?.IsFinalApprover === true) {
+                      Toaster.warning("Final level user cannot send costing for approval.")
+                    } else {
+                      Toaster.warning("User does not have permission to send costing for approval.")
+                    }
+                  }
+                }))
+              }
+            }
+          }))
         } else {
           Toaster.warning('A costing is pending for approval for this part or one of it\'s child part. Please approve that first')
         }
@@ -2026,7 +2079,7 @@ const CostingSummaryTable = (props) => {
                                           disabled={data?.editSOBPercentage ? false : true}
                                         />
                                       </div>
-                                      {data?.bestCost !== true && <>
+                                      {data?.bestCost !== true && showEditSOBButton && <>
                                         {data?.editSOBPercentage ?
                                           <>
                                             <Button
@@ -2696,15 +2749,15 @@ const CostingSummaryTable = (props) => {
                                     <div style={{ width: '95%' }} className={`d-flex justify-content-between`}>
                                       <div>
                                         <div className=''>Applicability</div>
-                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0 && (data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType ?? '-')}</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0 && (data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType ?? '-')}</div>
                                       </div>
                                       <div>
-                                        <div>Value</div>
-                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</div>
+                                        <div>Percentage (%)</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) && <span title={checkForDecimalAndNull(String(data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType) === String('Fixed') ? '-' : data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}>{String(data?.CostingPartDetails?.DiscountCostDetails[0]?.ApplicabilityType) === String('Fixed') ? '-' : checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.Value, initialConfiguration.NoOfDecimalForPrice)}</span>}</div>
                                       </div>
                                       <div className='mr-2'>
-                                        <div>Cost</div>
-                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key")}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</div>
+                                        <div>Value</div>
+                                        <div className={highlighter(["otherDiscountValue", "discountValue"], "multiple-key") + " mt-2"}>{(data?.CostingHeading !== VARIANCE && data?.CostingPartDetails?.DiscountCostDetails?.length > 0) ? <span title={checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}>{checkForDecimalAndNull(data?.CostingPartDetails?.DiscountCostDetails[0]?.NetCost, initialConfiguration.NoOfDecimalForPrice)}</span> : ''}</div>
                                       </div>
                                     </div>
                                     {/* <span className="d-inline-block ">{"Applicability"}</span>
@@ -3109,6 +3162,7 @@ const CostingSummaryTable = (props) => {
             anchor={'right'}
             index={index}
             isPDFShow={false}
+            costingTypeId={viewCostingData[index]?.costingTypeId}
           />
         )
       }

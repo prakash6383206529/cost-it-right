@@ -15,8 +15,9 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { getSingleCostingDetails, gridDataAdded, setCostingViewData } from '../../../actions/Costing';
 import CostingDetailSimulationDrawer from '../../../../simulation/components/CostingDetailSimulationDrawer';
 import { ViewCostingContext } from '../../CostingDetails';
-import { EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
+import { CBCTypeId, EMPTY_DATA, VBCTypeId, WACTypeId } from '../../../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { number, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../../helper/validation";
 
 function EditPartCost(props) {
 
@@ -34,10 +35,10 @@ function EditPartCost(props) {
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
-    const { ToolTabData, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, SurfaceTabData, RMCCTabData, OverheadProfitTabData, DiscountCostData, PackageAndFreightTabData, checkIsToolTabChange, getAssemBOPCharge, CostingEffectiveDate } = useSelector(state => state.costing)
+    const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate } = useSelector(state => state.costing)
 
 
-    const { register, handleSubmit, control, setValue, getValues } = useForm({
+    const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -70,6 +71,8 @@ function EditPartCost(props) {
                 tempObject.VendorName = item?.VendorName
                 tempObject.label = item?.CostingNumber
                 tempObject.value = item?.BaseCostingId
+                tempObject.CustomerCode = item?.CustomerCode
+                tempObject.CustomerName = item?.CustomerName
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
             })
@@ -95,6 +98,8 @@ function EditPartCost(props) {
                 tempObject.VendorName = item?.VendorName
                 tempObject.label = item?.CostingNumber
                 tempObject.value = item?.BaseCostingId
+                tempObject.CustomerCode = item?.CustomerCode
+                tempObject.CustomerName = item?.CustomerName
                 tempArray.push(tempObject)
                 setValue(`${PartCostFields}.${index}.DeltaSign`, { label: item?.DeltaSign, value: item?.DeltaSign })
             })
@@ -108,8 +113,8 @@ function EditPartCost(props) {
         let obj = {
             partId: props?.tabAssemblyIndividualPartDetail?.PartId,
             plantId: costData?.DestinationPlantId,
-            isRequestForWAC: (costData?.CostingTypeId === WACTypeId) ? true : false,
-            costingTypeId: (costData?.CostingTypeId === WACTypeId) ? null : costData?.CostingTypeId
+            isRequestForWAC: (costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false,
+            costingTypeId: (costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? null : costData?.CostingTypeId
         }
 
         !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))
@@ -341,7 +346,7 @@ function EditPartCost(props) {
                 if (item?.Value === '0' || final.includes(item?.CostingNumber)) return false;
                 temp.push({
                     label: item?.CostingNumber, value: item?.BaseCostingIdRef,
-                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName, SOBPercentage: (item?.SOBPercentage) ? item.SOBPercentage : 0
+                    SettledPrice: item?.SettledPrice, VendorCode: item?.VendorCode, VendorName: item?.VendorName, SOBPercentage: (item?.SOBPercentage) ? item.SOBPercentage : 0, CustomerCode: item?.CustomerCode, CustomerName: item?.CustomerName
                 })
                 return null;
             });
@@ -398,6 +403,7 @@ function EditPartCost(props) {
                 tempObject.Delta = item?.DeltaValue
                 tempObject.DeltaSign = item?.DeltaSign?.label
                 tempObject.NetCost = item?.NetCost
+                tempObject.BasicRate = item?.NetCost
                 tempArray.push(tempObject)
             })
 
@@ -405,16 +411,19 @@ function EditPartCost(props) {
             let obj = {
                 "BaseWeightedAverageCostingId": props?.tabAssemblyIndividualPartDetail?.CostingId,
                 "NetPOPrice": weightedCost,
+                "BasicRate": weightedCost,
                 "CostingSettledDetails": tempArray
             }
             dispatch(saveSettledCostingDetails(obj, res => { }))
-
+            let totalOverheadPrice = OverheadProfitTabData && (checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.OverheadCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ProfitCost) +
+                checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.RejectionCost) + checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.PaymentTermCost) +
+                checkForNull(OverheadProfitTabData[0]?.CostingPartDetails?.ICCCost))
             let totalCost = (checkForNull(tempsubAssemblyTechnologyArray[0]?.CostingPartDetails?.TotalCalculatedRMBOPCCCost) +
                 checkForNull(surfaceTabData?.CostingPartDetails?.NetSurfaceTreatmentCost) +
                 checkForNull(PackageAndFreightTabData[0]?.CostingPartDetails?.NetFreightPackagingCost) +
                 checkForNull(ToolTabData && ToolTabData[0]?.CostingPartDetails?.TotalToolCost) +
-                checkForNull(OverHeadAndProfitTabData && OverHeadAndProfitTabData[0]?.CostingPartDetails?.NetOverheadAndProfitCost) +
-                checkForNull(DiscountCostData?.AnyOtherCost)) -
+                checkForNull(totalOverheadPrice) +
+                checkForNull(DiscountCostData?.AnyOtherCost) + checkForNull(DiscountCostData?.totalConditionCost)) -
                 checkForNull(DiscountCostData?.HundiOrDiscountValue)
 
             let request = formatMultiTechnologyUpdate(tempsubAssemblyTechnologyArray[0], totalCost, surfaceTabData, overHeadAndProfitTabData, packageAndFreightTabData, toolTabData, DiscountCostData, CostingEffectiveDate)
@@ -485,11 +494,18 @@ function EditPartCost(props) {
                                 <Table className={`table cr-brdr-main mb-0 rmcc-main-headings ${props.costingSummary ? 'mt-2' : ''}`}>
                                     <thead>
                                         <tr >
-                                            <th>Vendor Name</th>
+                                            {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
+
+                                                <th>Vendor (Code)</th>
+                                            }
+                                            {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
+
+                                                <th>Customer (Code)</th>
+                                            }
                                             <th>Costing Number</th>
                                             <th>Settled Price</th>
                                             <th>SOB%</th>
-                                            {costData?.CostingTypeId !== WACTypeId && <th>Delta</th>}
+                                            {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
                                             <th>Net Cost</th>
                                             <th>Action</th>
                                         </tr>
@@ -499,7 +515,14 @@ function EditPartCost(props) {
                                             return (
                                                 <>
                                                     <tr key={index} >
-                                                        <td>{item?.VendorName}</td>
+                                                        {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
+                                                            <td>{`${item?.VendorName} (${item?.VendorCode})`}</td>
+
+                                                        }
+                                                        {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
+                                                            <td>{`${item.CustomerName} (${item.CustomerCode})`}</td>
+
+                                                        }
                                                         <td>{item?.label}</td>
                                                         <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
                                                         <td>
@@ -524,11 +547,11 @@ function EditPartCost(props) {
                                                                 defaultValue={''}
                                                                 className=""
                                                                 customClassName={'withBorder'}
-                                                                disabled={(CostingViewMode || props.costingSummary || costData?.CostingTypeId === WACTypeId) ? true : false}
+                                                                disabled={(CostingViewMode || props.costingSummary || costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false}
                                                             />
                                                         </td>
 
-                                                        {costData?.CostingTypeId !== WACTypeId && <td >
+                                                        {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <td >
                                                             <div className='delta-warpper'>
                                                                 <SearchableSelectHookForm
                                                                     name={`${PartCostFields}.${index}.DeltaSign`}
@@ -552,6 +575,7 @@ function EditPartCost(props) {
                                                                     mandatory={false}
                                                                     rules={{
                                                                         required: false,
+                                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
                                                                         pattern: {
                                                                             value: /^\d*\.?\d*$/,
                                                                             message: 'Invalid Number.'
@@ -562,6 +586,7 @@ function EditPartCost(props) {
                                                                     className=""
                                                                     customClassName={'withBorder'}
                                                                     disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                    errors={errors?.PartCostFields && errors?.PartCostFields[index]?.DeltaValue}
                                                                 />
                                                             </div>
                                                         </td>}

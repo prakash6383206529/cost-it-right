@@ -2964,8 +2964,8 @@ export const MHRMoreZBC = [
 ]
 
 export const CLIENT_DOWNLOAD_EXCEl = [
-    { label: "Company Name", value: "CompanyName", },
-    { label: "Company Code", value: "CompanyCode", },
+    { label: "Customer Name", value: "CompanyName", },
+    { label: "Customer Code", value: "CompanyCode", },
     { label: "Contact Name", value: "ClientName", },
     { label: "Email Id", value: "ClientEmailId", },
     { label: "Phone No.", value: "PhoneNumber", },
@@ -5230,6 +5230,7 @@ export const MACHINERATE_DOWNLOAD_EXCEl = [
     { label: "Machine Type", value: "MachineTypeName", },
     { label: "Machine Tonnage", value: "MachineTonnage", },
     { label: "Process Name", value: "ProcessName", },
+    { label: "UOM", value: "UOM" },
     { label: "Vendor (Code)", value: "VendorName", },
     { label: "Plant (Code)", value: "Plant", },
     { label: "Customer (Code)", value: "CustomerName", },

@@ -18,6 +18,7 @@ import { REMARKMAXLENGTH, SHEETMETAL } from '../../config/masterData';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import { masterApprovalAPI, masterApprovalRequestBySenderBudget } from './actions/Budget';
 import TooltipCustom from '../common/Tooltip';
+import LoaderCustom from '../common/LoaderCustom';
 
 function MasterSendForApproval(props) {
     const { type, IsFinalLevel, IsPushDrawer, reasonId, masterId, approvalObj, isBulkUpload, IsImportEntry, approvalDetails, IsFinalLevelButtonShow, approvalData, levelDetails, Technology, showScrapKeys } = props
@@ -31,6 +32,7 @@ function MasterSendForApproval(props) {
 
     const [approvalDropDown, setApprovalDropDown] = useState([])
     const [isDisable, setIsDisable] = useState(false)
+    const [isLoader, setIsLoader] = useState(false)
 
     const dispatch = useDispatch()
     const reasonsList = useSelector((state) => state.approval.reasonsList)
@@ -70,21 +72,23 @@ function MasterSendForApproval(props) {
 
             dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
                 const Data = res.data.DataList[1] ? res.data.DataList[1] : []
-                setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
-                setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
-                let tempDropdownList = []
-                res.data.DataList &&
-                    res.data.DataList.map((item) => {
-                        if (item.Value === '0') return false;
-                        tempDropdownList.push({
-                            label: item.Text,
-                            value: item.Value,
-                            levelId: item.LevelId,
-                            levelName: item.LevelName
+                if (Data?.length !== 0) {
+                    setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+                    setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+                    let tempDropdownList = []
+                    res.data.DataList &&
+                        res.data.DataList.map((item) => {
+                            if (item.Value === '0') return false;
+                            tempDropdownList.push({
+                                label: item.Text,
+                                value: item.Value,
+                                levelId: item.LevelId,
+                                levelName: item.LevelName
+                            })
+                            return null
                         })
-                        return null
-                    })
-                setApprovalDropDown(tempDropdownList)
+                    setApprovalDropDown(tempDropdownList)
+                }
             },),)
         }))
     }, [])
@@ -130,18 +134,23 @@ function MasterSendForApproval(props) {
             ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
         }
         dispatch(getAllMasterApprovalUserByDepartment(obj, (res) => {
-            res.data.DataList &&
-                res.data.DataList.map((item) => {
-                    if (item.Value === '0') return false;
-                    tempDropdownList.push({
-                        label: item.Text,
-                        value: item.Value,
-                        levelId: item.LevelId,
-                        levelName: item.LevelName
+            const Data = res.data.DataList[1] ? res.data.DataList[1] : []
+            if (Data?.length !== 0) {
+                setValue('dept', { label: Data.DepartmentName, value: Data.DepartmentId })
+                setValue('approver', { label: Data.Text ? Data.Text : '', value: Data.Value ? Data.Value : '', levelId: Data.LevelId ? Data.LevelId : '', levelName: Data.LevelName ? Data.LevelName : '' })
+                res.data.DataList &&
+                    res.data.DataList.map((item) => {
+                        if (item.Value === '0') return false;
+                        tempDropdownList.push({
+                            label: item.Text,
+                            value: item.Value,
+                            levelId: item.LevelId,
+                            levelName: item.LevelName
+                        })
+                        return null
                     })
-                    return null
-                })
-            setApprovalDropDown(tempDropdownList)
+                setApprovalDropDown(tempDropdownList)
+            }
         }),
         )
 
@@ -199,8 +208,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = RMTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('Raw Material has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -225,8 +236,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = BOPTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('BOP has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -253,8 +266,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = OPERATIONTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('Operation has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -306,8 +321,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = MACHINETYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalAPI(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('Machine has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -357,8 +374,10 @@ function MasterSendForApproval(props) {
                     senderObj.ApprovalMasterId = BUDGETTYPE
 
                     //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+                    setIsLoader(true)
                     dispatch(masterApprovalRequestBySender(senderObj, res => {
                         setIsDisable(false)
+                        setIsLoader(false)
                         if (res?.data?.Result) {
                             Toaster.success('Budget has been sent for approval.')
                             props.closeDrawer('', 'submit')
@@ -391,8 +410,10 @@ function MasterSendForApproval(props) {
             obj.IsFinalApprovalProcess = false
             if (type === 'Approve') {
                 reset()
+                setIsLoader(true)
                 dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
                     setIsDisable(false)
+                    setIsLoader(false)
                     if (res?.data?.Result) {
                         if (IsPushDrawer) {
                             Toaster.success('The token has been approved')
@@ -405,7 +426,9 @@ function MasterSendForApproval(props) {
                 }))
             } else {
                 // REJECT CONDITION
+                setIsLoader(true)
                 dispatch(approvalOrRejectRequestByMasterApprove(obj, res => {
+                    setIsLoader(false)
                     if (res.data.Result) {
                         Toaster.success('Token Rejected')
                         props.closeDrawer('', 'submit')
@@ -472,42 +495,46 @@ function MasterSendForApproval(props) {
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && props.costingTypeId === ZBCTypeId &&
                     <>
                         <div className="input-group form-group col-md-6">
-                            <TextFieldHookForm
-                                label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                                name={'BasicPrice'}
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.BasicPrice}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-
+                            <Col>
+                                <TooltipCustom id="bop-basic-price-currency" tooltipText={props?.toolTipTextObject?.basicPriceCurrency} />
+                                <TextFieldHookForm
+                                    label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
+                                    name={'BasicPrice'}
+                                    Controller={Controller}
+                                    control={control}
+                                    placeholder={'-'}
+                                    register={register}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.BasicPrice}
+                                    defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                    disabled={true}
+                                />
+                            </Col>
                         </div>
                         {props?.IsImportEntry && <div className="input-group form-group col-md-6">
-                            <TextFieldHookForm
-                                label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                name={'BasicPriceBase'}
-                                Controller={Controller}
-                                control={control}
-                                placeholder={'-'}
-                                register={register}
-                                className=""
-                                customClassName={'withBorder'}
-                                errors={errors.BasicPriceBase}
-                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                                disabled={true}
-                            />
-
+                            <Col>
+                                <TooltipCustom id="bop-basic-price-base-currency" tooltipText={props?.toolTipTextObject?.basicPriceBaseCurrency} />
+                                <TextFieldHookForm
+                                    label={`Basic Price/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                    name={'BasicPriceBase'}
+                                    Controller={Controller}
+                                    control={control}
+                                    placeholder={'-'}
+                                    register={register}
+                                    className=""
+                                    customClassName={'withBorder'}
+                                    errors={errors.BasicPriceBase}
+                                    defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetCostWithoutConditionCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                    disabled={true}
+                                />
+                            </Col>
                         </div>}
 
 
                         <div className="input-group form-group col-md-6">
                             <TextFieldHookForm
-                                label={`Total Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
+                                label={`Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
                                 name={'ConditionCost'}
                                 Controller={Controller}
                                 control={control}
@@ -523,7 +550,7 @@ function MasterSendForApproval(props) {
                         </div>
                         {props?.IsImportEntry && <div className="input-group form-group col-md-6">
                             <TextFieldHookForm
-                                label={`Total Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                label={`Condition Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
                                 name={'ConditionCostBase'}
                                 Controller={Controller}
                                 control={control}
@@ -541,36 +568,40 @@ function MasterSendForApproval(props) {
                 }
 
                 <div className="input-group form-group col-md-6">
-                    <TextFieldHookForm
-                        label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
-                        name={'netCost'}
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.NetLandedCost}
-                        disabled={true}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                    />
-
+                    <Col>
+                        <TooltipCustom id="bop-net-cost-currency" tooltipText={props?.toolTipTextObject?.netCostCurrency} />
+                        <TextFieldHookForm
+                            label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${props?.currency?.label ? props?.currency?.label : 'Currency'})`}
+                            name={'netCost'}
+                            Controller={Controller}
+                            control={control}
+                            placeholder={'-'}
+                            register={register}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.NetLandedCost}
+                            disabled={true}
+                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        />
+                    </Col>
                 </div>
                 {props?.IsImportEntry && <div className="input-group form-group col-md-6">
-                    <TextFieldHookForm
-                        label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                        name={'netCostBase'}
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.NetLandedCostConversion}
-                        disabled={true}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                    />
-
+                    <Col>
+                        <TooltipCustom id="bop-net-cost-base-currency" tooltipText={props?.toolTipTextObject?.netCostBaseCurrency} />
+                        <TextFieldHookForm
+                            label={`Net Cost/${props?.UOM?.label ? props?.UOM?.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                            name={'netCostBase'}
+                            Controller={Controller}
+                            control={control}
+                            placeholder={'-'}
+                            register={register}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.NetLandedCostConversion}
+                            disabled={true}
+                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.NetLandedCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                        />
+                    </Col>
                 </div>}
             </>
         )
@@ -597,6 +628,7 @@ function MasterSendForApproval(props) {
                 </Col>
 
                 {props?.IsImportEntry && <Col md="6">
+                    <TooltipCustom id="rm-cut-off-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextCutOffBaseCurrency} />
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Cut Off Price", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"cutOffPriceBase"}
@@ -633,6 +665,7 @@ function MasterSendForApproval(props) {
                     />
                 </Col>
                 {props?.IsImportEntry && <Col md="6">
+                    <TooltipCustom id="rm-basic-rate-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextBasicRateBaseCurrency} />
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Basic Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"BasicRateBase"}
@@ -672,6 +705,7 @@ function MasterSendForApproval(props) {
                             />
                         </Col>
                         {props?.IsImportEntry && <Col md="6">
+                            <TooltipCustom id="rm-scrap-rate-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextScrapCostBaseCurrency} />
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"ScrapRateBase"}
@@ -707,6 +741,7 @@ function MasterSendForApproval(props) {
                             />
                         </Col>
                         {props?.IsImportEntry && <Col md="6">
+                            <TooltipCustom id="rm-forging-scrap-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextForgingScrapCostBaseCurrency} />
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Forging Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"ForgingScrapBase"}
@@ -742,6 +777,7 @@ function MasterSendForApproval(props) {
                             />
                         </Col>
                         {props?.IsImportEntry && <Col md="6">
+                            <TooltipCustom id="rm-machining-scrap-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextMachiningScrapCostBaseCurrency} />
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Machining Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"MachiningScrapBase"}
@@ -778,8 +814,9 @@ function MasterSendForApproval(props) {
                             />
                         </Col>
                         {props?.IsImportEntry && <Col md="6">
+                            <TooltipCustom id="rm-circle-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextCircleScrapCostBaseCurrency} />
                             <TextFieldHookForm
-                                label={labelWithUOMAndCurrency("Circle Scrap Cost Conversion", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                label={labelWithUOMAndCurrency("Circle Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"CircleScrapCostBase"}
                                 type="text"
                                 Controller={Controller}
@@ -813,6 +850,7 @@ function MasterSendForApproval(props) {
                             />
                         </Col>
                         {props?.IsImportEntry && <Col md="6">
+                            <TooltipCustom id="rm-jali-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrency} />
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Jali Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                                 name={"JaliScrapCostBase"}
@@ -849,6 +887,7 @@ function MasterSendForApproval(props) {
                     />
                 </Col>
                 {props?.IsImportEntry && <Col md="6">
+                    <TooltipCustom id="rm-freight-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextFreightCostBaseCurrency} />
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"FreightChargeBase"}
@@ -884,6 +923,7 @@ function MasterSendForApproval(props) {
                     />
                 </Col>
                 {props?.IsImportEntry && <Col md="6">
+                    <TooltipCustom id="rm-shearing-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextShearingCostBaseCurrency} />
                     <TextFieldHookForm
                         label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
                         name={"ShearingCostBase"}
@@ -902,6 +942,7 @@ function MasterSendForApproval(props) {
 
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && props.costingTypeId === ZBCTypeId && <>
                     <Col md="6">
+                        <TooltipCustom id="rm-basic-price" tooltipText={props?.toolTipTextObject?.basicPriceCurrency} />
                         <TextFieldHookForm
                             label={`Basic Price (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
                             name={"BasicPriceCurrency"}
@@ -918,6 +959,7 @@ function MasterSendForApproval(props) {
                         />
                     </Col>
                     {props?.IsImportEntry && <Col md="6">
+                        <TooltipCustom id="rm-basic-base-price" tooltipText={props?.toolTipTextObject?.basicPriceBaseCurrency} />
                         <TextFieldHookForm
                             label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
                             name={"BasicPriceBase"}
@@ -936,7 +978,6 @@ function MasterSendForApproval(props) {
 
 
                     <Col md="6">
-                        <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
                         <TextFieldHookForm
                             label={`Condition Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
                             name={"FinalConditionCostCurrency"}
@@ -954,7 +995,7 @@ function MasterSendForApproval(props) {
                     </Col>
 
                     {props?.IsImportEntry && <Col md="6">
-                        <TooltipCustom id="bop-net-cost" tooltipText={'Net Cost = Basic Rate'} />
+                        <TooltipCustom id="rm-condition-cost-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextConditionCostBaseCurrency} />
                         <TextFieldHookForm
                             label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
                             name={"FinalConditionCostBase"}
@@ -973,7 +1014,7 @@ function MasterSendForApproval(props) {
 
                 </>}
                 <Col md="6">
-                    <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
+                    <TooltipCustom id="rm-net-cost-currency" tooltipText={props?.toolTipTextObject?.netCostCurrency} />
                     <TextFieldHookForm
                         label={`Net Cost (${props?.currency?.label === undefined ? 'Currency' : props?.currency?.label})`}
                         name={"NetLandedCostCurrency"}
@@ -990,7 +1031,7 @@ function MasterSendForApproval(props) {
                     />
                 </Col>
                 {props?.IsImportEntry && <Col md="6">
-                    <TooltipCustom id="bop-net-cost-currency" tooltipText={'Net Cost (INR) = Basic Rate * Currency Rate'} />
+                    <TooltipCustom id="rm-net-cost-base-currency" tooltipText={props?.toolTipTextObject?.netCostBaseCurrency} />
                     <TextFieldHookForm
                         label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
                         name={"NetLandedCostBase"}
@@ -1033,7 +1074,7 @@ function MasterSendForApproval(props) {
                                     ></div>
                                 </Col>
                             </Row>
-
+                            {isLoader && <LoaderCustom customClass="approve-reject-drawer-loader" />}
                             <Row className="ml-0">
                                 {(!IsFinalLevelButtonShow && (type === 'Approve' || type === 'Sender')) && (
                                     <>

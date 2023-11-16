@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../common/DayTimeWrapper'
-import { EMPTY_DATA, VBCTypeId } from '../../../config/constants';
+import { CBCTypeId, EMPTY_DATA, VBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import Toaster from '../../common/Toaster';
@@ -50,10 +50,12 @@ function AssemblySimulationListing(props) {
 
     useEffect(() => {
         let obj = {
-            technologyId: selectedTechnologyForSimulation?.value,
-            vendorId: selectedVendorForSimulation?.value,
-            costingTypeId: VBCTypeId,
+            technologyId: technology?.value,
+            vendorId: props?.isCustomer ? null : selectedVendorForSimulation?.value,
+            costingTypeId: props?.isCustomer ? CBCTypeId : VBCTypeId,
+            customerId: props?.isCustomer ? selectedVendorForSimulation?.value : null,
         }
+
         dispatch(getAllMultiTechnologyCostings(obj, (res) => { }))
     }, [])
 
@@ -99,7 +101,7 @@ function AssemblySimulationListing(props) {
             "SimulationTechnologyId": checkForNull(selectedMasterForSimulation?.value),
             "EffectiveDate": DayTime(effectiveDate),
             "LoggedInUserId": loggedInUserId(),
-            "SimulationHeadId": VBCTypeId
+            "SimulationHeadId": props?.isCustomer ? CBCTypeId : VBCTypeId
         }
 
         dispatch(draftSimulationMultiTechnology(obj, res => {
@@ -284,6 +286,7 @@ function AssemblySimulationListing(props) {
                                             rowSelection={'multiple'}
                                             onSelectionChanged={onRowSelect}
                                         >
+
                                             <AgGridColumn field="CostingNumber" editable='false' headerName="Costing Number" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PlantName" editable='false' headerName="Plant Name" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PlantCode" editable='false' headerName="Plant Code" minWidth={140}></AgGridColumn>
@@ -342,7 +345,7 @@ function AssemblySimulationListing(props) {
                 }
                 {
                     showverifyPage &&
-                    <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} />
+                    <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} isCustomer={props?.isCustomer} />
                 }
                 {
                     showRunSimulationDrawer &&
