@@ -25,6 +25,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
+import { ASSEMBLY } from '../../../config/masterData';
 
 const selector = formValueSelector('AddProfit');
 
@@ -76,6 +77,7 @@ class AddProfit extends Component {
       vendorFilterList: [],
       RawMaterial: [],
       RMGrade: [],
+      isAssemblyCheckbox: false,
     }
   }
 
@@ -205,6 +207,8 @@ class AddProfit extends Component {
               singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0].PlantId ? { label: Data.Plants[0].PlantName, value: Data.Plants[0].PlantId } : {},
               RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
               RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
+              isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false
+
             }, () => {
               this.checkProfitFields()
               this.setState({ isLoader: false })
@@ -237,6 +241,7 @@ class AddProfit extends Component {
   renderListing = (label) => {
     const { modelTypes, costingHead, clientSelectList, plantSelectList, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
+    const excludedItems = ['RM', 'RM + CC', 'RM + CC + BOP', 'RM + BOP'];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
         if (item.Value === '0') return false
@@ -266,6 +271,7 @@ class AddProfit extends Component {
     if (label === 'ProfitApplicability') {
       costingHead && costingHead.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
+        if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) return false
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -882,7 +888,8 @@ class AddProfit extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: IsFinancialDataChanged
+        IsFinancialDataChanged: IsFinancialDataChanged,
+        TechnologyId: this.state.isAssemblyCheckbox ? ASSEMBLY : null
       }
 
       this.props.createProfit(formData, (res) => {
@@ -900,7 +907,13 @@ class AddProfit extends Component {
       e.preventDefault();
     }
   };
-
+  /**
+  * @method onPressAssemblyCheckbox
+  * @description Used for Surface Treatment
+  */
+  onPressAssemblyCheckbox = () => {
+    this.setState({ isAssemblyCheckbox: !this.state.isAssemblyCheckbox });
+  }
   /**
   * @method render
   * @description Renders the component
@@ -1160,6 +1173,25 @@ class AddProfit extends Component {
                             />
                           </Col>
                         )}
+                        <Col md="3" className="st-operation mt-4 pt-2">
+                          <label
+                            className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                              }`}
+                            onChange={this.onPressAssemblyCheckbox}
+                          >
+                            Apply for Part Type
+                            <input
+                              type="checkbox"
+                              checked={this.state.isAssemblyCheckbox}
+                              disabled={isEditFlag ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={this.state.isAssemblyCheckbox}
+                              onChange={this.onPressAssemblyCheckbox}
+                            />
+                          </label>
+                        </Col>
 
                         <Col md="3" >
                           <Field
