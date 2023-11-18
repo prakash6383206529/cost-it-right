@@ -513,6 +513,11 @@ class OperationListing extends Component {
         }
         window.screen.width >= 1921 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
+        const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+        floatingFilterInstances.forEach((floatingFilter, index) => {
+            const specificId = `Operation_Floating${index}`;
+            floatingFilter.id = specificId;
+        });
     };
 
     onExcelDownload = () => {
