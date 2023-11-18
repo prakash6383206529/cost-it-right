@@ -589,6 +589,11 @@ function RMDomesticListing(props) {
 
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
+        const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+        floatingFilterInstances.forEach((floatingFilter, index) => {
+            const specificId = `RM_Domestic_Floating${index}`;
+            floatingFilter.id = specificId;
+        });
     };
 
     const onPageSizeChanged = (newPageSize) => {
