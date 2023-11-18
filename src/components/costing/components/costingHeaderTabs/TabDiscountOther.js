@@ -55,12 +55,8 @@ function TabDiscountOther(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [effectiveDate, setEffectiveDate] = useState('');
   const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
-  const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
   const [isDisable, setIsDisable] = useState(false)
-  const [npvAcc, setNpvAcc] = useState(false)
-  const [conditionAcc, setConditionAcc] = useState(false)
-  const [otherCostAcc, setOtherCotAcc] = useState(false)
   const dispatch = useDispatch()
   let history = useHistory();
   const costData = useContext(costingInfoContext);
@@ -73,7 +69,7 @@ function TabDiscountOther(props) {
 
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
-  const [otherCostApplicability, setOtherCostApplicability] = useState([])
+  const [reRender, setRerender] = useState([])
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const [attachmentLoader, setAttachmentLoader] = useState(false)
@@ -122,6 +118,7 @@ function TabDiscountOther(props) {
     control,
     name: ['Remarks', 'Currency'],
   });
+
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -901,7 +898,18 @@ function TabDiscountOther(props) {
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
     if (errorCheckObject(ErrorObjDiscount)) return false;
-
+    if (!getValues('discountDescriptionRemark')) {
+      errors.discountDescriptionRemark = {
+        "type": "required",
+        "message": "",
+        "ref": {
+          "name": "discountDescriptionRemark",
+          "value": ""
+        }
+      }
+      setRerender(!reRender)
+      return false
+    }
     const tabData = RMCCTabData[0]
     const surfaceTabData = SurfaceTabData[0]
     const overHeadAndProfitTabData = OverheadProfitTabData[0]

@@ -25,6 +25,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
+import { ASSEMBLY } from '../../../config/masterData';
 
 const selector = formValueSelector('AddOverhead');
 
@@ -76,6 +77,7 @@ class AddOverhead extends Component {
       RawMaterial: [],
       RMGrade: [],
       IsFinancialDataChanged: true,
+      isAssemblyCheckbox: false,
     }
   }
 
@@ -216,6 +218,7 @@ class AddOverhead extends Component {
               singlePlantSelected: Data && Data.Plants[0] && Data.Plants[0]?.PlantId ? { label: Data.Plants[0]?.PlantName, value: Data.Plants[0]?.PlantId } : {},
               RawMaterial: Data.RawMaterialName !== undefined ? { label: Data.RawMaterialName, value: Data.RawMaterialChildId } : [],
               RMGrade: Data.RawMaterialGrade !== undefined ? { label: Data.RawMaterialGrade, value: Data.RawMaterialGradeId } : [],
+              isAssemblyCheckbox: Data.TechnologyId === ASSEMBLY ? true : false
             }, () => {
               this.checkOverheadFields()
               this.setState({ isLoader: false })
@@ -248,6 +251,7 @@ class AddOverhead extends Component {
   renderListing = (label) => {
     const { clientSelectList, modelTypes, plantSelectList, costingHead, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
+    const excludedItems = ['RM', 'RM + CC', 'RM + CC + BOP', 'RM + BOP'];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map((item) => {
         if (item.Value === '0') return false
@@ -278,6 +282,7 @@ class AddOverhead extends Component {
     if (label === 'OverheadApplicability') {
       costingHead && costingHead.map(item => {
         if (item.Value === '0' || item.Text === 'Net Cost') return false;
+        if (this.state.isAssemblyCheckbox && excludedItems.includes(item.Text)) return false
         temp.push({ label: item.Text, value: item.Value })
         return null;
       });
@@ -872,7 +877,8 @@ class AddOverhead extends Component {
         RawMaterialName: RawMaterial?.label,
         RawMaterialGradeId: RMGrade?.value,
         RawMaterialGrade: RMGrade?.label,
-        IsFinancialDataChanged: IsFinancialDataChanged
+        IsFinancialDataChanged: IsFinancialDataChanged,
+        TechnologyId: this.state.isAssemblyCheckbox ? ASSEMBLY : null
       }
 
       this.props.createOverhead(formData, (res) => {
@@ -890,7 +896,13 @@ class AddOverhead extends Component {
       e.preventDefault();
     }
   };
-
+  /**
+  * @method onPressAssemblyCheckbox
+  * @description Used for Surface Treatment
+  */
+  onPressAssemblyCheckbox = () => {
+    this.setState({ isAssemblyCheckbox: !this.state.isAssemblyCheckbox });
+  }
   /**
   * @method render
   * @description Renders the component
@@ -1147,7 +1159,25 @@ class AddOverhead extends Component {
                             />
                           </Col>
                         )}
-
+                        <Col md="3" className="st-operation mt-4 pt-2">
+                          <label
+                            className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
+                              }`}
+                            onChange={this.onPressAssemblyCheckbox}
+                          >
+                            Apply for Part Type
+                            <input
+                              type="checkbox"
+                              checked={this.state.isAssemblyCheckbox}
+                              disabled={isEditFlag ? true : false}
+                            />
+                            <span
+                              className=" before-box"
+                              checked={this.state.isAssemblyCheckbox}
+                              onChange={this.onPressAssemblyCheckbox}
+                            />
+                          </label>
+                        </Col>
                         <Col md="3" >
                           <Field
                             name="OverheadApplicability"
@@ -1267,6 +1297,7 @@ class AddOverhead extends Component {
                           </div>
                         </Col>
                       </Row>
+
 
                       <Row>
                         <Col md="12">
