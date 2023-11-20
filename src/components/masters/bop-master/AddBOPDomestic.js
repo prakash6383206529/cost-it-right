@@ -614,8 +614,8 @@ class AddBOPDomestic extends Component {
     if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) &&
       checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostBaseCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
 
-      this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
-      this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
+      this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '' });
+      this.props.change('EffectiveDate', DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '')
     } else {
       this.setState({ IsFinancialDataChanged: true })
 
