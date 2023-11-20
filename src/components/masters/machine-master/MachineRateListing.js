@@ -547,6 +547,11 @@ class MachineRateListing extends Component {
         this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
 
         params.api.paginationGoToPage(0);
+        const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+        floatingFilterInstances.forEach((floatingFilter, index) => {
+            const specificId = `Machine_Floating${index}`;
+            floatingFilter.id = specificId;
+        });
     };
 
     onExcelDownload = () => {
