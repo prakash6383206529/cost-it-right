@@ -9,11 +9,12 @@ import {
 
 } from '../../../../config/constants';
 import { apiErrors } from '../../../../helper/util';
+import { userDepartmetList } from '../../../../helper';
 
 export function getAllNfrList(callback) {
     return (dispatch) => {
 
-        const request = axios.get(`${API.getAllNfrList}`, config());
+        const request = axios.get(`${API.getAllNfrList}?departmentCode=${userDepartmetList()}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 callback(response);
