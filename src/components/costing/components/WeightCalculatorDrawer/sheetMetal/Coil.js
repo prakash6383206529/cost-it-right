@@ -5,7 +5,7 @@ import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, convertmmTocm, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import Toaster from '../../../../common/Toaster'
@@ -152,14 +152,14 @@ function Coil(props) {
 
         let grossWeight
         let data = {
-            density: rmRowData.Density,
+            density: rmRowData.Density / 1000,
             stripWidth: checkForNull(getValues('StripWidth')),
-            thickness: convertmmTocm(getValues('Thickness')),
+            thickness: checkForNull(getValues('Thickness')),
             pitch: checkForNull(getValues('Pitch')),
             cavity: getValues('Cavity')
         }
         grossWeight = calculateWeight(data.density, data.stripWidth, data.thickness, data.pitch) / data.cavity
-        setGrossWeights(grossWeight)
+        setGrossWeights(grossWeight) // for coverting into gram
         const updatedValue = dataToSend
         updatedValue.GrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
         updatedValue.newGrossWeight = setValueAccToUOM(grossWeight, UOMDimension.label)
@@ -262,7 +262,7 @@ function Coil(props) {
     }
 
     const UnitFormat = () => {
-        return <>Net Surface Area(cm<sup>2</sup>)</>
+        return <>Net Surface Area(mm<sup>2</sup>)</>
         // return (<sup>2</sup>)
     }
 
@@ -294,7 +294,7 @@ function Coil(props) {
                             <Row className={''}>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Strip Width(cm)`}
+                                        label={`Strip Width(mm)`}
                                         name={'StripWidth'}
                                         Controller={Controller}
                                         control={control}
@@ -334,7 +334,7 @@ function Coil(props) {
                                 </Col>
                                 <Col md="3">
                                     <TextFieldHookForm
-                                        label={`Pitch(cm)`}
+                                        label={`Pitch(mm)`}
                                         name={'Pitch'}
                                         Controller={Controller}
                                         control={control}
@@ -415,7 +415,7 @@ function Coil(props) {
 
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * (Thickness * Strip Width * Pitch) / 10)'} />
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'coil-gross-weight'} tooltipText={'Gross Weight =  (Density * Thickness * Strip Width * Pitch) / 1000'} />
                                     <TextFieldHookForm
                                         label={`Gross Weight(${UOMDimension.label})`}
                                         name={'GrossWeight'}

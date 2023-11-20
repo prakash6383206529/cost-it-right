@@ -488,8 +488,8 @@ function ViewConversionCost(props) {
                 <th>{`UOM`}</th>
                 <th>{`Rate`}</th>
                 <th>{`Quantity`}</th>
-                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Rate`}</th>}
-                {costingOperationCost && costingOperationCost[0]?.IsLabourRateExist === true && <th>{`Labour Quantity`}</th>}
+                {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Rate`}</th>}
+                {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <th>{`Labour Quantity`}</th>}
                 <th>{`Net Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                 <th className="costing-border-right">{`Remark`}</th>
@@ -508,8 +508,8 @@ function ViewConversionCost(props) {
                       <td>{item.UOM ? item.UOM : '-'}</td>
                       <td>{item.Rate ? item.Rate : '-'}</td>
                       <td>{item.Quantity ? item.Quantity : '-'}</td>
-                      {item.IsLabourRateExist && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>}
-                      {item.IsLabourRateExist && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
+                      {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <td>{checkForDecimalAndNull(item.LabourRate, initialConfiguration.NoOfDecimalForPrice)}</td>}
+                      {initialConfiguration && initialConfiguration.IsOperationLabourRateConfigure && <td>{checkForDecimalAndNull(item.LabourQuantity, initialConfiguration.NoOfDecimalForPrice)}</td>}
                       {/* <td>{netCost(item.OperationCost)}</td> */}
                       <td>
                         {item.OperationCost ? checkForDecimalAndNull(item.OperationCost, initialConfiguration.NoOfDecimalForPrice) : 0}

@@ -7,7 +7,7 @@ import HeaderTitle from '../../../../common/HeaderTitle'
 import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
-  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, convertmmTocm, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation
+  checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation
 } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -193,7 +193,7 @@ function Pipe(props) {
    * @description CALCULATE INNER DIAMETER
    */
   const calculateInnerDiameter = () => {
-    let ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(convertmmTocm(fieldValues.Thickness));
+    let ID = checkForNull(fieldValues.OuterDiameter) - 2 * checkForNull(fieldValues.Thickness);
 
     setValue('InnerDiameter', checkForDecimalAndNull(ID, localStorage.NoOfDecimalForInputOutput))
     const updatedValue = dataToSend
@@ -238,7 +238,7 @@ function Pipe(props) {
    */
   const calculateWeightOfSheet = () => {
     const data = {
-      Density: props.rmRowData.Density,
+      Density: props.rmRowData.Density / 1000,
       OuterDiameter: Number(getValues('OuterDiameter')),
       InnerDiameter: dataToSend.InnerDiameter,
       SheetLength: Number(getValues('SheetLength')),
@@ -260,7 +260,7 @@ function Pipe(props) {
    */
   const calculateWeightOfPart = () => {
     const data = {
-      Density: props.rmRowData.Density,
+      Density: props.rmRowData.Density / 1000,
       OuterDiameter: getValues('OuterDiameter'),
       InnerDiameter: dataToSend.InnerDiameter,
       PartLength: getValues('PartLength'),
@@ -280,7 +280,7 @@ function Pipe(props) {
    */
   const calculateWeightOfScrap = () => {
     const data = {
-      Density: props.rmRowData.Density,
+      Density: props.rmRowData.Density / 1000,
       OuterDiameter: getValues('OuterDiameter'),
       InnerDiameter: dataToSend.InnerDiameter,
       ScrapLength: dataToSend.ScrapLength,
@@ -465,7 +465,7 @@ function Pipe(props) {
   }
 
   const UnitFormat = () => {
-    return <>Net Surface Area(cm<sup>2</sup>)</>
+    return <>Net Surface Area(mm<sup>2</sup>)</>
   }
 
   const handleKeyDown = function (e) {
@@ -479,7 +479,7 @@ function Pipe(props) {
    * @description Renders the component
    */
   const tooltipMessageForSheetWeight = (value) => {
-    return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value})</div>
+    return <div>Weight of {value} = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * Length of {value})/1000</div>
   }
   const surfaceaAreaTooltipMessage = <div>Net Surface Area =(π * Outer Diameter * Length of Part) + {isOneSide ? '(π * Inner Diameter * Length of Part) +' : ''} (π / 2 * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>))</div>
   return (
@@ -500,7 +500,7 @@ function Pipe(props) {
               <Row className={''}>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Outer Diameter(cm)`}
+                    label={`Outer Diameter(mm)`}
                     name={'OuterDiameter'}
                     Controller={Controller}
                     control={control}
@@ -539,9 +539,9 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness / 10)" />
+                  <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness)" />
                   <TextFieldHookForm
-                    label={`Inner Diameter(cm)`}
+                    label={`Inner Diameter(mm)`}
                     name={'InnerDiameter'}
                     Controller={Controller}
                     control={control}
@@ -561,7 +561,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Length of Sheet(cm)`}
+                    label={`Length of Sheet(mm)`}
                     name={'SheetLength'}
                     Controller={Controller}
                     control={control}
@@ -581,7 +581,7 @@ function Pipe(props) {
                 </Col>
                 <Col md="3">
                   <TextFieldHookForm
-                    label={`Length of Part(cm)`}
+                    label={`Length of Part(mm)`}
                     name={'PartLength'}
                     Controller={Controller}
                     control={control}
@@ -621,7 +621,7 @@ function Pipe(props) {
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
 
                   <TextFieldHookForm
-                    label={`Length of Scrap(cm)`}
+                    label={`Length of Scrap(mm)`}
                     name={'ScrapLength'}
                     Controller={Controller}
                     control={control}

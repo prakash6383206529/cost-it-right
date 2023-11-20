@@ -192,7 +192,7 @@ function SimulationApprovalListing(props) {
         isDashboard && dispatch(dashboardTabLock(true))
         let obj = { ...dataObj }
         dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
-
+            dispatch(dashboardTabLock(false))
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
                 setPageNo(0)
