@@ -154,6 +154,14 @@
         position: absolute;
         right: 0;
     }
+
+    .btn-container {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        white-space: nowrap;
+        background: transparent;
+    }
 }
 
 
