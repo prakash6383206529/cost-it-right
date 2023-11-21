@@ -152,7 +152,8 @@ function Simulation(props) {
         dispatch(setTechnologyForSimulation(''))
         setAssociation('')
         setValue('Association', '')
-        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
+        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value)) && checkForNull(value.value) !== ASSEMBLY_TECHNOLOGY_MASTER) {
+
             setSelectionForListingMasterAPI('Master')
             setShowTokenDropdown(true)
             setShowMasterList(true)
@@ -194,7 +195,7 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
-        if (checkForNull(value?.value) === ASSEMBLY) {
+        if (checkForNull(value?.value) === ASSEMBLY && Number(master) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) {
             setTechnology(value)
             setShowMasterList(false)
             setShowTokenDropdown(false)
@@ -487,8 +488,13 @@ function Simulation(props) {
                 return temp
             } else {
                 technologySelectList && technologySelectList.map((item) => {
-                    if (item.Value === '0' || IdForMultiTechnology.includes(String(item.Value))) return false;
-                    temp.push({ label: item.Text, value: item.Value });
+                    if (item.Value === '0') return false;
+                    if (String(master.value) === String(RMDOMESTIC) || String(master.value) === String(RMIMPORT)) {
+                        if (String(item.Value) !== String(ASSEMBLY)) temp.push({ label: item.Text, value: item.Value })
+                    } else {
+                        temp.push({ label: item.Text, value: item.Value });
+
+                    }
                     return null;
                 })
                 return temp
