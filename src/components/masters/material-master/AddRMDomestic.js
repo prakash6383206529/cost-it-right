@@ -288,6 +288,7 @@ class AddRMDomestic extends Component {
    * @description  used to handle row material selection
    */
   handleRMChange = (newValue, actionMeta) => {
+    console.log('newValue: ', newValue);
     if (newValue && newValue !== '') {
       this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
         const { RawMaterial } = this.state
@@ -1177,6 +1178,8 @@ class AddRMDomestic extends Component {
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
+    console.log('values: ', values);
+
     const { RawMaterial, RMGrade, RMSpec, Category, client, Technology, selectedPlants, costingTypeId, vendorName, VendorCode, HasDifferentSource, sourceLocation, UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate,
       NetLandedCostBaseCurrency, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, IsFinancialDataChanged, conditionTableData, FinalCutOffBaseCurrency, FinalScrapRateBaseCurrency, FinalForgingScrapCostBaseCurrency,
       FinalMachiningScrapCostBaseCurrency, FinalCircleScrapCostBaseCurrency, FinalJaliScrapCostBaseCurrency, FinalFreightCostBaseCurrency, FinalShearingCostBaseCurrency, FinalBasicPriceBaseCurrency, FinalConditionCostBaseCurrency, FinalBasicRateBaseCurrency, showScrapKeys, } = this.state
@@ -1363,6 +1366,7 @@ class AddRMDomestic extends Component {
   };
 
   handleSinglePlant = (newValue) => {
+    console.log('newValue: ', newValue);
     this.setState({ singlePlantSelected: newValue })
   }
 

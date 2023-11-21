@@ -152,7 +152,8 @@ function Simulation(props) {
         dispatch(setTechnologyForSimulation(''))
         setAssociation('')
         setValue('Association', '')
-        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
+        if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value)) && checkForNull(value.value) !== ASSEMBLY_TECHNOLOGY_MASTER) {
+
             setSelectionForListingMasterAPI('Master')
             setShowTokenDropdown(true)
             setShowMasterList(true)
@@ -194,7 +195,7 @@ function Simulation(props) {
     }
 
     const handleTechnologyChange = (value) => {
-        if (checkForNull(value?.value) === ASSEMBLY) {
+        if (checkForNull(value?.value) === ASSEMBLY && Number(master) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) {
             setTechnology(value)
             setShowMasterList(false)
             setShowTokenDropdown(false)
@@ -487,8 +488,13 @@ function Simulation(props) {
                 return temp
             } else {
                 technologySelectList && technologySelectList.map((item) => {
-                    if (item.Value === '0' || IdForMultiTechnology.includes(String(item.Value))) return false;
-                    temp.push({ label: item.Text, value: item.Value });
+                    if (item.Value === '0') return false;
+                    if (String(master.value) === String(RMDOMESTIC) || String(master.value) === String(RMIMPORT)) {
+                        if (String(item.Value) !== String(ASSEMBLY)) temp.push({ label: item.Text, value: item.Value })
+                    } else {
+                        temp.push({ label: item.Text, value: item.Value });
+
+                    }
                     return null;
                 })
                 return temp
@@ -1198,16 +1204,16 @@ function Simulation(props) {
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
                                     {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
-                                    <button type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(dataForSimulationFunction() || editWarning) ? true : false}>
+                                    <button id={"simulation-edit"} type="button" className={"user-btn mt2 mr5"} onClick={openEditPage} disabled={(dataForSimulationFunction() || editWarning) ? true : false}>
                                         <div className={"edit-icon"}></div>  {"EDIT"} </button>
                                     {
                                         !isUploadSimulation(master.value) &&
                                         <>
-                                            <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                            <ExcelFile filename={master.label} fileExtension={'.xls'} element={<button id={"simulation-download"} type="button" disabled={editWarning} className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                                 {/* {true ? '' : renderColumn(master.label)} */}
                                                 {!editWarning ? renderColumn(master.value) : ''}
                                             </ExcelFile>
-                                            <button type="button" className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
+                                            <button type="button" id='simulation-upload' className={"user-btn mr5"} onClick={() => { setShowDrawer(true) }}> <div className={"upload"}></div>UPLOAD</button>
                                         </>
                                     }
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
