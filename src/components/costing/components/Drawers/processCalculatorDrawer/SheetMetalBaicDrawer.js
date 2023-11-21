@@ -17,8 +17,8 @@ import TooltipCustom from '../../../../common/Tooltip';
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
 
 function SheetMetalBaicDrawer(props) {
-
   const { rmFinishWeight } = props
+  const { ProcessName } = props.calculatorData
   const costData = useContext(costingInfoContext);
   const WeightCalculatorRequest = props.calculatorData.WeightCalculatorRequest
   const localStorage = reactLocalStorage.getObject('InitialConfiguration');
@@ -29,7 +29,9 @@ function SheetMetalBaicDrawer(props) {
     Efficiency: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Efficiency !== null ? WeightCalculatorRequest.Efficiency : 100 : 100,
     Cavity: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.Cavity !== null ? WeightCalculatorRequest.Cavity : 1 : 1,
     Quantity: Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.Quantity !== undefined ? checkForNull(WeightCalculatorRequest.Quantity) : 1,
-    ProcessCost: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " " : ''
+    ProcessCost: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? checkForDecimalAndNull(WeightCalculatorRequest.ProcessCost, localStorage.NoOfDecimalForPrice) : " " : '',
+    ExtrusionSpeed: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ExtrusionSpeed : '',
+    PartLength: Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.PartLength : '',
   }
 
   const { register, handleSubmit, control, setValue, getValues, formState: { errors }, } = useForm({
@@ -52,17 +54,20 @@ function SheetMetalBaicDrawer(props) {
   const tempProcessObj = Object.keys(WeightCalculatorRequest).length > 0 ? WeightCalculatorRequest.ProcessCost !== null ? WeightCalculatorRequest.ProcessCost : '' : ''
   const fieldValues = useWatch({
     control,
-    name: ['Efficiency', 'Cavity', 'CycleTime'],
+    name: ['Efficiency', 'Cavity', 'CycleTime', 'PartLength', 'ExtrusionSpeed'],
   })
-
+  const quantFieldValue = useWatch({
+    control,
+    name: ['Quantity']
+  })
   useEffect(() => {
     handleProductionPerHour()
     calculateProcessCost()
   }, [fieldValues, quantityState])
 
-  const quantFieldValue = useWatch({
+  const cycleTime = useWatch({
     control,
-    name: ['Quantity']
+    name: ['PartLength', 'ExtrusionSpeed', 'Efficiency']
   })
 
   useEffect(() => {
@@ -72,7 +77,9 @@ function SheetMetalBaicDrawer(props) {
     setQuantityState(getValues('Quantity'))
   }, [quantFieldValue])
 
-
+  useEffect(() => {
+    calculateCycleTime()
+  }, [cycleTime])
   useEffect(() => {
 
     if (!props.CostingViewMode && props.calculatorData.UOMType === MASS) {
@@ -158,6 +165,8 @@ function SheetMetalBaicDrawer(props) {
     obj.UnitTypeId = props.calculatorData.UOMTypeId
     obj.UnitType = props.calculatorData.UOMType
     obj.PartPerHour = props.calculatorData.UOMType === TIME ? checkForNull(quantityState) : '-'
+    obj.ExtrusionSpeed = getValues('ExtrusionSpeed')
+    obj.PartLength = getValues('PartLength')
     dispatch(saveDefaultProcessCostCalculationData(obj, res => {
       setIsDisable(false)
       if (res.data.Result) {
@@ -229,6 +238,13 @@ function SheetMetalBaicDrawer(props) {
       }
     }
   }
+  const calculateCycleTime = () => {
+    const ExtrusionSpeed = checkForNull(getValues('ExtrusionSpeed'))
+    const PartLength = checkForNull(getValues('PartLength'))
+    const Efficiency = checkForNull(getValues('Efficiency')) / 100
+    const CycleTime = (60 / ExtrusionSpeed * PartLength) / 1000 * Efficiency
+    setValue('CycleTime', checkForDecimalAndNull(CycleTime, getConfigurationKey().NoOfDecimalForInputOutput))
+  }
 
   const onCancel = () => {
     calculateMachineTime('0.00')
@@ -283,9 +299,83 @@ function SheetMetalBaicDrawer(props) {
                       disabled={true}
                     />
                   </Col>
+                  {(ProcessName === 'Extrusion') &&
+                    <>
+                      <Col md="4">
+                        <TextFieldHookForm
+                          label={'Extrusion Speed / Meter'}
+                          name={'ExtrusionSpeed'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={true}
+                          rules={{
+                            required: true,
+                            pattern: {
+                              value: /^\d{0,6}(\.\d{0,4})?$/i,
+                              message: 'Maximum length for integer is 6 and for decimal is 4',
+                            },
+                          }}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.ExtrusionSpeed}
+                          disabled={(props.CostingViewMode) ? true : false}
+                        />
+                      </Col>
+                      <Col md="4">
+                        <TextFieldHookForm
+                          label={'Part Length (mm)'}
+                          name={'PartLength'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={true}
+                          rules={{
+                            required: true,
+                            pattern: {
+                              value: /^\d{0,6}(\.\d{0,4})?$/i,
+                              message: 'Maximum length for integer is 6 and for decimal is 4',
+                            },
+                          }}
+                          handleChange={() => { }}
+                          defaultValue={''}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.PartLength}
+                          disabled={(props.CostingViewMode) ? true : false}
+                        />
+                      </Col>
+                    </>}
+                  <Col md="4">
+                    <TextFieldHookForm
+                      label={`Efficiency (%)`}
+                      name={'Efficiency'}
+                      Controller={Controller}
+                      control={control}
+                      register={register}
+                      mandatory={true}
+                      rules={{
+                        required: true,
+                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                        max: {
+                          value: 100,
+                          message: 'Percentage cannot be greater than 100'
+                        },
+                      }}
+                      handleChange={() => { }}
+                      defaultValue={100}
+                      className=""
+                      customClassName={'withBorder'}
+                      errors={errors.Efficiency}
+                      disabled={props.CostingViewMode ? true : false}
+                    />
+                  </Col>
                   {
                     hide &&
                     <Col md="4">
+                      {ProcessName === "Extrusion" && <TooltipCustom tooltipClass='cycle-time' disabledIcon={true} id={'cycle-time'} tooltipText={'(60/Extrusion Speed * Part Length (mm))/1000 * Efficiency'} />}
                       <NumberFieldHookForm
                         label={`Cycle Time(sec)`}
                         name={'CycleTime'}
@@ -300,12 +390,13 @@ function SheetMetalBaicDrawer(props) {
                             message: 'Invalid Number.',
                           },
                         }}
+                        id={'cycle-time'}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.CycleTime}
-                        disabled={props.CostingViewMode ? true : false}
+                        disabled={props.CostingViewMode || ProcessName === 'Extrusion' ? true : false}
                       />
                     </Col>
                   }
@@ -335,30 +426,7 @@ function SheetMetalBaicDrawer(props) {
                     />
                   </Col>
 
-                  <Col md="4">
-                    <TextFieldHookForm
-                      label={`Efficiency (%)`}
-                      name={'Efficiency'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={true}
-                      rules={{
-                        required: true,
-                        validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                        max: {
-                          value: 100,
-                          message: 'Percentage cannot be greater than 100'
-                        },
-                      }}
-                      handleChange={() => { }}
-                      defaultValue={100}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.Efficiency}
-                      disabled={props.CostingViewMode ? true : false}
-                    />
-                  </Col>
+
                   <Col md="4">
                     <NumberFieldHookForm
                       label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Parts/Hour` : `Quantity`}

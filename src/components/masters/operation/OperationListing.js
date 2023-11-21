@@ -513,6 +513,11 @@ class OperationListing extends Component {
         }
         window.screen.width >= 1921 && params.api.sizeColumnsToFit()
         params.api.paginationGoToPage(0);
+        const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
+        checkBoxInstance.forEach((checkBox, index) => {
+            const specificId = `Operation_Checkbox${index / 11}`;
+            checkBox.id = specificId;
+        })
         const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
         floatingFilterInstances.forEach((floatingFilter, index) => {
             const specificId = `Operation_Floating${index}`;
