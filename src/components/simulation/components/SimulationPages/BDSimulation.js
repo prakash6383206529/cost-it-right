@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA, CBCTypeId } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, CBCTypeId, BOPIMPORT, EXCHNAGERATE } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -24,6 +24,7 @@ import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
 import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import { hideColumnFromExcel } from '../../../common/CommonFunctions';
+import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
 const gridOptions = {
 
@@ -58,7 +59,8 @@ function BDSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
 
     useEffect(() => {
         if (isbulkUpload) {
@@ -78,6 +80,54 @@ function BDSimulation(props) {
             setMaxDate(maxDate)
         }
     }, [list])
+
+    const apiCall = (check, tempList) => {
+        let obj = {}
+        obj.SimulationTechnologyId = check ? BOPIMPORT : selectedMasterForSimulation.value
+        obj.SimulationTypeId = list[0]?.CostingTypeId
+        obj.LoggedInUserId = loggedInUserId()
+        obj.TechnologyId = selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null
+        obj.TechnologyName = selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null
+        obj.EffectiveDate = effectiveDate
+        // if (filteredRMData.plantId && filteredRMData.plantId.value) {
+        //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
+        // }
+
+        let tempArr = []
+        list && list.map(item => {
+            if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
+                let tempObj = {}
+                tempObj.BoughtOutPartId = item.BoughtOutPartId
+                tempObj.OldBOPRate = item.BasicRate
+                tempObj.NewBOPRate = item.NewBasicRate
+                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
+                tempArr.push(tempObj)
+            }
+            return null;
+        })
+
+        obj.SimulationIds = tokenForMultiSimulation
+        obj.SimulationBoughtOutPart = tempArr
+        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+        obj.SimulationHeadId = list[0]?.CostingTypeId
+        obj.IsSimulationWithOutCosting = !isMasterAssociatedWithCosting
+
+        if (check) {
+            obj.SimulationExchangeRates = tempList
+            obj.IsExchangeRateSimulation = true
+        }
+
+        dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
+            setIsDisable(false)
+            if (res?.data?.Result) {
+                setToken(res.data.Identity)
+                setTimeout(() => {
+                    setShowVerifyPage(true)
+                }, 200);
+            }
+        }))
+    }
 
     const verifySimulation = debounce(() => {
         if (!isEffectiveDateSelected) {
@@ -105,43 +155,14 @@ function BDSimulation(props) {
         basicRateCount = 0
         // setShowVerifyPage(true)
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
-        let obj = {}
-        obj.SimulationTechnologyId = selectedMasterForSimulation?.value
-        obj.SimulationTypeId = list[0].CostingTypeId
-        obj.LoggedInUserId = loggedInUserId()
-        obj.TechnologyId = selectedTechnologyForSimulation?.value ? selectedTechnologyForSimulation?.value : null
-        obj.TechnologyName = selectedTechnologyForSimulation?.label ? selectedTechnologyForSimulation?.label : null
-        obj.EffectiveDate = effectiveDate
-        // if (filteredRMData.plantId && filteredRMData.plantId.value) {
-        //     obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
-        // }
-        let tempArr = []
-        list && list.map(item => {
-            if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
-                let tempObj = {}
-                tempObj.BoughtOutPartId = item.BoughtOutPartId
-                tempObj.OldBOPRate = item.BasicRate
-                tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
-                tempArr.push(tempObj)
-            }
-            return null;
-        })
-
-        obj.SimulationIds = tokenForMultiSimulation
-        obj.SimulationBoughtOutPart = tempArr
-        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-        obj.SimulationHeadId = list[0].CostingTypeId
-        obj.IsSimulationWithOutCosting = !isMasterAssociatedWithCosting
-
-        dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
-            setIsDisable(false)
-            if (res?.data?.Result) {
-                setToken(res.data.Identity)
-                setShowVerifyPage(true)
-            }
-        }))
+        const check = selectedMasterForSimulation.value === EXCHNAGERATE
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, res => {
+                apiCall(check, res);
+            }))
+        } else {
+            apiCall(check);
+        }
         setShowTooltip(false)
     }, 500)
 
@@ -470,10 +491,10 @@ function BDSimulation(props) {
                                                     </div>
                                                 </>
                                             }
-                                            {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
-                                                {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                            {!isImpactedMaster && list && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                {list[0]?.CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
                                                     <label className='mr-1'>Vendor (Code):</label>
-                                                    <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
+                                                    <p title={list[0]?.Vendor} className='mr-2'>{list[0]?.Vendor ? list[0]?.Vendor : list?.[0]?.['Vendor (Code)']}</p>
                                                 </div>}
                                                 <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                             </div>}
@@ -508,8 +529,8 @@ function BDSimulation(props) {
                                             <AgGridColumn field="BoughtOutPartNumber" tooltipField='BoughtOutPartNumber' editable='false' headerName="BOP Part No" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="BoughtOutPartName" tooltipField='BoughtOutPartName' editable='false' headerName="BOP Part Name" minWidth={140}></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn field="BoughtOutPartCategory" tooltipField='BoughtOutPartCategory' editable='false' headerName="BOP Category" minWidth={140}></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn field="Vendor" tooltipField='Vendor' editable='false' headerName="Vendor (Code)" minWidth={140} cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" minWidth={140} cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
                                             {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="Quantity" tooltipField='Quantity' editable='false' headerName="Min Order Quantity" minWidth={140} cellRenderer='quantityFormatter'></AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={Number(selectedMasterForSimulation?.value) === 5 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>

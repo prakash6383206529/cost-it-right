@@ -7289,3 +7289,12 @@ export const statusDropdownforNfr = [
 export const CostingBulkUploadTechnologyDropdown = [
     { label: "Sheet Metal", value: "7" },
 ]
+
+export const applicabilityList = [
+    { label: 'RM', value: 'RM' },
+    { label: 'BOP', value: 'BOP' },
+    { label: 'Component', value: 'Component' },
+];
+
+export const APPLICABILITY_RM_SIMULATION = "RM"
+export const APPLICABILITY_BOP_SIMULATION = "BOP"

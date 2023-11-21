@@ -298,6 +298,7 @@ class ExchangeRateListing extends Component {
 
     onRowSelect = () => {
         const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.props?.apply(selectedRows, selectedRows?.length)
         this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
     }
 

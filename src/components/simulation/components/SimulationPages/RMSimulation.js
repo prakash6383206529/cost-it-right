@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMIMPORT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -25,6 +25,7 @@ import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { FORGING, RM_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import ReactExport from 'react-export-excel';
+import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
 const gridOptions = {
 
@@ -64,7 +65,8 @@ function RMSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
+    const { selectedMasterForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
 
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
@@ -85,12 +87,12 @@ function RMSimulation(props) {
 
     }, [list])
 
-    const setValueFunction = () => {
+    const setValueFunction = (check, tempList = []) => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.Technology = technology
-        obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.SimulationHeadId = list[0].CostingTypeId
+        obj.SimulationTechnologyId = check ? RMIMPORT : selectedMasterForSimulation.value
+        obj.SimulationHeadId = list[0]?.CostingTypeId
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 
@@ -131,6 +133,10 @@ function RMSimulation(props) {
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
+        if (check) {
+            obj.SimulationExchangeRates = tempList
+            obj.IsExchangeRateSimulation = true
+        }
 
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         dispatch(runVerifySimulation(obj, res => {
@@ -190,7 +196,13 @@ function RMSimulation(props) {
         setIsDisable(true)
 
         basicRateCount = 0
-        setValueFunction();
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(list, currencySelectList, res => {
+                setValueFunction(true, res);
+            }))
+        } else {
+            setValueFunction(false, []);
+        }
         setShowTooltip(false)
     }, 600)
 
@@ -558,7 +570,13 @@ function RMSimulation(props) {
         setShowPopup(false)
     }
     const onPopupConfirm = () => {
-        setValueFunction()
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, res => {
+                setValueFunction(true, res);
+            }))
+        } else {
+            setValueFunction(false, []);
+        }
         setShowPopup(false)
     }
     const basicRatetooltipToggle = () => {
@@ -651,14 +669,14 @@ function RMSimulation(props) {
                                                             />
                                                         </div>
                                                     </>}
-                                                {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                {!isImpactedMaster && list && <div className={`d-flex align-items-center simulation-label-container`}>
                                                     <div className='d-flex'>
                                                         <label>Technology: </label>
-                                                        <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
+                                                        <p className='technology ml-1' title={list[0]?.TechnologyName}>{list[0]?.TechnologyName}</p>
                                                     </div>
-                                                    {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                    {list[0]?.CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
                                                         <label className='mr-1'>Vendor (Code):</label>
-                                                        <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+                                                        <p title={list[0]?.VendorName}>{list[0]?.VendorName ? list[0]?.VendorName : list?.[0]?.['Vendor (Code)']}</p>
 
                                                     </div>}
                                                     <button type="button" className={"apply ml-2"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
@@ -705,8 +723,8 @@ function RMSimulation(props) {
                                             <AgGridColumn width={135} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" tooltipField='Category' editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" tooltipField='TechnologyName' editable='false' headerName="Technology" ></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn width={160} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={160} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={160} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={160} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={160} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
                                             <AgGridColumn width={100} field="UnitOfMeasurementName" tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
