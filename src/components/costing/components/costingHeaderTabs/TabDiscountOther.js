@@ -898,7 +898,7 @@ function TabDiscountOther(props) {
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
     if (errorCheckObject(ErrorObjDiscount)) return false;
-    if (!getValues('discountDescriptionRemark')) {
+    if (!getValues('discountDescriptionRemark') && discountCostApplicability?.value) {
       errors.discountDescriptionRemark = {
         "type": "required",
         "message": "",
@@ -1561,9 +1561,9 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={discountCostApplicability?.value ? true : false}
                         rules={{
-                          required: true,
+                          required: discountCostApplicability?.value ? true : false,
                           validate: { hashValidation, checkWhiteSpaces, maxLength80, }
                         }}
                         handleChange={() => { }}
