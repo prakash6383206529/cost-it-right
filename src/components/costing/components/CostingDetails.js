@@ -2619,7 +2619,7 @@ function CostingDetails(props) {
 
 
                       {/* check here full component  @ashok */}
-                      {IsOpenVendorSOBDetails && showCostingSection.ZBC && !breakupBOP && (
+                      {IsOpenVendorSOBDetails && showCostingSection.ZBC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && (
                         <>
                           <Row className="align-items-center">
                             <Col md="6" className={"mb-2 mt-3"}>
