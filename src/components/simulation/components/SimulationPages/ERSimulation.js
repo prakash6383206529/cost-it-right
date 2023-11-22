@@ -278,7 +278,7 @@ function ERSimulation(props) {
                                                 {onBtExport()}
                                             </ExcelFile>
                                         </div>
-                                        {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
+                                        {!isImpactedMaster && <button type="button" id="simulation-back" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
 
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
@@ -339,6 +339,7 @@ function ERSimulation(props) {
                                         <DatePicker
                                             name="EffectiveDate"
                                             selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                            id='EffectiveDate'
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
                                             showYearDropdown
@@ -352,7 +353,7 @@ function ERSimulation(props) {
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" id={"verify-btn"} disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

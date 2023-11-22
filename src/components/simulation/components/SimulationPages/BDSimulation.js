@@ -475,7 +475,7 @@ function BDSimulation(props) {
                                                     <label className='mr-1'>Vendor (Code):</label>
                                                     <p title={list[0].Vendor} className='mr-2'>{list[0].Vendor ? list[0].Vendor : list[0]['Vendor (Code)']}</p>
                                                 </div>}
-                                                <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                                <button type="button" id="simulation-back" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                             </div>}
                                         </div>
                                     </div>
@@ -542,6 +542,7 @@ function BDSimulation(props) {
                                     <div className="inputbox date-section mr-3 verfiy-page">
                                         <DatePicker
                                             name="EffectiveDate"
+                                            id="EffectiveDate"
                                             selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
@@ -557,7 +558,7 @@ function BDSimulation(props) {
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                    <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}
