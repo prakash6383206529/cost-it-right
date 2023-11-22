@@ -217,7 +217,7 @@ function AssemblySimulationListing(props) {
                                 <div className="ag-grid-wrapper assembly-simulaiton">
                                     <div className="ag-grid-header d-flex align-items-center">
                                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                        <button type="button" className="user-btn float-right" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" className="user-btn float-right" id="simulation-back" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
                                     </div>
@@ -314,6 +314,7 @@ function AssemblySimulationListing(props) {
                                     <div className="inputbox date-section mr-3 verfiy-page">
                                         <DatePicker
                                             name="EffectiveDate"
+                                            id="EffectiveDate"
                                             selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
@@ -333,7 +334,7 @@ function AssemblySimulationListing(props) {
                                         <div className={"cancel-icon"}></div>
                                         {"CANCEL"}
                                     </button>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                    <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

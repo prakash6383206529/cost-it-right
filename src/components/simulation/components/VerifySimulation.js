@@ -665,6 +665,18 @@ function VerifySimulation(props) {
     const onGridReady = (params) => {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
+        setTimeout(() => {
+            const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
+            checkBoxInstance.forEach((checkBox, index) => {
+                const specificId = `verify_simulation_Checkbox${index}`;
+                checkBox.id = specificId;
+            })
+        }, 200);
+        const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+        floatingFilterInstances.forEach((floatingFilter, index) => {
+            const specificId = `verify_simulation_Floating${index}`;
+            floatingFilter.id = specificId;
+        });
         params.api.paginationGoToPage(0);
         if (!isMasterAssociatedWithCosting) {
             params.api.sizeColumnsToFit();
@@ -747,7 +759,7 @@ function VerifySimulation(props) {
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                         </div>
-                                        <button type="button" className={"apply"} onClick={cancelVerifyPage}> <div className={'back-icon'}></div>Back</button>
+                                        <button type="button" className={"apply"} id="verfiy-simulation-back" onClick={cancelVerifyPage}> <div className={'back-icon'}></div>Back</button>
                                     </div>
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
@@ -851,7 +863,7 @@ function VerifySimulation(props) {
                                 disabled={true}
                                 className='form-control bottom-disabled-date'
                             />}
-                            <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
+                            <button onClick={runSimulation} id="run-simulation-btn" type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
