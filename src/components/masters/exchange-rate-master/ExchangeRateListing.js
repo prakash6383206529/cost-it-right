@@ -123,6 +123,10 @@ class ExchangeRateListing extends Component {
     getTableListData = (currencyId = 0) => {
         let filterData = {
             currencyId: currencyId,
+            costingHeadId: currencyId,
+            vendorId: this.props.filteredRMData?.VendorId ? this.props.filteredRMData?.VendorId : '',
+            customerId: this.props.filteredRMData?.CustomerId ? this.props.filteredRMData?.CustomerId : '',
+            isBudgeting: currencyId,
         }
         if (this.props.isSimulation) {
             this.props?.changeTokenCheckBox(false)
@@ -486,10 +490,11 @@ class ExchangeRateListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ exchangeRate, auth }) {
+function mapStateToProps({ exchangeRate, auth, material }) {
     const { currencySelectList, exchangeRateDataList } = exchangeRate;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
-    return { leftMenuData, currencySelectList, exchangeRateDataList, initialConfiguration, topAndLeftMenuData };
+    const { filteredRMData } = material;
+    return { leftMenuData, currencySelectList, exchangeRateDataList, initialConfiguration, topAndLeftMenuData, filteredRMData };
 }
 
 /**

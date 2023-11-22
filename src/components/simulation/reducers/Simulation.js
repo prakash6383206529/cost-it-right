@@ -27,7 +27,8 @@ import {
     GET_ALL_MULTI_TECHNOLOGY_COSTING,
     SET_BOP_ASSOCIATION,
     SET_SIMULATION_APPLICABILITY,
-    SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT
+    SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
+    SET_SELECTED_CUSTOMER_SIMULATION
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 
@@ -275,6 +276,12 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 exchangeRateListBeforeDraft: action.payload
+            }
+        case SET_SELECTED_CUSTOMER_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedCustomerSimulation: action.payload
             }
         default:
             return state;

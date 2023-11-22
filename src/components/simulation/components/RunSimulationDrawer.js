@@ -11,7 +11,7 @@ import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHI
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
-import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
+import { checkForNull, getConfigurationKey } from '../../../helper';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../helper/validation";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
@@ -68,7 +68,6 @@ function RunSimulationDrawer(props) {
     const [isCostingCondition, setIsCostingCondition] = useState(false)
     const [isCostingNPV, setIsCostingNPV] = useState(false)
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)

@@ -7293,7 +7293,7 @@ export const CostingBulkUploadTechnologyDropdown = [
 export const applicabilityList = [
     { label: 'RM', value: 'RM' },
     { label: 'BOP', value: 'BOP' },
-    { label: 'Component', value: 'Component' },
+    { label: 'Part', value: 'Part' },
 ];
 
 export const APPLICABILITY_RM_SIMULATION = "RM"

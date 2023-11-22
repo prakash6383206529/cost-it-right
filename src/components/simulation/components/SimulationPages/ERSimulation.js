@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, VBC, ZBC } from '../../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-import { runVerifyExchangeRateSimulation, runVerifySimulation, setExchangeRateListBeforeDraft } from '../../actions/Simulation';
+import { runVerifySimulation, setExchangeRateListBeforeDraft } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,11 +16,8 @@ import Simulation from '../Simulation';
 import VerifySimulation from '../VerifySimulation';
 import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import DatePicker from "react-datepicker";
-import WarningMessage from '../../../common/WarningMessage';
 import ReactExport from 'react-export-excel';
 import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
-import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 import { getCurrencySelectList } from '../../../../actions/Common';
 import RMImportListing from '../../../masters/material-master/RMImportListing';
 import { setFilterForRM } from '../../../masters/actions/Material';
@@ -34,7 +31,7 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
+    const { list, isbulkUpload, isImpactedMaster, costingAndPartNo } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -43,9 +40,6 @@ function ERSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [isDisable, setIsDisable] = useState(false)
-    const [effectiveDate, setEffectiveDate] = useState('');
-    const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
-    const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [noData, setNoData] = useState(false);
     const [largestDate, setLargestDate] = useState(new Date());
     const [showRMMasterList, setShowRMMasterList] = useState(false);
@@ -62,15 +56,13 @@ function ERSimulation(props) {
     }, [])
 
     useEffect(() => {
-        let value = list?.filter(element => element?.EffectiveDate)
         const entryWithLargestDate = _.maxBy(list, entry => new Date(entry.EffectiveDate));
         setLargestDate(entryWithLargestDate?.EffectiveDate)
     }, [list])
 
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
-    const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { simulationApplicability } = useSelector(state => state.simulation)
-    const { selectedVendorForSimulation } = useSelector(state => state.simulation)
+    const { selectedVendorForSimulation, selectedCustomerSimulation } = useSelector(state => state.simulation)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
 
     const cancelVerifyPage = () => {
@@ -202,11 +194,6 @@ function ERSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-    const handleEffectiveDateChange = (date) => {
-        setEffectiveDate(date)
-        setIsEffectiveDateSelected(true)
-        setIsWarningMessageShow(false)
-    }
 
     const revisedBasicRateHeader = (props) => {
         return (
@@ -234,96 +221,123 @@ function ERSimulation(props) {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
-    const verifySimulation = debounce(() => {
-        /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
-        if (!isEffectiveDateSelected) {
-            setIsWarningMessageShow(true)
-            return false
-        }
 
-        if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one costing.')
-            return false
-        }
+    // const verifySimulation = debounce(() => {
+    //     /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
+    //     if (!isEffectiveDateSelected) {
+    //         setIsWarningMessageShow(true)
+    //         return false
+    //     }
 
-        dispatch(createMultipleExchangeRate(list, currencySelectList, res => {
-            setIsDisable(true)
-            let tempArr = []
-            list && list.map(item => {
-                let tempObj = {}
-                tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
-                tempObj.RawMaterialName = item.RawMaterialName
-                tempObj.MaterialType = item.MaterialType
-                tempObj.RawMaterialGrade = item.RawMaterialGradeName
-                tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
-                tempObj.RawMaterialCategory = item.Category
-                tempObj.UOM = item.UnitOfMeasurementName
-                tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
-                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate
-                tempObj.OldScrapRate = item.ScrapRate
-                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
-                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
-                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
-                tempObj.OldNetLandedCost = item.NetLandedCost
-                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
-                tempObj.EffectiveDate = item.EffectiveDate
-                tempObj.RawMaterialId = item.RawMaterialId
-                tempObj.PlantId = item.PlantId
-                tempObj.VendorId = item.VendorId
-                tempObj.Delta = 0
-                tempArr.push(tempObj)
-                return null;
-            })
-            let obj = {
-                "IsExchangeRateSimulation": true,
-                "SimulationRawMaterials": tempArr,
-                "SimulationExchangeRates": res,
-                "SimulationIds": tokenForMultiSimulation,
-                "TechnologyId": technologyId,
-                "SimulationTechnologyId": selectedMasterForSimulation.value,
-                "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-                "LoggedInUserId": loggedInUserId(),
-                "SimulationHeadId": list[0].CostingTypeId,
-                "IsSimulationWithOutCosting": true
-            }
+    //     if (selectedRowData.length === 0) {
+    //         Toaster.warning('Please select atleast one costing.')
+    //         return false
+    //     }
 
-            if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
-                dispatch(runVerifySimulation(obj, res => {
-                    setIsDisable(false)
+    //     dispatch(createMultipleExchangeRate(list, currencySelectList, res => {
+    //         setIsDisable(true)
+    //         let tempArr = []
+    //         list && list.map(item => {
+    //             let tempObj = {}
+    //             tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
+    //             tempObj.RawMaterialName = item.RawMaterialName
+    //             tempObj.MaterialType = item.MaterialType
+    //             tempObj.RawMaterialGrade = item.RawMaterialGradeName
+    //             tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
+    //             tempObj.RawMaterialCategory = item.Category
+    //             tempObj.UOM = item.UnitOfMeasurementName
+    //             tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
+    //             tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate
+    //             tempObj.OldScrapRate = item.ScrapRate
+    //             tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
+    //             tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
+    //             tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
+    //             tempObj.OldNetLandedCost = item.NetLandedCost
+    //             tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+    //             tempObj.EffectiveDate = item.EffectiveDate
+    //             tempObj.RawMaterialId = item.RawMaterialId
+    //             tempObj.PlantId = item.PlantId
+    //             tempObj.VendorId = item.VendorId
+    //             tempObj.Delta = 0
+    //             tempArr.push(tempObj)
+    //             return null;
+    //         })
+    //         let obj = {
+    //             "IsExchangeRateSimulation": true,
+    //             "SimulationRawMaterials": tempArr,
+    //             "SimulationExchangeRates": res,
+    //             "SimulationIds": tokenForMultiSimulation,
+    //             "TechnologyId": technologyId,
+    //             "SimulationTechnologyId": selectedMasterForSimulation.value,
+    //             "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+    //             "LoggedInUserId": loggedInUserId(),
+    //             "SimulationHeadId": list[0].CostingTypeId,
+    //             "IsSimulationWithOutCosting": true
+    //         }
 
-                    if (res?.data?.Result) {
-                        setToken(res.data.Identity)
-                        setShowVerifyPage(true)
-                    }
-                }))
-            } else if (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
-                dispatch(runVerifySimulation(obj, res => {
-                    setIsDisable(false)
+    //         if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+    //             dispatch(runVerifySimulation(obj, res => {
+    //                 setIsDisable(false)
 
-                    if (res?.data?.Result) {
-                        setToken(res.data.Identity)
-                        setShowVerifyPage(true)
-                    }
-                }))
-            } else {
-                dispatch(runVerifySimulation(obj, res => {
-                    setIsDisable(false)
+    //                 if (res?.data?.Result) {
+    //                     setToken(res.data.Identity)
+    //                     setShowVerifyPage(true)
+    //                 }
+    //             }))
+    //         } else if (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+    //             dispatch(runVerifySimulation(obj, res => {
+    //                 setIsDisable(false)
 
-                    if (res?.data?.Result) {
-                        setToken(res.data.Identity)
-                        setShowVerifyPage(true)
-                    }
-                }))
-            }
-        }))
+    //                 if (res?.data?.Result) {
+    //                     setToken(res.data.Identity)
+    //                     setShowVerifyPage(true)
+    //                 }
+    //             }))
+    //         } else {
+    //             dispatch(runVerifySimulation(obj, res => {
+    //                 setIsDisable(false)
+
+    //                 if (res?.data?.Result) {
+    //                     setToken(res.data.Identity)
+    //                     setShowVerifyPage(true)
+    //                 }
+    //             }))
+    //         }
+    //     }))
 
 
-        // setShowVerifyPage(true)
-    }, 500)
+    //     // setShowVerifyPage(true)
+    // }, 500)
 
     const selectRM = debounce(() => {
+        // let basicRateCount = 0
+        // list && list.map((li) => {
+        //     if (Number(li.BasicRate) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
+        //         basicRateCount = basicRateCount + 1
+        //     }
+
+        //     if (li.NewBasicrateFromPercentage === undefined || li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+        //         if (!(basicRateCount === list.length)) {
+        //             li.NewBasicRate = li?.BasicRate
+        //             li.NewScrapRate = li?.ScrapRate
+        //             Toaster.warning('Scrap Rate should be less than Basic Rate')
+        //             return false
+        //         }
+        //     }
+        //     return null;
+        // })
+        // if (basicRateCount === list.length) {
+        //     Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+        //     return false
+        // }
+
+
+        if (selectedRowData?.length === 0) {
+            Toaster.warning("Please select atleast one Exchange Rate")
+            return false
+        }
         dispatch(setExchangeRateListBeforeDraft(selectedRowData))
-        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value }))
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(list, 'Currency') }))
         if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
             setShowRMMasterList(true)
         } else {
@@ -341,6 +355,7 @@ function ERSimulation(props) {
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
             temp.push(item)
+            return null
         })
 
         return (
@@ -462,7 +477,7 @@ function ERSimulation(props) {
                                         </div>{" "}
                                         {`Select ${simulationApplicability?.label}`}
                                     </button>
-                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
+                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn">
                                 <div className={"Run"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}

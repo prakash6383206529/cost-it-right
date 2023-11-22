@@ -52,6 +52,7 @@ import {
     SET_BOP_ASSOCIATION,
     SET_SIMULATION_APPLICABILITY,
     SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
+    SET_SELECTED_CUSTOMER_SIMULATION,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1479,6 +1480,15 @@ export function setExchangeRateListBeforeDraft(value) {
     return (dispatch) => {
         dispatch({
             type: SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
+            payload: value,
+        });
+    }
+}
+
+export function setCustomerForSimulation(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SELECTED_CUSTOMER_SIMULATION,
             payload: value,
         });
     }

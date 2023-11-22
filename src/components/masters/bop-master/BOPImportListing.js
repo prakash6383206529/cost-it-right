@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize, ENTRY_TYPE_IMPORT, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
 import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -15,7 +14,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -25,7 +24,6 @@ import { getListingForSimulationCombined, setSelectedRowForPagination } from '..
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel } from '../../common/CommonFunctions';
@@ -170,6 +168,12 @@ class BOPImportListing extends Component {
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
         dataObj.VendorId = this.props?.filteredRMData?.VendorId
+        dataObj.CustomerId = this.props?.filteredRMData?.CustomerId
+        if (this.props?.isFromVerifyPage) {
+            dataObj.VendorId = this.props?.filteredRMData && this.props?.filteredRMData?.VendorId ? this.props?.filteredRMData?.VendorId : vendorId
+            dataObj.CustomerId = this.props?.filteredRMData && this.props?.filteredRMData?.CustomerId ? this.props?.filteredRMData?.CustomerId : ''
+            dataObj.Currency = this.props?.filteredRMData?.Currency
+        }
         dataObj.EntryType = ENTRY_TYPE_IMPORT
         if (!this.props.isMasterSummaryDrawer) {
             this.props.getBOPDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
@@ -782,7 +786,7 @@ class BOPImportListing extends Component {
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => { this.resetState(); }}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
-
+                                            <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                         </div>
                                     </Col>
                                 </Row>

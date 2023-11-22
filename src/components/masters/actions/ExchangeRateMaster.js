@@ -45,7 +45,7 @@ export function getExchangeRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, config())
+            axios.get(`${API.getExchangeRateDataList}?currencyId=${data?.currencyId}&costingHeadId=${data?.costingHeadId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&isBudgeting=${data?.isBudgeting}`, config())
                 .then((response) => {
                     if (response.data.Result === true || response.status === 204) {
                         dispatch({
