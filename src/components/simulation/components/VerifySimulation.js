@@ -15,7 +15,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../common/commonPagination';
-import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import DayTime from '../../common/DayTimeWrapper';
 import DatePicker from "react-datepicker";
 // import AssemblySimulation from './AssemblySimulation';
@@ -41,10 +41,11 @@ function VerifySimulation(props) {
     // const [showAssemblyPage, setShowAssemblyPage] = useState(false);   // REJECTED ASSEMBLY
     const { filteredRMData } = useSelector(state => state.material)
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const isSurfaceTreatmentOrOperation = ((Number(selectedMasterForSimulation.value) === Number(SURFACETREATMENT)) || (Number(selectedMasterForSimulation.value) === Number(OPERATIONS)));
-    const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(RMIMPORT)));
-    const isExchangeRate = Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE));
-    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
+    const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION));
+    const isExchangeRate = (Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION));
+    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
     const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false;
@@ -52,6 +53,9 @@ function VerifySimulation(props) {
     const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
     const { selectedVendorForSimulation } = useSelector(state => state.simulation)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
+    const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
+    const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
+    const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
 
     const gridRef = useRef();
 
@@ -104,7 +108,13 @@ function VerifySimulation(props) {
             //     }
             // }))
         } else {
-            switch (Number(selectedMasterForSimulation.value)) {
+            let masterTemp = selectedMasterForSimulation.value
+            if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+                masterTemp = RMIMPORT
+            } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+                masterTemp = BOPIMPORT
+            }
+            switch (Number(masterTemp)) {
                 case Number(RMDOMESTIC):
                     dispatch(getVerifySimulationList(props.token, plant, rawMatrialId, (res) => {
                         if (res.data.Result) {
@@ -375,7 +385,7 @@ function VerifySimulation(props) {
 
     const revisionFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return (cell != null && cell.length !== 0) ? cell : '-'
+        return cell ? cell : '-'
     }
 
     const priceFormatter = (props) => {
@@ -502,7 +512,13 @@ function VerifySimulation(props) {
                     return null;
                 })
             } else {
-                switch (Number(selectedMasterForSimulation.value)) {
+                let masterTemp = selectedMasterForSimulation.value
+                if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+                    masterTemp = RMIMPORT
+                } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+                    masterTemp = BOPIMPORT
+                }
+                switch (Number(masterTemp)) {
                     case Number(RMDOMESTIC):
                     case Number(RMIMPORT):
                         selectedRowData && selectedRowData.map(item => {
@@ -567,11 +583,9 @@ function VerifySimulation(props) {
                 }
             }
 
-            if (!isExchangeRate) {
-                obj.RunSimualtionCostingInfo = tempArr
-                setObj(obj)
-                setSimulationDrawer(true)
-            }
+            obj.RunSimualtionCostingInfo = tempArr
+            setObj(obj)
+            setSimulationDrawer(true)
         } else {
             if (selectedRowData.length === 0) {
                 Toaster.warning('Please select atleast one Bought Out Part.')
@@ -826,6 +840,17 @@ function VerifySimulation(props) {
                                             {isMultiTechnology && <AgGridColumn width={150} field="OldPOPrice" tooltipField="OldPOPrice" headerName="Existing Net Cost"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
 
+                                            {/* {showRM && <AgGridColumn width={150} field="RMName" tooltipField="RMName" headerName="RM Name"></AgGridColumn>}
+                                            {showRM && <AgGridColumn width={150} field="RMGrade" tooltipField="RMGrade" headerName="RM Grade"></AgGridColumn>}
+                                            {showRM && <AgGridColumn width={150} field="RMSpecification" tooltipField="RMSpecification" headerName="RM Specification"></AgGridColumn>}
+
+                                            {showBOP && <AgGridColumn width={150} field="BOPName" tooltipField="BOPName" headerName="BOP Name"></AgGridColumn>}
+                                            {showBOP && <AgGridColumn width={150} field="BOPNumber" tooltipField="BOPNumber" headerName="BOP Number"></AgGridColumn>}
+                                            {showBOP && <AgGridColumn width={150} field="Category" tooltipField="Category" headerName="Category"></AgGridColumn>} */}
+
+                                            {/* {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                            {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                            {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>} */}
 
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" cellRenderer='overHeadFormatter' tooltipField="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
                                         </AgGridReact>}

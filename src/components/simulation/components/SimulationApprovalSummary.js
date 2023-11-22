@@ -115,6 +115,7 @@ function SimulationApprovalSummary(props) {
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const { initialConfiguration } = useSelector(state => state.auth)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
     const dispatch = useDispatch()
 
@@ -125,6 +126,9 @@ function SimulationApprovalSummary(props) {
     const [finalLeveluser, setFinalLevelUser] = useState(false)
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
+    const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
+    const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => {
@@ -1310,6 +1314,18 @@ function SimulationApprovalSummary(props) {
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="OldNetProcessCost" headerName="Existing Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="Revised Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Variance (Proc. Cost)" cellRenderer='processVarianceFormatter' ></AgGridColumn>}
+
+                                                                {showRM && <AgGridColumn width={150} field="RMName" tooltipField="RMName" headerName="RM Name"></AgGridColumn>}
+                                                                {showRM && <AgGridColumn width={150} field="RMGrade" tooltipField="RMGrade" headerName="RM Grade"></AgGridColumn>}
+                                                                {showRM && <AgGridColumn width={150} field="RMSpecification" tooltipField="RMSpecification" headerName="RM Specification"></AgGridColumn>}
+
+                                                                {showBOP && <AgGridColumn width={150} field="BOPName" tooltipField="BOPName" headerName="BOP Name"></AgGridColumn>}
+                                                                {showBOP && <AgGridColumn width={150} field="BOPNumber" tooltipField="BOPNumber" headerName="BOP Number"></AgGridColumn>}
+                                                                {showBOP && <AgGridColumn width={150} field="Category" tooltipField="Category" headerName="Category"></AgGridColumn>}
+
+                                                                {/* {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                                             {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                                              {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>} */}
 
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Existing Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="Revised Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}

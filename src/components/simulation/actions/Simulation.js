@@ -50,6 +50,8 @@ import {
     SET_SELECTED_VENDOR_SIMULATION,
     GET_ALL_MULTI_TECHNOLOGY_COSTING,
     SET_BOP_ASSOCIATION,
+    SET_SIMULATION_APPLICABILITY,
+    SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -1453,5 +1455,31 @@ export function getAllSimulatedBoughtOutPart(token, callback) {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         })
+    }
+}
+
+/**
+ * @method setSimulationApplicability
+ * @description setSimulationApplicability
+ */
+export function setSimulationApplicability(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_SIMULATION_APPLICABILITY,
+            payload: value,
+        });
+    }
+}
+
+/**
+ * @method setExchangeRateListBeforeDraft
+ * @description setExchangeRateListBeforeDraft
+ */
+export function setExchangeRateListBeforeDraft(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
+            payload: value,
+        });
     }
 }

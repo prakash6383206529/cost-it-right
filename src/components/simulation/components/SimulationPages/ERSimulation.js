@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, VBC, ZBC } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
+import { runVerifyExchangeRateSimulation, runVerifySimulation, setExchangeRateListBeforeDraft } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,12 +14,17 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import VerifySimulation from '../VerifySimulation';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import ReactExport from 'react-export-excel';
-import { EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
+import { getCurrencySelectList } from '../../../../actions/Common';
+import RMImportListing from '../../../masters/material-master/RMImportListing';
+import { setFilterForRM } from '../../../masters/actions/Material';
+import BOPImportListing from '../../../masters/bop-master/BOPImportListing';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -29,7 +34,7 @@ const gridOptions = {
 
 };
 function ERSimulation(props) {
-    const { list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation } = props
+    const { list, isbulkUpload, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -42,10 +47,31 @@ function ERSimulation(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
     const [noData, setNoData] = useState(false);
+    const [largestDate, setLargestDate] = useState(new Date());
+    const [showRMMasterList, setShowRMMasterList] = useState(false);
+    const [showBOPMasterList, setShowBOPMasterList] = useState(false);
 
     const dispatch = useDispatch()
 
+    useEffect(() => {
+        dispatch(getCurrencySelectList(() => { }))
+        list && list?.map(item => {
+            item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+            return null
+        })
+    }, [])
+
+    useEffect(() => {
+        let value = list?.filter(element => element?.EffectiveDate)
+        const entryWithLargestDate = _.maxBy(list, entry => new Date(entry.EffectiveDate));
+        setLargestDate(entryWithLargestDate?.EffectiveDate)
+    }, [list])
+
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { simulationApplicability } = useSelector(state => state.simulation)
+    const { selectedVendorForSimulation } = useSelector(state => state.simulation)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
 
     const cancelVerifyPage = () => {
 
@@ -101,7 +127,6 @@ function ERSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-
     /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
@@ -124,6 +149,11 @@ function ERSimulation(props) {
 
     const cancel = () => {
         setShowMainSimulation(true)
+    }
+
+    const cancelImportList = () => {
+        setShowRMMasterList(false)
+        setShowBOPMasterList(false)
     }
 
     const closeDrawer = (e = '') => {
@@ -178,6 +208,13 @@ function ERSimulation(props) {
         setIsWarningMessageShow(false)
     }
 
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+            </div>
+        );
+    };
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -185,7 +222,8 @@ function ERSimulation(props) {
         customNoRowsOverlay: NoContentFound,
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
-        nullHandler: props.nullHandler && props.nullHandler
+        nullHandler: props.nullHandler && props.nullHandler,
+        revisedBasicRateHeader: revisedBasicRateHeader
     };
 
     const onRowSelect = () => {
@@ -208,34 +246,89 @@ function ERSimulation(props) {
             return false
         }
 
-        setIsDisable(true)
-        let obj = {}
-        obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.LoggedInUserId = loggedInUserId()
-        let tempArr = []
-        selectedRowData && selectedRowData.map(item => {
-            let tempObj = {}
-            tempObj.ExchangeRateId = item.ExchangeRateId
-            tempObj.EffectiveDate = item.EffectiveDate
-            tempObj.Currency = item.Currency
-            tempObj.NewExchangeRate = item.CurrencyExchangeRate
-            tempObj.Delta = 0
-            tempArr.push(tempObj)
+        dispatch(createMultipleExchangeRate(list, currencySelectList, res => {
+            setIsDisable(true)
+            let tempArr = []
+            list && list.map(item => {
+                let tempObj = {}
+                tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
+                tempObj.RawMaterialName = item.RawMaterialName
+                tempObj.MaterialType = item.MaterialType
+                tempObj.RawMaterialGrade = item.RawMaterialGradeName
+                tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
+                tempObj.RawMaterialCategory = item.Category
+                tempObj.UOM = item.UnitOfMeasurementName
+                tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
+                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate
+                tempObj.OldScrapRate = item.ScrapRate
+                tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
+                tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
+                tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
+                tempObj.OldNetLandedCost = item.NetLandedCost
+                tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+                tempObj.EffectiveDate = item.EffectiveDate
+                tempObj.RawMaterialId = item.RawMaterialId
+                tempObj.PlantId = item.PlantId
+                tempObj.VendorId = item.VendorId
+                tempObj.Delta = 0
+                tempArr.push(tempObj)
+                return null;
+            })
+            let obj = {
+                "IsExchangeRateSimulation": true,
+                "SimulationRawMaterials": tempArr,
+                "SimulationExchangeRates": res,
+                "SimulationIds": tokenForMultiSimulation,
+                "TechnologyId": technologyId,
+                "SimulationTechnologyId": selectedMasterForSimulation.value,
+                "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                "LoggedInUserId": loggedInUserId(),
+                "SimulationHeadId": list[0].CostingTypeId,
+                "IsSimulationWithOutCosting": true
+            }
 
-            return null;
-        })
-        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-        obj.SimulationIds = tokenForMultiSimulation
-        obj.SimulationExchangeRates = tempArr
+            if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+                dispatch(runVerifySimulation(obj, res => {
+                    setIsDisable(false)
 
-        dispatch(runVerifyExchangeRateSimulation(obj, res => {
-            setIsDisable(false)
-            if (res?.data?.Result) {
-                setToken(res.data.Identity)
-                setShowVerifyPage(true)
+                    if (res?.data?.Result) {
+                        setToken(res.data.Identity)
+                        setShowVerifyPage(true)
+                    }
+                }))
+            } else if (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+                dispatch(runVerifySimulation(obj, res => {
+                    setIsDisable(false)
+
+                    if (res?.data?.Result) {
+                        setToken(res.data.Identity)
+                        setShowVerifyPage(true)
+                    }
+                }))
+            } else {
+                dispatch(runVerifySimulation(obj, res => {
+                    setIsDisable(false)
+
+                    if (res?.data?.Result) {
+                        setToken(res.data.Identity)
+                        setShowVerifyPage(true)
+                    }
+                }))
             }
         }))
+
+
         // setShowVerifyPage(true)
+    }, 500)
+
+    const selectRM = debounce(() => {
+        dispatch(setExchangeRateListBeforeDraft(selectedRowData))
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value }))
+        if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+            setShowRMMasterList(true)
+        } else {
+            setShowBOPMasterList(true)
+        }
     }, 500)
 
     const onBtExport = () => {
@@ -258,7 +351,7 @@ function ERSimulation(props) {
 
     return (
         <div>
-            <div className={`ag-grid-react`}>
+            {!showRMMasterList && !showBOPMasterList && <div className={`ag-grid-react`}>
 
                 {
 
@@ -294,7 +387,6 @@ function ERSimulation(props) {
                                             paginationPageSize={defaultPageSize}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
-                                            loadingOverlayComponent={'customLoadingOverlay'}
                                             noRowsOverlayComponent={'customNoRowsOverlay'}
                                             noRowsOverlayComponentParams={{
                                                 title: EMPTY_DATA,
@@ -312,9 +404,15 @@ function ERSimulation(props) {
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" minWidth={190}></AgGridColumn>}
                                             <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={190}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission %" minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>}
+
+                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
+                                                <AgGridColumn width={120} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewCurrencyExchangeRate" headerName="Revised" colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                            </AgGridColumn>
+                                            }
+
                                             {isImpactedMaster && <>
                                                 <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Existing Exchange Rate(INR)" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="Revised Exchange Rate(INR)" minWidth={190}></AgGridColumn>
@@ -335,7 +433,7 @@ function ERSimulation(props) {
                             !isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                    {/* <div className="inputbox date-section mr-3 verfiy-page">
                                         <DatePicker
                                             name="EffectiveDate"
                                             selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
@@ -349,6 +447,8 @@ function ERSimulation(props) {
                                             autoComplete={"off"}
                                             disabledKeyboardNavigation
                                             onChangeRaw={(e) => e.preventDefault()}
+                                        // minDate={new Date()}
+                                        // minDate={new Date(largestDate)}
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
@@ -356,6 +456,11 @@ function ERSimulation(props) {
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}
+                                    </button> */}
+                                    <button onClick={selectRM} type="button" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                        <div>
+                                        </div>{" "}
+                                        {`Select ${simulationApplicability?.label}`}
                                     </button>
                                     {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
                                 <div className={"Run"}>
@@ -384,7 +489,40 @@ function ERSimulation(props) {
                         anchor={"right"}
                     />
                 }
-            </div>
+            </div>}
+            {showRMMasterList && <RMImportListing
+                isSimulation={true}
+                isMasterSummaryDrawer={false}
+                //   apply={editTable}
+                //    objectForMultipleSimulation={obj} 
+                //    selectionForListingMasterAPI={selectionForListingMasterAPI} 
+                //    changeSetLoader={changeSetLoader} 
+                //    changeTokenCheckBox={changeTokenCheckBox} 
+                //    isReset={isReset} 
+                ListFor='simulation'
+                approvalStatus={APPROVED_STATUS}
+                // stopUnrequiredCalls={true}
+                isFromVerifyPage={true}
+                cancelImportList={cancelImportList}
+            />}
+            {showBOPMasterList &&
+                <BOPImportListing
+                    isSimulation={true}
+                    isMasterSummaryDrawer={false}
+                    // technology={technology.value}
+                    // objectForMultipleSimulation={obj}
+                    // apply={editTable}
+                    // selectionForListingMasterAPI={selectionForListingMasterAPI}
+                    // changeSetLoader={changeSetLoader}
+                    // changeTokenCheckBox={changeTokenCheckBox}
+                    // isReset={isReset}
+                    ListFor={'simulation'}
+                    // isBOPAssociated={association?.value === ASSOCIATED ? true : false}
+                    approvalStatus={APPROVED_STATUS}
+                    // callBackLoader={callBackLoader}
+                    isFromVerifyPage={true}
+                    cancelImportList={cancelImportList}
+                />}
         </div >
     );
 }
