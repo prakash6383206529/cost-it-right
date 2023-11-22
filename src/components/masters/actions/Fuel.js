@@ -111,10 +111,10 @@ export function getFuelDetailDataList(isAPICall, data, callback) {
 }
 
 /**
- * @method getFuelAPI
+ * @method getAllFuelAPI
  * @description create fuel list
  */
-export function getFuelAPI() {
+export function getAllFuelAPI(callback) {
     return (dispatch) => {
         const request = axios.get(API.getAllFuelAPI, config());
         request.then((response) => {
@@ -122,9 +122,11 @@ export function getFuelAPI() {
                 type: GET_FUEL_DETAIL_SUCCESS,
                 payload: response.data.DataList,
             });
+            callback(response);
         }).catch((error) => {
             dispatch({ type: GET_FUEL_FAILURE });
             apiErrors(error);
+            callback(error);
         });
     };
 }
