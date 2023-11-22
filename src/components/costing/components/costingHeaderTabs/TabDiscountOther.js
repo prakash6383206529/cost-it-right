@@ -1161,11 +1161,14 @@ function TabDiscountOther(props) {
 
       if (type === 'save') {
         if (data) {
-
+          let list = data && data?.map(item => {
+            item.Percentage = item?.ConditionPercentage
+            return item
+          })
           let obj = {}
           obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
           obj.LoggedInUserId = loggedInUserId()
-          obj.ConditionsData = data
+          obj.ConditionsData = list
           dispatch(saveCostingDetailCondition(obj, () => { }))
         }
       }

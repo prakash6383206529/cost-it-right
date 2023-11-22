@@ -139,72 +139,55 @@ function AddConditionCosting(props) {
     }
 
 
-    // This function is called when the user clicks a button to add data to a table.
     const addData = () => {
-        if (!getValues('Condition') || !getValues('Type')) {
-            if (getValues('Type') === 'Fixed' && !getValues('CostBase')) {
-                Toaster.warning("Please enter all details to add row.")
-                return false
-            } else if (getValues('Type') === 'Percentage' && !getValues('Percentage')) {
-                Toaster.warning("Please enter all details to add row.")
-                return false
-            }
+        if (getValues('Type').label === 'Fixed' && !getValues('CostCurrency')) {
+            Toaster.warning("Please enter all details to add a row.")
+            return false;
+        } else if (getValues('Type').label === 'Percentage' && !getValues('Percentage')) {
+            Toaster.warning("Please enter all details to add a row.")
+            return false;
         }
         if (errors.Percentage) {
-            return false
+            return false;
         }
 
-        // Get the current data in the table and set some initial variables.
-        let table = [...tableData]
-        let indexOfNpvType
-        let condition = getValues('Condition') ? getValues('Condition').CostingConditionNumber : ''
-        let alreadyDataExist = false
+        const newCondition = getValues('Condition') ? getValues('Condition') : null;
 
-        // Check if the new data to be added is a duplicate of existing data.
-        table && table.map((item, index) => {
-            if (item.CostingConditionNumber === condition) {
-                alreadyDataExist = true
-                indexOfNpvType = index
-            }
-        })
+        const newData = {
+            CostingConditionMasterId: newCondition ? newCondition.CostingConditionMasterId : '',
+            ConditionNumber: newCondition ? newCondition.CostingConditionNumber : '',
+            Description: newCondition ? newCondition.label : '',
+            ConditionType: getValues('Type') ? getValues('Type').label : '',
+            ConditionPercentage: getValues('Percentage') ? getValues('Percentage') : '',
+            ConditionCost: totalCostCurrency ? totalCostCurrency : '',
+            ConditionCostConversion: totalCostBase ? totalCostBase : '',
+        };
 
-        // If the new data is a duplicate and we're not in edit mode, show an error message and return false.
-        if ((alreadyDataExist && !isEditMode) || (isEditMode && indexOfNpvType !== editIndex && indexOfNpvType)) {
-            Toaster.warning('Duplicate entry is not allowed.')
-            return false
-        }
+        let updatedTableData = [...tableData];
 
-        // If all mandatory fields are filled out, create a new object with the data and add it to the table.
-        if (getValues('Condition') && getValues('Type') && (getValues('CostCurrency') || getValues('CostBase'))) {
-            let obj = {}
-            obj.CostingConditionMasterId = getValues('Condition') ? getValues('Condition').CostingConditionMasterId : ''
-            obj.ConditionNumber = getValues('Condition') ? getValues('Condition').CostingConditionNumber : ''
-            obj.Description = getValues('Condition') ? getValues('Condition').label : ''
-            obj.ConditionType = getValues('Type') ? getValues('Type').label : ''
-            obj.ConditionPercentage = getValues('Percentage') ? getValues('Percentage') : ''
-            obj.ConditionCost = totalCostCurrency ? totalCostCurrency : ''
-            obj.ConditionCostConversion = totalCostBase ? totalCostBase : ''
-
-            // If we're in edit mode, update the existing row with the new data.
-            // Otherwise, add the new row to the end of the table.
-            if (isEditMode) {
-                table = Object.assign([...table], { [editIndex]: obj })
-            } else {
-                table.push(obj)
-            }
-
-            // Update the table data in the Redux store and reset the form fields.
-            setTableData(table)
-            resetData()
-            setIsEditMode(false)
-            setEditIndex('')
-
+        // If we're in edit mode, update the existing row with the new data.
+        // Otherwise, add the new row to the end of the table.
+        if (isEditMode) {
+            updatedTableData[editIndex] = newData;
         } else {
-            // If not all mandatory fields are filled out, show an error message.
-            Toaster.warning('Please enter data in all mandatory fields.')
-        }
-    }
+            // Check if the new condition already exists in the table data, excluding the row being edited in edit mode.
+            const duplicateConditionIndex = updatedTableData.findIndex(
+                (item) => item.ConditionNumber === newCondition?.CostingConditionNumber
+            );
 
+            if (duplicateConditionIndex !== -1) {
+                Toaster.warning('Duplicate entry is not allowed.')
+                return false;
+            }
+
+            updatedTableData.push(newData);
+        }
+
+        setTableData(updatedTableData);
+        resetData();
+        setIsEditMode(false);
+        setEditIndex('');
+    };
 
     const resetData = () => {
         setValue('Condition', '')
@@ -325,7 +308,7 @@ function AddConditionCosting(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.LossOfType}
+                                            errors={errors.Type}
                                             disabled={props.ViewMode}
                                         />
                                     </Col>
