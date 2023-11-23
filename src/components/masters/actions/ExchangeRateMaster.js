@@ -164,7 +164,7 @@ export function getCurrencySelectList(callback) {
  * @method createMultipleExchangeRate
  * @description create Multiple Exchange Rate 
  */
-export function createMultipleExchangeRate(dataList, currencySelectList, callback) {
+export function createMultipleExchangeRate(dataList, currencySelectList, effectiveDate, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST })
         let temp = []
@@ -175,7 +175,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, callbac
                 "BankRate": item?.BankRate,
                 "CustomRate": item?.CustomRate,
                 "BankCommissionPercentage": item?.BankCommissionPercentage,
-                "EffectiveDate": item?.EffectiveDate,
+                "EffectiveDate": effectiveDate,
                 "LoggedInUserId": loggedInUserId(),
                 "CostingHeadId": item?.CostingHeadId,
                 "CustomerId": item?.CustomerId,

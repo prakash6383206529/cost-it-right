@@ -156,7 +156,7 @@ function BDSimulation(props) {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         const check = selectedMasterForSimulation.value === EXCHNAGERATE
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
-            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, res => {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 apiCall(check, res);
             }))
         } else {
