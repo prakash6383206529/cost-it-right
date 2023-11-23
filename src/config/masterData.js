@@ -7298,3 +7298,4 @@ export const applicabilityList = [
 
 export const APPLICABILITY_RM_SIMULATION = "RM"
 export const APPLICABILITY_BOP_SIMULATION = "BOP"
+export const APPLICABILITY_PART_SIMULATION = "Part"
