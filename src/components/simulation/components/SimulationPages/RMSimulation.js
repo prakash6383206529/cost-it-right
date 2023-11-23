@@ -196,7 +196,7 @@ function RMSimulation(props) {
 
         basicRateCount = 0
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
-            dispatch(createMultipleExchangeRate(list, currencySelectList, res => {
+            dispatch(createMultipleExchangeRate(list, currencySelectList, effectiveDate, res => {
                 setValueFunction(true, res);
             }))
         } else {
@@ -570,7 +570,7 @@ function RMSimulation(props) {
     }
     const onPopupConfirm = () => {
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
-            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, res => {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 setValueFunction(true, res);
             }))
         } else {
