@@ -1245,9 +1245,9 @@ const CostingSummaryTable = (props) => {
 
   //GET CURRENCY VARIANCE IF CURRENCY VARIANCE IS NULL
   const getCurrencyVarianceFormatter = () => {
-    let varianceWithCurrency = isApproval && !props.isRfqCosting ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPriceWithCurrency > viewCostingData[1]?.nPOPriceWithCurrency ? 'green-row' : viewCostingData[0]?.nPOPriceWithCurrency < viewCostingData[1]?.nPOPriceWithCurrency ? 'red-row' : '' : '-'
+    let varianceWithCurrency = isApproval && !props.isRfqCosting ? viewCostingData?.length > 0 && viewCostingData[firstIndex]?.nPOPriceWithCurrency > viewCostingData[secondIndex]?.nPOPriceWithCurrency ? 'green-row' : viewCostingData[firstIndex]?.nPOPriceWithCurrency < viewCostingData[secondIndex]?.nPOPriceWithCurrency ? 'red-row' : '' : '-'
 
-    let varianceWithoutCurrency = isApproval && !props.isRfqCosting ? viewCostingData?.length > 0 && viewCostingData[0]?.nPOPrice > viewCostingData[1]?.nPOPrice ? 'green-row' : viewCostingData[0]?.nPOPrice < viewCostingData[1]?.nPOPrice ? 'red-row' : '' : '-'
+    let varianceWithoutCurrency = isApproval && !props.isRfqCosting ? viewCostingData?.length > 0 && viewCostingData[firstIndex]?.nPOPrice > viewCostingData[secondIndex]?.nPOPrice ? 'green-row' : viewCostingData[firstIndex]?.nPOPrice < viewCostingData[secondIndex]?.nPOPrice ? 'red-row' : '' : '-'
     if (viewCostingData[0]?.currency.currencyTitle === '-') {
       return varianceWithoutCurrency
     }
@@ -1656,9 +1656,11 @@ const CostingSummaryTable = (props) => {
       }
     }))
   }
+  const type = viewCostingData[0]?.costingTypeId
 
-  const firstIndex = SWAP_POSITIVE_NEGATIVE ? 1 : 0; // Determine the first index based on SWAP_POSITIVE_NEGATIVE flag
-  const secondIndex = SWAP_POSITIVE_NEGATIVE ? 0 : 1; // Determine the second index based on SWAP_POSITIVE_NEGATIVE flag
+  const firstIndex = type === CBCTypeId ? 1 : SWAP_POSITIVE_NEGATIVE ? 1 : 0; // Determine the first index based on SWAP_POSITIVE_NEGATIVE flag
+  const secondIndex = type === CBCTypeId ? 0 : SWAP_POSITIVE_NEGATIVE ? 0 : 1; // Determine the second index based on SWAP_POSITIVE_NEGATIVE flag
+
   const displayValueWithSign = (data, key) => {
     let value = data[key]; // Get the value from the data object using the provided key
     let finalKey = key
@@ -1710,6 +1712,8 @@ const CostingSummaryTable = (props) => {
 
 
   const highlighter = (key, columnName = '') => {
+    const firstInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 1 : 0
+    const secondInd = viewCostingData[0]?.costingTypeId === CBCTypeId ? 0 : 1
     let highlighClass = ''; // The variable to hold the highlight class
     const activeClass = isApproval && !props.isRfqCosting; // Check if main row highlight class is applicable
     const activeText = isApproval && viewCostingData?.length > 1 && !props.isRfqCosting; // Check if sub data highlight is applicable
@@ -1718,23 +1722,23 @@ const CostingSummaryTable = (props) => {
     switch (columnName) {
       case 'main-row':
         // Highlight class for main row, conditionally set to green or red based on values
-        highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && viewCostingData[0]?.[key] > viewCostingData[1]?.[key] ? 'green-row' : viewCostingData[0]?.[key] < viewCostingData[1]?.[key] ? 'red-row' : '' : '-'}`
+        highlighClass = `${mainRow} ${activeClass ? viewCostingData?.length > 0 && viewCostingData[firstInd]?.[key] > viewCostingData[secondInd]?.[key] ? 'green-row' : viewCostingData[firstInd]?.[key] < viewCostingData[secondInd]?.[key] ? 'red-row' : '' : '-'}`
         break;
       case 'multiple-key':
-        // Highlight class case, if hierarchical key comes from function,  here is getting value like viewCostingData[0]?.[key[0]]?.[key[1]] as viewCostingData[0]?.childObject.childValue
-        highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(viewCostingData[0]?.[key[0]]?.[key[1]], viewCostingData[1]?.[key[0]]?.[key[1]]) : ''}`
+        // Highlight class case, if hierarchical key comes from function,  here is getting value like viewCostingData[firstInd]?.[key[0]]?.[key[1]] as viewCostingData[firstInd]?.childObject.childValue
+        highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(viewCostingData[firstInd]?.[key[firstInd]]?.[key[secondInd]], viewCostingData[secondInd]?.[key[firstInd]]?.[key[secondInd]]) : ''}`
         break;
       case 'rm-reducer':
         // Highlight class case, if key comes from reducer
-        highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(reducer(viewCostingData[0]?.netRMCostView), reducer(viewCostingData[1]?.netRMCostView)) : ''}`
+        highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(reducer(viewCostingData[firstInd]?.netRMCostView), reducer(viewCostingData[secondInd]?.netRMCostView)) : ''}`
         break;
       case 'finish-reducer':
         // Highlight class case, if key comes from finishReducer
-        highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(reducerFinish(viewCostingData[0]?.netRMCostView), reducerFinish(viewCostingData[1]?.netRMCostView)) : ''}`
+        highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(reducerFinish(viewCostingData[firstInd]?.netRMCostView), reducerFinish(viewCostingData[secondInd]?.netRMCostView)) : ''}`
         break;
       default:
         // Highlight class for all others key
-        highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(viewCostingData[0]?.[key], viewCostingData[1]?.[key]) : ''}`
+        highlighClass = `${textClass} ${activeText ? highlightCostingSummaryValue(viewCostingData[firstInd]?.[key], viewCostingData[secondInd]?.[key]) : ''}`
         break;
     }
 
@@ -1965,7 +1969,7 @@ const CostingSummaryTable = (props) => {
                                         (data?.bestCost === true) ? "" :
                                           <span className={`checkbox-text`} title={title}><div><span>{heading(data).mainHeading}<span> {data.costingTypeId !== CBCTypeId && `(SOB: ${data?.shareOfBusinessPercent}%)`}</span></span><span className='sub-heading'>{heading(data).subHeading}-{data.costingHeadCheck}</span></div></span>
                                     }
-                                    {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText="Variance = (Old Costing - New Costing)" />}
+                                    {data?.CostingHeading === VARIANCE && ((!pdfHead)) && <TooltipCustom customClass="mb-0 ml-1" id="variance" tooltipText={`Variance = (${data.costingTypeId === CBCTypeId ? "New Costing - Old Costing" : "Old Costing - New Costing"})`} />}
                                   </div>
                                   <div className="action  text-right">
                                     {((!pdfHead && !drawerDetailPDF)) && (data?.IsAssemblyCosting === true) && < button title='View BOM' className="hirarchy-btn mr-1 mb-0 align-middle" type={'button'} onClick={() => viewBomCostingDetail(index)} />}
