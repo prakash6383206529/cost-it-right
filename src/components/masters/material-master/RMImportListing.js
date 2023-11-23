@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import {
   deleteRawMaterialAPI, getAllRMDataList
 } from '../actions/Material';
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT, ZBCTypeId } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, ENTRY_TYPE_IMPORT, FILE_URL, RMIMPORT, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -17,7 +17,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails, } from '../../../helper';
+import { CheckApprovalApplicableMaster, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -191,24 +191,28 @@ function RMImportListing(props) {
     let statusString = [props?.approvalStatus].join(",")
 
     const filterData = {
-      costingHead: isSimulation && filteredRMData && filteredRMData.costingHeadTemp ? filteredRMData.costingHeadTemp.value : costingHead,
-      plantId: isSimulation && filteredRMData && filteredRMData.plantId ? filteredRMData.plantId.value : plantId,
-      material_id: isSimulation && filteredRMData && filteredRMData.RMid ? filteredRMData.RMid.value : materialId,
-      grade_id: isSimulation && filteredRMData && filteredRMData.RMGradeid ? filteredRMData.RMGradeid.value : gradeId,
-      VendorId: isSimulation && filteredRMData && filteredRMData.VendorId ? filteredRMData.VendorId : vendorId,
+      costingHead: isSimulation && filteredRMData && filteredRMData?.costingHeadTemp ? filteredRMData?.costingHeadTemp.value : costingHead,
+      plantId: isSimulation && filteredRMData && filteredRMData?.plantId ? filteredRMData?.plantId.value : plantId,
+      material_id: isSimulation && filteredRMData && filteredRMData?.RMid ? filteredRMData?.RMid.value : materialId,
+      grade_id: isSimulation && filteredRMData && filteredRMData?.RMGradeid ? filteredRMData?.RMGradeid.value : gradeId,
+      VendorId: isSimulation && filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId,
       technologyId: isSimulation ? (props?.technology ? props?.technology : '') : (technologyId ? technologyId : ''),
       net_landed_min_range: value.min,
       net_landed_max_range: value.max,
       statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
       ListFor: ListFor,
       StatusId: statusString,
-      Vendor: isSimulation && filteredRMData && filteredRMData.Vendor ? filteredRMData.Vendor : '',
+      Vendor: isSimulation && filteredRMData && filteredRMData?.Vendor ? filteredRMData?.Vendor : '',
     }
 
     if (isPagination === true) {
       setloader(true)
     }
-    dataObj.VendorId = isSimulation && filteredRMData && filteredRMData.VendorId ? filteredRMData.VendorId : vendorId
+    if (isFromVerifyPage) {
+      dataObj.VendorId = filteredRMData && filteredRMData?.VendorId ? filteredRMData?.VendorId : vendorId
+      dataObj.CustomerId = filteredRMData && filteredRMData?.CustomerId ? filteredRMData?.CustomerId : ''
+      dataObj.Currency = filteredRMData?.Currency
+    }
     dataObj.RawMaterialEntryType = Number(ENTRY_TYPE_IMPORT)
     //THIS CONDTION IS FOR IF THIS COMPONENT IS RENDER FROM MASTER APPROVAL SUMMARY IN THIS NO GET API
     if (!props?.isMasterSummaryDrawer) {
@@ -1043,11 +1047,11 @@ function RMImportListing(props) {
                 </div>
               </Col>
             </Row>
-            <Row>
+            {!props?.isMasterSummaryDrawer && <Row>
               <Col md="12" className="d-flex justify-content-end">
                 <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
               </Col>
-            </Row>
+            </Row>}
           </>
         }
         {

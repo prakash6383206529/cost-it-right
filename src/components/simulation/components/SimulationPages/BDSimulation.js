@@ -15,7 +15,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
 import DatePicker from "react-datepicker";
@@ -178,6 +177,11 @@ function BDSimulation(props) {
     }
 
     const costingHeadFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cell ? cell : '-';
+    }
+
+    const hyphenFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cell ? cell : '-';
     }
@@ -398,7 +402,8 @@ function BDSimulation(props) {
         customerFormatter: customerFormatter,
         revisedBasicRateHeader: revisedBasicRateHeader,
         nullHandler: props.nullHandler && props.nullHandler,
-        quantityFormatter: quantityFormatter
+        quantityFormatter: quantityFormatter,
+        hyphenFormatter: hyphenFormatter
     };
 
     const basicRatetooltipToggle = () => {
@@ -542,6 +547,10 @@ function BDSimulation(props) {
                                                 {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost' suppressSizeToFit={true}></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost' suppressSizeToFit={true}></AgGridColumn>
+                                            </AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"BOP Net Landed Cost Conversion"} marryChildren={true}>
+                                                <AgGridColumn width={120} field="OldBoughtOutPartNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewBoughtOutPartNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn>
                                             {props.children}
                                             <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>

@@ -4,12 +4,12 @@ import RMDomesticListing from '../../masters/material-master/RMDomesticListing';
 import RMImportListing from '../../masters/material-master/RMImportListing';
 import { Row, Col } from 'reactstrap'
 import { Controller, useForm } from 'react-hook-form';
-import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability } from '../actions/Simulation';
+import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingSpecificTechnology, getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -49,7 +49,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState([])
     const [technology, setTechnology] = useState({})
@@ -70,7 +70,7 @@ function Simulation(props) {
     const [loader, setloader] = useState(false)
     const [masterSummaryDrawerState, setmasterSummaryDrawerState] = useState(props.isCancelClicked)
     const [isTechnologyDisable, setIsTechnologyDisable] = useState(false)
-    const [vendor, setVendor] = useState({})
+    const [vendor, setVendor] = useState('')
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [vendorName, setVendorName] = useState({})
     const [association, setAssociation] = useState('')
@@ -81,6 +81,9 @@ function Simulation(props) {
     const [showApplicabilityDropdown, setShowApplicabilityDropdown] = useState(false)
     const [applicability, setApplicability] = useState('')
     const [showVendor, setShowVendor] = useState(false)
+    const [showCustomer, setShowCustomer] = useState(false)
+    const [customer, setCustomer] = useState('')
+    const [renderComponent, setRenderComponent] = useState(false)
 
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
@@ -88,6 +91,7 @@ function Simulation(props) {
         dispatch(setTokenForSimulation([]))
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+        dispatch(getClientSelectList(() => { }))
 
         // ASSEMBLY TECHNOLOGY
         dispatch(getSelectListOfMasters(() => { }))
@@ -108,6 +112,9 @@ function Simulation(props) {
             setShowApplicabilityDropdown(true)
             setShowMasterList(true)
             setShowEditTable(false)
+            if (simulationApplicability?.value) {
+                setShowVendor(true)
+            }
         }
         return () => {
             dispatch(setMasterForSimulation({ label: '', value: '' }))
@@ -124,7 +131,6 @@ function Simulation(props) {
     const operationList = useSelector(state => state.material.operationList)
     const customerList = useSelector(state => state.client.clientSelectList)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    const exchangeRateListBeforeDraft = useSelector(state => state.simulation.exchangeRateListBeforeDraft)
 
     const technologySelectList = useSelector(state => state.costing.costingSpecifiTechnology)
     useEffect(() => {
@@ -153,7 +159,7 @@ function Simulation(props) {
         setShowTokenDropdown(false)
         setTechnology({ label: '', value: '' })
         setValue('Technology', '')
-        setValue('Vendor', { label: '', value: '' })
+        setValue('Vendor', '')
         setValue('token', '')
         setIsTechnologyDisable(false)
         dispatch(setMasterForSimulation(value))
@@ -165,6 +171,7 @@ function Simulation(props) {
         setShowApplicabilityDropdown(false)
         dispatch(setSimulationApplicability(''))
         setValue('Applicability', '')
+        setShowCustomer(false)
         if (value !== '' && (Object.keys(getValues('Technology')).length > 0 || !getTechnologyForSimulation.includes(value.value))) {
             setSelectionForListingMasterAPI('Master')
             if (checkForNull(value.value) === Number(EXCHNAGERATE)) {
@@ -197,10 +204,12 @@ function Simulation(props) {
         setShowTokenDropdown(false)
         setApplicability(value)
         setShowVendor(false)
+        setShowCustomer(false)
         dispatch(setSimulationApplicability(value))
         setEditWarning(false);
         setTimeout(() => {
             setShowVendor(true)
+            setShowCustomer(true)
             setShowTokenDropdown(true)
             setEditWarning(true);
         }, 200);
@@ -231,10 +240,8 @@ function Simulation(props) {
             setTechnology(value)
             setShowMasterList(false)
             setShowTokenDropdown(false)
-            setVendor({ label: '', value: '' })
-            setValue('Vendor', { label: '', value: '' })
-            dispatch(getClientSelectList((res) => {
-            }))
+            setVendor('')
+            setValue('Vendor', '')
         } else {
             dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendorid: '' }))
             setTechnology(value)
@@ -271,14 +278,29 @@ function Simulation(props) {
             if (value !== '') {
                 setShowMasterList(true)
             }
-        }, 50);                // ASSEMBLY TECHNOLOGY    }, 500);       
-
-        // ASSEMBLY TECHNOLOGY
+        }, 50);
         dispatch(setVendorForSimulation(value))
+        dispatch(setCustomerForSimulation(''))
         setVendor(value)
-
+        dispatch(setFilterForRM({ VendorId: value?.value }))
     }
 
+    const handleCustomerChange = (value) => {
+        setShowMasterList(false)
+        setToken([])
+        setValue('token', '')
+        setSelectionForListingMasterAPI('Master')
+        setTimeout(() => {
+            if (value !== '') {
+                setShowMasterList(true)
+            }
+        }, 50);
+        dispatch(setCustomerForSimulation(value))
+        dispatch(setVendorForSimulation(''))
+        setIsCustomer(true)
+        setCustomer(value)
+        dispatch(setFilterForRM({ CustomerId: value?.value }))
+    }
 
     const backToSimulation = (value) => {
         setShowEditTable(false)
@@ -398,7 +420,7 @@ function Simulation(props) {
     const cancelSimulationListingPage = () => {
         setShowMasterList(false)
 
-        setValue('Vendor', { label: '', value: '' })
+        setValue('Vendor', '')
         setValue('Technology', '')
         setValue('Masters', '')
 
@@ -614,9 +636,9 @@ function Simulation(props) {
 
     const cancelRunSimulation = () => {
         setMaster({ label: '', value: '' })
-        setValue('Masters', { label: '', value: '' })
-        setVendor({ label: '', value: '' })
-        setValue('Vendor', { label: '', value: '' })
+        setValue('Masters', '')
+        setVendor('')
+        setValue('Vendor', '')
 
     }
 
@@ -1112,23 +1134,20 @@ function Simulation(props) {
         setIsHide(true)
     }
 
-    const handleCustomerChange = (value) => {
+    const buttonCrossVendor = () => {
+        setValue('Vendor', '')
+        setVendor('')
+        setRenderComponent(!renderComponent)
         setShowMasterList(false)
-        setToken([])
-        setValue('token', '')
-        setSelectionForListingMasterAPI('Master')
-        setTimeout(() => {
-            if (value !== '') {
-                setShowMasterList(true)
-            }
-        }, 50);                // ASSEMBLY TECHNOLOGY    }, 500);       
-
-        // ASSEMBLY TECHNOLOGY
-        dispatch(setVendorForSimulation(value))
-        // setVendor(value)
-        setIsCustomer(true)
-
     }
+
+    const buttonCrossCustomer = () => {
+        setValue('customer', '')
+        setCustomer('')
+        setRenderComponent(!renderComponent)
+        setShowMasterList(false)
+    }
+
     // THIS WILL RENDER WHEN CLICK FROM SIMULATION HISTORY FOR DRAFT STATUS
     if (props?.isFromApprovalListing === true) {
         const simulationId = props?.approvalProcessId;
@@ -1193,7 +1212,7 @@ function Simulation(props) {
                                             <SearchableSelectHookForm
                                                 label={''}
                                                 name={'Association'}
-                                                placeholder={'Association'}
+                                                placeholder={'Select'}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
@@ -1217,7 +1236,7 @@ function Simulation(props) {
                                             <SearchableSelectHookForm
                                                 label={''}
                                                 name={'Technology'}
-                                                placeholder={'Technology'}
+                                                placeholder={'Select'}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
@@ -1240,7 +1259,7 @@ function Simulation(props) {
                                             <AsyncSearchableSelectHookForm
                                                 label={''}
                                                 name={'Vendor'}
-                                                placeholder={'Vendor'}
+                                                placeholder={'Select'}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
@@ -1251,28 +1270,32 @@ function Simulation(props) {
                                                 handleChange={handleVendorChange}
                                                 errors={errors.Masters}
                                                 NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                                buttonCross={buttonCrossVendor}
+                                                disabled={getValues('customer')?.value}
                                             />
                                         </div>
                                     </div>
                                 }
-                                {partType &&
+                                {(partType || showCustomer) &&
                                     < div className="d-inline-flex justify-content-start align-items-center mr-3">
                                         <div className="flex-fills label">Customer:</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
                                             <SearchableSelectHookForm
                                                 label={''}
                                                 name={'customer'}
-                                                placeholder={'customer'}
+                                                placeholder={'Select'}
                                                 valueDescription={token}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
                                                 register={register}
-                                                // defaultValue={technology.length !== 0 ? technology : ''}
                                                 options={renderListing('customer')}
+                                                defaultValue={customer.length !== 0 ? customer : ''}
                                                 mandatory={false}
                                                 handleChange={handleCustomerChange}
                                                 errors={errors.Masters}
+                                                buttonCross={buttonCrossCustomer}
+                                                disabled={getValues('Vendor')?.value ? true : false}
                                             />
                                         </div>
                                     </div>
@@ -1284,7 +1307,7 @@ function Simulation(props) {
                                             <SearchableSelectHookForm
                                                 label={''}
                                                 name={'token'}
-                                                placeholder={'token'}
+                                                placeholder={'Select'}
                                                 valueDescription={token}
                                                 Controller={Controller}
                                                 control={control}

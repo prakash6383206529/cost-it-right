@@ -4,7 +4,7 @@ import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, CBCTypeId } from '../../../config/constants';
-import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
+import { getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
@@ -26,7 +26,6 @@ function VerifySimulation(props) {
     const { cancelVerifyPage, token, assemblyTechnology } = props
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [effectiveDate, setEffectiveDate] = useState('')
-    const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
     const [simulationTechnologyId, setSimulationTechnologyId] = useState('')
@@ -49,9 +48,6 @@ function VerifySimulation(props) {
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
     const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false;
-    const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
-    const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
-    const { selectedVendorForSimulation } = useSelector(state => state.simulation)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');

@@ -16,7 +16,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
@@ -741,6 +740,10 @@ function RMSimulation(props) {
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
                                                 <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
+                                            </AgGridColumn>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"BOP Net Landed Cost Conversion"} marryChildren={true}>
+                                                <AgGridColumn width={120} field="OldRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Existing" colId='OldRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Revised" colId='NewRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn>
                                             <AgGridColumn width={150} field="RMFreightCost" tooltipField='RMFreightCost' editable='false' cellRenderer={'CostFormatter'} headerName="Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" tooltipField='RMShearingCost' editable='false' cellRenderer={'CostFormatter'} headerName="Shearing Cost" ></AgGridColumn>
