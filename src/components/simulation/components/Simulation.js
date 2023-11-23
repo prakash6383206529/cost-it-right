@@ -1167,7 +1167,7 @@ function Simulation(props) {
                         <Row>
                             <Col md="12" className="filter-block zindex-9 simulation-labels">
 
-                                <div className="d-inline-flex justify-content-start align-items-center mr-3 ">
+                                <div className="d-inline-flex justify-content-start align-items-center mr-3 mb-3 zindex-unset ">
                                     <div className="flex-fills label">Masters:</div>
                                     <div className="hide-label flex-fills pl-0">
                                         <SearchableSelectHookForm
@@ -1186,7 +1186,7 @@ function Simulation(props) {
                                         />
                                     </div>
                                 </div>
-                                {showApplicabilityDropdown && <div className="d-inline-flex justify-content-start align-items-center mr-3 ">
+                                {showApplicabilityDropdown && <div className="d-inline-flex justify-content-start align-items-center mr-3 mb-3 zindex-unset ">
                                     <div className="flex-fills label">Applied On:</div>
                                     <div className="hide-label flex-fills pl-0">
                                         <SearchableSelectHookForm
@@ -1206,7 +1206,7 @@ function Simulation(props) {
                                     </div>
                                 </div>}
                                 {(String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
-                                    <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="d-inline-flex justify-content-start align-items-center mr-3 mb-3 zindex-unset">
                                         <div className="flex-fills label">Association:</div>
                                         <div className="flex-fills hide-label pl-0 d-flex mr-3">
                                             <SearchableSelectHookForm
@@ -1230,7 +1230,7 @@ function Simulation(props) {
                                 {((String(selectedMasterForSimulation?.value) !== BOPDOMESTIC && String(selectedMasterForSimulation?.value) !== BOPIMPORT) ? true :
                                     (association !== '' && association?.value !== NON_ASSOCIATED)) &&
                                     getTechnologyForSimulation.includes(master.value) &&
-                                    <div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    <div className="d-inline-flex justify-content-start align-items-center mr-3 mb-3 zindex-unset">
                                         <div className="flex-fills label">Technology:</div>
                                         <div className="flex-fills hide-label pl-0">
                                             <SearchableSelectHookForm
@@ -1252,7 +1252,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {(partType || showVendor) &&
-                                    < div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    < div className="d-inline-flex justify-content-start align-items-center mr-3 mb-3 zindex-unset">
                                         <div className="flex-fills label">Vendor:</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
                                             {/* {inputLoader && <LoaderCustom customClass="vendor-loader" />} */}
@@ -1277,7 +1277,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {(partType || showCustomer) &&
-                                    < div className="d-inline-flex justify-content-start align-items-center mr-3">
+                                    < div className="d-inline-flex justify-content-start align-items-center mr-3 mb-3 zindex-unset">
                                         <div className="flex-fills label">Customer:</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
                                             <SearchableSelectHookForm
@@ -1301,7 +1301,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {showTokenDropdown &&
-                                    <div className="d-inline-flex justify-content-start align-items-center">
+                                    <div className="d-inline-flex justify-content-start align-items-center zindex-unset">
                                         <div className="flex-fills label">Token:</div>
                                         <div className="flex-fills hide-label pl-0">
                                             <SearchableSelectHookForm
