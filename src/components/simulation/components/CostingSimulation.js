@@ -212,10 +212,18 @@ function CostingSimulation(props) {
                     }
                 }))
             } else {
+                let technologyId = SimulationTechnologyIdState
+                if (amendmentDetails?.IsExchangeRateSimulation) {
+                    if (String(SimulationTechnologyIdState) === String(RMIMPORT) || String(SimulationTechnologyIdState) === String(BOPIMPORT)) {
+                        technologyId = EXCHNAGERATE
+                    }
+                } else {
+                    technologyId = SimulationTechnologyIdState
+                }
                 let obj = {
                     DepartmentId: userData.DepartmentId,
                     UserId: loggedInUserId(),
-                    TechnologyId: SimulationTechnologyIdState,
+                    TechnologyId: technologyId,
                     Mode: 'simulation',
                     approvalTypeId: costingTypeIdToApprovalTypeIdFunction(amendmentDetails.SimulationHeadId)
                 }
@@ -416,6 +424,7 @@ function CostingSimulation(props) {
             tempObj.TotalImpactPerQuarter = Data.TotalImpactPerQuarter
             tempObj.CustomerName = simulationList[0].CustomerName
             tempObj.BudgetedPriceImpactPerQuarter = simulationList[0]?.BudgetedPriceImpactPerQuarter
+            tempObj.IsExchangeRateSimulation = Data?.IsExchangeRateSimulation
             setAmendmentDetails(tempObj)
 
             //LISTING
