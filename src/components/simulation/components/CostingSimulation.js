@@ -14,6 +14,7 @@ import { Redirect } from 'react-router';
 import { checkFinalUser, getReleaseStrategyApprovalDetails, setCostingViewData } from '../../costing/actions/Costing';
 import {
     APPLICABILITY_BOP_SIMULATION,
+    APPLICABILITY_PART_SIMULATION,
     APPLICABILITY_RM_SIMULATION,
     ASSEMBLY_TECHNOLOGY_MASTER,
     ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl,
@@ -107,16 +108,16 @@ function CostingSimulation(props) {
     const [isBreakupBoughtOutPart, setIsBreakupBoughtOutPart] = useState(false)
     const [disableSendForApproval, setDisableSendForApproval] = useState(false);
 
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
-    const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)));
-    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)))
+    const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION));
+    const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION))
     const isMachineRate = Number(master) === (Number(MACHINERATE));
-    const isExchangeRate = Number(master) === (Number(EXCHNAGERATE));
+    const isExchangeRate = (Number(master) === Number(EXCHNAGERATE) && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION);
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
     const gridRef = useRef();
-    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
     const costingList = useSelector(state => state.simulation.costingSimulationList)
     const [noData, setNoData] = useState(false);
@@ -403,7 +404,7 @@ function CostingSimulation(props) {
             setTokenNo(tokenNo)
             setAPIData(tempArrayCosting)
             setCostingArr(tempArrayCosting)
-            setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate })
+            setSimulationDetail({ TokenNo: Data.SimulationTokenNumber, Status: Data.SimulationStatus, SimulationId: Data.SimulationId, SimulationAppliedOn: Data.SimulationAppliedOn, EffectiveDate: Data.EffectiveDate, IsExchangeRateSimulation: Data.IsExchangeRateSimulation })
             setLoader(false)
             let tempObj = {}
             tempObj.EffectiveDate = Data.EffectiveDate
@@ -444,6 +445,8 @@ function CostingSimulation(props) {
                 masterTemp = RMIMPORT
             } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
                 masterTemp = BOPIMPORT
+            } else {
+                masterTemp = selectedMasterForSimulation?.value
             }
             switch (Number(masterTemp)) {
                 //  ***** WHEN SAME BLOCK OF CODE IS FOR TWO DIFFERENT CASES | WE WRITE TWO CASES TOGETHER *****

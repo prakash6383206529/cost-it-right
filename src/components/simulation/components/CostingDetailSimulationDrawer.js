@@ -7,6 +7,7 @@ import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
+import { useSelector } from 'react-redux';
 
 
 
@@ -22,6 +23,7 @@ function CostingDetailSimulationDrawer(props) {
 
     // table code starts here
     const { simulationDetail, pricesDetail, selectedRowData, costingArr, master, isReport, isSimulation, isReportLoader, isOldCosting } = props
+    const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
 
     const [isApprovalDrawer, setIsApprovalDrawer] = useState(false)
     const [showApprovalHistory, setShowApprovalHistory] = useState(false)
