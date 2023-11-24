@@ -852,7 +852,6 @@ input::-webkit-input-placeholder {
   .tab-pane {
     .filter-block {
       position: initial;
-      height: 32px !important;
       margin-bottom: 25px;
       background-color: none;
 
@@ -8316,9 +8315,6 @@ body {
 // <-------END simulation token dropdown css------>
 
 .simulation-labels {
-  .flex-fills.label {
-    min-width: fit-content !important;
-  }
 
   .w-72 {
     .flex-fills.label {
