@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
-import { NumberFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
 
-import { useForm, Controller } from 'react-hook-form'
+import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
-import { typePercentageAndFixed } from '../../../../../config/masterData'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
 import ConditionCosting from './ConditionCosting'
 import { getCostingCondition } from '../../../../../actions/Common'
 import Toaster from '../../../../common/Toaster'
 import TooltipCustom from '../../../../common/Tooltip'
+import { trim } from 'lodash'
 
 function AddConditionCosting(props) {
     const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, } = props
@@ -24,7 +24,6 @@ function AddConditionCosting(props) {
     const [type, setType] = useState('')
     const [totalCostCurrency, setTotalCostCurrency] = useState('')
     const [totalCostBase, setTotalCostBase] = useState('')
-    const [percentageType, setPercentageType] = useState('')
     const [disableBase, setDisableBase] = useState(false)
     const [disableCurrency, setDisableCurrency] = useState(false)
 
@@ -36,7 +35,10 @@ function AddConditionCosting(props) {
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
     const dispatch = useDispatch();
-
+    const fieldValues = useWatch({
+        control,
+        name: ['Quantity', 'CostCurrency'],
+    })
 
     useEffect(() => {
         if (true) {
@@ -58,39 +60,45 @@ function AddConditionCosting(props) {
 
     }, [])
 
-    const onConditionChange = (e) => {
-        setValue('Type', '')
-        setValue('Percentage', '')
-        setValue('Cost', '')
-    }
+    useEffect(() => {
+        calculateCostPerQuantity()
+    }, [fieldValues])
 
-    const onTypeChange = (e) => {
-        setValue('Cost', '')
-        if (e?.label) {
-            setType(e?.label)
-            if (e?.label === 'Fixed') {
-                setDisableTotalCost(false)
-                setDisableCurrency(false)
-                setDisableBase(false)
-                setDisableAllFields(true)
-                setPercentageType(false)
-                setValue('Percentage', '')
-            } else {
-                setDisableAllFields(false)
-                setDisableTotalCost(true)
-                setPercentageType(true)
-                setValue('Cost', '')
-                setTotalCostCurrency('')
-                setTotalCostBase('')
-            }
+    const onConditionChange = (e) => {
+        setType(e?.ConditionType)
+        setValue('Type', e?.ConditionType)
+        setValue('Percentage', '')
+        setValue('Quantity', '')
+        setValue('CostCurrency', '')
+        setValue('CostBase', '')
+        if (e?.ConditionType === 'Fixed' || e?.ConditionType === 'Quantity') {
+            setDisableTotalCost(false)
+            setDisableCurrency(false)
+            setDisableBase(false)
+            setDisableAllFields(true)
+            setValue('Percentage', '')
+        } else if (e?.ConditionType === 'Percentage') {
+            setDisableAllFields(false)
+            setDisableTotalCost(true)
+            setTotalCostCurrency('')
+            setTotalCostBase('')
+        } else {
+            setDisableAllFields(false)
+            setDisableTotalCost(true)
+            setTotalCostCurrency('')
+            setTotalCostBase('')
         }
     }
-
-
     const handleCostChangeCurrency = (e) => {
         if (e?.target?.value) {
             const costBase = checkForNull(e.target.value) * checkForNull(currencyValue)
             setValue("CostBase", checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
+            const ConditionCostPerQuantity = checkForNull(e.target.value) / checkForNull(getValues('Quantity'))
+            setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
+            setDisableBase(true)
+            setTotalCostCurrency(e.target.value)
+            setTotalCostBase(costBase)
+            setValue("ConditionCostPerQuantity", checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
             setDisableBase(true)
             setTotalCostCurrency(e.target.value)
             setTotalCostBase(costBase)
@@ -140,16 +148,11 @@ function AddConditionCosting(props) {
 
 
     const addData = () => {
-        if (getValues('Type').label === 'Fixed' && !getValues('CostCurrency')) {
-            Toaster.warning("Please enter all details to add a row.")
-            return false;
-        } else if (getValues('Type').label === 'Percentage' && !getValues('Percentage')) {
-            Toaster.warning("Please enter all details to add a row.")
+        if (((getValues('Type') === 'Fixed' || getValues('Type') === 'Quantity') && !getValues('CostCurrency')) || (getValues('Type') === 'Percentage' && !getValues('Percentage'))) {
+            Toaster.warning("Please enter all details to add a row.");
             return false;
         }
-        if (errors.Percentage) {
-            return false;
-        }
+        if (errors.Percentage) return false;
 
         const newCondition = getValues('Condition') ? getValues('Condition') : null;
 
@@ -157,33 +160,37 @@ function AddConditionCosting(props) {
             CostingConditionMasterId: newCondition ? newCondition.CostingConditionMasterId : '',
             ConditionNumber: newCondition ? newCondition.CostingConditionNumber : '',
             Description: newCondition ? newCondition.label : '',
-            ConditionType: getValues('Type') ? getValues('Type').label : '',
+            ConditionType: getValues('Type') ? getValues('Type') : '',
             ConditionPercentage: getValues('Percentage') ? getValues('Percentage') : '',
             ConditionCost: totalCostCurrency ? totalCostCurrency : '',
             ConditionCostConversion: totalCostBase ? totalCostBase : '',
+            ConditionCostPerQuantity: getValues('ConditionCostPerQuantity') ? getValues('ConditionCostPerQuantity') : '',
+            ConditionQuantity: getValues('Quantity') ? getValues('Quantity') : '',
+            ConditionCostPerQuantityConversion: getValues('CostPerQuantityConversion') ? getValues('CostPerQuantityConversion') : '',
         };
-
-        let updatedTableData = [...tableData];
-
-        // If we're in edit mode, update the existing row with the new data.
-        // Otherwise, add the new row to the end of the table.
-        if (isEditMode) {
-            updatedTableData[editIndex] = newData;
-        } else {
-            // Check if the new condition already exists in the table data, excluding the row being edited in edit mode.
-            const duplicateConditionIndex = updatedTableData.findIndex(
-                (item) => item.ConditionNumber === newCondition?.CostingConditionNumber
-            );
-
-            if (duplicateConditionIndex !== -1) {
-                Toaster.warning('Duplicate entry is not allowed.')
-                return false;
+        let isDuplicate = false
+        tableData.map((item, index) => {
+            if (index !== editIndex) {
+                if (trim(item?.Description) === trim(newData?.Description)) {
+                    isDuplicate = true
+                }
             }
+            return null
+        });
 
-            updatedTableData.push(newData);
+        if (isDuplicate) {
+            Toaster.warning('Duplicate entry is not allowed.');
+            return false;
         }
 
-        setTableData(updatedTableData);
+        if (isEditMode) {
+            const updatedTableData = [...tableData];
+            updatedTableData[editIndex] = newData;
+            setTableData(updatedTableData);
+        } else {
+            setTableData([...tableData, newData]);
+        }
+
         resetData();
         setIsEditMode(false);
         setEditIndex('');
@@ -195,12 +202,15 @@ function AddConditionCosting(props) {
         setValue('Percentage', '')
         setValue('CostCurrency', '')
         setValue('CostBase', '')
+        setValue('ConditionCostPerQuantity', '')
+        setValue('Quantity', '')
         setDisableAllFields(true)
         setDisableTotalCost(true)
         setTotalCostCurrency('')
         setTotalCostBase('')
-        setPercentageType(false)
         setIsEditMode(false)
+        setType('')
+        setEditIndex('')
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -228,30 +238,38 @@ function AddConditionCosting(props) {
             setDisableAllFields(false)
             setValue('Condition', {
                 label: Data.Description, value: Data.ConditionNumber,
-                CostingConditionMasterId: Data.CostingConditionMasterId, CostingConditionNumber: Data.ConditionNumber
+                CostingConditionMasterId: Data.CostingConditionMasterId, ConditionNumber: Data.ConditionNumber, ConditionType: Data.ConditionType
             })
-            setValue('Type', { label: Data.ConditionType, value: Data.ConditionType })
+            setValue('Type', Data.ConditionType)
             setValue('Percentage', checkForDecimalAndNull(Data.ConditionPercentage, initialConfiguration.NoOfDecimalForPrice))
             setValue('CostCurrency', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('CostBase', checkForDecimalAndNull(Data.ConditionCostConversion, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Quantity', Data.ConditionQuantity)
             setTotalCostCurrency(Data?.ConditionCost)
             setTotalCostBase(Data?.ConditionCostConversion)
-            if (Data.ConditionType === 'Fixed') {
+            setType(Data.ConditionType)
+            if (Data.ConditionType === 'Fixed' || Data.ConditionType === 'Quantity') {
                 setDisableTotalCost(false)
                 setDisableCurrency(false)
                 setDisableBase(false)
                 setDisableAllFields(true)
-                setPercentageType(false)
             } else {
                 setDisableAllFields(false)
                 setDisableCurrency(true)
                 setDisableBase(true)
                 setDisableTotalCost(true)
-                setPercentageType(true)
             }
         }
     }
-
+    const calculateCostPerQuantity = () => {
+        let cost = checkForNull(getValues('CostCurrency'))
+        let quantity = checkForNull(getValues('Quantity'))
+        let costBase = checkForNull(getValues('CostBase'))
+        let ConditionCostPerQuantity = cost / quantity
+        let ConditionCostPerQuantityConversion = costBase / quantity
+        setValue('ConditionCostPerQuantity', checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
+        setValue('CostPerQuantityConversion', checkForDecimalAndNull(ConditionCostPerQuantityConversion, initialConfiguration.NoOfDecimalForPrice))
+    }
     return (
 
         <div>
@@ -294,25 +312,41 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         />
                                     </Col>
-                                    <Col md={isFromImport ? 3 : 2} className='px-1'>
-                                        <SearchableSelectHookForm
+                                    <Col md={3} className='px-1'>
+                                        <TextFieldHookForm
                                             label={`Type`}
                                             name={'Type'}
-                                            placeholder={'Select'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            handleChange={() => { }}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.Type}
+                                            disabled={true}
+                                        />
+                                    </Col>
+                                    {type === 'Quantity' && <Col md="3" className='px-1'>
+                                        <NumberFieldHookForm
+                                            label={`Quantity`}
+                                            name={'Quantity'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
                                             mandatory={true}
-                                            options={typePercentageAndFixed}
-                                            handleChange={onTypeChange}
+                                            rules={{
+                                                required: true,
+                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                            }}
+                                            handleChange={() => { }}
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.Type}
+                                            errors={errors.Quantity}
                                             disabled={props.ViewMode}
                                         />
-                                    </Col>
-                                    <Col md={isFromImport ? 3 : 2} className='px-1'>
+                                    </Col>}
+                                    {type === 'Percentage' && <Col md={3} className='px-1'>
                                         <NumberFieldHookForm
                                             label={`Percentage (%)`}
                                             name={'Percentage'}
@@ -321,15 +355,13 @@ function AddConditionCosting(props) {
                                             register={register}
                                             mandatory={true}
                                             rules={{
-                                                required: false,
+                                                required: true,
                                                 validate: { number, checkWhiteSpaces, percentageLimitValidation },
                                                 max: {
                                                     value: 100,
                                                     message: 'Percentage should be less than 100'
                                                 },
-
                                             }}
-
                                             handleChange={onPercentChange}
                                             defaultValue={''}
                                             className=""
@@ -337,9 +369,9 @@ function AddConditionCosting(props) {
                                             errors={errors.Percentage}
                                             disabled={props.ViewMode || disableAllFields}
                                         />
-                                    </Col>
-                                    <Col md={isFromImport ? 3 : 2} className={isFromImport ? "pl-1" : 'px-1'}>
-                                        {type !== 'Fixed' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
+                                    </Col>}
+                                    <Col md={3} className={isFromImport ? "pl-1" : 'px-1'}>
+                                        {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
                                         <NumberFieldHookForm
                                             label={`Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
                                             name={'CostCurrency'}
@@ -361,7 +393,7 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>
                                     {isFromImport && <Col md={3} className='pr-0'>
-                                        {type !== 'Fixed' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
+                                        {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
                                         <NumberFieldHookForm
                                             label={`Cost (${initialConfiguration?.BaseCurrency})`}
                                             name={'CostBase'}
@@ -382,9 +414,44 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableTotalCost || disableBase}
                                         />
                                     </Col>}
-
-                                    <Col md="3" className="mt-4 pt-1">
-
+                                    {type === 'Quantity' && <>
+                                        <Col md={3} className='pr-0'>
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost Per Quantity = Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) / Quantity`} />
+                                            <NumberFieldHookForm
+                                                label={`Cost Per Quantity (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
+                                                name={'ConditionCostPerQuantity'}
+                                                id={'cost-per-quantity'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.ConditionCostPerQuantity}
+                                                disabled={true}
+                                            />
+                                        </Col>
+                                        {isFromImport && <Col md={3} className='pr-0'>
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost Per Quantity = Cost (${initialConfiguration?.BaseCurrency})  / Quantity`} />
+                                            <NumberFieldHookForm
+                                                label={`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}
+                                                name={'CostPerQuantityConversion'}
+                                                id={'cost-per-quantity-coversion'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.CostPerQuantityConversion}
+                                                disabled={true}
+                                            />
+                                        </Col>}
+                                    </>
+                                    }
+                                    <Col md="3" className={`${type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'}`}>
                                         <button
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}

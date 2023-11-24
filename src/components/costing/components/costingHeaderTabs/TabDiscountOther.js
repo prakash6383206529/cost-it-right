@@ -266,7 +266,7 @@ function TabDiscountOther(props) {
             let temp = []
             Data && Data.map((item) => {
               item.ConditionPercentage = item.Percentage
-              item.condition = `${item.Description} (${item.CostingConditionNumber})`
+              item.Description = `${item.Description} (${item.CostingConditionNumber})`
               temp.push(item)
             })
             seConditionTableData(temp)
@@ -1054,7 +1054,9 @@ function TabDiscountOther(props) {
 
 
   const handleDiscountApplicabilityChange = (value) => {
-
+    if (!value) {
+      errors.discountDescriptionRemark = {}
+    }
     if (!CostingViewMode) {
       if (value && value !== '') {
         dispatch(isDiscountDataChange(true))

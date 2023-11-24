@@ -2385,7 +2385,8 @@ class AddRMImport extends Component {
                                     id="addRMImport_condition"
                                     onClick={this.conditionToggle}
                                     className={"right mt-0 mb-2"}
-                                    variant="plus-icon-square"
+                                    variant={(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency) ? `plus-icon-square` : `blurPlus-icon-square`}
+                                    disabled={!(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency)}
                                   />
                                 </div>
                               </Col>
