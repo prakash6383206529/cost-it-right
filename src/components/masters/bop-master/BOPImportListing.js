@@ -783,7 +783,7 @@ class BOPImportListing extends Component {
                                                     </ExcelFile>
                                                 </>
                                             }
-                                            <button type="button" className="user-btn" title="Reset Grid" onClick={() => { this.resetState(); }}>
+                                            <button type="button" className="user-btn mr-1" title="Reset Grid" onClick={() => { this.resetState(); }}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
                                             <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
@@ -795,7 +795,7 @@ class BOPImportListing extends Component {
                             <Row>
                                 <Col>
 
-                                    <div className={`ag-grid-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                    <div className={`ag-grid-wrapper bop-import-listing ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                                         <div className={`ag-theme-material p-relative ${this.state.isLoader && "max-loader-height"}`} >
                                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                             <AgGridReact

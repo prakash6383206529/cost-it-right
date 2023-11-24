@@ -412,9 +412,9 @@ function ERSimulation(props) {
                         {!isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    <div className="inputbox date-section mr-3 verfiy-page">
+                                    <div className="d-flex align-items-center">
                                         {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ?
-                                            <> <DatePicker
+                                            <><div className='verfiy-page inputbox date-section mr-3'> <DatePicker
                                                 name="EffectiveDate"
                                                 selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                                 onChange={handleEffectiveDateChange}
@@ -430,6 +430,7 @@ function ERSimulation(props) {
                                             // minDate={new Date()}
                                             // minDate={new Date(largestDate)}
                                             />
+                                            </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                                 <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
                                                     <div className={"Run-icon"}>
