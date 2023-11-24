@@ -138,7 +138,7 @@ class AddBOPImport extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
-      this.props.getPlantSelectListByType(ZBC, '', () => { })
+      this.props.getPlantSelectListByType(ZBC, () => { })
     }
   }
 
