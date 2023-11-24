@@ -146,6 +146,11 @@ function ERSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewBasicRate = undefined
+            item.NewScrapRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
     }
 
@@ -390,7 +395,7 @@ function ERSimulation(props) {
 
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
                                                 <AgGridColumn width={120} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer='newRateFormatter' editable={!isImpactedMaster} field="NewCurrencyExchangeRate" headerName="Revised" colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={!isImpactedMaster} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn>}
 
                                             {isImpactedMaster && <>

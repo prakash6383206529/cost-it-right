@@ -1693,6 +1693,7 @@ function CostingSimulation(props) {
                                     technologyId={SimulationTechnologyIdState}
                                     showApprovalTypeDropdown={true}
                                     approvalTypeIdValue={amendmentDetails?.SimulationHeadId}
+                                    IsExchangeRateSimulation={amendmentDetails?.IsExchangeRateSimulation}
                                 // isSaveDone={isSaveDone}
                                 />
                             }

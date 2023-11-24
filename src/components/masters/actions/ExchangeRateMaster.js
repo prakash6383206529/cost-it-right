@@ -177,7 +177,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
                 "BankCommissionPercentage": item?.BankCommissionPercentage,
                 "EffectiveDate": effectiveDate,
                 "LoggedInUserId": loggedInUserId(),
-                "CostingHeadId": item?.CostingHeadId,
+                "CostingHeadId": item?.CostingHeadId ? item?.CostingHeadId : item?.CostingTypeId,
                 "CustomerId": item?.CustomerId,
                 "VendorId": item?.VendorId,
                 "IsBudgeting": item?.IsBudgeting,

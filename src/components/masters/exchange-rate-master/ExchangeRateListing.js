@@ -70,7 +70,7 @@ class ExchangeRateListing extends Component {
             if (this.props.isSimulation) {
                 if (this.props.selectionForListingMasterAPI === 'Combined') {
                     this.props?.changeSetLoader(true)
-                    this.props.getListingForSimulationCombined(this.props.tokenArray, EXCHNAGERATE, () => {
+                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, EXCHNAGERATE, (res) => {
                         this.props?.changeSetLoader(false)
                     })
                 }
