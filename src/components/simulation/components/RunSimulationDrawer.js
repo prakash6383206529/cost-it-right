@@ -511,7 +511,7 @@ function RunSimulationDrawer(props) {
                                                         if (el.Value === '0') return false;
                                                         return (
                                                             <Col md="6" className="mb-3 p-0 check-box-container">
-                                                                <div class={`custom-check1 d-inline-block drawer-side-input-other applicability-checkbox_${i}`}>
+                                                                <div class={`custom-check1 d-inline-block drawer-side-input-other`} id={`applicability-checkbox_${i}`}>
                                                                     <label
                                                                         className="custom-checkbox mb-0"
                                                                         onChange={() => handleApplicabilityChange(el)}
@@ -732,7 +732,7 @@ function RunSimulationDrawer(props) {
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
 
-                                                            <div className={`input-group col-md-12 mb-3 px-0 m-height-auto applicability-checkbox_16`}>
+                                                            <div className={`input-group col-md-12 mb-3 px-0 m-height-auto`} id={`applicability-checkbox_16`}>
 
                                                                 <label
                                                                     className="custom-checkbox mb-0"
@@ -854,7 +854,7 @@ function RunSimulationDrawer(props) {
                                                 <Col md="12" className="mb-3 p-0">
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
-                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto applicability-checkbox_17">
+                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_17`}>
                                                                 <label
                                                                     className="custom-checkbox mb-0"
                                                                     onChange={() => handleAdditional('Freight')}
@@ -976,7 +976,7 @@ function RunSimulationDrawer(props) {
                                                 <Col md="12" className={`p-0 pb-3`}>
                                                     <div class={`custom-check1 d-inline-block drawer-side-input-other `}>
                                                         {(
-                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto applicability-checkbox_18">
+                                                            <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_18`}>
 
                                                                 <label
                                                                     className="custom-checkbox mb-0"
@@ -1126,7 +1126,7 @@ function RunSimulationDrawer(props) {
 
                                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (
                                                 <Row>
-                                                    <div className="input-group col-md-12 mb-3 px-0 m-height-auto applicability-checkbox_19">
+                                                    <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_19`}>
                                                         <label
                                                             className="custom-checkbox mb-0"
                                                             onChange={() => applyCondition(`Condition`)}
@@ -1149,7 +1149,7 @@ function RunSimulationDrawer(props) {
 
                                             {initialConfiguration?.IsShowNpvCost && (
                                                 <Row>
-                                                    <div className="input-group col-md-12 mb-3 px-0 m-height-auto applicability-checkbox_20">
+                                                    <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_20`}>
                                                         <label
                                                             className="custom-checkbox mb-0"
                                                             onChange={() => applyNPV(`NPV`)}
