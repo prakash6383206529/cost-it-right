@@ -109,12 +109,14 @@ function CostingSimulation(props) {
     const [disableSendForApproval, setDisableSendForApproval] = useState(false);
 
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+
     const isSurfaceTreatment = (Number(master) === Number(SURFACETREATMENT));
     const isOperation = (Number(master) === Number(OPERATIONS));
     const isRMDomesticOrRMImport = ((Number(master) === Number(RMDOMESTIC)) || (Number(master) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION));
     const isBOPDomesticOrImport = ((Number(master) === Number(BOPDOMESTIC)) || (Number(master) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION))
     const isMachineRate = Number(master) === (Number(MACHINERATE));
     const isExchangeRate = (Number(master) === Number(EXCHNAGERATE) && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION);
+
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const impactedMasterData = useSelector(state => state.comman.impactedMasterData)
     const gridRef = useRef();
@@ -1069,7 +1071,7 @@ function CostingSimulation(props) {
         setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
         setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
         setShowRMColumn(costingSimulationListAllKeys?.IsRawMaterialSimulation === true ? true : false)
-        setShowExchangeRateColumn(costingSimulationListAllKeys?.IsExchangeRateSimulation === true ? true : false)
+        setShowExchangeRateColumn((costingSimulationListAllKeys?.IsExchangeRateSimulation === true && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION) ? true : false)
         setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineProcessSimulation === true ? true : false)
         setIsMultipleMasterSimulation(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ||
             costingSimulationListAllKeys?.IsCombinedProcessSimulation === true || costingSimulationListAllKeys?.IsExchangeRateSimulation === true ||

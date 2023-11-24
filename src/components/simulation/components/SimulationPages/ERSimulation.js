@@ -248,7 +248,8 @@ function ERSimulation(props) {
 
         setIsDisable(true)
 
-        dispatch(createMultipleExchangeRate(list, currencySelectList, res => {
+        dispatch(createMultipleExchangeRate(list, currencySelectList, effectiveDate, res => {
+
             let obj = {}
             obj.SimulationTechnologyId = selectedMasterForSimulation.value
             obj.LoggedInUserId = loggedInUserId()
@@ -257,6 +258,7 @@ function ERSimulation(props) {
             obj.SimulationHeadId = list[0]?.CostingHeadId
             obj.SimulationExchangeRates = res
             obj.IsExchangeRateSimulation = true
+
             dispatch(runVerifyExchangeRateSimulation(obj, res => {
                 setIsDisable(false)
                 if (res?.data?.Result) {
