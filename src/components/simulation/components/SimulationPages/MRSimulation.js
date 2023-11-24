@@ -460,7 +460,7 @@ function MRSimulation(props) {
                                                         <label className='mr-1'>Vendor (Code):</label>
                                                         <p className='mr-2' title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
                                                     </div>}
-                                                    <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                                                    <button type="button" id="simulation-back" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
                                                 </div>}
                                             </div>
                                         </div>
@@ -529,6 +529,7 @@ function MRSimulation(props) {
                                         <div className="inputbox date-section mr-3 verfiy-page">
                                             <DatePicker
                                                 name="EffectiveDate"
+                                                id="EffectiveDate"
                                                 selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                                 onChange={handleEffectiveDateChange}
                                                 showMonthDropdown
@@ -545,7 +546,7 @@ function MRSimulation(props) {
                                             {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                         </div>
 
-                                        <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={false}>
+                                        <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn" disabled={false}>
                                             <div className={"Run-icon"}>
                                             </div>{" "}
                                             {"Verify"}
