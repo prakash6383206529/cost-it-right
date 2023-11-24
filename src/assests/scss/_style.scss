@@ -9092,3 +9092,14 @@ iframe {
 .zindex-unset {
   z-index: unset !important;
 }
+
+.bop-import-listing {
+  .paging-container {
+    margin-top: 0 !important;
+  }
+
+  .pagination-button-container {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
