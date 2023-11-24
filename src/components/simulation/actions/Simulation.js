@@ -170,7 +170,7 @@ export function getSimulationApprovalList(filterData, skip, take, isPagination, 
         })
         const queryParameter = `isDashboard=${filterData.isDashboard}&logged_in_user_id=${filterData.logged_in_user_id}&logged_in_user_level_id=${filterData.logged_in_user_level_id}&token_number=${filterData.token_number}&simulated_by=${filterData.simulated_by}&requested_by=${filterData.requestedBy}&status=${filterData.status}`
 
-        const queryParamsSecond = `ApprovalNumber=${obj.ApprovalNumber !== undefined ? obj.ApprovalNumber : ""}&CostingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&SimulationType=${obj.SimulationType !== undefined ? obj.SimulationType : ""}&AmedmentStatus=${obj.ProvisionalStatus !== undefined ? obj.ProvisionalStatus : ""}&LinkingTokenNo=${obj.LinkingTokenNo !== undefined ? obj.LinkingTokenNo : ""}&SimulationHead=${obj.SimulationTechnologyHead !== undefined ? obj.SimulationTechnologyHead : ""}&Technology=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""}&Vendor=${obj.VendorName !== undefined ? obj.VendorName : ""}&ImpactedCosting=${obj.ImpactCosting !== undefined ? obj.ImpactCosting : ""}&ImpactedParts=${obj.ImpactParts !== undefined ? obj.ImpactParts : ""}&Reason=${obj.Reason !== undefined ? obj.Reason : ""}&InitiatedBy=${obj.SimulatedByName !== undefined ? obj.SimulatedByName : ""}&SimulatedOn=${obj.SimulatedOn !== undefined ? obj.SimulatedOn : ""}&LastApproval=${obj.LastApprovedBy !== undefined ? obj.LastApprovedBy : ""}&RequestedOn=${obj.RequestedOn !== undefined ? obj.RequestedOn : ""}&SimulationStatus=${obj.DisplayStatus !== undefined ? obj.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&IsCustomerDataShow=${IsCustomerDataShow !== undefined ? IsCustomerDataShow : false}`
+        const queryParamsSecond = `ApprovalNumber=${obj?.ApprovalNumber !== undefined ? obj?.ApprovalNumber : ""}&CostingHead=${obj?.CostingHead !== undefined ? obj?.CostingHead : ""}&SimulationType=${obj?.SimulationType !== undefined ? obj?.SimulationType : ""}&AmedmentStatus=${obj?.ProvisionalStatus !== undefined ? obj?.ProvisionalStatus : ""}&LinkingTokenNo=${obj?.LinkingTokenNo !== undefined ? obj?.LinkingTokenNo : ""}&SimulationHead=${obj?.SimulationTechnologyHead !== undefined ? obj?.SimulationTechnologyHead : ""}&Technology=${obj?.TechnologyName !== undefined ? obj?.TechnologyName : ""}&Vendor=${obj?.VendorName !== undefined ? obj?.VendorName : ""}&ImpactedCosting=${obj?.ImpactCosting !== undefined ? obj?.ImpactCosting : ""}&ImpactedParts=${obj?.ImpactParts !== undefined ? obj?.ImpactParts : ""}&Reason=${obj?.Reason !== undefined ? obj?.Reason : ""}&InitiatedBy=${obj?.SimulatedByName !== undefined ? obj?.SimulatedByName : ""}&SimulatedOn=${obj?.SimulatedOn !== undefined ? obj?.SimulatedOn : ""}&LastApproval=${obj?.LastApprovedBy !== undefined ? obj?.LastApprovedBy : ""}&RequestedOn=${obj?.RequestedOn !== undefined ? obj?.RequestedOn : ""}&SimulationStatus=${obj?.DisplayStatus !== undefined ? obj?.DisplayStatus : ""}&applyPagination=${isPagination}&skip=${skip}&take=${take}&IsCustomerDataShow=${IsCustomerDataShow !== undefined ? IsCustomerDataShow : false}`
         const request = axios.get(`${API.getSimulationApprovalList}?${queryParameter}&${queryParamsSecond}`, config())
 
         request.then((response) => {
@@ -1024,7 +1024,7 @@ export function getTokenSelectListAPI(obj, callback) {
 
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj.technologyId}&loggedInUserId=${obj.loggedInUserId}&simulationTechnologyId=${obj.simulationTechnologyId}&vendorId=${obj.vendorId}`, config());
+        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj?.technologyId}&loggedInUserId=${obj?.loggedInUserId}&simulationTechnologyId=${obj?.simulationTechnologyId}&vendorId=${obj?.vendorId}&customerId=${obj?.customerId}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1148,7 +1148,7 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                     case EXCHNAGERATE:
                         dispatch({
                             type: EXCHANGE_RATE_DATALIST,
-                            payload: response.data.Data
+                            payload: response.data.DataList
                         })
                         break;
 
@@ -1163,6 +1163,7 @@ export function getListingForSimulationCombined(requestData, master, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            callback(error)
         })
     }
 }

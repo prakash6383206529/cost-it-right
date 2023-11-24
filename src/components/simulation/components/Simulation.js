@@ -7,9 +7,9 @@ import { Controller, useForm } from 'react-hook-form';
 import { getMasterSelectListSimulation, getTokenSelectListAPI, setSelectedRowForPagination, setMasterForSimulation, setTechnologyForSimulation, setTokenCheckBoxValue, setTokenForSimulation, getSelectListOfMasters, setVendorForSimulation, setIsMasterAssociatedWithCosting, setSimulationApplicability, setCustomerForSimulation } from '../actions/Simulation';
 import { useDispatch, useSelector } from 'react-redux';
 import SimulationUploadDrawer from './SimulationUploadDrawer';
-import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS } from '../../../config/constants';
+import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
-import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION } from '../../../config/masterData';
+import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingSpecificTechnology, getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -283,6 +283,20 @@ function Simulation(props) {
         dispatch(setCustomerForSimulation(''))
         setVendor(value)
         dispatch(setFilterForRM({ VendorId: value?.value }))
+        let simuTechId = technology?.value
+        if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_RM_SIMULATION) {
+            simuTechId = RMIMPORT
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_BOP_SIMULATION) {
+            simuTechId = BOPIMPORT
+        }
+        let obj = {
+            technologyId: technology?.value ? technology?.value : 0,
+            loggedInUserId: loggedInUserId(),
+            simulationTechnologyId: simuTechId,
+            vendorId: value.value ? value.value : EMPTY_GUID
+            /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
+        }
+        dispatch(getTokenSelectListAPI(obj, () => { }))
     }
 
     const handleCustomerChange = (value) => {
@@ -300,6 +314,20 @@ function Simulation(props) {
         setIsCustomer(true)
         setCustomer(value)
         dispatch(setFilterForRM({ CustomerId: value?.value }))
+        let simuTechId = technology?.value
+        if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_RM_SIMULATION) {
+            simuTechId = RMIMPORT
+        } else if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_BOP_SIMULATION) {
+            simuTechId = BOPIMPORT
+        }
+        let obj = {
+            technologyId: technology?.value ? technology?.value : 0,
+            loggedInUserId: loggedInUserId(),
+            simulationTechnologyId: simuTechId,
+            vendorId: value.value ? value.value : EMPTY_GUID
+            /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
+        }
+        dispatch(getTokenSelectListAPI(obj, () => { }))
     }
 
     const backToSimulation = (value) => {
@@ -436,8 +464,16 @@ function Simulation(props) {
     const renderModule = (value) => {
         let tempValue = [{ SimulationId: tokenForSimulation?.value }]
 
+        let masterTemp
+        if (master?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+            masterTemp = RMIMPORT
+        } else if (master?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+            masterTemp = BOPIMPORT
+        } else if (master?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION) {
+            masterTemp = master?.value
+        }
         let obj = {
-            MasterId: master.value,
+            MasterId: masterTemp,
             TechnologyId: technology.value,
             // DepartmentCode: temp.join(),
             DepartmentCode: '',

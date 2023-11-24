@@ -240,10 +240,18 @@ function SimulationApprovalSummary(props) {
             //         }
             //     }))
             // } else {
+            let technologyIdTemp = SimulationTechnologyId
+            if (res?.data?.Data?.IsExchangeRateSimulation) {
+                if (String(SimulationTechnologyId) === String(RMIMPORT) || String(SimulationTechnologyId) === String(BOPIMPORT)) {
+                    technologyIdTemp = EXCHNAGERATE
+                }
+            } else {
+                technologyIdTemp = SimulationTechnologyId
+            }
             let obj = {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: SimulationTechnologyId,
+                TechnologyId: technologyIdTemp,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
             }
@@ -1649,6 +1657,7 @@ function SimulationApprovalSummary(props) {
                     releaseStrategyDetails={releaseStrategyDetails}
                     technologyId={SimulationTechnologyId}
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
+                    IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />

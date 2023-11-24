@@ -958,7 +958,7 @@ function RMImportListing(props) {
                     icon={"refresh"}
                     className={"mr5"}
                   />
-                  <button type="button" className={"apply"} onClick={cancel}> <div className={'back-icon'}></div>Back</button>
+                  {isSimulation && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
                 </>}
               </Col>
             </Row>
@@ -1047,7 +1047,7 @@ function RMImportListing(props) {
                 </div>
               </Col>
             </Row>
-            {!props?.isMasterSummaryDrawer && <Row>
+            {props.isSimulation && <Row>
               <Col md="12" className="d-flex justify-content-end">
                 <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
               </Col>
