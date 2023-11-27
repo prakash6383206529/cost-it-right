@@ -769,8 +769,8 @@ class AddBOPImport extends Component {
     const { conditionTableData } = this.state;
     let tempList = conditionTableData && conditionTableData?.map(item => {
       if (item?.ConditionType === "Percentage") {
-        let costCurrency = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceSelectedCurrency)
-        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBaseCurrency)
+        let costCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceSelectedCurrency)
+        let costBase = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBaseCurrency)
         item.ConditionCost = costCurrency
         item.ConditionCostConversion = costBase
       }
