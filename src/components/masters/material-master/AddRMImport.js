@@ -552,14 +552,14 @@ class AddRMImport extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
 
-  recalculateConditions = (basicPriceCurrency, basicPriceBase) => {
+  recalculateConditions = (basicPriceSelectedCurrency, basicPriceBaseCurrency) => {
     const { conditionTableData } = this.state;
     let tempList = conditionTableData && conditionTableData?.map(item => {
       if (item?.ConditionType === "Percentage") {
-        let costCurrency = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceCurrency)
-        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBase)
-        item.ConditionCost = costCurrency
-        item.ConditionCostConversion = costBase
+        let costSelectedCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceSelectedCurrency)
+        let costBaseCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBaseCurrency)
+        item.ConditionCost = costSelectedCurrency
+        item.ConditionCostConversion = costBaseCurrency
       }
       return item
     })

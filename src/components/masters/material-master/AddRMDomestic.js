@@ -497,12 +497,12 @@ class AddRMDomestic extends Component {
     return checkForNull(price) * checkForNull(currencyValue)
   }
 
-  recalculateConditions = (basicPriceBase) => {
+  recalculateConditions = (basicPriceBaseCurrency) => {
     const { conditionTableData } = this.state;
     let tempList = conditionTableData && conditionTableData?.map(item => {
       if (item?.ConditionType === "Percentage") {
-        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBase)
-        item.ConditionCost = costBase
+        let costBaseCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBaseCurrency)
+        item.ConditionCost = costBaseCurrency
       }
       return item
     })
