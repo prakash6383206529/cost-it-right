@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMIMPORT } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -22,7 +22,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { FORGING, RM_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
@@ -36,6 +36,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMSimulation(props) {
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
+    console.log('list: ', list);
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -66,6 +67,8 @@ function RMSimulation(props) {
 
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    console.log('simulationApplicability: ', simulationApplicability);
 
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
@@ -101,8 +104,39 @@ function RMSimulation(props) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         }
         let tempArr = []
-        list && list.map(item => {
-            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && (((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+        if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT)) {
+
+            list && list.map(item => {
+                if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && (((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+                    let tempObj = {}
+                    tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
+                    tempObj.RawMaterialName = item.RawMaterialName
+                    tempObj.MaterialType = item.MaterialType
+                    tempObj.RawMaterialGrade = item.RawMaterialGradeName
+                    tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
+                    tempObj.RawMaterialCategory = item.Category
+                    tempObj.UOM = item.UnitOfMeasurementName
+                    tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
+                    tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate
+                    tempObj.OldScrapRate = item.ScrapRate
+                    tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
+                    tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
+                    tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
+                    tempObj.OldNetLandedCost = item.NetLandedCost
+                    tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+                    tempObj.EffectiveDate = item.EffectiveDate
+                    tempObj.RawMaterialId = item.RawMaterialId
+                    tempObj.PlantId = item.PlantId
+                    tempObj.VendorId = item.VendorId
+                    tempObj.Delta = 0
+                    tempArr.push(tempObj)
+                }
+                return null;
+            })
+        } else {
+            list && list.map(item => {
+                console.log(item.NewBasicRate, item.NewBasicrateFromPercentage, item.BasicRate, " item.BasicRate");
+                console.log((item.NewBasicrateFromPercentage !== 0 && item.NewBasicrateFromPercentage !== null && item.NewBasicrateFromPercentage !== undefined), "condition answr");
                 let tempObj = {}
                 tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.RawMaterialName = item.RawMaterialName
@@ -112,7 +146,7 @@ function RMSimulation(props) {
                 tempObj.RawMaterialCategory = item.Category
                 tempObj.UOM = item.UnitOfMeasurementName
                 tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
-                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate
+                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : (item.NewBasicrateFromPercentage !== 0 && item.NewBasicrateFromPercentage !== null && item.NewBasicrateFromPercentage !== undefined) ? item.NewBasicrateFromPercentage : (isbulkUpload ? item.BasicRate : item.BasicRatePerUOM)
                 tempObj.OldScrapRate = item.ScrapRate
                 tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
                 tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
@@ -125,9 +159,10 @@ function RMSimulation(props) {
                 tempObj.VendorId = item.VendorId
                 tempObj.Delta = 0
                 tempArr.push(tempObj)
-            }
-            return null;
-        })
+
+                return null;
+            })
+        }
 
 
         obj.SimulationIds = tokenForMultiSimulation
@@ -179,7 +214,7 @@ function RMSimulation(props) {
             }
             return null;
         })
-        if (basicRateCount === list.length) {
+        if ((selectedMasterForSimulation?.value === RMDOMESTIC || selectedMasterForSimulation?.value === RMIMPORT) && basicRateCount === list.length) {
             Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
             return false
         }
@@ -196,7 +231,8 @@ function RMSimulation(props) {
 
         basicRateCount = 0
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
-            dispatch(createMultipleExchangeRate(list, currencySelectList, effectiveDate, res => {
+            console.log(list, "list");
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 setValueFunction(true, res);
             }))
         } else {
