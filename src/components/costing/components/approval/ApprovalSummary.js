@@ -270,7 +270,7 @@ function ApprovalSummary(props) {
             Datbi: DayTime('9999-12-31').format('YYYY-MM-DD'),
             Kbetr: item.ConditionType === "Percentage" ? item?.Percentage : item?.ConditionCost,
             Konwa: INR,
-            Kpein: item?.Quantity ? String(item?.Quantity) : "1",
+            Kpein: item?.ConditionQuantity ? String(item?.ConditionQuantity) : "1",
             Kmein: "NO",
           }
           conditionArr.push(obj)
