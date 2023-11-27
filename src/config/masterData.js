@@ -4771,6 +4771,11 @@ export const CostingSimulationDownloadRM = [
     { label: "Existing RM Cost/Pc", value: "OldRMPrice" },
     { label: "Revised RM Cost/Pc", value: "NewRMPrice" },
     { label: "Variance (RM Cost)", value: "RMCVariance" },
+
+    { label: "Existing Exchange Rate", value: "OldExchangeRate" },
+    { label: "RevisedExchangeRate", value: "NewExchangeRate" },
+    { label: "Variance (w.r.t. Existing)", value: "ERVariance" },
+
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
     { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
@@ -4942,6 +4947,11 @@ export const CostingSimulationDownloadBOP = [
     { label: "ExistingNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "RevisedNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
+
+    { label: "Existing Exchange Rate", value: "OldExchangeRate" },
+    { label: "RevisedExchangeRate", value: "NewExchangeRate" },
+    { label: "Variance (w.r.t. Existing)", value: "ERVariance" },
+
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
     { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },

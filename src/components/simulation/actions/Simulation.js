@@ -1023,20 +1023,27 @@ export function setShowSimulationPage(Data) {
 export function getTokenSelectListAPI(obj, callback) {
 
     return (dispatch) => {
-        dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj?.technologyId}&loggedInUserId=${obj?.loggedInUserId}&simulationTechnologyId=${obj?.simulationTechnologyId}&vendorId=${obj?.vendorId}&customerId=${obj?.customerId}`, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                dispatch({
-                    type: GET_TOKEN_SELECT_LIST,
-                    payload: response.data.SelectList,
-                });
-                callback(response);
-            }
-        }).catch((error) => {
-            dispatch({ type: API_FAILURE, });
-            apiErrors(error);
-        });
+        if (obj === false) {
+            dispatch({
+                type: GET_TOKEN_SELECT_LIST,
+                payload: [],
+            });
+        } else {
+            dispatch({ type: API_REQUEST });
+            const request = axios.get(`${API.getTokenSelectListAPI}?technologyId=${obj?.technologyId}&loggedInUserId=${obj?.loggedInUserId}&simulationTechnologyId=${obj?.simulationTechnologyId}&vendorId=${obj?.vendorId}&customerId=${obj?.customerId}`, config());
+            request.then((response) => {
+                if (response.data.Result) {
+                    dispatch({
+                        type: GET_TOKEN_SELECT_LIST,
+                        payload: response.data.SelectList,
+                    });
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                apiErrors(error);
+            });
+        }
     };
 }
 
