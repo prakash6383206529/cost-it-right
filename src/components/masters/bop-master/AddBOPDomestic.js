@@ -597,7 +597,7 @@ class AddBOPDomestic extends Component {
     const { conditionTableData } = this.state;
     let tempList = conditionTableData && conditionTableData?.map(item => {
       if (item?.ConditionType === "Percentage") {
-        let costBase = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBase)
+        let costBase = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBase)
         item.ConditionCost = costBase
       }
       return item
