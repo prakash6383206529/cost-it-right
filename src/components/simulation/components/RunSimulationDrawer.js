@@ -240,7 +240,12 @@ function RunSimulationDrawer(props) {
         }
     }
 
-    const IsAvailable = (id) => { }
+    const IsAvailable = (id) => {
+        if (id === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            return true
+        }
+    }
+
 
     const checkForResponse = (res) => {
         setRunSimulationDisable(false)
@@ -527,13 +532,13 @@ function RunSimulationDrawer(props) {
                                                                             type="checkbox"
                                                                             value={"All"}
                                                                             disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : false}
-                                                                            checked={IsAvailable(el.Value) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE)}
+                                                                            checked={IsAvailable(el.Text)}
                                                                         />
 
 
                                                                         <span
                                                                             className=" before-box"
-                                                                            checked={IsAvailable(el.Value)}
+                                                                            checked={IsAvailable(el.Text)}
                                                                             onChange={() => handleApplicabilityChange(el)}
                                                                         />
                                                                     </label>
