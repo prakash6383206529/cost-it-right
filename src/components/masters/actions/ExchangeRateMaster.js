@@ -13,6 +13,7 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from '../../../helper';
 import _ from 'lodash';
+import DayTime from '../../common/DayTimeWrapper';
 
 // const config() = config;
 
@@ -175,7 +176,7 @@ export function createMultipleExchangeRate(dataList, currencySelectList, effecti
                 "BankRate": item?.BankRate,
                 "CustomRate": item?.CustomRate,
                 "BankCommissionPercentage": item?.BankCommissionPercentage,
-                "EffectiveDate": effectiveDate,
+                "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
                 "LoggedInUserId": loggedInUserId(),
                 "CostingHeadId": item?.CostingHeadId ? item?.CostingHeadId : item?.CostingTypeId,
                 "CustomerId": item?.CustomerId,

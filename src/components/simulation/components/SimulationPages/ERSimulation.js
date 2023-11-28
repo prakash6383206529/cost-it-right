@@ -147,8 +147,7 @@ function ERSimulation(props) {
 
     const cancel = () => {
         list && list.map((item) => {
-            item.NewBasicRate = undefined
-            item.NewScrapRate = undefined
+            item.NewCurrencyExchangeRate = undefined
             return null
         })
         setShowMainSimulation(true)

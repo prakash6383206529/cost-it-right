@@ -933,10 +933,10 @@ class BOPImportListing extends Component {
                         // isbulkUpload={isbulkUpload}
                         // rowCount={rowCount}
                         list={this.state.gridApi.getSelectedRows() ? this.state.gridApi.getSelectedRows() : []}
-                    // technology={technology.label}
-                    // technologyId={technology.value}
-                    // master={master.label}
-                    // tokenForMultiSimulation={tempObject}
+                        // technology={technology.label}
+                        // technologyId={technology.value}
+                        // master={master.label}
+                        tokenForMultiSimulation={this.props?.tokenForSimulation?.length !== 0 ? [{ SimulationId: this.props?.tokenForSimulation?.value }] : []}
                     />
                 }
             </div>
@@ -957,9 +957,9 @@ function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation, m
     const { filteredRMData } = material;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
-    const { selectedRowForPagination } = simulation;
+    const { selectedRowForPagination, tokenForSimulation } = simulation;
 
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedRowForPagination, filteredRMData }
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedRowForPagination, filteredRMData, tokenForSimulation }
 }
 
 /**
