@@ -32,8 +32,11 @@ function ConditionCosting(props) {
                                 <th>{`Condition`}</th>
                                 {<th>{`Type`}</th>}
                                 {<th>{`Percentage (%)`}</th>}
+                                {<th>{`Quantity`}</th>}
                                 {isFromImport && <th>{`Cost (${currency?.label})`}</th>}
                                 {<th>{`Cost (${initialConfiguration?.BaseCurrency})`}</th>}
+                                {isFromImport && <th>{`Cost Per Quantity (${currency?.label})`}</th>}
+                                {<th>{`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
                             </tr>
@@ -44,9 +47,12 @@ function ConditionCosting(props) {
                                             <tr key={index}>
                                                 <td>{`${item.Description}`} </td>
                                                 {<td>{item.ConditionType}</td>}
-                                                {<td>{item.ConditionPercentage ? checkForDecimalAndNull(item?.ConditionPercentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {<td>{item.ConditionQuantity ? checkForDecimalAndNull(item?.ConditionQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {isFromImport && <td>{checkForDecimalAndNull(item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
+                                                {<td>{item?.ConditionCostPerQuantity ? checkForDecimalAndNull(item?.ConditionCostPerQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {isFromImport && <td>{item?.ConditionCostPerQuantityConversion ? checkForDecimalAndNull(item?.ConditionCostPerQuantityConversion, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {!props.hideAction && <td><div className='text-right'>
                                                     <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editDeleteData(index, 'edit')} disabled={props.ViewMode} />
                                                     <button title='Delete' className="Delete mr-1" type={'button'} onClick={() => editDeleteData(index, 'delete')} disabled={props.ViewMode} />
@@ -64,8 +70,8 @@ function ConditionCosting(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
-                                <td colSpan={3} className="text-right">{`Total Cost :`}</td>
-                                <td colSpan={isFromImport ? 0 : 2}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`} {isFromImport && <span className='text-right'>{`Total Cost :`}</span>}</div></td>
+                                <td colSpan={4} className="text-right">{`Total Cost :`}</td>
+                                <td colSpan={isFromImport ? 3 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`} {isFromImport && <span className='text-right'>{`Total Cost :`}</span>}</div></td>
                                 {isFromImport && <>
                                     <td colSpan={2} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({initialConfiguration?.BaseCurrency})</td>
                                 </>}

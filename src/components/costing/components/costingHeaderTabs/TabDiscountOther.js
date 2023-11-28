@@ -261,8 +261,8 @@ function TabDiscountOther(props) {
             let Data = res?.data?.Data.ConditionsData
             let temp = []
             Data && Data.map((item) => {
-              item.ConditionPercentage = item.Percentage
-              item.condition = `${item.Description} (${item.CostingConditionNumber})`
+              // item.ConditionPercentage = item.Percentage
+              item.Description = `${item.Description} (${item.CostingConditionNumber})`
               temp.push(item)
             })
             seConditionTableData(temp)
@@ -898,7 +898,7 @@ function TabDiscountOther(props) {
   */
   const onSubmit = debounce((values, val, gotoNextValue) => {
     if (errorCheckObject(ErrorObjDiscount)) return false;
-    if (!getValues('discountDescriptionRemark')) {
+    if (!getValues('discountDescriptionRemark') && discountCostApplicability?.value) {
       errors.discountDescriptionRemark = {
         "type": "required",
         "message": "",
@@ -1041,7 +1041,9 @@ function TabDiscountOther(props) {
 
 
   const handleDiscountApplicabilityChange = (value) => {
-
+    if (!value) {
+      errors.discountDescriptionRemark = {}
+    }
     if (!CostingViewMode) {
       if (value && value !== '') {
         dispatch(isDiscountDataChange(true))
@@ -1148,15 +1150,15 @@ function TabDiscountOther(props) {
 
       if (type === 'save') {
         if (data) {
-          let list = data && data?.map(item => {
-            item.Percentage = item?.ConditionPercentage
-            delete item?.ConditionPercentage
-            return item
-          })
+          // let list = data && data?.map(item => {
+          //   // item.Percentage = item?.ConditionPercentage
+          //   // delete item?.ConditionPercentage
+          //   return item
+          // })
           let obj = {}
           obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
           obj.LoggedInUserId = loggedInUserId()
-          obj.ConditionsData = list
+          obj.ConditionsData = data
           dispatch(saveCostingDetailCondition(obj, () => { }))
         }
       }
@@ -1561,9 +1563,9 @@ function TabDiscountOther(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={true}
+                        mandatory={discountCostApplicability?.value ? true : false}
                         rules={{
-                          required: true,
+                          required: discountCostApplicability?.value ? true : false,
                           validate: { hashValidation, checkWhiteSpaces, maxLength80, }
                         }}
                         handleChange={() => { }}

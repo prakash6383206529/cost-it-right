@@ -7,7 +7,7 @@ import {
   searchableSelect, focusOnError, renderTextInputField,
 } from "../../layout/FormInputs";
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountry, getVendorNameByVendorSelectList, } from '../../../actions/Common';
-import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId } from '../actions/Fuel';
+import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
 import { CBCTypeId, EMPTY_DATA, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
@@ -81,7 +81,7 @@ class AddFuel extends Component {
       this.props.fetchCountryDataAPI(() => { })
       this.props.fetchStateDataAPI(0, () => { })
       this.props.fetchCityDataAPI(0, () => { })
-      this.props.getFuelByPlant({}, () => { })
+      this.props.getAllFuelAPI(() => { })
     }
     this.getDetails(data);
     if (!(data.isEditFlag || data.isViewMode)) {
@@ -400,22 +400,24 @@ class AddFuel extends Component {
 
   closeFuelDrawer = (e = '', reqData = {}) => {
     this.setState({ isOpenFuelDrawer: false }, () => {
-      this.props.getFuelByPlant('', () => {
-        const { fuelDataByPlant } = this.props;
+      setTimeout(() => {
+        this.props.getAllFuelAPI((res) => {
+          const { fuelDetailList } = this.props;
 
-        /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
-        if (Object.keys(reqData).length > 0) {
-          let fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => item.Text === reqData.FuelName)
+          /*TO SHOW FUEL NAME VALUE PRE FILLED FROM DRAWER*/
+          if (Object.keys(reqData).length > 0) {
+            let fuelObj = fuelDetailList && fuelDetailList.find(item => item.FuelName === reqData.FuelName)
 
-          if (fuelObj) {
-            this.props.getUOMByFuelId(fuelObj.Value, (res) => {
-              let Data = res.data.DynamicData
-              this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
-            })
+            if (fuelObj) {
+              this.props.getUOMByFuelId(fuelObj.FuelId, (res) => {
+                let Data = res.data.DynamicData
+                this.setState({ UOM: { label: Data?.UnitOfMeasurementName, value: Data?.UnitOfMeasurementId } })
+              })
+            }
+            this.setState({ fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.FuelName, value: fuelObj.FuelId } : [] })
           }
-          this.setState({ fuel: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [] })
-        }
-      })
+        })
+      }, 500);
     })
   }
 
@@ -461,12 +463,12 @@ class AddFuel extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { fuelDataByPlant, UOMSelectList, stateList, plantSelectList, clientSelectList, countryList, cityList } = this.props;
+    const { UOMSelectList, stateList, plantSelectList, clientSelectList, countryList, cityList, fuelDetailList } = this.props;
     const temp = [];
     if (label === 'fuel') {
-      fuelDataByPlant && fuelDataByPlant.map(item => {
+      fuelDetailList && fuelDetailList.map(item => {
         if (item.Value === '0') return false;
-        temp.push({ label: item.Text, value: item.Value })
+        temp.push({ label: item.FuelName, value: item.FuelId })
         return null
       });
       return temp;
@@ -1255,11 +1257,11 @@ function mapStateToProps(state) {
   let initialValues = {};
 
   const { UOMSelectList, stateList, plantSelectList, countryList, cityList } = comman;
-  const { fuelDataByPlant } = fuel;
+  const { fuelDetailList } = fuel;
   const { initialConfiguration } = auth;
   const { clientSelectList } = client;
 
-  return { initialValues, fieldsObj, fuelDataByPlant, initialConfiguration, UOMSelectList, stateList, plantSelectList, clientSelectList, countryList, cityList }
+  return { initialValues, fieldsObj, initialConfiguration, UOMSelectList, stateList, plantSelectList, clientSelectList, countryList, cityList, fuelDetailList }
 
 }
 
@@ -1283,6 +1285,7 @@ export default connect(mapStateToProps, {
   fetchCountryDataAPI,
   fetchCityDataAPI,
   getCityByCountry,
+  getAllFuelAPI
 
 
 

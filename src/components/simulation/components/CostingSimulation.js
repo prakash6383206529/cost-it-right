@@ -554,8 +554,8 @@ function CostingSimulation(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return (
             <>
-                <button className="View" title='View' type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
-                {row?.IsAssemblyExist && <button title='Assembly Impact' className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
+                <button className="View" title='View' id={`other_simulation_view${props.rowIndex}`} type={'button'} onClick={() => { viewCosting(cell, row, props?.rowIndex) }} />
+                {row?.IsAssemblyExist && <button title='Assembly Impact' id={`other_simulation_assembly${props.rowIndex}`} className="hirarchy-btn" type={'button'} onClick={() => { viewAssembly(cell, row, props?.rowIndex) }}> </button>}
 
             </>
         )
@@ -1279,6 +1279,16 @@ function CostingSimulation(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
+        checkBoxInstance.forEach((checkBox, index) => {
+            const specificId = `other_simulation_Checkbox${index}`;
+            checkBox.id = specificId;
+        })
+        const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+        floatingFilterInstances.forEach((floatingFilter, index) => {
+            const specificId = `other_simulation_Floating${index}`;
+            floatingFilter.id = specificId;
+        });
         var allColumnIds = [];
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
@@ -1446,20 +1456,20 @@ function CostingSimulation(props) {
                                                     showMachineRateColumn || showExchangeRateColumn || showSurfaceTreatmentColumn)
                                                     ?
                                                     <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
-                                                        <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                        <button title="Download" type="button" className={'user-btn mr5'} id={'other_simulation_excel_download'} ><div className="download mr-0"></div></button>}>
                                                         {renderColumn()}
                                                         {returnExcelColumnSecond()}
                                                         {returnExcelColumnImpactedMaster()}
 
                                                     </ExcelFile> :
                                                     <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
-                                                        <button title="Download" type="button" className={'user-btn mr5'} ><div className="download mr-0"></div></button>}>
+                                                        <button title="Download" type="button" className={'user-btn mr5'} id={'other_simulation_excel_download'} ><div className="download mr-0"></div></button>}>
                                                         {renderColumn()}
                                                         {returnExcelColumnSecond()}
                                                     </ExcelFile>
 
                                                 }
-                                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                                                <button type="button" className="user-btn" id={'other_simulation_reset_grid'} title="Reset Grid" onClick={() => resetState()}>
                                                     <div className="refresh mr-0"></div>
                                                 </button>
                                             </div>
@@ -1655,6 +1665,7 @@ function CostingSimulation(props) {
                                         <button
                                             class="user-btn approval-btn mr5"
                                             onClick={() => sendForApproval()}
+                                            id={'other_simulation_send_for_approval'}
                                             disabled={((selectedRowData && selectedRowData.length === 0) || isFinalLevelApprover || disableSendForApproval) ? true : disableApproveButton ? true : false}
                                             title="Send For Approval"
                                         >
@@ -1665,13 +1676,14 @@ function CostingSimulation(props) {
                                         <button
                                             type="button"
                                             className="user-btn mr5 save-btn"
+                                            id={'other_simulation_go_to_history'}
                                             // disabled={((selectedRowData && selectedRowData.length === 0) || isFromApprovalListing) ? true : false}
                                             onClick={onSaveSimulation}>
                                             <div className={"back-icon"}></div>
                                             {"Go to History"}
                                         </button>
 
-                                        <button className="user-btn mr5 save-btn" onClick={() => { setIsVerifyImpactDrawer(true) }}>
+                                        <button className="user-btn mr5 save-btn" id={'other_simulation_verify_impact'} onClick={() => { setIsVerifyImpactDrawer(true) }}>
                                             <div className={"save-icon"}></div>
                                             {"Verify Impact"}
                                         </button>

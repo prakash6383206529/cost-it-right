@@ -76,6 +76,7 @@ class AddMaterialType extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
+    console.log('values: ', values);
     const { reset, ID, isEditFlag, initialValues } = this.props;
 
     if (isEditFlag) {
@@ -234,7 +235,7 @@ class AddMaterialType extends Component {
                       >
                         {" "}
                         <div className={"save-icon"}></div>
-                        {this.state.isEditFlag ? "UPDATE" : "SAVE"}
+                        {this.props.isEditFlag ? "UPDATE" : "SAVE"}
                       </button>
                     </div>
                   </div>

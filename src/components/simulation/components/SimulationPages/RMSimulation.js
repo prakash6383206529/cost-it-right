@@ -720,7 +720,7 @@ function RMSimulation(props) {
                                                         <p title={list[0]?.VendorName}>{list[0]?.VendorName ? list[0]?.VendorName : list?.[0]?.['Vendor (Code)']}</p>
 
                                                     </div>}
-                                                    <button type="button" className={"apply ml-2"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
+                                                    <button type="button" className={"apply ml-2"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                                 </div>}
                                             </div>
 
@@ -822,6 +822,7 @@ function RMSimulation(props) {
                                     <div className="inputbox date-section mr-3 verfiy-page">
                                         <DatePicker
                                             name="EffectiveDate"
+                                            id="EffectiveDate"
                                             selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                                             onChange={handleEffectiveDateChange}
                                             showMonthDropdown
@@ -837,7 +838,7 @@ function RMSimulation(props) {
                                         />
                                         {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
                                     </div>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                    <button onClick={verifySimulation} type="submit" id="verify-btn" className="user-btn mr5 save-btn" disabled={isDisable}>
                                         <div className={"Run-icon"}>
                                         </div>{" "}
                                         {"Verify"}

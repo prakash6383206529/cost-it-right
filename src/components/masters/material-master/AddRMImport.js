@@ -611,8 +611,8 @@ class AddRMImport extends Component {
     const { conditionTableData } = this.state;
     let tempList = conditionTableData && conditionTableData?.map(item => {
       if (item?.ConditionType === "Percentage") {
-        let costSelectedCurrency = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceSelectedCurrency)
-        let costBaseCurrency = checkForNull((item?.ConditionPercentage) / 100) * checkForNull(basicPriceBaseCurrency)
+        let costSelectedCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceSelectedCurrency)
+        let costBaseCurrency = checkForNull((item?.Percentage) / 100) * checkForNull(basicPriceBaseCurrency)
         item.ConditionCost = costSelectedCurrency
         item.ConditionCostConversion = costBaseCurrency
       }
@@ -2460,7 +2460,8 @@ class AddRMImport extends Component {
                                     id="addRMImport_condition"
                                     onClick={this.conditionToggle}
                                     className={"right mt-0 mb-2"}
-                                    variant="plus-icon-square"
+                                    variant={(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency) ? `plus-icon-square` : `blurPlus-icon-square`}
+                                    disabled={!(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency)}
                                   />
                                 </div>
                               </Col>

@@ -356,7 +356,7 @@ function ERSimulation(props) {
                                                 {onBtExport()}
                                             </ExcelFile>
                                         </div>
-                                        {!isImpactedMaster && <button type="button" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
+                                        {!isImpactedMaster && <button type="button" id="simulation-back" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
 
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
@@ -418,25 +418,27 @@ function ERSimulation(props) {
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
                                     <div className="d-flex align-items-center">
                                         {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ?
-                                            <><div className='verfiy-page inputbox date-section mr-3'> <DatePicker
-                                                name="EffectiveDate"
-                                                selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                                onChange={handleEffectiveDateChange}
-                                                showMonthDropdown
-                                                showYearDropdown
-                                                dropdownMode='select'
-                                                dateFormat="dd/MM/yyyy"
-                                                placeholderText="Select effective date"
-                                                className="withBorder"
-                                                autoComplete={"off"}
-                                                disabledKeyboardNavigation
-                                                onChangeRaw={(e) => e.preventDefault()}
-                                            // minDate={new Date()}
-                                            // minDate={new Date(largestDate)}
-                                            />
+                                            <><div className="inputbox date-section mr-3 verfiy-page">
+                                                <DatePicker
+                                                    name="EffectiveDate"
+                                                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                    id='EffectiveDate'
+                                                    onChange={handleEffectiveDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dropdownMode='select'
+                                                    dateFormat="dd/MM/yyyy"
+                                                    placeholderText="Select effective date"
+                                                    className="withBorder"
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                // minDate={new Date()}
+                                                // minDate={new Date(largestDate)}
+                                                />
                                             </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
-                                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" id={"verify-btn"} disabled={isDisable}>
                                                     <div className={"Run-icon"}>
                                                     </div>{" "}
                                                     {"Verify"}
