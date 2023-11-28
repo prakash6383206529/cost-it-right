@@ -28,7 +28,7 @@ function AddConditionCosting(props) {
     const [disableCurrency, setDisableCurrency] = useState(false)
 
 
-    const { register, control, setValue, getValues, formState: { errors }, } = useForm({
+    const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -152,7 +152,7 @@ function AddConditionCosting(props) {
             Toaster.warning("Please enter all details to add a row.");
             return false;
         }
-        if (errors.Percentage) return false;
+        if (errors.Percentage || errors.Quantity || errors.CostCurrency) return false;
 
         const newCondition = getValues('Condition') ? getValues('Condition') : null;
 
@@ -197,13 +197,6 @@ function AddConditionCosting(props) {
     };
 
     const resetData = () => {
-        setValue('Condition', '')
-        setValue('Type', '')
-        setValue('Percentage', '')
-        setValue('CostCurrency', '')
-        setValue('CostBase', '')
-        setValue('ConditionCostPerQuantity', '')
-        setValue('Quantity', '')
         setDisableAllFields(true)
         setDisableTotalCost(true)
         setTotalCostCurrency('')
@@ -211,6 +204,15 @@ function AddConditionCosting(props) {
         setIsEditMode(false)
         setType('')
         setEditIndex('')
+        reset({
+            Condition: '',
+            Type: '',
+            Percentage: '',
+            CostCurrency: '',
+            CostBase: '',
+            ConditionCostPerQuantity: '',
+            Quantity: '',
+        })
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -388,12 +390,12 @@ function AddConditionCosting(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.Cost}
+                                            errors={errors.CostCurrency}
                                             disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                         />
                                     </Col>
                                     {isFromImport && <Col md={3} className='pr-0'>
-                                        {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
+                                        {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
                                         <NumberFieldHookForm
                                             label={`Cost (${initialConfiguration?.BaseCurrency})`}
                                             name={'CostBase'}
@@ -410,7 +412,7 @@ function AddConditionCosting(props) {
                                             defaultValue={''}
                                             className=""
                                             customClassName={'withBorder'}
-                                            errors={errors.Cost}
+                                            errors={errors.CostBase}
                                             disabled={props.ViewMode || disableTotalCost || disableBase}
                                         />
                                     </Col>}

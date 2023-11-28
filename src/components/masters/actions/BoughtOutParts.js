@@ -561,3 +561,21 @@ export function getPaymentTermSelectList(callback) {
         });
     };
 }
+/**
+ * @method checkAndGetBopCode
+ * @description CHECK AND GET BOP CODE
+ */
+export function checkAndGetBopPartNo(obj, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        const request = axios.post(`${API.checkAndGetBopPartNo}?bopName=${obj.bopName}&bopCategory=${obj.bopCategory}&bopNumber=${obj.bopNumber}`, '', config());
+        request.then((response) => {
+            if (response && response.status === 200) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}

@@ -284,6 +284,7 @@ export const API = {
   fileUploadBOPDomestic: `${BASE_URL}/masters-bought-out-part/bought-out-part-file-upload`,
   bulkUploadBOP: `${BASE_URL}/masters-bought-out-part/bulk-upload-for-bought-out-part-json`,
   getPlantSelectListByVendor: `${BASE_URL}/masters-bought-out-part/get-select-list-plant-by-vendor`,
+  checkAndGetBopPartNo: `${BASE_URL}/masters-bought-out-part/check-bought-out-part-number-is-unique`,
 
   //BOP IMPORT
   getBOPImportById: `${BASE_URL}/masters-bought-out-part/get-import-bought-out-part-by-id`,
