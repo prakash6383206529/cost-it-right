@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { reduxForm, } from "redux-form";
 import { Row, Col, } from 'reactstrap';
-import { checkForDecimalAndNull } from "../../../helper/validation";
-import { BOPIMPORT, EMPTY_DATA, defaultPageSize, APPROVED_STATUS, ENTRY_TYPE_IMPORT, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
+import { BOPIMPORT, EMPTY_DATA, defaultPageSize, ENTRY_TYPE_IMPORT, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
 import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -15,7 +14,7 @@ import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { BopImport, INR, BOP_MASTER_ID } from '../../../config/constants';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList, userDetails } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -25,12 +24,12 @@ import { getListingForSimulationCombined, setSelectedRowForPagination } from '..
 import WarningMessage from '../../common/WarningMessage';
 import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
+import BDSimulation from '../../simulation/components/SimulationPages/BDSimulation';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -77,7 +76,8 @@ class BOPImportListing extends Component {
             noData: false,
             dataCount: 0,
             attachment: false,
-            viewAttachment: []
+            viewAttachment: [],
+            editSelectedList: false
         }
     }
 
@@ -93,7 +93,7 @@ class BOPImportListing extends Component {
     */
     componentDidMount() {
         setTimeout(() => {
-            if (!this.props.stopApiCallOnCancel) {
+            if (!this.props?.stopApiCallOnCancel) {
 
                 if (this.props.isSimulation) {
                     if (this.props.selectionForListingMasterAPI === 'Combined') {
@@ -113,8 +113,8 @@ class BOPImportListing extends Component {
                 this.setState({ isLoader: false })
             }
         }, 300);
-        if (this.props.isSimulation) {
-            this.props.callBackLoader(this.state.isLoader)
+        if (this.props.isSimulation && !this.props?.isFromVerifyPage) {
+            this.props?.callBackLoader(this.state.isLoader)
         }
         if (this.props.isMasterSummaryDrawer) {
             this.setState({ totalRecordCount: this.props.bopImportList.length })
@@ -123,7 +123,7 @@ class BOPImportListing extends Component {
 
     componentWillUnmount() {
         setTimeout(() => {
-            if (!this.props.stopApiCallOnCancel) {
+            if (!this.props?.stopApiCallOnCancel) {
                 this.props.setSelectedRowForPagination([])
             }
         }, 300);
@@ -135,7 +135,7 @@ class BOPImportListing extends Component {
     */
     getDataList = (bopFor = '', CategoryId = 0, vendorId = '', plantId = '', skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
         const { floatingFilterData } = this.state
-        if (this.props.isSimulation) {
+        if (this.props.isSimulation && !this.props?.isFromVerifyPage) {
             this.props?.changeTokenCheckBox(false)
         }
 
@@ -167,11 +167,18 @@ class BOPImportListing extends Component {
 
         let FloatingfilterData = this.state.filterModel
         let obj = { ...this.state.floatingFilterData }
+        dataObj.VendorId = this.props?.filteredRMData?.VendorId
+        dataObj.CustomerId = this.props?.filteredRMData?.CustomerId
+        if (this.props?.isFromVerifyPage) {
+            dataObj.VendorId = this.props?.filteredRMData && this.props?.filteredRMData?.VendorId ? this.props?.filteredRMData?.VendorId : vendorId
+            dataObj.CustomerId = this.props?.filteredRMData && this.props?.filteredRMData?.CustomerId ? this.props?.filteredRMData?.CustomerId : ''
+            dataObj.Currency = this.props?.filteredRMData?.Currency
+        }
         dataObj.EntryType = ENTRY_TYPE_IMPORT
         if (!this.props.isMasterSummaryDrawer) {
             this.props.getBOPDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
                 this.setState({ noData: false })
-                if (this.props.isSimulation) {
+                if (this.props.isSimulation && !this.props?.isFromVerifyPage) {
                     this.props?.changeTokenCheckBox(true)
                 }
                 this.setState({ isLoader: false })
@@ -561,7 +568,7 @@ class BOPImportListing extends Component {
     */
     render() {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
-        const { isBulkUpload, noData } = this.state;
+        const { isBulkUpload, noData, editSelectedList } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
         const netCostHeader = `Net Cost (${initialConfiguration?.BaseCurrency})`
 
@@ -677,7 +684,7 @@ class BOPImportListing extends Component {
             let length = finalArr?.length
             let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
 
-            if (this.props.isSimulation) {
+            if (this.props.isSimulation && !this.props?.isFromVerifyPage) {
 
                 this.props.apply(uniqueArray, length)
             }
@@ -694,212 +701,245 @@ class BOPImportListing extends Component {
 
         }
 
+        const cancel = () => {
+            this.props?.cancelImportList()
+        }
+
+        const editSelectedData = () => {
+            this.setState({ editSelectedList: true })
+        }
+
+        const backToSimulation = (value) => {
+            this.setState({ editSelectedList: false })
+        }
 
         return (
-            <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : this.props.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
-                {(this.state.isLoader && !this.props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
-                    <>
-                        {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-                        < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
-                            <Row className={`pt-4  ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'} ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
+            <div>
+                {!editSelectedList && <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""} ${this.props.isSimulation ? 'simulation-height' : this.props.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+                    {(this.state.isLoader && !this.props.isMasterSummaryDrawer) ? <LoaderCustom customClass="simulation-Loader" /> :
+                        <>
+                            {this.state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+                            < form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate >
+                                <Row className={`pt-4  ${this.props?.benchMark ? 'zindex-2' : 'filter-row-large'} ${this.props.isSimulation ? 'simulation-filter zindex-0' : ''}`}>
 
-                                <Col md="3" lg="3">
-                                    <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                                </Col>
-                                <Col md="9" lg="9" className=" mb-3">
-                                    <div className="d-flex justify-content-end bd-highlight w100">
-                                        {this.state.shown ? (
-                                            <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { this.setState({ shown: !this.state.shown }); this.getDataList(); }}>
-                                                <div className="cancel-icon-white"></div></button>
-                                        ) : (
-                                            <>
-                                            </>
-                                        )}
-                                        {(!this.props.isMasterSummaryDrawer) && <>
-                                            {
-                                                <div className="warning-message d-flex align-items-center">
-                                                    {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                                </div>
-                                            }
+                                    <Col md="3" lg="3">
+                                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                                    </Col>
+                                    <Col md="9" lg="9" className=" mb-3">
+                                        <div className="d-flex justify-content-end bd-highlight w100">
+                                            {this.state.shown ? (
+                                                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { this.setState({ shown: !this.state.shown }); this.getDataList(); }}>
+                                                    <div className="cancel-icon-white"></div></button>
+                                            ) : (
+                                                <>
+                                                </>
+                                            )}
+                                            {(!this.props.isMasterSummaryDrawer) && <>
+                                                {
+                                                    <div className="warning-message d-flex align-items-center">
+                                                        {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                                    </div>
+                                                }
 
-                                            {
-                                                <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
+                                                {
+                                                    <button disabled={this.state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch()}><div class="filter mr-0"></div></button>
 
-                                            }</>}
+                                                }</>}
 
-                                        {AddAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={this.formToggle}
-                                                title="Add"
-                                            >
-                                                <div className={"plus mr-0"}></div>
-                                                {/* ADD */}
-                                            </button>
-                                        )}
-                                        {BulkUploadAccessibility && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={this.bulkToggle}
-                                                title="Bulk Upload"
-                                            >
-                                                <div className={"upload mr-0"}></div>
-                                                {/* Bulk Upload */}
-                                            </button>
-                                        )}
-                                        {
-                                            DownloadAccessibility &&
-                                            <>
-                                                <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                    {/* DOWNLOAD */}
-                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                            {AddAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.formToggle}
+                                                    title="Add"
+                                                >
+                                                    <div className={"plus mr-0"}></div>
+                                                    {/* ADD */}
                                                 </button>
+                                            )}
+                                            {BulkUploadAccessibility && (
+                                                <button
+                                                    type="button"
+                                                    className={"user-btn mr5"}
+                                                    onClick={this.bulkToggle}
+                                                    title="Bulk Upload"
+                                                >
+                                                    <div className={"upload mr-0"}></div>
+                                                    {/* Bulk Upload */}
+                                                </button>
+                                            )}
+                                            {
+                                                DownloadAccessibility &&
+                                                <>
+                                                    <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                        {/* DOWNLOAD */}
+                                                        {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                                    </button>
 
-                                                <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads-bop-import'} className="p-absolute" type="button" >
-                                                    </button>}>
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
-                                            </>
-                                        }
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => { this.resetState(); }}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
+                                                    <ExcelFile filename={'BOP Import'} fileExtension={'.xls'} element={
+                                                        <button id={'Excel-Downloads-bop-import'} className="p-absolute" type="button" >
+                                                        </button>}>
+                                                        {this.onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
+                                            <button type="button" className="user-btn mr-1" title="Reset Grid" onClick={() => { this.resetState(); }}>
+                                                <div className="refresh mr-0"></div>
+                                            </button>
+                                            {this.props.isSimulation && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
+                                        </div>
+                                    </Col>
+                                </Row>
 
-                                    </div>
-                                </Col>
-                            </Row>
+                            </form >
+                            <Row>
+                                <Col>
 
-                        </form >
-                        <Row>
-                            <Col>
+                                    <div className={`ag-grid-wrapper bop-import-listing ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+                                        <div className={`ag-theme-material p-relative ${this.state.isLoader && "max-loader-height"}`} >
+                                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                            <AgGridReact
+                                                defaultColDef={defaultColDef}
 
-                                <div className={`ag-grid-wrapper ${(this.props.bopImportList && this.props.bopImportList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                                    <div className={`ag-theme-material p-relative ${this.state.isLoader && "max-loader-height"}`} >
-                                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                        <AgGridReact
-                                            defaultColDef={defaultColDef}
+                                                floatingFilter={true}
 
-                                            floatingFilter={true}
+                                                domLayout='autoHeight'
+                                                // columnDefs={c}
+                                                rowData={this.props.bopImportList}
+                                                pagination={true}
+                                                paginationPageSize={this.state.globalTake}
+                                                onGridReady={this.onGridReady}
+                                                gridOptions={gridOptions}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{
+                                                    title: EMPTY_DATA,
+                                                    imagClass: 'imagClass'
+                                                }}
+                                                frameworkComponents={frameworkComponents}
+                                                rowSelection={'multiple'}
+                                                //onSelectionChanged={onRowSelect}
+                                                onRowSelected={onRowSelect}
+                                                suppressRowClickSelection={true}
+                                                onFilterModified={this.onFloatingFilterChanged}
+                                            >
+                                                {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                                                <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
+                                                <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
+                                                <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                                                <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
+                                                <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
+                                                <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms" ></AgGridColumn>
+                                                {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
+                                                {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
+                                                {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
+                                                <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
+                                                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
+                                                <AgGridColumn field="Currency"></AgGridColumn>
 
-                                            domLayout='autoHeight'
-                                            // columnDefs={c}
-                                            rowData={this.props.bopImportList}
-                                            pagination={true}
-                                            paginationPageSize={this.state.globalTake}
-                                            onGridReady={this.onGridReady}
-                                            gridOptions={gridOptions}
-                                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                                            noRowsOverlayComponentParams={{
-                                                title: EMPTY_DATA,
-                                                imagClass: 'imagClass'
-                                            }}
-                                            frameworkComponents={frameworkComponents}
-                                            rowSelection={'multiple'}
-                                            //onSelectionChanged={onRowSelect}
-                                            onRowSelected={onRowSelect}
-                                            suppressRowClickSelection={true}
-                                            onFilterModified={this.onFloatingFilterChanged}
-                                        >
-                                            {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                            <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
-                                            <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
-                                            <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
-                                            <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
-                                            <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                            {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                                            <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms" ></AgGridColumn>
-                                            {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
-                                            {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
-                                            {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                                            <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                            {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
-                                            {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
-                                            <AgGridColumn field="Currency"></AgGridColumn>
+                                                <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="BasicRateConversion" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
 
-                                            <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="BasicRateConversion" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName="Basic Price (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
 
-                                            {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
-                                            {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName="Basic Price (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCostConversion" headerName="Net Condition Cost (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
 
-                                            {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
-                                            {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCostConversion" headerName="Net Condition Cost (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                                <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
+                                                <AgGridColumn field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+                                                {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                                {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
+                                                {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
+                                            </AgGridReact>
+                                            <div>
+                                                {!this.state.isLoader && !this.props.isMasterSummaryDrawer && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
+                                                <div className="d-flex pagination-button-container">
+                                                    <p><Button id="bopDomesticListing_previous" variant="previous-btn" onClick={() => this.onBtPrevious()} /></p>
+                                                    {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
+                                                    {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
+                                                    {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
+                                                    <p><Button id="bopDomesticListing_next" variant="next-btn" onClick={() => this.onBtNext()} /></p>
+                                                </div>
 
-                                            <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
-                                            <AgGridColumn field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                            <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                                            {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                            {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
-                                            {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                                        </AgGridReact>
-                                        <div>
-                                            {!this.state.isLoader && !this.props.isMasterSummaryDrawer && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
-                                            <div className="d-flex pagination-button-container">
-                                                <p><Button id="bopDomesticListing_previous" variant="previous-btn" onClick={() => this.onBtPrevious()} /></p>
-                                                {this.state.pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 10)}</p>}
-                                                {this.state.pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 50)}</p>}
-                                                {this.state.pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{this.state.pageNo}</span> of {Math.ceil(this.state.totalRecordCount / 100)}</p>}
-                                                <p><Button id="bopDomesticListing_next" variant="next-btn" onClick={() => this.onBtNext()} /></p>
                                             </div>
-
                                         </div>
                                     </div>
-                                </div>
-                                {
-                                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
-                                }
-                                {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
-                            </Col>
-                        </Row></>}
-                {
-                    isBulkUpload && <BulkUpload
-                        isOpen={isBulkUpload}
-                        closeDrawer={this.closeBulkUploadDrawer}
-                        isEditFlag={false}
-                        fileName={'BOP Import'}
-                        isZBCVBCTemplate={true}
-                        messageLabel={'BOP Import'}
-                        anchor={'right'}
-                        masterId={BOP_MASTER_ID}
-                        typeOfEntryId={ENTRY_TYPE_IMPORT}
-                    />
-                }
-
-                {
-                    this.state.analyticsDrawer &&
-                    <AnalyticsDrawer
-                        isOpen={this.state.analyticsDrawer}
-                        ModeId={2}
-                        closeDrawer={closeAnalyticsDrawer}
-                        anchor={"right"}
-                        importEntry={true}
-                        isReport={this.state.analyticsDrawer}
-                        selectedRowData={this.state.selectedRowData}
-                        isSimulation={true}
-                        //cellValue={cellValue}
-                        rowData={this.state.selectedRowData}
-                        import={true}
-                    />
-                }
-                {
-                    this.state.attachment && (
-                        <Attachament
-                            isOpen={this.state.attachment}
-                            index={this.state.viewAttachment}
-                            closeDrawer={this.closeAttachmentDrawer}
+                                    {
+                                        this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
+                                    }
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
+                                </Col>
+                            </Row>
+                            {this.props.isSimulation && <Row>
+                                <Col md="12" className="d-flex justify-content-end">
+                                    <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
+                                </Col>
+                            </Row>}
+                        </>}
+                    {
+                        isBulkUpload && <BulkUpload
+                            isOpen={isBulkUpload}
+                            closeDrawer={this.closeBulkUploadDrawer}
+                            isEditFlag={false}
+                            fileName={'BOP Import'}
+                            isZBCVBCTemplate={true}
+                            messageLabel={'BOP Import'}
                             anchor={'right'}
-                            gridListing={true}
+                            masterId={BOP_MASTER_ID}
+                            typeOfEntryId={ENTRY_TYPE_IMPORT}
                         />
-                    )
-                }
+                    }
 
-            </div >
+                    {
+                        this.state.analyticsDrawer &&
+                        <AnalyticsDrawer
+                            isOpen={this.state.analyticsDrawer}
+                            ModeId={2}
+                            closeDrawer={closeAnalyticsDrawer}
+                            anchor={"right"}
+                            importEntry={true}
+                            isReport={this.state.analyticsDrawer}
+                            selectedRowData={this.state.selectedRowData}
+                            isSimulation={true}
+                            //cellValue={cellValue}
+                            rowData={this.state.selectedRowData}
+                            import={true}
+                        />
+                    }
+                    {
+                        this.state.attachment && (
+                            <Attachament
+                                isOpen={this.state.attachment}
+                                index={this.state.viewAttachment}
+                                closeDrawer={this.closeAttachmentDrawer}
+                                anchor={'right'}
+                                gridListing={true}
+                            />
+                        )
+                    }
+
+                </div >}
+                {
+                    editSelectedList &&
+                    <BDSimulation
+                        isDomestic={false}
+                        backToSimulation={backToSimulation}
+                        // isbulkUpload={isbulkUpload}
+                        // rowCount={rowCount}
+                        list={this.state.gridApi.getSelectedRows() ? this.state.gridApi.getSelectedRows() : []}
+                        // technology={technology.label}
+                        // technologyId={technology.value}
+                        // master={master.label}
+                        tokenForMultiSimulation={this.props?.tokenForSimulation?.length !== 0 ? [{ SimulationId: this.props?.tokenForSimulation?.value }] : []}
+                    />
+                }
+            </div>
         );
     }
 }
@@ -911,14 +951,15 @@ class BOPImportListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation }) {
+function mapStateToProps({ boughtOutparts, comman, supplier, auth, simulation, material }) {
     const { bopCategorySelectList, vendorAllSelectList, bopImportList, allBopDataList } = boughtOutparts;
     const { plantSelectList, } = comman;
+    const { filteredRMData } = material;
     const { vendorWithVendorCodeSelectList } = supplier;
     const { initialConfiguration } = auth;
-    const { selectedRowForPagination } = simulation;
+    const { selectedRowForPagination, tokenForSimulation } = simulation;
 
-    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedRowForPagination }
+    return { bopCategorySelectList, plantSelectList, vendorAllSelectList, bopImportList, allBopDataList, vendorWithVendorCodeSelectList, initialConfiguration, selectedRowForPagination, filteredRMData, tokenForSimulation }
 }
 
 /**

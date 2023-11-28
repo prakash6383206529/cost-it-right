@@ -4771,6 +4771,11 @@ export const CostingSimulationDownloadRM = [
     { label: "Existing RM Cost/Pc", value: "OldRMPrice" },
     { label: "Revised RM Cost/Pc", value: "NewRMPrice" },
     { label: "Variance (RM Cost)", value: "RMCVariance" },
+
+    { label: "Existing Exchange Rate", value: "OldExchangeRate" },
+    { label: "RevisedExchangeRate", value: "NewExchangeRate" },
+    { label: "Variance (w.r.t. Existing)", value: "ERVariance" },
+
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
     { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
@@ -4942,6 +4947,11 @@ export const CostingSimulationDownloadBOP = [
     { label: "ExistingNetBoughtOutPartCost", value: "OldNetBoughtOutPartCost" },
     { label: "RevisedNetBoughtOutPartCost", value: "NewNetBoughtOutPartCost" },
     { label: "NetBoughtOutPartCostVariance", value: "NetBoughtOutPartCostVariance" },
+
+    { label: "Existing Exchange Rate", value: "OldExchangeRate" },
+    { label: "RevisedExchangeRate", value: "NewExchangeRate" },
+    { label: "Variance (w.r.t. Existing)", value: "ERVariance" },
+
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
     { label: "Impact/Quarter (w.r.t. Budgeted Price)", value: "BudgetedPriceImpactPerQuarter" },
     { label: "ExistingOverheadCost", value: "OldOverheadCost" },
@@ -5594,12 +5604,38 @@ export const RM_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Spec", value: "RawMaterialSpecificationName", },
     { label: "Code", value: "RawMaterialCode", },
     { label: "UOM", value: "UnitOfMeasurementName", },
+    { label: "Currency", value: "Currency" },
     { label: "Existing Basic Rate", value: "OldBasicRate", },
     { label: "Revised Basic Rate", value: "NewBasicRate", },
     { label: "Existing Scrap Rate", value: "OldScrapRate", },
     { label: "Revised Scrap Rate", value: "NewScrapRate", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Previous Min.", value: "PreviousMinimum", },
+    { label: "Previous Max.", value: "PreviousMaximum", },
+    { label: "Previous Avg.", value: "PreviousAverage", },
+    { label: "Current Min.", value: "Minimum", },
+    { label: "Current Max.", value: "Maximum", },
+    { label: "Current Avg.", value: "Average", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+export const RM_IMPACT_DOWNLOAD_EXCEl_IMPORT = [
+    { label: "Raw Material", value: "RawMaterialName", },
+    { label: "Grade", value: "RawMaterialGradeName", },
+    { label: "Spec", value: "RawMaterialSpecificationName", },
+    { label: "Code", value: "RawMaterialCode", },
+    { label: "UOM", value: "UnitOfMeasurementName", },
+    { label: "Currency", value: "Currency" },
+    { label: "Existing Basic Rate", value: "OldBasicRate", },
+    { label: "Revised Basic Rate", value: "NewBasicRate", },
+    { label: "Existing Scrap Rate", value: "OldScrapRate", },
+    { label: "Revised Scrap Rate", value: "NewScrapRate", },
+    { label: "Freight Cost", value: "RMFreightCost", },
+    { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Existing Net Cost (Currency)", value: "OldNetLandedCost" },
+    { label: "Revised Net Cost (Currency)", value: "NewNetLandedCost" },
+    { label: "Existing Net Cost (INR)", value: "OldRMNetLandedCostConversion" },
+    { label: "Revised Net Cost (INR)", value: "NewRMNetLandedCostConversion" },
     { label: "Previous Min.", value: "PreviousMinimum", },
     { label: "Previous Max.", value: "PreviousMaximum", },
     { label: "Previous Avg.", value: "PreviousAverage", },
@@ -5617,6 +5653,25 @@ export const BOP_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Minimum Order Quantity", value: "Quantity", },
     { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
     { label: "Revised Net Cost", value: "NewNetBoughtOutPartCost", },
+    { label: "Previous Min.", value: "PreviousMinimum", },
+    { label: "Previous Max.", value: "PreviousMaximum", },
+    { label: "Previous Avg.", value: "PreviousAverage", },
+    { label: "Current Min.", value: "Minimum", },
+    { label: "Current Max.", value: "Maximum", },
+    { label: "Current Avg.", value: "Average", },
+    { label: "Current Effective date", value: "EffectiveDate", },
+]
+export const BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT = [
+    { label: "BOP Part No", value: "BoughtOutPartNumber", },
+    { label: "BOP Part Name", value: "BoughtOutPartName", },
+    { label: "Existing Basic Rate", value: "OldBOPRate", },
+    { label: "Revised Basic Rate", value: "NewBOPRate", },
+    { label: "Minimum Order Quantity", value: "Quantity", },
+    { label: "Currency", value: "Currency" },
+    { label: "Existing Net Cost", value: "OldNetBoughtOutPartCost", },
+    { label: "Revised Net Cost", value: "NewNetBoughtOutPartCost", },
+    { label: "Existing Net Cost (INR)", value: "OldBoughtOutPartNetLandedCostConversion" },
+    { label: "Revised Net Cost (INR)", value: "NewBoughtOutPartNetLandedCostConversion" },
     { label: "Previous Min.", value: "PreviousMinimum", },
     { label: "Previous Max.", value: "PreviousMaximum", },
     { label: "Previous Avg.", value: "PreviousAverage", },
@@ -7289,3 +7344,13 @@ export const statusDropdownforNfr = [
 export const CostingBulkUploadTechnologyDropdown = [
     { label: "Sheet Metal", value: "7" },
 ]
+
+export const applicabilityList = [
+    { label: 'RM', value: 'RM' },
+    { label: 'BOP', value: 'BOP' },
+    { label: 'Part', value: 'Part' },
+];
+
+export const APPLICABILITY_RM_SIMULATION = "RM"
+export const APPLICABILITY_BOP_SIMULATION = "BOP"
+export const APPLICABILITY_PART_SIMULATION = "Part"

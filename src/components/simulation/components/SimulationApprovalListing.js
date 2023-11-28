@@ -857,6 +857,7 @@ function SimulationApprovalListing(props) {
                                         showApprovalTypeDropdown={selectedRowData && selectedRowData[0]?.Status === "Draft"}
                                         releaseStrategyDetails={releaseStrategyDetails}
                                         technologyId={selectedRowData ? selectedRowData[0].SimulationTechnologyId : approvalData?.SimulationTechnologyId}
+                                        IsExchangeRateSimulation={selectedRowData[0]?.IsExchangeRateSimulation}
                                     />
                                 }
                             </div>

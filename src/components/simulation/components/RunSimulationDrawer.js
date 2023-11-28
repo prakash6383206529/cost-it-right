@@ -11,14 +11,14 @@ import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHI
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
-import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
+import { checkForNull, getConfigurationKey } from '../../../helper';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../helper/validation";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -68,9 +68,9 @@ function RunSimulationDrawer(props) {
     const [isCostingCondition, setIsCostingCondition] = useState(false)
     const [isCostingNPV, setIsCostingNPV] = useState(false)
     const selectedMasterForSimulation = useSelector(state => state.simulation.selectedMasterForSimulation)
-    const selectedTechnologyForSimulation = useSelector(state => state.simulation.selectedTechnologyForSimulation)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -304,7 +304,7 @@ function RunSimulationDrawer(props) {
         obj.AdditionalFreightApplicability = freightCostApplicability.label
         obj.IsAdditionalFreight = additionalFreight
         obj.AdditionalFreightValue = toggleSwitchAdditionalFreight ? getValues("FreightPercent") : getValues("Freight")
-        obj.IsApplyLatestExchangeRate = LatestExchangeRate
+        obj.IsApplyLatestExchangeRate = (selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : LatestExchangeRate
         obj.IsCostingCondition = isCostingCondition
         obj.IsCostingNPV = isCostingNPV
 
@@ -316,7 +316,13 @@ function RunSimulationDrawer(props) {
                 checkForResponse(res)
             }))
         } else {
-            switch (Number(masterId)) {
+            let masterTemp = selectedMasterForSimulation.value
+            if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+                masterTemp = RMIMPORT
+            } else if (selectedMasterForSimulation?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+                masterTemp = BOPIMPORT
+            }
+            switch (Number(masterTemp)) {
                 case Number(EXCHNAGERATE):
                     dispatch(runSimulationOnSelectedExchangeCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                         checkForResponse(res)
@@ -520,8 +526,8 @@ function RunSimulationDrawer(props) {
                                                                         <input
                                                                             type="checkbox"
                                                                             value={"All"}
-                                                                            disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) ? true : false}
-                                                                            checked={IsAvailable(el.Value)}
+                                                                            disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : false}
+                                                                            checked={IsAvailable(el.Value) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE)}
                                                                         />
 
 

@@ -8,7 +8,12 @@ import {
     GET_CURRENCY_SELECTLIST_BY,
     config,
 } from '../../../config/constants';
-import { apiErrors } from '../../../helper/util';
+import { apiErrors, getValueFromLabel } from '../../../helper/util';
+import Toaster from '../../common/Toaster';
+import { MESSAGES } from '../../../config/message';
+import { loggedInUserId } from '../../../helper';
+import _ from 'lodash';
+import DayTime from '../../common/DayTimeWrapper';
 
 // const config() = config;
 
@@ -41,7 +46,7 @@ export function getExchangeRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            axios.get(`${API.getExchangeRateDataList}?currencyId=${data.currencyId}`, config())
+            axios.get(`${API.getExchangeRateDataList}?currencyId=${data?.currencyId}&costingHeadId=${data?.costingHeadId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&isBudgeting=${data?.isBudgeting}`, config())
                 .then((response) => {
                     if (response.data.Result === true || response.status === 204) {
                         dispatch({
@@ -154,4 +159,45 @@ export function getCurrencySelectList(callback) {
             apiErrors(error);
         });
     };
+}
+
+/**
+ * @method createMultipleExchangeRate
+ * @description create Multiple Exchange Rate 
+ */
+export function createMultipleExchangeRate(dataList, currencySelectList, effectiveDate, callback) {
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        let temp = []
+        dataList && dataList.map((item) => {
+            let data = {
+                "CurrencyId": getValueFromLabel(item?.Currency, currencySelectList)?.Value,
+                "CurrencyExchangeRate": item?.NewCurrencyExchangeRate,
+                "BankRate": item?.BankRate,
+                "CustomRate": item?.CustomRate,
+                "BankCommissionPercentage": item?.BankCommissionPercentage,
+                "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+                "LoggedInUserId": loggedInUserId(),
+                "CostingHeadId": item?.CostingHeadId ? item?.CostingHeadId : item?.CostingTypeId,
+                "CustomerId": item?.CustomerId,
+                "VendorId": item?.VendorId,
+                "IsBudgeting": item?.IsBudgeting,
+                "IsExchangeRateSimulation": true,
+                "OldCurrencyExchangeRate": item?.CurrencyExchangeRate,
+            }
+            const request = axios.post(API.createExchangeRate, data, config());
+            temp.push(request)
+        })
+        axios.all(temp).then((response) => {
+            if (response) {
+                let arrayfromapi = _.map(response, 'data.Data')
+                callback(arrayfromapi)
+            } else {
+                Toaster.error(MESSAGES.SOME_ERROR)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }
