@@ -4,16 +4,14 @@ import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
 import {
   required, checkForNull, number, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter, maxLength20,
-  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber
+  maxLength, maxLength10, positiveAndDecimalNumber, maxLength512, maxLength80, checkWhiteSpaces, decimalLengthsix, checkSpacesInString, postiveNumber, hashValidation
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getCityBySupplier, getPlantBySupplier, getUOMSelectList, getPlantSelectListByType, getCityByCountry, getAllCity, getVendorNameByVendorSelectList } from '../../../actions/Common';
-import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, } from '../actions/BoughtOutParts';
+import { createBOP, updateBOP, getBOPCategorySelectList, getBOPDomesticById, fileUploadBOPDomestic, checkAndGetBopPartNo } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
-import Switch from "react-switch";
-import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
@@ -23,7 +21,6 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import DayTime from '../../common/DayTimeWrapper'
 import { ASSEMBLY, AcceptableBOPUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
-import { applySuperScripts } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png';
 import MasterSendForApproval from '../MasterSendForApproval'
@@ -88,7 +85,7 @@ class AddBOPDomestic extends Component {
       remarks: '',
       showErrorOnFocus: false,
       showErrorOnFocusDate: false,
-      finalApprovalLoader: false,
+      finalApprovalLoader: true,
       client: [],
       costingTypeId: ZBCTypeId,
       showPopup: false,
@@ -103,13 +100,16 @@ class AddBOPDomestic extends Component {
       isOpenConditionDrawer: false,
       conditionTableData: [],
 
-      FinalBasicRateBase: '',
-      FinalBasicPriceBase: '',
-      FinalConditionCostBase: '',
-      FinalNetLandedCostBase: '',
+      FinalBasicRateBaseCurrency: '',
+      FinalBasicPriceBaseCurrency: '',
+      FinalConditionCostBaseCurrency: '',
+      FinalNetLandedCostBaseCurrency: '',
       toolTipTextNetCost: {},
+      toolTipTextBasicPrice: '',
     }
   }
+
+  // NOTE :: ALL COST KEYS ARE OF BASE CURRENCY IRRESPECTIVE OF THEIR NAME IN DOMESTIC
 
   /**
   * @method componentWillMount
@@ -123,13 +123,36 @@ class AddBOPDomestic extends Component {
     }
   }
 
+  toolTipNetCost() {
+    const { initialConfiguration } = this.props
+    const { costingTypeId } = this.state
+    let netCostText = ''
+    let basicPriceText = ''
+    if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
+        basicPriceText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+      } else {
+        basicPriceText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+      }
+      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
+      this.setState({ toolTipTextNetCost: netCostText, toolTipTextBasicPrice: basicPriceText })
+    } else if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
+      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+      this.setState({ toolTipTextNetCost: netCostText })
+    } else {
+      netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+      this.setState({ toolTipTextNetCost: netCostText })
+    }
+    const obj = { ...this.state.toolTipTextObject, netCostCurrency: netCostText, basicPriceSelectedCurrency: basicPriceText }
+    this.setState({ toolTipTextObject: obj })
+  }
+
   /**
    * @method componentDidMount
    * @description Called after rendering the component
    */
   componentDidMount() {
     const { initialConfiguration } = this.props
-    const { costingTypeId } = this.state
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
@@ -138,11 +161,6 @@ class AddBOPDomestic extends Component {
     setTimeout(() => {
       this.getDetails()
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
-      if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-        this.setState({ toolTipTextNetCost: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})` })
-      } else {
-        this.setState({ toolTipTextNetCost: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})` })
-      }
       if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
         this.props.getClientSelectList(() => { })
       }
@@ -152,6 +170,8 @@ class AddBOPDomestic extends Component {
             this.commonFunction()
           }, 100);
         })
+      } else {
+        this.setState({ finalApprovalLoader: false })
       }
     }, 300);
   }
@@ -185,6 +205,7 @@ class AddBOPDomestic extends Component {
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
     if (this.props.fieldsObj !== prevProps.fieldsObj) {
+      this.toolTipNetCost()
       this.handleCalculation()
     }
     if ((prevState?.costingTypeId !== this.state.costingTypeId) && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(BOP_MASTER_ID) === true) {
@@ -233,11 +254,35 @@ class AddBOPDomestic extends Component {
   handleCategoryChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
       this.setState({ BOPCategory: newValue });
+      if (this.props.fieldsObj.BoughtOutPartName && this.state.BOPCategory && getConfigurationKey().IsAutoGeneratedBOPNumber) {
+        let obj = {
+          bopName: this.props.fieldsObj.BoughtOutPartName,
+          bopCategory: newValue.label,
+          bopNumber: ''
+        }
+        this.props.checkAndGetBopPartNo(obj, (res) => {
+          let Data = res.data.Identity;
+          this.props.change('BoughtOutPartNumber', Data)
+        })
+      }
     } else {
       this.setState({ BOPCategory: [], });
 
     }
   }
+  handleBoughtOutPartName = debounce((e) => {
+    if (this.state.BOPCategory.length !== 0 && e.target.value && getConfigurationKey().IsAutoGeneratedBOPNumber) {
+      let obj = {
+        bopName: e.target.value,
+        bopCategory: this.state.BOPCategory.label,
+        bopNumber: ''
+      }
+      this.props.checkAndGetBopPartNo(obj, (res) => {
+        let Data = res.data.Identity;
+        this.props.change('BoughtOutPartNumber', Data)
+      })
+    }
+  }, 500)
   /**
   * @method handleClient
   * @description called
@@ -263,7 +308,7 @@ class AddBOPDomestic extends Component {
   * @description Used to get Details
   */
   getDetails = () => {
-    const { data } = this.props;
+    const { data, initialConfiguration } = this.props;
     if (data && data.isEditFlag) {
       this.setState({
         isLoader: true,
@@ -274,10 +319,10 @@ class AddBOPDomestic extends Component {
           const Data = res.data.Data;
           this.setState({ DataToCheck: Data })
           this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
-          this.props.change('BasicRateBase', Data.BasicRate)
-          this.props.change('BasicPriceBase', Data.NetCostWithoutConditionCost)
-          this.props.change('ConditionCost', Data.NetConditionCost)
-          this.props.change('NetLandedCostBase', Data.NetLandedCost)
+          this.props.change('BasicRateBase', checkForDecimalAndNull(Data.BasicRate, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('BasicPriceBase', checkForDecimalAndNull(Data.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('ConditionCost', checkForDecimalAndNull(Data.NetConditionCost, initialConfiguration.NoOfDecimalForPrice))
+          this.props.change('NetLandedCostBase', checkForDecimalAndNull(Data.NetLandedCost, initialConfiguration.NoOfDecimalForPrice))
           this.setState({ minEffectiveDate: Data.EffectiveDate })
           // this.props.getPlantBySupplier(Data.Vendor, () => { })
           setTimeout(() => {
@@ -303,10 +348,13 @@ class AddBOPDomestic extends Component {
               isClientVendorBOP: Data.IsClientVendorBOP,
               isTechnologyVisible: Data.IsBreakupBoughtOutPart,
               Technology: { label: Data.TechnologyName, value: Data.TechnologyId },
-              FinalConditionCostBase: Data.NetConditionCost,
+              FinalConditionCostBaseCurrency: Data.NetConditionCost,
               conditionTableData: Data.BoughtOutPartConditionsDetails,
-              FinalBasicPriceBase: Data.NetCostWithoutConditionCost,
-            }, () => this.setState({ isLoader: false }))
+              FinalBasicPriceBaseCurrency: Data.NetCostWithoutConditionCost,
+            }, () => {
+              this.toolTipNetCost()
+              this.setState({ isLoader: false })
+            })
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.Attachements && Data.Attachements.map((item) => {
               item.meta = {}
@@ -346,7 +394,7 @@ class AddBOPDomestic extends Component {
   * @description Used to show type of listing
   */
   renderListing = (label) => {
-    const { vendorWithVendorCodeSelectList, bopCategorySelectList, plantSelectList, cityList,
+    const { bopCategorySelectList, plantSelectList, cityList,
       UOMSelectList, partSelectList, clientSelectList, costingSpecifiTechnology } = this.props;
     const temp = [];
     if (label === 'BOPCategory') {
@@ -564,31 +612,37 @@ class AddBOPDomestic extends Component {
 
   handleCalculation = () => {
     const { fieldsObj, initialConfiguration } = this.props
-    const { FinalConditionCostBase, NetLandedCost } = this.state
+    const { FinalConditionCostBaseCurrency, costingTypeId } = this.state
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
 
-    const basicRateBase = checkForNull(fieldsObj?.BasicRateBase)
-    const basicPriceBase = checkForNull(basicRateBase) / checkForNull(NoOfPieces)
-    const conditionCostBase = checkForNull(FinalConditionCostBase)
+    console.log('fieldsObj?.BasicRateBase: ', fieldsObj?.BasicRateBase);
+    const basicRateBaseCurrency = checkForNull(fieldsObj?.BasicRateBase)
+    const basicPriceBaseTemp = checkForNull(basicRateBaseCurrency) / checkForNull(NoOfPieces)
+    let basicPriceBaseCurrency
+    if (costingTypeId === ZBCTypeId) {
+      basicPriceBaseCurrency = basicPriceBaseTemp
+    }
+    const conditionCostBaseCurrency = checkForNull(FinalConditionCostBaseCurrency)
 
-    let conditionList = this.recalculateConditions(basicPriceBase)
+    let conditionList = this.recalculateConditions(basicPriceBaseCurrency)
 
     const sumBase = conditionList.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCostBase = checkForNull(sumBase) + checkForNull(basicPriceBase)
+    let netLandedCostBaseCurrency = checkForNull(sumBase) + checkForNull(basicPriceBaseTemp)
 
-    this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change("BasicPriceBase", checkForDecimalAndNull(basicPriceBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('ConditionCost', checkForDecimalAndNull(sumBase, initialConfiguration.NoOfDecimalForPrice))
-    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBase, initialConfiguration.NoOfDecimalForPrice))
+    this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCostBaseCurrency, initialConfiguration.NoOfDecimalForPrice))
 
     this.setState({
-      FinalBasicRateBase: basicRateBase,
-      FinalBasicPriceBase: basicPriceBase,
-      FinalConditionCostBase: conditionCostBase,
-      FinalNetLandedCostBase: netLandedCostBase,
+      FinalBasicRateBaseCurrency: basicRateBaseCurrency,
+      FinalBasicPriceBaseCurrency: basicPriceBaseCurrency,
+      FinalConditionCostBaseCurrency: conditionCostBaseCurrency,
+      FinalNetLandedCostBaseCurrency: netLandedCostBaseCurrency,
       conditionTableData: conditionList,
     })
 
-    if (this.state.isEditFlag && checkForNull(basicPriceBase) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) && checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces)) {
+    if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) &&
+      checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostBaseCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
 
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
@@ -604,7 +658,6 @@ class AddBOPDomestic extends Component {
     // })
     // this.props.change('BasicPrice', BasicPrice !== 0 ? checkForDecimalAndNull(BasicPrice, initialConfiguration.NoOfDecimalForPrice) : 0)
   }
-
 
   /**
   * @method handleChange
@@ -749,7 +802,7 @@ class AddBOPDomestic extends Component {
   */
   onSubmit = debounce((values) => {
     const { BOPCategory, selectedPlants, vendorName, costingTypeId, sourceLocation, BOPID, isEditFlag, files, DropdownChanged, oldDate, client, effectiveDate, UOM, DataToCheck, isDateChange, IsFinancialDataChanged,
-      isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBase, FinalBasicPriceBase, FinalNetLandedCostBase, FinalBasicRateBase, conditionTableData, isBOPAssociated } = this.state;
+      isClientVendorBOP, isTechnologyVisible, Technology, FinalConditionCostBaseCurrency, FinalBasicPriceBaseCurrency, FinalNetLandedCostBaseCurrency, FinalBasicRateBaseCurrency, conditionTableData, isBOPAssociated } = this.state;
     const { fieldsObj } = this.props;
     const userDetailsBop = JSON.parse(localStorage.getItem('userDetail'))
     if (costingTypeId !== CBCTypeId && vendorName.length <= 0) {
@@ -796,30 +849,33 @@ class AddBOPDomestic extends Component {
     formData.TechnologyId = Technology?.value
     formData.IsBreakupBoughtOutPart = isTechnologyVisible
 
-    formData.BasicRate = FinalBasicRateBase
-    formData.NetLandedCost = FinalNetLandedCostBase
+    formData.BasicRate = FinalBasicRateBaseCurrency
+    formData.NetLandedCost = FinalNetLandedCostBaseCurrency
 
     if (costingTypeId === ZBCTypeId) {
-      formData.NetCostWithoutConditionCost = FinalBasicPriceBase
-      formData.NetConditionCost = FinalConditionCostBase
+      formData.NetCostWithoutConditionCost = FinalBasicPriceBaseCurrency
+      formData.NetConditionCost = FinalConditionCostBaseCurrency
     }
 
     formData.BoughtOutPartConditionsDetails = conditionTableData
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
-      const basicPriceCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces)
-      const netLandedCostCurrency = checkForNull(basicPriceCurrency) + checkForNull(FinalConditionCostBase)
+      let basicPriceBaseCurrency
+      if (costingTypeId === ZBCTypeId) {
+        basicPriceBaseCurrency = checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)
+      }
+      const netLandedCostBaseCurrency = checkForNull(checkForNull(fieldsObj?.BasicRateBase) / checkForNull(fieldsObj?.NumberOfPieces ? fieldsObj?.NumberOfPieces : 1)) + checkForNull(FinalConditionCostBaseCurrency)
       // CHECK IF THERE IS CHANGE !!!  
       // IF: NO CHANGE  
 
       if (((files ? JSON.stringify(files) : []) === (DataToCheck.Attachements ? JSON.stringify(DataToCheck.Attachements) : [])) && ((DataToCheck.Remark ? DataToCheck.Remark : '') === (values.Remark ? values.Remark : '')) &&
         ((DataToCheck.Source ? String(DataToCheck.Source) : '-') === (values.Source ? String(values.Source) : '-')) &&
         ((DataToCheck.SourceLocation ? String(DataToCheck.SourceLocation) : '') === (sourceLocation?.value ? String(sourceLocation?.value) : '')) &&
-        checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
-        checkForNull(netLandedCostCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBase) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
+        checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
+        checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
         this.setState({ isEditBuffer: true })
-        Toaster.warning('Please change data to send RM for approval')
+        Toaster.warning('Please change data to send Insert for approval')
         return false
       }
       //  ELSE: CHANGE
@@ -913,14 +969,14 @@ class AddBOPDomestic extends Component {
       this.setState({ IsFinancialDataChanged: true })
     }
     const sum = data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
-    let netLandedCost = checkForNull(sum) + checkForNull(this.state.FinalBasicPriceBase)
+    let netLandedCost = checkForNull(sum) + checkForNull(this.state.FinalBasicPriceBaseCurrency)
     this.props.change('ConditionCost', checkForDecimalAndNull(sum, initialConfiguration.NoOfDecimalForPrice))
     this.props.change('NetLandedCostBase', checkForDecimalAndNull(netLandedCost, initialConfiguration.NoOfDecimalForPrice))
     this.setState({
       isOpenConditionDrawer: false,
       conditionTableData: data,
-      FinalConditionCostBase: sum,
-      FinalNetLandedCostBase: netLandedCost
+      FinalConditionCostBaseCurrency: sum,
+      FinalNetLandedCostBaseCurrency: netLandedCost
     })
   }
 
@@ -935,7 +991,7 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBase, IsFinancialDataChanged, toolTipTextNetCost } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1048,24 +1104,9 @@ class AddBOPDomestic extends Component {
                             </Label>}
                           </Col>
                         </Row>
-
                         <Row>
                           <Col md="12">
                             <div className="left-border">{"Insert:"}</div>
-                          </Col>
-                          <Col md="3">
-                            <Field
-                              label={`Insert Part No`}
-                              name={"BoughtOutPartNumber"}
-                              type="text"
-                              placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
-                              component={renderText}
-                              required={true}
-                              disabled={isEditFlag ? true : false}
-                              className=" "
-                              customClassName=" withBorder"
-                            />
                           </Col>
                           <Col md="3">
                             <Field
@@ -1073,8 +1114,9 @@ class AddBOPDomestic extends Component {
                               name={"BoughtOutPartName"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                               component={renderText}
+                              onChange={this.handleBoughtOutPartName}
                               required={true}
                               disabled={isEditFlag ? true : false}
                               className=" "
@@ -1112,11 +1154,26 @@ class AddBOPDomestic extends Component {
                           </Col>
                           <Col md="3">
                             <Field
+                              label={`Insert Part No`}
+                              name={"BoughtOutPartNumber"}
+                              type="text"
+                              placeholder={(isEditFlag || getConfigurationKey().IsAutoGeneratedBOPNumber) ? '' : "Enter"}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
+                              component={renderText}
+                              required={true}
+                              disabled={(isEditFlag || getConfigurationKey().IsAutoGeneratedBOPNumber) ? true : false}
+                              className=" "
+                              customClassName=" withBorder"
+                            />
+                          </Col>
+
+                          <Col md="3">
+                            <Field
                               label={`Specification`}
                               name={"Specification"}
                               type="text"
                               placeholder={isViewMode ? "-" : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, hashValidation]}
                               component={renderText}
                               //required={true}
                               disabled={isEditFlag ? true : false}
@@ -1124,11 +1181,9 @@ class AddBOPDomestic extends Component {
                               customClassName=" withBorder"
                             />
                           </Col>
-
                         </Row>
 
                         <Row>
-
                           <Col md="3">
                             <Field
                               name="UOM"
@@ -1166,6 +1221,46 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
+                          {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
+                            <>
+                              <Col md="3" className='d-flex align-items-center'>
+                                <label
+                                  className={`custom-checkbox`}
+                                  onChange={this.breakUpHandleChange}
+                                >
+                                  Detailed Insert
+                                  <input
+                                    type="checkbox"
+                                    checked={isTechnologyVisible}
+                                    disabled={isViewMode || isEditFlag ? true : false}
+                                  />
+                                  <span
+                                    className=" before-box"
+                                    checked={isTechnologyVisible}
+                                    onChange={this.breakUpHandleChange}
+                                  />
+                                </label>
+                              </Col>
+                              {isTechnologyVisible && <Col md="3">
+                                <Field
+                                  label="Technology"
+                                  type="text"
+                                  name="Technology"
+                                  component={searchableSelect}
+                                  placeholder={"Technology"}
+                                  options={this.renderListing("technology")}
+                                  validate={
+                                    this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
+                                  required={true}
+                                  handleChangeDescription={
+                                    this.handleTechnologyChange
+                                  }
+                                  valueDescription={this.state.Technology}
+                                  disabled={isViewMode || isEditFlag ? true : false}
+                                />
+                              </Col>}
+                            </>
+                          }
                           {costingTypeId === CBCTypeId && (
                             <Col md="3">
                               <Field
@@ -1189,155 +1284,88 @@ class AddBOPDomestic extends Component {
                               />
                             </Col>
                           )}
-
-                          {/* <Col md="3">
-                            <Field
-                              label="Part/ Assembly No."
-                              name="PartAssemblyNo"
-                              placeholder={"Select"}
-                              selection={
-                                this.state.selectedPartAssembly == null || this.state.selectedPartAssembly.length === 0 ? [] : this.state.selectedPartAssembly}
-                              options={this.renderListing("PartAssembly")}
-                              selectionChanged={this.handlePartAssembly}
-                              optionValue={(option) => option.Value}
-                              optionLabel={(option) => option.Text}
-                              component={renderMultiSelectField}
-                              //  mendatory={true}
-                            //className="multiselect-with-border"
-                            //disabled={(this.state.IsVendor || isEditFlag) ? true : false}
-                            />
-                          </Col> */}
                         </Row>
 
                         <Row>
-                          {
-                            costingTypeId !== CBCTypeId && (
-                              <>
-                                <Col md="12">
-                                  <div className="left-border">{"Vendor:"}</div>
-                                </Col>
-                                <Col md="3" className='mb-4'>
-                                  <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                                  <div className="d-flex justify-space-between align-items-center async-select">
-                                    <div className="fullinput-icon p-relative">
-                                      {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
-                                      <AsyncSelect
-                                        name="vendorName"
-                                        ref={this.myRef}
-                                        key={this.state.updateAsyncDropdown}
-                                        loadOptions={filterList}
-                                        onChange={(e) => this.handleVendorName(e)}
-                                        value={this.state.vendorName}
-                                        noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                        isDisabled={(isEditFlag) ? true : false}
-                                        onFocus={() => onFocus(this)}
-                                        onKeyDown={(onKeyDown) => {
-                                          if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
-                                        }}
-                                      />
-                                    </div>
-                                    {!isEditFlag && (
-                                      <Button
-                                        id="addBOPDomestic_vendorToggle"
-                                        onClick={this.vendorToggler}
-                                        className={"right"}
-                                        variant="plus-icon-square"
-                                      />
-                                    )}
+                          {costingTypeId !== CBCTypeId && (
+                            <>
+                              <Col md="12">
+                                <div className="left-border">{"Vendor:"}</div>
+                              </Col>
+                              <Col md="3" className='mb-4'>
+                                <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
+                                <div className="d-flex justify-space-between align-items-center async-select">
+                                  <div className="fullinput-icon p-relative">
+                                    {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
+                                    <AsyncSelect
+                                      name="vendorName"
+                                      ref={this.myRef}
+                                      key={this.state.updateAsyncDropdown}
+                                      loadOptions={filterList}
+                                      onChange={(e) => this.handleVendorName(e)}
+                                      value={this.state.vendorName}
+                                      noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
+                                      isDisabled={(isEditFlag) ? true : false}
+                                      onFocus={() => onFocus(this)}
+                                      onKeyDown={(onKeyDown) => {
+                                        if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
+                                      }}
+                                    />
                                   </div>
-                                  {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
-                                </Col>
-                              </>
-                            )
-                          }
-                          {
-                            costingTypeId === VBCTypeId && (
-                              <>
-                                <Col md="3">
-                                  <Field
-                                    label={`Source`}
-                                    name={"Source"}
-                                    type="text"
-                                    placeholder={isViewMode ? "-" : "Enter"}
-                                    validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80)]}
-                                    component={renderText}
-                                    valueDescription={this.state.source}
-                                    onChange={this.handleSource}
-                                    disabled={isViewMode}
-                                    className=" "
-                                    customClassName=" withBorder"
-                                  />
-                                </Col>
-                                <Col md="3">
-                                  <Field
-                                    name="SourceLocation"
-                                    type="text"
-                                    label="Source Location"
-                                    component={searchableSelect}
-                                    placeholder={isViewMode ? "-" : "Select"}
-                                    options={this.renderListing(
-                                      "SourceLocation"
-                                    )}
-                                    disabled={isViewMode}
-                                    //onKeyUp={(e) => this.changeItemDesc(e)}
-                                    // validate={
-                                    //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
-                                    // required={true}
-                                    handleChangeDescription={
-                                      this.handleSourceSupplierCity
-                                    }
-                                    valueDescription={this.state.sourceLocation}
-                                  />
-                                </Col>
-                              </>
-                            )
-                          }
-                        </Row >
-
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && costingTypeId === VBCTypeId &&
-                          <Row>
-                            <Col md="12">
-                              <div className="left-border">{"Detailed BOP:"}</div>
-                            </Col>
-                            <Col md="3" className='mb-4'>
-                              <label
-                                className={`custom-checkbox`}
-                                onChange={this.breakUpHandleChange}
-                              >
-                                Detailed BOP
-                                <input
-                                  type="checkbox"
-                                  checked={isTechnologyVisible}
-                                  disabled={isViewMode || isEditFlag ? true : false}
+                                  {!isEditFlag && (
+                                    <Button
+                                      id="addBOPDomestic_vendorToggle"
+                                      onClick={this.vendorToggler}
+                                      className={"right"}
+                                      variant="plus-icon-square"
+                                    />
+                                  )}
+                                </div>
+                                {((this.state.showErrorOnFocus && this.state.vendorName.length === 0) || this.state.isVendorNameNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
+                              </Col>
+                            </>
+                          )}
+                          {costingTypeId === VBCTypeId && (
+                            <>
+                              <Col md="3">
+                                <Field
+                                  label={`Source`}
+                                  name={"Source"}
+                                  type="text"
+                                  placeholder={isViewMode ? "-" : "Enter"}
+                                  validate={[acceptAllExceptSingleSpecialCharacter, maxLength(80), hashValidation]}
+                                  component={renderText}
+                                  valueDescription={this.state.source}
+                                  onChange={this.handleSource}
+                                  disabled={isViewMode}
+                                  className=" "
+                                  customClassName=" withBorder"
                                 />
-                                <span
-                                  className=" before-box"
-                                  checked={isTechnologyVisible}
-                                  onChange={this.breakUpHandleChange}
+                              </Col>
+                              <Col md="3">
+                                <Field
+                                  name="SourceLocation"
+                                  type="text"
+                                  label="Source Location"
+                                  component={searchableSelect}
+                                  placeholder={isViewMode ? "-" : "Select"}
+                                  options={this.renderListing(
+                                    "SourceLocation"
+                                  )}
+                                  disabled={isViewMode}
+                                  //onKeyUp={(e) => this.changeItemDesc(e)}
+                                  // validate={
+                                  //   this.state.sourceLocation == null || this.state.sourceLocation.length === 0 ? [required] : []}
+                                  // required={true}
+                                  handleChangeDescription={
+                                    this.handleSourceSupplierCity
+                                  }
+                                  valueDescription={this.state.sourceLocation}
                                 />
-                              </label>
-                            </Col>
-                            {isTechnologyVisible && <Col md="3" className='mb-4'>
-                              <Field
-                                label="Technology"
-                                type="text"
-                                name="Technology"
-                                component={searchableSelect}
-                                placeholder={"Technology"}
-                                options={this.renderListing("technology")}
-                                validate={
-                                  this.state.Technology == null || this.state.Technology.length === 0 ? [required] : []}
-                                required={true}
-                                handleChangeDescription={
-                                  this.handleTechnologyChange
-                                }
-                                valueDescription={this.state.Technology}
-                                disabled={isViewMode || isEditFlag ? true : false}
-                              />
-                            </Col>}
-                          </Row>
-                        }
-
+                              </Col>
+                            </>
+                          )}
+                        </Row>
                         <Row className='UOM-label-container'>
                           <Col md="12">
                             <div className="left-border">{"Cost:"}</div>
@@ -1396,6 +1424,7 @@ class AddBOPDomestic extends Component {
                             </Col></>}
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                             <Col md="3">
+                              <TooltipCustom id="bop-basic-price" tooltipText={this.state.toolTipTextObject?.basicPriceSelectedCurrency} />
                               <Field
                                 label={`Basic Price/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
                                 name={"BasicPriceBase"}
@@ -1436,7 +1465,7 @@ class AddBOPDomestic extends Component {
                               </div>
                             </Col>
                           </>}
-                          <Col md="3">
+                          {!isTechnologyVisible && <Col md="3">
                             <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
                             <Field
                               label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
@@ -1450,7 +1479,7 @@ class AddBOPDomestic extends Component {
                               className=" "
                               customClassName=" withBorder"
                             />
-                          </Col>
+                          </Col>}
 
 
                         </Row>
@@ -1553,7 +1582,7 @@ class AddBOPDomestic extends Component {
                                   const fileURL = `${FILE_URL}${withOutTild}`;
                                   return (
                                     <div className={"attachment images"}>
-                                      <a href={fileURL} target="_blank">
+                                      <a href={fileURL} target="_blank" rel="noreferrer">
                                         {f.OriginalFileName}
                                       </a>
                                       {/* <a href={fileURL} target="_blank" download={f.FileName}>
@@ -1580,7 +1609,7 @@ class AddBOPDomestic extends Component {
                             </div>
                           </Col>
                         </Row>
-                      </div >
+                      </div>
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
@@ -1623,7 +1652,7 @@ class AddBOPDomestic extends Component {
                 </div>
               </div>
             </div>
-          </div>
+          </div >
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
@@ -1666,7 +1695,7 @@ class AddBOPDomestic extends Component {
               tableData={conditionTableData}
               closeDrawer={this.openAndCloseAddConditionCosting}
               anchor={'right'}
-              basicRateCurrency={FinalBasicPriceBase}
+              basicRateCurrency={FinalBasicPriceBaseCurrency}
               ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
               isFromMaster={true}
             />
@@ -1688,6 +1717,7 @@ class AddBOPDomestic extends Component {
                 levelDetails={this.state.levelDetails}
                 isFromImport={false}
                 currency={{ label: initialConfiguration?.BaseCurrency, value: initialConfiguration?.BaseCurrency }}
+                toolTipTextObject={this.state.toolTipTextObject}
               />
             )
           }
@@ -1704,7 +1734,7 @@ class AddBOPDomestic extends Component {
 */
 function mapStateToProps(state) {
   const { comman, supplier, boughtOutparts, part, auth, costing, client } = state;
-  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRateBase', 'Remark');
+  const fieldsObj = selector(state, 'NumberOfPieces', 'BasicRateBase', 'Remark', 'BoughtOutPartName');
 
   const { bopCategorySelectList, bopData, } = boughtOutparts;
   const { plantList, filterPlantList, filterCityListBySupplier, cityList, UOMSelectList, plantSelectList, costingHead } = comman;
@@ -1723,9 +1753,9 @@ function mapStateToProps(state) {
       Source: bopData.Source,
       NetLandedCost: bopData.NetLandedCost,
       BasicPriceBase: bopData.BasicPriceBase,
-      NumberOfPieces: bopData.NumberOfPieces,
       BasicRateBase: bopData.BasicRateBase,
       Remark: bopData.Remark,
+      NumberOfPieces: bopData?.NumberOfPieces,
     }
   }
 
@@ -1759,6 +1789,7 @@ export default connect(mapStateToProps, {
   getUsersMasterLevelAPI,
   getVendorNameByVendorSelectList,
   getCostingSpecificTechnology,
+  checkAndGetBopPartNo
 })(reduxForm({
   form: 'AddBOPDomestic',
   touchOnChange: true,
