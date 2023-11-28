@@ -34,7 +34,7 @@ import ViewAssembly from './ViewAssembly';
 import _ from 'lodash';
 import { PaginationWrapper } from '../../common/commonPagination';
 import WarningMessage from '../../common/WarningMessage';
-import { hideColumnFromExcel } from '../../common/CommonFunctions';
+import { hideColumnFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
@@ -384,16 +384,11 @@ function CostingSimulation(props) {
                     checkForNull(item.NewMachineRate).toFixed(TOFIXEDVALUE))
                 item.BOPNONVariance = (checkForNull(item.OldBOPRate).toFixed(TOFIXEDVALUE) -
                     checkForNull(item.NewBOPRate).toFixed(TOFIXEDVALUE))
-                switch (String(master)) {
-                    case EXCHNAGERATE:
-                        item.POVariance = (checkForNull(item.OldNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE))
-                        item.ERVariance = (checkForNull(item.OldExchangeRate).toFixed(TOFIXEDVALUE) -
-                            checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
-
-                        break;
-                    default:
-                        break;
+                if ((String(master) === String(EXCHNAGERATE)) || Data?.IsExchangeRateSimulation) {
+                    item.POVariance = (checkForNull(item.OldNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE) -
+                        checkForNull(item.NewNetPOPriceOtherCurrency).toFixed(TOFIXEDVALUE))
+                    item.ERVariance = (checkForNull(item.OldExchangeRate).toFixed(TOFIXEDVALUE) -
+                        checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
                 }
                 return null
             })
@@ -1220,17 +1215,34 @@ function CostingSimulation(props) {
         if (isMultiTechnology) {
             return returnExcelColumn(CostingSimulationDownloadAssemblyTechnology, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
         } else {
-            switch (Number(master)) {
+            let masterIdTemp = master
+            let listRM = []
+            let listBOP = []
+            if (String(master) === String(EXCHNAGERATE) || amendmentDetails?.IsExchangeRateSimulation) {
+                if (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+                    masterIdTemp = BOPIMPORT
+                } else if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+                    masterIdTemp = RMIMPORT
+                }
+                listRM = CostingSimulationDownloadRM
+                listBOP = CostingSimulationDownloadBOP
+            } else {
+                masterIdTemp = master
+                listRM = hideMultipleColumnFromExcel(CostingSimulationDownloadRM, ["OldExchangeRate", "NewExchangeRate", "ERVariance"])
+                listBOP = hideMultipleColumnFromExcel(CostingSimulationDownloadBOP, ["OldExchangeRate", "NewExchangeRate", "ERVariance"])
+            }
+
+            switch (Number(masterIdTemp)) {
                 case Number(RMDOMESTIC):
                 case Number(RMIMPORT):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : listRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(SURFACETREATMENT):
                     return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(OPERATIONS):
                     return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? CostingSimulationDownloadBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? listBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(EXCHNAGERATE):
                     return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 case Number(MACHINERATE):

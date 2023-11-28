@@ -80,7 +80,9 @@ function RMImportListing(props) {
   const [attachment, setAttachment] = useState(false);
   const [viewAttachment, setViewAttachment] = useState([])
   const [editSelectedList, setEditSelectedList] = useState(false)
+  const [tempList, setTempList] = useState([])
   const netCostHeader = `Net Cost (${getConfigurationKey()?.BaseCurrency})`
+  const { tokenForSimulation } = useSelector(state => state.simulation)
   var filterParams = {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
@@ -842,6 +844,7 @@ function RMImportListing(props) {
   }
 
   const editSelectedData = () => {
+    setTempList(gridApi?.getSelectedRows() ? gridApi?.getSelectedRows() : [])
     setEditSelectedList(true)
   }
 
@@ -1113,11 +1116,11 @@ function RMImportListing(props) {
           backToSimulation={backToSimulation}
           // isbulkUpload={isbulkUpload}
           // rowCount={rowCount}
-          list={gridApi?.getSelectedRows() ? gridApi?.getSelectedRows() : []}
-        // technology={technology.label}
-        // technologyId={technology.value}
-        // master={master.label}
-        // tokenForMultiSimulation={tempObject}
+          list={tempList ? tempList : []}
+          // technology={technology.label}
+          // technologyId={technology.value}
+          // master={master.label}
+          tokenForMultiSimulation={tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []}
         />
       }
     </div>

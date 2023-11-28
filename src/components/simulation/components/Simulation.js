@@ -49,7 +49,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState([])
     const [technology, setTechnology] = useState({})
@@ -88,7 +88,6 @@ function Simulation(props) {
     const dispatch = useDispatch()
     const vendorSelectList = useSelector(state => state.comman.vendorWithVendorCodeSelectList)
     useEffect(() => {
-        dispatch(setTokenForSimulation([]))
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getClientSelectList(() => { }))
@@ -112,9 +111,15 @@ function Simulation(props) {
             setShowApplicabilityDropdown(true)
             setShowMasterList(true)
             setShowEditTable(false)
+            setValue('Vendor', { label: selectedVendorForSimulation?.label, value: selectedVendorForSimulation?.label })
+            setValue('Customer', { label: selectedCustomerSimulation?.label, value: selectedCustomerSimulation?.label })
+            setShowTokenDropdown(true)
             if (simulationApplicability?.value) {
+                setShowCustomer(true)
                 setShowVendor(true)
             }
+        } else {
+            dispatch(setTokenForSimulation([]))
         }
         return () => {
             dispatch(setMasterForSimulation({ label: '', value: '' }))
@@ -207,7 +212,17 @@ function Simulation(props) {
         setShowCustomer(false)
         dispatch(setSimulationApplicability(value))
         setEditWarning(false);
+        dispatch(setCustomerForSimulation(''))
+        setValue('customer', '')
+        setCustomer('')
+        dispatch(setVendorForSimulation(''))
+        setValue('Vendor', '')
+        setVendor('')
+        dispatch(setTokenForSimulation(''))
+        setValue('token', '')
+        setToken('')
         setTimeout(() => {
+            setShowMasterList(false)
             setShowVendor(true)
             setShowCustomer(true)
             setShowTokenDropdown(true)
@@ -283,6 +298,8 @@ function Simulation(props) {
         dispatch(setCustomerForSimulation(''))
         setVendor(value)
         dispatch(setFilterForRM({ VendorId: value?.value }))
+        setToken('')
+        dispatch(setTokenForSimulation(''))
         let simuTechId = technology?.value
         if (master?.value === EXCHNAGERATE && applicability?.value === APPLICABILITY_RM_SIMULATION) {
             simuTechId = RMIMPORT
@@ -293,7 +310,8 @@ function Simulation(props) {
             technologyId: technology?.value ? technology?.value : 0,
             loggedInUserId: loggedInUserId(),
             simulationTechnologyId: simuTechId,
-            vendorId: value.value ? value.value : EMPTY_GUID
+            vendorId: value.value ? value.value : EMPTY_GUID,
+            customerId: customer?.value ? customer?.value : EMPTY_GUID,
             /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
         }
         dispatch(getTokenSelectListAPI(obj, () => { }))
@@ -309,6 +327,8 @@ function Simulation(props) {
                 setShowMasterList(true)
             }
         }, 50);
+        setToken('')
+        dispatch(setTokenForSimulation(''))
         dispatch(setCustomerForSimulation(value))
         dispatch(setVendorForSimulation(''))
         setIsCustomer(true)
@@ -324,7 +344,8 @@ function Simulation(props) {
             technologyId: technology?.value ? technology?.value : 0,
             loggedInUserId: loggedInUserId(),
             simulationTechnologyId: simuTechId,
-            vendorId: value.value ? value.value : EMPTY_GUID
+            vendorId: vendor.value ? vendor.value : EMPTY_GUID,
+            customerId: value.value ? value.value : EMPTY_GUID,
             /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
         }
         dispatch(getTokenSelectListAPI(obj, () => { }))
@@ -1175,6 +1196,7 @@ function Simulation(props) {
         setVendor('')
         setRenderComponent(!renderComponent)
         setShowMasterList(false)
+        dispatch(getTokenSelectListAPI(false, () => { }))
     }
 
     const buttonCrossCustomer = () => {
@@ -1320,7 +1342,7 @@ function Simulation(props) {
                                                 label={''}
                                                 name={'customer'}
                                                 placeholder={'Select'}
-                                                valueDescription={token}
+                                                valueDescription={customer}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
