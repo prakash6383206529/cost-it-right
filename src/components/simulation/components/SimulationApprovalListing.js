@@ -450,7 +450,6 @@ function SimulationApprovalListing(props) {
         dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
         setApprovalData({ approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
-        dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
             setStatusForLinkedToken(rowObj?.Status === 'Linked')
             setRedirectCostingSimulation(true)
