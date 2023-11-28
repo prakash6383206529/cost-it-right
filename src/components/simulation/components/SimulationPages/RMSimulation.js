@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -22,7 +22,7 @@ import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
@@ -36,7 +36,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMSimulation(props) {
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
-    console.log('list: ', list);
+    console.log(props.children, "props.children");
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -366,9 +366,10 @@ function RMSimulation(props) {
     // const colorCheck = 
 
     const costFormatter = (props) => {
-
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('row: ', row.OldNetLandedCost);
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+        return isImpactedMaster ? checkForDecimalAndNull(row?.OldNetLandedCost, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     /**
@@ -622,7 +623,12 @@ function RMSimulation(props) {
     }
 
     const onBtExport = () => {
-        return returnExcelColumn(RM_IMPACT_DOWNLOAD_EXCEl, list)
+        if (String(props?.masterId) === String(RMIMPORT)) {
+            return returnExcelColumn(RM_IMPACT_DOWNLOAD_EXCEl_IMPORT, list)
+        } else {
+
+            return returnExcelColumn(RM_IMPACT_DOWNLOAD_EXCEl, list)
+        }
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -766,14 +772,16 @@ function RMSimulation(props) {
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
 
                                             {<AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE)) ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >
+                                            {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
+
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >
                                                 <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={"Percentage"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
                                             </AgGridColumn>}
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE)) ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
                                                 <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
                                             </AgGridColumn>
@@ -784,9 +792,15 @@ function RMSimulation(props) {
                                             <AgGridColumn width={150} field="RMFreightCost" tooltipField='RMFreightCost' editable='false' cellRenderer={'CostFormatter'} headerName="Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" tooltipField='RMShearingCost' editable='false' cellRenderer={'CostFormatter'} headerName="Shearing Cost" ></AgGridColumn>
                                             {technologyId === String(FORGING) && <AgGridColumn width={170} field="MachiningScrapRate" tooltipField='MachiningScrapRate' editable='false' headerName="Machining Scrap Cost" cellRenderer={'CostFormatter'}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE)) ? "Net Cost (Currency)" : "Net Cost (INR)"}>
+                                            {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Net Cost (Currency)" : "Net Cost (INR)"}>
                                                 <AgGridColumn width={120} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
+                                            </AgGridColumn>
+                                            }
+                                            {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
+                                            {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"Net Cost (INR)"}>
+                                                <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
                                             </AgGridColumn>
                                             }
                                             {props.children}

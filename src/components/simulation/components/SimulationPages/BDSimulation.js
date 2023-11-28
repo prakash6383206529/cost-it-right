@@ -21,7 +21,7 @@ import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
-import { BOP_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { BOP_IMPACT_DOWNLOAD_EXCEl, BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
 import { hideColumnFromExcel } from '../../../common/CommonFunctions';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
@@ -34,6 +34,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function BDSimulation(props) {
+    console.log(props.children, "props.children");
     const { list, isbulkUpload, rowCount, isImpactedMaster, tokenForMultiSimulation } = props
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
@@ -96,11 +97,11 @@ function BDSimulation(props) {
         list && list.map(item => {
             if (item.NewBasicRate !== undefined ? Number(item.NewBasicRate) : Number(item.BasicRate)) {
                 let tempObj = {}
-                tempObj.BoughtOutPartId = item.BoughtOutPartId
-                tempObj.OldBOPRate = item.BasicRate
-                tempObj.NewBOPRate = item.NewBasicRate
-                tempObj.OldNetLandedCost = checkForNull(item.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
-                tempObj.NewNetLandedCost = checkForNull(item.NewBasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.BoughtOutPartId = item?.BoughtOutPartId
+                tempObj.OldBOPRate = item?.BasicRate
+                tempObj.NewBOPRate = item?.NewBasicRate ? item?.NewBasicRate : item?.BasicRate
+                tempObj.OldNetLandedCost = checkForNull(item?.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
+                tempObj.NewNetLandedCost = checkForNull(item?.NewBasicRate ? item?.NewBasicRate : item?.BasicRate) / (getConfigurationKey().IsMinimumOrderQuantityVisible ? checkForNull(item?.NumberOfPieces) : 1)
                 tempArr.push(tempObj)
             }
             return null;
@@ -146,7 +147,7 @@ function BDSimulation(props) {
             return null;
         })
 
-        if (basicRateCount === list.length) {
+        if (String(selectedMasterForSimulation?.value) !== String(EXCHNAGERATE) && basicRateCount === list.length) {
             Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
             return false
         }
@@ -411,7 +412,12 @@ function BDSimulation(props) {
     }
 
     const onBtExport = () => {
-        return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEl, list)
+        if (String(props?.masterId) === String(BOPIMPORT)) {
+            return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT, list)
+        } else {
+
+            return returnExcelColumn(BOP_IMPACT_DOWNLOAD_EXCEl, list)
+        }
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -539,18 +545,23 @@ function BDSimulation(props) {
                                             {!isImpactedMaster && <AgGridColumn field="Plants" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' minWidth={140} cellRenderer='plantFormatter'></AgGridColumn>}
                                             {<AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || Number(selectedMasterForSimulation?.value === Number(EXCHNAGERATE))) ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || Number(selectedMasterForSimulation?.value === Number(EXCHNAGERATE)) || String(props?.masterId) === String(BOPIMPORT)) ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} field="BasicRate" editable='false' cellRenderer='oldBasicRateFormatter' headerName="Existing" colId="BasicRate" suppressSizeToFit={true}></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={!isImpactedMaster} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn>
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || Number(selectedMasterForSimulation?.value === Number(EXCHNAGERATE))) ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || Number(selectedMasterForSimulation?.value === Number(EXCHNAGERATE)) || String(props?.masterId) === String(BOPIMPORT)) ? "Net Cost (Currency)" : "Net Cost (INR)"} marryChildren={true}>
                                                 {/* {!isImpactedMaster &&<AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Old" colId='NetLandedCost'></AgGridColumn>} */}
                                                 <AgGridColumn width={120} field="OldNetLandedCost" editable='false' cellRenderer={'OldcostFormatter'} headerName="Existing" colId='NetLandedCost' suppressSizeToFit={true}></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter='data.NewBasicRate' cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost' suppressSizeToFit={true}></AgGridColumn>
                                             </AgGridColumn>
-
-                                            {props.children}
+                                            {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR BOPIMPORT */}
+                                            {String(props?.masterId) === String(BOPIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={"Net Cost (INR)"} marryChildren={true} >
+                                                <AgGridColumn width={120} field="OldBoughtOutPartNetLandedCostConversion" tooltipField='OldBoughtOutPartNetLandedCostConversion' editable='false' headerName="Existing" colId='OldBoughtOutPartNetLandedCostConversion'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewBoughtOutPartNetLandedCostConversion" editable='false' headerName="Revised" colId='NewBoughtOutPartNetLandedCostConversion'></AgGridColumn>
+                                            </AgGridColumn>
+                                            }
+                                            {props?.children}
                                             <AgGridColumn field="EffectiveDate" headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} editable='false' minWidth={150} cellRenderer='effectiveDateRenderer'></AgGridColumn>
                                             <AgGridColumn field="CostingId" hide={true}></AgGridColumn>
 
