@@ -934,7 +934,7 @@ export function CheckApprovalApplicableMaster(number) {
 
 // THIS FUNCTION WILL BE USED IF WE FOR EDITING OF SIMUALTION,WE DON'T NEED ANY FILTER
 export function applyEditCondSimulation(master) {
-  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT]
+  const ApplyEditCondition = [RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE]
   return ApplyEditCondition.includes(String(master))
 }
 
@@ -1239,4 +1239,9 @@ export function showRMScrapKeys(technology) {
       break;
   }
   return obj
+}
+
+export function getValueFromLabel(currency, currencySelectList) {
+  const data = currencySelectList && currencySelectList?.filter(element => element?.Text === currency)
+  return data[0]
 }

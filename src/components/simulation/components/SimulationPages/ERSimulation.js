@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-import { runVerifyExchangeRateSimulation } from '../../actions/Simulation';
+import { runVerifyExchangeRateSimulation, setExchangeRateListBeforeDraft } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,12 +14,17 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import Simulation from '../Simulation';
 import VerifySimulation from '../VerifySimulation';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import { PaginationWrapper } from '../../../common/commonPagination';
-import DatePicker from "react-datepicker";
-import WarningMessage from '../../../common/WarningMessage';
 import ReactExport from 'react-export-excel';
-import { EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, EXCHANGE_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { getCurrencySelectList } from '../../../../actions/Common';
+import RMImportListing from '../../../masters/material-master/RMImportListing';
+import { setFilterForRM } from '../../../masters/actions/Material';
+import BOPImportListing from '../../../masters/bop-master/BOPImportListing';
+import WarningMessage from '../../../common/WarningMessage';
+import DatePicker from "react-datepicker";
+import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -38,14 +43,33 @@ function ERSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [isDisable, setIsDisable] = useState(false)
+    const [noData, setNoData] = useState(false);
+    const [largestDate, setLargestDate] = useState(new Date());
+    const [showRMMasterList, setShowRMMasterList] = useState(false);
+    const [showBOPMasterList, setShowBOPMasterList] = useState(false);
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
-    const [noData, setNoData] = useState(false);
 
     const dispatch = useDispatch()
 
+    useEffect(() => {
+        dispatch(getCurrencySelectList(() => { }))
+        list && list?.map(item => {
+            item.NewCurrencyExchangeRate = item.CurrencyExchangeRate
+            return null
+        })
+    }, [])
+
+    useEffect(() => {
+        const entryWithLargestDate = _.maxBy(list, entry => new Date(entry.EffectiveDate));
+        setLargestDate(entryWithLargestDate?.EffectiveDate)
+    }, [list])
+
     const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const { simulationApplicability } = useSelector(state => state.simulation)
+    const { selectedVendorForSimulation, selectedCustomerSimulation } = useSelector(state => state.simulation)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
 
     const cancelVerifyPage = () => {
 
@@ -101,7 +125,6 @@ function ERSimulation(props) {
         return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
     }
 
-
     /**
   * @method beforeSaveCell
   * @description CHECK FOR ENTER NUMBER IN CELL
@@ -123,7 +146,16 @@ function ERSimulation(props) {
 
 
     const cancel = () => {
+        list && list.map((item) => {
+            item.NewCurrencyExchangeRate = undefined
+            return null
+        })
         setShowMainSimulation(true)
+    }
+
+    const cancelImportList = () => {
+        setShowRMMasterList(false)
+        setShowBOPMasterList(false)
     }
 
     const closeDrawer = (e = '') => {
@@ -172,12 +204,19 @@ function ERSimulation(props) {
     const onFilterTextBoxChanged = (e) => {
         gridApi.setQuickFilter(e.target.value);
     }
-    const handleEffectiveDateChange = (date) => {
-        setEffectiveDate(date)
-        setIsEffectiveDateSelected(true)
-        setIsWarningMessageShow(false)
-    }
 
+    const revisedBasicRateHeader = (props) => {
+        return (
+            <div className='ag-header-cell-label'>
+                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+            </div>
+        );
+    };
+
+    const newRateFormatter = (props) => {
+        const cell = props?.value;
+        return cell ? cell : ''
+    };
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -185,7 +224,9 @@ function ERSimulation(props) {
         customNoRowsOverlay: NoContentFound,
         newERFormatter: newERFormatter,
         oldERFormatter: oldERFormatter,
-        nullHandler: props.nullHandler && props.nullHandler
+        nullHandler: props.nullHandler && props.nullHandler,
+        revisedBasicRateHeader: revisedBasicRateHeader,
+        newRateFormatter: newRateFormatter
     };
 
     const onRowSelect = () => {
@@ -196,6 +237,7 @@ function ERSimulation(props) {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
+
     const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         if (!isEffectiveDateSelected) {
@@ -209,33 +251,62 @@ function ERSimulation(props) {
         }
 
         setIsDisable(true)
-        let obj = {}
-        obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.LoggedInUserId = loggedInUserId()
-        let tempArr = []
-        selectedRowData && selectedRowData.map(item => {
-            let tempObj = {}
-            tempObj.ExchangeRateId = item.ExchangeRateId
-            tempObj.EffectiveDate = item.EffectiveDate
-            tempObj.Currency = item.Currency
-            tempObj.NewExchangeRate = item.CurrencyExchangeRate
-            tempObj.Delta = 0
-            tempArr.push(tempObj)
 
-            return null;
-        })
-        obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-        obj.SimulationIds = tokenForMultiSimulation
-        obj.SimulationExchangeRates = tempArr
+        dispatch(createMultipleExchangeRate(list, currencySelectList, effectiveDate, res => {
 
-        dispatch(runVerifyExchangeRateSimulation(obj, res => {
-            setIsDisable(false)
-            if (res?.data?.Result) {
-                setToken(res.data.Identity)
-                setShowVerifyPage(true)
-            }
+            let obj = {}
+            obj.SimulationTechnologyId = selectedMasterForSimulation.value
+            obj.LoggedInUserId = loggedInUserId()
+            obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
+            obj.SimulationIds = tokenForMultiSimulation
+            obj.SimulationHeadId = list[0]?.CostingHeadId
+            obj.SimulationExchangeRates = res
+            obj.IsExchangeRateSimulation = true
+
+            dispatch(runVerifyExchangeRateSimulation(obj, res => {
+                setIsDisable(false)
+                if (res?.data?.Result) {
+                    setToken(res.data.Identity)
+                    setShowVerifyPage(true)
+                }
+            }))
         }))
-        // setShowVerifyPage(true)
+    }, 500)
+
+    const selectRM = debounce(() => {
+        // let basicRateCount = 0
+        // list && list.map((li) => {
+        //     if (Number(li.BasicRate) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
+        //         basicRateCount = basicRateCount + 1
+        //     }
+
+        //     if (li.NewBasicrateFromPercentage === undefined || li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+        //         if (!(basicRateCount === list.length)) {
+        //             li.NewBasicRate = li?.BasicRate
+        //             li.NewScrapRate = li?.ScrapRate
+        //             Toaster.warning('Scrap Rate should be less than Basic Rate')
+        //             return false
+        //         }
+        //     }
+        //     return null;
+        // })
+        // if (basicRateCount === list.length) {
+        //     Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+        //     return false
+        // }
+
+
+        if (selectedRowData?.length === 0) {
+            Toaster.warning("Please select atleast one Exchange Rate")
+            return false
+        }
+        dispatch(setExchangeRateListBeforeDraft(selectedRowData))
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(list, 'Currency') }))
+        if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+            setShowRMMasterList(true)
+        } else {
+            setShowBOPMasterList(true)
+        }
     }, 500)
 
     const onBtExport = () => {
@@ -248,6 +319,7 @@ function ERSimulation(props) {
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
             temp.push(item)
+            return null
         })
 
         return (
@@ -256,9 +328,15 @@ function ERSimulation(props) {
             </ExcelSheet>);
     }
 
+    const handleEffectiveDateChange = (date) => {
+        setEffectiveDate(date)
+        setIsEffectiveDateSelected(true)
+        setIsWarningMessageShow(false)
+    }
+
     return (
         <div>
-            <div className={`ag-grid-react`}>
+            {!showRMMasterList && !showBOPMasterList && <div className={`ag-grid-react`}>
 
                 {
 
@@ -294,7 +372,6 @@ function ERSimulation(props) {
                                             paginationPageSize={defaultPageSize}
                                             onGridReady={onGridReady}
                                             gridOptions={gridOptions}
-                                            loadingOverlayComponent={'customLoadingOverlay'}
                                             noRowsOverlayComponent={'customNoRowsOverlay'}
                                             noRowsOverlayComponentParams={{
                                                 title: EMPTY_DATA,
@@ -312,9 +389,14 @@ function ERSimulation(props) {
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' headerName="Part No" minWidth={190}></AgGridColumn>}
                                             <AgGridColumn field="BankRate" editable='false' headerName="Bank Rate(INR)" minWidth={190}></AgGridColumn>
-                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission % " minWidth={190}></AgGridColumn>
+                                            <AgGridColumn suppressSizeToFit="true" editable='false' field="BankCommissionPercentage" headerName="Bank Commission %" minWidth={190}></AgGridColumn>
                                             <AgGridColumn field="CustomRate" editable='false' headerName="Custom Rate(INR)" minWidth={190}></AgGridColumn>
-                                            {!isImpactedMaster && <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate(INR)" minWidth={190}></AgGridColumn>}
+
+                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Exchange Rate" marryChildren={true} >
+                                                <AgGridColumn width={120} field="CurrencyExchangeRate" tooltipField='CurrencyExchangeRate' editable='false' headerName="Existing" cellRenderer='oldRateFormatter' colId="CurrencyExchangeRate" suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewCurrencyExchangeRate" tooltipField="NewCurrencyExchangeRate" valueGetter='data.NewCurrencyExchangeRate' editable={!isImpactedMaster} headerName="Revised" cellRenderer='newRateFormatter' colId='NewCurrencyExchangeRate' headerComponent={'revisedBasicRateHeader'} suppressSizeToFit={true}></AgGridColumn>
+                                            </AgGridColumn>}
+
                                             {isImpactedMaster && <>
                                                 <AgGridColumn suppressSizeToFit="true" field="OldExchangeRate" headerName="Existing Exchange Rate(INR)" minWidth={190}></AgGridColumn>
                                                 <AgGridColumn suppressSizeToFit="true" field="NewExchangeRate" headerName="Revised Exchange Rate(INR)" minWidth={190}></AgGridColumn>
@@ -331,34 +413,44 @@ function ERSimulation(props) {
 
                             </Col>
                         </Row>
-                        {
-                            !isImpactedMaster &&
+                        {!isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                 <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
-                                    <div className="inputbox date-section mr-3 verfiy-page">
-                                        <DatePicker
-                                            name="EffectiveDate"
-                                            selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
-                                            id='EffectiveDate'
-                                            onChange={handleEffectiveDateChange}
-                                            showMonthDropdown
-                                            showYearDropdown
-                                            dropdownMode='select'
-                                            dateFormat="dd/MM/yyyy"
-                                            placeholderText="Select effective date"
-                                            className="withBorder"
-                                            autoComplete={"off"}
-                                            disabledKeyboardNavigation
-                                            onChangeRaw={(e) => e.preventDefault()}
-                                        />
-                                        {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                    <div className="d-flex align-items-center">
+                                        {simulationApplicability?.value === APPLICABILITY_PART_SIMULATION ?
+                                            <><div className="inputbox date-section mr-3 verfiy-page">
+                                                <DatePicker
+                                                    name="EffectiveDate"
+                                                    selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
+                                                    id='EffectiveDate'
+                                                    onChange={handleEffectiveDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dropdownMode='select'
+                                                    dateFormat="dd/MM/yyyy"
+                                                    placeholderText="Select effective date"
+                                                    className="withBorder"
+                                                    autoComplete={"off"}
+                                                    disabledKeyboardNavigation
+                                                    onChangeRaw={(e) => e.preventDefault()}
+                                                // minDate={new Date()}
+                                                // minDate={new Date(largestDate)}
+                                                />
+                                            </div>
+                                                {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
+                                                <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" id={"verify-btn"} disabled={isDisable}>
+                                                    <div className={"Run-icon"}>
+                                                    </div>{" "}
+                                                    {"Verify"}
+                                                </button>
+                                            </> :
+                                            <button onClick={selectRM} type="button" className="user-btn mr5 save-btn" disabled={isDisable}>
+                                                <div>
+                                                </div>{" "}
+                                                {`Select ${simulationApplicability?.label}`}
+                                            </button>}
                                     </div>
-                                    <button onClick={verifySimulation} type="submit" className="user-btn mr5 save-btn" id={"verify-btn"} disabled={isDisable}>
-                                        <div className={"Run-icon"}>
-                                        </div>{" "}
-                                        {"Verify"}
-                                    </button>
-                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn"                    >
+                                    {/* <button onClick={runSimulation} type="submit" className="user-btn mr5 save-btn">
                                 <div className={"Run"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
@@ -385,7 +477,40 @@ function ERSimulation(props) {
                         anchor={"right"}
                     />
                 }
-            </div>
+            </div>}
+            {showRMMasterList && <RMImportListing
+                isSimulation={true}
+                isMasterSummaryDrawer={false}
+                //   apply={editTable}
+                //    objectForMultipleSimulation={obj} 
+                //    selectionForListingMasterAPI={selectionForListingMasterAPI} 
+                //    changeSetLoader={changeSetLoader} 
+                //    changeTokenCheckBox={changeTokenCheckBox} 
+                //    isReset={isReset} 
+                ListFor='simulation'
+                approvalStatus={APPROVED_STATUS}
+                // stopUnrequiredCalls={true}
+                isFromVerifyPage={true}
+                cancelImportList={cancelImportList}
+            />}
+            {showBOPMasterList &&
+                <BOPImportListing
+                    isSimulation={true}
+                    isMasterSummaryDrawer={false}
+                    // technology={technology.value}
+                    // objectForMultipleSimulation={obj}
+                    // apply={editTable}
+                    // selectionForListingMasterAPI={selectionForListingMasterAPI}
+                    // changeSetLoader={changeSetLoader}
+                    // changeTokenCheckBox={changeTokenCheckBox}
+                    // isReset={isReset}
+                    ListFor={'simulation'}
+                    // isBOPAssociated={association?.value === ASSOCIATED ? true : false}
+                    approvalStatus={APPROVED_STATUS}
+                    // callBackLoader={callBackLoader}
+                    isFromVerifyPage={true}
+                    cancelImportList={cancelImportList}
+                />}
         </div >
     );
 }

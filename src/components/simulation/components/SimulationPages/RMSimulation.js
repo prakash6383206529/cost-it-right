@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { CBCTypeId, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, BOPIMPORT } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -16,15 +16,15 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import Simulation from '../Simulation';
 import { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
-import { FORGING, RM_IMPACT_DOWNLOAD_EXCEl } from '../../../../config/masterData';
+import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
 import ReactExport from 'react-export-excel';
+import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
 const gridOptions = {
 
@@ -36,6 +36,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMSimulation(props) {
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
+    console.log(props.children, "props.children");
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -64,7 +65,10 @@ function RMSimulation(props) {
 
     const dispatch = useDispatch()
 
-    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+    const currencySelectList = useSelector(state => state.comman.currencySelectList)
+    const { selectedMasterForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    console.log('simulationApplicability: ', simulationApplicability);
 
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
@@ -85,12 +89,12 @@ function RMSimulation(props) {
 
     }, [list])
 
-    const setValueFunction = () => {
+    const setValueFunction = (check, tempList = []) => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE TODO ****************/
         let obj = {}
         obj.Technology = technology
-        obj.SimulationTechnologyId = selectedMasterForSimulation.value
-        obj.SimulationHeadId = list[0].CostingTypeId
+        obj.SimulationTechnologyId = check ? RMIMPORT : selectedMasterForSimulation.value
+        obj.SimulationHeadId = list[0]?.CostingTypeId
         obj.Masters = master
         obj.LoggedInUserId = loggedInUserId()
 
@@ -100,8 +104,39 @@ function RMSimulation(props) {
             obj.PlantId = filteredRMData.plantId ? filteredRMData.plantId.value : ''
         }
         let tempArr = []
-        list && list.map(item => {
-            if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && (((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+        if (String(selectedMasterForSimulation.value) === String(RMDOMESTIC) || String(selectedMasterForSimulation.value) === String(RMIMPORT)) {
+
+            list && list.map(item => {
+                if ((item.NewBasicRate !== undefined || item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) && (((item.NewBasicRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewBasicRate) : Number(item.BasicRate)) !== Number(item.BasicRate) || ((item.NewScrapRate !== undefined || item.NewBasicrateFromPercentage) ? Number(item.NewScrapRate) : Number(item.ScrapRate)) !== Number(item.ScrapRate))) {
+                    let tempObj = {}
+                    tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
+                    tempObj.RawMaterialName = item.RawMaterialName
+                    tempObj.MaterialType = item.MaterialType
+                    tempObj.RawMaterialGrade = item.RawMaterialGradeName
+                    tempObj.RawMaterialSpecification = item.RawMaterialSpecificationName
+                    tempObj.RawMaterialCategory = item.Category
+                    tempObj.UOM = item.UnitOfMeasurementName
+                    tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
+                    tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate
+                    tempObj.OldScrapRate = item.ScrapRate
+                    tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
+                    tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
+                    tempObj.RawMaterialShearingCost = checkForNull(item.RMShearingCost)
+                    tempObj.OldNetLandedCost = item.NetLandedCost
+                    tempObj.NewNetLandedCost = Number(item.NewBasicRate ? item.NewBasicRate : item.BasicRate) + checkForNull(item.RMShearingCost) + checkForNull(item.RMFreightCost)
+                    tempObj.EffectiveDate = item.EffectiveDate
+                    tempObj.RawMaterialId = item.RawMaterialId
+                    tempObj.PlantId = item.PlantId
+                    tempObj.VendorId = item.VendorId
+                    tempObj.Delta = 0
+                    tempArr.push(tempObj)
+                }
+                return null;
+            })
+        } else {
+            list && list.map(item => {
+                console.log(item.NewBasicRate, item.NewBasicrateFromPercentage, item.BasicRate, " item.BasicRate");
+                console.log((item.NewBasicrateFromPercentage !== 0 && item.NewBasicrateFromPercentage !== null && item.NewBasicrateFromPercentage !== undefined), "condition answr");
                 let tempObj = {}
                 tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.RawMaterialName = item.RawMaterialName
@@ -111,7 +146,7 @@ function RMSimulation(props) {
                 tempObj.RawMaterialCategory = item.Category
                 tempObj.UOM = item.UnitOfMeasurementName
                 tempObj.OldBasicRate = isbulkUpload ? item.BasicRate : item.BasicRatePerUOM
-                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : item.NewBasicrateFromPercentage ? item.NewBasicrateFromPercentage : item.BasicRate
+                tempObj.NewBasicRate = item.NewBasicRate ? item.NewBasicRate : (item.NewBasicrateFromPercentage !== 0 && item.NewBasicrateFromPercentage !== null && item.NewBasicrateFromPercentage !== undefined) ? item.NewBasicrateFromPercentage : (isbulkUpload ? item.BasicRate : item.BasicRatePerUOM)
                 tempObj.OldScrapRate = item.ScrapRate
                 tempObj.NewScrapRate = item.NewScrapRate ? item.NewScrapRate : item.ScrapRate
                 tempObj.RawMaterialFreightCost = checkForNull(item.RMFreightCost)
@@ -124,13 +159,18 @@ function RMSimulation(props) {
                 tempObj.VendorId = item.VendorId
                 tempObj.Delta = 0
                 tempArr.push(tempObj)
-            }
-            return null;
-        })
+
+                return null;
+            })
+        }
 
 
         obj.SimulationIds = tokenForMultiSimulation
         obj.SimulationRawMaterials = tempArr
+        if (check) {
+            obj.SimulationExchangeRates = tempList
+            obj.IsExchangeRateSimulation = true
+        }
 
         obj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
         dispatch(runVerifySimulation(obj, res => {
@@ -174,7 +214,7 @@ function RMSimulation(props) {
             }
             return null;
         })
-        if (basicRateCount === list.length) {
+        if ((selectedMasterForSimulation?.value === RMDOMESTIC || selectedMasterForSimulation?.value === RMIMPORT) && basicRateCount === list.length) {
             Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
             return false
         }
@@ -190,7 +230,14 @@ function RMSimulation(props) {
         setIsDisable(true)
 
         basicRateCount = 0
-        setValueFunction();
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            console.log(list, "list");
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
+                setValueFunction(true, res);
+            }))
+        } else {
+            setValueFunction(false, []);
+        }
         setShowTooltip(false)
     }, 600)
 
@@ -319,9 +366,10 @@ function RMSimulation(props) {
     // const colorCheck = 
 
     const costFormatter = (props) => {
-
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('row: ', row.OldNetLandedCost);
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : ''
+        return isImpactedMaster ? checkForDecimalAndNull(row?.OldNetLandedCost, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }
 
     /**
@@ -558,7 +606,13 @@ function RMSimulation(props) {
         setShowPopup(false)
     }
     const onPopupConfirm = () => {
-        setValueFunction()
+        if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
+                setValueFunction(true, res);
+            }))
+        } else {
+            setValueFunction(false, []);
+        }
         setShowPopup(false)
     }
     const basicRatetooltipToggle = () => {
@@ -569,7 +623,12 @@ function RMSimulation(props) {
     }
 
     const onBtExport = () => {
-        return returnExcelColumn(RM_IMPACT_DOWNLOAD_EXCEl, list)
+        if (String(props?.masterId) === String(RMIMPORT)) {
+            return returnExcelColumn(RM_IMPACT_DOWNLOAD_EXCEl_IMPORT, list)
+        } else {
+
+            return returnExcelColumn(RM_IMPACT_DOWNLOAD_EXCEl, list)
+        }
     };
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -651,14 +710,14 @@ function RMSimulation(props) {
                                                             />
                                                         </div>
                                                     </>}
-                                                {!isImpactedMaster && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                {!isImpactedMaster && list && <div className={`d-flex align-items-center simulation-label-container`}>
                                                     <div className='d-flex'>
                                                         <label>Technology: </label>
-                                                        <p className='technology ml-1' title={list[0].TechnologyName}>{list[0].TechnologyName}</p>
+                                                        <p className='technology ml-1' title={list[0]?.TechnologyName}>{list[0]?.TechnologyName}</p>
                                                     </div>
-                                                    {list[0].CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                    {list[0]?.CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
                                                         <label className='mr-1'>Vendor (Code):</label>
-                                                        <p title={list[0].VendorName}>{list[0].VendorName ? list[0].VendorName : list[0]['Vendor (Code)']}</p>
+                                                        <p title={list[0]?.VendorName}>{list[0]?.VendorName ? list[0]?.VendorName : list?.[0]?.['Vendor (Code)']}</p>
 
                                                     </div>}
                                                     <button type="button" className={"apply ml-2"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
@@ -705,31 +764,43 @@ function RMSimulation(props) {
                                             <AgGridColumn width={135} field="RawMaterialCode" tooltipField='RawMaterialCode' editable='false' headerName='Code' cellRenderer='hyphenFormatter'></AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn width={110} field="Category" tooltipField='Category' editable='false' headerName="Category"></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={125} field="TechnologyName" tooltipField='TechnologyName' editable='false' headerName="Technology" ></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId !== CBCTypeId && <AgGridColumn width={160} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
-                                            {!isImpactedMaster && list[0].CostingTypeId === CBCTypeId && <AgGridColumn width={160} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0]?.CostingTypeId !== CBCTypeId && <AgGridColumn width={160} field="Vendor (Code)" tooltipField='Vendor (Code)' editable='false' headerName="Vendor (Code)" cellRenderer='vendorFormatter'></AgGridColumn>}
+                                            {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={160} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={160} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
                                             <AgGridColumn width={100} field="UnitOfMeasurementName" tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
 
+                                            {<AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
+                                            {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >
                                                 <AgGridColumn width={120} cellRenderer='oldBasicRateFormatter' field={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"} editable='false' headerName="Existing" colId={isImpactedMaster ? "OldBasicRate" : "BasicRatePerUOM"}></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newBasicRateFormatter' editable={isImpactedMaster ? false : EditableCallbackForNewBasicRate} onCellValueChanged='cellChange' field="NewBasicRate" headerName="Revised" colId='NewBasicRate' headerComponent={'revisedBasicRateHeader'}></AgGridColumn>
                                             </AgGridColumn>
                                             {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" headerName={"Percentage"} marryChildren={true} width={240}>
                                                 <AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
                                             </AgGridColumn>}
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
                                                 <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
                                             </AgGridColumn>
+                                            {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"BOP Net Landed Cost Conversion"} marryChildren={true}>
+                                                <AgGridColumn width={120} field="OldRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Existing" colId='OldRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Revised" colId='NewRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
+                                            </AgGridColumn> */}
                                             <AgGridColumn width={150} field="RMFreightCost" tooltipField='RMFreightCost' editable='false' cellRenderer={'CostFormatter'} headerName="Freight Cost"></AgGridColumn>
                                             <AgGridColumn width={170} field="RMShearingCost" tooltipField='RMShearingCost' editable='false' cellRenderer={'CostFormatter'} headerName="Shearing Cost" ></AgGridColumn>
                                             {technologyId === String(FORGING) && <AgGridColumn width={170} field="MachiningScrapRate" tooltipField='MachiningScrapRate' editable='false' headerName="Machining Scrap Cost" cellRenderer={'CostFormatter'}></AgGridColumn>}
-                                            {!isImpactedMaster && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={Number(selectedMasterForSimulation?.value) === 2 ? "Net Cost (Currency)" : "Net Cost (INR)"}>
+                                            {<AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Net Cost (Currency)" : "Net Cost (INR)"}>
                                                 <AgGridColumn width={120} field="NetLandedCost" tooltipField='NetLandedCost' editable='false' cellRenderer={'costFormatter'} headerName="Existing" colId='NetLandedCost'></AgGridColumn>
                                                 <AgGridColumn width={120} field="NewNetLandedCost" editable='false' valueGetter={ageValueGetterLanded} cellRenderer={'NewcostFormatter'} headerName="Revised" colId='NewNetLandedCost'></AgGridColumn>
+                                            </AgGridColumn>
+                                            }
+                                            {/* THIS COLUMN WILL BE VISIBLE IF WE ARE LOOKING IMPACTED MASTER DATA FOR RMIMPORT */}
+                                            {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"Net Cost (INR)"}>
+                                                <AgGridColumn width={120} field="OldRMNetLandedCostConversion" tooltipField='OldRMNetLandedCostConversion' editable='false' headerName="Existing" colId='OldRMNetLandedCostConversion'></AgGridColumn>
+                                                <AgGridColumn width={120} field="NewRMNetLandedCostConversion" editable='false' headerName="Revised" colId='NewRMNetLandedCostConversion'></AgGridColumn>
                                             </AgGridColumn>
                                             }
                                             {props.children}

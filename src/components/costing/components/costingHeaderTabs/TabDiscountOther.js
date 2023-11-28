@@ -261,7 +261,7 @@ function TabDiscountOther(props) {
             let Data = res?.data?.Data.ConditionsData
             let temp = []
             Data && Data.map((item) => {
-              item.ConditionPercentage = item.Percentage
+              // item.ConditionPercentage = item.Percentage
               item.Description = `${item.Description} (${item.CostingConditionNumber})`
               temp.push(item)
             })
@@ -1150,15 +1150,15 @@ function TabDiscountOther(props) {
 
       if (type === 'save') {
         if (data) {
-          let list = data && data?.map(item => {
-            item.Percentage = item?.ConditionPercentage
-            delete item?.ConditionPercentage
-            return item
-          })
+          // let list = data && data?.map(item => {
+          //   // item.Percentage = item?.ConditionPercentage
+          //   // delete item?.ConditionPercentage
+          //   return item
+          // })
           let obj = {}
           obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
           obj.LoggedInUserId = loggedInUserId()
-          obj.ConditionsData = list
+          obj.ConditionsData = data
           dispatch(saveCostingDetailCondition(obj, () => { }))
         }
       }

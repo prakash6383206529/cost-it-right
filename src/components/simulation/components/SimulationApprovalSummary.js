@@ -18,10 +18,10 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { checkFinalUser, getReleaseStrategyApprovalDetails, setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -114,7 +114,7 @@ function SimulationApprovalSummary(props) {
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
-    const { initialConfiguration } = useSelector(state => state.auth)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
     const dispatch = useDispatch()
 
@@ -125,6 +125,9 @@ function SimulationApprovalSummary(props) {
     const [finalLeveluser, setFinalLevelUser] = useState(false)
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
+    const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
+    const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => {
@@ -237,10 +240,18 @@ function SimulationApprovalSummary(props) {
             //         }
             //     }))
             // } else {
+            let technologyIdTemp = SimulationTechnologyId
+            if (res?.data?.Data?.IsExchangeRateSimulation) {
+                if (String(SimulationTechnologyId) === String(RMIMPORT) || String(SimulationTechnologyId) === String(BOPIMPORT)) {
+                    technologyIdTemp = EXCHNAGERATE
+                }
+            } else {
+                technologyIdTemp = SimulationTechnologyId
+            }
             let obj = {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: SimulationTechnologyId,
+                TechnologyId: technologyIdTemp,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
             }
@@ -1311,6 +1322,18 @@ function SimulationApprovalSummary(props) {
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="Revised Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Variance (Proc. Cost)" cellRenderer='processVarianceFormatter' ></AgGridColumn>}
 
+                                                                {showRM && <AgGridColumn width={150} field="RMName" tooltipField="RMName" headerName="RM Name"></AgGridColumn>}
+                                                                {showRM && <AgGridColumn width={150} field="RMGrade" tooltipField="RMGrade" headerName="RM Grade"></AgGridColumn>}
+                                                                {showRM && <AgGridColumn width={150} field="RMSpecification" tooltipField="RMSpecification" headerName="RM Specification"></AgGridColumn>}
+
+                                                                {showBOP && <AgGridColumn width={150} field="BOPName" tooltipField="BOPName" headerName="BOP Name"></AgGridColumn>}
+                                                                {showBOP && <AgGridColumn width={150} field="BOPNumber" tooltipField="BOPNumber" headerName="BOP Number"></AgGridColumn>}
+                                                                {showBOP && <AgGridColumn width={150} field="Category" tooltipField="Category" headerName="Category"></AgGridColumn>}
+
+                                                                {/* {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                                             {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                                              {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>} */}
+
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Existing Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="Revised Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="Net Bought Out Part Cost Variance"></AgGridColumn>}
@@ -1634,6 +1657,7 @@ function SimulationApprovalSummary(props) {
                     releaseStrategyDetails={releaseStrategyDetails}
                     technologyId={SimulationTechnologyId}
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
+                    IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />

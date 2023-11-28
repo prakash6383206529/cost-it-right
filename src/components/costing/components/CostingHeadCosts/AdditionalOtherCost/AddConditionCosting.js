@@ -161,7 +161,7 @@ function AddConditionCosting(props) {
             ConditionNumber: newCondition ? newCondition.CostingConditionNumber : '',
             Description: newCondition ? newCondition.label : '',
             ConditionType: getValues('Type') ? getValues('Type') : '',
-            ConditionPercentage: getValues('Percentage') ? getValues('Percentage') : '',
+            Percentage: getValues('Percentage') ? getValues('Percentage') : '',
             ConditionCost: totalCostCurrency ? totalCostCurrency : '',
             ConditionCostConversion: totalCostBase ? totalCostBase : '',
             ConditionCostPerQuantity: getValues('ConditionCostPerQuantity') ? getValues('ConditionCostPerQuantity') : '',
@@ -241,7 +241,7 @@ function AddConditionCosting(props) {
                 CostingConditionMasterId: Data.CostingConditionMasterId, ConditionNumber: Data.ConditionNumber, ConditionType: Data.ConditionType
             })
             setValue('Type', Data.ConditionType)
-            setValue('Percentage', checkForDecimalAndNull(Data.ConditionPercentage, initialConfiguration.NoOfDecimalForPrice))
+            setValue('Percentage', checkForDecimalAndNull(Data.Percentage, initialConfiguration.NoOfDecimalForPrice))
             setValue('CostCurrency', checkForDecimalAndNull(Data.ConditionCost, initialConfiguration.NoOfDecimalForPrice))
             setValue('CostBase', checkForDecimalAndNull(Data.ConditionCostConversion, initialConfiguration.NoOfDecimalForPrice))
             setValue('Quantity', Data.ConditionQuantity)

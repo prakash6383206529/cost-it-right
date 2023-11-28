@@ -47,7 +47,7 @@ function ConditionCosting(props) {
                                             <tr key={index}>
                                                 <td>{`${item.Description}`} </td>
                                                 {<td>{item.ConditionType}</td>}
-                                                {<td>{item.ConditionPercentage ? checkForDecimalAndNull(item?.ConditionPercentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
+                                                {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {<td>{item.ConditionQuantity ? checkForDecimalAndNull(item?.ConditionQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {<td>{checkForDecimalAndNull(item?.ConditionCost, getConfigurationKey().NoOfDecimalForPrice)}</td>}
                                                 {isFromImport && <td>{checkForDecimalAndNull(item?.ConditionCostConversion, getConfigurationKey().NoOfDecimalForPrice)}</td>}
