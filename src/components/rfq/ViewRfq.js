@@ -18,7 +18,7 @@ import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, formViewData, loggedInUserId } from '../../helper';
+import { checkForNull, formViewData, getCodeBySplitting, getNameBySplitting, loggedInUserId } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -342,8 +342,8 @@ function RfqListing(props) {
                     obj.ApprovalToken = quotationGrid[index].ApprovalToken
                     obj.typeOfCosting = 1
                     obj.partNo = quotationGrid[index]?.PartNumber
-                    obj.plantCode = quotationGrid[index]?.PlantName.split('(')[1]?.split(')')[0]
-                    obj.plantName = quotationGrid[index]?.PlantName.split('(')[0]
+                    obj.plantCode = getCodeBySplitting(quotationGrid[index]?.PlantName)
+                    obj.plantName = getNameBySplitting(quotationGrid[index]?.PlantName)
                     obj.plantId = quotationGrid[index]?.PlantId
 
                     obj.vendorId = quotationGrid[index]?.VendorId
@@ -425,8 +425,8 @@ function RfqListing(props) {
 
                     obj.CostingHead = quotationGrid[index]?.costingHeadCheck
 
-                    obj.destinationPlantCode = quotationGrid[index]?.PlantName.split('(')[1]?.split(')')[0]
-                    obj.destinationPlantName = quotationGrid[index]?.PlantName.split('(')[0]
+                    obj.destinationPlantCode = getCodeBySplitting(quotationGrid[index]?.PlantName)
+                    obj.destinationPlantName = getNameBySplitting(quotationGrid[index]?.PlantName)
                     obj.destinationPlantId = quotationGrid[index]?.PlantId
                     obj.costingTypeId = quotationGrid[index]?.NfrId !== null ? NCCTypeId : VBCTypeId
                     obj.customerName = quotationGrid[index]?.customerName
