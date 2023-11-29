@@ -18,10 +18,10 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, INR, CBCTypeId } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { checkFinalUser, getReleaseStrategyApprovalDetails, setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -42,10 +42,8 @@ import _, { debounce } from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { approvalPushedOnSap } from '../../costing/actions/Approval';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
 import { hideColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
 
 const gridOptions = {};
@@ -55,7 +53,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { isbulkUpload, approvalDetails, approvalData, list, technology, master } = props;
+    const { isbulkUpload, approvalData } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props.location.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [assemblyWiseAcc, setAssemblyWiseAcc] = useState(true)
@@ -1065,13 +1063,12 @@ function SimulationApprovalSummary(props) {
         });
 
         uniqueArr && uniqueArr.map(item => {
-            const vendor = item.VendorName.split('(')[1]
 
             temp.push({
                 CostingId: item?.CostingId,
                 BoughtOutPartId: item?.BoughtOutPartId,
                 effectiveDate: DayTime(simulationDetail?.EffectiveDate).format('YYYY-MM-DD'),
-                vendorCode: vendor?.split(')')[0],
+                vendorCode: getCodeBySplitting(item.VendorName),
                 materialNumber: item?.PartNo,
                 netPrice: item?.NewBasicRate,
                 plant: item?.PlantCode ? item?.PlantCode : null,

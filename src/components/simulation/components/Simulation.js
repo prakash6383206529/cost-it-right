@@ -104,7 +104,6 @@ function Simulation(props) {
             setShowEditTable(false)
         }
         return () => {
-            dispatch(setMasterForSimulation({ label: '', value: '' }))
             reactLocalStorage?.setObject('vendorData', [])
         }
     }, [])

@@ -7,7 +7,7 @@ import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookF
 import { getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { autoCompleteDropdown, autoCompleteDropdownPart } from '../../common/CommonFunctions';
 import { MESSAGES } from '../../../config/message';
-import { checkWhiteSpaces, } from "../../../helper/validation";
+import { checkWhiteSpaces, getCodeBySplitting, } from "../../../helper/validation";
 import { VBC_VENDOR_TYPE, ZBC, searchCount } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getPartSelectListWtihRevNo } from '../actions/Volume';
@@ -157,15 +157,12 @@ function SAPPushDetail(props) {
         }
         let obj = {}
 
-        const vendor = getValues('Vendor').label.split('(')[1]
-        const plant = getValues('Plant').label.split('(')[1]
-
         obj.PartNumber = getValues('PartNumber').label
-        obj.PlantCode = plant?.split(')')[0]
+        obj.PlantCode = getCodeBySplitting(getValues('Plant').label)
         obj.MaterialGroup = getValues('MaterialGroup')
         obj.PurchasingOrg = getValues('PurcahaseOrganisation')
         obj.PurchasingGroup = getValues('PurcahaseGroup')
-        obj.VendorCode = vendor?.split(')')[0]
+        obj.VendorCode = getCodeBySplitting(getValues('Vendor').label)
         if (isEditFlag) {
             obj.SapPushDetailId = data.SapPushDetailId
             dispatch(updateSAPDetail(obj, res => {

@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
+import { formatRMSimulationObject, getCodeBySplitting, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { EMPTY_GUID, INR, FILE_URL, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -639,11 +639,10 @@ function ApproveRejectDrawer(props) {
               Toaster.success('The simulation token approved successfully.')
               let temp = []
               costingList && costingList.map(item => {
-                const vendor = item.VendorName.split('(')[1]
                 temp.push({
                   CostingId: item.CostingId,
                   effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/YYYY'),
-                  vendorCode: vendor.split(')')[0],
+                  vendorCode: getCodeBySplitting(item.VendorName),
                   materialNumber: item.PartNo,
                   netPrice: item.NewPOPrice,
                   plant: item.PlantCode ? item.PlantCode : '1511',
