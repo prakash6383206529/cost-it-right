@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
-import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, getVendorCode } from "../../../helper/validation";
+import { required, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number, getCodeBySplitting } from "../../../helper/validation";
 import {
   searchableSelect, focusOnError, renderTextInputField,
 } from "../../layout/FormInputs";
@@ -681,7 +681,7 @@ class AddFuel extends Component {
           const { vendorName } = this.state
           const result =
             vendorName && vendorName.label
-              ? getVendorCode(vendorName.label)
+              ? getCodeBySplitting(vendorName.label)
               : ''
           this.setState({ VendorCode: result })
           //this.props.getPlantBySupplier(vendorName.value, () => { })

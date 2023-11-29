@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Table, Label } from 'reactstrap';
-import { required, checkForNull, getVendorCode, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
+import { required, checkForNull, getCodeBySplitting, checkForDecimalAndNull, positiveAndDecimalNumber, maxLength10, decimalLengthFour, decimalLengthThree, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation } from "../../../helper/validation";
 import { searchableSelect, renderMultiSelectField, focusOnError, renderDatePicker, renderText, renderTextInputField } from "../../layout/FormInputs";
 import { getPowerTypeSelectList, getUOMSelectList, getPlantBySupplier, getAllCity, fetchStateDataAPI, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
@@ -437,7 +437,7 @@ class AddPower extends Component {
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false }, () => {
         const { vendorName } = this.state;
-        const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
+        const result = vendorName && vendorName.label ? getCodeBySplitting(vendorName.label) : '';
         this.setState({ VendorCode: result })
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });

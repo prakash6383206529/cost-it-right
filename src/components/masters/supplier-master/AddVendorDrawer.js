@@ -4,7 +4,7 @@ import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, Table, } from 'reactstrap';
 import {
     required, upper, email, minLength7, maxLength70, maxLength80, minLength10, maxLength71, maxLength5, maxLength12, alphaNumeric, acceptAllExceptSingleSpecialCharacter,
-    postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString, number, hashValidation
+    postiveNumber, maxLength6, checkWhiteSpaces, checkSpacesInString, number, hashValidation, getNameBySplitting, getCodeBySplitting
 } from "../../../helper/validation";
 import { renderText, renderEmailInputField, renderMultiSelectField, searchableSelect, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { createSupplierAPI, updateSupplierAPI, getSupplierByIdAPI, getRadioButtonSupplierType, getVendorTypesSelectList, } from '../actions/Supplier';
@@ -540,8 +540,8 @@ class AddVendorDrawer extends Component {
         selectedPlants && selectedPlants.map(item => {
             let obj = {
                 PlantId: item.Value,
-                PlantName: item.Text.split(' (')[0],
-                PlantCode: item.Text.split('(')[1]?.split(')')[0],
+                PlantName: getNameBySplitting(item.Text),
+                PlantCode: getCodeBySplitting(item.Text),
                 VendorTechnologies: vendorArray
             }
             array.push(obj)
@@ -653,8 +653,8 @@ class AddVendorDrawer extends Component {
         // Create a new item based on the selected technologies and plants
         const newItem = {
             PlantId: selectedPlants[0]?.Value || '',
-            PlantName: selectedPlants[0]?.Text.split(' (')[0] || '',
-            PlantCode: selectedPlants[0]?.Text.split('(')[1]?.split(')')[0],
+            PlantName: getNameBySplitting(selectedPlants[0]?.Text),
+            PlantCode: getCodeBySplitting(selectedPlants[0]?.Text),
             VendorTechnologies: Technology.map(({ Text, Value }) => ({
                 VendorTechnologyId: '', // Add the missing property, or replace it with an appropriate value
                 TechnologyName: Text,
