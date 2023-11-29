@@ -1069,10 +1069,9 @@ function CostingSimulation(props) {
         setShowExchangeRateColumn((costingSimulationListAllKeys?.IsExchangeRateSimulation === true && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION) ? true : false)
         setShowMachineRateColumn(costingSimulationListAllKeys?.IsMachineProcessSimulation === true ? true : false)
         setIsMultipleMasterSimulation(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ||
-            costingSimulationListAllKeys?.IsCombinedProcessSimulation === true || costingSimulationListAllKeys?.IsExchangeRateSimulation === true ||
-            costingSimulationListAllKeys?.IsRawMaterialSimulation === true || costingSimulationListAllKeys?.IsOperationSimulation === true ||
-            costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true || costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ||
-            costingSimulationListAllKeys?.IsMachineProcessSimulation === true)
+            costingSimulationListAllKeys?.IsCombinedProcessSimulation === true || costingSimulationListAllKeys?.IsRawMaterialSimulation === true ||
+            costingSimulationListAllKeys?.IsOperationSimulation === true || costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ||
+            costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true || costingSimulationListAllKeys?.IsMachineProcessSimulation === true)
         setTimeout(() => {
             setLoader(false)
         }, 200);
@@ -1708,7 +1707,7 @@ function CostingSimulation(props) {
                                     simulationDetail={simulationDetail}
                                     selectedRowData={selectedRowData}
                                     costingArr={costingArr}
-                                    master={selectedMasterForSimulation ? selectedMasterForSimulation?.value : master}
+                                    master={selectedMasterForSimulation?.value ? selectedMasterForSimulation?.value : master}
                                     closeDrawer={closeDrawer}
                                     isSimulation={true}
                                     apiData={apiData}
@@ -1760,10 +1759,11 @@ function CostingSimulation(props) {
                     simulationDetail={simulationDetail}
                     selectedRowData={selectedRowData}
                     costingArr={costingArr}
-                    master={selectedMasterForSimulation ? selectedMasterForSimulation?.value : master}
+                    master={selectedMasterForSimulation?.value ? selectedMasterForSimulation?.value : master}
                     // closeDrawer={closeDrawer}
                     isSimulation={true}
                     simulationDrawer={true}
+                    IsExchangeRateSimulation={amendmentDetails?.IsExchangeRateSimulation}
                 />
             }
             {

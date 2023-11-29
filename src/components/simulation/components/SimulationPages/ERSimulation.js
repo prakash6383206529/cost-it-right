@@ -274,30 +274,18 @@ function ERSimulation(props) {
     }, 500)
 
     const selectRM = debounce(() => {
-        // let basicRateCount = 0
-        // list && list.map((li) => {
-        //     if (Number(li.BasicRate) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
-        //         basicRateCount = basicRateCount + 1
-        //     }
+        let count = 0
+        let listData = []
+        selectedRowData && selectedRowData?.map((item) => {
+            if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
+                count = count + 1
+                listData.push(item)
+            }
+            return null
+        })
 
-        //     if (li.NewBasicrateFromPercentage === undefined || li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
-        //         if (!(basicRateCount === list.length)) {
-        //             li.NewBasicRate = li?.BasicRate
-        //             li.NewScrapRate = li?.ScrapRate
-        //             Toaster.warning('Scrap Rate should be less than Basic Rate')
-        //             return false
-        //         }
-        //     }
-        //     return null;
-        // })
-        // if (basicRateCount === list.length) {
-        //     Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
-        //     return false
-        // }
-
-
-        if (selectedRowData?.length === 0) {
-            Toaster.warning("Please select atleast one Exchange Rate")
+        if (listData?.length === 0) {
+            Toaster.warning("Please select atleast one Exchange Rate with changes")
             return false
         }
         dispatch(setExchangeRateListBeforeDraft(selectedRowData))
