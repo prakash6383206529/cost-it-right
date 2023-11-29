@@ -62,8 +62,28 @@ function AddConditionCosting(props) {
 
     useEffect(() => {
         calculateCostPerQuantity()
-    }, [fieldValues])
 
+    }, [fieldValues])
+    const toggleCondition = () => {
+        // isFromImport ? type === 'Fixed' ? 'mb-3' : 'mt-4 pt-1' : type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'
+        let cssClass = '';
+        if (isFromImport) {
+            if (type === "") {
+                cssClass = 'mb-3';
+            } else if (type === "Fixed") {
+                cssClass = 'mb-3';
+            } else {
+                cssClass = 'mt-4 pt-1';
+            }
+        } else {
+            if (type === "Percentage") {
+                cssClass = 'mb-3';
+            } else {
+                cssClass = 'mt-4 pt-1';
+            }
+        }
+        return cssClass
+    }
     const onConditionChange = (e) => {
         setType(e?.ConditionType)
         setValue('Type', e?.ConditionType)
@@ -278,7 +298,7 @@ function AddConditionCosting(props) {
             >
                 <div className={`ag-grid-react hidepage-size`}>
                     <Container className="add-bop-drawer">
-                        <div className={'drawer-wrapper layout-min-width-820px'}>
+                        <div className={'drawer-wrapper layout-min-width-1000px'}>
 
                             <Row className="drawer-heading">
                                 <Col className="pl-0">
@@ -294,7 +314,7 @@ function AddConditionCosting(props) {
                             <div className='hidepage-size'>
                                 <Row>
 
-                                    <Col md="3" className='pr-1'>
+                                    <Col md="3" className='px-2'>
                                         <SearchableSelectHookForm
                                             label={`Condition`}
                                             name={'Condition'}
@@ -312,7 +332,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         />
                                     </Col>
-                                    <Col md={3} className='px-1'>
+                                    <Col md={3} className='px-2'>
                                         <TextFieldHookForm
                                             label={`Type`}
                                             name={'Type'}
@@ -326,7 +346,7 @@ function AddConditionCosting(props) {
                                             disabled={true}
                                         />
                                     </Col>
-                                    {type === 'Quantity' && <Col md="3" className='px-1'>
+                                    {type === 'Quantity' && <Col md="3" className='px-2'>
                                         <NumberFieldHookForm
                                             label={`Quantity`}
                                             name={'Quantity'}
@@ -346,7 +366,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         />
                                     </Col>}
-                                    {type === 'Percentage' && <Col md={3} className='px-1'>
+                                    {type === 'Percentage' && <Col md={3} className='px-2'>
                                         <NumberFieldHookForm
                                             label={`Percentage (%)`}
                                             name={'Percentage'}
@@ -370,7 +390,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableAllFields}
                                         />
                                     </Col>}
-                                    <Col md={3} className={'px-1'}>
+                                    <Col md={3} className={'px-2'}>
                                         {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
                                         <NumberFieldHookForm
                                             label={`Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
@@ -392,7 +412,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                         />
                                     </Col>
-                                    {isFromImport && <Col md={3} className='px-1'>
+                                    {isFromImport && <Col md={3} className='px-2'>
                                         {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
                                         <NumberFieldHookForm
                                             label={`Cost (${initialConfiguration?.BaseCurrency})`}
@@ -415,7 +435,7 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>}
                                     {type === 'Quantity' && <>
-                                        <Col md={3} className='px-1'>
+                                        <Col md={3} className='px-2'>
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost Per Quantity = Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) / Quantity`} />
                                             <NumberFieldHookForm
                                                 label={`Cost Per Quantity (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
@@ -432,7 +452,7 @@ function AddConditionCosting(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        {isFromImport && <Col md={3} className='px-1'>
+                                        {isFromImport && <Col md={3} className='px-2'>
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost Per Quantity = Cost (${initialConfiguration?.BaseCurrency})  / Quantity`} />
                                             <NumberFieldHookForm
                                                 label={`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}
@@ -451,7 +471,7 @@ function AddConditionCosting(props) {
                                         </Col>}
                                     </>
                                     }
-                                    <Col md="3" className={`${type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'}`}>
+                                    <Col md="3" className={toggleCondition()}>
                                         <button
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}
