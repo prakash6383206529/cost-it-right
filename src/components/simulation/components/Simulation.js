@@ -122,7 +122,6 @@ function Simulation(props) {
             dispatch(setTokenForSimulation([]))
         }
         return () => {
-            dispatch(setMasterForSimulation({ label: '', value: '' }))
             reactLocalStorage?.setObject('vendorData', [])
         }
     }, [])
