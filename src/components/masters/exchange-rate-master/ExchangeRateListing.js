@@ -70,7 +70,7 @@ class ExchangeRateListing extends Component {
             if (this.props.isSimulation) {
                 if (this.props.selectionForListingMasterAPI === 'Combined') {
                     this.props?.changeSetLoader(true)
-                    this.props.getListingForSimulationCombined(this.props.tokenArray, EXCHNAGERATE, () => {
+                    this.props.getListingForSimulationCombined(this.props.objectForMultipleSimulation, EXCHNAGERATE, (res) => {
                         this.props?.changeSetLoader(false)
                     })
                 }
@@ -123,6 +123,10 @@ class ExchangeRateListing extends Component {
     getTableListData = (currencyId = 0) => {
         let filterData = {
             currencyId: currencyId,
+            costingHeadId: currencyId,
+            vendorId: this.props.filteredRMData?.VendorId ? this.props.filteredRMData?.VendorId : '',
+            customerId: this.props.filteredRMData?.CustomerId ? this.props.filteredRMData?.CustomerId : '',
+            isBudgeting: currencyId,
         }
         if (this.props.isSimulation) {
             this.props?.changeTokenCheckBox(false)
@@ -298,6 +302,7 @@ class ExchangeRateListing extends Component {
 
     onRowSelect = () => {
         const selectedRows = this.state.gridApi?.getSelectedRows()
+        this.props?.apply(selectedRows, selectedRows?.length)
         this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
     }
 
@@ -485,10 +490,11 @@ class ExchangeRateListing extends Component {
 * @description return state to component as props
 * @param {*} state
 */
-function mapStateToProps({ exchangeRate, auth }) {
+function mapStateToProps({ exchangeRate, auth, material }) {
     const { currencySelectList, exchangeRateDataList } = exchangeRate;
     const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth;
-    return { leftMenuData, currencySelectList, exchangeRateDataList, initialConfiguration, topAndLeftMenuData };
+    const { filteredRMData } = material;
+    return { leftMenuData, currencySelectList, exchangeRateDataList, initialConfiguration, topAndLeftMenuData, filteredRMData };
 }
 
 /**

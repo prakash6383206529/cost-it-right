@@ -852,7 +852,6 @@ input::-webkit-input-placeholder {
   .tab-pane {
     .filter-block {
       position: initial;
-      height: 32px !important;
       margin-bottom: 25px;
       background-color: none;
 
@@ -2092,6 +2091,10 @@ html {
 
     .flex-fills {
       width: 20%;
+
+      .multi-select-container__control--is-disabled {
+        min-height: 32px !important;
+      }
 
       &:last-child {
         width: 255px;
@@ -8316,9 +8319,6 @@ body {
 // <-------END simulation token dropdown css------>
 
 .simulation-labels {
-  .flex-fills.label {
-    min-width: fit-content !important;
-  }
 
   .w-72 {
     .flex-fills.label {
@@ -9087,4 +9087,19 @@ iframe {
   text-overflow: ellipsis;
   margin-bottom: 4px;
   border: 1px solid $borderColor !important;
+}
+
+.zindex-unset {
+  z-index: unset !important;
+}
+
+.bop-import-listing {
+  .paging-container {
+    margin-top: 0 !important;
+  }
+
+  .pagination-button-container {
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
 }
