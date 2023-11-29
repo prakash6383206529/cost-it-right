@@ -33,9 +33,9 @@ function ConditionCosting(props) {
                                 {<th>{`Type`}</th>}
                                 {<th>{`Percentage (%)`}</th>}
                                 {<th>{`Quantity`}</th>}
-                                {isFromImport && <th>{`Cost (${currency?.label})`}</th>}
-                                {<th>{`Cost (${initialConfiguration?.BaseCurrency})`}</th>}
-                                {isFromImport && <th>{`Cost Per Quantity (${currency?.label})`}</th>}
+                                {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost (${currency?.label})`}</th>}
+                                {<th style={{ minWidth: '100px' }}>{`Cost (${initialConfiguration?.BaseCurrency})`}</th>}
+                                {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost Per Quantity (${currency?.label})`}</th>}
                                 {<th>{`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
