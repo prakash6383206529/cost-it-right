@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number, hashValidation, maxLength10 } from "../../../helper/validation";
+import { required, getCodeBySplitting, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number, hashValidation, maxLength10 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -461,7 +461,7 @@ class AddRMImport extends Component {
     if (newValue && newValue !== '') {
       this.setState({ vendorName: newValue, isVendorNameNotSelected: false, vendorLocation: [], isDropDownChanged: true }, () => {
         const { vendorName } = this.state;
-        const result = vendorName && vendorName.label ? getVendorCode(vendorName.label) : '';
+        const result = vendorName && vendorName.label ? getCodeBySplitting(vendorName.label) : '';
         this.setState({ VendorCode: result })
         this.props.getPlantBySupplier(vendorName.value, () => { })
       });
@@ -1608,7 +1608,6 @@ class AddRMImport extends Component {
       FinalNetCostBaseCurrency: netLandedCostINR,
       FinalNetCostSelectedCurrency: netLandedCostSelectedCurrency,
     })
-
   }
 
   /**
