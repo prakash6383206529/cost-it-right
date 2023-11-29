@@ -6,7 +6,7 @@ import Drawer from '@material-ui/core/Drawer';
 import { DatePickerHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs';
 import { saveCopyCosting, checkDataForCopyCosting } from '../../actions/Costing';
 import { CBCTypeId, NCCTypeId, VBCTypeId, ZBCTypeId } from '../../../../config/constants';
-import { getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { getCodeBySplitting, getConfigurationKey, getNameBySplitting, loggedInUserId } from '../../../../helper';
 import DayTime from '../../../common/DayTimeWrapper'
 import Toaster from '../../../common/Toaster';
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
@@ -162,8 +162,8 @@ function CopyCosting(props) {
     copyCostingObj.CostingId = copyCostingData.CostingId
     copyCostingObj.PartId = partNo.value
     copyCostingObj.ToPlantId = toPlant?.value
-    copyCostingObj.ToPlantName = toPlant?.label?.split('(')[0].trim()
-    copyCostingObj.ToPlantCode = toPlant?.label?.split('(')[1]?.split(')')[0]
+    copyCostingObj.ToPlantName = getNameBySplitting(toPlant?.label)
+    copyCostingObj.ToPlantCode = getCodeBySplitting(toPlant?.label)
     copyCostingObj.ToVendorId = toVendor?.value
     copyCostingObj.ToCustomerId = toCustomer?.value
     copyCostingObj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')

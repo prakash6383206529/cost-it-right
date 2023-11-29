@@ -259,28 +259,30 @@ export const getSupplierCode = (name) => {
     }
 }
 
-export const getVendorCode = (name) => {
+export const getCodeBySplitting = (name) => {
     if (name !== '') {
-        const firstIndex = name.indexOf('(');
-        const lastIndex = name.lastIndexOf(')');
-        const supplierCode = name.substring(firstIndex + 1, lastIndex);
-        return supplierCode;
-    } else {
-        return '';
-    }
-}
+        const lastIndex = name.lastIndexOf('(');
+        const lastClosingIndex = name.lastIndexOf(')');
 
-export const getPlantCode = (name) => {
+        if (lastIndex !== -1 && lastClosingIndex !== -1 && lastClosingIndex > lastIndex) {
+            const supplierCode = name.substring(lastIndex + 1, lastClosingIndex).trim();
+            return supplierCode;
+        }
+    }
+    return '';
+}
+export const getNameBySplitting = (name) => {
     if (name !== '') {
-        const firstIndex = name.indexOf('(');
-        const lastIndex = name.lastIndexOf(')');
-        const Code = name.substring(firstIndex + 1, lastIndex);
-        return Code;
-    } else {
-        return '';
-    }
-}
+        const lastIndex = name.lastIndexOf('(');
+        const lastClosingIndex = name.lastIndexOf(')');
 
+        if (lastIndex !== -1 && lastClosingIndex !== -1 && lastClosingIndex > lastIndex) {
+            const vendorName = name.substring(0, lastIndex).trim();
+            return vendorName;
+        }
+    }
+    return '';
+}
 export const applySuperScript = (cell) => {
     if (cell && cell !== '') {
         const capIndex = cell && cell.indexOf('^');

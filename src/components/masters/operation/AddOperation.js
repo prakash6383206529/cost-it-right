@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation } from "../../../helper/validation";
+import { required, getCodeBySplitting, maxLength80, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength10, maxLength15, positiveAndDecimalNumber, maxLength512, decimalLengthsix, checkSpacesInString, number, hashValidation } from "../../../helper/validation";
 import { renderText, renderMultiSelectField, searchableSelect, renderTextAreaField, renderDatePicker, focusOnError, renderTextInputField } from "../../layout/FormInputs";
 import { createOperationsAPI, getOperationDataAPI, updateOperationAPI, fileUploadOperation, checkAndGetOperationCode } from '../actions/OtherOperation';
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList, } from '../../../actions/Common';
@@ -697,7 +697,7 @@ class AddOperation extends Component {
       OperationCode: values.OperationCode,
       Description: values.Description,
       VendorId: costingTypeId === VBCTypeId ? vendorName.value : userDetail?.ZBCSupplierInfo.VendorId,
-      VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : userDetail?.ZBCSupplierInfo.VendorNameWithCode,
+      VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : userDetail?.ZBCSupplierInfo.VendorNameWithCode,
       UnitOfMeasurementId: UOM.value,
       IsSurfaceTreatmentOperation: isSurfaceTreatment,
       //SurfaceTreatmentCharges: values.SurfaceTreatmentCharges,

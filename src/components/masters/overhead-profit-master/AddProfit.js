@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
+import { required, getCodeBySplitting, maxLength512, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
@@ -868,7 +868,7 @@ class AddProfit extends Component {
         ProfitRMPercentage: !isRM ? values.ProfitRMPercentage : '',
         Remark: remarks,
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '',
+        VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         ProfitApplicabilityId: profitAppli.value,
         ModelTypeId: ModelType.value,

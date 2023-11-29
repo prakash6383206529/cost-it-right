@@ -4,7 +4,7 @@ import { Field, reduxForm, formValueSelector, isDirty, clearFields } from "redux
 import { Row, Col, Table, Label } from 'reactstrap';
 import {
   required, checkForNull, postiveNumber, checkForDecimalAndNull, acceptAllExceptSingleSpecialCharacter,
-  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix
+  checkWhiteSpaces, maxLength80, maxLength10, positiveAndDecimalNumber, maxLength512, checkSpacesInString, decimalLengthsix, hashValidation, getNameBySplitting
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getVendorNameByVendorSelectList } from '../../../actions/Common';
@@ -689,8 +689,7 @@ class AddMachineRate extends Component {
         const { processSelectList } = this.props;
         /*TO SHOW PROCESS VALUE PRE FILLED FROM DRAWER*/
         if (Object.keys(formData).length > 0) {
-          const processObj = processSelectList && processSelectList.find(item => item.Text.split('(')[0].trim() === formData.ProcessName)
-
+          const processObj = processSelectList && processSelectList.find(item => getNameBySplitting(item.Text) === formData.ProcessName)
           this.setState({
             processName: processObj && processObj !== undefined ? { label: processObj.Text, value: processObj.Value } : [],
           })

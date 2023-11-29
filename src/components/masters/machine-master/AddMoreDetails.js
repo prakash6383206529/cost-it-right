@@ -5,7 +5,7 @@ import { Row, Col, Table } from 'reactstrap';
 import {
   required, checkForNull, number, acceptAllExceptSingleSpecialCharacter, maxLength10,
   maxLength80, checkWhiteSpaces, checkForDecimalAndNull, postiveNumber, positiveAndDecimalNumber, maxLength20, maxLength3,
-  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue
+  maxLength512, decimalLengthFour, decimalLengthThree, decimalLength2, decimalLengthsix, checkSpacesInString, maxValue366, decimalAndNumberValidation, percentageLimitValidation, maxPercentValue, hashValidation, getNameBySplitting
 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderTextAreaField, focusOnError, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import { getPlantSelectListByType, getPlantBySupplier, getUOMSelectList, getShiftTypeSelectList, getDepreciationTypeSelectList, } from '../../../actions/Common';
@@ -816,7 +816,7 @@ class AddMoreDetails extends Component {
         const { processSelectList } = this.props;
         /*TO SHOW PROCESS VALUE PRE FILLED FROM DRAWER*/
         if (Object.keys(formData).length > 0) {
-          const processObj = processSelectList && processSelectList.find(item => item.Text.split('(')[0].trim() === formData.ProcessName)
+          const processObj = processSelectList && processSelectList.find(item => getNameBySplitting(item.Text) === formData.ProcessName)
 
           this.setState({
             processName: processObj && processObj !== undefined ? { label: processObj.Text, value: processObj.Value } : [],
