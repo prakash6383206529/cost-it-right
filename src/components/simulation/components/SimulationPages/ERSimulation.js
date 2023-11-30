@@ -223,9 +223,18 @@ function ERSimulation(props) {
     };
 
     const newRateFormatter = (props) => {
-        const cell = props?.value;
-        return cell ? cell : ''
-    };
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        checkForDecimalAndNull(row.NewCurrencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span id={`newCurrencyExchangeRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell ? Number(cell) : Number(row.CurrencyExchangeRate)} >{cell ? Number(cell) : Number(row.CurrencyExchangeRate)}</span>
+                }
+            </>
+        )
+    }
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
