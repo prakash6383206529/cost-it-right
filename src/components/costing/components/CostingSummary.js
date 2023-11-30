@@ -95,6 +95,7 @@ function CostingSummary(props) {
       setTimeout(() => {
         setValue('Technology', costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
         setTechnology(costingData && costingData !== undefined ? { label: costingData.TechnologyName, value: costingData.TechnologyId } : [])
+        setIsTechnologySelected(costingData.TechnologyId ? true : false)
         setValue('Part', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setPart(costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
         setValue('PartType', costingData && costingData !== undefined ? { label: costingData.PartNumber, value: costingData.PartId } : [])
