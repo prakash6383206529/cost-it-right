@@ -525,6 +525,10 @@ function SimulationApproveReject(props) {
     }
   }
 
+  const fileDataCallback = (fileList) => {
+    setFiles(fileList)
+  }
+
   return (
     <>
       <ApproveRejectUI
@@ -555,6 +559,7 @@ function SimulationApproveReject(props) {
         showMessage={showMessage}
         isDisable={isDisable}
         disableReleaseStrategy={disableReleaseStrategy}
+        fileDataCallback={fileDataCallback}
       />
 
       {

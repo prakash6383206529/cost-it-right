@@ -72,6 +72,10 @@ function ApproveRejectUI(props) {
     }
   }, [dataInFields])
 
+  useEffect(() => {
+    props?.fileDataCallback(files)
+  }, [files])
+
   const handleTokenDropDownChange = (value) => {
     setLinkingTokenDropDown(value)
   }
