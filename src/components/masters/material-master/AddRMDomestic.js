@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation, maxLength10 } from "../../../helper/validation";
+import { required, getCodeBySplitting, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation, maxLength10, getVendorName } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { ASSEMBLY, AcceptableRMUOM } from '../../../config/masterData'
 import {
@@ -288,7 +288,6 @@ class AddRMDomestic extends Component {
    * @description  used to handle row material selection
    */
   handleRMChange = (newValue, actionMeta) => {
-    console.log('newValue: ', newValue);
     if (newValue && newValue !== '') {
       this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
         const { RawMaterial } = this.state
@@ -398,7 +397,7 @@ class AddRMDomestic extends Component {
           const { vendorName } = this.state
           const result =
             vendorName && vendorName.label
-              ? getVendorCode(vendorName.label)
+              ? getCodeBySplitting(vendorName.label)
               : ''
           this.setState({ VendorCode: result })
         },
@@ -1178,7 +1177,6 @@ class AddRMDomestic extends Component {
    * @description Used to Submit the form
    */
   onSubmit = debounce((values) => {
-    console.log('values: ', values);
 
     const { RawMaterial, RMGrade, RMSpec, Category, client, Technology, selectedPlants, costingTypeId, vendorName, VendorCode, HasDifferentSource, sourceLocation, UOM, remarks, RawMaterialID, isEditFlag, files, effectiveDate,
       NetLandedCostBaseCurrency, oldDate, singlePlantSelected, DataToChange, DropdownChanged, isDateChange, IsFinancialDataChanged, conditionTableData, FinalCutOffBaseCurrency, FinalScrapRateBaseCurrency, FinalForgingScrapCostBaseCurrency,
@@ -1366,7 +1364,6 @@ class AddRMDomestic extends Component {
   };
 
   handleSinglePlant = (newValue) => {
-    console.log('newValue: ', newValue);
     this.setState({ singlePlantSelected: newValue })
   }
 
