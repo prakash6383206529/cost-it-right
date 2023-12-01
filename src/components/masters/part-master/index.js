@@ -12,6 +12,7 @@ import IndivisualProductListing from './IndivisualProductListing';
 import AddIndivisualProduct from './AddIndivisualProduct';
 import ScrollToTop from '../../common/ScrollToTop';
 import { MESSAGES } from '../../../config/message';
+import { CreatComponentBySap } from '../actions/Part';
 
 class PartMaster extends Component {
     constructor(props) {
@@ -122,6 +123,7 @@ class PartMaster extends Component {
 
     openFetchDrawer = () => {
         this.setState({ openDrawer: true })
+        this.props.CreatComponentBySap(() => { })
     }
     /**
     * @method handleMouse
@@ -286,6 +288,7 @@ function mapStateToProps({ auth, comman }) {
 
 export default connect(mapStateToProps,
     {
+        CreatComponentBySap,
     }
 )(PartMaster);
 

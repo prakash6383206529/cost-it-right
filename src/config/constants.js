@@ -117,6 +117,7 @@ export const API = {
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
+  CreatComponentBySap: `${BASE_URL}/sap-sync/create-component-by-sap`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,

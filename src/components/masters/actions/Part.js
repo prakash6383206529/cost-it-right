@@ -758,3 +758,19 @@ export function convertPartToAssembly(requestData, callback) {
             });
     };
 }
+/**
+ * @method CreatComponentBySap
+ * @description create Component By SAP
+ */
+export function CreatComponentBySap(callback) {
+    return (dispatch) => {
+        const request = axios.post(`${API.CreatComponentBySap}?fromDate=${null}&toDate=${null}`, '', config());
+        request.then((response) => {
+            callback(response);
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error);
+        });
+    };
+}
