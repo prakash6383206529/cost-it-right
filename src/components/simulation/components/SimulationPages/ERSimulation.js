@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
@@ -50,6 +50,8 @@ function ERSimulation(props) {
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
+    const [showTooltip, setShowTooltip] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -77,9 +79,11 @@ function ERSimulation(props) {
     }
 
     const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
+        let cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cell?.includes('T')) {
+            cell = DayTime(cell).format('DD/MM/YYYY')
+        }
+        return (!cell ? '-' : cell)
     }
 
     const newERFormatter = (props) => {
@@ -187,6 +191,9 @@ function ERSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
 
         // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
@@ -205,18 +212,31 @@ function ERSimulation(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
+
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text'>Revised {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"exchangesdRate-tooltip"}></i>}</span>
             </div>
         );
     };
 
     const newRateFormatter = (props) => {
-        const cell = props?.value;
-        return cell ? cell : ''
-    };
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        checkForDecimalAndNull(row.NewCurrencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span id={`newCurrencyExchangeRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell ? Number(cell) : Number(row.CurrencyExchangeRate)} >{cell ? Number(cell) : Number(row.CurrencyExchangeRate)}</span>
+                }
+            </>
+        )
+    }
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -251,6 +271,7 @@ function ERSimulation(props) {
         }
 
         setIsDisable(true)
+        setShowTooltip(false)
 
         dispatch(createMultipleExchangeRate(list, currencySelectList, effectiveDate, res => {
 
@@ -283,6 +304,7 @@ function ERSimulation(props) {
             }
             return null
         })
+        setShowTooltip(false)
 
         if (listData?.length === 0) {
             Toaster.warning("Please select atleast one Exchange Rate with changes")
@@ -326,6 +348,7 @@ function ERSimulation(props) {
         <div>
             {!showRMMasterList && !showBOPMasterList && <div className={`ag-grid-react`}>
 
+                {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"exchangesdRate-tooltip"} >{"To edit revised exchange rate please double click on the field."}</Tooltip>}
                 {
 
                     (!showverifyPage && !showMainSimulation) &&
