@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { BOUGHTOUTPARTSPACING, COMPONENT_PART, EMPTY_DATA, FILE_URL, RFQ, } from '../../../config/constants'
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, EMPTY_DATA, FILE_URL, RAW_MATERIAL, RFQ, } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import 'react-input-range/lib/css/index.css'
@@ -268,7 +268,7 @@ function NfrPartsListing(props) {
     }
     const partTypeFormater = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null && cellValue === BOUGHTOUTPARTSPACING ? 'BOP (Standard)' : cellValue === COMPONENT_PART ? 'Component (Customized)' : '-';
+        return cellValue != null && cellValue === BOUGHTOUTPARTSPACING ? 'BOP (Standard)' : cellValue === COMPONENT_PART ? 'Component (Customized)' : cellValue === RAW_MATERIAL ? 'Raw Material' : ' -';
     }
     const viewAttachmentData = (index) => {
         setAttachment(true)
