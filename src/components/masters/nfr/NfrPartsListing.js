@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, FILE_URL, RFQ, } from '../../../config/constants'
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, EMPTY_DATA, FILE_URL, RFQ, } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import 'react-input-range/lib/css/index.css'
@@ -266,7 +266,10 @@ function NfrPartsListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
-
+    const partTypeFormater = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null && cellValue === BOUGHTOUTPARTSPACING ? 'BOP (Standard)' : cellValue === COMPONENT_PART ? 'Component (Customized)' : '-';
+    }
     const viewAttachmentData = (index) => {
         setAttachment(true)
         setViewAttachment(index)
@@ -352,7 +355,8 @@ function NfrPartsListing(props) {
         linkableFormatter: linkableFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
-        dateFormater: dateFormater
+        dateFormater: dateFormater,
+        partTypeFormater: partTypeFormater
     }
 
     const resetState = () => {
@@ -420,7 +424,7 @@ function NfrPartsListing(props) {
                                             >
                                                 {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
                                                 <AgGridColumn field="Technology" headerName="Technology" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="PartType" headerName='Part Type' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="PartType" headerName='Part Type' width={150} cellRenderer={partTypeFormater}></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NumberOfSimulation" headerName='No. of Simulations' cellRenderer={hyphenFormatter}></AgGridColumn>
