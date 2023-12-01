@@ -2603,6 +2603,12 @@ export const CRMHeads = [
 ]
 
 
+export const LANGUAGES = [
+  { value: 'en-US', label: 'English - EN', },
+  { value: 'hi', label: 'हिन्दी - HI', },
+  { value: 'mr', label: 'मराठी - MR', },
+]
+
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])

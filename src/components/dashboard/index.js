@@ -14,11 +14,14 @@ import Tabs from "./Tabs";
 import MasterApprovalTabs from "./MasterApprovalTabs";
 import ScrollToTop from "../common/ScrollToTop";
 import { MESSAGES } from "../../config/message";
+import TourWrapper from "../common/Tour/TourWrapper";
+import { Steps } from "../common/Tour/TourMessages";
+import { useTranslation } from "react-i18next";
 
 
 function Dashboard(props) {
   const { handleSubmit } = props
-
+  const { t } = useTranslation()
   const [acc1, setAcc1] = useState(false)
   const [acc2, setAcc2] = useState(true)
   const [acc3, setAcc3] = useState(false)
@@ -27,6 +30,7 @@ function Dashboard(props) {
   const [viewSimulation, setViewSimulation] = useState(true)
   const [viewCosting, setViewCosting] = useState(true)
   const [pageDropDownRef, setPageDropDownRef] = useState('')
+  const [showTour, setShowTour] = useState(false)
 
   const [viewMastersObj, setViewMAstersObj] = useState({
     RM: false,
@@ -108,6 +112,7 @@ function Dashboard(props) {
         <>
           <ScrollToTop pointProp={"dashboard-go-to-top"} />
           <div className="dashboard-page w-100">
+
             <CalculatorWrapper />
             {/* <Row>
               <Col md="12">
@@ -115,7 +120,8 @@ function Dashboard(props) {
               </Col>
             </Row> */}
             <form onSubmit={handleSubmit}>
-
+              <button className={`guide-bulb${showTour ? "-on" : ""} ml-2`} onClick={() => { setShowTour(!showTour) }} title='Guide'></button>
+              {showTour && <TourWrapper steps={Steps(t).DASHBOARD_SIMULATION_TAB} stepsEnable={true} start={showTour} onExit={() => { setShowTour(false) }} />}
               {viewSimulation && JSON.parse(localStorage.getItem('simulationViewPermission'))?.length !== 0 && <Row className="m-0">
                 <div className="graph-box w-100" id={`${pageDropDownRef === 'simulation' ? 'refresh-to-top' : ''}`}>
                   <Row>

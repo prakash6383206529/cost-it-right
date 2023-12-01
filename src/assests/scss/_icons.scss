@@ -447,6 +447,16 @@
     }
 }
 
+.guide-bulb {
+    @include icons("../../images/guide-off.png", 32px, 32px);
+    border-radius: 5px;
+}
+
+.guide-bulb-on {
+    @include icons("../../images/guide-bulb-on.svg", 32px, 32px);
+    border-radius: 5px;
+}
+
 .CalculatorIcon:disabled,
 .Add:disabled,
 .Edit:disabled,

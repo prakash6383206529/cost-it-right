@@ -35,6 +35,7 @@ import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
 import { checkForNull } from "../../helper";
+import LanguageDropdown from "../common/Tour/LanguageDropdown";
 
 class SideBar extends Component {
   constructor(props) {
@@ -960,7 +961,10 @@ class SideBar extends Component {
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
                 </ul>
-
+                <div className="d-flex align-items-center">
+                  <LanguageDropdown />
+                  <button className={`guide-bulb${true ? "-on" : ""}`} title={`Guide ${true ? "on" : "off"}`}></button>
+                </div>
               </nav>
             </div>
           )

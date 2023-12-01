@@ -1,0 +1,16 @@
+{
+    "dashboard": {
+        "simulationApproval": {
+            "dashboard_simulation_Pending_For_Approval": "Check you Pending Approvals from here.",
+            "dashboard_simulation_Awaiting_Approval": "Check you Awaiting Approvals from here.",
+            "dashboard_simulation_Approved": "Check you Approved Approvals from here.",
+            "dashboard_simulation_Rejected": "Check you Rejected Approvals from here."
+        },
+        "costingApproval": {
+            "dashboard_costing_Pending_For_Approval": "Check you Pending Approvals from here.",
+            "dashboard_costing_Awaiting_Approval": "Check you Awaiting Approvals from here.",
+            "dashboard_costing_Approved": "Check you Approved Approvals from here.",
+            "dashboard_costing_Rejected": "Check you Rejected Approvals from here."
+        }
+    }
+}
