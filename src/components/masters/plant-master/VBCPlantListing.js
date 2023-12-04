@@ -1,10 +1,8 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { reduxForm } from "redux-form";
+import React, { useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { getPlantDataAPI, activeInactiveStatus, getFilteredPlantList, deletePlantAPI } from '../actions/Plant';
-import { fetchStateDataAPI, fetchCityDataAPI } from '../../../actions/Common';
-import { focusOnError } from "../../layout/FormInputs";
+
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
@@ -12,7 +10,6 @@ import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
 import AddVBCPlant from './AddVBCPlant';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantVbc } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
@@ -31,558 +28,454 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-class VBCPlantListing extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditFlag: false,
-            isOpenVendor: false,
-            shown: false,
-            ID: '',
-            tableData: [],
-            city: [],
-            country: [],
-            state: [],
-            showPopup: false,
-            deletedId: '',
-            cellData: {},
-            cellValue: '',
-            showPopupToggle: false,
-            isViewMode: false,
-            noData: false,
-            countData: 0
 
-        }
-    }
+const VBCPlantListing = ({ ...props }) => {
+  const { EditAccessibility, DeleteAccessibility, ViewAccessibility, ActivateAccessibility, DownloadAccessibility, AddAccessibility, } = props;
+  const [stateData, setStateData] = useState({
+    isEditFlag: false,
+    isOpenVendor: false,
+    shown: false,
+    ID: '',
+    tableData: [],
+    city: [],
+    country: [],
+    state: [],
+    showPopup: false,
+    deletedId: '',
+    cellData: {},
+    cellValue: '',
+    showPopupToggle: false,
+    isViewMode: false,
+    noData: false,
+    countData: 0
+  });
+  const dispatch = useDispatch();
+  const { plantDataList, } = useSelector(state => ({
 
-    componentDidMount() {
-        setTimeout(() => {
-            this.getTableListData();
-        }, 300);
-    }
+    plantDataList: state.plant.plantDataList,
+  }));
 
-    /**
-    * @method getTableListData
-    * @description Get user list data
+
+
+  /**
+  * @method getTableListData
+  * @description Get user list data
+  */
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      getTableListData()
+    }, 300);
+    // Clean up the timer when component unmounts
+    return () => clearTimeout(timer);
+  }, []);
+
+  const getTableListData = () => {
+    dispatch(getPlantDataAPI(true, (res) => {
+      if (res && res.data && res.status === 200) {
+        let Data = res.data.DataList;
+        setStateData(prevState => ({ ...prevState, tableData: Data }));
+      }
+    }));
+  }
+
+
+
+
+
+  /**
+  * @method deleteItem
+  * @description confirm delete part
+  */
+  const deleteItem = (Id) => {
+    setStateData(prevState => ({ ...prevState, showPopup: true, deletedId: Id }));
+  };
+  /**
+  * @method confirmDeleteItem
+  * @description confirm delete user item
+  */
+  const confirmDeleteItem = (Id) => {
+    const loggedInUser = loggedInUserId();
+    dispatch(deletePlantAPI(Id, loggedInUser, (res) => {
+      if (res.data.Result === true) {
+        Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
+        setStateData(prevState => ({ ...prevState, showPopup: false }));
+        filterList()
+      }
+    }));
+  };
+  const onPopupConfirm = () => {
+    confirmDeleteItem(stateData.deletedId);
+  };
+  const closePopUp = () => {
+    setStateData(prevState => ({
+      ...prevState,
+      showPopup: false,
+      showPopupToggle: false
+    }));
+  };
+  const onPopupConfirmToggle = () => {
+    confirmDeactivateItem(stateData.cellData, stateData.cellValue);
+  };
+
+  /**
+    * @method viewOrEditItemDetails
+    * @description confirm edit item
     */
-    getTableListData = () => {
-        this.props.getPlantDataAPI(true, (res) => {
-            if (res && res.data && res.status === 200) {
-                let Data = res.data.DataList;
-                this.setState({ tableData: Data })
-            }
-        })
-    }
+  const viewOrEditItemDetails = (Id, isViewMode) => {
+    setStateData(prevState => ({
+      ...prevState,
+      isOpenVendor: true,
+      isEditFlag: true,
+      ID: Id,
+      isViewMode: isViewMode
+    }));
+  };
 
-    /**
-    * @method deleteItem
-    * @description confirm delete part
-    */
-    deleteItem = (Id) => {
-        this.setState({ showPopup: true, deletedId: Id })
-    }
+  /**
+  * @method buttonFormatter
+  * @description Renders buttons
+  */
 
-    /**
-    * @method confirmDeleteItem
-    * @description confirm delete user item
-    */
-    confirmDeleteItem = (Id) => {
-        const loggedInUser = loggedInUserId()
-        this.props.deletePlantAPI(Id, loggedInUser, (res) => {
-            if (res.data.Result === true) {
-                Toaster.success(MESSAGES.PLANT_DELETE_SUCCESSFULLY);
-                // this.getTableListData();
-                this.filterList()
-            }
-        });
-        this.setState({ showPopup: false })
-    }
-    onPopupConfirm = () => {
-        this.confirmDeleteItem(this.state.deletedId);
-    }
-    closePopUp = () => {
-        this.setState({ showPopup: false })
-        this.setState({ showPopupToggle: false })
-    }
-    onPopupConfirmToggle = () => {
-        this.confirmDeactivateItem(this.state.cellData, this.state.cellValue)
-    }
+  const buttonFormatter = (cell, row) => {
+    const cellValue = cell.value;
+    return (
+      <>
+        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, true)} />}
+        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, false)} />}
+        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+      </>
+    );
+  };
 
-    /**
-      * @method viewOrEditItemDetails
-      * @description confirm edit item
-      */
-    viewOrEditItemDetails = (Id, isViewMode) => {
-        this.setState({
-            isOpenVendor: true,
-            isEditFlag: true,
-            ID: Id,
-            isViewMode: isViewMode
-        })
 
+  const onFloatingFilterChanged = (value) => {
+    if (value?.api?.rowModel?.rowsToDisplay?.length === 0) {
+      setStateData(prevState => ({
+        ...prevState,
+        noData: true
+      }));
+      document.getElementsByClassName("ag-row-no-animation")[0].classList.add('no-content-image-container');
+    } else {
+      setStateData(prevState => ({
+        ...prevState,
+        noData: false
+      }));
+      document.getElementsByClassName("ag-row-no-animation")[0].classList.remove('no-content-image-container');
     }
-    /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    buttonFormatter = (cell, row, props) => {
-        const cellValue = cell.value;
+  };
 
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
-        return (
-            <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
-            </>
-        )
+
+  const handleChange = (cell, row) => {
+    let data = {
+      Id: row.PlantId,
+      ModifiedBy: loggedInUserId(),
+      IsActive: !cell  // Status of the user.
     }
-    onFloatingFilterChanged = (value) => {
-        if (value?.api?.rowModel?.rowsToDisplay?.length === 0) {
+    setStateData(prevState => ({
+      ...prevState,
+      showPopupToggle: true,
+      cellData: data,
+      cellValue: cell
+    }));
+  };
 
-            this.setState({ noData: true })
-            document.getElementsByClassName("ag-row-no-animation")[0].classList.add('no-content-image-container');
+  const confirmDeactivateItem = (data, cell) => {
+    dispatch(activeInactiveStatus(data, res => {
+      if (res && res.data && res.data.Result) {
+        if (cell === true) {
+          Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY);
         } else {
-            this.setState({ noData: false })
-            document.getElementsByClassName("ag-row-no-animation")[0].classList.remove('no-content-image-container');
+          Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY);
         }
+        filterList(); // Assuming filterList is another function that updates the list
+      }
+    }));
+    setStateData(prevState => ({
+      ...prevState,
+      showPopupToggle: false
+    }));
+  };
 
+  /**
+  * @method statusButtonFormatter
+  * @description Renders buttons
+  */
+
+
+  const statusButtonFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    showTitleForActiveToggle(props); // Make sure this is a util and not another method
+    if (ActivateAccessibility) {
+      return (
+        <>
+          <label htmlFor="normal-switch" className="normal-switch">
+            {/* <span>Switch with default style</span> */}
+            <Switch
+              onChange={() => handleChange(cellValue, rowData)}
+              checked={cellValue}
+              background="#ff6600"
+              onColor="#4DC771"
+              onHandleColor="#ffffff"
+              offColor="#FC5774"
+              id="normal-switch"
+              height={24}
+              className={cellValue ? "active-switch" : "inactive-switch"}
+            />
+          </label>
+        </>
+      )
+    } else {
+      return cellValue ? <div className={'Activated'}> {'Active'}</div> : <div className={'Deactivated'}>{'Deactive'}</div>;
     }
-    handleChange = (cell, row, enumObject, rowIndex) => {
-        let data = {
-            Id: row.PlantId,
-            ModifiedBy: loggedInUserId(),
-            IsActive: !cell, //Status of the user.
-        }
-        this.setState({ showPopupToggle: true, cellData: data, cellValue: cell })
-    }
+  };
 
-    confirmDeactivateItem = (data, cell) => {
-        this.props.activeInactiveStatus(data, res => {
-            if (res && res.data && res.data.Result) {
-                if (cell === true) {
-                    Toaster.success(MESSAGES.PLANT_INACTIVE_SUCCESSFULLY)
-                } else {
-                    Toaster.success(MESSAGES.PLANT_ACTIVE_SUCCESSFULLY)
-                }
-                // this.getTableListData()
-                this.filterList()
-            }
-        })
-        this.setState({ showPopupToggle: false })
-    }
 
-    /**
-    * @method statusButtonFormatter
-    * @description Renders buttons
-    */
-    statusButtonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const { ActivateAccessibility } = this.props;
-        showTitleForActiveToggle(props)
-        if (ActivateAccessibility) {
-            return (
-                <>
-                    <label htmlFor="normal-switch" className="normal-switch">
-                        {/* <span>Switch with default style</span> */}
-                        <Switch
-                            onChange={() => this.handleChange(cellValue, rowData)}
-                            checked={cellValue}
-                            background="#ff6600"
-                            onColor="#4DC771"
-                            onHandleColor="#ffffff"
-                            offColor="#FC5774"
-                            id="normal-switch"
-                            height={24}
-                            className={cellValue ? "active-switch" : "inactive-switch"}
-                        />
-                    </label>
-                </>
-            )
-        } else {
-            return (
-                <>
-                    {
-                        cellValue ?
-                            <div className={'Activated'}> {'Active'}</div>
-                            :
-                            <div className={'Deactivated'}>{'Deactive'}</div>
-                    }
-                </>
-            )
-        }
-    }
 
-    /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        let currentPage = this.refs.table.state.currPage;
-        let sizePerPage = this.refs.table.state.sizePerPage;
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
+  /**
+  * @method filterList
+  * @description Filter user listing on the basis of role and department
+  */
+  const filterList = () => {
+    const { country, state, city } = stateData;
 
-    onExportToCSV = (row) => {
-        return this.state.userData; // must return the data which you want to be exported
-    }
+    // Set isLoader to true before initiating the filter operation
+    setStateData(prevState => ({ ...prevState, isLoader: true }));
 
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
-
-    /**
-    * @method selectType
-    * @description Used show listing of unit of measurement
-    */
-    selectType = (label) => {
-        const { countryList, stateList, cityList } = this.props;
-        const temp = [];
-
-        if (label === 'country') {
-            countryList && countryList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'state') {
-            stateList && stateList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-        if (label === 'city') {
-            cityList && cityList.map(item => {
-                if (item.Value === '0') return false;
-                temp.push({ label: item.Text, value: item.Value })
-                return null;
-            });
-            return temp;
-        }
-
-    }
-
-    /**
-    * @method countryHandler
-    * @description Used to handle country
-    */
-    countryHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ country: newValue }, () => {
-                const { country } = this.state;
-                this.props.fetchStateDataAPI(country.value, () => { })
-            });
-        } else {
-            this.setState({ country: [], state: [], city: [], })
-            this.props.fetchStateDataAPI(0, () => { })
-        }
+    let filterData = {
+      country: country ? country.value : '',
+      state: state ? state.value : '',
+      city: city ? city.value : '',
+      is_vendor: true
     };
 
-    /**
-    * @method stateHandler
-    * @description Used to handle state
-    */
-    stateHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ state: newValue }, () => {
-                const { state } = this.state;
-                this.props.fetchCityDataAPI(state.value, () => { })
-            });
-        } else {
-            this.setState({ state: [], city: [] });
-            this.props.fetchCityDataAPI(0, () => { })
-        }
+    dispatch(getFilteredPlantList(filterData, (res) => {
+      // Handle the response from the filtering action
+      if (res.status === 204 && res.data === '') {
+        setStateData(prevState => ({ tableData: [], isLoader: false }));
+      } else if (res && res.data && res.data.DataList) {
+        let Data = res.data.DataList;
+        setStateData(prevState => ({ tableData: Data, isLoader: false }));
+      } else {
+        // Handle any other response scenarios if needed
+        setStateData(prevState => ({ tableData: [], isLoader: false }));
+      }
+    }));
+  };
 
-    };
 
-    /**
-    * @method cityHandler
-    * @description Used to handle City
-    */
-    cityHandler = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ city: newValue });
-        } else {
-            this.setState({ city: [] });
-        }
-    };
 
-    /**
-    * @method filterList
-    * @description Filter user listing on the basis of role and department
-    */
-    filterList = () => {
-        const { country, state, city, } = this.state;
-        let filterData = {
-            country: country && country.hasOwnProperty('value') ? country.value : '',
-            state: state && state.hasOwnProperty('value') ? state.value : '',
-            city: city && city.hasOwnProperty('value') ? city.value : '',
-            is_vendor: true,
-        }
-        this.props.getFilteredPlantList(filterData, (res) => {
-            if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], isLoader: false })
-            } else if (res && res.data && res.data.DataList) {
-                let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                    isLoader: false
-                })
-            } else {
 
-            }
-        })
+  const formToggle = () => {
+    setStateData(prevState => ({ ...prevState, isOpenVendor: true, isViewMode: false }));
+  };
+
+
+
+  const closeVendorDrawer = (e = '', type) => {
+    setStateData(prevState => ({ ...prevState, isOpenVendor: false, isEditFlag: false, ID: '' }));
+
+    if (type === 'submit') {
+      filterList()
+      getTableListData()
+    }
+  };
+
+
+
+  const onGridReady = params => {
+    // gridApi = params.api;
+    setStateData(prevState => ({
+      ...prevState,
+      gridApi: params.api,
+      gridColumnApi: params.columnApi
+    }));
+
+    if (window.screen.width >= 1600) {
+      params.api.sizeColumnsToFit();
     }
 
-    /**
-    * @method resetFilter
-    * @description Reset user filter
-    */
-    resetFilter = () => {
-        this.setState({ country: [], state: [], city: [], }, () => {
-            this.props.fetchStateDataAPI(0, () => { })
-            this.props.fetchCityDataAPI(0, () => { })
-            this.getTableListData()
-        })
+    params.api.paginationGoToPage(0);
+  };
+
+  const onPageSizeChanged = newPageSize => {
+    if (stateData.gridApi) {
+      stateData.gridApi.paginationSetPageSize(Number(newPageSize));
     }
-
-    formToggle = () => {
-        this.setState({ isOpenVendor: true, isViewMode: false })
+  };
+  // onBtExport = () => {
+  //     let tempArr = this.props.plantDataList && this.props.plantDataList
+  //     return this.returnExcelColumn(VBCPLANT_DOWNLOAD_EXCEl, tempArr)
+  // };
+  const onBtExport = useCallback(() => {
+    if (plantDataList) {
+      return returnExcelColumn(VBCPLANT_DOWNLOAD_EXCEl, plantDataList);
     }
+  }, [plantDataList]);
 
-    closeVendorDrawer = (e = '', type) => {
-        this.setState({
-            isOpenVendor: false,
-            isEditFlag: false,
-            ID: '',
-        }, () => {
-            if (type === 'submit') {
-                this.filterList()
-                this.getTableListData()
-            }
 
-        })
+  // onRowSelect = () => {
+  //     const selectedRows = this.state.gridApi?.getSelectedRows()
+  //     this.setState({ dataCount: selectedRows?.length })
+  // }
+
+  const onRowSelect = () => {
+    const selectedRows = stateData.gridApi.getSelectedRows();
+    setStateData(prevState => ({
+      ...prevState,
+      selectedRows
+    }));
+  };
+
+
+  const returnExcelColumn = (data = [], TempData) => {
+    let temp = TempData && TempData.map((item) => {
+      // Clone the item to avoid mutating the original object
+      let newItem = { ...item };
+
+      // Update the IsActive property to a string value
+      if (item.IsActive === true) {
+        newItem.IsActive = 'Active';
+      } else if (item.IsActive === false) {
+        newItem.IsActive = 'In Active';
+      }
+      return newItem;
+    });
+
+    return (
+      <ExcelSheet data={temp} name={PlantVbc}>
+        {data && data.map((ele, index) => (
+          <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+        ))}
+      </ExcelSheet>
+    );
+  };
+
+
+  const onFilterTextBoxChanged = event => {
+    if (stateData.gridApi) {
+      stateData.gridApi.setQuickFilter(event.target.value);
     }
-
-    /**
-    * @name onSubmit
-    * @param values
-    * @desc Submit the signup form values.
-    * @returns {{}}
-    */
-    onSubmit(values) {
-    }
-
-    onGridReady = (params) => {
-        this.gridApi = params.api;
-        window.screen.width >= 1600 && params.api.sizeColumnsToFit()
-        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(0);
-    };
-
-    onPageSizeChanged = (newPageSize) => {
-        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-    }
-
-    onBtExport = () => {
-        let tempArr = this.props.plantDataList && this.props.plantDataList
-        return this.returnExcelColumn(VBCPLANT_DOWNLOAD_EXCEl, tempArr)
-    };
-
-    onRowSelect = () => {
-        const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ dataCount: selectedRows?.length })
-    }
-
-    returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData && TempData.map((item) => {
-            if (item.IsActive === true) {
-                item.IsActive = 'Active'
-            } else if (item.IsActive === false) {
-                item.IsActive = 'In Active'
-            }
-            return temp;
-        })
-        return (
-            <ExcelSheet data={TempData} name={PlantVbc}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
-    }
-
-    onFilterTextBoxChanged(e) {
-        this.state.gridApi.setQuickFilter(e.target.value);
-    }
+  };
 
 
-    resetState() {
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
-
-    createCustomExportCSVButton = (onClick) => {
-        return (
-            <button type="button" className={"user-btn mr5"} onClick={this.onBtExport}><div className={"download"} ></div>Download</button>
-        );
-    }
-    render() {
-        const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-        const { isEditFlag, isOpenVendor, noData } = this.state;
-
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: false,
-        };
-
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound,
-            statusButtonFormatter: this.statusButtonFormatter
-        };
+  const resetState = () => {
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+  }
 
 
-        return (
-            <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {/* {this.props.loading && <Loader />} */}
-                <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                    <Row className="pt-4">
 
-                        <Col md="6" className="search-user-block mb-3">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div>
 
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
-                                            <ExcelFile filename={PlantVbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
-                                                {this.onBtExport()}
-                                            </ExcelFile>
-                                        </>
-                                    }
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
+  };
 
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-                                </div>
-                            </div>
-                        </Col>
-                    </Row>
-                </form>
-                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.plantDataList && this.props.plantDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                    <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        <SelectRowWrapper dataCount={this.state.dataCount} />
-                    </div>
-                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter={true}
-                            domLayout='autoHeight'
-                            // columnDefs={c}
-                            rowData={this.props.plantDataList}
-                            pagination={true}
-                            paginationPageSize={defaultPageSize}
-                            onGridReady={this.onGridReady}
-                            gridOptions={gridOptions}
-                            loadingOverlayComponent={'customLoadingOverlay'}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            onFilterModified={this.onFloatingFilterChanged}
-                            noRowsOverlayComponentParams={{
-                                title: EMPTY_DATA,
-                                imagClass: 'imagClass'
-                            }}
-                            frameworkComponents={frameworkComponents}
-                            onRowSelected={this.onRowSelect}
-                        >
-                            <AgGridColumn field="VendorName" headerName="Vendor Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
-                            <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
-                            <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
-                            <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
-                            <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                            <AgGridColumn width="100" pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                            <AgGridColumn field="PlantId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" width={"150px"} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                        </AgGridReact>
-                        {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-                    </div>
-                </div>
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    customLoadingOverlay: LoaderCustom,
+    customNoRowsOverlay: NoContentFound,
+    statusButtonFormatter: statusButtonFormatter
+  };
 
-                {isOpenVendor && <AddVBCPlant
-                    isOpen={isOpenVendor}
-                    closeDrawer={this.closeVendorDrawer}
-                    isEditFlag={isEditFlag}
-                    isViewMode={this.state.isViewMode}
-                    ID={this.state.ID}
-                    anchor={'right'}
 
-                />}
+  return (
+    <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
+      {/* {this.props.loading && <Loader />} */}
+      <form noValidate>
+        <Row className="pt-4">
+
+          <Col md="6" className="search-user-block mb-3">
+            <div className="d-flex justify-content-end bd-highlight w100">
+              <div>
+
+                {AddAccessibility && (
+                  <button
+                    type="button"
+                    className={"user-btn mr5"}
+                    onClick={formToggle}
+                    title="Add"
+                  >
+                    <div className={"plus mr-0"}></div>
+                  </button>
+                )}
                 {
-                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
+                  DownloadAccessibility &&
+                  <>
+                    <ExcelFile filename={PlantVbc} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'} title="Download"><div className="download mr-0"></div></button>}>
+                      {onBtExport()}
+                    </ExcelFile>
+                  </>
                 }
-                {
-                    this.state.showPopupToggle && <PopupMsgWrapper isOpen={this.state.showPopupToggle} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmToggle} message={`${this.state.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
-                }
+
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                  <div className="refresh mr-0"></div>
+                </button>
+              </div>
             </div>
-        );
-    }
+          </Col>
+        </Row>
+      </form>
+      <div className={`ag-grid-wrapper height-width-wrapper ${(plantDataList && plantDataList?.length <= 0) || stateData.noData ? "overlay-contain" : ""}`}>
+        <div className="ag-grid-header">
+          <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+          <SelectRowWrapper dataCount={stateData.dataCount} />
+        </div>
+        <div className={`ag-theme-material ${stateData.isLoader && "max-loader-height"}`}>
+          {stateData.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+          <AgGridReact
+            defaultColDef={defaultColDef}
+            floatingFilter={true}
+            domLayout='autoHeight'
+            // columnDefs={c} // Uncomment if 'c' is defined within the component
+            rowData={plantDataList}
+            pagination={true}
+            paginationPageSize={defaultPageSize}
+            onGridReady={onGridReady}
+            gridOptions={gridOptions}
+            loadingOverlayComponent={'customLoadingOverlay'}
+            noRowsOverlayComponent={'customNoRowsOverlay'}
+            onFilterModified={onFloatingFilterChanged}
+            noRowsOverlayComponentParams={{
+              title: EMPTY_DATA, // Assuming 'EMPTY_DATA' is defined elsewhere
+              imagClass: 'imagClass'
+            }}
+            frameworkComponents={frameworkComponents}
+            onRowSelected={onRowSelect}
+          >
+            <AgGridColumn field="VendorName" headerName="Vendor Name1" cellRenderer={'costingHeadFormatter'} />
+            <AgGridColumn field="PlantName" headerName="Plant Name" />
+            <AgGridColumn field="PlantCode" headerName="Plant Code" />
+            <AgGridColumn field="CountryName" headerName="Country" />
+            <AgGridColumn field="StateName" headerName="State" />
+            <AgGridColumn field="CityName" headerName="City" />
+            <AgGridColumn width={100} pinned="right" field="IsActive" headerName="Status" cellRenderer={'statusButtonFormatter'} />
+            <AgGridColumn field="PlantId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" width={150} cellRenderer={'totalValueRenderer'} />
+          </AgGridReact>
+          {<PaginationWrapper gridApi={stateData.gridApi} setPage={onPageSizeChanged} />}
+        </div>
+      </div>
+
+      {stateData.isOpenVendor && <AddVBCPlant
+        isOpen={stateData.isOpenVendor}
+        closeDrawer={closeVendorDrawer}
+        isEditFlag={stateData.isEditFlag}
+        isViewMode={stateData.isViewMode}
+        ID={stateData.ID}
+        anchor={'right'}
+
+      />}
+      {
+        stateData.showPopup && <PopupMsgWrapper isOpen={stateData.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PLANT_DELETE_ALERT}`} />
+      }
+      {
+        stateData.showPopupToggle && <PopupMsgWrapper isOpen={stateData.showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${stateData.cellValue ? MESSAGES.PLANT_DEACTIVE_ALERT : MESSAGES.PLANT_ACTIVE_ALERT}`} />
+      }
+    </div>
+  );
+
 }
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ comman, auth, plant }) {
-    const { countryList, stateList, cityList } = comman;
-    const { loading } = auth;
-    const { plantDataList } = plant;
-    return { loading, countryList, stateList, cityList, plantDataList };
-}
-
-
-/**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-
-export default connect(mapStateToProps, {
-    getPlantDataAPI,
-    activeInactiveStatus,
-    fetchStateDataAPI,
-    fetchCityDataAPI,
-    getFilteredPlantList,
-    deletePlantAPI,
-})(reduxForm({
-    form: 'ZBCPlantListing',
-    onSubmitFail: errors => {
-        focusOnError(errors);
-    },
-    enableReinitialize: true,
-    touchOnChange: true
-})(VBCPlantListing));
+export default VBCPlantListing
