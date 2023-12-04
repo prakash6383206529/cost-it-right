@@ -73,7 +73,9 @@ function ApproveRejectUI(props) {
   }, [dataInFields])
 
   useEffect(() => {
-    props?.fileDataCallback(files)
+    if (isSimulation) {                     // ANIKET REPORTED PAGE GOES BLANK
+      props?.fileDataCallback(files)
+    }
   }, [files])
 
   const handleTokenDropDownChange = (value) => {
