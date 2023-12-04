@@ -73,7 +73,9 @@ function ApproveRejectUI(props) {
   }, [dataInFields])
 
   useEffect(() => {
-    props?.fileDataCallback(files)
+    if (isSimulation) {
+      props?.fileDataCallback(files)
+    }
   }, [files])
 
   const handleTokenDropDownChange = (value) => {

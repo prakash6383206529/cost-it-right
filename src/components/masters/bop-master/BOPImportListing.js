@@ -77,7 +77,9 @@ class BOPImportListing extends Component {
             dataCount: 0,
             attachment: false,
             viewAttachment: [],
-            editSelectedList: false
+            editSelectedList: false,
+            tempList: []
+
         }
     }
 
@@ -706,7 +708,7 @@ class BOPImportListing extends Component {
         }
 
         const editSelectedData = () => {
-            this.setState({ editSelectedList: true })
+            this.setState({ editSelectedList: true, tempList: this.state.gridApi?.getSelectedRows() ? this.state.gridApi?.getSelectedRows() : [] })
         }
 
         const backToSimulation = (value) => {
@@ -932,7 +934,7 @@ class BOPImportListing extends Component {
                         backToSimulation={backToSimulation}
                         // isbulkUpload={isbulkUpload}
                         // rowCount={rowCount}
-                        list={this.state.gridApi.getSelectedRows() ? this.state.gridApi.getSelectedRows() : []}
+                        list={this.state?.tempList ? this.state?.tempList : []}
                         // technology={technology.label}
                         // technologyId={technology.value}
                         // master={master.label}

@@ -71,6 +71,7 @@ function RunSimulationDrawer(props) {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    const showCheckBox = (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION || simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -515,15 +516,15 @@ function RunSimulationDrawer(props) {
 
                                     <Row className="ml-0 pt-2">
                                         {runSimulationDisable && <LoaderCustom customClass="approve-reject-drawer-loader" />}
-                                        <Col md="12" className="mb-3 pr-0">
+                                        <Col md="12" className={`${showCheckBox ? 'mb-3' : ''} pr-0`}>
                                             <Row>
                                                 {
                                                     masterId !== Number(EXCHNAGERATE) && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                         if (el.Value === '0') return false;
                                                         return (
-                                                            <Col md="6" className="mb-3 p-0 check-box-container">
-                                                                <div class={`custom-check1 d-inline-block drawer-side-input-other`} id={`applicability-checkbox_${i}`}>
-                                                                    <label
+                                                            <Col md="6" className={`${showCheckBox ? 'mb-3 check-box-container' : ''} p-0`}>
+                                                                <div class={`${showCheckBox ? 'custom-check1 d-inline-block drawer-side-input-other' : ''}`} id={`applicability-checkbox_${i}`}>
+                                                                    {showCheckBox && <label
                                                                         className="custom-checkbox mb-0"
                                                                         onChange={() => handleApplicabilityChange(el)}
                                                                     >
@@ -541,7 +542,7 @@ function RunSimulationDrawer(props) {
                                                                             checked={IsAvailable(el.Text)}
                                                                             onChange={() => handleApplicabilityChange(el)}
                                                                         />
-                                                                    </label>
+                                                                    </label>}
                                                                     {(el.Text === "Additional Other Cost") && inputOtherCost ?
                                                                         <Fragment>
                                                                             <div className="toggle-button-per-and-fix">
