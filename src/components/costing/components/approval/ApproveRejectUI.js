@@ -24,6 +24,7 @@ import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
 import { MESSAGES } from '../../../../config/message'
 import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import PushSection from '../../../common/PushSection'
+import { transformApprovalItem } from '../../../common/CommonFunctions'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -132,7 +133,8 @@ function ApproveRejectUI(props) {
     }
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map((item) => {
-        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) tempDropdownList.push({ label: item.Text, value: item.Value })
+        const transformedText = transformApprovalItem(item);
+        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) tempDropdownList.push({ label: transformedText, value: item.Value })
         return null
       })
       return tempDropdownList
