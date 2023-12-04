@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
@@ -110,6 +110,7 @@ function AddConditionCosting(props) {
         }
     }
     const handleCostChangeCurrency = (e) => {
+        errors.CostBase = {}
         if (e?.target?.value) {
             const costBase = checkForNull(e.target.value) * checkForNull(currencyValue)
             setValue("CostBase", checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
@@ -131,6 +132,7 @@ function AddConditionCosting(props) {
     }
 
     const handleCostChangeBase = (e) => {
+        errors.CostCurrency = {}
         if (e?.target?.value) {
             const costCurrency = checkForNull(e.target.value) / checkForNull(currencyValue)
             setValue("CostCurrency", checkForDecimalAndNull(costCurrency, initialConfiguration.NoOfDecimalForPrice))
@@ -349,7 +351,7 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>
                                     {type === 'Quantity' && <Col md="3" className='px-2'>
-                                        <NumberFieldHookForm
+                                        <TextFieldHookForm
                                             label={`Quantity`}
                                             name={'Quantity'}
                                             Controller={Controller}
@@ -369,7 +371,7 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>}
                                     {type === 'Percentage' && <Col md={3} className='px-2'>
-                                        <NumberFieldHookForm
+                                        <TextFieldHookForm
                                             label={`Percentage (%)`}
                                             name={'Percentage'}
                                             Controller={Controller}
@@ -394,7 +396,7 @@ function AddConditionCosting(props) {
                                     </Col>}
                                     <Col md={3} className={'px-2'}>
                                         {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
-                                        <NumberFieldHookForm
+                                        <TextFieldHookForm
                                             label={`Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
                                             name={'CostCurrency'}
                                             id={'cost-by-percent'}
@@ -415,11 +417,11 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>
                                     {isFromImport && <Col md={3} className='px-2'>
-                                        {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
-                                        <NumberFieldHookForm
+                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-currency'} tooltipText={`Cost = Cost (${currency?.label}) * Currency (${currencyValue})`} />
+                                        <TextFieldHookForm
                                             label={`Cost (${initialConfiguration?.BaseCurrency})`}
                                             name={'CostBase'}
-                                            id={'cost-by-percent'}
+                                            id={'cost-by-currency'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -439,7 +441,7 @@ function AddConditionCosting(props) {
                                     {type === 'Quantity' && <>
                                         <Col md={3} className='px-2'>
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost Per Quantity = Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) / Quantity`} />
-                                            <NumberFieldHookForm
+                                            <TextFieldHookForm
                                                 label={`Cost Per Quantity (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
                                                 name={'ConditionCostPerQuantity'}
                                                 id={'cost-per-quantity'}
@@ -456,7 +458,7 @@ function AddConditionCosting(props) {
                                         </Col>
                                         {isFromImport && <Col md={3} className='px-2'>
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost Per Quantity = Cost (${initialConfiguration?.BaseCurrency})  / Quantity`} />
-                                            <NumberFieldHookForm
+                                            <TextFieldHookForm
                                                 label={`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}
                                                 name={'CostPerQuantityConversion'}
                                                 id={'cost-per-quantity-coversion'}
