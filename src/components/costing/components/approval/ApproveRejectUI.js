@@ -73,7 +73,7 @@ function ApproveRejectUI(props) {
   }, [dataInFields])
 
   useEffect(() => {
-    if (isSimulation) {                     // ANIKET REPORTED PAGE GOES BLANK
+    if (isSimulation) {
       props?.fileDataCallback(files)
     }
   }, [files])
