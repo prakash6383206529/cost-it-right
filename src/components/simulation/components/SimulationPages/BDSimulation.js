@@ -76,7 +76,7 @@ function BDSimulation(props) {
                 gridRef.current.api.sizeColumnsToFit();
             }
             let maxDate = getMaxDate(list)
-            setMaxDate(maxDate)
+            setMaxDate(maxDate?.EffectiveDate)
         }
     }, [list])
 
@@ -120,7 +120,7 @@ function BDSimulation(props) {
         dispatch(runVerifyBoughtOutPartSimulation(obj, res => {
             setIsDisable(false)
             if (res?.data?.Result) {
-                setToken(res.data.Identity)
+                setToken(res?.data?.Identity)
                 setTimeout(() => {
                     setShowVerifyPage(true)
                 }, 200);

@@ -317,20 +317,23 @@ class ExchangeRateListing extends Component {
 
 
     returnExcelColumn = (data = [], TempData) => {
+        let tempList = [...TempData]
         let excelData = hideCustomerFromExcel(data, "customerWithCode")
         let temp = []
-        temp = TempData && TempData.map((item) => {
+        temp = tempList && tempList.map((item) => {
+            let obj = {}
             if (item.BankRate === null) {
-                item.BankRate = ' '
+                obj.BankRate = ' '
             } else if (item.BankCommissionPercentage === null) {
-                item.BankCommissionPercentage = ' '
+                obj.BankCommissionPercentage = ' '
             } else if (item.CustomRate === null) {
-                item.CustomRate = ' '
+                obj.CustomRate = ' '
             } else if (item?.EffectiveDate?.includes('T') || item?.DateOfModification?.includes('T')) {
-                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-                item.DateOfModification = DayTime(item.DateOfModification).format('DD/MM/YYYY')
+                obj.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+                obj.DateOfModification = DayTime(item.DateOfModification).format('DD/MM/YYYY')
             }
-            return item
+            temp.push(obj)
+            return null
         })
         return (
 
