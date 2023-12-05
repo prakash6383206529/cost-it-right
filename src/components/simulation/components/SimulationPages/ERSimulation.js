@@ -370,10 +370,10 @@ function ERSimulation(props) {
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right mr-1" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div></button>
-                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                            {isImpactedMaster && <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
-                                            </ExcelFile>
+                                            </ExcelFile>}
                                         </div>
                                         {!isImpactedMaster && <button type="button" id="simulation-back" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
