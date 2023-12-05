@@ -127,6 +127,8 @@ class ExchangeRateListing extends Component {
             vendorId: this.props.filteredRMData?.VendorId ? this.props.filteredRMData?.VendorId : '',
             customerId: this.props.filteredRMData?.CustomerId ? this.props.filteredRMData?.CustomerId : '',
             isBudgeting: currencyId,
+            currency: '',
+            isRequestForSimulation: this.props.isSimulation ? true : false,
         }
         if (this.props.isSimulation) {
             this.props?.changeTokenCheckBox(false)
