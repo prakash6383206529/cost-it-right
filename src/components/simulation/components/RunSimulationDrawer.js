@@ -523,7 +523,7 @@ function RunSimulationDrawer(props) {
                                                         if (el.Value === '0') return false;
                                                         if (showCheckBox === false && (el?.Text !== "Additional Discount" && el?.Text !== "Additional Other Cost" && el?.Text !== "Latest Exchange Rate")) return false;
                                                         return (
-                                                            <Col md="6" className='mb-3 check-box-container p-0'>
+                                                            <Col md={`${showCheckBox ? '6' : '8'}`} className='mb-3 check-box-container p-0'>
                                                                 <div class={'custom-check1 d-inline-block drawer-side-input-other'} id={`afpplicability-checkbox_${i}`}>
                                                                     <label
                                                                         className="custom-checkbox mb-0"
