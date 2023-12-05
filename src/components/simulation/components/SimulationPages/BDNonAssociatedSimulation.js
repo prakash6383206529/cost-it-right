@@ -80,7 +80,7 @@ function BDNonAssociatedSimulation(props) {
         if (list && list.length > 0) {
             window.screen.width >= 1920 && gridRef?.current?.api?.sizeColumnsToFit();
             let maxDate = getMaxDate(list)
-            setMaxDate(maxDate)
+            setMaxDate(maxDate?.EffectiveDate)
         }
     }, [list])
 

@@ -87,7 +87,7 @@ function MRSimulation(props) {
                 gridRef.current.api.sizeColumnsToFit();
             }
             let maxDate = getMaxDate(list)
-            setMaxDate(maxDate)
+            setMaxDate(maxDate?.EffectiveDate)
         }
     }, [list])
 
