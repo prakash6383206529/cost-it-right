@@ -2511,11 +2511,20 @@ export const BUDGET_ID = 5
 export const PROVISIONAL = "Provisional"
 export const NEW_COMPONENT = "New Component"
 export const CUSTOMER_BASED = "Customer Based"
+
+// Original release strategy constants
 export const RELEASE_STRATEGY_B1 = "Release Strategy B1"
 export const RELEASE_STRATEGY_B2 = "Release Strategy B2"
 export const RELEASE_STRATEGY_B3 = "Release Strategy B3"
 export const RELEASE_STRATEGY_B4 = "Release Strategy B4"
 export const RELEASE_STRATEGY_B6 = "Release Strategy B6"
+
+// Transformed release strategy constants
+export const RELEASE_STRATEGY_B1_NEW = "Release Strategy B1 (PFS rate increase upto 110%)"
+export const RELEASE_STRATEGY_B2_NEW = "Release Strategy B2 (PFS rate increase beyond upto 110%)"
+export const RELEASE_STRATEGY_B3_NEW = "Release Strategy B3 (Rate increase BOM budgeted upto 103%)"
+export const RELEASE_STRATEGY_B4_NEW = "Release Strategy B4 (Rate increase BOM budgeted beyond 103%)"
+export const RELEASE_STRATEGY_B6_NEW = "Release Strategy B6 (Regular BOM)"
 
 //default value for page size
 export const defaultPageSize = 10;
