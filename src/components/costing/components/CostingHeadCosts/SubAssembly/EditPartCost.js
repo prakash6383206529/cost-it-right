@@ -114,7 +114,8 @@ function EditPartCost(props) {
             partId: props?.tabAssemblyIndividualPartDetail?.PartId,
             plantId: costData?.DestinationPlantId,
             isRequestForWAC: (costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? true : false,
-            costingTypeId: (costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? null : costData?.CostingTypeId
+            costingTypeId: (costData?.CostingTypeId === WACTypeId || props?.costingTypeId === WACTypeId) ? null : costData?.CostingTypeId,
+            effectiveDate: CostingEffectiveDate
         }
 
         !props.costingSummary && dispatch(getCostingForMultiTechnology(obj, res => { }))

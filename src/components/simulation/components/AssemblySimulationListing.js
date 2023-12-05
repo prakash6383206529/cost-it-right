@@ -99,7 +99,7 @@ function AssemblySimulationListing(props) {
             "MultiTechnologyCostings": tempArray,
             "TechnologyId": checkForNull(selectedTechnologyForSimulation?.value),
             "SimulationTechnologyId": checkForNull(selectedMasterForSimulation?.value),
-            "EffectiveDate": DayTime(effectiveDate),
+            "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             "LoggedInUserId": loggedInUserId(),
             "SimulationHeadId": props?.isCustomer ? CBCTypeId : VBCTypeId
         }

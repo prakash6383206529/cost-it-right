@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { getAllApprovalUserFilterByDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
 import { formatRMSimulationObject, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { EMPTY_GUID } from '../../../../config/constants'
+import { BOPIMPORT, EMPTY_GUID, EXCHNAGERATE, RMIMPORT } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import { debounce } from 'lodash'
@@ -22,7 +22,7 @@ function SimulationApproveReject(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails } = props
+  const { type, technologyId, approvalTypeIdValue, approvalData, IsFinalLevel, IsPushDrawer, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsExchangeRateSimulation } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -54,7 +54,7 @@ function SimulationApproveReject(props) {
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
-  const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+  const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -74,8 +74,15 @@ function SimulationApproveReject(props) {
         setDataFromReleaseStrategy(releaseStrategyDetails, dataInFieldTemp)
       }
     }))
-
-    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), selectedTechnologyForSimulation?.value, (res) => {
+    let technologyId = selectedMasterForSimulation?.value
+    if (IsExchangeRateSimulation) {
+      if (String(selectedMasterForSimulation?.value) === String(RMIMPORT) || String(selectedMasterForSimulation?.value) === String(BOPIMPORT)) {
+        technologyId = EXCHNAGERATE
+      }
+    } else {
+      technologyId = selectedMasterForSimulation?.value
+    }
+    dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
       if (res?.data?.Data) {
         setTechnologyLevelsList(res?.data?.Data)
       }
@@ -258,12 +265,20 @@ function SimulationApproveReject(props) {
 
       } else {
         let appTypeId = dataInFieldsTemp?.ApprovalType?.value
+        let technologyIdTemp = technologyId
+        if (IsExchangeRateSimulation) {
+          if (String(technologyId) === String(RMIMPORT) || String(technologyId) === String(BOPIMPORT)) {
+            technologyIdTemp = EXCHNAGERATE
+          }
+        } else {
+          technologyIdTemp = technologyId
+        }
 
         let obj = {
           LoggedInUserId: userData.LoggedInUserId,
           DepartmentId: departId,
           //NEED TO MAKE THIS 2   
-          TechnologyId: technologyId,
+          TechnologyId: technologyIdTemp,
           ReasonId: 0,
           ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(appTypeId)
         }
@@ -510,6 +525,10 @@ function SimulationApproveReject(props) {
     }
   }
 
+  const fileDataCallback = (fileList) => {
+    setFiles(fileList)
+  }
+
   return (
     <>
       <ApproveRejectUI
@@ -540,6 +559,7 @@ function SimulationApproveReject(props) {
         showMessage={showMessage}
         isDisable={isDisable}
         disableReleaseStrategy={disableReleaseStrategy}
+        fileDataCallback={fileDataCallback}
       />
 
       {

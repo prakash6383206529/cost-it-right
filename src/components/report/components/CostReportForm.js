@@ -133,7 +133,7 @@ function CostReportForm(props) {
     */
     const handleFromDate = (value) => {
         setEffectiveDate(value)
-        dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))
+        dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
 
     }
 

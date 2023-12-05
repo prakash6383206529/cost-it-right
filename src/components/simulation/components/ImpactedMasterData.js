@@ -42,13 +42,15 @@ export function Impactedmasterdata(props) {
             return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
         }
         return (<>
-            {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.RawMaterialImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} lastRevision={lastRevision} nullHandler={nullHandler}>
+            {rmListing && <RMSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.RawMaterialImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} customClass={customClass} lastRevision={lastRevision} nullHandler={nullHandler} masterId={masterId}>
                 {commonGridColumns}
             </RMSimulation>}
             {operationListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.OperationImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} nullHandler={nullHandler}>{commonGridColumns}</OperationSTSimulation>}
             {surfaceTreatmentListing && masterId && <OperationSTSimulation isOperationMaster={true} costingAndPartNo={viewCostingAndPartNo} list={data?.SurfaceTreatmentImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} nullHandler={nullHandler}>{commonGridColumns}</OperationSTSimulation>}
             {exchangeRateListing && <ERSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.ExchangeRateImpactedMasterDataList} isImpactedMaster={true} lastRevision={lastRevision} nullHandler={nullHandler}>{commonGridColumns}</ERSimulation>}
-            {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} nullHandler={nullHandler}>{commonGridColumns}</BDSimulation>}
+            {bopListing && <BDSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.BoughtOutPartImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} masterId={masterId} nullHandler={nullHandler}>
+                {commonGridColumns}
+            </BDSimulation>}
             {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} nullHandler={nullHandler}>{commonGridColumns}</MRSimulation>}
         </>
         )

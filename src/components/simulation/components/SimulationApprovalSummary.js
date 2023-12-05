@@ -18,10 +18,10 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
-import { checkFinalUser, getReleaseStrategyApprovalDetails, setCostingViewData } from '../../costing/actions/Costing';
+import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
 import { EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { Redirect } from 'react-router';
@@ -114,6 +114,7 @@ function SimulationApprovalSummary(props) {
 
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
     const { initialConfiguration } = useSelector(state => state.auth)
 
     const dispatch = useDispatch()
@@ -125,6 +126,12 @@ function SimulationApprovalSummary(props) {
     const [finalLeveluser, setFinalLevelUser] = useState(false)
     const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
     const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+    const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
+    const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
+    const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
+    const headers = {
+        NetCost: `Net Cost ${initialConfiguration?.BaseCurrency}`,
+    }
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => {
@@ -237,10 +244,18 @@ function SimulationApprovalSummary(props) {
             //         }
             //     }))
             // } else {
+            let technologyIdTemp = SimulationTechnologyId
+            if (res?.data?.Data?.IsExchangeRateSimulation) {
+                if (String(SimulationTechnologyId) === String(RMIMPORT) || String(SimulationTechnologyId) === String(BOPIMPORT)) {
+                    technologyIdTemp = EXCHNAGERATE
+                }
+            } else {
+                technologyIdTemp = SimulationTechnologyId
+            }
             let obj = {
                 DepartmentId: DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: SimulationTechnologyId,
+                TechnologyId: technologyIdTemp,
                 Mode: 'simulation',
                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
             }
@@ -558,112 +573,112 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newPOFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewPOPrice > row.OldPOPrice) ? 'red-value form-control' : (row.NewPOPrice < row.OldPOPrice) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldRMFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newRMFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetRawMaterialsCost > row.OldNetRawMaterialsCost) ? 'red-value form-control' : (row.NewNetRawMaterialsCost < row.OldNetRawMaterialsCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
     const oldPOCurrencyFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetPOPriceOtherCurrency > row.OldNetPOPriceOtherCurrency) ? 'red-value form-control' : (row.NewNetPOPriceOtherCurrency < row.OldNetPOPriceOtherCurrency) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newPOCurrencyFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetPOPriceOtherCurrency > row.OldNetPOPriceOtherCurrency) ? 'red-value form-control' : (row.NewNetPOPriceOtherCurrency < row.OldNetPOPriceOtherCurrency) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldERFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newERFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewExchangeRate > row.OldExchangeRate) ? 'red-value form-control' : (row.NewExchangeRate < row.OldExchangeRate) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldBOPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost) ? 'red-value form-control custom-max-width-120px' : (row.NewNetBoughtOutPartCost < row.OldNetBoughtOutPartCost) ? 'green-value form-control custom-max-width-120px' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newBOPFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetBoughtOutPartCost > row.OldNetBoughtOutPartCost) ? 'red-value form-control custom-max-width-120px' : (row.NewNetBoughtOutPartCost < row.OldNetBoughtOutPartCost) ? 'green-value form-control custom-max-width-120px' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
     const processFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetProcessCost > row.OldNetProcessCost) ? 'red-value form-control' : (row.NewNetProcessCost < row.OldNetProcessCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const varianceFormatter = (props) => {
         const cell = props?.value;
-        let variance = checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
+        let variance = checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
 
     const BOPVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let variance = checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, getConfigurationKey().NoOfDecimalForPrice)
+        let variance = checkForDecimalAndNull(row.NetBoughtOutPartCostVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
     const OPVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let variance = checkForDecimalAndNull(row.OperationCostVariance, getConfigurationKey().NoOfDecimalForPrice)
+        let variance = checkForDecimalAndNull(row.OperationCostVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
     const STVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let variance = checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, getConfigurationKey().NoOfDecimalForPrice)
+        let variance = checkForDecimalAndNull(row.NetSurfaceTreatmentCostVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
     const processVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let variance = checkForDecimalAndNull(row.NetProcessCostVariance, getConfigurationKey().NoOfDecimalForPrice)
+        let variance = checkForDecimalAndNull(row.NetProcessCostVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
 
     const POVarianceFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        let variance = checkForDecimalAndNull(row.POVariance, getConfigurationKey().NoOfDecimalForPrice)
+        let variance = checkForDecimalAndNull(row.POVariance, initialConfiguration?.NoOfDecimalForPrice)
         variance = variance > 0 ? `+${variance}` : variance;
         return variance;
     }
@@ -672,28 +687,28 @@ function SimulationApprovalSummary(props) {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewNetSurfaceTreatmentCost < row.OldNetSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newSTFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewNetSurfaceTreatmentCost > row.OldNetSurfaceTreatmentCost) ? 'red-value form-control' : (row.NewNetSurfaceTreatmentCost < row.OldNetSurfaceTreatmentCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const oldOperationFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const newOperationFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const classGreen = (row.NewOperationCost > row.OldOperationCost) ? 'red-value form-control' : (row.NewOperationCost < row.OldOperationCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const plantFormatter = (props) => {
@@ -704,7 +719,7 @@ function SimulationApprovalSummary(props) {
 
     const percentageFormatter = (props) => {
         const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice) : '-'
     }
 
     const viewAssembly = (cell, row, rowIndex) => {
@@ -784,15 +799,15 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const tempA = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost);
         const classGreen = (tempA > row.NetLandedCost) ? 'red-value form-control' : (tempA < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
     }
 
     const NewcostFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         const NewBasicRate = Number(row.NewBasicRate) + checkForNull(row.RMFreightCost) + checkForNull(row.RMShearingCost)
         const classGreen = (NewBasicRate > row.NetLandedCost) ? 'red-value form-control' : (NewBasicRate < row.NetLandedCost) ? 'green-value form-control' : 'form-class'
-        return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)}</span> : ''
-        // checkForDecimalAndNull(NewBasicRate, getConfigurationKey().NoOfDecimalForPrice)
+        return row.NewBasicRate != null ? <span className={classGreen}>{checkForDecimalAndNull(NewBasicRate, initialConfiguration?.NoOfDecimalForPrice)}</span> : ''
+        // checkForDecimalAndNull(NewBasicRate, initialConfiguration?.NoOfDecimalForPrice)
     }
 
     const effectiveDateFormatter = (props) => {
@@ -841,7 +856,7 @@ function SimulationApprovalSummary(props) {
 
     const decimalFormatter = (props) => {
         const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-';
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? checkForDecimalAndNull(cellValue, initialConfiguration?.NoOfDecimalForPrice) : '-';
     }
 
     const bopNumberFormatter = (props) => {
@@ -904,7 +919,7 @@ function SimulationApprovalSummary(props) {
 
     const impactPerQuarterFormatter = (props) => {
         const cell = props?.value;
-        return cell != null ? checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice) : '-'
+        return cell != null ? checkForDecimalAndNull(cell, initialConfiguration?.NoOfDecimalForPrice) : '-'
     }
 
     if (showListing === true) {
@@ -1103,8 +1118,8 @@ function SimulationApprovalSummary(props) {
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.Reason}</td>
                                             <td>{simulationDetail && simulationDetail.AmendmentDetails?.SimulationTechnology}</td>
                                             <td>{simulationDetail && DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}</td>
-                                            {isMasterAssociatedWithCosting && <td>{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>}
-                                            {isMasterAssociatedWithCosting && <td>{simulationDetail && (simulationDetail?.TotalBudgetedPriceImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice) : '-')}</td>}
+                                            {isMasterAssociatedWithCosting && <td>{simulationDetail && (simulationDetail?.TotalImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalImpactPerQuarter, initialConfiguration?.NoOfDecimalForPrice) : '-')}</td>}
+                                            {isMasterAssociatedWithCosting && <td>{simulationDetail && (simulationDetail?.TotalBudgetedPriceImpactPerQuarter ? checkForDecimalAndNull(simulationDetail?.TotalBudgetedPriceImpactPerQuarter, initialConfiguration?.NoOfDecimalForPrice) : '-')}</td>}
                                         </tr>
                                     </tbody>
                                 </Table>
@@ -1214,7 +1229,7 @@ function SimulationApprovalSummary(props) {
                                                                 <div className="refresh mr-0"></div>
                                                             </button>
                                                             {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
-                                                                keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation)
+                                                                keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsMachineProcessSimulation)
                                                                 ?
                                                                 <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
@@ -1283,7 +1298,7 @@ function SimulationApprovalSummary(props) {
                                                                 {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="NewOperationCost" headerName="Revised Operation Cost" cellRenderer='newOperationFormatter'></AgGridColumn>}
                                                                 {(isOperation || keysForDownloadSummary.IsOperationSimulation) && <AgGridColumn width={140} field="OperationCostVariance" headerName="Variance (Oper. Cost)" cellRenderer='OPVarianceFormatter'></AgGridColumn>}
 
-                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? 'Net Cost' : "Existing Net Cost"}></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="OldPOPrice" cellRenderer='oldPOFormatter' headerName={String(SimulationTechnologyId) === EXCHNAGERATE ? headers?.NetCost : `Existing ${headers?.NetCost}`}></AgGridColumn>}
 
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="NewPOPrice" cellRenderer='newPOFormatter' headerName="Revised Net Cost"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && isMasterAssociatedWithCosting && <AgGridColumn width={140} field="POVariance" headerName="Variance (w.r.t. Existing)" cellRenderer='POVarianceFormatter' ></AgGridColumn>}
@@ -1292,8 +1307,8 @@ function SimulationApprovalSummary(props) {
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="NewNetRawMaterialsCost" cellRenderer='newRMFormatter' headerName="Revised RM Cost/pc" ></AgGridColumn>}
                                                                 {(isRMDomesticOrRMImport || keysForDownloadSummary.IsRawMaterialSimulation) && <AgGridColumn width={140} field="RMVariance" headerName="Variance (RM Cost)" cellRenderer='varianceFormatter' ></AgGridColumn>}
 
-                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Existing Net Cost (in Currency)"></AgGridColumn>}
-                                                                {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="Revised Net Cost (in Currency)"></AgGridColumn>}
+                                                                {(isExchangeRate || (keysForDownloadSummary.IsExchangeRateSimulation && simulationDetail.SimulationTechnologyId === EXCHNAGERATE)) && <AgGridColumn width={140} field="OldNetPOPriceOtherCurrency" cellRenderer='oldPOCurrencyFormatter' headerName="Existing Net Cost (in Currency)"></AgGridColumn>}
+                                                                {(isExchangeRate || (keysForDownloadSummary.IsExchangeRateSimulation && simulationDetail.SimulationTechnologyId === EXCHNAGERATE)) && <AgGridColumn width={140} field="NewNetPOPriceOtherCurrency" cellRenderer='newPOCurrencyFormatter' headerName="Revised Net Cost (in Currency)"></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="POVariance" headerName="Variance (w.r.t. Existing)" cellRenderer='POVarianceFormatter' ></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="BudgetedPriceVariance" headerName='Variance (w.r.t. Budgeted)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {(isExchangeRate || keysForDownloadSummary.IsExchangeRateSimulation) && <AgGridColumn width={140} field="OldExchangeRate" cellRenderer='oldERFormatter' headerName="Existing Exchange Rate" ></AgGridColumn>}
@@ -1311,6 +1326,18 @@ function SimulationApprovalSummary(props) {
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="Revised Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Variance (Proc. Cost)" cellRenderer='processVarianceFormatter' ></AgGridColumn>}
 
+                                                                {showRM && <AgGridColumn width={150} field="RMName" tooltipField="RMName" headerName="RM Name"></AgGridColumn>}
+                                                                {showRM && <AgGridColumn width={150} field="RMGrade" tooltipField="RMGrade" headerName="RM Grade"></AgGridColumn>}
+                                                                {showRM && <AgGridColumn width={150} field="RMSpecification" tooltipField="RMSpecification" headerName="RM Specification"></AgGridColumn>}
+
+                                                                {showBOP && <AgGridColumn width={150} field="BOPName" tooltipField="BOPName" headerName="BOP Name"></AgGridColumn>}
+                                                                {showBOP && <AgGridColumn width={150} field="BOPNumber" tooltipField="BOPNumber" headerName="BOP Number"></AgGridColumn>}
+                                                                {showBOP && <AgGridColumn width={150} field="Category" tooltipField="Category" headerName="Category"></AgGridColumn>}
+
+                                                                {/* {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                                             {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
+                                                              {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>} */}
+
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="OldNetBoughtOutPartCost" headerName="Existing Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="NewNetBoughtOutPartCost" headerName="Revised Net Bought Out Part Cost" cellRenderer='decimalFormatter' ></AgGridColumn>}
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="NetBoughtOutPartCostVariance" headerName="Net Bought Out Part Cost Variance"></AgGridColumn>}
@@ -1319,7 +1346,7 @@ function SimulationApprovalSummary(props) {
                                                                 {isMultiTechnology && <AgGridColumn width={140} field="POVariance" headerName="Variance (w.r.t. Existing)" cellRenderer='decimalFormatter' ></AgGridColumn>}
 
                                                                 {(keysForDownloadSummary?.IsBoughtOutPartSimulation || keysForDownloadSummary?.IsSurfaceTreatmentSimulation || keysForDownloadSummary?.IsOperationSimulation ||
-                                                                    keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsExchangeRateSimulation || keysForDownloadSummary?.IsMachineProcessSimulation) &&
+                                                                    keysForDownloadSummary?.IsRawMaterialSimulation || keysForDownloadSummary?.IsMachineProcessSimulation) &&
                                                                     < AgGridColumn width={140} field="DraftPOPrice" headerName="Draft Net Cost" ></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && < AgGridColumn width={140} field="ImpactPerQuarter" headerName="Impact/Quarter (w.r.t. Existing)" cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPriceImpactPerQuarter" headerName='Impact/Quarter (w.r.t. Budgeted Price)' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
@@ -1634,6 +1661,7 @@ function SimulationApprovalSummary(props) {
                     releaseStrategyDetails={releaseStrategyDetails}
                     technologyId={SimulationTechnologyId}
                     approvalTypeIdValue={simulationDetail?.ApprovalTypeId}
+                    IsExchangeRateSimulation={keysForDownloadSummary?.IsExchangeRateSimulation}
                 // IsPushDrawer={showPushDrawer}
                 // dataSend={[approvalDetails, partDetail]}
                 />
