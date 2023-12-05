@@ -452,8 +452,7 @@ function ERSimulation(props) {
                                                     autoComplete={"off"}
                                                     disabledKeyboardNavigation
                                                     onChangeRaw={(e) => e.preventDefault()}
-                                                // minDate={new Date()}
-                                                // minDate={new Date(largestDate)}
+                                                    minDate={new Date(largestDate)}
                                                 />
                                             </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
