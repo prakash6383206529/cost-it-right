@@ -386,7 +386,8 @@ function ApprovalSummary(props) {
       DecimalOption: approvalData.DecimalOption,
       InfoToConditions: conditionInfo,
       TokenNumber: approvalData?.ApprovalNumber,
-      IsRequestForCosting: true
+      IsRequestForCosting: true,
+      IsRequestForBoughtOutPartMaster: false,
       // effectiveDate: '11/30/2021',
       // vendorCode: '203670',
       // materialNumber: 'S07004-003A0Y',
@@ -815,13 +816,11 @@ function ApprovalSummary(props) {
               <div className="col-sm-12 text-right bluefooter-butn">
                 <Fragment>
                   {
-
                     showPushButton &&
                     <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI(INR)}>
                       <div className={"save-icon"}></div>
                       {"Repush"}
                     </button>
-
                   }
                   {approvalData.IsNFRPFS2PushedButtonShow &&
                     <button type={'button'} className="submit-button mr5 save-btn" onClick={pushTonfr} >

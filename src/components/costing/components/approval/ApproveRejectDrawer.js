@@ -474,7 +474,8 @@ function ApproveRejectDrawer(props) {
                 DecimalOption: approvalData[0].DecimalOption,
                 InfoToConditions: props.conditionInfo,
                 TokenNumber: approvalData[0]?.ApprovalNumber,
-                IsRequestForCosting: true
+                IsRequestForCosting: true,
+                IsRequestForBoughtOutPartMaster: false,
                 // Quantity: quantity
                 // effectiveDate: '11/30/2021',
                 // vendorCode: '203670',

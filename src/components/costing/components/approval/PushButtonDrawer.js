@@ -136,7 +136,8 @@ function PushButtonDrawer(props) {
         Quantity: quantity,
         DecimalOption: approvalData[0].DecimalOption,
         InfoToConditions: props.conditionInfo,
-        IsRequestForCosting: true
+        IsRequestForCosting: true,
+        IsRequestForBoughtOutPartMaster: false,
         // effectiveDate: '11/30/2021',
         // vendorCode: '203670',
         // materialNumber: 'S07004-003A0Y',
