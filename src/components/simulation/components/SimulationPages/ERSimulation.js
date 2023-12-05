@@ -178,8 +178,6 @@ function ERSimulation(props) {
         resizable: true,
         filter: true,
         sortable: false,
-        headerCheckboxSelection: isFirstColumn,
-        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -264,9 +262,19 @@ function ERSimulation(props) {
             setIsWarningMessageShow(true)
             return false
         }
+        let count = 0
+        let listData = []
+        list && list?.map((item) => {
+            if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
+                count = count + 1
+                listData.push(item)
+            }
+            return null
+        })
+        setShowTooltip(false)
 
-        if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one costing.')
+        if (count === 0) {
+            Toaster.warning("Please change the basic rate and proceed to the next page.")
             return false
         }
 
@@ -297,7 +305,7 @@ function ERSimulation(props) {
     const selectRM = debounce(() => {
         let count = 0
         let listData = []
-        selectedRowData && selectedRowData?.map((item) => {
+        list && list?.map((item) => {
             if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
                 count = count + 1
                 listData.push(item)
@@ -306,12 +314,12 @@ function ERSimulation(props) {
         })
         setShowTooltip(false)
 
-        if (listData?.length === 0) {
-            Toaster.warning("Please select atleast one Exchange Rate with changes")
+        if (count === 0) {
+            Toaster.warning("Please change the basic rate and proceed to the next page to select Raw Materials.")
             return false
         }
-        dispatch(setExchangeRateListBeforeDraft(selectedRowData))
-        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(list, 'Currency') }))
+        dispatch(setExchangeRateListBeforeDraft(listData))
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(listData, 'Currency') }))
         if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
             setShowRMMasterList(true)
         } else {
@@ -362,10 +370,10 @@ function ERSimulation(props) {
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right mr-1" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div></button>
-                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                            {isImpactedMaster && <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
-                                            </ExcelFile>
+                                            </ExcelFile>}
                                         </div>
                                         {!isImpactedMaster && <button type="button" id="simulation-back" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
@@ -444,8 +452,7 @@ function ERSimulation(props) {
                                                     autoComplete={"off"}
                                                     disabledKeyboardNavigation
                                                     onChangeRaw={(e) => e.preventDefault()}
-                                                // minDate={new Date()}
-                                                // minDate={new Date(largestDate)}
+                                                    minDate={new Date(largestDate)}
                                                 />
                                             </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}

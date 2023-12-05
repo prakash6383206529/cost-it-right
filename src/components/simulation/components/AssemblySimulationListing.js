@@ -75,7 +75,7 @@ function AssemblySimulationListing(props) {
             }
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
             let maxDate = getMaxDate(multiTechnologyCostinig)
-            setMaxDate(maxDate)
+            setMaxDate(maxDate?.EffectiveDate)
         }
     }, [multiTechnologyCostinig])
 

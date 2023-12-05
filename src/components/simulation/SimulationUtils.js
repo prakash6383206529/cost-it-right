@@ -6,6 +6,7 @@ import { getAmmendentStatus } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
 import DayTime from "../common/DayTimeWrapper";
+import _ from "lodash";
 
 export const SimulationUtils = (TempData) => {
 
@@ -40,14 +41,7 @@ export const SimulationUtils = (TempData) => {
 export const getMaxDate = (arr) => {
 
     // ✅ Get Max date
-    let maxDate = new Date(
-        Math.max(
-            ...arr.map(element => {
-                return new Date(element.EffectiveDate);
-            }),
-        ),
-    );
-
+    const maxDate = _.maxBy(arr, entry => new Date(entry.EffectiveDate));
     return maxDate
 
 }

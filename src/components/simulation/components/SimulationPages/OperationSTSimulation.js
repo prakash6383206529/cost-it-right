@@ -81,7 +81,7 @@ function OperationSTSimulation(props) {
         if (list && list.length >= 0) {
             gridRef.current.api.sizeColumnsToFit();
             let maxDate = getMaxDate(list)
-            setMaxDate(maxDate)
+            setMaxDate(maxDate?.EffectiveDate)
         }
     }, [list])
 
