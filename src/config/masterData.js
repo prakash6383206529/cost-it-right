@@ -5011,6 +5011,27 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
 ]
 
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADER = [
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "Part Type", value: "PartType" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Plant (Code)", value: "PlantName" },
+    { label: "Existing Net PO Price Other Currency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "Revised Net PO Price Other Currency", value: "NewNetPOPriceOtherCurrency" },
+    { label: "Existing Exchange Rate", value: "OldExchangeRate" },
+    { label: "Revised Exchange Rate", value: "NewExchangeRate" },
+    { label: "Variance (ER Cost)", value: "Variance" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
+    { label: "Variance (w.r.t. Existing)", value: "POVariance" },
+    { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+]
+
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
 
     { label: "Costing Id", value: "CostingNumber" },
