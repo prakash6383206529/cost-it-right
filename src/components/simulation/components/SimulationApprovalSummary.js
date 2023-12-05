@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import {
     SIMULATIONAPPROVALSUMMARYDOWNLOADBOP, BOPGridForTokenSummary, InitialGridForTokenSummary,
     LastGridForTokenSummary, OperationGridForTokenSummary, RMGridForTokenSummary, STGridForTokenSummary,
-    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, ASSEMBLY_TECHNOLOGY_MASTER, SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING
+    SIMULATIONAPPROVALSUMMARYDOWNLOADST, ASSEMBLY_WISEIMPACT_DOWNLOAD_EXCEl, SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, SIMULATIONAPPROVALSUMMARYDOWNLOADMR, MRGridForTokenSummary, SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, ASSEMBLY_TECHNOLOGY_MASTER, SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING, SIMULATIONAPPROVALSUMMARYDOWNLOADER
 } from '../../../config/masterData';
 import { getPlantSelectListByType, getTechnologySelectList } from '../../../actions/Common';
 import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getImpactedMasterData, getLastSimulationData, uploadSimulationAttachment, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation'
@@ -183,7 +183,7 @@ function SimulationApprovalSummary(props) {
             // setShowPushButton(IsPushedButtonShow)
 
             // SimulatedCostingList CONTAINS LIST TO SHOW ON UI | SUMMARY BLOCK
-            if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
+            if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList)?.length !== 0 || SimulatedCostingList?.length > 0)) {
                 let requestData = []
                 let isAssemblyInDraft = false
 
@@ -306,10 +306,10 @@ function SimulationApprovalSummary(props) {
     }, [keysForDownloadSummary])
 
     useEffect(() => {
-        // if (costingList.length > 0 && effectiveDate) {
+        // if (costingList?.length > 0 && effectiveDate) {
         setLoader(false)
         if (effectiveDate && costingList && simulationDetail.SimulationId) {
-            if (costingList && costingList.length > 0 && effectiveDate && Object.keys('simulationDetail'.length > 0) && simulationDetail?.SimulationHeadId === VBCTypeId) {
+            if (costingList && costingList?.length > 0 && effectiveDate && Object.keys('simulationDetail'?.length > 0) && simulationDetail?.SimulationHeadId === VBCTypeId) {
                 dispatch(getLastSimulationData(costingList[0].VendorId, effectiveDate, res => {
                     const structureOfData = {
                         ExchangeRateImpactedMasterDataList: [],
@@ -512,21 +512,23 @@ function SimulationApprovalSummary(props) {
         }
 
         if (isMultiTechnology) {
-            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, downloadGrid.length > 0 ? downloadGrid : [])
+            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, downloadGrid?.length > 0 ? downloadGrid : [])
         } else {
             switch (String(SimulationTechnologyId)) {
                 case RMDOMESTIC:
                 case RMIMPORT:
-                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADRM, downloadGrid.length > 0 ? downloadGrid : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADRM, downloadGrid?.length > 0 ? downloadGrid : [])
                 case SURFACETREATMENT:
-                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADST, downloadGrid.length > 0 ? downloadGrid : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADST, downloadGrid?.length > 0 ? downloadGrid : [])
                 case OPERATIONS:
-                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, downloadGrid.length > 0 ? downloadGrid : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, downloadGrid?.length > 0 ? downloadGrid : [])
                 case BOPDOMESTIC:
                 case BOPIMPORT:
-                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? SIMULATIONAPPROVALSUMMARYDOWNLOADBOP : SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING), downloadGrid.length > 0 ? downloadGrid : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? SIMULATIONAPPROVALSUMMARYDOWNLOADBOP : SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING), downloadGrid?.length > 0 ? downloadGrid : [])
                 case MACHINERATE:
-                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADMR, downloadGrid.length > 0 ? downloadGrid : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADMR, downloadGrid?.length > 0 ? downloadGrid : [])
+                case EXCHNAGERATE:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADER, downloadGrid?.length > 0 ? downloadGrid : [])
                 default:
                     break;
             }
@@ -730,7 +732,7 @@ function SimulationApprovalSummary(props) {
 
     const closeAssemblyDrawer = () => {
         // setAssemblyWiseAcc(false)
-        // if (DataForAssemblyImpactForFg !== undefined && (Object.keys(DataForAssemblyImpactForFg).length !== 0 || DataForAssemblyImpactForFg.length > 0) && count === 0) {
+        // if (DataForAssemblyImpactForFg !== undefined && (Object.keys(DataForAssemblyImpactForFg)?.length !== 0 || DataForAssemblyImpactForFg?.length > 0) && count === 0) {
         //     let requestData = []
         //     DataForAssemblyImpactForFg && DataForAssemblyImpactForFg.map(item => {
         //         requestData.push({ CostingId: item.CostingId, delta: item.POVariance, IsSinglePartImpact: false })
@@ -748,7 +750,7 @@ function SimulationApprovalSummary(props) {
     }
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            if (costingList.length !== 0) {
+            if (costingList?.length !== 0) {
                 setNoData(searchNocontentFilter(value, noData))
             }
         }, 500);
@@ -1201,7 +1203,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </Col>
                         </Row>
-                        {listWithTooltip.length !== 0 && listWithTooltip.map(item => {
+                        {listWithTooltip?.length !== 0 && listWithTooltip.map(item => {
                             return showTooltip && <Tooltip
                                 key={`tooltip-${item.CostingId}`}
                                 className=""
@@ -1214,7 +1216,7 @@ function SimulationApprovalSummary(props) {
                             </Tooltip>
                         })}
 
-                        {costingSummary && keysForDownloadSummary && Object.keys(keysForDownloadSummary).length > 0 &&
+                        {costingSummary && keysForDownloadSummary && Object.keys(keysForDownloadSummary)?.length > 0 &&
                             <>
                                 <div className={`ag-grid-react`}>
                                     { }
@@ -1419,7 +1421,7 @@ function SimulationApprovalSummary(props) {
                             <Col md="6"><div className="left-border">{'Attachments:'}</div></Col>
                             {false && <Col md="12" className="px-4">
                                 <label>Upload Attachment (upload up to 2 files)</label>
-                                {files && files.length > 2 ? (
+                                {files && files?.length > 2 ? (
                                     <div class="alert alert-danger" role="alert">
                                         Maximum file upload limit reached.
                                     </div>

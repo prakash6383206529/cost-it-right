@@ -727,7 +727,7 @@ function RMImportListing(props) {
     setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
     setDataCount(0)
     reactLocalStorage.setObject('selectedRow', {})
-    if (isSimulation) {
+    if (isSimulation && !isFromVerifyPage) {
       props?.isReset()
     }
   }
@@ -961,7 +961,7 @@ function RMImportListing(props) {
                     icon={"refresh"}
                     className={"mr5"}
                   />
-                  {isSimulation && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
+                  {isSimulation && isFromVerifyPage && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
                 </>}
               </Col>
             </Row>
@@ -1050,7 +1050,7 @@ function RMImportListing(props) {
                 </div>
               </Col>
             </Row>
-            {props.isSimulation && <Row>
+            {props.isSimulation && isFromVerifyPage && <Row>
               <Col md="12" className="d-flex justify-content-end">
                 <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
               </Col>
