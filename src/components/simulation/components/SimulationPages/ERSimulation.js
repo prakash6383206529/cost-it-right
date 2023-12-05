@@ -178,8 +178,6 @@ function ERSimulation(props) {
         resizable: true,
         filter: true,
         sortable: false,
-        headerCheckboxSelection: isFirstColumn,
-        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -264,9 +262,19 @@ function ERSimulation(props) {
             setIsWarningMessageShow(true)
             return false
         }
+        let count = 0
+        let listData = []
+        list && list?.map((item) => {
+            if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
+                count = count + 1
+                listData.push(item)
+            }
+            return null
+        })
+        setShowTooltip(false)
 
-        if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one costing.')
+        if (count === 0) {
+            Toaster.warning("Please change the basic rate and proceed to the next page.")
             return false
         }
 
@@ -297,7 +305,7 @@ function ERSimulation(props) {
     const selectRM = debounce(() => {
         let count = 0
         let listData = []
-        selectedRowData && selectedRowData?.map((item) => {
+        list && list?.map((item) => {
             if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
                 count = count + 1
                 listData.push(item)
@@ -306,12 +314,12 @@ function ERSimulation(props) {
         })
         setShowTooltip(false)
 
-        if (listData?.length === 0) {
-            Toaster.warning("Please select atleast one Exchange Rate with changes")
+        if (count === 0) {
+            Toaster.warning("Please change the basic rate and proceed to the next page to select Raw Materials.")
             return false
         }
-        dispatch(setExchangeRateListBeforeDraft(selectedRowData))
-        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(list, 'Currency') }))
+        dispatch(setExchangeRateListBeforeDraft(listData))
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(listData, 'Currency') }))
         if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
             setShowRMMasterList(true)
         } else {
