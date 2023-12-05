@@ -1081,7 +1081,8 @@ function SimulationApprovalSummary(props) {
                 TokenNumber: simulationDetail?.Token,
                 DecimalOption: simulationDetail?.DecimalOption,
                 IsRequestForCosting: false,
-                InfoToConditions: []
+                InfoToConditions: [],
+                IsRequestForBoughtOutPartMaster: false
             })
         })
 
