@@ -21,7 +21,7 @@ import DatePicker from "react-datepicker";
 import WarningMessage from '../../../common/WarningMessage';
 import { getMaxDate } from '../../SimulationUtils';
 import ReactExport from 'react-export-excel';
-import { BOP_IMPACT_DOWNLOAD_EXCEl, BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, BOP_IMPACT_DOWNLOAD_EXCEl, BOP_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
 import { hideColumnFromExcel } from '../../../common/CommonFunctions';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
 
@@ -60,6 +60,7 @@ function BDSimulation(props) {
 
     const { selectedMasterForSimulation, selectedTechnologyForSimulation, isMasterAssociatedWithCosting, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
+    const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
     useEffect(() => {
         if (isbulkUpload) {
@@ -75,7 +76,12 @@ function BDSimulation(props) {
             if (isImpactedMaster) {
                 gridRef.current.api.sizeColumnsToFit();
             }
-            let maxDate = getMaxDate(list)
+
+            let tempList = [...list]
+            if (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
+                tempList = [...exchangeRateListBeforeDraft]
+            }
+            let maxDate = getMaxDate(tempList)
             setMaxDate(maxDate?.EffectiveDate)
         }
     }, [list])
