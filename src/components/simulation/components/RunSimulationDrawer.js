@@ -18,7 +18,7 @@ import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -71,7 +71,7 @@ function RunSimulationDrawer(props) {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    const showCheckBox = !(simulationApplicability?.value === APPLICABILITY_RM_SIMULATION || simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION)
+    const showCheckBox = !(simulationApplicability?.value === APPLICABILITY_PART_SIMULATION)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
