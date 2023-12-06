@@ -1386,7 +1386,7 @@ function UserRegistration(props) {
         LevelId: registerUserData?.LevelId,
         LevelName: registerUserData?.LevelName,
         // DepartmentName: department.label,
-        DepartmentName: getConfigurationKey().IsMultipleDepartmentAllowed ? '' : department.label,
+        DepartmentName: '',
         TechnologyId: '',
         TechnologyName: '',
         PlantName: '',
@@ -1399,7 +1399,7 @@ function UserRegistration(props) {
         RoleId: role.value,
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         // DepartmentId: department.value,
-        DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,
+        DepartmentId: '',
         loggedInUserId: loggedInUserId(),
         CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
@@ -1431,7 +1431,7 @@ function UserRegistration(props) {
         updatedData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         updatedData.SimulationTechnologyLevels = tempHeadLevelArray
         updatedData.MasterLevels = tempMasterLevelArray
-        updatedData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []
+        updatedData.Departments = multiDeptArr
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
       let isDepartmentUpdate = registerUserData?.Departments?.every(
@@ -1526,7 +1526,7 @@ function UserRegistration(props) {
         userData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         userData.SimulationTechnologyLevels = tempHeadLevelArray
         userData.MasterLevels = tempMasterLevelArray
-        userData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []
+        userData.Departments = multiDeptArr
         userData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
 
