@@ -26,6 +26,11 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { onFocus } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
+
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -67,7 +72,8 @@ class AddFuel extends Component {
         effectiveDate: false
       },
       isGridEdit: false,
-      showPopup: false
+      showPopup: false,
+      showTour: false,
     }
   }
 
@@ -756,8 +762,8 @@ class AddFuel extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, } = this.props;
-    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit, costingTypeId } = this.state;
+    const { handleSubmit, initialConfiguration, t } = this.props;
+    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit, costingTypeId, showTour } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -800,7 +806,16 @@ class AddFuel extends Component {
                   <div className="shadow-lgg login-formg">
                     <div className="row">
                       <div className="col-md-6">
-                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Fuel</h1>
+                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Fuel
+                          <Button
+                            id="addFuel_Guide"
+                            variant={"ml-2"}
+                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            onClick={() => { this.setState({ showTour: !showTour }) }}
+                            title='Guide'
+                          />
+                          {showTour && <TourWrapper steps={Steps(t).ADD_FUEL} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                        </h1>
                       </div>
                     </div>
                     <form
@@ -813,7 +828,7 @@ class AddFuel extends Component {
                         <Row>
 
                           <Col md="12">
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="AddFuel_zerobased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -827,7 +842,7 @@ class AddFuel extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="AddFuel_vendorbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -841,7 +856,7 @@ class AddFuel extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddFuel_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1079,7 +1094,7 @@ class AddFuel extends Component {
                             <div className="form-group">
                               <label>Effective Date<span className="asterisk-required">*</span>
                               </label>
-                              <div className="inputbox date-section">
+                              <div id="AddFuel_EffectiveDate" className="inputbox date-section">
                                 <DatePicker
                                   required
                                   name="EffectiveDate"
@@ -1202,7 +1217,7 @@ class AddFuel extends Component {
 
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
-                          <button
+                          <button id="AddFuel_Cancel"
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancelHandler}
@@ -1211,7 +1226,7 @@ class AddFuel extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {!isViewMode && <button
+                          {!isViewMode && <button id="AddFuel_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
                             disabled={isViewMode || setDisable}
@@ -1296,4 +1311,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
-})(AddFuel));
+})(withTranslation()(AddFuel)),
+)

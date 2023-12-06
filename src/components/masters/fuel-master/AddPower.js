@@ -28,6 +28,10 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getClientSelectList, } from '../actions/Client';
 import TooltipCustom from '../../common/Tooltip';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddPower');
 
@@ -96,6 +100,7 @@ class AddPower extends Component {
       client: [],
       costPerUnitTooltipText: 'Please fill in the mandatory fields of State Electricity Board Power Changes section, as the calculation will be based on them.',
       segCostUnittooltipText: 'Please select the Source of Power, as the calculation will be based on them.',
+      showTour: false,
     }
   }
 
@@ -1367,9 +1372,9 @@ class AddPower extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
-      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry } = this.state;
+      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry, showTour } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1410,7 +1415,16 @@ class AddPower extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Power</h1>
+                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Power
+                          <Button
+                            id="addPower_guide"
+                            variant={"ml-2"}
+                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            onClick={() => { this.setState({ showTour: !showTour }) }}
+                            title='Guide'
+                          />
+                          {showTour && <TourWrapper steps={Steps(t).ADD_POWER} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                        </h1>
                       </div>
                     </div>
                   </div>
@@ -1424,7 +1438,7 @@ class AddPower extends Component {
                       <Row>
 
                         <Col md="12">
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <Label id="AddPower_zerobased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1438,7 +1452,7 @@ class AddPower extends Component {
                             />{" "}
                             <span>Zero Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <Label id="AddPower_vendorbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1452,7 +1466,7 @@ class AddPower extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddPower_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -2163,7 +2177,7 @@ class AddPower extends Component {
                     </div>
                     <Row className="sf-btn-footer no-gutters bottom-footer justify-content-between">
                       <div className="col-sm-12 text-right bluefooter-butn">
-                        <button
+                        <button id="AddPower_Cancel"
                           type={'button'}
                           className="mr15 cancel-btn"
                           onClick={this.cancelHandler}
@@ -2171,7 +2185,7 @@ class AddPower extends Component {
                         >
                           <div className={"cancel-icon"}></div> {'Cancel'}
                         </button>
-                        {!isViewMode && <button
+                        {!isViewMode && <button id="AddPower_Save"
                           type="submit"
                           disabled={isViewMode || setDisable}
                           className="user-btn mr5 save-btn" >
@@ -2274,4 +2288,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
-})(AddPower));
+})(withTranslation()(AddPower)),
+)

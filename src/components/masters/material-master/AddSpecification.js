@@ -21,6 +21,9 @@ import AddRawMaterial from './AddRawMaterial';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import Button from '../../layout/Button';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next'
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -43,6 +46,7 @@ class AddSpecification extends Component {
       rmCode: '',
       showPopup: false,
       isDropDownChanged: false,
+      showTour: false,
     }
   }
 
@@ -475,9 +479,9 @@ class AddSpecification extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer, setDisable } = this.state;
+    const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer, setDisable, showTour } = this.state;
     const { handleSubmit, isEditFlag, specificationData, AddAccessibilityRMANDGRADE,
-      EditAccessibilityRMANDGRADE, } = this.props;
+      EditAccessibilityRMANDGRADE, t } = this.props;
     return (
       <div>
         <Drawer
@@ -500,6 +504,14 @@ class AddSpecification extends Component {
                         {isEditFlag
                           ? "Update  Specification"
                           : "Add Raw Material Specification"}
+                        <Button
+                          id="add_RMAddSpecification_Guide"
+                          variant={"ml-2"}
+                          className={`guide-bulb${showTour ? "-on" : ""}`}
+                          onClick={() => { this.setState({ showTour: !showTour }) }}
+                          title='Guide'
+                        />
+                        {showTour && <TourWrapper steps={Steps(t).ADD_RAW_MATERIAL_SPEC} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                       </h3>
                     </div>
                     <div
@@ -770,4 +782,6 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(AddSpecification));
+})(withTranslation()(AddSpecification)),
+
+)

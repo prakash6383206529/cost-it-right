@@ -30,6 +30,10 @@ import { getPartSelectList } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddAssemblyPart')
 export const PartEffectiveDate = React.createContext()
@@ -78,7 +82,8 @@ class AddAssemblyPart extends Component {
       IsTechnologyUpdateRequired: false,
       partName: '',
       showPopup: false,
-      partAssembly: ''
+      partAssembly: '',
+      showTour: false,
     }
   }
 
@@ -864,8 +869,8 @@ class AddAssemblyPart extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
+    const { handleSubmit, initialConfiguration, t } = this.props;
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData, showTour } = this.state;
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -905,6 +910,14 @@ class AddAssemblyPart extends Component {
                       <div className="form-heading mb-0">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Assembly Part
+                          <Button
+                            id="addAssemblyPart_guide"
+                            variant={"ml-2"}
+                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            onClick={() => { this.setState({ showTour: !showTour }) }}
+                            title='Guide'
+                          />
+                          {showTour && <TourWrapper steps={Steps(t).ADD_ASSEMBLY_PART} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                         </h1>
                       </div>
                     </Col>
@@ -1211,7 +1224,7 @@ class AddAssemblyPart extends Component {
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
-                          <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                          <div id="AddAssemblyPart_UploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
@@ -1289,7 +1302,7 @@ class AddAssemblyPart extends Component {
 
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn">
-                        <button
+                        <button id="AddAssemblyPart_Cancel"
                           type={"button"}
                           className=" mr15 cancel-btn"
                           onClick={() => { this.cancelHandler() }}
@@ -1298,7 +1311,7 @@ class AddAssemblyPart extends Component {
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
-                        {!isViewMode && <button
+                        {!isViewMode && <button id="AddAssemblyPart_Save"
                           type="submit"
                           className="user-btn mr5 save-btn"
                           disabled={isViewMode || setDisable}
@@ -1411,4 +1424,5 @@ export default connect(mapStateToProps, {
   },
   enableReinitialize: true,
   touchOnChange: true,
-})(AddAssemblyPart));
+})(withTranslation()(AddAssemblyPart)),
+)

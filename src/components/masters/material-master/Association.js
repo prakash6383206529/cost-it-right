@@ -11,6 +11,9 @@ import Toaster from '../../common/Toaster';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import Button from '../../layout/Button';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next'
 
 class Association extends Component {
     constructor(props) {
@@ -22,6 +25,7 @@ class Association extends Component {
             setDisable: false,
             showPopup: false,
             isDropDownChanged: false,
+            showTour: false,
         }
 
     }
@@ -145,8 +149,8 @@ class Association extends Component {
         this.setState({ showPopup: false })
     }
     render() {
-        const { handleSubmit } = this.props;
-        const { setDisable } = this.state
+        const { handleSubmit, t } = this.props;
+        const { setDisable, showTour } = this.state
 
         return (
             <div>
@@ -167,6 +171,14 @@ class Association extends Component {
                                         <div className={"header-wrapper left"}>
                                             <h3>
                                                 {"Add Association"}
+                                                <Button
+                                                    id="add_RMAddAssociation_Guide"
+                                                    variant={"ml-2"}
+                                                    className={`guide-bulb${showTour ? "-on" : ""}`}
+                                                    onClick={() => { this.setState({ showTour: !showTour }) }}
+                                                    title='Guide'
+                                                />
+                                                {showTour && <TourWrapper steps={Steps(t).ADD_RM_ASSOCIATION} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                                             </h3>
                                         </div>
                                         <div
@@ -307,4 +319,5 @@ export default connect(mapStateToProps, {
     form: 'Association',
     enableReinitialize: true,
     touchOnChange: true
-})(Association));
+})(withTranslation()(Association)),
+)
