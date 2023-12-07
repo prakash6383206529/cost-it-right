@@ -877,6 +877,7 @@ export const API = {
   updateBudget: `${BASE_URL}/master-budgeting/update`,
   bulkUploadBudgetMaster: `${BASE_URL}/master-budgeting/bulk-upload-for-budgeting`,
   masterApprovalRequestBySenderBudget: `${BASE_URL}/master-budgeting/master-send-to-approver-by-sender`,
+  deleteBudget: `${BASE_URL}/master-budgeting/delete-by-id`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,

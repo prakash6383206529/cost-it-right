@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-import { Row, Col, TabContent, Nav, Container } from 'reactstrap'
+import { Row, Col, Container } from 'reactstrap'
 import { MESSAGES } from '../../../config/message'
-import { defaultPageSize, EMPTY_DATA, FILE_URL } from '../../../config/constants'
+import { BUDGETING, defaultPageSize, EMPTY_DATA, FILE_URL } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound'
-import { getBudgetDataList, getPartCostingHead, } from '../actions/Budget'
+import { deleteBudget, getBudgetDataList, getPartCostingHead, } from '../actions/Budget'
 import { BUDGET_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import BulkUpload from '../../massUpload/BulkUpload'
 import { ADDITIONAL_MASTERS, VOLUME } from '../../../config/constants'
@@ -23,6 +23,9 @@ import { disabledClass } from '../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
 import { Drawer } from '@material-ui/core'
 import Attachament from '../../costing/components/Drawers/Attachament'
+import Toaster from '../../common/Toaster'
+import PopupMsgWrapper from '../../common/PopupMsgWrapper'
+import Button from '../../layout/Button';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -39,12 +42,10 @@ function BudgetListing(props) {
     const [deleteAccessibility, setDeleteAccessibility] = useState(false);
     const [bulkUploadAccessibility, setBulkUploadAccessibility] = useState(false);
     const [downloadAccessibility, setDownloadAccessibility] = useState(false);
+    const [ViewAccessibility, setViewAccessibility] = useState(false);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
-    const [showPopup, setShowPopup] = useState(false);
-    const [deletedId, setDeletedId] = useState('');
     const [isLoader, setIsLoader] = useState(false);
-    const [limit, setLimit] = useState(false);
     const [dataCount, setDataCount] = useState(0);
     const [activeTab, setactiveTab] = useState('1');
 
@@ -59,11 +60,13 @@ function BudgetListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
     const [pageSize, setPageSize] = useState({ pageSize10: true, pageSize50: false, pageSize100: false })
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', VendorName: '', Plant: '', PartNumber: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', CustomerName: '', PartType: '' })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingHead: '', Year: '', Month: '', vendorNameWithCode: '', plantNameWithCode: '', partNoWithRevNo: '', PartName: '', BudgetedQuantity: '', ApprovedQuantity: '', applyPagination: '', skip: '', take: '', customerNameWithCode: '', PartType: '' })
     const [disableDownload, setDisableDownload] = useState(false)
     const [noData, setNoData] = useState(false)
     const [attachment, setAttachment] = useState(false);
     const [viewAttachment, setViewAttachment] = useState([])
+    const [showPopup, setShowPopup] = useState(false);
+    const [deletedId, setDeletedId] = useState('');
 
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
@@ -110,14 +113,16 @@ function BudgetListing(props) {
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
-            const accessData = Data && Data.Pages.find((el) => el.PageName === VOLUME)
+            const accessData = Data && Data.Pages.find((el) => el.PageName === BUDGETING)
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
             if (permmisionData !== undefined) {
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
                 setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false)
                 setDeleteAccessibility(permmisionData && permmisionData.Delete ? permmisionData.Delete : false)
                 setBulkUploadAccessibility(permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false)
                 setDownloadAccessibility(permmisionData && permmisionData.Download ? permmisionData.Download : false)
+                setViewAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false)
             }
 
         }
@@ -174,11 +179,42 @@ function BudgetListing(props) {
      * @method editItemDetails
      * @description confirm edit item
      */
-    const editItemDetails = (Id) => {
-        setData({ isEditFlag: true, ID: Id })
+    const editItemDetails = (Id, isViewMode) => {
+        setData({ isEditFlag: true, ID: Id, isViewMode: isViewMode })
         setShowBudgetForm(true)
     }
+    /**
+     * @method deleteItem
+     * @description confirm delete Raw Material details
+     */
+    const deleteItem = (Id) => {
+        setShowPopup(true)
+        setDeletedId(Id)
+    }
 
+    /**
+    * @method confirmDelete
+    * @description confirm delete Raw Material details
+    */
+    const confirmDelete = (ID) => {
+        dispatch(deleteBudget(ID, (res) => {
+            if (res !== undefined && res.status === 417 && res.data.Result === false) {
+                Toaster.error(res.data.Message)
+            } else if (res && res.data && res.data.Result === true) {
+                Toaster.success(MESSAGES.DELETE_BUDGET_SUCCESS);
+                setDataCount(0)
+                resetState()
+            }
+        }));
+        setShowPopup(false)
+    }
+
+    const onPopupConfirm = () => {
+        confirmDelete(deletedId);
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
     /**
   * @method buttonFormatter
   * @description Renders buttons
@@ -188,7 +224,27 @@ function BudgetListing(props) {
         const rowData = props?.data;
         return (
             <>
-                {editAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editItemDetails(cellValue)} />}
+                {ViewAccessibility && <Button
+                    id={`budgetListing_view${props.rowIndex}`}
+                    className={"mr-1"}
+                    variant="View"
+                    onClick={() => editItemDetails(cellValue, true)}
+                    title={"View"}
+                />}
+                {editAccessibility && <Button
+                    id={`budgetListing_edit${props.rowIndex}`}
+                    variant="Edit"
+                    className={"mr-1"}
+                    onClick={() => editItemDetails(cellValue, false)}
+                    title={"Edit"}
+                />}
+                {deleteAccessibility && <Button
+                    id={`budgetListing_delete${props.rowIndex}`}
+                    title='Delete'
+                    variant="Delete"
+                    onClick={() => deleteItem(rowData.BudgetingId)}
+                    className={"mr-1"}
+                />}
             </>
         )
     };
@@ -268,9 +324,8 @@ function BudgetListing(props) {
             selectedRows = [...selectedRows, ...finalData]
         }
         let uniqeArrayVolumeApprovedId = _.uniqBy(selectedRows, "BudgetingId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        let uniqeArrayVolumeBudgetedId = _.uniqBy(uniqeArrayVolumeApprovedId, "FinancialYear")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-        dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
-        setDataCount(uniqeArrayVolumeBudgetedId.length)
+        setDataCount(uniqeArrayVolumeApprovedId.length)
+        dispatch(setSelectedRowForPagination(uniqeArrayVolumeApprovedId))              //SETTING CHECKBOX STATE DATA IN REDUCER
     }
 
 
@@ -473,12 +528,6 @@ function BudgetListing(props) {
         setBulkUploadBtn(true)
     }
 
-    const toggle = (tab) => {
-        if (activeTab !== tab) {
-            setactiveTab(tab);
-        }
-    }
-
     const ExcelFile = ReactExport.ExcelFile;
 
     const isFirstColumn = (params) => {
@@ -640,7 +689,7 @@ function BudgetListing(props) {
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                                     <AgGridColumn field="vendorNameWithCode" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>
@@ -648,7 +697,7 @@ function BudgetListing(props) {
                                     <AgGridColumn field="NetPoPrice" headerName="Net Cost"></AgGridColumn>
                                     <AgGridColumn field="BudgetedPoPrice" headerName="Budgeted Cost" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     {/*  <AgGridColumn field="BudgetedPrice" headerName="Budgeted Price"></AgGridColumn>   ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE */}
-                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} cellClass="ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
+                                    {!props?.isMasterSummaryDrawer && <AgGridColumn field="BudgetingId" width={120} cellClass={"actions-wrapper ag-grid-action-container"} headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
                                     {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
                                 </AgGridReact>
@@ -697,6 +746,9 @@ function BudgetListing(props) {
                     </Container>
 
                 </Drawer>}
+                {
+                    showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BUDGET_DELETE_ALERT}`} />
+                }
                 {
                     attachment && (
                         <Attachament
