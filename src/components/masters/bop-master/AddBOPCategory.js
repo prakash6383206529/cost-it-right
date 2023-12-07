@@ -9,12 +9,17 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 class AddBOPCategory extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            isEditFlag: false
+            isEditFlag: false,
+            showTour: false,
         }
     }
 
@@ -70,7 +75,8 @@ class AddBOPCategory extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag } = this.props;
+        const { handleSubmit, isEditFlag, t } = this.props;
+        const { showTour } = this.state;
         return (
             <>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -87,7 +93,16 @@ class AddBOPCategory extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update BOP Category' : 'Add BOP Category'}</h3>
+                                            <h3>{isEditFlag ? 'Update BOP Category' : 'Add BOP Category'}
+                                            <Button
+                                            id="addBOP_Category_guide"
+                                            variant={"ml-2"}
+                                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                                            onClick={() => {this.setState({showTour:!showTour})}}
+                                            title='Guide'
+                                           />
+                                            {showTour && <TourWrapper steps={Steps(t).BOP_DOMESTIC_CATEGORY_FORM} stepsEnable={true} start={showTour} onExit={() => {this.setState({showTour : false})}} />}
+                                            </h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e)}
@@ -116,6 +131,7 @@ class AddBOPCategory extends Component {
                                             <button
                                                 type={"button"}
                                                 className=" mr15 cancel-btn"
+                                                id='AddBOPDomesticCategory_Cancel'
                                                 onClick={this.cancel}
                                             >
                                                 <div className={"cancel-icon"}></div>
@@ -125,6 +141,7 @@ class AddBOPCategory extends Component {
                                             <button
                                                 type="submit"
                                                 className="user-btn save-btn"
+                                                id='AddBOPDomesticCategory_Save'
                                             >
                                                 <div className={"save-icon"}></div>
                                                 {isEditFlag ? "Update" : "Save"}
@@ -168,4 +185,4 @@ export default connect(mapStateToProps, {
     onSubmitFail: errors => {
         focusOnError(errors);
     },
-})(AddBOPCategory));
+})(withTranslation()(AddBOPCategory)));

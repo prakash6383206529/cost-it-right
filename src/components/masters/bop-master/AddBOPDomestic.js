@@ -38,6 +38,9 @@ import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import WarningMessage from '../../common/WarningMessage';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import Button from '../../layout/Button';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
 
 
 const selector = formValueSelector('AddBOPDomestic');
@@ -105,6 +108,7 @@ class AddBOPDomestic extends Component {
       FinalNetLandedCostBaseCurrency: '',
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: '',
+      showTour: false,
     }
   }
 
@@ -983,9 +987,9 @@ class AddBOPDomestic extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
+    const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, showTour } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1035,7 +1039,15 @@ class AddBOPDomestic extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Domestic)
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Domestic) 
+                          <Button
+                                            id="addBOP_Domestic_guide"
+                                            variant={"ml-2"}
+                                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                                            onClick={() => {this.setState({showTour:!showTour})}}
+                                            title='Guide'
+                                           />                          
+                          {showTour && <TourWrapper steps={Steps(t).BOP_DOMESTIC_FORM} stepsEnable={true} start={showTour} onExit={() => {this.setState({showTour : false})}} />}
                         </h1>
                       </div>
                     </div>
@@ -1048,7 +1060,7 @@ class AddBOPDomestic extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="bop_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1064,7 +1076,7 @@ class AddBOPDomestic extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id='bop_form_vendor_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1080,7 +1092,7 @@ class AddBOPDomestic extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label id='bop_form_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1100,12 +1112,14 @@ class AddBOPDomestic extends Component {
                         </Row>
                         <Row>
                           <Col md="12">
-                            <div className="left-border">{"BOP:"}</div>
+                            <div className="left-border">{"BOP:"} 
+                            </div>
                           </Col>
                           <Col md="3">
                             <Field
                               label={`BOP Part Name`}
                               name={"BoughtOutPartName"}
+                              id='bop_part_name_form_zero_based'
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
@@ -1150,6 +1164,7 @@ class AddBOPDomestic extends Component {
                             <Field
                               label={`BOP Part No`}
                               name={"BoughtOutPartNumber"}
+                              id='bop_part_number_form_zero_based'
                               type="text"
                               placeholder={(isEditFlag || getConfigurationKey().IsAutoGeneratedBOPNumber) ? '' : "Enter"}
                               validate={[required, acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
@@ -1165,6 +1180,7 @@ class AddBOPDomestic extends Component {
                             <Field
                               label={`Specification`}
                               name={"Specification"}
+                              id='bop_specification_form_zero_based'
                               type="text"
                               placeholder={isViewMode ? "-" : "Enter"}
                               validate={[acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, hashValidation]}
@@ -1210,7 +1226,7 @@ class AddBOPDomestic extends Component {
                                 valueDescription={this.state.selectedPlants}
                                 mendatory={true}
                                 required={true}
-                                className="multiselect-with-border"
+                                className="multiselect-with-border bop_plant_form_zero_based"
                                 disabled={isEditFlag ? true : false}
                               />
                             </Col>
@@ -1293,6 +1309,7 @@ class AddBOPDomestic extends Component {
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
                                       name="vendorName"
+                                      id="bop_vendor_name_form_zero_based"
                                       ref={this.myRef}
                                       key={this.state.updateAsyncDropdown}
                                       loadOptions={filterList}
@@ -1523,7 +1540,7 @@ class AddBOPDomestic extends Component {
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                            <div id='bop_file_upload_form_zero_based' className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
@@ -1791,4 +1808,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(AddBOPDomestic));
+})(withTranslation()(AddBOPDomestic)));
