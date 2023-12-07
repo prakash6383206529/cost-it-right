@@ -41,7 +41,7 @@ const LanguageDropdown = () => {
                 placeholder={"Select"}
                 defaultValue={selectedLanguage}
                 options={LANGUAGES}
-                customClassName={"mb-0"}
+                customClassName={"mb-0 custom-max-width-124px"}
                 mandatory={true}
                 handleChange={onLanguageChange}
             />

@@ -120,12 +120,11 @@ function Dashboard(props) {
               </Col>
             </Row> */}
             <form onSubmit={handleSubmit}>
-              <button className={`guide-bulb${showTour ? "-on" : ""} ml-2`} onClick={() => { setShowTour(!showTour) }} title='Guide'></button>
-              {showTour && <TourWrapper steps={Steps(t).DASHBOARD_SIMULATION_TAB} stepsEnable={true} start={showTour} onExit={() => { setShowTour(false) }} />}
+
               {viewSimulation && JSON.parse(localStorage.getItem('simulationViewPermission'))?.length !== 0 && <Row className="m-0">
                 <div className="graph-box w-100" id={`${pageDropDownRef === 'simulation' ? 'refresh-to-top' : ''}`}>
                   <Row>
-                    <Col md="8"><h3 className="mb-0">Amendments Approval Status</h3></Col>
+                    <Col md="8"><h3 className="mb-0">Amendments Approval Status {acc2 && <button className={`guide-bulb${showTour ? "-on" : ""} ml-2`} onClick={() => { setShowTour(!showTour) }} title='Guide'></button>}</h3></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc2(!acc2) }}>
                         {acc2 ? (
@@ -138,7 +137,10 @@ function Dashboard(props) {
                   </Row>
 
                   {acc2 && <Row>
-                    <Col md="12" className="mt-3">{acc2 && <Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} />}</Col>
+                    <Col md="12" className="mt-3">{acc2 && <>
+                      {showTour && <TourWrapper steps={Steps(t).DASHBOARD_SIMULATION_TAB} stepsEnable={true} start={showTour} onExit={() => { setShowTour(false) }} />}
+                      <Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} />
+                    </>}</Col>
                   </Row>}
                 </div>
               </Row>}

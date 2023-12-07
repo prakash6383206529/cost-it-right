@@ -58,55 +58,55 @@ export function Steps(t) {
             {
                 element: "#AddRMDomestic_TechnologyId_container",
                 intro: t("rmMaster.form.AddRMDomestic_TechnologyId_container"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_RawMaterialId_container",
                 intro: t("rmMaster.form.AddRMDomestic_RawMaterialId_container"),
-            }, 
+            },
             {
                 element: "#addRMDomestic_RMToggle",
                 intro: t("rmMaster.form.addRMDomestic_RMToggle"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_RawMaterialGradeId",
                 intro: t("rmMaster.form.AddRMDomestic_RawMaterialGradeId"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_RawMaterialSpecificationId_container",
                 intro: t("rmMaster.form.AddRMDomestic_RawMaterialSpecificationId_container"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_CategoryId_container",
                 intro: t("rmMaster.form.AddRMDomestic_CategoryId_container"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_SourceSupplierPlantId_container",
                 intro: t("rmMaster.form.AddRMDomestic_SourceSupplierPlantId_container"),
-            },   
+            },
             {
                 element: "#AddRMDomestic_Vendor",
                 intro: t("rmMaster.form.AddRMDomestic_Vendor"),
-            }, 
+            },
             {
                 element: "#addRMDomestic_vendorToggle",
                 intro: t("rmMaster.form.addRMDomestic_vendorToggle"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_UnitOfMeasurementId_container",
                 intro: t("rmMaster.form.AddRMDomestic_UnitOfMeasurementId_container"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_cutOffPrice",
                 intro: t("rmMaster.form.AddRMDomestic_cutOffPrice"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_BasicRateBaseCurrency",
                 intro: t("rmMaster.form.AddRMDomestic_BasicRateBaseCurrency"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_FreightCharge",
                 intro: t("rmMaster.form.AddRMDomestic_FreightCharge"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_ShearingCost",
                 intro: t("rmMaster.form.AddRMDomestic_ShearingCost"),
@@ -118,23 +118,23 @@ export function Steps(t) {
             {
                 element: "#AddRMDomestic_EffectiveDate",
                 intro: t("rmMaster.form.AddRMDomestic_EffectiveDate"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_Remark",
                 intro: t("rmMaster.form.AddRMDomestic_Remark"),
-            }, 
+            },
             {
                 element: "#AddRMDomestic_uploadFiles",
                 intro: t("rmMaster.form.AddRMDomestic_uploadFiles"),
-            }, 
+            },
             {
                 element: "#addRMDomestic_cancel",
                 intro: t("rmMaster.form.addRMDomestic_cancel"),
-            }, 
+            },
             {
                 element: "#addRMDomestic_sendForApproval",
                 intro: t("rmMaster.form.addRMDomestic_sendForApproval"),
-            }, 
+            },
         ],
         BOP_DOMESTIC_FORM:[
             {
@@ -384,19 +384,19 @@ export function Steps(t) {
             {
                 element: "#AddSpecification_RawMaterialName_container",
                 intro: t("rmMaster.addRawMaterialSpecification.AddSpecification_RawMaterialName_container"),
-            }, 
+            },
             {
                 element: "#AddSpecification_GradeId_container",
                 intro: t("rmMaster.addRawMaterialSpecification.AddSpecification_GradeId_container"),
-            }, 
+            },
             {
                 element: "#AddSpecification_Specification",
                 intro: t("rmMaster.addRawMaterialSpecification.AddSpecification_Specification"),
-            }, 
+            },
             {
                 element: "#rm-specification-cancel",
                 intro: t("rmMaster.addRawMaterialSpecification.rm-specification-cancel"),
-            }, 
+            },
             {
                 element: "#rm-specification-submit",
                 intro: t("rmMaster.addRawMaterialSpecification.rm-specification-submit"),
@@ -406,91 +406,91 @@ export function Steps(t) {
             {
                 element: "#Add_rm_import_zero_based",
                 intro: t("rmMaster.addRawMaterialImport.Add_rm_import_zero_based"),
-            }, 
+            },
             {
                 element: "#Add_rm_import_vendor_based",
                 intro: t("rmMaster.addRawMaterialImport.Add_rm_import_vendor_based"),
-            }, 
+            },
             {
                 element: "#Add_rm_import_customer_based",
                 intro: t("rmMaster.addRawMaterialImport.Add_rm_import_customer_based"),
-            }, 
+            },
             {
                 element: "#AddRMImport_TechnologyId_container",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_TechnologyId_container"),
-            }, 
+            },
             {
                 element: "#addRMImport_RMToggle",
                 intro: t("rmMaster.addRawMaterialImport.addRMImport_RMToggle"),
-            },  
+            },
             {
                 element: "#AddRMImport_RawMaterialId_container",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_RawMaterialId_container"),
-            }, 
+            },
             {
                 element: "#AddRMImport_RawMaterialGradeId_container",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_RawMaterialGradeId_container"),
-            }, 
+            },
             {
                 element: "#AddRMImport_RawMaterialSpecificationId_container",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_RawMaterialSpecificationId_container"),
-            }, 
+            },
             {
                 element: "#AddRMImport_CategoryId_container",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_CategoryId_container"),
-            }, 
+            },
             {
                 element: "#AddRMImport_SourceSupplierPlantId_container",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_SourceSupplierPlantId_container"),
-            }, 
+            },
             {
                 element: "#AddRMImport_Vendor",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_Vendor"),
-            }, 
+            },
             {
                 element: "#addRMImport_vendorToggle",
                 intro: t("rmMaster.addRawMaterialImport.addRMImport_vendorToggle"),
-            }, 
+            },
             {
                 element: "#AddRMImport_UnitOfMeasurementId_container",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_UnitOfMeasurementId_container"),
-            }, 
+            },
             {
                 element: "#AddRMImport_Currency_container",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_Currency_container"),
-            }, 
+            },
             {
                 element: "#AddRMImport_EffectiveDate",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_EffectiveDate"),
-            }, 
+            },
             {
                 element: "#AddRMImport_cutOffPriceSelectedCurrency",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_cutOffPriceSelectedCurrency"),
-            }, 
+            },
             {
                 element: "#AddRMImport_BasicRateSelectedCurrency",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_BasicRateSelectedCurrency"),
-            }, 
+            },
             {
                 element: "#AddRMImport_FreightChargeSelectedCurrency",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_FreightChargeSelectedCurrency"),
-            }, 
+            },
             {
                 element: "#AddRMImport_ShearingCostSelectedCurrency",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_ShearingCostSelectedCurrency"),
-            }, 
+            },
             {
                 element: "#AddRMImport_Remark",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_Remark"),
-            }, 
+            },
             {
                 element: "#AddRMImport_UploadFiles",
                 intro: t("rmMaster.addRawMaterialImport.AddRMImport_UploadFiles"),
-            }, 
+            },
             {
                 element: "#addRMImport_cancel",
                 intro: t("rmMaster.addRawMaterialImport.addRMImport_cancel"),
-            }, 
+            },
             {
                 element: "#addRMImport_sendForApproval",
                 intro: t("rmMaster.addRawMaterialImport.addRMImport_sendForApproval"),
@@ -500,23 +500,23 @@ export function Steps(t) {
             {
                 element: "#Association_RawMaterialName_container",
                 intro: t("rmMaster.addRawMaterialAssociation.Association_RawMaterialName_container"),
-            }, 
+            },
             {
                 element: "#Association_GradeId_container",
                 intro: t("rmMaster.addRawMaterialAssociation.Association_GradeId_container"),
-            }, 
+            },
             {
                 element: "#Association_MaterialTypeId_container",
                 intro: t("rmMaster.addRawMaterialAssociation.Association_MaterialTypeId_container"),
-            }, 
+            },
             {
                 element: "#rmAssociation_cancel",
                 intro: t("rmMaster.addRawMaterialAssociation.rmAssociation_cancel"),
-            }, 
+            },
             {
                 element: "#rmAssociation_Save",
                 intro: t("rmMaster.addRawMaterialAssociation.rmAssociation_Save"),
-            }, 
+            },
         ],
         ADD_MATERIAL: [
             {
@@ -536,7 +536,7 @@ export function Steps(t) {
                 intro: t("rmMaster.addMaterial.AddMaterialType_Save"),
             },
         ],
-        ADD_OVERHEADS_DETAILS:[
+        ADD_OVERHEADS_DETAILS: [
             {
                 element: "#AddOverhead_zerobased",
                 intro: t("overheadsdMaster.AddOverhead_zerobased"),
@@ -568,7 +568,7 @@ export function Steps(t) {
             {
                 element: "#AddOverhead_OverheadRMPercentage",
                 intro: t("overheadsdMaster.AddOverhead_OverheadRMPercentage"),
-            },        
+            },
             {
                 element: "#AddOverhead_OverheadMachiningCCPercentage",
                 intro: t("overheadsdMaster.AddOverhead_OverheadMachiningCCPercentage"),
@@ -660,224 +660,224 @@ export function Steps(t) {
             {
                 element: "#Add_operation_zero_based",
                 intro: t("operationMaster.Add_operation_zero_based"),
-            }, 
+            },
             {
                 element: "#Add_operation_vendor_based",
                 intro: t("operationMaster.Add_operation_vendor_based"),
-            }, 
+            },
             {
                 element: "#Add_operation_customer_based",
                 intro: t("operationMaster.Add_operation_customer_based"),
-            }, 
+            },
             {
                 element: "#AddOperation_technology_container",
                 intro: t("operationMaster.AddOperation_technology_container"),
-            }, 
+            },
             {
                 element: "#AddOperation_OperationName",
                 intro: t("operationMaster.AddOperation_OperationName"),
-            }, 
+            },
             {
                 element: "#AddOperation_Description",
                 intro: t("operationMaster.AddOperation_Description"),
-            }, 
+            },
             {
                 element: "#AddOperation_Plant_container",
                 intro: t("operationMaster.AddOperation_Plant_container"),
-            }, 
+            },
             {
                 element: "#AddOperation_UnitOfMeasurementId_container",
                 intro: t("operationMaster.AddOperation_UnitOfMeasurementId_container"),
-            }, 
+            },
             {
                 element: "#AddOperation_Rate",
                 intro: t("operationMaster.AddOperation_Rate"),
-            }, 
+            },
             {
                 element: "#AddOperation_EffectiveDate",
                 intro: t("operationMaster.AddOperation_EffectiveDate"),
-            }, 
+            },
             {
                 element: "#AddOperation_Remark",
                 intro: t("operationMaster.AddOperation_Remark"),
-            }, 
+            },
             {
                 element: "#AddOperation_UploadFiles",
                 intro: t("operationMaster.AddOperation_UploadFiles"),
-            }, 
+            },
             {
                 element: "#AddOperation_Cancel",
                 intro: t("operationMaster.AddOperation_Cancel"),
-            }, 
+            },
             {
                 element: "#AddOperation_SendForApproval",
                 intro: t("operationMaster.AddOperation_SendForApproval"),
-            }, 
+            },
         ],
         ADD_FUEL: [
             {
                 element: "#AddFuel_zerobased",
                 intro: t("addfuel.AddFuel_zerobased"),
-            }, 
+            },
             {
                 element: "#AddFuel_vendorbased",
                 intro: t("addfuel.AddFuel_vendorbased"),
-            }, 
+            },
             {
                 element: "#AddFuel_customerbased",
                 intro: t("addfuel.AddFuel_customerbased"),
-            }, 
+            },
             {
                 element: "#AddFuel_plant_container",
                 intro: t("addfuel.AddFuel_plant_container"),
-            }, 
+            },
             {
                 element: "#AddFuel_Fuel_container ",
                 intro: t("addfuel.AddFuel_Fuel_container "),
-            }, 
+            },
             {
                 element: "#AddFuel_CountryId_container",
                 intro: t("addfuel.AddFuel_CountryId_container"),
-            }, 
+            },
             {
                 element: "#AddFuel_StateId_container",
                 intro: t("addfuel.AddFuel_StateId_container"),
-            }, 
+            },
             {
                 element: "#AddFuel_CityId_container ",
                 intro: t("addfuel.AddFuel_CityId_container"),
-            }, 
+            },
             {
                 element: "#AddFuel_Rate",
                 intro: t("addfuel.AddFuel_Rate"),
-            }, 
+            },
             {
                 element: "#AddFuel_EffectiveDate",
                 intro: t("addfuel.AddFuel_EffectiveDate"),
-            }, 
+            },
             {
                 element: "#AddFuel_Cancel",
                 intro: t("addfuel.AddFuel_Cancel"),
-            }, 
+            },
             {
                 element: "#AddFuel_Save",
                 intro: t("addfuel.AddFuel_Save"),
-            }, 
+            },
         ],
         ADD_FUEL_NAME_DRAWERS: [
             {
                 element: "#AddFuelNameDrawer_FuelName",
                 intro: t("addfuelNameDrawers.AddFuelNameDrawer_FuelName"),
-            }, 
+            },
             {
                 element: "#AddFuelNameDrawer_UnitOfMeasurementId_container",
                 intro: t("addfuelNameDrawers.AddFuelNameDrawer_UnitOfMeasurementId_container"),
-            }, 
+            },
             {
                 element: "#AddFuelNameDrawer_Cancel",
                 intro: t("addfuelNameDrawers.AddFuelNameDrawer_Cancel"),
-            }, 
+            },
             {
                 element: "#AddFuelNameDrawer_Save",
                 intro: t("addfuelNameDrawers.AddFuelNameDrawer_Save"),
-            }, 
+            },
         ],
         ADD_POWER: [
             {
                 element: "#AddPower_zerobased",
                 intro: t("addPower.AddPower_zerobased"),
-            }, 
+            },
             {
                 element: "#AddPower_vendorbased",
                 intro: t("addPower.AddPower_vendorbased"),
-            }, 
+            },
             {
                 element: "#AddPower_customerbased",
                 intro: t("addPower.AddPower_customerbased"),
-            }, 
+            },
             {
                 element: "#AddPower_state_container",
                 intro: t("addPower.AddPower_state_container"),
-            }, 
+            },
             {
                 element: "#AddPower_Plant_container",
                 intro: t("addPower.AddPower_Plant_container"),
-            }, 
+            },
             {
                 element: "#AddPower_EffectiveDate",
                 intro: t("addPower.AddPower_EffectiveDate"),
-            }, 
+            },
             {
                 element: "#AddPower_NetPowerCostPerUnit",
                 intro: t("addPower.AddPower_NetPowerCostPerUnit"),
-            }, 
+            },
             {
                 element: "#AddPower_Cancel",
                 intro: t("addPower.AddPower_Cancel"),
-            }, 
+            },
             {
                 element: "#AddPower_Save",
                 intro: t("addPower.AddPower_Save"),
-            }, 
+            },
 
         ],
         ADD_ASSEMBLY_PART: [
             {
                 element: "#AddAssemblyPart_BOMNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_BOMNumber"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_AssemblyPartNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_AssemblyPartNumber"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_AssemblyPartName",
                 intro: t("addAssemblyPart.AddAssemblyPart_AssemblyPartName"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_Description",
                 intro: t("addAssemblyPart.AddAssemblyPart_Description"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_ECNNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_ECNNumber"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_RevisionNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_RevisionNumber"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_DrawingNumber",
                 intro: t("addAssemblyPart.AddAssemblyPart_DrawingNumber"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_ProductGroup_container",
                 intro: t("addAssemblyPart.AddAssemblyPart_ProductGroup_container"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_TechnologyId_container",
                 intro: t("addAssemblyPart.AddAssemblyPart_TechnologyId_container"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_EffectiveDate",
                 intro: t("addAssemblyPart.AddAssemblyPart_EffectiveDate"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_Remark",
                 intro: t("addAssemblyPart.AddAssemblyPart_Remark"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_UploadFiles",
                 intro: t("addAssemblyPart.AddAssemblyPart_UploadFiles"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_Cancel",
                 intro: t("addAssemblyPart.AddAssemblyPart_Cancel"),
-            }, 
+            },
             {
                 element: "#AddAssemblyPart_Save",
                 intro: t("addAssemblyPart.AddAssemblyPart_Save"),
-            }, 
+            },
         ],
         ADD_COMPONENT_PART: [
             {
@@ -911,7 +911,7 @@ export function Steps(t) {
             {
                 element: "#AddIndivisualPart_TechnologyId_container",
                 intro: t("addComponentPart.AddIndivisualPart_TechnologyId_container"),
-            }, 
+            },
             {
                 element: "#AddIndivisualPart_EffectiveDate",
                 intro: t("addComponentPart.AddIndivisualPart_EffectiveDate"),
@@ -919,7 +919,7 @@ export function Steps(t) {
             {
                 element: "#AddIndivisualPart_Remark",
                 intro: t("addComponentPart.AddIndivisualPart_Remark"),
-            }, 
+            },
             {
                 element: "#AddIndivisualPart_UploadFiles",
                 intro: t("addComponentPart.AddIndivisualPart_UploadFiles"),
@@ -927,11 +927,11 @@ export function Steps(t) {
             {
                 element: "#AddIndivisualPart_Cancel",
                 intro: t("addComponentPart.AddIndivisualPart_Cancel"),
-            }, 
+            },
             {
                 element: "#AddIndivisualPart_Save",
                 intro: t("addComponentPart.AddIndivisualPart_Save"),
-            }, 
+            },
         ],
         ADD_PRODUCT_PART: [
             {
@@ -1051,10 +1051,10 @@ export function Steps(t) {
             },
 
 
-            
+
 
         ],
-        ADD_MACHINE_MORE_RATE_DETAILS:[
+        ADD_MACHINE_MORE_RATE_DETAILS: [
             {
                 element: "#AddMoreDetails_Plant_container",
                 intro: t("addMachineRateMoreDetails.AddMoreDetails_Plant_container"),
@@ -1078,7 +1078,7 @@ export function Steps(t) {
             {
                 element: "#AddMoreDetails_Manufacture",
                 intro: t("addMachineRateMoreDetails.AddMoreDetails_Manufacture"),
-            },            
+            },
             {
                 element: "#AddMoreDetails_yearofManfacturing",
                 intro: t("addMachineRateMoreDetails.AddMoreDetails_yearofManfacturing"),
@@ -1104,7 +1104,7 @@ export function Steps(t) {
                 intro: t("addMachineRateMoreDetails.AddMoreDetails_EffectiveDate"),
             },
         ]
-     
+
     }
 }
 export const Hints = (t) => {

@@ -36,7 +36,7 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
 import { checkForNull } from "../../helper";
 import LanguageDropdown from "../common/Tour/LanguageDropdown";
-
+import { TourStartAction } from "../../actions/Common";
 class SideBar extends Component {
   constructor(props) {
     super(props)
@@ -50,7 +50,8 @@ class SideBar extends Component {
       CostingsAwaitingApprovalDashboard: false,
       showPopup: false,
       updatedObj: {},
-      isShowCal: false
+      isShowCal: false,
+      showTour: false
     };
   }
 
@@ -880,9 +881,21 @@ class SideBar extends Component {
     );
   };
 
+  tourStart = () => {
+    const { location, TourStartAction } = this.props;
+    const { showTour } = this.state;
+    this.setState({ showTour: !showTour });
+
+
+    TourStartAction({
+      showTour: !showTour,
+    });
+
+  }
+
   render() {
     const { userData, topAndLeftMenuData } = this.props;
-    const { isLoader, } = this.state;
+    const { isLoader, showTour } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
       <nav className={`${this.props.sidebarAndNavbarHide ? 'hide-navbar' : ''}`}>
@@ -911,8 +924,16 @@ class SideBar extends Component {
               </div>
               <div className="navbar-collapse offcanvas-collapse justify-content-end" id="">
                 <ul className="navbar-nav ml-auto">
+                  <li className="nav-item d-xl-inline-block">
+                    <div className="d-flex align-items-center">
+                      <LanguageDropdown />
+                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
+                    </div>
+                  </li>
                   <li className="nav-item d-xl-inline-block version">
-                    {VERSION}
+                    <div className="nav-link-user ml-3 pl-3">
+                      {VERSION}
+                    </div>
                   </li>
                   <li className="nav-item d-xl-inline-block">
                     <div className="nav-link-user">
@@ -961,10 +982,6 @@ class SideBar extends Component {
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
                 </ul>
-                <div className="d-flex align-items-center">
-                  <LanguageDropdown />
-                  <button className={`guide-bulb${true ? "-on" : ""}`} title={`Guide ${true ? "on" : "off"}`}></button>
-                </div>
               </nav>
             </div>
           )
@@ -1002,5 +1019,6 @@ export default connect(mapStateToProps, {
   getModuleSelectList,
   getPermissionByUser,
   getMenu,
-  getTopAndLeftMenuData
+  getTopAndLeftMenuData,
+  TourStartAction
 })(SideBar)

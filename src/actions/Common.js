@@ -58,7 +58,8 @@ import {
   GET_REPORTER_LIST,
   GET_APPROVAL_TYPE_SELECT_LIST,
   GET_DATA_WHILE_LOADING,
-  GET_DATA_FROM_REPORT
+  GET_DATA_FROM_REPORT,
+  TOUR_START_DATA
 } from '../config/constants';
 import { apiErrors } from '../helper/util';
 import { MESSAGES } from '../config/message';
@@ -1715,4 +1716,13 @@ export function getVendorNameByVendorSelectList(vendorTypeId, vendorName, techno
     callback(error);
     return Promise.reject(error)
   });
+}
+
+export function TourStartAction(data) {
+  return (dispatch) => {
+    dispatch({
+      type: TOUR_START_DATA,
+      payload: data
+    })
+  }
 }

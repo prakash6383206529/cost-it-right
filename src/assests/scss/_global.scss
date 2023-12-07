@@ -3573,6 +3573,7 @@ input:focus,
   text-shadow: none;
   padding: 4px 8px;
   height: unset !important;
+  max-height: 14px !important;
 
   &:hover {
     color: #fff !important;
@@ -3601,9 +3602,10 @@ input:focus,
   position: absolute;
   top: 10px;
   right: 10px;
-  color: #333;
+  color: #333 !important;
   // background-color: $bordercolor;
   height: auto !important;
+  max-height: 22px !important;
   padding: 5px;
 
   &:hover {
@@ -3647,4 +3649,18 @@ input:focus,
 .introjs-tooltiptext {
   padding: 5px 10px;
   white-space-collapse: break-spaces;
+}
+
+.language-dropdown {
+  .multi-select-container__control {
+    height: 26px !important;
+  }
+
+  .multi-select-container__single-value {
+    top: 35% !important;
+  }
+
+  .multi-select-container__indicators {
+    height: 24px !important;
+  }
 }

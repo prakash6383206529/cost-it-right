@@ -246,6 +246,11 @@ class AddRMDomestic extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
+    if (prevProps.tourStartData.showTour !== this.props.tourStartData.showTour) {
+      setTimeout(() => {
+        this.setState({ showTour: this.props.tourStartData.showTour })
+      }, 700);
+    }
 
 
     if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
@@ -621,7 +626,7 @@ class AddRMDomestic extends Component {
    */
   getDetails = (data) => {
 
-    const { initialConfiguration } = this.props
+    const { initialConfiguration, tourStartData } = this.props
     const { showScrapKeys } = this.state
 
     if (data && data.isEditFlag) {
@@ -714,7 +719,7 @@ class AddRMDomestic extends Component {
       this.setState({
         isEditFlag: false,
         isLoader: false,
-        RawMaterialID: EMPTY_GUID,
+        RawMaterialID: EMPTY_GUID
       })
       this.props.getRMDataById('', false, (res) => { })
     }
@@ -2350,7 +2355,7 @@ function mapStateToProps(state) {
 
   const { rowMaterialList, rmGradeList, rmSpecification, plantList, supplierSelectList, filterPlantList, filterCityListBySupplier,
     cityList, technologyList, costingHead, categoryList, filterPlantListByCity, filterPlantListByCityAndSupplier, UOMSelectList,
-    plantSelectList } = comman
+    plantSelectList, tourStartData } = comman
   const { costingSpecifiTechnology } = costing
   const { clientSelectList } = client;
   const { initialConfiguration, userMasterLevelAPI } = auth;
@@ -2377,7 +2382,7 @@ function mapStateToProps(state) {
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
     filterPlantList, UOMSelectList, vendorListByVendorType, plantSelectList,
-    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI
+    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI, tourStartData
   }
 }
 
