@@ -37,10 +37,12 @@ function GotGivenListing(props) {
 
     useEffect(() => {
         let obj = {}
-        obj.plantId = EMPTY_GUID
+        obj.plantId = props?.plantId
         obj.partId = (part ? part : EMPTY_GUID)
         obj.productCategoryId = product ? (product.value ? product.value : EMPTY_GUID) : EMPTY_GUID
         obj.isRequestForSummary = false
+        obj.customerId = props?.customerId
+        obj.vendorId = props?.vendorId
         setIsLoader(true)
         dispatch(getGotAndGivenDetails(obj, (res) => {
             setIsLoader(false)
@@ -208,7 +210,7 @@ function GotGivenListing(props) {
                                 <AgGridColumn field="RawMaterialScrapWeight" width={130} headerName="Scrap Weight" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NetRawMaterialsCost" width={130} headerName="Net RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="ProfitRMTotalCost" width={130} headerName="Profit of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NetProcessCost" headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                <AgGridColumn field="NetProcessOperationAndSTCost" headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="ProfitCCPercentage" headerName="Profit of Component on CC (%)" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="SubTotal" width={130} headerName="Sub Total" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NewRawMaterialRate" width={130} headerName="Revised RM Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
@@ -264,7 +266,7 @@ function GotGivenListing(props) {
                                 <AgGridColumn field="RawMaterialScrapWeight" width={130} headerName="Scrap Weight" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NetRawMaterialsCost" width={130} headerName="Net RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="ProfitRMTotalCost" width={130} headerName="Profit of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
-                                <AgGridColumn field="NetProcessCost" width={170} headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                <AgGridColumn field="NetProcessOperationAndSTCost" width={170} headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="ProfitCCPercentage" width={170} headerName="Profit of Component on CC (%)" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="SubTotal" width={130} headerName="Sub Total" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NewRawMaterialRate" headerName="Revised RM Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
