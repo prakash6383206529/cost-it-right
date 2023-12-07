@@ -42,6 +42,9 @@ import TooltipCustom from '../../common/Tooltip';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import Button from '../../layout/Button';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
 
 const selector = formValueSelector('AddBOPImport');
 
@@ -128,6 +131,7 @@ class AddBOPImport extends Component {
       toolTipTextObject: {},
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: {},
+      showTour: false,
     }
   }
 
@@ -1219,9 +1223,9 @@ class AddBOPImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isBOPAssociated, initialConfiguration } = this.props;
+    const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject, showTour } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1270,7 +1274,15 @@ class AddBOPImport extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import)
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import) 
+                          <Button
+                                            id="addBOP_import_guide"
+                                            variant={"ml-2"}
+                                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                                            onClick={() => {this.setState({showTour:!showTour})}}
+                                            title='Guide'
+                                           />  
+                          {showTour && <TourWrapper steps={Steps(t).BOP_Import_FORM} stepsEnable={true} start={showTour} onExit={() => {this.setState({showTour : false})}} />}
                         </h1>
                       </div>
                     </div>
@@ -1283,7 +1295,7 @@ class AddBOPImport extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id='bop_import_zeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1299,7 +1311,7 @@ class AddBOPImport extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id='bop_import_vendor_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1315,7 +1327,7 @@ class AddBOPImport extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label id='bop_import_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1527,7 +1539,7 @@ class AddBOPImport extends Component {
                               <Col md="3" className='mb-4'>
                                 <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
                                 <div className="d-flex justify-space-between align-items-center async-select">
-                                  <div className="fullinput-icon p-relative">
+                                  <div id='AddBOPImport_BOPVendoreName' className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
                                       name="vendorName"
@@ -1872,7 +1884,7 @@ class AddBOPImport extends Component {
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                            <div id='AddBOPImport_FileUpload' className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
@@ -2140,4 +2152,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(AddBOPImport));
+})(withTranslation()(AddBOPImport)));
