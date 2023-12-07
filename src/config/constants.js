@@ -877,6 +877,7 @@ export const API = {
   updateBudget: `${BASE_URL}/master-budgeting/update`,
   bulkUploadBudgetMaster: `${BASE_URL}/master-budgeting/bulk-upload-for-budgeting`,
   masterApprovalRequestBySenderBudget: `${BASE_URL}/master-budgeting/master-send-to-approver-by-sender`,
+  deleteBudget: `${BASE_URL}/master-budgeting/delete-by-id`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
@@ -1853,8 +1854,8 @@ export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
 export const GOT_GIVEN_REPORT = "Got Given Report"
 export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
+export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
-export const CUSTOMER_POAM_IMPACT = "Customer Poam Impact"
 
 //export const SIMULATION_HISTORY = 'Simulation History'
 
@@ -2687,7 +2688,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.280";
+export const VERSION = "V2.1.281";
 
 
 

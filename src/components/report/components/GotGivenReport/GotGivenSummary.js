@@ -34,10 +34,12 @@ function GotGivenSummary(props) {
 
     useEffect(() => {
         let obj = {}
-        obj.plantId = EMPTY_GUID
+        obj.plantId = props?.plantId
         obj.partId = part ? (part.value ? part.value : EMPTY_GUID) : EMPTY_GUID
         obj.productCategoryId = product ? (product.value ? product.value : EMPTY_GUID) : EMPTY_GUID
         obj.isRequestForSummary = true
+        obj.customerId = props?.customerId
+        obj.vendorId = props?.vendorId
         setIsLoader(true)
         dispatch(getGotAndGivenDetails(obj, (res) => {
             setIsLoader(false)
@@ -257,7 +259,12 @@ function GotGivenSummary(props) {
                 mainGotGivenListing &&
                 < GotGivenListing
                     part={selectedPartId}
-                    closeDrawer={closeDrawer} />
+                    closeDrawer={closeDrawer}
+                    customerId={props?.customerId}
+                    plantId={props.plantId}
+                    vendorId={props.vendorId}
+
+                />
             }
         </>
     );

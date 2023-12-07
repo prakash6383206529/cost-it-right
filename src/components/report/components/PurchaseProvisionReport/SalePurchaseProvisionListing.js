@@ -270,7 +270,7 @@ function SalePurchaseProvisionListing(props) {
                                                 {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="OldRate" width="120" headerName="Existing Net Cost (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NewRate" width="120" headerName="Revised Net Cost (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="Difference" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="Variance" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity (No.)" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="Impact" headerName="Impact" floatingFilter={true}></AgGridColumn>}
                                             </AgGridReact>
