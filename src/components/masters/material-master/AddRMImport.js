@@ -45,6 +45,9 @@ import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import Button from '../../layout/Button';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
 
 const selector = formValueSelector('AddRMImport');
 
@@ -155,7 +158,8 @@ class AddRMImport extends Component {
       FinalFreightCostSelectedCurrency: '',
       FinalShearingCostBaseCurrency: '',
       FinalShearingCostSelectedCurrency: '',
-      toolTipTextObject: {}
+      toolTipTextObject: {},
+      showTour: false,
     }
   }
 
@@ -1616,9 +1620,9 @@ class AddRMImport extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, isRMAssociated } = this.props;
+    const { handleSubmit, initialConfiguration, isRMAssociated, t } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval,
-      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, showScrapKeys, toolTipTextObject } = this.state;
+      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, showScrapKeys, toolTipTextObject, showTour } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1669,6 +1673,14 @@ class AddRMImport extends Component {
                       <div className="col-md-6">
                         <h2>
                           {isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} Raw Material (Import)
+                          <Button
+                            id="addRMImport_guide"
+                            variant={"ml-2"}
+                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            onClick={() => { this.setState({ showTour: !showTour }) }}
+                            title='Guide'
+                          />
+                          {showTour && <TourWrapper steps={Steps(t).ADD_RAW_MATERIAL_IMPORT} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                         </h2>
                       </div>
                     </div>
@@ -1681,7 +1693,7 @@ class AddRMImport extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="Add_rm_import_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1697,7 +1709,7 @@ class AddRMImport extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="Add_rm_import_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1713,7 +1725,7 @@ class AddRMImport extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="Add_rm_import_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1951,7 +1963,7 @@ class AddRMImport extends Component {
                               </Col>
                               <Col md="3" className='mb-4'>
                                 <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                                <div className="d-flex justify-space-between align-items-center async-select">
+                                <div id="AddRMImport_Vendor" className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
@@ -2534,7 +2546,7 @@ class AddRMImport extends Component {
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                            <div id="AddRMImport_UploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
@@ -2852,4 +2864,5 @@ export default connect(mapStateToProps, {
   form: 'AddRMImport',
   enableReinitialize: true,
   touchOnChange: true
-})(AddRMImport));
+})(withTranslation()(AddRMImport)),
+)

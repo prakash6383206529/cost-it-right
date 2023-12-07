@@ -17,6 +17,10 @@ import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 class AddIndivisualProduct extends Component {
     constructor(props) {
@@ -40,7 +44,8 @@ class AddIndivisualProduct extends Component {
             isImpactCalculation: false,
             setDisable: false,
             attachmentLoader: false,
-            showPopup: false
+            showPopup: false,
+            showTour: false,
         }
     }
 
@@ -354,8 +359,8 @@ class AddIndivisualProduct extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, initialConfiguration } = this.props;
-        const { isEditFlag, isViewMode, setDisable } = this.state;
+        const { handleSubmit, initialConfiguration, t } = this.props;
+        const { isEditFlag, isViewMode, setDisable, showTour } = this.state;
         return (
             <>
                 {this.state.isLoader && <LoaderCustom />}
@@ -370,6 +375,14 @@ class AddIndivisualProduct extends Component {
                                                 <div className="form-heading mb-0">
                                                     <h1>
                                                         {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add "} Product
+                                                        <Button
+                                                            id="addIndivisualProduct_guide"
+                                                            variant={"ml-2"}
+                                                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                                                            onClick={() => { this.setState({ showTour: !showTour }) }}
+                                                            title='Guide'
+                                                        />
+                                                        {showTour && <TourWrapper steps={Steps(t).ADD_PRODUCT_PART} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                                                     </h1>
                                                 </div>
                                             </Col>
@@ -570,7 +583,7 @@ class AddIndivisualProduct extends Component {
                                                         <div className={`alert alert-danger mt-2 ${this.state.files.length === initialConfiguration.MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                                                             Maximum file upload limit reached.
                                                         </div>
-                                                        <div className={`${this.state.files.length >= initialConfiguration.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                                                        <div id="AddIndivisualPart_UploadFiles" className={`${this.state.files.length >= initialConfiguration.MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                                                             <Dropzone
                                                                 ref={this.dropzone}
                                                                 onChangeStatus={this.handleChangeStatus}
@@ -648,7 +661,7 @@ class AddIndivisualProduct extends Component {
 
                                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                                                 <div className="col-sm-12 text-right bluefooter-butn">
-                                                    <button
+                                                    <button id="AddIndivisualPart_Cancel"
                                                         type={"button"}
                                                         className="mr15 cancel-btn"
                                                         onClick={this.cancelHandler}
@@ -658,7 +671,7 @@ class AddIndivisualProduct extends Component {
                                                         {"Cancel"}
                                                     </button>
                                                     {!isViewMode &&
-                                                        <button
+                                                        <button id="AddIndivisualPart_Save"
                                                             type="submit"
                                                             className="user-btn mr5 save-btn"
                                                             disabled={isViewMode || setDisable}
@@ -728,4 +741,5 @@ export default connect(mapStateToProps, {
     form: 'AddIndivisualPart',
     enableReinitialize: true,
     touchOnChange: true
-})(AddIndivisualProduct));
+})(withTranslation()(AddIndivisualProduct)),
+)

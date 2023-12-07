@@ -31,6 +31,10 @@ import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import AddMoreOperation from './AddMoreOperation';
 import WarningMessage from '../../common/WarningMessage';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddOperation');
 
@@ -94,7 +98,8 @@ class AddOperation extends Component {
       isDetailEntry: false,
       detailObject: {},
       CostingTypePermission: false,
-      disableSendForApproval: false
+      disableSendForApproval: false,
+      showTour: false,
     }
   }
 
@@ -868,8 +873,8 @@ class AddOperation extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, isOperationAssociated } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval } = this.state;
+    const { handleSubmit, initialConfiguration, isOperationAssociated, t } = this.props;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval, showTour } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -912,6 +917,14 @@ class AddOperation extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
+                      <Button
+                        id="addOperation_guide"
+                        variant={"ml-2"}
+                        className={`guide-bulb${showTour ? "-on" : ""}`}
+                        onClick={() => { this.setState({ showTour: !showTour }) }}
+                        title='Guide'
+                      />
+                      {showTour && <TourWrapper steps={Steps(t).ADD_OPERATION} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                     </h2>
                   </div>
                 </div>
@@ -924,7 +937,7 @@ class AddOperation extends Component {
                   <div className="add-min-height">
                     <Row>
                       <Col md="12">
-                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        <Label id="Add_operation_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -938,7 +951,7 @@ class AddOperation extends Component {
                           />{" "}
                           <span>Zero Based</span>
                         </Label>
-                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        <Label id="Add_operation_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -952,7 +965,7 @@ class AddOperation extends Component {
                           />{" "}
                           <span>Vendor Based</span>
                         </Label>
-                        {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                        {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="Add_operation_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -1273,7 +1286,7 @@ class AddOperation extends Component {
                         <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                           Maximum file upload limit reached.
                         </div>
-                        <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                        <div id="AddOperation_UploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                           <Dropzone
                             ref={this.dropzone}
                             onChangeStatus={this.handleChangeStatus}
@@ -1333,7 +1346,7 @@ class AddOperation extends Component {
                   <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                     <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                       {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                      <button
+                      <button id="AddOperation_Cancel"
                         type={"button"}
                         className="mr15 cancel-btn"
                         onClick={this.cancelHandler}
@@ -1344,7 +1357,7 @@ class AddOperation extends Component {
                       </button>
                       {!isViewMode && <>
                         {(!isViewMode && (CheckApprovalApplicableMaster(OPERATIONS_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                          <button type="submit"
+                          <button id="AddOperation_SendForApproval" type="submit"
                             class="user-btn approval-btn save-btn mr5"
                             disabled={isViewMode || setDisable || disableSendForApproval}
                           >
@@ -1487,5 +1500,6 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(AddOperation));
+})(withTranslation()(AddOperation)),
+)
 

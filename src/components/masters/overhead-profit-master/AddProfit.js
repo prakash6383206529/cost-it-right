@@ -26,6 +26,10 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 import { ASSEMBLY } from '../../../config/masterData';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddProfit');
 
@@ -78,6 +82,7 @@ class AddProfit extends Component {
       RawMaterial: [],
       RMGrade: [],
       isAssemblyCheckbox: false,
+      showTour: false,
     }
   }
 
@@ -919,9 +924,9 @@ class AddProfit extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, t } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
-      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged } = this.state;
+      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged, showTour } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -965,6 +970,14 @@ class AddProfit extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <h1> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit Details
+                        <Button
+                          id="addProfit_guide"
+                          variant={"ml-2"}
+                          className={`guide-bulb${showTour ? "-on" : ""}`}
+                          onClick={() => { this.setState({ showTour: !showTour }) }}
+                          title='Guide'
+                        />
+                        {showTour && <TourWrapper steps={Steps(t).ADD_PROFIT_DETAILS} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                       </h1>
                     </div>
                   </div>
@@ -976,7 +989,7 @@ class AddProfit extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          <Label id="AddProfit_zeroBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -990,7 +1003,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Zero Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          <Label id="AddProfit_vendorBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1004,7 +1017,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddProfit_customerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1341,7 +1354,7 @@ class AddProfit extends Component {
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
-                          <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                          <div id="AddProfit_UploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
@@ -1422,7 +1435,7 @@ class AddProfit extends Component {
                     </div>
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn">
-                        <button
+                        <button id="AddProfit_Cancel"
                           type={"button"}
                           className=" mr15 cancel-btn"
                           onClick={this.cancelHandler}
@@ -1431,7 +1444,7 @@ class AddProfit extends Component {
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
-                        {!isViewMode && <button
+                        {!isViewMode && <button id="AddProfit_Save"
                           type="submit"
                           className="user-btn mr5 save-btn"
                           disabled={isViewMode || setDisable}
@@ -1510,4 +1523,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddProfit',
   enableReinitialize: true,
-})(AddProfit));
+})(withTranslation()(AddProfit)),
+)

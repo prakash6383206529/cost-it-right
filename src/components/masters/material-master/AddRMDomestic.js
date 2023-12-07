@@ -46,6 +46,9 @@ import WarningMessage from '../../common/WarningMessage';
 import Button from '../../layout/Button';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { debounce } from 'lodash';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from '../../common/Tour/TourMessages';
+import { withTranslation } from 'react-i18next'
 
 const selector = formValueSelector('AddRMDomestic')
 
@@ -160,7 +163,9 @@ class AddRMDomestic extends Component {
       FinalJaliScrapCostBaseCurrency: '',
       FinalFreightCostBaseCurrency: '',
       FinalShearingCostBaseCurrency: '',
-      toolTipTextObject: {}
+      toolTipTextObject: {},
+      showTour: false,
+
 
     }
   }
@@ -1394,8 +1399,8 @@ class AddRMDomestic extends Component {
    */
   render() {
 
-    const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, showScrapKeys } = this.state
+    const { handleSubmit, initialConfiguration, isRMAssociated, t } = this.props
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, showScrapKeys, showTour } = this.state
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1446,6 +1451,14 @@ class AddRMDomestic extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isViewFlag ? 'View' : isEditFlag ? 'Update' : 'Add'} Raw Material (Domestic)
+                          <Button
+                            id="addRMDomestic_guide"
+                            variant={"ml-2"}
+                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            onClick={() => { this.setState({ showTour: !showTour }) }}
+                            title='Guide'
+                          />
+                          {showTour && <TourWrapper steps={Steps(t).RM_DOMESTIC_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                         </h1>
                       </div>
                     </div>
@@ -1458,7 +1471,7 @@ class AddRMDomestic extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1474,7 +1487,7 @@ class AddRMDomestic extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1490,7 +1503,7 @@ class AddRMDomestic extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1726,7 +1739,7 @@ class AddRMDomestic extends Component {
                               </Col>
                               <Col md="3" className='mb-4'>
                                 <label>{"Vendor (Code)"}<span className="asterisk-required">*</span></label>
-                                <div className="d-flex justify-space-between align-items-center async-select">
+                                <div id="AddRMDomestic_Vendor" className="d-flex justify-space-between align-items-center async-select">
                                   <div className="fullinput-icon p-relative">
                                     {this.state.inputLoader && <LoaderCustom customClass={`input-loader`} />}
                                     <AsyncSelect
@@ -2084,7 +2097,7 @@ class AddRMDomestic extends Component {
                               Maximum file upload limit reached.
                             </div>
 
-                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                            <div id="AddRMDomestic_uploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
@@ -2409,5 +2422,5 @@ export default connect(mapStateToProps, {
     onSubmitFail: (errors) => {
       focusOnError(errors)
     },
-  })(AddRMDomestic),
+  })(withTranslation()(AddRMDomestic)),
 )
