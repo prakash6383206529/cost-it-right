@@ -111,6 +111,7 @@ function SheetMetalBaicDrawer(props) {
       }, 200);
 
     }
+    setValue('CycleTime', Object.keys(WeightCalculatorRequest).length > 0 || WeightCalculatorRequest.CycleTime !== undefined ? WeightCalculatorRequest.CycleTime : 1)
     switch (props.calculatorData.UOMType) {
       case MASS:
         setProcessCostTooltip('Process Cost = ((100 / Efficiency) * Weight * Rate) / Cavity')
