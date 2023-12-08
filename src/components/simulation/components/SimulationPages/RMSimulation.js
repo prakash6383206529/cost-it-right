@@ -36,7 +36,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function RMSimulation(props) {
     const { list, isbulkUpload, rowCount, technology, master, isImpactedMaster, costingAndPartNo, tokenForMultiSimulation, technologyId } = props
-    console.log(props.children, "props.children");
     const [showRunSimulationDrawer, setShowRunSimulationDrawer] = useState(false)
     const [showverifyPage, setShowVerifyPage] = useState(false)
     const [token, setToken] = useState('')
@@ -68,7 +67,6 @@ function RMSimulation(props) {
     const currencySelectList = useSelector(state => state.comman.currencySelectList)
     const { selectedMasterForSimulation, exchangeRateListBeforeDraft } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
-    console.log('simulationApplicability: ', simulationApplicability);
 
     const { filteredRMData } = useSelector(state => state.material)
     useEffect(() => {
@@ -135,8 +133,6 @@ function RMSimulation(props) {
             })
         } else {
             list && list.map(item => {
-                console.log(item.NewBasicRate, item.NewBasicrateFromPercentage, item.BasicRate, " item.BasicRate");
-                console.log((item.NewBasicrateFromPercentage !== 0 && item.NewBasicrateFromPercentage !== null && item.NewBasicrateFromPercentage !== undefined), "condition answr");
                 let tempObj = {}
                 tempObj.CostingHead = item.CostingHead === 'Vendor Based' ? VBC : ZBC
                 tempObj.RawMaterialName = item.RawMaterialName
@@ -231,7 +227,6 @@ function RMSimulation(props) {
 
         basicRateCount = 0
         if (selectedMasterForSimulation?.value === EXCHNAGERATE) {
-            console.log(list, "list");
             dispatch(createMultipleExchangeRate(exchangeRateListBeforeDraft, currencySelectList, effectiveDate, res => {
                 setValueFunction(true, res);
             }))
@@ -367,7 +362,6 @@ function RMSimulation(props) {
 
     const costFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        console.log('row: ', row.OldNetLandedCost);
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         return isImpactedMaster ? checkForDecimalAndNull(row?.OldNetLandedCost, getConfigurationKey().NoOfDecimalForPrice) : checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)
     }

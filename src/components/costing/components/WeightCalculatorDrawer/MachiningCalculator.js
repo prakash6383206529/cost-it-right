@@ -200,6 +200,19 @@ function Machining(props) {
     const tooltipMessageForSheetWeight = (type, value) => {
         return <div>{type} Weight = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * {value} Length)/1000/1000</div>
     }
+    const handleOuterDiameterChange = (e) => {
+        let outerDiameter = checkForNull(Number(e?.target?.value))
+        if (Number(getValues('thickness')) < outerDiameter) {
+            delete errors.thickness
+        }
+    }
+    const handleThicknessChange = (value) => {
+        let thickness = checkForNull(Number(value?.target?.value))
+        if (Number(getValues('outerDiameter')) > thickness) {
+            delete errors.outerDiameter
+        }
+    }
+
     return (
         <Fragment>
             <Row>
@@ -227,8 +240,12 @@ function Machining(props) {
                                         rules={{
                                             required: true,
                                             validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
+                                            min: {
+                                                value: getValues('thickness'),
+                                                message: 'Outer diameter should not be  less than thickness.'
+                                            }
                                         }}
-                                        handleChange={() => { }}
+                                        handleChange={handleOuterDiameterChange}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
@@ -247,8 +264,12 @@ function Machining(props) {
                                         rules={{
                                             required: false,
                                             validate: { number, positiveAndDecimalNumber, decimalNumberLimit },
+                                            max: {
+                                                value: getValues('outerDiameter'),
+                                                message: 'Thickness should not be greater than outer diameter.'
+                                            },
                                         }}
-                                        handleChange={() => { }}
+                                        handleChange={handleThicknessChange}
                                         defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}

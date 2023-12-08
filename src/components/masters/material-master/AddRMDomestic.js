@@ -580,7 +580,7 @@ class AddRMDomestic extends Component {
 
 
     const { fieldsObj, initialConfiguration } = this.props;
-    const { FinalConditionCostBaseCurrency, DataToChange, isEditFlag, costingTypeId, showScrapKeys } = this.state
+    const { FinalConditionCostBaseCurrency, DataToChange, isEditFlag, costingTypeId, showScrapKeys, CalculatedFactor, ScrapRatePerScrapUOM, ConversionRatio } = this.state
     const conversionFactorTemp = 1 / fieldsObj?.ConversionRatio
     this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
     const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
@@ -614,7 +614,8 @@ class AddRMDomestic extends Component {
     if (isEditFlag && checkForNull(fieldsObj?.BasicRateBaseCurrency) === checkForNull(DataToChange?.BasicRatePerUOM) && checkForNull(fieldsObj?.ScrapRateBaseCurrency) === checkForNull(DataToChange?.ScrapRate)
       && checkForNull(fieldsObj?.ForgingScrap) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.MachiningScrap) === checkForNull(DataToChange?.MachiningScrapRate) && checkForNull(fieldsObj?.CircleScrapCost) === checkForNull(DataToChange?.JaliScrapCost)
       && checkForNull(fieldsObj?.JaliScrapCost) === checkForNull(DataToChange?.ScrapRate) && checkForNull(fieldsObj?.FreightCharge) === checkForNull(DataToChange?.RMFreightCost) && checkForNull(fieldsObj?.ShearingCost) === checkForNull(DataToChange?.RMShearingCost)
-      && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToChange?.NetConditionCost)) {
+      && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToChange?.NetCostWithoutConditionCost) && checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToChange?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToChange?.NetConditionCost) && checkForNull(DataToChange?.UOMToScrapUOMRatio) === checkForNull(ConversionRatio) &&
+      checkForNull(DataToChange?.CalculatedFactor) === checkForNull(CalculatedFactor) && checkForNull(DataToChange?.ScrapRatePerScrapUOM) === checkForNull(ScrapRatePerScrapUOM)) {
       this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
       this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
     } else {

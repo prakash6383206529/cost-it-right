@@ -457,6 +457,22 @@ function MasterSendForApproval(props) {
         }
     }
 
+    const labelForScrapRate = () => {
+        let labelSelectedCurrency = `Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : 'Currency'}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+        let labelBaseCurrency = `Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+        if (showScrapKeys?.showCircleJali) {
+            labelSelectedCurrency = `Jali Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : 'Currency'}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+            labelBaseCurrency = `Jali Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+        } else if (showScrapKeys?.showForging) {
+            labelSelectedCurrency = `Forging Scrap Cost (${approvalObj?.Currency ? approvalObj?.Currency : 'Currency'}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+            labelBaseCurrency = `Forging Scrap Cost (${getConfigurationKey()?.BaseCurrency}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+        } else if (showScrapKeys?.showScrap) {
+            labelSelectedCurrency = `Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : 'Currency'}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+            labelBaseCurrency = `Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+        }
+        return { labelSelectedCurrency: labelSelectedCurrency, labelBaseCurrency: labelBaseCurrency }
+    }
+
     const showPriceKeysCommonBOP = () => {
         return (
             <>
@@ -719,6 +735,7 @@ function MasterSendForApproval(props) {
                         />
                     </Col>
                     <Col md="6">
+                        <TooltipCustom id="conversion-factor-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextCalculatedFactor} />
                         <TextFieldHookForm
                             label={labelWithUOMAndCurrency("Calculated Factor", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                             name={"CalculatedFactor"}
@@ -736,7 +753,7 @@ function MasterSendForApproval(props) {
                     </Col>
                     <Col md="6">
                         <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Scrap Rate UOM", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                            label={labelForScrapRate()?.labelSelectedCurrency}
                             name={"ScrapRatePerScrapUOM"}
                             type="text"
                             Controller={Controller}
@@ -750,6 +767,22 @@ function MasterSendForApproval(props) {
                             disabled={true}
                         />
                     </Col>
+                    {props?.IsImportEntry && <Col md="6">
+                        <TextFieldHookForm
+                            label={labelForScrapRate()?.labelBaseCurrency}
+                            name={"ScrapRatePerScrapUOMConversion"}
+                            type="text"
+                            Controller={Controller}
+                            control={control}
+                            placeholder={'-'}
+                            register={register}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.ScrapRate}
+                            defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.ScrapRatePerScrapUOMConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                            disabled={true}
+                        />
+                    </Col>}
                 </>}
 
                 {/* {(!this.state.showForgingMachiningScrapCost && !this.state.showExtraCost) && */}
