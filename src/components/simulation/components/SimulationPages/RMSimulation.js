@@ -342,6 +342,29 @@ function RMSimulation(props) {
             </>
         )
     }
+    const newScrapRateUOMFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        console.log('cell: ', cell);
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        console.log('row: ', row.CalculatedFactor);
+        const newScrapRateInOldUOM = checkForDecimalAndNull(cell * row?.CalculatedFactor, getConfigurationKey().NoOfDecimalForPrice)
+        console.log('newScrapRateInOldUOM: ', newScrapRateInOldUOM);
+        const value = beforeSaveCell(newScrapRateInOldUOM, props, "scrapRate")
+        if (value) {
+            console.log("coming here");
+            row.NewScrapRate = newScrapRateInOldUOM
+            row.NewScrapRatePerScrapUOM = cell
+        }
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        checkForDecimalAndNull(row.NewScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.ScrapRatePerScrapUOM)} >{cell && value ? Number(cell) : Number(row.ScrapRatePerScrapUOM)}</span>
+                }
+            </>
+        )
+    }
 
     const oldScrapRateFormatter = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -565,6 +588,7 @@ function RMSimulation(props) {
         costingHeadFormatter: costingHeadFormatter,
         CostFormatter: CostFormatter,
         newScrapRateFormatter: newScrapRateFormatter,
+        newScrapRateUOMFormatter: newScrapRateUOMFormatter,
         NewcostFormatter: NewcostFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
@@ -595,6 +619,18 @@ function RMSimulation(props) {
 
         return valueReturn;
     };
+
+    const ageValueGetterScrapRate = (params) => {
+        console.log('params: ', params);
+        let row = params.data
+        let valueReturn = ''
+        if (row.IsScrapUOMApply) {
+            valueReturn = checkForDecimalAndNull(row.NewScrapRatePerScrapUOM * row.CalculatedFactor, getConfigurationKey().NoOfDecimalForPrice)
+        } else {
+            valueReturn = row.NewScrapRate
+        }
+        return valueReturn
+    }
 
     const closePopUp = () => {
         setShowPopup(false)
@@ -776,8 +812,10 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
                                             </AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
+                                                <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>
+                                                <AgGridColumn width={120} editable={!isImpactedMaster} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} ></AgGridColumn>
                                                 <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"BOP Net Landed Cost Conversion"} marryChildren={true}>
                                                 <AgGridColumn width={120} field="OldRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Existing" colId='OldRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
