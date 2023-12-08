@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
-import { checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper'
+import { checkForNull, getConfigurationKey, getWeightFromDensity, loggedInUserId } from '../../../../helper'
 import { saveRawMaterialCalculationForMachining } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
@@ -16,19 +16,27 @@ function Machining(props) {
     const dispatch = useDispatch()
 
     const defaultValues = {
-        outerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? WeightCalculatorRequest.OuterDiameter : '',
-        thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? WeightCalculatorRequest.Thickness : '',
-        partingMargin: WeightCalculatorRequest && WeightCalculatorRequest.PartingMargin !== undefined ? WeightCalculatorRequest.PartingMargin : '',
-        netLength: WeightCalculatorRequest && WeightCalculatorRequest.NetLength !== undefined ? WeightCalculatorRequest.NetLength : '',
-        grossLength: WeightCalculatorRequest && WeightCalculatorRequest.GrossLength !== undefined ? WeightCalculatorRequest.GrossLength : '',
-        piecePerMeter: WeightCalculatorRequest && WeightCalculatorRequest.PiecePerMeter !== undefined ? WeightCalculatorRequest.PiecePerMeter : '',
-        rmPerPiece: WeightCalculatorRequest && WeightCalculatorRequest.RMPerPiece !== undefined ? WeightCalculatorRequest.RMPerPiece : '',
-        netRm: WeightCalculatorRequest && WeightCalculatorRequest.RMPerPiece !== undefined ? WeightCalculatorRequest.RMPerPiece : '',
+        outerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.OuterDiameter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.OuterDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        thickness: WeightCalculatorRequest && WeightCalculatorRequest.Thickness !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.Thickness, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        partingMargin: WeightCalculatorRequest && WeightCalculatorRequest.PartingMargin !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.PartingMargin, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        netLength: WeightCalculatorRequest && WeightCalculatorRequest.NetLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.NetLength, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        grossLength: WeightCalculatorRequest && WeightCalculatorRequest.GrossLength !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossLength, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        piecePerMeter: WeightCalculatorRequest && WeightCalculatorRequest.PiecePerMeter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.PiecePerMeter, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        rmPerPiece: WeightCalculatorRequest && WeightCalculatorRequest.RMPerPiece !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RMPerPiece, getConfigurationKey().NoOfDecimalForPrice) : '',
+        netRm: WeightCalculatorRequest && WeightCalculatorRequest.RMPerPiece !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.RMPerPiece, getConfigurationKey().NoOfDecimalForPrice) : '',
+        ScrapWeight: WeightCalculatorRequest && WeightCalculatorRequest.ScrapWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        ScrapCost: WeightCalculatorRequest && WeightCalculatorRequest.ScrapCost !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.ScrapCost, getConfigurationKey().NoOfDecimalForPrice) : '',
+        InnerDiameter: WeightCalculatorRequest && WeightCalculatorRequest.InnerDiameter !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.InnerDiameter, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== undefined ? checkForDecimalAndNull(WeightCalculatorRequest.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput) : '',
     }
     const [grossLength, setGrossLength] = useState(0)
     const [piecePerMeter, setPiecePerMeter] = useState(0)
     const [rmPerPiece, setRmPerPiece] = useState(0)
-
+    const [dataToSend, setDataToSend] = useState({
+        GrossWeight: WeightCalculatorRequest && WeightCalculatorRequest.GrossWeight !== null ? WeightCalculatorRequest.GrossWeight : '',
+        FinishWeight: WeightCalculatorRequest && WeightCalculatorRequest.FinishWeight !== null ? WeightCalculatorRequest.FinishWeight : ''
+    })
     const { register, control, setValue, getValues, handleSubmit, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -37,14 +45,20 @@ function Machining(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['partingMargin', 'netLength', 'finishedWeight'],
+        name: ['partingMargin', 'netLength', 'outerDiameter', 'thickness'],
     })
 
 
     useEffect(() => {
         if (!CostingViewMode) {
             calculateAll()
+            calculateInnerDiameter()
+            calculateGrossWeight()
+            calculateFinishWeight()
+            calculateScrapWeight()
+            calculateScrapCost()
         }
+        calculateNetRm()
     }, [fieldValues])
 
 
@@ -59,11 +73,87 @@ function Machining(props) {
         setPiecePerMeter(piecePerMeter)
         const rmPerPiece = checkForNull(rmRowData.RMRate / piecePerMeter)
         setValue('rmPerPiece', checkForDecimalAndNull(rmPerPiece, getConfigurationKey().NoOfDecimalForInputOutput))
-        setValue('netRm', checkForDecimalAndNull(rmPerPiece, getConfigurationKey().NoOfDecimalForInputOutput))
         setRmPerPiece(rmPerPiece)
     }
-
-
+    const calculateNetRm = () => {
+        const rmPerPiece = getValues('rmPerPiece')
+        const scrapCost = getValues('ScrapCost')
+        const netRm = rmPerPiece - scrapCost
+        setValue('netRm', checkForDecimalAndNull(netRm, getConfigurationKey().NoOfDecimalForPrice))
+    }
+    /**
+ * @method calculateInnerDiameter
+ * @description CALCULATE INNER DIAMETER
+ */
+    const calculateInnerDiameter = () => {
+        const outerDiameter = getValues('outerDiameter')
+        const thickness = getValues('thickness')
+        let innerDiameter = checkForNull(outerDiameter) - 2 * checkForNull(thickness);
+        setValue('InnerDiameter', checkForDecimalAndNull(innerDiameter, getConfigurationKey().NoOfDecimalForInputOutput))
+        const updatedValue = dataToSend
+        updatedValue.InnerDiameter = innerDiameter
+        setDataToSend(updatedValue)
+    }
+    /**
+     * @method calculateGrossWeight
+     * @description CALCULATE WEIGHT OF PART
+     */
+    const calculateGrossWeight = () => {
+        const data = {
+            Density: props.rmRowData.Density / 1000,
+            OuterDiameter: getValues('outerDiameter'),
+            InnerDiameter: getValues('InnerDiameter'),
+            GrossLength: getValues('grossLength'),
+        }
+        const GrossWeight = (getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.GrossLength) / 1000)
+        const updatedValue = dataToSend
+        updatedValue.GrossWeight = GrossWeight
+        setDataToSend(updatedValue)
+        setValue('GrossWeight', checkForDecimalAndNull(GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+    }
+    /**
+   * @method calculateGrossWeight
+   * @description CALCULATE WEIGHT OF PART
+   */
+    const calculateFinishWeight = () => {
+        const data = {
+            Density: props.rmRowData.Density / 1000,
+            OuterDiameter: checkForNull(getValues('outerDiameter')),
+            InnerDiameter: checkForNull(getValues('InnerDiameter')),
+            NetLength: checkForNull(getValues('netLength')),
+        }
+        const FinishWeight = (getWeightFromDensity(data.Density, data.InnerDiameter, data.OuterDiameter, data.NetLength) / 1000)
+        const updatedValue = dataToSend
+        updatedValue.FinishWeight = FinishWeight
+        setDataToSend(updatedValue)
+        setValue('FinishWeight', checkForDecimalAndNull(FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+    }
+    /**
+     * @method calculateWeightOfScrap
+     * @description CALCULATE WEIGHT OF SCRAP
+     */
+    const calculateScrapWeight = () => {
+        const GrossWeight = checkForNull(getValues('GrossWeight'))
+        const FinishWeight = checkForNull(getValues('FinishWeight'))
+        const ScrapWeight = GrossWeight - FinishWeight
+        const updatedValue = dataToSend
+        updatedValue.ScrapWeight = ScrapWeight
+        setDataToSend(updatedValue)
+        setValue('ScrapWeight', checkForDecimalAndNull(ScrapWeight, getConfigurationKey().NoOfDecimalForInputOutput))
+    }
+    /**
+   * @method calculateScrapCost
+   * @description CALCULATE SCRAP COST
+   */
+    const calculateScrapCost = () => {
+        const ScrapWeight = getValues('ScrapWeight')
+        const ScrapRate = props.rmRowData.ScrapRatePerScrapUOM
+        const ScrapCost = ScrapWeight * ScrapRate
+        const updatedValue = dataToSend
+        updatedValue.ScrapCost = ScrapCost
+        setDataToSend(updatedValue)
+        setValue('ScrapCost', checkForDecimalAndNull(ScrapCost, getConfigurationKey().NoOfDecimalForPrice))
+    }
     /**
        * @method cancel
        * @description used to Reset form
@@ -85,6 +175,12 @@ function Machining(props) {
             GrossLength: grossLength,
             PiecePerMeter: piecePerMeter,
             RMPerPiece: rmPerPiece,
+            InnerDiameter: dataToSend.InnerDiameter,
+            GrossWeight: dataToSend.GrossWeight,
+            FinishWeight: dataToSend.FinishWeight,
+            ScrapWeight: dataToSend.ScrapWeight,
+            ScrapCost: dataToSend.ScrapCost,
+            NetRM: getValues('netRm'),
         }
         dispatch(saveRawMaterialCalculationForMachining(obj, res => {
             if (res.data.Result) {
@@ -101,7 +197,9 @@ function Machining(props) {
             e.preventDefault();
         }
     };
-
+    const tooltipMessageForSheetWeight = (type, value) => {
+        return <div>{type} Weight = (Density * (π / 4) * (Outer Diameter<sup>2</sup> - Inner Diameter<sup>2</sup>) * {value} Length)/1000/1000</div>
+    }
     return (
         <Fragment>
             <Row>
@@ -156,6 +254,27 @@ function Machining(props) {
                                         customClassName={'withBorder'}
                                         errors={errors.thickness}
                                         disabled={props.CostingViewMode ? props.CostingViewMode : false}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} tooltipClass='inner-diameter' id={'inner-diameter'} tooltipText="Inner Diameter = Outer Diameter - (2 * Thickness)" />
+                                    <TextFieldHookForm
+                                        label={`Inner Diameter(mm)`}
+                                        name={'InnerDiameter'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'inner-diameter'}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.InnerDiameter}
+                                        disabled={true}
                                     />
                                 </Col>
                                 <Col md="3">
@@ -245,7 +364,7 @@ function Machining(props) {
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
-                                        defaultValue={rmRowData.RMRate}
+                                        defaultValue={200}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.rmRate}
@@ -271,7 +390,110 @@ function Machining(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TooltipCustom disabledIcon={true} id={'net-rm-cost'} tooltipText={'Net RM Cost = RM/Pc'} />
+                                    <TooltipCustom disabledIcon={true} id={'gross-weight'} tooltipText={tooltipMessageForSheetWeight('Gross', 'Gross')} />
+                                    <TextFieldHookForm
+                                        label={`Gross Weight(Kg)`}
+                                        name={'GrossWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'gross-weight'}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.GrossWeight}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'finish-weight'} tooltipText={tooltipMessageForSheetWeight('Finish', 'Net')} />
+                                    <TextFieldHookForm
+                                        label={`Finish Weight(Kg)`}
+                                        name={'FinishWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'finish-weight'}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.FinishWeight}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'Scrap-weight'} tooltipText={"Scrap Weight =  Gross Weight - Finish Weight"} />
+                                    <TextFieldHookForm
+                                        label={`Scrap Weight(Kg)`}
+                                        name={'ScrapWeight'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'Scrap-weight'}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.ScrapWeight}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TextFieldHookForm
+                                        label={`Scrap Rate(INR/Kg)`}
+                                        name={'ScrapRate'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={props.rmRowData.ScrapRatePerScrapUOM}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.ScrapRate}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'Scrap-Cost'} tooltipText={"Scrap Cost =  Scrap Weight * Scrap Rate"} />
+                                    <TextFieldHookForm
+                                        label={`Scrap Cost(INR)`}
+                                        name={'ScrapCost'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        id={'Scrap-Cost'}
+                                        rules={{
+                                            required: false,
+                                        }}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.ScrapCost}
+                                        disabled={true}
+                                    />
+                                </Col>
+                                <Col md="3">
+                                    <TooltipCustom disabledIcon={true} id={'net-rm-cost'} tooltipText={'Net RM Cost = RM/Pc - ScrapCost'} />
                                     <TextFieldHookForm
                                         label={`Net RM Cost`}
                                         name={'netRm'}
@@ -281,7 +503,7 @@ function Machining(props) {
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
-                                        defaultValue={rmPerPiece}
+                                        defaultValue={''}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.netRm}

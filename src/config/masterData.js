@@ -4855,7 +4855,7 @@ export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
 export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25]
-export const technologyForDensity = [1, 2, 25]
+export const technologyForDensity = [1, 2, 14, 25]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']
 export const IdForMultiTechnology = ['13', '10', '9']   //Assembly, Electrical Proprietary, Mechanical Proprietary
