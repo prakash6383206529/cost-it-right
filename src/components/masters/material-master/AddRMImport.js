@@ -652,19 +652,23 @@ class AddRMImport extends Component {
     let scrapRatePerScrapUOMBaseCurrencyTemp = this.convertIntoBase(fieldsObj?.ScrapRatePerScrapUOM)
     this.props.change('ScrapRatePerScrapUOMBaseCurrency', checkForDecimalAndNull(scrapRatePerScrapUOMBaseCurrencyTemp, initialConfiguration.NoOfDecimalForPrice));
 
-    const conversionFactorTemp = 1 / fieldsObj?.UOMToScrapUOMRatio
-    this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
-    const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
     let obj = {}
-    if (showScrapKeys?.showCircleJali) {
-      obj.FinalJaliScrapCostBaseCurrency = scrapRateTemp
-      this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
-    } else if (showScrapKeys?.showForging) {
-      obj.FinalForgingScrapCostBaseCurrency = scrapRateTemp
-      this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
-    } else if (showScrapKeys?.showScrap) {
-      obj.FinalScrapRateBaseCurrency = scrapRateTemp
-      this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+    if (this.state.IsApplyHasDifferentUOM) {
+      const conversionFactorTemp = 1 / fieldsObj?.UOMToScrapUOMRatio
+      this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
+      const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
+      if (showScrapKeys?.showCircleJali) {
+        obj.FinalJaliScrapCostBaseCurrency = scrapRateTemp
+        this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+      } else if (showScrapKeys?.showForging) {
+        obj.FinalForgingScrapCostBaseCurrency = scrapRateTemp
+        this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+      } else if (showScrapKeys?.showScrap) {
+        obj.FinalScrapRateBaseCurrency = scrapRateTemp
+        this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+      }
+      obj.ScrapRateBaseCurrency = scrapRateTemp
+      obj.CalculatedFactor = conversionFactorTemp
     }
 
     const cutOffPriceBaseCurrency = this.convertIntoBase(fieldsObj?.cutOffPriceSelectedCurrency)
@@ -773,8 +777,6 @@ class AddRMImport extends Component {
       UOMToScrapUOMRatio: fieldsObj?.UOMToScrapUOMRatio,
       ScrapRatePerScrapUOM: fieldsObj?.ScrapRatePerScrapUOM,
       ScrapRatePerScrapUOMConversion: scrapRatePerScrapUOMBaseCurrencyTemp,
-      ScrapRateBaseCurrency: scrapRateTemp,
-      CalculatedFactor: conversionFactorTemp,
       ...obj,
 
     }, () => {

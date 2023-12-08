@@ -581,19 +581,23 @@ class AddRMDomestic extends Component {
 
     const { fieldsObj, initialConfiguration } = this.props;
     const { FinalConditionCostBaseCurrency, DataToChange, isEditFlag, costingTypeId, showScrapKeys, CalculatedFactor, ScrapRatePerScrapUOM, ConversionRatio } = this.state
-    const conversionFactorTemp = 1 / fieldsObj?.ConversionRatio
-    this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
-    const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
     let obj = {}
-    if (showScrapKeys?.showCircleJali) {
-      obj.FinalJaliScrapCostBaseCurrency = scrapRateTemp
-      this.props.change('JaliScrapCost', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
-    } else if (showScrapKeys?.showForging) {
-      obj.FinalForgingScrapCostBaseCurrency = scrapRateTemp
-      this.props.change('ForgingScrap', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
-    } else if (showScrapKeys?.showScrap) {
-      obj.FinalScrapRateBaseCurrency = scrapRateTemp
-      this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+    if (this.state.IsApplyHasDifferentUOM) {
+      const conversionFactorTemp = 1 / fieldsObj?.ConversionRatio
+      this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
+      const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
+      if (showScrapKeys?.showCircleJali) {
+        obj.FinalJaliScrapCostBaseCurrency = scrapRateTemp
+        this.props.change('JaliScrapCost', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+      } else if (showScrapKeys?.showForging) {
+        obj.FinalForgingScrapCostBaseCurrency = scrapRateTemp
+        this.props.change('ForgingScrap', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+      } else if (showScrapKeys?.showScrap) {
+        obj.FinalScrapRateBaseCurrency = scrapRateTemp
+        this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
+      }
+      obj.ScrapRateBaseCurrency = scrapRateTemp
+      obj.CalculatedFactor = conversionFactorTemp
     }
 
     const basicPriceCurrencyTemp = checkForNull(fieldsObj?.BasicRateBaseCurrency) + checkForNull(fieldsObj?.FreightCharge) + checkForNull(fieldsObj?.ShearingCost)
@@ -653,8 +657,6 @@ class AddRMDomestic extends Component {
 
       ConversionRatio: fieldsObj?.ConversionRatio,
       ScrapRatePerScrapUOM: fieldsObj?.ScrapRatePerScrapUOM,
-      ScrapRateBaseCurrency: scrapRateTemp,
-      CalculatedFactor: conversionFactorTemp,
       ...obj,
     })
   }
