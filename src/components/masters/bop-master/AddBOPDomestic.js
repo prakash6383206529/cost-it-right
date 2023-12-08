@@ -39,7 +39,7 @@ import WarningMessage from '../../common/WarningMessage';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 
 
@@ -1039,15 +1039,15 @@ class AddBOPDomestic extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Domestic) 
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Domestic)
                           <Button
-                                            id="addBOP_Domestic_guide"
-                                            variant={"ml-2"}
-                                            className={`guide-bulb${showTour ? "-on" : ""}`}
-                                            onClick={() => {this.setState({showTour:!showTour})}}
-                                            title='Guide'
-                                           />                          
-                          {showTour && <TourWrapper steps={Steps(t).BOP_DOMESTIC_FORM} stepsEnable={true} start={showTour} onExit={() => {this.setState({showTour : false})}} />}
+                            id="addBOP_Domestic_guide"
+                            variant={"ml-2"}
+                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            onClick={() => { this.setState({ showTour: !showTour }) }}
+                            title='Guide'
+                          />
+                          {showTour && <TourWrapper steps={Steps(t).BOP_DOMESTIC_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                         </h1>
                       </div>
                     </div>
@@ -1112,7 +1112,7 @@ class AddBOPDomestic extends Component {
                         </Row>
                         <Row>
                           <Col md="12">
-                            <div className="left-border">{"BOP:"} 
+                            <div className="left-border">{"BOP:"}
                             </div>
                           </Col>
                           <Col md="3">

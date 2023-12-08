@@ -22,7 +22,7 @@ import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import { EMPTY_DATA, ZBC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 
@@ -706,16 +706,16 @@ class AddVendorDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor 
-                                            <Button
-                                            id="add_vendor_guide"
-                                            variant={"ml-2"}
-                                            className={`guide-bulb${showTour ? "-on" : ""}`}
-                                            onClick={() => {this.setState({showTour:!showTour})}}
-                                            title='Guide'
-                                            />  
-                                            {showTour && <TourWrapper steps={Steps(t).VENDOR_FORM} stepsEnable={true} start={showTour} onExit={() => {this.setState({showTour : false})}} />}
-                                            </h3> 
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor
+                                                <Button
+                                                    id="add_vendor_guide"
+                                                    variant={"ml-2"}
+                                                    className={`guide-bulb${showTour ? "-on" : ""}`}
+                                                    onClick={() => { this.setState({ showTour: !showTour }) }}
+                                                    title='Guide'
+                                                />
+                                                {showTour && <TourWrapper steps={Steps(t).VENDOR_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                                            </h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e, '', 'cancel')}

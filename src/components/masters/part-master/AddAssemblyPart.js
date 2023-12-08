@@ -31,7 +31,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 

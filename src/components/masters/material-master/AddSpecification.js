@@ -22,7 +22,7 @@ import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next'
 
 class AddSpecification extends Component {

@@ -46,7 +46,7 @@ import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import Button from '../../layout/Button';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 
 const selector = formValueSelector('AddRMImport');

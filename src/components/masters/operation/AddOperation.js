@@ -32,7 +32,7 @@ import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import AddMoreOperation from './AddMoreOperation';
 import WarningMessage from '../../common/WarningMessage';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 

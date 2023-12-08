@@ -10,7 +10,7 @@ import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import { AcceptableFuelUOM } from '../../../config/masterData';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 

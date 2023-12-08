@@ -10,7 +10,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
 
@@ -94,14 +94,14 @@ class AddBOPCategory extends Component {
                                     <Col>
                                         <div className={'header-wrapper left'}>
                                             <h3>{isEditFlag ? 'Update BOP Category' : 'Add BOP Category'}
-                                            <Button
-                                            id="addBOP_Category_guide"
-                                            variant={"ml-2"}
-                                            className={`guide-bulb${showTour ? "-on" : ""}`}
-                                            onClick={() => {this.setState({showTour:!showTour})}}
-                                            title='Guide'
-                                           />
-                                            {showTour && <TourWrapper steps={Steps(t).BOP_DOMESTIC_CATEGORY_FORM} stepsEnable={true} start={showTour} onExit={() => {this.setState({showTour : false})}} />}
+                                                <Button
+                                                    id="addBOP_Category_guide"
+                                                    variant={"ml-2"}
+                                                    className={`guide-bulb${showTour ? "-on" : ""}`}
+                                                    onClick={() => { this.setState({ showTour: !showTour }) }}
+                                                    title='Guide'
+                                                />
+                                                {showTour && <TourWrapper steps={Steps(t).BOP_DOMESTIC_CATEGORY_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                                             </h3>
                                         </div>
                                         <div

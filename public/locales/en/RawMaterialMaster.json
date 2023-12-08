@@ -1,0 +1,72 @@
+{
+    "form": {
+        "form_zero_based": "Select Zero based Costing Head.",
+        "form_vendor_based": "Select Vendor based Costing Head.",
+        "form_customer_based": "Select Customer based Costing Head.",
+        "AddRMDomestic_TechnologyId_container": "Enter the Technology name.",
+        "AddRMDomestic_RawMaterialId_container": "Select Your Raw Material",
+        "addRMDomestic_RMToggle": "Add Your Raw Material from here",
+        "AddRMDomestic_RawMaterialGradeId": "Select Your RawMaterial GradeId",
+        "AddRMDomestic_RawMaterialSpecificationId_container": "Select Your Specification",
+        "AddRMDomestic_CategoryId_container": "Select Your CategoryId",
+        "AddRMDomestic_SourceSupplierPlantId_container": "Select Plant (Code) from the dropdown.",
+        "AddRMDomestic_UnitOfMeasurementId_container": "Select UOM from the dropdown.",
+        "AddRMDomestic_cutOffPrice": "Enter Your CutOffPrice",
+        "AddRMDomestic_BasicRateBaseCurrency": "Enter Your Basic Rate",
+        "AddRMDomestic_FreightCharge": "Enter Your Freight Cost",
+        "AddRMDomestic_ShearingCost": "Enter Your Shearing Cost",
+        "addRMDomestic_conditionToggle": "Add your Condition from here",
+        "AddRMDomestic_EffectiveDate": "Select Effective Date from the calendar.",
+        "AddRMDomestic_Remark": "Add remarks if necessary.",
+        "AddRMDomestic_uploadFiles": "Add attachements if necessary.",
+        "AddRMDomestic_Vendor": "Select Vendor Name from the dropdown.",
+        "addRMDomestic_vendorToggle": "Add Vendor from here",
+        "addRMDomestic_cancel": "Click here to reset the form and go-back to the grid page.",
+        "addRMDomestic_sendForApproval": "Click here to Send For Approval"
+    },
+    "addRawMaterialImport": {
+        "Add_rm_import_zero_based": "Select Zero based Costing Head.",
+        "Add_rm_import_vendor_based": "Select Vendor based Costing Head.",
+        "Add_rm_import_customer_based": "Select Customer based Costing Head.",
+        "AddRMImport_TechnologyId_container": "Enter the Technology name.",
+        "AddRMImport_RawMaterialId_container": "Select Your Raw Material",
+        "addRMImport_RMToggle": "Add Your Raw Material from here",
+        "AddRMImport_RawMaterialGradeId_container": "Select Your RawMaterial GradeId",
+        "AddRMImport_RawMaterialSpecificationId_container": "Select Your Specification",
+        "AddRMImport_CategoryId_container": "Select Your CategoryId",
+        "AddRMImport_SourceSupplierPlantId_container": "Select Plant (Code) from the dropdown.",
+        "AddRMImport_Vendor": "Select Vendor Name from the dropdown.",
+        "addRMImport_vendorToggle": "Add Vendor from here",
+        "AddRMImport_UnitOfMeasurementId_container": "Select UOM from the dropdown.",
+        "AddRMImport_Currency_container": "Select Your Currency",
+        "AddRMImport_EffectiveDate": "Select Effective Date from the calendar.",
+        "AddRMImport_cutOffPriceSelectedCurrency": "Enter Your CutOffPrice",
+        "AddRMImport_BasicRateSelectedCurrency": "Enter Your Basic Rate",
+        "AddRMImport_FreightChargeSelectedCurrency": "Enter Your Freight Cost",
+        "AddRMImport_ShearingCostSelectedCurrency": "Enter Your Shearing Cost",
+        "AddRMImport_Remark": "Add remarks if necessary.",
+        "AddRMImport_UploadFiles": "Add attachements if necessary.",
+        "addRMImport_cancel": "Click here to reset the form and go-back to the grid page.",
+        "addRMImport_sendForApproval": "Click here to Send For Approval"
+    },
+    "addRawMaterialSpecification": {
+        "AddSpecification_RawMaterialName_container": "Select Your Raw Material",
+        "AddSpecification_GradeId_container": "Select Your RawMaterial GradeId",
+        "AddSpecification_Specification": "Select Your Specification",
+        "rm-specification-cancel": "Click here to reset the form and go-back to the grid page.",
+        "rm-specification-submit": "Click here to Send For Approval"
+    },
+    "addRawMaterialAssociation": {
+        "Association_RawMaterialName_container": "Select Your Raw Material",
+        "Association_GradeId_container": "Select Your RawMaterial GradeId",
+        "Association_MaterialTypeId_container": "Select Your Raw Material Id",
+        "rmAssociation_cancel": "Click here to reset the form and go-back to the grid page.",
+        "rmAssociation_Save": "Click here to Save The Material"
+    },
+    "addMaterial": {
+        "AddMaterialType_MaterialType": "Enter Your Material",
+        "AddMaterialType_CalculatedDensityValue": "Enter Your Density",
+        "AddMaterialType_Cancel": "Click here to reset the form and go-back to the grid page.",
+        "AddMaterialType_Save": "Click here to Save The Material"
+    }
+}

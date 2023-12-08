@@ -43,7 +43,7 @@ import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 
 const selector = formValueSelector('AddBOPImport');
@@ -1274,15 +1274,15 @@ class AddBOPImport extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>
-                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import) 
+                          {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import)
                           <Button
-                                            id="addBOP_import_guide"
-                                            variant={"ml-2"}
-                                            className={`guide-bulb${showTour ? "-on" : ""}`}
-                                            onClick={() => {this.setState({showTour:!showTour})}}
-                                            title='Guide'
-                                           />  
-                          {showTour && <TourWrapper steps={Steps(t).BOP_Import_FORM} stepsEnable={true} start={showTour} onExit={() => {this.setState({showTour : false})}} />}
+                            id="addBOP_import_guide"
+                            variant={"ml-2"}
+                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            onClick={() => { this.setState({ showTour: !showTour }) }}
+                            title='Guide'
+                          />
+                          {showTour && <TourWrapper steps={Steps(t).BOP_IMPORT_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
                         </h1>
                       </div>
                     </div>

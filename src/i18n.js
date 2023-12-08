@@ -9,6 +9,11 @@ i18n
     .use(initReactI18next)
     .init({
         fallbackLng: 'en',
+        ns: ['common', 'RawMaterialMaster', 'BOPMaster', 'MachineMaster'],
+        defualtNS: 'common',
+        Backend: {
+            loadPath: '/locales/{{lng}}/{{ns}}.json'
+        },
         debug: false,
         interpolation: {
             escapeValue: false

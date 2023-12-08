@@ -47,7 +47,7 @@ import Button from '../../layout/Button';
 import AddConditionCosting from '../../costing/components/CostingHeadCosts/AdditionalOtherCost/AddConditionCosting';
 import { debounce } from 'lodash';
 import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from '../../common/Tour/TourMessages';
+import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next'
 
 const selector = formValueSelector('AddRMDomestic')
@@ -1476,7 +1476,7 @@ class AddRMDomestic extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1492,7 +1492,7 @@ class AddRMDomestic extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1508,7 +1508,7 @@ class AddRMDomestic extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -2427,5 +2427,5 @@ export default connect(mapStateToProps, {
     onSubmitFail: (errors) => {
       focusOnError(errors)
     },
-  })(withTranslation()(AddRMDomestic)),
+  })(withTranslation(['RawMaterialMaster'])(AddRMDomestic)),
 )
