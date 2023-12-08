@@ -803,10 +803,10 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="BasicRatePerUOM" headerName='Basic Rate'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapUnitOfMeasurement" headerName="Scrap UOM"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UOMToScrapUOMRatio" headerName="UOM To Scrap UOM Ratio" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapUnitOfMeasurement" headerName="Scrap Rate UOM"></AgGridColumn>}
+                                    {/* {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UOMToScrapUOMRatio" headerName="UOM To Scrap UOM Ratio" cellRenderer={"hyphenFormatter"}></AgGridColumn>} */}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="CalculatedFactor" headerName="Calculated Factor" cellRenderer={"hyphenFormatter"}></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapRatePerScrapUOM" headerName='Scrap Rate UOM'></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="ScrapRate"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="155" field="RMFreightCost" headerName='FreightCost' cellRenderer='freightCostFormatter'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="165" field="RMShearingCost" headerName='ShearingCost' cellRenderer='shearingCostFormatter'></AgGridColumn>}

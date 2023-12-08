@@ -2249,11 +2249,11 @@ class AddRMImport extends Component {
                                     className={`custom-checkbox mb-0`}
                                     onChange={onPressHasDifferentUOM}
                                   >
-                                    Has Different UOM
+                                    Has Different Scrap UOM ?
                                     <input
                                       type="checkbox"
                                       checked={this.state.IsApplyHasDifferentUOM}
-                                    // disabled={(CostingViewMode || IsLocked) ? true : false}          //CHECK THIS
+                                      disabled={(isViewFlag) ? true : false}
                                     />
                                     <span
                                       className=" before-box"
@@ -2280,7 +2280,7 @@ class AddRMImport extends Component {
                                   disabled={isEditFlag || isViewFlag}
                                 />
                               </Col>}
-                            {this.state.ScrapRateUOM?.value && <>
+                            {this.state.IsApplyHasDifferentUOM && this.state.ScrapRateUOM?.value && <>
                               <Col md="3">
                                 <Field
                                   label={`Conversion Ratio (${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'})`}
