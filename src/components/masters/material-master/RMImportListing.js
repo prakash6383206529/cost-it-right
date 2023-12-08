@@ -1010,6 +1010,10 @@ function RMImportListing(props) {
 
                       <AgGridColumn field="BasicRatePerUOM" headerName='BasicRate' cellRenderer='commonCostFormatter'></AgGridColumn>
                       <AgGridColumn field="BasicRatePerUOMConversion" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                      <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
+                      <AgGridColumn field="ScrapUnitOfMeasurement" cellRenderer='commonCostFormatter'></AgGridColumn>
+                      <AgGridColumn field="CalculatedFactor" cellRenderer='commonCostFormatter'></AgGridColumn>
+                      <AgGridColumn field="ScrapRatePerScrapUOM" cellRenderer='commonCostFormatter'></AgGridColumn>
                       <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                       <AgGridColumn field="ScrapRateInINR" headerName="Scrap Rate (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
                       {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
