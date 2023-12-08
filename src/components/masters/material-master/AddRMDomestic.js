@@ -1959,8 +1959,8 @@ class AddRMDomestic extends Component {
                             </Col>
 
                             <Col md="3">
-                              <div className="pl-3">
-                                <span className="d-inline-block">
+                              <div className="mt-3">
+                                <span className="d-inline-block mt15">
                                   <label
                                     className={`custom-checkbox mb-0`}
                                     onChange={onPressHasDifferentUOM}
