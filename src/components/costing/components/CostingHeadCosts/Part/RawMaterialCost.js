@@ -217,7 +217,8 @@ function RawMaterialCost(props) {
             RawMaterialCategory: el.Category,
             CutOffPrice: el.CutOffPrice,
             IsCutOffApplicable: el.IsCutOffApplicable,
-            MachiningScrapRate: el.MachiningScrapRate
+            MachiningScrapRate: el.MachiningScrapRate,
+            ScrapRatePerScrapUOM: el.ScrapRatePerScrapUOM
           }
         })
 
@@ -837,7 +838,7 @@ function RawMaterialCost(props) {
       if (Number(costData?.TechnologyId) === Number(MACHINING) && gridData?.some(material => material.UOM === 'Meter')) {
         tempData = {
           ...tempData,
-          NetLandedCost: weightData.RMPerPiece,
+          NetLandedCost: weightData.NetRM,
           WeightCalculatorRequest: weightData,
           WeightCalculationId: weightData.WeightCalculationId,
           RawMaterialCalculatorId: weightData.WeightCalculationId,
