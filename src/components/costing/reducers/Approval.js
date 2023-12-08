@@ -71,6 +71,7 @@ export default function ApprovalReducer(state = initialState, action) {
       let arr = action.payload && action.payload.map((item) => {
         item.NetPOPriceNew = checkForDecimalAndNull(item.NetPOPrice, getConfigurationKey()?.NoOfDecimalForPrice)
         item.OldPOPriceNew = checkForDecimalAndNull(item.OldPOPrice, getConfigurationKey()?.NoOfDecimalForPrice)
+        item.IsScrapUOMApply = item.IsScrapUOMApply === true ? 'Yes' : 'No'
         return item
       })
       return {
