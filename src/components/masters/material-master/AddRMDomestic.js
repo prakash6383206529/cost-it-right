@@ -2051,7 +2051,7 @@ class AddRMDomestic extends Component {
 
                             {showScrapKeys?.showScrap &&
                               <Col md="3">
-                                <TooltipCustom id="scrap-ate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />
+                                <TooltipCustom id="scrap-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />
                                 <Field
                                   label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                   name={"ScrapRateBaseCurrency"}
