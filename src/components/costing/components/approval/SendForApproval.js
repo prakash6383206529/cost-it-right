@@ -1036,7 +1036,7 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={disableRS || (!(userData.Department.length > 1) || Object.keys(approvalType).length === 0)}
+                          disabled={disableRS || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0)}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}

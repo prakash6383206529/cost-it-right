@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
-import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs'
+import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
@@ -28,7 +28,7 @@ function AddConditionCosting(props) {
     const [disableCurrency, setDisableCurrency] = useState(false)
 
 
-    const { register, control, setValue, getValues, formState: { errors }, } = useForm({
+    const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
@@ -62,8 +62,28 @@ function AddConditionCosting(props) {
 
     useEffect(() => {
         calculateCostPerQuantity()
-    }, [fieldValues])
 
+    }, [fieldValues])
+    const toggleCondition = () => {
+        // isFromImport ? type === 'Fixed' ? 'mb-3' : 'mt-4 pt-1' : type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'
+        let cssClass = '';
+        if (isFromImport) {
+            if (type === "") {
+                cssClass = 'mb-3';
+            } else if (type === "Fixed") {
+                cssClass = 'mb-3';
+            } else {
+                cssClass = 'mt-4 pt-1';
+            }
+        } else {
+            if (type === "Percentage") {
+                cssClass = 'mb-3';
+            } else {
+                cssClass = 'mt-4 pt-1';
+            }
+        }
+        return cssClass
+    }
     const onConditionChange = (e) => {
         setType(e?.ConditionType)
         setValue('Type', e?.ConditionType)
@@ -90,6 +110,7 @@ function AddConditionCosting(props) {
         }
     }
     const handleCostChangeCurrency = (e) => {
+        errors.CostBase = {}
         if (e?.target?.value) {
             const costBase = checkForNull(e.target.value) * checkForNull(currencyValue)
             setValue("CostBase", checkForDecimalAndNull(costBase, initialConfiguration.NoOfDecimalForPrice))
@@ -111,6 +132,7 @@ function AddConditionCosting(props) {
     }
 
     const handleCostChangeBase = (e) => {
+        errors.CostCurrency = {}
         if (e?.target?.value) {
             const costCurrency = checkForNull(e.target.value) / checkForNull(currencyValue)
             setValue("CostCurrency", checkForDecimalAndNull(costCurrency, initialConfiguration.NoOfDecimalForPrice))
@@ -152,7 +174,7 @@ function AddConditionCosting(props) {
             Toaster.warning("Please enter all details to add a row.");
             return false;
         }
-        if (errors.Percentage) return false;
+        if (errors.Percentage || errors.Quantity || errors.CostCurrency) return false;
 
         const newCondition = getValues('Condition') ? getValues('Condition') : null;
 
@@ -197,13 +219,6 @@ function AddConditionCosting(props) {
     };
 
     const resetData = () => {
-        setValue('Condition', '')
-        setValue('Type', '')
-        setValue('Percentage', '')
-        setValue('CostCurrency', '')
-        setValue('CostBase', '')
-        setValue('ConditionCostPerQuantity', '')
-        setValue('Quantity', '')
         setDisableAllFields(true)
         setDisableTotalCost(true)
         setTotalCostCurrency('')
@@ -211,6 +226,15 @@ function AddConditionCosting(props) {
         setIsEditMode(false)
         setType('')
         setEditIndex('')
+        reset({
+            Condition: '',
+            Type: '',
+            Percentage: '',
+            CostCurrency: '',
+            CostBase: '',
+            ConditionCostPerQuantity: '',
+            Quantity: '',
+        })
     }
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
@@ -278,7 +302,7 @@ function AddConditionCosting(props) {
             >
                 <div className={`ag-grid-react hidepage-size`}>
                     <Container className="add-bop-drawer">
-                        <div className={'drawer-wrapper layout-min-width-820px'}>
+                        <div className={'drawer-wrapper layout-min-width-1000px'}>
 
                             <Row className="drawer-heading">
                                 <Col className="pl-0">
@@ -294,7 +318,7 @@ function AddConditionCosting(props) {
                             <div className='hidepage-size'>
                                 <Row>
 
-                                    <Col md="3" className='pr-1'>
+                                    <Col md="3" className='px-2'>
                                         <SearchableSelectHookForm
                                             label={`Condition`}
                                             name={'Condition'}
@@ -312,7 +336,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         />
                                     </Col>
-                                    <Col md={3} className='px-1'>
+                                    <Col md={3} className='px-2'>
                                         <TextFieldHookForm
                                             label={`Type`}
                                             name={'Type'}
@@ -326,8 +350,8 @@ function AddConditionCosting(props) {
                                             disabled={true}
                                         />
                                     </Col>
-                                    {type === 'Quantity' && <Col md="3" className='px-1'>
-                                        <NumberFieldHookForm
+                                    {type === 'Quantity' && <Col md="3" className='px-2'>
+                                        <TextFieldHookForm
                                             label={`Quantity`}
                                             name={'Quantity'}
                                             Controller={Controller}
@@ -346,8 +370,8 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         />
                                     </Col>}
-                                    {type === 'Percentage' && <Col md={3} className='px-1'>
-                                        <NumberFieldHookForm
+                                    {type === 'Percentage' && <Col md={3} className='px-2'>
+                                        <TextFieldHookForm
                                             label={`Percentage (%)`}
                                             name={'Percentage'}
                                             Controller={Controller}
@@ -370,9 +394,9 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableAllFields}
                                         />
                                     </Col>}
-                                    <Col md={3} className={isFromImport ? "pl-1" : 'px-1'}>
+                                    <Col md={3} className={'px-2'}>
                                         {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
-                                        <NumberFieldHookForm
+                                        <TextFieldHookForm
                                             label={`Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
                                             name={'CostCurrency'}
                                             id={'cost-by-percent'}
@@ -392,12 +416,12 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                         />
                                     </Col>
-                                    {isFromImport && <Col md={3} className='pr-0'>
-                                        {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Rate'} />}
-                                        <NumberFieldHookForm
+                                    {isFromImport && <Col md={3} className='px-2'>
+                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-currency'} tooltipText={`Cost = Cost (${currency?.label}) * Currency (${currencyValue})`} />
+                                        <TextFieldHookForm
                                             label={`Cost (${initialConfiguration?.BaseCurrency})`}
                                             name={'CostBase'}
-                                            id={'cost-by-percent'}
+                                            id={'cost-by-currency'}
                                             Controller={Controller}
                                             control={control}
                                             register={register}
@@ -415,9 +439,9 @@ function AddConditionCosting(props) {
                                         />
                                     </Col>}
                                     {type === 'Quantity' && <>
-                                        <Col md={3} className='pr-0'>
+                                        <Col md={3} className='px-2'>
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost Per Quantity = Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) / Quantity`} />
-                                            <NumberFieldHookForm
+                                            <TextFieldHookForm
                                                 label={`Cost Per Quantity (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
                                                 name={'ConditionCostPerQuantity'}
                                                 id={'cost-per-quantity'}
@@ -432,9 +456,9 @@ function AddConditionCosting(props) {
                                                 disabled={true}
                                             />
                                         </Col>
-                                        {isFromImport && <Col md={3} className='pr-0'>
+                                        {isFromImport && <Col md={3} className='px-2'>
                                             <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost Per Quantity = Cost (${initialConfiguration?.BaseCurrency})  / Quantity`} />
-                                            <NumberFieldHookForm
+                                            <TextFieldHookForm
                                                 label={`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}
                                                 name={'CostPerQuantityConversion'}
                                                 id={'cost-per-quantity-coversion'}
@@ -451,7 +475,7 @@ function AddConditionCosting(props) {
                                         </Col>}
                                     </>
                                     }
-                                    <Col md="3" className={`${type === 'Percentage' ? 'mb-3' : 'mt-4 pt-1'}`}>
+                                    <Col md="3" className={toggleCondition()}>
                                         <button
                                             type="button"
                                             className={"user-btn  pull-left mt-1"}

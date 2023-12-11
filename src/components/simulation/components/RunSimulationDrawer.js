@@ -18,7 +18,7 @@ import { Fragment } from 'react';
 import { debounce } from 'lodash';
 import WarningMessage from '../../common/WarningMessage';
 import DatePicker from "react-datepicker";
-import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
+import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION, ASSEMBLY_TECHNOLOGY_MASTER } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -71,6 +71,7 @@ function RunSimulationDrawer(props) {
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    const showCheckBox = !(simulationApplicability?.value === APPLICABILITY_PART_SIMULATION)
 
     useEffect(() => {
         dispatch(getSelectListOfSimulationApplicability(() => { }))
@@ -240,7 +241,12 @@ function RunSimulationDrawer(props) {
         }
     }
 
-    const IsAvailable = (id) => { }
+    const IsAvailable = (id) => {
+        if (id === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) {
+            return true
+        }
+    }
+
 
     const checkForResponse = (res) => {
         setRunSimulationDisable(false)
@@ -290,18 +296,18 @@ function RunSimulationDrawer(props) {
         obj.IsFreight = Freight
         obj.IsPackaging = Packaging
         obj.IsBOPHandlingCharge = BOPHandlingCharge
-        obj.AdditionalOtherCostApplicability = otherCostApplicability.label
-        obj.AdditionalDiscountApplicability = discountCostApplicability.label
+        obj.AdditionalOtherCostApplicability = (inputOtherCost === true) ? ((toggleSwitchAdditionalOtherCOst === false) ? 'Fixed' : otherCostApplicability.label) : ''
+        obj.AdditionalDiscountApplicability = (inputAdditionalDiscount === true) ? ((toggleSwitchAdditionalDiscount === false) ? 'Fixed' : discountCostApplicability.label) : ''
         obj.IsAdditionalToolPercentage = toggleSwitchAdditionalTool
-        obj.AdditionalToolApplicability = toolCostApplicability.label
+        obj.AdditionalToolApplicability = (additionalTool === true) ? ((toggleSwitchAdditionalTool === false) ? 'Fixed' : toolCostApplicability.label) : ''
         obj.IsAdditionalTool = additionalTool
         obj.AdditionalToolValue = toggleSwitchAdditionalTool ? getValues("ToolPercent") : getValues("Tool")
         obj.IsAdditionalPackagingPercentage = toggleSwitchAdditionalPackaging
-        obj.AdditionalPackagingApplicability = packagingCostApplicability.label
+        obj.AdditionalPackagingApplicability = (additionalPackaging === true) ? ((toggleSwitchAdditionalPackaging === false) ? 'Fixed' : packagingCostApplicability.label) : ''
         obj.IsAdditionalPackaging = additionalPackaging
         obj.AdditionalPackagingValue = toggleSwitchAdditionalPackaging ? getValues("PackagingPercent") : getValues("Packaging")
         obj.IsAdditionalFreightPercentage = toggleSwitchAdditionalFreight
-        obj.AdditionalFreightApplicability = freightCostApplicability.label
+        obj.AdditionalFreightApplicability = (additionalFreight === true) ? ((toggleSwitchAdditionalFreight === false) ? 'Fixed' : freightCostApplicability.label) : ''
         obj.IsAdditionalFreight = additionalFreight
         obj.AdditionalFreightValue = toggleSwitchAdditionalFreight ? getValues("FreightPercent") : getValues("Freight")
         obj.IsApplyLatestExchangeRate = (selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : LatestExchangeRate
@@ -515,9 +521,10 @@ function RunSimulationDrawer(props) {
                                                 {
                                                     masterId !== Number(EXCHNAGERATE) && applicabilityHeadListSimulation && applicabilityHeadListSimulation.map((el, i) => {
                                                         if (el.Value === '0') return false;
+                                                        if (showCheckBox === false && (el?.Text !== "Additional Discount" && el?.Text !== "Additional Other Cost" && el?.Text !== "Latest Exchange Rate")) return false;
                                                         return (
-                                                            <Col md="6" className="mb-3 p-0 check-box-container">
-                                                                <div class={`custom-check1 d-inline-block drawer-side-input-other`} id={`applicability-checkbox_${i}`}>
+                                                            <Col md={`${showCheckBox ? '6' : '8'}`} className='mb-3 check-box-container p-0'>
+                                                                <div class={'custom-check1 d-inline-block drawer-side-input-other'} id={`afpplicability-checkbox_${i}`}>
                                                                     <label
                                                                         className="custom-checkbox mb-0"
                                                                         onChange={() => handleApplicabilityChange(el)}
@@ -527,13 +534,13 @@ function RunSimulationDrawer(props) {
                                                                             type="checkbox"
                                                                             value={"All"}
                                                                             disabled={(el.Text === "Discount And Other Cost" && disableDiscountAndOtherCost) || (el.Text === "Discount And Other Cost" && disableDiscountAndOtherCostSecond) || (el.Text === "Additional Discount" && disableAdditionalDiscount) || (el.Text === "Additional Other Cost" && disableAdditionalOtherCost) || (el.Text === "Packaging" && disablePackaging) || (el.Text === "Freight" && disableFreight) || (el.Text === "Tool" && disableTool) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE) ? true : false}
-                                                                            checked={IsAvailable(el.Value) || (el.Text === "Latest Exchange Rate" && selectedMasterForSimulation?.value === EXCHNAGERATE)}
+                                                                            checked={IsAvailable(el.Text)}
                                                                         />
 
 
                                                                         <span
                                                                             className=" before-box"
-                                                                            checked={IsAvailable(el.Value)}
+                                                                            checked={IsAvailable(el.Text)}
                                                                             onChange={() => handleApplicabilityChange(el)}
                                                                         />
                                                                     </label>

@@ -877,6 +877,7 @@ export const API = {
   updateBudget: `${BASE_URL}/master-budgeting/update`,
   bulkUploadBudgetMaster: `${BASE_URL}/master-budgeting/bulk-upload-for-budgeting`,
   masterApprovalRequestBySenderBudget: `${BASE_URL}/master-budgeting/master-send-to-approver-by-sender`,
+  deleteBudget: `${BASE_URL}/master-budgeting/delete-by-id`,
 
   //CLIENT MASTER
   createClient: `${BASE_URL}/client/create-client`,
@@ -1844,17 +1845,18 @@ export const COST_MOVEMENT_REPORT = 'Cost Movement'
 export const MASTER_BENCHMARK_REPORT = 'Master Benchmark'
 export const SUPPLIER_CONTRIBUTION_REPORT = 'Supplier Contribution'
 export const SALE_PROVISION_REPORT = 'Sale Provision'
+export const PURCHASE_PROVISION_REPORT = 'Purchase Provision'
 export const CUSTOMER_POAM_REPORT = 'Customer POAM Summary'
 export const BUDGETING = 'Budgeting'
-export const SALES_PROVISION_REPORT = 'Sales Provision Report'
-export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'
+export const SALES_PROVISION_FILE_NAME = 'Sales Provision Report'
+export const PURCHASE_PROVISION_FILE_NAME = 'Purchase Provision Report'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
 export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
 export const GOT_GIVEN_REPORT = "Got Given Report"
 export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
+export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
-export const CUSTOMER_POAM_IMPACT = "Customer Poam Impact"
 
 //export const SIMULATION_HISTORY = 'Simulation History'
 
@@ -2693,7 +2695,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.275";
+export const VERSION = "V2.1.282";
 
 
 

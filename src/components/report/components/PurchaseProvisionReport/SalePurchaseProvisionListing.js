@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Row, Col, } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import { EMPTY_DATA, PURCHASE_PROVISION_REPORT, SALES_PROVISION_REPORT } from '../../../../config/constants'
+import { EMPTY_DATA, SALES_PROVISION_FILE_NAME, PURCHASE_PROVISION_FILE_NAME } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getSalePurchaseProvisionReport } from '../../actions/ReportListing';
@@ -196,7 +196,7 @@ function SalePurchaseProvisionListing(props) {
         } else {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
         }
-        return (<ExcelSheet data={TempData} name={SALES_PROVISION_REPORT}>
+        return (<ExcelSheet data={TempData} name={SALES_PROVISION_FILE_NAME}>
             {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
@@ -219,7 +219,7 @@ function SalePurchaseProvisionListing(props) {
                         </div>
 
                         <div>
-                            <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_REPORT : PURCHASE_PROVISION_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                            <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_FILE_NAME : PURCHASE_PROVISION_FILE_NAME} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
                                 {renderColumn()}
                             </ExcelFile>
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
@@ -270,7 +270,7 @@ function SalePurchaseProvisionListing(props) {
                                                 {<AgGridColumn field="UnitOfMeasurement" headerName="UOM" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="OldRate" width="120" headerName="Existing Net Cost (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NewRate" width="120" headerName="Revised Net Cost (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
-                                                {<AgGridColumn field="Difference" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {<AgGridColumn field="Variance" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity (No.)" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="Impact" headerName="Impact" floatingFilter={true}></AgGridColumn>}
                                             </AgGridReact>

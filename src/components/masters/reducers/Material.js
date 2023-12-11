@@ -265,6 +265,7 @@ export default function materialReducer(state = initialState, action) {
                 item.RMShearingCost = checkForDecimalAndNull(item.RMShearingCost, getConfigurationKey()?.NoOfDecimalForPrice)
                 item.RMFreightCost = checkForDecimalAndNull(item.RMFreightCost, getConfigurationKey()?.NoOfDecimalForPrice)
                 item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.IsScrapUOMApply = item.IsScrapUOMApply === true ? 'Yes' : 'No'
                 return item.IsAVCCosting === false
             }
             )
@@ -295,6 +296,7 @@ export default function materialReducer(state = initialState, action) {
                 item.RMFreightCost = checkForDecimalAndNull(item.RMFreightCost, getConfigurationKey()?.NoOfDecimalForPrice)
                 item.NetLandedCost = checkForDecimalAndNull(item.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)
                 item.NetLandedCostConversion = checkForDecimalAndNull(item.NetLandedCostConversion, getConfigurationKey()?.NoOfDecimalForPrice)
+                item.IsScrapUOMApply = item.IsScrapUOMApply === true ? 'Yes' : 'No'
                 return item.IsAVCCosting === false
 
             }
@@ -378,6 +380,7 @@ export default function materialReducer(state = initialState, action) {
                     item.ScrapRate = checkForDecimalAndNull(item.ScrapRate, getConfigurationKey()?.NoOfDecimalForPrice)
                     item.RMFreightCost = checkForDecimalAndNull(item.RMFreightCost, getConfigurationKey()?.NoOfDecimalForPrice)
                     item.RMShearingCost = checkForDecimalAndNull(item.RMShearingCost, getConfigurationKey()?.NoOfDecimalForPrice)
+                    item.IsScrapUOMApply = item.IsScrapUOMApply === true ? 'Yes' : 'No'
                     return item
 
                 })

@@ -77,6 +77,10 @@ export const RMDomesticZBC = [
     { label: "SourceLocation", value: "SourceLocation" }, //NOUI
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
+    { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
+    { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
@@ -101,7 +105,11 @@ export const RMDomesticZBCTempData = [
         "Source": "Tata Steel",
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
-        "BasicRate": "500",
+        "BasicRate": "20",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -125,6 +133,10 @@ export const RMDomesticZBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "BasicRate": "500",
+        "IsScrapUOMApply": "No",
+        "ScrapUnitOfMeasurement": "-",
+        "UOMToScrapUOMRatio": "-",
+        "ScrapRatePerScrapUOM": "-",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -148,6 +160,10 @@ export const RMDomesticZBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "shot/stroke/Number",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -171,6 +187,10 @@ export const RMDomesticZBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -198,6 +218,10 @@ export const RMDomesticVBC = [
     { label: "SourceLocation", value: "SourceLocation" },
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
+    { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
+    { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
@@ -222,6 +246,10 @@ export const RMDomesticVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -244,6 +272,10 @@ export const RMDomesticVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -266,6 +298,10 @@ export const RMDomesticVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "shot/stroke/Number",
         "BasicRate": "500",
+        "IsScrapUOMApply": "No",
+        "ScrapUnitOfMeasurement": "-",
+        "UOMToScrapUOMRatio": "0",
+        "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -288,6 +324,10 @@ export const RMDomesticVBCTempData = [
         "SourceLocation": "Jamshedpur",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -317,6 +357,10 @@ export const RMImportZBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
+    { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
+    { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
@@ -337,6 +381,10 @@ export const RMDomesticCBCTempData = [
         "CustomerCode": "C-10008",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -356,6 +404,10 @@ export const RMDomesticCBCTempData = [
         "CustomerCode": "C-10008",
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -375,6 +427,10 @@ export const RMDomesticCBCTempData = [
         "CustomerCode": "C-10008",
         "UOM": "shot/stroke/Number",
         "BasicRate": "500",
+        "IsScrapUOMApply": "No",
+        "ScrapUnitOfMeasurement": "-",
+        "UOMToScrapUOMRatio": "0",
+        "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -394,6 +450,10 @@ export const RMDomesticCBCTempData = [
         "CustomerCode": "C-10008",
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -422,6 +482,10 @@ export const RMImportZBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -446,6 +510,10 @@ export const RMImportZBCTempData = [
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "No",
+        "ScrapUnitOfMeasurement": "-",
+        "UOMToScrapUOMRatio": "0",
+        "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -470,6 +538,10 @@ export const RMImportZBCTempData = [
         "UOM": "shot/stroke/Number",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -494,6 +566,10 @@ export const RMImportZBCTempData = [
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -513,6 +589,10 @@ export const RMDomesticCBC = [
     { label: "CustomerCode", value: "CustomerCode" }, //NOUI,*
     { label: "UOM", value: "UOM" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
+    { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
+    { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
@@ -541,6 +621,10 @@ export const RMImportVBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
+    { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
+    { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
@@ -566,6 +650,10 @@ export const RMImportVBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -589,6 +677,10 @@ export const RMImportVBCTempData = [
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "No",
+        "ScrapUnitOfMeasurement": "-",
+        "UOMToScrapUOMRatio": "0",
+        "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -612,6 +704,10 @@ export const RMImportVBCTempData = [
         "UOM": "shot/stroke/Number",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -635,6 +731,10 @@ export const RMImportVBCTempData = [
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -656,6 +756,10 @@ export const RMImportCBC = [
     { label: "UOM", value: "UOM" }, //*
     { label: "Currency", value: "Currency" }, //*
     { label: "BasicRate", value: "BasicRate" }, //*
+    { label: "IsScrapUOMApply", value: "IsScrapUOMApply", },
+    { label: "ScrapUnitOfMeasurement", value: "ScrapUnitOfMeasurement", },
+    { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
+    { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
     { label: "CutOffPrice", value: "CutOffPrice" }, //*
     { label: "FreightCost", value: "FreightCost" }, //*
@@ -678,6 +782,10 @@ export const RMImportCBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "Currency": "INR",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -698,6 +806,10 @@ export const RMImportCBCTempData = [
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "No",
+        "ScrapUnitOfMeasurement": "-",
+        "UOMToScrapUOMRatio": "0",
+        "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -718,6 +830,10 @@ export const RMImportCBCTempData = [
         "UOM": "shot/stroke/Number",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -738,6 +854,10 @@ export const RMImportCBCTempData = [
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "Currency": "USD",
         "BasicRate": "500",
+        "IsScrapUOMApply": "Yes",
+        "ScrapUnitOfMeasurement": "Kg",
+        "UOMToScrapUOMRatio": "10",
+        "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
         "FreightCost": "10",
@@ -4735,7 +4855,7 @@ export const BROACHING = 'Broaching'
 export const HARDFACING = 'Hard Facing'
 
 export const getTechnology = [1, 8, 2, 4, 20, 23, 14, 25]
-export const technologyForDensity = [1, 2, 25]
+export const technologyForDensity = [1, 2, 14, 25]
 export const getTechnologyForRecoveryPercent = [4, 6, 3, 5, 2]
 export const getTechnologyForSimulation = ['0', '1', '2', '3', '4', '5', '6', '7', '9', '10']
 export const IdForMultiTechnology = ['13', '10', '9']   //Assembly, Electrical Proprietary, Mechanical Proprietary
@@ -5011,6 +5131,27 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADRM = [
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
 ]
 
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADER = [
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "Part Type", value: "PartType" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor (Code)", value: "VendorName" },
+    { label: "Customer (Code)", value: "CustomerName" },
+    { label: "Plant (Code)", value: "PlantName" },
+    { label: "Existing Net PO Price Other Currency", value: "OldNetPOPriceOtherCurrency" },
+    { label: "Revised Net PO Price Other Currency", value: "NewNetPOPriceOtherCurrency" },
+    { label: "Existing Exchange Rate", value: "OldExchangeRate" },
+    { label: "Revised Exchange Rate", value: "NewExchangeRate" },
+    { label: "Variance (ER Cost)", value: "Variance" },
+    { label: "Existing Net Cost", value: "OldPOPrice" },
+    { label: "Revised Net Cost", value: "NewPOPrice" },
+    { label: "Variance (w.r.t. Existing)", value: "POVariance" },
+    { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
+]
+
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
 
     { label: "Costing Id", value: "CostingNumber" },
@@ -5273,6 +5414,10 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Net Condition Cost", value: "NetConditionCost", },
     { label: "Freight Cost", value: "RMFreightCost", },
     { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Has different Scrap Rate UOM", value: "IsScrapUOMApply", },
+    { label: "Scrap UOM", value: "ScrapUnitOfMeasurement", },
+    { label: "UOM To Scrap UOM Ratio", value: "UOMToScrapUOMRatio", },
+    { label: "Calculated Factor", value: "CalculatedFactor", },
     { label: "Machining Scrap Cost", value: "MachiningScrapRate", },
     { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
@@ -5308,6 +5453,10 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Freight Cost Conversion", value: "RawMaterialFreightCostConversion", },
     { label: "Shearing Cost", value: "RMShearingCost", },
     { label: "Shearing Cost Conversion", value: "RawMaterialShearingCostConversion", },
+    { label: "Has different Scrap Rate UOM", value: "IsScrapUOMApply", },
+    { label: "Scrap UOM", value: "ScrapUnitOfMeasurement", },
+    { label: "UOM To Scrap UOM Ratio", value: "UOMToScrapUOMRatio", },
+    { label: "Calculated Factor", value: "CalculatedFactor", },
     { label: "Machining Scrap Rate", value: "MachiningScrapRate", },
     { label: "Machining Scrap Rate Conversion", value: "MachiningScrapRateInINR", },
     { label: "Circle Scrap Cost", value: "JaliScrapCost", },

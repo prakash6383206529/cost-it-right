@@ -122,7 +122,6 @@ function Simulation(props) {
             dispatch(setTokenForSimulation([]))
         }
         return () => {
-            dispatch(setMasterForSimulation({ label: '', value: '' }))
             reactLocalStorage?.setObject('vendorData', [])
         }
     }, [])
@@ -491,7 +490,7 @@ function Simulation(props) {
             masterTemp = RMIMPORT
         } else if (master?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
             masterTemp = BOPIMPORT
-        } else if (master?.value === EXCHNAGERATE && simulationApplicability?.value === APPLICABILITY_PART_SIMULATION) {
+        } else {
             masterTemp = master?.value
         }
         let obj = {

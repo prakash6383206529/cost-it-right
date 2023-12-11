@@ -14,7 +14,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { loggedInUserId } from '../../../helper';
+import { loggedInUserId, userDetails } from '../../../helper';
 import Switch from "react-switch";
 import ScrollToTop from '../../common/ScrollToTop';
 
@@ -113,12 +113,12 @@ class RolesListing extends Component {
   */
   buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data
+    const userRoleCheck = userDetails()?.Role
     const { EditAccessibility, DeleteAccessibility } = this.state;
     return (
       <>
-        {!(rowData?.RoleName === 'RFQUser') && EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
+        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
         {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
       </>
     )

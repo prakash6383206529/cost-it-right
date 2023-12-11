@@ -88,6 +88,7 @@ export function runVerifySimulation(data, callback) {
                 callback(response);
             }
         }).catch((error) => {
+            callback(error);
             dispatch({ type: API_FAILURE });
             apiErrors(error);
         });

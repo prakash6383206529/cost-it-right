@@ -81,7 +81,6 @@ class AddMaterialType extends Component {
   * @description Used to Submit the form
   */
   onSubmit = debounce((values) => {
-    console.log('values: ', values);
     const { reset, ID, isEditFlag, initialValues } = this.props;
 
     if (isEditFlag) {

@@ -75,7 +75,7 @@ function AssemblySimulationListing(props) {
             }
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
             let maxDate = getMaxDate(multiTechnologyCostinig)
-            setMaxDate(maxDate)
+            setMaxDate(maxDate?.EffectiveDate)
         }
     }, [multiTechnologyCostinig])
 
@@ -99,7 +99,7 @@ function AssemblySimulationListing(props) {
             "MultiTechnologyCostings": tempArray,
             "TechnologyId": checkForNull(selectedTechnologyForSimulation?.value),
             "SimulationTechnologyId": checkForNull(selectedMasterForSimulation?.value),
-            "EffectiveDate": DayTime(effectiveDate),
+            "EffectiveDate": DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
             "LoggedInUserId": loggedInUserId(),
             "SimulationHeadId": props?.isCustomer ? CBCTypeId : VBCTypeId
         }

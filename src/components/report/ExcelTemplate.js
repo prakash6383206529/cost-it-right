@@ -20,7 +20,6 @@ export const CUSTOMER_POAM_EXCEL_TEMPLATE = [
     { label: 'Plant (Code)', value: 'PlantName', },
     { label: 'Customer (Code)', value: 'CustomerName', },
     { label: 'Product Category', value: 'GroupCode', },
-    { label: 'Part Description', value: 'PartDescription', },
     { label: 'Status of last Quarter II', value: 'LastQuarterQuantity', },
     { label: 'Sale Parts Quantity (No.)', value: 'TotalDispatchQuantity', },
     { label: 'Poam Received Quantity (No.)', value: 'TotalPOAMReceivedQuantity', },
@@ -112,11 +111,10 @@ export const GOT_GIVEN_EXCEL_TEMPLATE = [
     { label: 'Sub total', value: 'NewSubTotal' },
     { label: 'Total', value: 'Total' },
     { label: '', value: '' },
-    { label: '', value: '' },
     //GIVEN DETAILS
     { label: 'Vendor Name', value: 'givenVendorName' },
     { label: 'SAP Code', value: 'givenSAPCode' },
-    { label: 'Part Description', value: 'givenPartDescription' },
+    { label: 'Material Description', value: 'givenPartDescription' },
     { label: 'Type', value: 'givenPartType' },
     { label: 'GW', value: 'givenRawMaterialGrossWeight' },
     { label: 'RM Rate', value: 'givenRawMaterialRate' },
@@ -139,7 +137,6 @@ export const GOT_GIVEN_EXCEL_TEMPLATE = [
     { label: 'Sub total', value: 'givenNewSubTotal' },
     { label: 'Total', value: 'givenTotal' },
     { label: '', value: '' },
-    { label: '', value: '' },
     //VARIANCE
     { label: 'Variance', value: 'TotalDelta' },
     { label: 'Variance (%)', value: 'TotalDeltaPercentage' }
@@ -156,6 +153,22 @@ export const GOT_GIVEN_EXCEL_TEMPLATE_SUMMARY = [
     { label: '', value: '' },
     { label: 'Variance', value: 'NetPOPriceDelta' },
     { label: 'Variance (%)', value: 'NetPOPriceDeltaPercentage' },
+]
+export const CUSTOMER_POAM_IMPACT_EXCEL_TEMPLATE = [
+    { label: 'Customer (Code)', value: 'CustomerName', },
+    { label: 'Part no.', value: 'PartNumber', },
+    { label: 'Part Description', value: 'PartDescription', },
+    { label: 'Dispatch Quantity', value: 'TotalDispatchQuantity', },
+    { label: 'Total Impact', value: 'TotalImpact', },
+    { label: 'Purchase Doc', value: 'PurchaseDocumentNumber', },
+    { label: 'Poam status', value: 'POAMStatus', },
+    { label: 'Dispatch Quantity (No.)', value: 'DispatchQuantity', },
+    { label: 'Old Effective Date', value: 'FromDate', },
+    { label: 'New Effective Date', value: 'ToDate', },
+    { label: 'Old Rate (INR)', value: 'OldRate', },
+    { label: 'New Rate (INR)', value: 'NewRate', },
+    { label: 'Variance', value: 'Variance', },
+    { label: 'Impact', value: 'Impact', },
 ]
 // Excel download template for outsourcing
 export const OUTSOURCING_EXCEL_DOWNLOAD = [

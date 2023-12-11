@@ -35,8 +35,8 @@ function CustomerPoamListing(props) {
     useEffect(() => {
 
         let obj = {}
-        obj.FromDate = startDate ? DayTime(startDate).format('DD/MM/YYYY') : ''
-        obj.ToDate = endDate ? DayTime(endDate).format('DD/MM/YYYY') : ''
+        obj.FromDate = startDate ? DayTime(startDate).format('YYYY-MM-DD HH:mm:ss') : ''
+        obj.ToDate = endDate ? DayTime(endDate).format('YYYY-MM-DD HH:mm:ss') : ''
         obj.ShowLastQuarterData = costReportFormData?.includeQuarterData
 
         let sampleArray = []

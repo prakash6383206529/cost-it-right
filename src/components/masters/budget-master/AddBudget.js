@@ -49,7 +49,6 @@ function AddBudget(props) {
     const [tableData, setTableData] = useState([]);
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [BudgetId, setBudgetId] = useState('');
-    const [edit, setEdit] = useState(false);
     const [DataChanged, setDataChanged] = useState([]);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -91,7 +90,9 @@ function AddBudget(props) {
     const [partType, setPartType] = useState([]);
     const [partTypeList, setPartTypeList] = useState([])
     const [disableSendForApproval, setDisableSendForApproval] = useState(false);
+    const [disableCurrency, setDisableCurrency] = useState(true);
     const userMasterLevelAPI = useSelector((state) => state.auth.userMasterLevelAPI)
+    const isViewMode = props.data.isViewMode
 
     useEffect(() => {
 
@@ -255,6 +256,7 @@ function AddBudget(props) {
     const handleVendorName = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setVendorName(newValue)
+            setDisableCurrency(false)
         } else {
             setVendorName([])
         }
@@ -280,6 +282,9 @@ function AddBudget(props) {
     const handleFinancialYear = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setYear(newValue)
+            setDisableCurrency(false)
+            setValue('currency', '')
+            setCurrency([])
         } else {
             setYear([])
         }
@@ -292,6 +297,7 @@ function AddBudget(props) {
     const handleClient = (newValue, actionMeta) => {
         if (newValue && newValue !== '') {
             setClient(newValue)
+            setDisableCurrency(false)
         } else {
             setClient([])
         }
@@ -566,16 +572,17 @@ function AddBudget(props) {
 
             const finalYear = year?.label && year?.label?.slice(0, 4);
             let date = (`${finalYear}-04-01`);
-
-            dispatch(getExchangeRateByCurrency(newValue.label, costingTypeId, date, vendorName?.value, client?.value, true, res => {
-                if (res && res.data && res.data.Result) {
-                    let Data = res.data.Data;
-                    setCurrencyExchangeRate(Data.CurrencyExchangeRate)
-                    if (getValues('totalSum')) {
-                        setValue('totalSumCurrency', checkForDecimalAndNull((getValues('totalSum') / Data.CurrencyExchangeRate), getConfigurationKey().NoOfDecimalForPrice))
+            if (finalYear) {
+                dispatch(getExchangeRateByCurrency(newValue.label, costingTypeId, date, vendorName?.value, client?.value, true, res => {
+                    if (res && res?.data && res?.data?.Result && Object.keys(res?.data?.Data)?.length > 0) {
+                        let Data = res?.data?.Data;
+                        setCurrencyExchangeRate(Data.CurrencyExchangeRate)
+                        if (getValues('totalSum')) {
+                            setValue('totalSumCurrency', checkForDecimalAndNull((getValues('totalSum') / Data.CurrencyExchangeRate), getConfigurationKey().NoOfDecimalForPrice))
+                        }
                     }
-                }
-            }))
+                }))
+            }
         }
     }
 
@@ -701,13 +708,14 @@ function AddBudget(props) {
         obj.vendorId = vendorName.value
         obj.customerId = client.value
 
-        if (currency && currency.label) {
+        if (currency && currency.label && part.value) {
             dispatch(getApprovedPartCostingPrice(obj, (res) => {
+                let TotalSum = checkForNull(res?.data?.DataList[0]?.NetPOPrice) + checkForNull(totalSum)
                 setValue('currentPrice', checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
                 setCurrentPrice(checkForDecimalAndNull(res?.data?.DataList[0].NetPOPrice, getConfigurationKey().NoOfDecimalForInputOutput))
-                setTotalSum((res?.data?.DataList[0].NetPOPrice + totalSum) * (currencyExchangeRate))
-                setValue('totalSum', (res?.data?.DataList[0].NetPOPrice + totalSum))
-                setValue('totalSumCurrency', (res?.data?.DataList[0].NetPOPrice + totalSum) / (currencyExchangeRate))
+                setTotalSum(TotalSum * (currencyExchangeRate))
+                setValue('totalSum', TotalSum * (currencyExchangeRate))
+                setValue('totalSumCurrency', (TotalSum) / (currencyExchangeRate))
             }))
         }
     }
@@ -844,7 +852,7 @@ function AddBudget(props) {
                                                                 onClick={() =>
                                                                     onPressVendor(ZBCTypeId)
                                                                 }
-                                                                disabled={isEditFlag ? true : false}
+                                                                disabled={isViewMode ? true : false}
                                                             />{" "}
                                                             <span>Zero Based</span>
                                                         </Label>
@@ -858,7 +866,7 @@ function AddBudget(props) {
                                                                 onClick={() =>
                                                                     onPressVendor(VBCTypeId)
                                                                 }
-                                                                disabled={isEditFlag ? true : false}
+                                                                disabled={isViewMode ? true : false}
                                                             />{" "}
                                                             <span>Vendor Based</span>
                                                         </Label>
@@ -872,7 +880,7 @@ function AddBudget(props) {
                                                                 onClick={() =>
                                                                     onPressVendor(CBCTypeId)
                                                                 }
-                                                                disabled={isEditFlag ? true : false}
+                                                                disabled={isViewMode ? true : false}
                                                             />{" "}
                                                             <span>Customer Based</span>
                                                         </Label>}
@@ -901,7 +909,7 @@ function AddBudget(props) {
                                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                                         //validate={(role == null || role.length === 0) ? [required] : []}
                                                                         required={true}
-                                                                        disabled={isEditFlag ? true : false}
+                                                                        disabled={isViewMode ? true : false}
                                                                         handleChange={handlePlants}
                                                                         valueDescription={selectedPlants}
                                                                     />
@@ -922,11 +930,11 @@ function AddBudget(props) {
                                                                                 onChange={(e) => handleVendorName(e)}
                                                                                 value={vendorName}
                                                                                 noOptionsMessage={({ inputValue }) => inputValue.length < 3 ? MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN : "No results found"}
-                                                                                isDisabled={(isEditFlag) ? true : false}
+                                                                                isDisabled={(isViewMode) ? true : false}
                                                                                 onKeyDown={(onKeyDown) => {
                                                                                     if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                                                                 }}
-                                                                            //onBlur={() => onFocus(this)}
+                                                                                onBlur={() => setShowErrorOnFocus(true)}
                                                                             />
                                                                         </div>
                                                                     </div>
@@ -943,7 +951,7 @@ function AddBudget(props) {
                                                                         name="DestinationPlant"
                                                                         type="text"
                                                                         label={costingTypeId === VBCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}
-                                                                        errors={errors.Plant}
+                                                                        errors={errors.DestinationPlant}
                                                                         Controller={Controller}
                                                                         control={control}
                                                                         register={register}
@@ -956,7 +964,7 @@ function AddBudget(props) {
                                                                         //onKeyUp={(e) => this.changeItemDesc(e)}
                                                                         //validate={(role == null || role.length === 0) ? [required] : []}
                                                                         required={true}
-                                                                        disabled={isEditFlag ? true : false}
+                                                                        disabled={isViewMode ? true : false}
                                                                         handleChange={handlePlants}
                                                                         valueDescription={selectedPlants}
                                                                     />
@@ -983,7 +991,7 @@ function AddBudget(props) {
                                                                             options={renderListing("ClientList")}
                                                                             //onKeyUp={(e) => this.changeItemDesc(e)}
                                                                             //validate={(role == null || role.length === 0) ? [required] : []}
-                                                                            disabled={isEditFlag ? true : false}
+                                                                            disabled={isViewMode ? true : false}
                                                                             required={true}
                                                                             handleChange={handleClient}
                                                                             valueDescription={client}
@@ -1004,8 +1012,8 @@ function AddBudget(props) {
                                                                     options={renderListing('PartType')}
                                                                     mandatory={true}
                                                                     handleChange={handlePartTypeChange}
-                                                                    errors={errors.Part}
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    errors={errors.PartType}
+                                                                    disabled={isViewMode ? true : false}
                                                                 />
                                                             </Col>
                                                             <Col md="3">
@@ -1023,8 +1031,8 @@ function AddBudget(props) {
                                                                             onKeyDown={(onKeyDown) => {
                                                                                 if (onKeyDown.keyCode === SPACEBAR && !onKeyDown.target.value) onKeyDown.preventDefault();
                                                                             }}
-                                                                            isDisabled={(isEditFlag || partType.length === 0) ? true : false}
-                                                                            onBlur={() => setShowErrorOnFocus(true)}
+                                                                            isDisabled={(isViewMode || partType.length === 0) ? true : false}
+                                                                            onBlur={() => setShowErrorOnFocusPart(true)}
                                                                         />
                                                                         {((showErrorOnFocusPart && part.length === 0) || isPartNumberNotSelected) && <div className='text-help mt-1'>This field is required.</div>}
                                                                     </div>
@@ -1051,7 +1059,7 @@ function AddBudget(props) {
                                                                     //validate={(role == null || role.length === 0) ? [required] : []}
                                                                     required={true}
                                                                     handleChange={handleFinancialYear}
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    disabled={isViewMode ? true : false}
                                                                 />
 
                                                             </div>
@@ -1075,9 +1083,9 @@ function AddBudget(props) {
                                                                     //validate={(role == null || role.length === 0) ? [required] : []}
                                                                     required={true}
                                                                     handleChange={handleCurrencyChange}
-                                                                    disabled={isEditFlag ? true : false}
+                                                                    disabled={disableCurrency || isViewMode ? true : false}
                                                                 />
-                                                                <button className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isEditFlag ? true : false} >
+                                                                <button className='user-btn budget-tick-btn' type='button' onClick={getCostingPrice} disabled={isViewMode ? true : false} >
                                                                     <div className='save-icon' ></div>
                                                                 </button>
                                                             </div>
@@ -1142,18 +1150,18 @@ function AddBudget(props) {
                                                                     stopEditingWhenCellsLoseFocus={true}
                                                                 >
                                                                     <AgGridColumn field="Text" headerName="Net Cost" editable='false' pinned='left' cellStyle={{ 'font-size': '15px', 'font-weight': '500', 'color': '#3d4465' }} width={310} headerComponent={'costHeader'} ></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="April" headerName="April" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="May" headerName="May" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="June" headerName="June" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="July" headerName="July" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="August" headerName="August" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="September" headerName="September" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="October" headerName="October" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="November" headerName="November" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="December" headerName="December" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="January" headerName="January" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="February" headerName="February" cellRenderer='budgetedQuantity'></AgGridColumn>
-                                                                    <AgGridColumn width={115} field="March" headerName="March" cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="April" headerName="April" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="May" headerName="May" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="June" headerName="June" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="July" headerName="July" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="August" headerName="August" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="September" headerName="September" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="October" headerName="October" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="November" headerName="November" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="December" headerName="December" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="January" headerName="January" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="February" headerName="February" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
+                                                                    <AgGridColumn width={115} field="March" headerName="March" editable={isViewMode ? false : true} cellRenderer='budgetedQuantity'></AgGridColumn>
                                                                     <AgGridColumn width={130} field="Sum" headerName="Sum" cellRenderer='actualQuantity' editable={false} valueGetter='(Number(data.March?data.March:0) + Number(data.January?data.January:0) + Number(data.February?data.February:0)+ Number(data.April?data.April:0)+ Number(data.May?data.May:0)+ Number(data.June?data.June:0)+ Number(data.July?data.July:0)+ Number(data.August?data.August:0)+ Number(data.September?data.September:0)+ Number(data.October?data.October:0)+ Number(data.November?data.November:0)+ Number(data.December?data.December:0))'></AgGridColumn>
                                                                 </AgGridReact>
                                                             </div>
@@ -1161,7 +1169,7 @@ function AddBudget(props) {
                                                     </Col>
                                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <><Col md="8" className='mt-3'><div className="left-border mt-1">Costing Condition:</div></Col>
                                                         <Col md="4" className="text-right mt-3">
-                                                            <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }}>
+                                                            <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setConditionAcc(!conditionAcc) }} disabled={isViewMode ? true : false}>
                                                                 {conditionAcc ? (
                                                                     <i className="fa fa-minus" ></i>
                                                                 ) : (
@@ -1251,7 +1259,7 @@ function AddBudget(props) {
                                                     {!isFinalApprover ?
                                                         <button type="submit"
                                                             class="user-btn approval-btn save-btn mr5"
-                                                            disabled={setDisable || disableSendForApproval}
+                                                            disabled={setDisable || disableSendForApproval || isViewMode}
                                                         >
                                                             <div className="send-for-approval"></div>
                                                             {'Send For Approval'}
@@ -1260,7 +1268,7 @@ function AddBudget(props) {
                                                         <button
                                                             type="submit"
                                                             className="user-btn mr5 save-btn"
-                                                            disabled={setDisable || disableSendForApproval}
+                                                            disabled={setDisable || disableSendForApproval || isViewMode}
                                                         >
                                                             <div className={"save-icon"}></div>
                                                             {isEditFlag ? "Update" : "Save"}

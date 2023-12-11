@@ -873,7 +873,7 @@ class AddBOPDomestic extends Component {
         checkForNull(fieldsObj?.BasicRateBase) === checkForNull(DataToCheck?.BasicRate) && checkForNull(basicPriceBaseCurrency) === checkForNull(DataToCheck?.NetCostWithoutConditionCost) &&
         checkForNull(netLandedCostBaseCurrency) === checkForNull(DataToCheck?.NetLandedCost) && checkForNull(FinalConditionCostBaseCurrency) === checkForNull(DataToCheck?.NetConditionCost) && DropdownChanged) {
         this.setState({ isEditBuffer: true })
-        Toaster.warning('Please change data to send RM for approval')
+        Toaster.warning('Please change data to send BOP for approval')
         return false
       }
       //  ELSE: CHANGE

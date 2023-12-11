@@ -14,7 +14,7 @@ import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
-import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
+import { checkForNull, checkVendorPlantConfigurable, getCodeBySplitting, getNameBySplitting, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import { createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
@@ -267,8 +267,9 @@ function AddNfr(props) {
             return false;
         }
         let vendorList = vendorName && vendorName?.map((item) => {
-            item.vendorName = item?.label.split(" (")[0]
-            item.vendorCode = item?.label.split(" (")[1].slice(0, -1)
+            item.vendorName = getNameBySplitting(item?.label)
+            item.vendorCode = getCodeBySplitting(item?.label)
+            console.log('item: ', item);
             return item
         })
         const newCosting = {
@@ -296,8 +297,8 @@ function AddNfr(props) {
             return false
         }
         let vendorList = vendorName && vendorName?.map((item) => {
-            item.vendorName = item?.label.split(" (")[0]
-            item.vendorCode = item?.label.split(" (")[1].slice(0, -1)
+            item.vendorName = getNameBySplitting(item?.label)
+            item.vendorCode = getCodeBySplitting(item?.label)
             return item
         })
         let list = [...rowData]

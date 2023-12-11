@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Row, Col, } from 'reactstrap';
+import { Row, Col, Tooltip, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
@@ -50,6 +50,8 @@ function ERSimulation(props) {
     const [effectiveDate, setEffectiveDate] = useState('');
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false);
+    const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
+    const [showTooltip, setShowTooltip] = useState(false)
 
     const dispatch = useDispatch()
 
@@ -77,9 +79,11 @@ function ERSimulation(props) {
     }
 
     const effectiveDateFormatter = (props) => {
-        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '';
+        let cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (cell?.includes('T')) {
+            cell = DayTime(cell).format('DD/MM/YYYY')
+        }
+        return (!cell ? '-' : cell)
     }
 
     const newERFormatter = (props) => {
@@ -174,8 +178,6 @@ function ERSimulation(props) {
         resizable: true,
         filter: true,
         sortable: false,
-        headerCheckboxSelection: isFirstColumn,
-        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -187,6 +189,9 @@ function ERSimulation(props) {
         params.columnApi.getAllColumns().forEach(function (column) {
             allColumnIds.push(column.colId);
         });
+        setTimeout(() => {
+            setShowTooltip(true)
+        }, 100);
 
         // window.screen.width <= 1366 ? params.columnApi.autoSizeColumns(allColumnIds) : params.api.sizeColumnsToFit()
     };
@@ -205,18 +210,31 @@ function ERSimulation(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
+    const basicRatetooltipToggle = () => {
+        setBasicRateViewTooltip(!basicRateviewTooltip)
+    }
+
     const revisedBasicRateHeader = (props) => {
         return (
             <div className='ag-header-cell-label'>
-                <span className='ag-header-cell-text'>Revised{!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"basicRate-tooltip"}></i>} </span>
+                <span className='ag-header-cell-text'>Revised {!isImpactedMaster && <i className={`fa fa-info-circle tooltip_custom_right tooltip-icon mb-n3 ml-4 mt2 `} id={"exchangesdRate-tooltip"}></i>}</span>
             </div>
         );
     };
 
     const newRateFormatter = (props) => {
-        const cell = props?.value;
-        return cell ? cell : ''
-    };
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        checkForDecimalAndNull(row.NewCurrencyExchangeRate, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span id={`newCurrencyExchangeRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell ? Number(cell) : Number(row.CurrencyExchangeRate)} >{cell ? Number(cell) : Number(row.CurrencyExchangeRate)}</span>
+                }
+            </>
+        )
+    }
 
     const frameworkComponents = {
         effectiveDateRenderer: effectiveDateFormatter,
@@ -244,13 +262,24 @@ function ERSimulation(props) {
             setIsWarningMessageShow(true)
             return false
         }
+        let count = 0
+        let listData = []
+        list && list?.map((item) => {
+            if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
+                count = count + 1
+                listData.push(item)
+            }
+            return null
+        })
+        setShowTooltip(false)
 
-        if (selectedRowData.length === 0) {
-            Toaster.warning('Please select atleast one costing.')
+        if (count === 0) {
+            Toaster.warning("Please change the basic rate and proceed to the next page.")
             return false
         }
 
         setIsDisable(true)
+        setShowTooltip(false)
 
         dispatch(createMultipleExchangeRate(list, currencySelectList, effectiveDate, res => {
 
@@ -274,34 +303,23 @@ function ERSimulation(props) {
     }, 500)
 
     const selectRM = debounce(() => {
-        // let basicRateCount = 0
-        // list && list.map((li) => {
-        //     if (Number(li.BasicRate) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
-        //         basicRateCount = basicRateCount + 1
-        //     }
+        let count = 0
+        let listData = []
+        list && list?.map((item) => {
+            if (checkForNull(item?.NewCurrencyExchangeRate) !== checkForNull(item?.CurrencyExchangeRate)) {
+                count = count + 1
+                listData.push(item)
+            }
+            return null
+        })
+        setShowTooltip(false)
 
-        //     if (li.NewBasicrateFromPercentage === undefined || li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
-        //         if (!(basicRateCount === list.length)) {
-        //             li.NewBasicRate = li?.BasicRate
-        //             li.NewScrapRate = li?.ScrapRate
-        //             Toaster.warning('Scrap Rate should be less than Basic Rate')
-        //             return false
-        //         }
-        //     }
-        //     return null;
-        // })
-        // if (basicRateCount === list.length) {
-        //     Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
-        //     return false
-        // }
-
-
-        if (selectedRowData?.length === 0) {
-            Toaster.warning("Please select atleast one Exchange Rate")
+        if (count === 0) {
+            Toaster.warning("Please change the basic rate and proceed to the next page to select Raw Materials.")
             return false
         }
-        dispatch(setExchangeRateListBeforeDraft(selectedRowData))
-        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(list, 'Currency') }))
+        dispatch(setExchangeRateListBeforeDraft(listData))
+        dispatch(setFilterForRM({ costingHeadTemp: '', plantId: '', RMid: '', RMGradeid: '', Vendor: selectedVendorForSimulation?.label, VendorId: selectedVendorForSimulation?.value, CustomerId: selectedCustomerSimulation?.value, Currency: _.map(listData, 'Currency') }))
         if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
             setShowRMMasterList(true)
         } else {
@@ -338,6 +356,7 @@ function ERSimulation(props) {
         <div>
             {!showRMMasterList && !showBOPMasterList && <div className={`ag-grid-react`}>
 
+                {showTooltip && !isImpactedMaster && <Tooltip className="rfq-tooltip-left" placement={"top"} isOpen={basicRateviewTooltip} toggle={basicRatetooltipToggle} target={"exchangesdRate-tooltip"} >{"To edit revised exchange rate please double click on the field."}</Tooltip>}
                 {
 
                     (!showverifyPage && !showMainSimulation) &&
@@ -351,10 +370,10 @@ function ERSimulation(props) {
                                             <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                             <button type="button" className="user-btn float-right mr-1" title="Reset Grid" onClick={() => resetState()}>
                                                 <div className="refresh mr-0"></div></button>
-                                            <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
+                                            {isImpactedMaster && <ExcelFile filename={'Impacted Master Data'} fileExtension={'.xls'} element={
                                                 <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                 {onBtExport()}
-                                            </ExcelFile>
+                                            </ExcelFile>}
                                         </div>
                                         {!isImpactedMaster && <button type="button" id="simulation-back" className={"apply"} onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>}
                                     </div>
@@ -433,8 +452,7 @@ function ERSimulation(props) {
                                                     autoComplete={"off"}
                                                     disabledKeyboardNavigation
                                                     onChangeRaw={(e) => e.preventDefault()}
-                                                // minDate={new Date()}
-                                                // minDate={new Date(largestDate)}
+                                                    minDate={new Date(largestDate)}
                                                 />
                                             </div>
                                                 {isWarningMessageShow && <WarningMessage dClass={"error-message"} textClass={"pt-1"} message={"Please select effective date"} />}
