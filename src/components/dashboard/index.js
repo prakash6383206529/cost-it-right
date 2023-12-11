@@ -121,7 +121,7 @@ function Dashboard(props) {
                   <Row>
                     <Col md="8"><h3 className="mb-0">Amendments Approval Status</h3></Col>
                     <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc2(!acc2) }}>
+                      <button id="Dashboard_Simulation_Accordian" className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc2(!acc2) }}>
                         {acc2 ? (
                           <i className="fa fa-minus" ></i>
                         ) : (
@@ -142,7 +142,7 @@ function Dashboard(props) {
                   <Row>
                     <Col md="8"><h3 className="mb-0">Costings Approval Status</h3></Col>
                     <Col md="4" className="text-right">
-                      <button className="btn btn-small-primary-circle ml-1 " disabled={dashboardTabLock} type="button" onClick={() => { setAcc1(!acc1) }}>
+                      <button id="Dashboard_Costing_Accordian" className="btn btn-small-primary-circle ml-1 " disabled={dashboardTabLock} type="button" onClick={() => { setAcc1(!acc1) }}>
                         {acc1 ? (
                           <i className="fa fa-minus" ></i>
                         ) : (
@@ -164,7 +164,7 @@ function Dashboard(props) {
                     <Row>
                       <Col md="8"><h3 className="mb-0">Masters Approval Status</h3></Col>
                       <Col md="4" className="text-right">
-                        <button className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc3(!acc3) }}>
+                        <button id="Dashboard_Master_Accordian" className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc3(!acc3) }}>
                           {acc3 ? (
                             <i className="fa fa-minus" ></i>
                           ) : (
@@ -177,22 +177,22 @@ function Dashboard(props) {
                       <Col md="1" className="master-tabs px-0 p-relative"> <Nav tabs className="subtabs">
                         {dashboardTabLock && <div title={MESSAGES.LOADING_MESSAGE} className="disabled-overflow min-width"></div>}
                         {(CheckApprovalApplicableMaster(RM_MASTER_ID) && viewMastersObj.RM) && <NavItem>
-                          <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
+                          <NavLink id={`dashboard_RM_Masters_Approval`} className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                             RM
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(BOP_MASTER_ID) && viewMastersObj.BOP) && <NavItem>
-                          <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+                          <NavLink id={`dashboard_BOP_Masters_Approval`} className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                             BOP
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(OPERATIONS_ID) && viewMastersObj.operation) && <NavItem>
-                          <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                          <NavLink id={`dashboard_Operation_Masters_Approval`} className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                             Operation
                           </NavLink>
                         </NavItem>}
                         {(CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && viewMastersObj.machine) && <NavItem>
-                          <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
+                          <NavLink id={`dashboard_Machine_Masters_Approval`} className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                             Machine
                           </NavLink>
                         </NavItem>}
