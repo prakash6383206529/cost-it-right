@@ -889,5 +889,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(withTranslation()(AddIndivisualPart)),
+})(withTranslation(['PartMaster'])(AddIndivisualPart)),
 )

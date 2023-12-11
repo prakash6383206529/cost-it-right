@@ -185,4 +185,4 @@ export default connect(mapStateToProps, {
     onSubmitFail: errors => {
         focusOnError(errors);
     },
-})(withTranslation()(AddBOPCategory)));
+})(withTranslation(['BOPMaster'])(AddBOPCategory)));

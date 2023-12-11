@@ -1808,4 +1808,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(withTranslation()(AddBOPDomestic)));
+})(withTranslation(['BOPMaster'])(AddBOPDomestic)));

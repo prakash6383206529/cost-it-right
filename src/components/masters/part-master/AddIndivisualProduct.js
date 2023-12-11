@@ -741,5 +741,5 @@ export default connect(mapStateToProps, {
     form: 'AddIndivisualPart',
     enableReinitialize: true,
     touchOnChange: true
-})(withTranslation()(AddIndivisualProduct)),
+})(withTranslation(['PartMaster'])(AddIndivisualProduct)),
 )

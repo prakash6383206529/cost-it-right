@@ -1424,5 +1424,5 @@ export default connect(mapStateToProps, {
   },
   enableReinitialize: true,
   touchOnChange: true,
-})(withTranslation()(AddAssemblyPart)),
+})(withTranslation(['PartMaster'])(AddAssemblyPart)),
 )
