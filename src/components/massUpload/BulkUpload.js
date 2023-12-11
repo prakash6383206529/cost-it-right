@@ -301,7 +301,7 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(Vendor), fileHeads)
+                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(Vendor, '', '', true), fileHeads)
                             break;
                         case String(LABOURBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
