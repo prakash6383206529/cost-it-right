@@ -269,7 +269,6 @@ function AddNfr(props) {
         let vendorList = vendorName && vendorName?.map((item) => {
             item.vendorName = getNameBySplitting(item?.label)
             item.vendorCode = getCodeBySplitting(item?.label)
-            console.log('item: ', item);
             return item
         })
         const newCosting = {

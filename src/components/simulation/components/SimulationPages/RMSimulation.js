@@ -16,7 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { debounce } from 'lodash'
+import _, { debounce } from 'lodash'
 import { VBC, ZBC } from '../../../../config/constants';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import WarningMessage from '../../../common/WarningMessage';
@@ -25,6 +25,7 @@ import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import { APPLICABILITY_RM_SIMULATION, FORGING, RM_IMPACT_DOWNLOAD_EXCEl, RM_IMPACT_DOWNLOAD_EXCEl_IMPORT } from '../../../../config/masterData';
 import ReactExport from 'react-export-excel';
 import { createMultipleExchangeRate } from '../../../masters/actions/ExchangeRateMaster';
+import LoaderCustom from '../../../common/LoaderCustom';
 
 const gridOptions = {
 
@@ -56,6 +57,7 @@ function RMSimulation(props) {
     const [basicRateviewTooltip, setBasicRateViewTooltip] = useState(false)
     const [scrapRateviewTooltip, setScrapRateViewTooltip] = useState(false)
     const [isLoader, setIsLoader] = useState(false)
+    const [isScrapUOMApplyTemp, setIsScrapUOMApplyTemp] = useState(false)
     const { register, control, setValue, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -75,10 +77,23 @@ function RMSimulation(props) {
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
             setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
-        list && list?.map(item => {
-            item.NewBasicRate = item.BasicRatePerUOM
-            return null
-        })
+        setIsLoader(true)
+        let scrapUOMApplyList = _.map(list, 'IsScrapUOMApply')
+        setTimeout(() => {
+            if (scrapUOMApplyList?.includes("Yes")) {
+                setIsScrapUOMApplyTemp(true)
+                setIsLoader(false)
+            } else {
+                setIsScrapUOMApplyTemp(false)
+                setIsLoader(false)
+            }
+        }, 200);
+        if (!isImpactedMaster) {
+            list && list?.map(item => {
+                item.NewBasicRate = item.BasicRatePerUOM
+                return null
+            })
+        }
     }, [])
     useEffect(() => {
         if (list && list.length > 0) {
@@ -89,9 +104,7 @@ function RMSimulation(props) {
             }
             let maxDate = getMaxDate(tempList)
             setMaxDate(maxDate?.EffectiveDate)
-
         }
-
     }, [list])
 
     const setValueFunction = (check, tempList = []) => {
@@ -134,6 +147,8 @@ function RMSimulation(props) {
                     tempObj.PlantId = item.PlantId
                     tempObj.VendorId = item.VendorId
                     tempObj.Delta = 0
+                    tempObj.OldScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
+                    tempObj.NewScrapRatePerScrapUOM = item.NewScrapRatePerScrapUOM
                     tempArr.push(tempObj)
                 }
                 return null;
@@ -161,6 +176,8 @@ function RMSimulation(props) {
                 tempObj.PlantId = item.PlantId
                 tempObj.VendorId = item.VendorId
                 tempObj.Delta = 0
+                tempObj.OldScrapRatePerScrapUOM = 0
+                tempObj.NewScrapRatePerScrapUOM = 0
                 tempArr.push(tempObj)
 
                 return null;
@@ -344,7 +361,26 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewScrapRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''}`} title={cell && value ? Number(cell) : Number(row.ScrapRate)} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.IsScrapUOMApply === 'Yes' ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.ScrapRate)} >{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                }
+            </>
+        )
+    }
+    const newScrapRateUOMFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const newScrapRateInOldUOM = checkForDecimalAndNull(cell * row?.CalculatedFactor, getConfigurationKey().NoOfDecimalForPrice)
+        const value = beforeSaveCell(newScrapRateInOldUOM, props, "scrapRate")
+        if (value && !isImpactedMaster) {
+            row.NewScrapRate = newScrapRateInOldUOM
+            row.NewScrapRatePerScrapUOM = cell
+        }
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        checkForDecimalAndNull(row.NewScrapRatePerScrapUOM, getConfigurationKey().NoOfDecimalForPrice) :
+                        <span id={`newScrapRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row.IsScrapUOMApply === 'No' ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.ScrapRatePerScrapUOM)} >{cell && value ? Number(cell) : Number(row.ScrapRatePerScrapUOM)}</span>
                 }
             </>
         )
@@ -359,6 +395,21 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         row.OldScrapRate :
+                        <span title={cell && value ? Number(cell) : Number(row.ScrapRate)}>{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
+                }
+            </>
+        )
+    }
+
+    const oldScrapRateFormatterPerScrapUOM = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const value = beforeSaveCell(cell)
+        return (
+            <>
+                {
+                    isImpactedMaster ?
+                        row.OldScrapRatePerScrapUOM :
                         <span title={cell && value ? Number(cell) : Number(row.ScrapRate)}>{cell && value ? Number(cell) : Number(row.ScrapRate)}</span>
                 }
             </>
@@ -509,6 +560,28 @@ function RMSimulation(props) {
         return value
     }
 
+    const EditableCallbackForNewScrapRate = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if (rowData?.IsScrapUOMApply === 'No') {
+            value = false
+        } else {
+            value = true
+        }
+        return value
+    }
+
+    const EditableCallbackForNewScrapRateSecond = (props) => {
+        const rowData = props?.data;
+        let value = false
+        if (rowData?.IsScrapUOMApply === 'Yes') {
+            value = false
+        } else {
+            value = true
+        }
+        return value
+    }
+
     const ageValueGetterPer = (params) => {
         let row = params.data
         if (!row.Percentage) {
@@ -572,6 +645,7 @@ function RMSimulation(props) {
         costingHeadFormatter: costingHeadFormatter,
         CostFormatter: CostFormatter,
         newScrapRateFormatter: newScrapRateFormatter,
+        newScrapRateUOMFormatter: newScrapRateUOMFormatter,
         NewcostFormatter: NewcostFormatter,
         costFormatter: costFormatter,
         customNoRowsOverlay: NoContentFound,
@@ -587,7 +661,8 @@ function RMSimulation(props) {
         ageValueGetterPer: ageValueGetterPer,
         percentageFormatter: percentageFormatter,
         percentageHeader: percentageHeader,
-        nullHandler: props.nullHandler && props.nullHandler
+        nullHandler: props.nullHandler && props.nullHandler,
+        oldScrapRateFormatterPerScrapUOM: oldScrapRateFormatterPerScrapUOM
 
     };
 
@@ -602,6 +677,17 @@ function RMSimulation(props) {
 
         return valueReturn;
     };
+
+    const ageValueGetterScrapRate = (params) => {
+        let row = params.data
+        let valueReturn = ''
+        if (row.IsScrapUOMApply === 'Yes') {
+            valueReturn = checkForDecimalAndNull(row.NewScrapRatePerScrapUOM * row.CalculatedFactor, getConfigurationKey().NoOfDecimalForPrice)
+        } else {
+            valueReturn = row.NewScrapRate
+        }
+        return valueReturn
+    }
 
     const closePopUp = () => {
         setShowPopup(false)
@@ -730,8 +816,9 @@ function RMSimulation(props) {
 
                                     </div>
                                     <div className="ag-theme-material p-relative" style={{ width: '100%' }}>
+                                        {isLoader && <LoaderCustom />}
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
-                                        {list && !isLoader && <AgGridReact
+                                        {list && !isLoader ? <AgGridReact
                                             ref={gridRef}
                                             floatingFilter={true}
                                             style={{ height: '100%', width: '100%' }}
@@ -783,8 +870,10 @@ function RMSimulation(props) {
                                                 <AgGridColumn width={120} editable={EditableCallbackForPercentage} onCellValueChanged='cellChange' field="Percentage" colId='Percentage' valueGetter={ageValueGetterPer} cellRenderer='percentageFormatter' headerComponent={'percentageHeader'}></AgGridColumn>
                                             </AgGridColumn>}
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} marryChildren={true} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Scrap Rate (Currency)" : "Scrap Rate (INR)"}>
+                                                {isScrapUOMApplyTemp && <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} editable='false' cellRenderer='oldScrapRateFormatterPerScrapUOM' headerName="Existing (In Scrap UOM)" colId={isImpactedMaster ? "ScrapRatePerScrapUOM" : "ScrapRatePerScrapUOM"} ></AgGridColumn>}
+                                                {isScrapUOMApplyTemp && <AgGridColumn width={120} cellRenderer='newScrapRateUOMFormatter' field='NewScrapRatePerScrapUOM' headerName="Revised (In Scrap UOM)" colId={"NewScrapRatePerScrapUOM"} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRate}></AgGridColumn>}
                                                 <AgGridColumn width={120} field={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} editable='false' cellRenderer='oldScrapRateFormatter' headerName="Existing" colId={isImpactedMaster ? "OldScrapRate" : "ScrapRate"} ></AgGridColumn>
-                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" editable={!isImpactedMaster} headerComponent={'revisedScrapRateHeader'} ></AgGridColumn>
+                                                <AgGridColumn width={120} cellRenderer={'newScrapRateFormatter'} field="NewScrapRate" headerName="Revised" colId="NewScrapRate" valueGetter={ageValueGetterScrapRate} headerComponent={'revisedScrapRateHeader'} editable={isImpactedMaster ? false : EditableCallbackForNewScrapRateSecond} ></AgGridColumn>
                                             </AgGridColumn>
                                             {/* <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={"BOP Net Landed Cost Conversion"} marryChildren={true}>
                                                 <AgGridColumn width={120} field="OldRMNetLandedCostConversion" editable='false' cellRenderer={'hyphenFormatter'} headerName="Existing" colId='OldRMNetLandedCostConversion' suppressSizeToFit={true}></AgGridColumn>
@@ -808,7 +897,7 @@ function RMSimulation(props) {
                                             <AgGridColumn width={140} field="EffectiveDate" editable='false' cellRenderer={'effectiveDateFormatter'} headerName={props.isImpactedMaster && !props.lastRevision ? "Current Effective date" : "Effective Date"} ></AgGridColumn>
                                             <AgGridColumn field="RawMaterialId" hide></AgGridColumn>
 
-                                        </AgGridReact>}
+                                        </AgGridReact> : <></>}
 
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
                                     </div>
