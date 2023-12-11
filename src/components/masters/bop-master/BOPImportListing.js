@@ -77,7 +77,9 @@ class BOPImportListing extends Component {
             dataCount: 0,
             attachment: false,
             viewAttachment: [],
-            editSelectedList: false
+            editSelectedList: false,
+            tempList: []
+
         }
     }
 
@@ -570,7 +572,12 @@ class BOPImportListing extends Component {
         const { handleSubmit, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
         const { isBulkUpload, noData, editSelectedList } = this.state;
         const ExcelFile = ReactExport.ExcelFile;
-        const netCostHeader = `Net Cost (${initialConfiguration?.BaseCurrency})`
+        const headerNames = {
+            BasicRate: `Basic Rate (${initialConfiguration?.BaseCurrency})`,
+            BasicPrice: `Basic Price (${initialConfiguration?.BaseCurrency})`,
+            NetConditionCost: `Net Condition Cost (${initialConfiguration?.BaseCurrency})`,
+            NetCost: `Net Cost (${initialConfiguration?.BaseCurrency})`,
+        }
 
         var filterParams = {
             date: "",
@@ -706,7 +713,7 @@ class BOPImportListing extends Component {
         }
 
         const editSelectedData = () => {
-            this.setState({ editSelectedList: true })
+            this.setState({ editSelectedList: true, tempList: this.state.gridApi?.getSelectedRows() ? this.state.gridApi?.getSelectedRows() : [] })
         }
 
         const backToSimulation = (value) => {
@@ -836,22 +843,21 @@ class BOPImportListing extends Component {
                                                 {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                                                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                                                <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
                                                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                                                 <AgGridColumn field="Currency"></AgGridColumn>
 
-                                                <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                                                <AgGridColumn field="BasicRateConversion" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="BasicRate" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="BasicRateConversion" headerName={headerNames?.BasicRate} cellRenderer={'commonCostFormatter'}></AgGridColumn>
 
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName="Basic Price (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && !this.props?.isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && !this.props?.isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer={'commonCostFormatter'}></AgGridColumn>}
 
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
-                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCostConversion" headerName="Net Condition Cost (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && !this.props?.isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>}
+                                                {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((this.props.isMasterSummaryDrawer && this.props.bopImportList[0]?.CostingTypeId === ZBCTypeId) || !this.props.isMasterSummaryDrawer) && !this.props?.isFromVerifyPage && <AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer={'commonCostFormatter'}></AgGridColumn>}
 
                                                 <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
-                                                <AgGridColumn field="NetLandedCostConversion" headerName={netCostHeader} cellRenderer={'commonCostFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                                 {(!this.props.isSimulation && !this.props.isMasterSummaryDrawer) && <AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                                 {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
@@ -932,7 +938,7 @@ class BOPImportListing extends Component {
                         backToSimulation={backToSimulation}
                         // isbulkUpload={isbulkUpload}
                         // rowCount={rowCount}
-                        list={this.state.gridApi.getSelectedRows() ? this.state.gridApi.getSelectedRows() : []}
+                        list={this.state?.tempList ? this.state?.tempList : []}
                         // technology={technology.label}
                         // technologyId={technology.value}
                         // master={master.label}

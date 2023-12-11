@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label } from 'reactstrap';
-import { required, getVendorCode, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, maxLength512, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
+import { required, getCodeBySplitting, number, maxPercentValue, checkWhiteSpaces, percentageLimitValidation, maxLength512, acceptAllExceptSingleSpecialCharacter } from "../../../helper/validation";
 import { searchableSelect, renderTextAreaField, renderDatePicker, renderMultiSelectField, renderText } from "../../layout/FormInputs";
 import { fetchModelTypeAPI, fetchCostingHeadsAPI, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import {
@@ -820,7 +820,7 @@ class AddOverhead extends Component {
         OverheadRMPercentage: values.OverheadRMPercentage,
         Remark: remarks,
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '',
+        VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         OverheadApplicabilityId: overheadAppli.value,
         ModelTypeId: ModelType.value,
@@ -863,7 +863,7 @@ class AddOverhead extends Component {
         OverheadRMPercentage: !isRM ? values.OverheadRMPercentage : '',
         Remark: remarks,
         VendorId: costingTypeId === VBCTypeId ? vendorName.value : '',
-        VendorCode: costingTypeId === VBCTypeId ? getVendorCode(vendorName.label) : '',
+        VendorCode: costingTypeId === VBCTypeId ? getCodeBySplitting(vendorName.label) : '',
         CustomerId: costingTypeId === CBCTypeId ? client.value : '',
         OverheadApplicabilityId: overheadAppli.value,
         ModelTypeId: ModelType.value,

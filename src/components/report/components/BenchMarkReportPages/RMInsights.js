@@ -396,7 +396,7 @@ function Insights(props) {
 
             arr.push({
                 RawMaterialId: item.RawMaterialId,
-                RawMaterialName: item.RawMaterial,
+                RawMaterialName: item.RawMaterialName,
                 TechnologyId: item.TechnologyId
             })
             return arr

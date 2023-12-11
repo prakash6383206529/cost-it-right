@@ -33,9 +33,9 @@ function ConditionCosting(props) {
                                 {<th>{`Type`}</th>}
                                 {<th>{`Percentage (%)`}</th>}
                                 {<th>{`Quantity`}</th>}
-                                {isFromImport && <th>{`Cost (${currency?.label})`}</th>}
-                                {<th>{`Cost (${initialConfiguration?.BaseCurrency})`}</th>}
-                                {isFromImport && <th>{`Cost Per Quantity (${currency?.label})`}</th>}
+                                {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost (${currency?.label})`}</th>}
+                                {<th style={{ minWidth: '100px' }}>{`Cost (${initialConfiguration?.BaseCurrency})`}</th>}
+                                {isFromImport && <th style={{ minWidth: '100px' }}>{`Cost Per Quantity (${currency?.label})`}</th>}
                                 {<th>{`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}</th>}
                                 {!props.hideAction && <th className='text-right'>{`Action`}</th>}
 
@@ -70,10 +70,10 @@ function ConditionCosting(props) {
                                 </tr>
                             )}
                             <tr className='table-footer'>
-                                <td colSpan={4} className="text-right">{`Total Cost :`}</td>
-                                <td colSpan={isFromImport ? 3 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`} {isFromImport && <span className='text-right'>{`Total Cost :`}</span>}</div></td>
+                                <td colSpan={4} className="text-right font-weight-600 fw-bold">{`Total Cost :`}</td>
+                                <td colSpan={isFromImport ? 1 : 3}><div className='d-flex justify-content-between'>{checkForDecimalAndNull(totalCostCurrency, initialConfiguration.NoOfDecimalForPrice)} {`(${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}</div></td>
                                 {isFromImport && <>
-                                    <td colSpan={2} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({initialConfiguration?.BaseCurrency})</td>
+                                    <td colSpan={4} className="text-left"> {checkForDecimalAndNull(totalCostBase, initialConfiguration.NoOfDecimalForPrice)} ({initialConfiguration?.BaseCurrency})</td>
                                 </>}
                             </tr>
                         </tbody>

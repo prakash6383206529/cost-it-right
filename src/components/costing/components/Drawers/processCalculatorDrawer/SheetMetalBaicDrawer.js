@@ -283,23 +283,24 @@ function SheetMetalBaicDrawer(props) {
               <div className="border pl-3 pr-3 pt-3">
 
                 <Row className={'mt15'}>
-                  <Col md="4">
-                    <NumberFieldHookForm
-                      label={`Tonnage(T)`}
-                      name={'MachineTonnage'}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      handleChange={() => { }}
-                      defaultValue={MachineTonnage}
-                      className=""
-                      customClassName={'withBorder'}
-                      errors={errors.MachineTonnage}
-                      disabled={true}
-                    />
-                  </Col>
-                  {(ProcessName === 'Extrusion') &&
+                  {!(ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME) &&
+                    <Col md="4">
+                      <NumberFieldHookForm
+                        label={`Tonnage(T)`}
+                        name={'MachineTonnage'}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        handleChange={() => { }}
+                        defaultValue={MachineTonnage}
+                        className=""
+                        customClassName={'withBorder'}
+                        errors={errors.MachineTonnage}
+                        disabled={true}
+                      />
+                    </Col>}
+                  {((ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME)) &&
                     <>
                       <Col md="4">
                         <TextFieldHookForm
@@ -375,7 +376,7 @@ function SheetMetalBaicDrawer(props) {
                   {
                     hide &&
                     <Col md="4">
-                      {ProcessName === "Extrusion" && <TooltipCustom tooltipClass='cycle-time' disabledIcon={true} id={'cycle-time'} tooltipText={'(60/Extrusion Speed * Part Length (mm))/1000 * Efficiency'} />}
+                      {(ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME) && <TooltipCustom tooltipClass='cycle-time' disabledIcon={true} id={'cycle-time'} tooltipText={'(60/Extrusion Speed * Part Length (mm))/1000 * Efficiency'} />}
                       <NumberFieldHookForm
                         label={`Cycle Time(sec)`}
                         name={'CycleTime'}
@@ -396,7 +397,7 @@ function SheetMetalBaicDrawer(props) {
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.CycleTime}
-                        disabled={props.CostingViewMode || ProcessName === 'Extrusion' ? true : false}
+                        disabled={props.CostingViewMode || (ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME) ? true : false}
                       />
                     </Col>
                   }

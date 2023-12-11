@@ -322,7 +322,7 @@ function Coil(props) {
                                         mandatory={true}
                                         rules={{
                                             required: true,
-                                            validate: { nonZero, number, checkWhiteSpaces, decimalAndNumberValidation },
+                                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                                         }}
                                         handleChange={() => { }}
                                         defaultValue={''}

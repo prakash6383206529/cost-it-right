@@ -65,17 +65,20 @@ export default function ReportListingReducers(state = initialState, action) {
 
         case GET_BENCHMARK_MASTER_LIST:
             return {
+                ...state,
                 loading: false,
                 BenchmarkList: action.payload
 
             }
         case GET_COST_RATIO_REPORT:
             return {
+                ...state,
                 loading: false,
                 costRatioReportList: action.payload
             }
         case GET_REPORT_FORM_GRID_DATA:
             return {
+                ...state,
                 loading: false,
                 costReportFormGridData: action.payload
             }

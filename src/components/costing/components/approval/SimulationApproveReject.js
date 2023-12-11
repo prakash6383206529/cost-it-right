@@ -54,7 +54,7 @@ function SimulationApproveReject(props) {
   const [disableReleaseStrategy, setDisableReleaseStrategy] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
-  const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+  const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -74,13 +74,13 @@ function SimulationApproveReject(props) {
         setDataFromReleaseStrategy(releaseStrategyDetails, dataInFieldTemp)
       }
     }))
-    let technologyId = selectedTechnologyForSimulation?.value
+    let technologyId = selectedMasterForSimulation?.value
     if (IsExchangeRateSimulation) {
-      if (String(selectedTechnologyForSimulation?.value) === String(RMIMPORT) || String(selectedTechnologyForSimulation?.value) === String(BOPIMPORT)) {
+      if (String(selectedMasterForSimulation?.value) === String(RMIMPORT) || String(selectedMasterForSimulation?.value) === String(BOPIMPORT)) {
         technologyId = EXCHNAGERATE
       }
     } else {
-      technologyId = selectedTechnologyForSimulation?.value
+      technologyId = selectedMasterForSimulation?.value
     }
     dispatch(getUsersSimulationTechnologyLevelAPI(loggedInUserId(), technologyId, (res) => {
       if (res?.data?.Data) {
@@ -525,6 +525,10 @@ function SimulationApproveReject(props) {
     }
   }
 
+  const fileDataCallback = (fileList) => {
+    setFiles(fileList)
+  }
+
   return (
     <>
       <ApproveRejectUI
@@ -555,6 +559,7 @@ function SimulationApproveReject(props) {
         showMessage={showMessage}
         isDisable={isDisable}
         disableReleaseStrategy={disableReleaseStrategy}
+        fileDataCallback={fileDataCallback}
       />
 
       {

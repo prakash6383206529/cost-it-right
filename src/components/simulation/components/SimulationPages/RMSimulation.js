@@ -75,13 +75,20 @@ function RMSimulation(props) {
             setValue('NoOfRowsWithoutChange', rowCount.NoOfRowsWithoutChange)
             setTitleObj(prevState => ({ ...prevState, rowWithChanges: rowCount.correctRow, rowWithoutChanges: rowCount.NoOfRowsWithoutChange }))
         }
+        list && list?.map(item => {
+            item.NewBasicRate = item.BasicRatePerUOM
+            return null
+        })
     }, [])
     useEffect(() => {
         if (list && list.length > 0) {
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
-
-            let maxDate = getMaxDate(list)
-            setMaxDate(maxDate)
+            let tempList = [...list]
+            if (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION) {
+                tempList = [...exchangeRateListBeforeDraft]
+            }
+            let maxDate = getMaxDate(tempList)
+            setMaxDate(maxDate?.EffectiveDate)
 
         }
 
@@ -177,7 +184,7 @@ function RMSimulation(props) {
             setIsDisable(false)
 
             if (res?.data?.Result) {
-                setToken(res.data.Identity)
+                setToken(res?.data?.Identity)
                 setShowVerifyPage(true)
             }
         }))
@@ -205,7 +212,7 @@ function RMSimulation(props) {
                 if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                     isScrapRateGreaterThanBasiRate = true
                 }
-                if (isScrapRateGreaterThanBasiRate && !(basicRateCount === list.length)) {
+                if (isScrapRateGreaterThanBasiRate && !(Number(basicRateCount) === Number(list.length))) {
                     li.NewBasicRate = li?.BasicRate
                     li.NewScrapRate = li?.ScrapRate
                     Toaster.warning('Scrap Rate should be less than Basic Rate')

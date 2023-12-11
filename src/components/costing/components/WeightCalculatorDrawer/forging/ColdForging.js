@@ -4,11 +4,8 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
 import Toaster from '../../../../common/Toaster'
 import { saveRawMaterialCalculationForForging } from '../../../actions/CostWorking'
-import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
-import {
-  postiveNumber, maxPercentValue
-} from "../../../../../helper/validation"
+import { TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { number, checkWhiteSpaces, decimalAndNumberValidation, percentageLimitValidation, decimalNumberLimit } from "../../../../../helper/validation"
 import {
   checkForDecimalAndNull,
   checkForNull,
@@ -103,7 +100,8 @@ function ColdForging(props) {
 
     const finishedWeight = checkForNull(getValues('finishedWeight'))
     const forgedWeight = checkForNull(finishedWeight) + checkForNull(totalMachiningStock)
-    const machiningScrapWeight = forgedWeight - finishedWeight
+    const machiningScrapRecoveryPercent = checkForNull(getValues('machiningScrapRecoveryPercent'))
+    const machiningScrapWeight = (forgedWeight - finishedWeight) * machiningScrapRecoveryPercent / 100
     let obj = dataSend
     obj.forgedWeight = forgedWeight
     obj.machiningScrapWeight = machiningScrapWeight
@@ -190,7 +188,8 @@ function ColdForging(props) {
     const EndBitLoss = checkForNull(dataSend.EndBitLoss)
     const tolerance = checkForNull(getValues('tolerance'))
     const TotalInputWeight = checkForNull(forgedWeight) + checkForNull(lostWeight) + checkForNull(EndBitLoss) + tolerance
-    const ForgingScrapWeight = TotalInputWeight - forgedWeight
+    const forgingScrapRecoveryPercent = checkForNull(getValues('forgingScrapRecoveryPercent'))
+    const ForgingScrapWeight = (TotalInputWeight - forgedWeight) * forgingScrapRecoveryPercent / 100
     let obj = dataSend
     obj.TotalInputWeight = TotalInputWeight
     obj.ForgingScrapWeight = ForgingScrapWeight
@@ -205,16 +204,10 @@ function ColdForging(props) {
    *
    */
   const calculateScrapWeight = () => {
-    const TotalInputWeight = checkForNull(dataSend.TotalInputWeight)
-    const finishedWeight = checkForNull(getValues('finishedWeight'))
-    if (!finishedWeight || !TotalInputWeight) {
-      return ''
-    }
+    const ForgingScrapWeight = Number((getValues('forgingScrapWeight')))
+    const MachiningScrapWeight = Number(getValues('machiningScrapWeight'))
 
-    let ScrapWeight = 0
-    if (TotalInputWeight > finishedWeight) {
-      ScrapWeight = TotalInputWeight - finishedWeight
-    }
+    let ScrapWeight = ForgingScrapWeight + MachiningScrapWeight
     let obj = dataSend
     obj.ScrapWeight = ScrapWeight
     setDataSend(obj)
@@ -231,8 +224,8 @@ function ColdForging(props) {
     const forgingScrapRecoveryPercent = checkForNull(getValues('forgingScrapRecoveryPercent'))
     const machiningScrapRecoveryPercent = checkForNull(getValues('machiningScrapRecoveryPercent'))
 
-    const forgingScrapCost = (forgingScrapWeight * forgingScrapRecoveryPercent) / 100
-    const machiningScrapCost = (machiningScrapWeight * machiningScrapRecoveryPercent) / 100
+    const forgingScrapCost = ((forgingScrapWeight * forgingScrapRecoveryPercent) / 100) * rmRowData?.ScrapRate
+    const machiningScrapCost = ((machiningScrapWeight * machiningScrapRecoveryPercent) / 100) * rmRowData?.MachiningScrapRate
     const ScrapCost = forgingScrapCost + machiningScrapCost
     let obj = dataSend
     obj.ScrapCost = ScrapCost
@@ -423,7 +416,7 @@ function ColdForging(props) {
                   <Col md="12">
                     <Row>
                       <Col md="3">
-                        <NumberFieldHookForm
+                        <TextFieldHookForm
                           label={`Finished Weight(kg)`}
                           name={'finishedWeight'}
                           Controller={Controller}
@@ -432,11 +425,7 @@ function ColdForging(props) {
                           mandatory={true}
                           rules={{
                             required: true,
-                            pattern: {
-                              value: /^\d{0,4}(\.\d{0,7})?$/i,
-                              message: 'Maximum length for integer is 4 and for decimal is 7',
-                            },
-
+                            validate: { number, checkWhiteSpaces, decimalAndNumberValidation },
                           }}
                           handleChange={handleFinishWeight}
                           defaultValue={''}
@@ -465,7 +454,7 @@ function ColdForging(props) {
 
                 <Col md="3" className='mt10 px-0'>
                   <TooltipCustom disabledIcon={true} id={'forged-weight'} tooltipText={'Forged Weight = (Total Machining Stock + Finished Weight)'} />
-                  <NumberFieldHookForm
+                  <TextFieldHookForm
                     label={`Forged Weight(Kg)`}
                     name={'forgedWeight'}
                     Controller={Controller}
@@ -501,19 +490,16 @@ function ColdForging(props) {
             </Col>
             <Row className='mt20'>
               <Col md="3">
-                <NumberFieldHookForm
+                <TextFieldHookForm
                   label={`Billet Diameter(mm)`}
                   name={'BilletDiameter'}
                   Controller={Controller}
                   control={control}
                   register={register}
-                  mandatory={true}
+                  mandatory={false}
                   rules={{
-                    required: true,
-                    pattern: {
-                      value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for integer is 6 and for decimal is 4',
-                    },
+                    required: false,
+                    validate: { number, checkWhiteSpaces, decimalNumberLimit },
                   }}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -525,19 +511,16 @@ function ColdForging(props) {
                 />
               </Col>
               <Col md="3">
-                <NumberFieldHookForm
+                <TextFieldHookForm
                   label={`Input Bar Length(mm)`}
                   name={'BilletLength'}
                   Controller={Controller}
                   control={control}
                   register={register}
-                  mandatory={true}
+                  mandatory={false}
                   rules={{
-                    required: true,
-                    pattern: {
-                      value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for integer is 6 and for decimal is 4',
-                    },
+                    required: false,
+                    validate: { number, checkWhiteSpaces, decimalNumberLimit },
                   }}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -550,7 +533,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'input-length'} tooltipClass={'weight-of-sheet'} tooltipText={inputLengthTooltipMessage} />
-                <NumberFieldHookForm
+                <TextFieldHookForm
                   label={`Input Length(mm)`}
                   name={'InputLength'}
                   Controller={Controller}
@@ -568,7 +551,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'part-per-length'} tooltipClass={'weight-of-sheet'} tooltipText={'No. of Parts per Length(Number) = (Input Bar Length / Input Length) '} />
-                <NumberFieldHookForm
+                <TextFieldHookForm
                   label={`No. of Parts per Length`}
                   name={'NoOfPartsPerLength'}
                   Controller={Controller}
@@ -586,8 +569,8 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'end-bit-input'} tooltipClass={'weight-of-sheet'} tooltipText={'End Bit Length = Input Bar Length - (Input Length * No. of Parts per Length)'} />
-                <NumberFieldHookForm
-                  label={`End Bit Length`}
+                <TextFieldHookForm
+                  label={`End Bit Length(mm)`}
                   name={'EndBitLength'}
                   Controller={Controller}
                   control={control}
@@ -605,7 +588,7 @@ function ColdForging(props) {
 
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'end-bit-loss'} tooltipClass={'weight-of-sheet'} tooltipText={endBitLossTooltipMessage} />
-                <NumberFieldHookForm
+                <TextFieldHookForm
                   label={`End Bit Loss(Kg)`}
                   name={'EndBitLoss'}
                   Controller={Controller}
@@ -622,7 +605,7 @@ function ColdForging(props) {
                 />
               </Col>
               <Col md="3">
-                <NumberFieldHookForm
+                <TextFieldHookForm
                   label={`Tolerance(Kg)`}
                   name={'tolerance'}
                   Controller={Controller}
@@ -631,10 +614,7 @@ function ColdForging(props) {
                   mandatory={false}
                   rules={{
                     required: false,
-                    pattern: {
-                      value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for integer is 6 and for decimal is 4',
-                    },
+                    validate: { number, checkWhiteSpaces, decimalNumberLimit },
                   }}
                   handleChange={() => { }}
                   defaultValue={''}
@@ -646,7 +626,7 @@ function ColdForging(props) {
               </Col>
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'input-weight'} tooltipClass={'weight-of-sheet'} tooltipText={'Total Input Weight = (Net Loss + Forged Weight + End Bit Loss + Tolerance)'} />
-                <NumberFieldHookForm
+                <TextFieldHookForm
                   label={`Total Input Weight(Kg)`}
                   name={'TotalInputWeight'}
                   Controller={Controller}
@@ -662,11 +642,35 @@ function ColdForging(props) {
                   disabled={true}
                 />
               </Col>
-
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'forging-scrap'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Weight = (Total Input Weight - Forged weight)'} />
-                <NumberFieldHookForm
-                  label={`Forging Scrap Weight`}
+
+                <TextFieldHookForm
+                  label={`Forging Scrap Recovery (%)`}
+                  name={'forgingScrapRecoveryPercent'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  rules={{
+                    required: false,
+                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                    max: {
+                      value: 100,
+                      message: 'Percentage cannot be greater than 100'
+                    },
+                  }}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.forgingScrapRecoveryPercent}
+                  disabled={props.CostingViewMode || disableAll ? true : false}
+                />
+              </Col>
+              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'forging-scrap'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Weight = (Total Input Weight - Forged weight) * Forging Scrap Recovery (%)/100'} />
+                <TextFieldHookForm
+                  label={`Forging Scrap Weight(Kg)`}
                   name={'forgingScrapWeight'}
                   Controller={Controller}
                   control={control}
@@ -681,82 +685,10 @@ function ColdForging(props) {
                   disabled={true}
                 />
               </Col>
-
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'machining-scrap'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Weight = (Forged Weight - Finished Weight)'} />
-                <NumberFieldHookForm
-                  label={`Machining Scrap Weight`}
-                  name={'machiningScrapWeight'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  id={'machining-scrap'}
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.machiningScrapWeight}
-                  disabled={true}
-                />
-              </Col>
-
-              <Col md="3">
-
-                <NumberFieldHookForm
-                  label={`Forging Scrap Recovery (%)`}
-                  name={'forgingScrapRecoveryPercent'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for integer is 6 and for decimal is 4',
-                    },
-                    validate: { maxPercentValue }
-                  }}
-
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.forgingScrapRecoveryPercent}
-                  disabled={props.CostingViewMode || disableAll ? true : false}
-                />
-              </Col>
-
-              <Col md="3">
-                <NumberFieldHookForm
-                  label={`Machining Scrap Recovery (%)`}
-                  name={'machiningScrapRecoveryPercent'}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  rules={{
-                    required: false,
-                    pattern: {
-                      value: /^\d{0,6}(\.\d{0,4})?$/i,
-                      message: 'Maximum length for integer is 6 and for decimal is 4',
-                    },
-                    validate: { maxPercentValue }
-                  }}
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={''}
-                  className=""
-                  customClassName={'withBorder'}
-                  errors={errors.machiningScrapRecoveryPercent}
-                  disabled={props.CostingViewMode || disableAll ? true : false}
-                />
-              </Col>
-
-              <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = (Forging Scrap Weight * Forging Scrap Recovery (%)) / 100'} />
-                <NumberFieldHookForm
-                  label={`Forging Scrap Cost`}
+                <TooltipCustom disabledIcon={true} id={'forging-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Forging Scrap Cost = ((Forging Scrap Weight * Forging Scrap Recovery (%)) / 100) * Forging Scrap Rate'} />
+                <TextFieldHookForm
+                  label={`Forging Scrap Cost(INR)`}
                   name={'forgingScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -773,9 +705,55 @@ function ColdForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = (Machining Scrap Weight * Machining Scrap Recovery (%)) / 100'} />
-                <NumberFieldHookForm
-                  label={`Machining Scrap Cost`}
+                <TextFieldHookForm
+                  label={`Machining Scrap Recovery (%)`}
+                  name={'machiningScrapRecoveryPercent'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  rules={{
+                    required: false,
+                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                    max: {
+                      value: 100,
+                      message: 'Percentage cannot be greater than 100'
+                    },
+                  }}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.machiningScrapRecoveryPercent}
+                  disabled={props.CostingViewMode || disableAll ? true : false}
+                />
+              </Col>
+
+
+
+              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'machining-scrap'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Weight = (Forged Weight - Finished Weight) * Machining Scrap Recovery (%)/100'} />
+                <TextFieldHookForm
+                  label={`Machining Scrap Weight(Kg)`}
+                  name={'machiningScrapWeight'}
+                  Controller={Controller}
+                  control={control}
+                  register={register}
+                  id={'machining-scrap'}
+                  mandatory={false}
+                  handleChange={() => { }}
+                  defaultValue={''}
+                  className=""
+                  customClassName={'withBorder'}
+                  errors={errors.machiningScrapWeight}
+                  disabled={true}
+                />
+              </Col>
+
+              <Col md="3">
+                <TooltipCustom disabledIcon={true} id={'machining-scrapCost'} tooltipClass={'weight-of-sheet'} tooltipText={' Machining Scrap Cost = ((Machining Scrap Weight * Forging Scrap Recovery (%)) / 100) * Machining Scrap Rate'} />
+                <TextFieldHookForm
+                  label={`Machining Scrap Cost(INR)`}
                   name={'machiningScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -792,8 +770,8 @@ function ColdForging(props) {
               </Col>
 
               <Col md="3">
-                <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap Weight = (Total Input Weight - Finished Weight)'} />
-                <NumberFieldHookForm
+                <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap Weight = (Forging Scrap Weight + Machining Scrap Weight)'} />
+                <TextFieldHookForm
                   label={`Scrap Weight(Kg)`}
                   name={'ScrapWeight'}
                   Controller={Controller}
@@ -812,8 +790,8 @@ function ColdForging(props) {
 
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'scrap-cost'} tooltipClass={'weight-of-sheet'} tooltipText={'Scrap Cost = (Forging Scrap Cost + Machining Scrap Cost)'} />
-                <NumberFieldHookForm
-                  label={`Scrap Cost`}
+                <TextFieldHookForm
+                  label={`Scrap Cost(INR)`}
                   name={'ScrapCost'}
                   Controller={Controller}
                   control={control}
@@ -831,8 +809,8 @@ function ColdForging(props) {
 
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'rm-cost'} tooltipClass={'weight-of-sheet'} tooltipText={' Net RM Cost = (Total Input Weight * RM Rate - Scrap Cost)'} />
-                <NumberFieldHookForm
-                  label={`Net RM Cost/Component`}
+                <TextFieldHookForm
+                  label={`Net RM Cost/Component(INR)`}
                   name={'NetRMCostComponent'}
                   Controller={Controller}
                   control={control}

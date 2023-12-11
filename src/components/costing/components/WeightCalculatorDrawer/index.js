@@ -215,6 +215,8 @@ function OpenWeightCalculator(props) {
                   <div className="d-inline-block "><span className="grey-text d-block">RM Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? rmRowData.RMRate : ''}`}</span></div>
                   {appyMasterBatch && < div className="d-inline-block "><span className="grey-text d-block">RM Rate(including Master Batch):</span><span className="text-dark-blue">{`${rmRowData.RMRate !== undefined ? checkForDecimalAndNull(totalRM, getConfigurationKey().NoOfDecimalForInputOutput) : ''}`}</span></div>}
                   <div className="d-inline-block "><span className="grey-text d-block">Scrap Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? Number(technology) === Number(MACHINING) ? rmRowData.ScrapRatePerScrapUOM : rmRowData.ScrapRate : ''}`}</span></div>
+                  <div className="d-inline-block "><span className="grey-text d-block">{Number(technology) === Number(FORGING) ? 'Forging Scrap' : 'Scrap'} Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.ScrapRate !== undefined ? rmRowData.ScrapRate : ''}`}</span></div>
+                  {Number(technology) === Number(FORGING) && <div className="d-inline-block "><span className="grey-text d-block">Machining Scrap Rate(INR):</span><span className="text-dark-blue">{`${rmRowData.MachiningScrapRate ? rmRowData.MachiningScrapRate : 0}`}</span></div>}
                   <div className="d-inline-block"><span className="grey-text d-block">Category:</span><span className="text-dark-blue">{`${rmRowData.RawMaterialCategory !== undefined ? rmRowData.RawMaterialCategory : ''}`}</span></div>
 
                 </Col>

@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation, maxLength10 } from "../../../helper/validation";
+import { required, getCodeBySplitting, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation, maxLength10, getVendorName } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
 import { ASSEMBLY, AcceptableRMUOM } from '../../../config/masterData'
 import {
@@ -440,7 +440,7 @@ class AddRMDomestic extends Component {
           const { vendorName } = this.state
           const result =
             vendorName && vendorName.label
-              ? getVendorCode(vendorName.label)
+              ? getCodeBySplitting(vendorName.label)
               : ''
           this.setState({ VendorCode: result })
         },

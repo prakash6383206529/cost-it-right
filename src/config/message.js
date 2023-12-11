@@ -309,6 +309,8 @@ export const MESSAGES = {
   //BUDGET MASTER
   BUDGET_ADD_SUCCESS: 'Budget created successfully',
   BUDGET_UPDATE_SUCCESS: 'Budget updated successfully',
+  BUDGET_DELETE_ALERT: 'Are you sure you want to delete this budget?',
+  DELETE_BUDGET_SUCCESS: 'Budget deleted successfully',
 
   //CLIENT MASTER
   CLIENT_ADD_SUCCESS: 'Customer added successfully',
