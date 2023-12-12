@@ -1020,6 +1020,10 @@ function RMImportListing(props) {
 
                       <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate (Currency)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                       <AgGridColumn field="BasicRatePerUOMConversion" headerName={headerNames?.BasicRate} cellRenderer='commonCostFormatter'></AgGridColumn>
+                      <AgGridColumn field="IsScrapUOMApply" headerName="Has different Scrap Rate UOM" cellRenderer='commonCostFormatter'></AgGridColumn>
+                      <AgGridColumn field="ScrapUnitOfMeasurement" headerName='Scrap Rate UOM' cellRenderer='commonCostFormatter'></AgGridColumn>
+                      <AgGridColumn field="CalculatedFactor" headerName='Calculated Factor' cellRenderer='commonCostFormatter'></AgGridColumn>
+                      <AgGridColumn field="ScrapRatePerScrapUOM" headerName='Scrap Rate (In Scrap Rate UOM)' cellRenderer='commonCostFormatter'></AgGridColumn>
                       <AgGridColumn field="ScrapRate" headerName="Scrap Rate (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
                       <AgGridColumn field="ScrapRateInINR" headerName={headerNames?.ScrapRate} cellRenderer='commonCostFormatter'></AgGridColumn>
                       {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
@@ -1033,7 +1037,6 @@ function RMImportListing(props) {
                       {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
                       {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetConditionCostConversion" headerName={headerNames?.NetConditionCost} cellRenderer='commonCostFormatter'></AgGridColumn>}
 
-
                       <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer='costFormatter'></AgGridColumn>
                       <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer='costFormatter'></AgGridColumn>
 
@@ -1044,7 +1047,7 @@ function RMImportListing(props) {
                       <AgGridColumn field="TechnologyId" hide={true}></AgGridColumn>
                       {props?.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer='attachmentFormatter'></AgGridColumn>}
                       {props?.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                    </AgGridReact>
+                    </AgGridReact >
                     <div className='button-wrapper'>
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
 
@@ -1056,15 +1059,17 @@ function RMImportListing(props) {
                         <p><Button id="rmImportListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </Col>
-            </Row>
-            {props.isSimulation && isFromVerifyPage && <Row>
-              <Col md="12" className="d-flex justify-content-end">
-                <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
-              </Col>
-            </Row>}
+                  </div >
+                </div >
+              </Col >
+            </Row >
+            {
+              props.isSimulation && isFromVerifyPage && <Row>
+                <Col md="12" className="d-flex justify-content-end">
+                  <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
+                </Col>
+              </Row>
+            }
           </>
         }
         {
@@ -1118,7 +1123,7 @@ function RMImportListing(props) {
           showPopupBulk && <PopupMsgWrapper isOpen={showPopupBulk} closePopUp={closePopUp} confirmPopup={onPopupConfirmBulk} message={`Recently Created Material's Density is not created, Do you want to create?`} />
         }
 
-      </div>}
+      </div >}
       {
         editSelectedList &&
         <RMSimulation
@@ -1133,7 +1138,7 @@ function RMImportListing(props) {
           tokenForMultiSimulation={tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []}
         />
       }
-    </div>
+    </div >
   );
 }
 
