@@ -25,24 +25,24 @@ const Tabs = (props) => {
     return (
         <>
             <Nav tabs className="subtabs mt-0 p-relative">
-                {dashboardTabLock  && <div  title={MESSAGES.LOADING_MESSAGE} className="disabled-overflow min-width"></div>}
+                {dashboardTabLock && <div title={MESSAGES.LOADING_MESSAGE} className="disabled-overflow min-width"></div>}
                 <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
+                    <NavLink id={`dashboard_${props.module}_Pending_For_Approval`} className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                         Pending For Approval
                     </NavLink>
                 </NavItem>
                 <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+                    <NavLink id={`dashboard_${props.module}_Awaiting_Approval`} className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                         Awaiting Approval
                     </NavLink>
                 </NavItem>
                 <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                    <NavLink id={`dashboard_${props.module}_Rejected`} className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                         Rejected
                     </NavLink>
                 </NavItem>
                 <NavItem>
-                    <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
+                    <NavLink id={`dashboard_${props.module}_Approved`} className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                         Approved
                     </NavLink>
                 </NavItem>

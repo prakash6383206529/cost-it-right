@@ -385,7 +385,7 @@ function Machining(props) {
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
-                                        defaultValue={200}
+                                        defaultValue={rmRowData.RMRate}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.rmRate}
