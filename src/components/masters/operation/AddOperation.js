@@ -116,7 +116,7 @@ class AddOperation extends Component {
     const { initialConfiguration } = this.props
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
-      this.props.getPlantSelectListByType(ZBC, () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
       this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {

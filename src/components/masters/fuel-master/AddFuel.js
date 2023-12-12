@@ -86,7 +86,7 @@ class AddFuel extends Component {
     this.getDetails(data);
     if (!(data.isEditFlag || data.isViewMode)) {
       this.props.getUOMSelectList(() => { })
-      this.props.getPlantSelectListByType(ZBC, () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
       this.props.getClientSelectList(() => { })
     }
   }
