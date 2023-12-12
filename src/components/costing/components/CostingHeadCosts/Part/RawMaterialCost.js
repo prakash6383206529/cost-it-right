@@ -90,6 +90,7 @@ function RawMaterialCost(props) {
       NetWeight: 2,        // FINISH WEIGHT
     },
   ])
+  const [isScrapRateUOMApplied, setIsScrapRateUOMApplied] = useState(false)
 
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
@@ -160,6 +161,7 @@ function RawMaterialCost(props) {
       if (gridData && gridData?.length > 0) {
         let isCutOffApplicableCount = 0
         let totalCutOff = 0
+        let isScrapRateUOMApplied = false
         gridData && gridData.map(item => {
           if (item.IsCutOffApplicable) {
             isCutOffApplicableCount = isCutOffApplicableCount + 1
@@ -168,8 +170,16 @@ function RawMaterialCost(props) {
           else {
             totalCutOff = totalCutOff + checkForNull(item.NetLandedCost)
           }
+          if (item?.UOM === "Meter" && item?.IsScrapUOMApply) {
+            isScrapRateUOMApplied = true
+          }
           return null
         })
+        if (isScrapRateUOMApplied === true) {
+          setIsScrapRateUOMApplied(true)
+        } else {
+          setIsScrapRateUOMApplied(false)
+        }
         dispatch(setRMCutOff({ IsCutOffApplicable: isCutOffApplicableCount > 0 ? true : false, CutOffRMC: totalCutOff }))
       }
     }, 500)
@@ -218,7 +228,9 @@ function RawMaterialCost(props) {
             CutOffPrice: el.CutOffPrice,
             IsCutOffApplicable: el.IsCutOffApplicable,
             MachiningScrapRate: el.MachiningScrapRate,
-            ScrapRatePerScrapUOM: el.ScrapRatePerScrapUOM
+            ScrapRatePerScrapUOM: el.ScrapRatePerScrapUOM,
+            IsScrapUOMApply: el.IsScrapUOMApply,
+            ScrapUnitOfMeasurement: el.ScrapUnitOfMeasurement,
           }
         })
 
@@ -242,7 +254,9 @@ function RawMaterialCost(props) {
           RawMaterialCategory: rowData.Category,
           CutOffPrice: rowData.CutOffPrice,
           IsCutOffApplicable: rowData.IsCutOffApplicable,
-          MachiningScrapRate: rowData.MachiningScrapRate
+          MachiningScrapRate: rowData.MachiningScrapRate,
+          IsScrapUOMApply: rowData.IsScrapUOMApply,
+          ScrapUnitOfMeasurement: rowData.ScrapUnitOfMeasurement,
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -1186,6 +1200,34 @@ function RawMaterialCost(props) {
     setMasterBatch(true)
   }
 
+  const showCalculatorFunction = (item) => {
+    let value
+    if (costData?.TechnologyId === MACHINING) {
+      if (isScrapRateUOMApplied && item?.UOM === "Meter" && item?.IsScrapUOMApply && getConfigurationKey().IsShowMachiningCalculatorForMeter) {
+        value = true
+      } else {
+        value = false
+      }
+    } else if (getTechnology.includes(costData?.TechnologyId)) {
+      value = true
+    }
+    return value
+  }
+
+  const showCalculatorFunctionHeader = () => {
+    let value
+    if (costData?.TechnologyId === MACHINING) {
+      if (isScrapRateUOMApplied && getConfigurationKey().IsShowMachiningCalculatorForMeter) {
+        value = true
+      } else {
+        value = false
+      }
+    } else if (getTechnology.includes(costData?.TechnologyId)) {
+      value = true
+    }
+    return value
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -1269,7 +1311,7 @@ function RawMaterialCost(props) {
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
-                      {(getTechnology.includes(costData?.TechnologyId)) && <th className={`text-center weight-calculator`}>{`Weight Calculator`}</th>}
+                      {showCalculatorFunctionHeader() && <th className={`text-center weight-calculator`}>{`Weight Calculator`}</th>}
                       {<th>{`Gross Weight`}</th>}
                       {<th>{`Finish Weight`}</th>}
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
@@ -1292,15 +1334,14 @@ function RawMaterialCost(props) {
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
-                            {
-                              getTechnology.includes(costData?.TechnologyId) &&
+                            {getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
                               <td className="text-center">
-                                <button
+                                {showCalculatorFunction(item) ? <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
                                   onClick={() => toggleWeightCalculator(index)}
                                   disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
-                                />
+                                /> : '-'}
                               </td>
                             }
                             {
