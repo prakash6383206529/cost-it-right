@@ -5,7 +5,7 @@ import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
 import { } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { ASSEMBLYNAME, defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
@@ -23,6 +23,7 @@ import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import TechnologyUpdateDrawer from './TechnologyUpdateDrawer';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -49,7 +50,8 @@ class AssemblyPartListing extends Component {
             isLoader: false,
             selectedRowData: false,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            openTechnologyUpdateDrawer: false
         }
     }
 
@@ -299,6 +301,18 @@ class AssemblyPartListing extends Component {
         gridOptions.api.setFilterModel(null);
     }
 
+    associatePartWithTechnology = () => {
+        this.setState({ openTechnologyUpdateDrawer: true })
+    }
+
+    closeTechnologyUpdateDrawer = (type = '') => {
+        this.setState({ openTechnologyUpdateDrawer: false })
+        if (type === 'submit') {
+            this.getTableListData()
+        }
+
+    }
+
 
     /**
     * @method render
@@ -306,7 +320,7 @@ class AssemblyPartListing extends Component {
     */
     render() {
         const { isOpenVisualDrawer, isBulkUpload, noData } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration, EditAccessibility } = this.props;
 
         const isFirstColumn = (params) => {
             var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -340,6 +354,7 @@ class AssemblyPartListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
+                                {EditAccessibility && <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => this.associatePartWithTechnology()} />}
                                 {AddAccessibility && (
                                     <button
                                         type="button"
@@ -370,6 +385,8 @@ class AssemblyPartListing extends Component {
                                         </ExcelFile>
                                     </>
                                 }
+
+
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
@@ -442,6 +459,9 @@ class AssemblyPartListing extends Component {
                 />}
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`} />
+                }
+                {
+                    this.state.openTechnologyUpdateDrawer && <TechnologyUpdateDrawer isOpen={this.state.openTechnologyUpdateDrawer} anchor={'right'} closeDrawer={this.closeTechnologyUpdateDrawer} partType={ASSEMBLYNAME} />
                 }
             </div >
         );

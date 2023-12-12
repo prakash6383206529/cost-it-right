@@ -116,6 +116,7 @@ export const API = {
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
+  updateMultiplecomponentTechnology: `${BASE_URL}/masters-part/update-technology-for-multiple-component`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
@@ -867,6 +868,7 @@ export const API = {
   checkRegularizationLimit: `${BASE_URL}/app-approval-system/get-ncc-costing-regularization-limit-data`,
   getPartSelectListWtihRevNo: `${BASE_URL}/configuration/get-part-number-and-revision-number`,
   bulkUploadVolume: `${BASE_URL}/masters-volume/save-actual-volume-details`,
+  getUnassociatedPartNumber: `${BASE_URL}/configuration/get-part-number-and-revision-number-unupdated-technology`,
 
   //BUDGET MASTER
   getBudgetDataList: `${BASE_URL}/master-budgeting/get-all`,
