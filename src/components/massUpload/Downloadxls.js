@@ -199,6 +199,7 @@ class Downloadxls extends React.Component {
                 return this.returnExcelColumn(checkVendorPlantConfig(MachineVBC), MachineVBCTempData);
             case 'BOP Domestic':
                 if (bopType === DETAILED_BOP) {
+
                     return this.returnExcelColumn(checkVendorPlantConfig(BOP_DETAILED_DOMESTIC, '', true), BOP_DETAILED_DOMESTIC_TempData);
                 } else {
                     return this.returnExcelColumn(checkVendorPlantConfig(BOP_VBC_DOMESTIC, '', true), BOP_VBC_DOMESTIC_TempData);
@@ -266,8 +267,11 @@ class Downloadxls extends React.Component {
     */
     returnExcelColumn = (data = [], TempData) => {
         const { fileName, failedData, isFailedFlag } = this.props;
+
+
         let dataList = [...data]
         if (isFailedFlag) {
+
 
             //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
             let isContentReason = dataList.filter(d => d.label === 'Reason')
@@ -277,6 +281,7 @@ class Downloadxls extends React.Component {
             }
         }
 
+
         return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
             {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
         </ExcelSheet>);
@@ -284,6 +289,7 @@ class Downloadxls extends React.Component {
 
     render() {
         const { isFailedFlag, fileName, isZBCVBCTemplate, isMachineMoreTemplate, costingTypeId, bopType } = this.props;
+
         // DOWNLOAD FILE:- CALLED WHEN ZBC FILE FAILED   hideElement={true}
         // ZBC_MACHINE_MORE THIS IS ADDITIONAL CONDITION ONLY FOR MACHINE MORE DETAIL FROM MACHINE MASTER
         if (isFailedFlag && (costingTypeId === ZBCTypeId || costingTypeId === ZBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
@@ -295,6 +301,7 @@ class Downloadxls extends React.Component {
             );
         }
         if (isFailedFlag && (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) && (fileName === 'Machine')) {
+
             return (
                 <ExcelFile hideElement={true} filename={costingTypeId === ZBCADDMORE ? "ZBC Add more details" : costingTypeId === VBCADDMORE ? "VBC Add more details" : "CBC Add more details"} fileExtension={'.xls'} >
                     {isMachineMoreTemplate || (costingTypeId === ZBCADDMORE || costingTypeId === VBCADDMORE || costingTypeId === CBCADDMORE) ? this.renderZBCSwitch(costingTypeId) : ""}
@@ -303,15 +310,17 @@ class Downloadxls extends React.Component {
         }
 
         // DOWNLOAD FILE:- CALLED WHEN VBC FILE FAILED
-        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+        if (isFailedFlag && (costingTypeId === VBCTypeId || costingTypeId === VBCADDMOREOPERATION || bopType === DETAILED_BOP) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+
             return (
                 <ExcelFile hideElement={true} filename={`${fileName}VBC`} fileExtension={'.xls'} >
-                    {costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(costingTypeId) : this.renderVBCSwitch(fileName)}
+                    {costingTypeId === VBCADDMOREOPERATION ? this.renderVBCSwitch(costingTypeId) : this.renderVBCSwitch(fileName, bopType)}
                 </ExcelFile>
             );
         }
         // DOWNLOAD FILE:- CALLED WHEN CBC FILE FAILED
         if (isFailedFlag && (costingTypeId === CBCTypeId || costingTypeId === CBCADDMOREOPERATION) && (fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'Operation' || fileName === 'Machine' || fileName === 'BOP Domestic' || fileName === 'BOP Import' || fileName === 'Actual Volume' || fileName === 'Budgeted Volume' || fileName === 'Interest Rate' || fileName === 'Budget')) {
+
             return (
                 <ExcelFile hideElement={true} filename={`${fileName} CBC`} fileExtension={'.xls'} >
                     {costingTypeId === CBCADDMOREOPERATION ? this.renderCBCSwitch(costingTypeId) : this.renderCBCSwitch(fileName)}
@@ -320,6 +329,7 @@ class Downloadxls extends React.Component {
         }
         // DOWNLOAD FILE:- CALLED WHEN FILE FAILED APART FROM ZBC AND VBC
         if (isFailedFlag && (fileName === 'RM Specification' || fileName === 'Vendor' || fileName === 'Overhead' || fileName === 'Fuel' || fileName === 'Labour' || fileName === 'Part Component' || fileName === 'Product Component' || fileName === 'ADD RFQ')) {
+
             return (
                 <ExcelFile hideElement={true} filename={fileName} fileExtension={'.xls'} >
                     {this.renderSwitch(fileName)}
