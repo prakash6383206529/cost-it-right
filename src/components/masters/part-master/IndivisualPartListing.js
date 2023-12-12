@@ -643,7 +643,7 @@ class IndivisualPartListing extends Component {
                                 </div>
                                 <div className='d-flex'>
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
-                                    {EditAccessibility && <button title='Associate part with technology' className="user-btn pl-2 pr-3 mr-1" type={'button'} onClick={() => this.associatePartWithTechnology()}><div className='associate'></div></button>}
+                                    {/* {EditAccessibility && <button title='Associate part with technology' className="user-btn pl-2 pr-3 mr-1" type={'button'} onClick={() => this.associatePartWithTechnology()}><div className='associate'></div></button>} */}
                                     {AddAccessibility && (
                                         <button
                                             type="button"

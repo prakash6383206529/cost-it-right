@@ -354,7 +354,7 @@ class AssemblyPartListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div className='d-flex align-items-center'>
-                                {EditAccessibility && <button title='Associate part with technology' className="user-btn pl-2 pr-3 mb-0 mr-1" type={'button'} onClick={() => this.associatePartWithTechnology()} ><div className='associate'></div></button>}
+                                {/* {EditAccessibility && <button title='Associate part with technology' className="user-btn pl-2 pr-3 mb-0 mr-1" type={'button'} onClick={() => this.associatePartWithTechnology()} ><div className='associate'></div></button>} */}
                                 {AddAccessibility && (
                                     <button
                                         type="button"
