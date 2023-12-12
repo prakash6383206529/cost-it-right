@@ -128,7 +128,7 @@ function TechnologyUpdateDrawer(props) {
         <>
             <Drawer className="top-drawer approval-workflow-drawer" anchor={props.anchor} open={props.isOpen} >
                 <div className="container-fluid ">
-                    <div className={'drawer-wrapper drawer-full-width'}>
+                    <div className={'drawer-wrapper'}>
                         <Row className="drawer-heading sticky-top-0">
                             <Col >
                                 <div className={'header-wrapper left'}>
