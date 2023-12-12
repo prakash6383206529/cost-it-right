@@ -14,6 +14,7 @@ import Button from '../../layout/Button';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next'
+import { GUIDE_BUTTON_SHOW } from '../../../config/constants';
 
 class Association extends Component {
     constructor(props) {
@@ -174,7 +175,7 @@ class Association extends Component {
                                                 <Button
                                                     id="add_RMAddAssociation_Guide"
                                                     variant={"ml-2"}
-                                                    className={`guide-bulb${showTour ? "-on" : ""}`}
+                                                    className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                                                     onClick={() => { this.setState({ showTour: !showTour }) }}
                                                     title='Guide'
                                                 />
@@ -319,5 +320,5 @@ export default connect(mapStateToProps, {
     form: 'Association',
     enableReinitialize: true,
     touchOnChange: true
-})(withTranslation()(Association)),
+})(withTranslation(['RawMaterialMaster'])(Association)),
 )

@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, GUIDE_BUTTON_SHOW } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -1571,7 +1571,7 @@ class AddRMDomestic extends Component {
                           <Button
                             id="addRMDomestic_guide"
                             variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                             onClick={() => { this.setState({ showTour: !showTour }) }}
                             title='Guide'
                           />
@@ -1834,7 +1834,7 @@ class AddRMDomestic extends Component {
                                 <div className=" flex-fills mb-2 pl-0 d-flex justify-content-between align-items-center">
                                   <h5>{"Vendor:"}</h5>
                                   {costingTypeId !== VBCTypeId && (
-                                    <label
+                                    <label id="AddRMDomestic_HasDifferentSource"
                                       className={`custom-checkbox w-auto mb-0 ${(costingTypeId === VBCTypeId || isViewFlag) ? "disabled" : ""
                                         }`}
                                       onChange={this.onPressDifferentSource}

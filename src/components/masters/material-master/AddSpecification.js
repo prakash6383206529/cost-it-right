@@ -12,7 +12,7 @@ import {
 import { fetchRMGradeAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { SPECIFICATION } from '../../../config/constants';
+import { GUIDE_BUTTON_SHOW, SPECIFICATION } from '../../../config/constants';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
@@ -507,7 +507,7 @@ class AddSpecification extends Component {
                         <Button
                           id="add_RMAddSpecification_Guide"
                           variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""}`}
+                          className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                           onClick={() => { this.setState({ showTour: !showTour }) }}
                           title='Guide'
                         />
@@ -782,6 +782,6 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(withTranslation()(AddSpecification)),
+})(withTranslation(['RawMaterialMaster'])(AddSpecification)),
 
 )

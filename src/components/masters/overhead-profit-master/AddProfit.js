@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
@@ -973,7 +973,7 @@ class AddProfit extends Component {
                         <Button
                           id="addProfit_guide"
                           variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""}`}
+                          className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                           onClick={() => { this.setState({ showTour: !showTour }) }}
                           title='Guide'
                         />
@@ -989,7 +989,7 @@ class AddProfit extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label id="AddProfit_zeroBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          <Label id="AddProfit_zeroBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1003,7 +1003,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Zero Based</span>
                           </Label>
-                          <Label id="AddProfit_vendorBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          <Label id="AddProfit_vendorBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1017,7 +1017,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddProfit_customerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddProfit_customerBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1187,7 +1187,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         <Col md="3" className="st-operation mt-4 pt-2">
-                          <label
+                          <label id="AddProfit_ApplyPartCheckbox"
                             className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                               }`}
                             onChange={this.onPressAssemblyCheckbox}
@@ -1523,5 +1523,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddProfit',
   enableReinitialize: true,
-})(withTranslation()(AddProfit)),
+})(withTranslation(['OverheadsProfits'])(AddProfit)),
 )

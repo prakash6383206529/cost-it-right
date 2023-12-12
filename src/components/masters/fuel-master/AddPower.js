@@ -11,7 +11,7 @@ import {
 } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, GENERATOR_DIESEL, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
+import { CBCTypeId, GENERATOR_DIESEL, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId, } from '../../../config/constants';
 import { EMPTY_DATA } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import "react-datepicker/dist/react-datepicker.css";
@@ -1419,7 +1419,7 @@ class AddPower extends Component {
                           <Button
                             id="addPower_guide"
                             variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                             onClick={() => { this.setState({ showTour: !showTour }) }}
                             title='Guide'
                           />
@@ -1438,7 +1438,7 @@ class AddPower extends Component {
                       <Row>
 
                         <Col md="12">
-                          <Label id="AddPower_zerobased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <Label id="AddPower_zerobased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1452,7 +1452,7 @@ class AddPower extends Component {
                             />{" "}
                             <span>Zero Based</span>
                           </Label>
-                          <Label id="AddPower_vendorbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <Label id="AddPower_vendorbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1466,7 +1466,7 @@ class AddPower extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddPower_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddPower_customerbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1640,7 +1640,7 @@ class AddPower extends Component {
                         </Col>}
 
                         <Col md="6" className={(costingTypeId === ZBCTypeId || isDetailEntry) ? "" : "mt30 pt-1"}>
-                          <label
+                          <label id="AddPower_AddMoreDetails"
                             className={`custom-checkbox w-auto ${isDetailEntry ? 'mb-3' : ''}`}
                             onChange={this.isDetailEntryChange}
                           >
@@ -2288,5 +2288,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
-})(withTranslation()(AddPower)),
+})(withTranslation(['FuelPowerMaster'])(AddPower)),
 )

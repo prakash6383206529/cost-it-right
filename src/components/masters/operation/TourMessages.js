@@ -42,6 +42,10 @@ export function Steps(t) {
                 intro: t("operationMaster.AddOperation_EffectiveDate"),
             },
             {
+                element: "#AddOperation_SurfaceTreatmentCheckbox",
+                intro: t("operationMaster.AddOperation_SurfaceTreatmentCheckbox"),
+            },
+            {
                 element: "#AddOperation_Remark",
                 intro: t("operationMaster.AddOperation_Remark"),
             },
@@ -56,6 +60,7 @@ export function Steps(t) {
             {
                 element: "#AddOperation_SendForApproval",
                 intro: t("operationMaster.AddOperation_SendForApproval"),
+                position: 'left'
             },
         ],
     }

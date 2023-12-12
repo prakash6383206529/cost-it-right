@@ -15,6 +15,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import { GUIDE_BUTTON_SHOW } from '../../../config/constants';
 
 class AddMaterialType extends Component {
   constructor(props) {
@@ -169,7 +170,7 @@ class AddMaterialType extends Component {
                         <Button
                           id="addMaterialType_Guide"
                           variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""}`}
+                          className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                           onClick={() => { this.setState({ showTour: !showTour }) }}
                           title='Guide'
                         />
@@ -296,5 +297,5 @@ export default connect(mapStateToProps, {
   form: 'AddMaterialType',
   enableReinitialize: true,
   touchOnChange: true
-})(withTranslation()(AddMaterialType)),
+})(withTranslation(['RawMaterialMaster'])(AddMaterialType)),
 )

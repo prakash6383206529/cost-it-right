@@ -7,7 +7,7 @@ import dashboardImg from '../../assests/images/dashboard-img.png';
 import classnames from 'classnames';
 import { CheckApprovalApplicableMaster, getConfigurationKey } from "../../helper";
 import { checkPermission } from "../../helper/util";
-import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
+import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, GUIDE_BUTTON_SHOW, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
 import Tabs from "./Tabs";
@@ -124,7 +124,7 @@ function Dashboard(props) {
               {viewSimulation && JSON.parse(localStorage.getItem('simulationViewPermission'))?.length !== 0 && <Row className="m-0">
                 <div className="graph-box w-100" id={`${pageDropDownRef === 'simulation' ? 'refresh-to-top' : ''}`}>
                   <Row>
-                    <Col md="8"><h3 className="mb-0">Amendments Approval Status {acc2 && <button className={`guide-bulb${showTour ? "-on" : ""} ml-2`} onClick={() => { setShowTour(!showTour) }} title='Guide'></button>}</h3></Col>
+                    <Col md="8"><h3 className="mb-0">Amendments Approval Status {acc2 && <button className={`guide-bulb${showTour ? "-on" : ""} ml-2 ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`} onClick={() => { setShowTour(!showTour) }} title='Guide'></button>}</h3></Col>
                     <Col md="4" className="text-right">
                       <button className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc2(!acc2) }}>
                         {acc2 ? (
