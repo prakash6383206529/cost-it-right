@@ -232,21 +232,22 @@ class AddRMImport extends Component {
         toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) = Circle Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
         toolTipTextJaliScrapCostBaseCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Jali Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
         toolTipTextJaliScrapCostSelectedCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost ()`,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Jali Scrap Cost (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${initialConfiguration?.BaseCurrency}) = 1 / Conversion Ratio (${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'})`,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = Forging Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
       }
     } else if (showScrapKeys?.showForging) {
       obj = {
         ...obj,
         toolTipTextForgingScrapCostBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Forging Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
         toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) = Machining Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-        toolTipTextForgingScrapCostSelectedCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Forging Scrap Cost ()`,
+        toolTipTextForgingScrapCostSelectedCurrency: `Forging Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Forging Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = Forging Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
       }
     } else if (showScrapKeys?.showScrap) {
       obj = {
         ...obj,
         toolTipTextScrapCostBaseCurrency: `Scrap Rate (${initialConfiguration?.BaseCurrency}) = Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
         toolTipTextScrapCostSelectedCurrency: `Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Scrap Cost ()`,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Scrap Cost (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${initialConfiguration?.BaseCurrency}) = 1 / Conversion Ratio (${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'})`,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = Forging Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
       }
     }
     if (setData) {
