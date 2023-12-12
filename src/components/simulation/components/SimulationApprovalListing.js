@@ -637,10 +637,14 @@ function SimulationApprovalListing(props) {
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
                     if (selectedRowData[0].Status === DRAFT) {
-                        setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
-                        if (res.data.Data.IsFinalApprover) {
+                        if (res.data.Data.IsUserInApprovalFlow === false) {
+                            Toaster.warning("User does not have permission to send simulation for approval.")
+                            gridApi.deselectAll()
+                        } if (res.data.Data.IsFinalApprover) {
                             Toaster.warning("Final level approver can not send draft token for approval")
                             gridApi.deselectAll()
+                        } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
+                            setApproveDrawer(true)
                         }
                     }
                     else {

@@ -1534,13 +1534,13 @@ class AddRMDomestic extends Component {
     }
 
     const labelForScrapRate = () => {
-      let label = 'Scarp Rate (INR/Kg)'
+      let label = `Scarp Rate (${initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`
       if (showScrapKeys?.showCircleJali) {
-        label = 'Jali Scarp Rate (INR/Kg)'
+        label = `Jali Scarp Rate (${initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`
       } else if (showScrapKeys?.showForging) {
-        label = 'Forging Scarp Rate (INR/Kg)'
+        label = `Forging Scarp Rate (${initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`
       } else if (showScrapKeys?.showScrap) {
-        label = 'Scrap Rate (INR/Kg)'
+        label = `Scrap Rate (${initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`
       }
       return label
     }
