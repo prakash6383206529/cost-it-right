@@ -2152,4 +2152,4 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(withTranslation()(AddBOPImport)));
+})(withTranslation(['BOPMaster'])(AddBOPImport)));
