@@ -12,7 +12,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
@@ -493,7 +493,7 @@ class AddIndivisualPart extends Component {
                             <Button
                               id="addIndivisualPart_guide"
                               variant={"ml-2"}
-                              className={`guide-bulb${showTour ? "-on" : ""}`}
+                              className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                               onClick={() => { this.setState({ showTour: !showTour }) }}
                               title='Guide'
                             />
@@ -889,5 +889,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(withTranslation()(AddIndivisualPart)),
+})(withTranslation(['PartMaster'])(AddIndivisualPart)),
 )

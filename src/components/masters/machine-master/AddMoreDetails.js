@@ -17,7 +17,7 @@ import { getLabourTypeByMachineTypeSelectList } from '../actions/Labour';
 import { getFuelByPlant, } from '../actions/Fuel';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID, TIME, ZBCTypeId, VBCTypeId, CBCTypeId, CRMHeads, GUIDE_BUTTON_SHOW } from '../../../config/constants'
 import { loggedInUserId, userDetails, getConfigurationKey } from "../../../helper/auth";
 import Switch from "react-switch";
 import Dropzone from 'react-dropzone-uploader';
@@ -45,6 +45,10 @@ import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import WarningMessage from '../../common/WarningMessage';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next'
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddMoreDetails');
 
@@ -147,7 +151,18 @@ class AddMoreDetails extends Component {
       crmHeads: {},
       updateCrmHeadObj: {},
       CostingTypePermission: false,
-      disableSendForApproval: false
+      disableSendForApproval: false,
+      tourContainer: {
+        initial: false,
+        loanTour: false,
+        workingHoursTour: false,
+        depreciationTour: false,
+        variableCostTour: false,
+        powerTour: false,
+        labourTour: false,
+        processTour: false,
+        processGroupTour: false
+      },
     }
     this.dropzone = React.createRef();
   }
@@ -2525,15 +2540,26 @@ class AddMoreDetails extends Component {
     }
   }
 
+  updateTourContainer = (stateName, type) => {
+    if (type === 'start') {
+      this.setState({ tourContainer: { [stateName]: true } })
+
+    }
+    else if (type === 'exit') {
+      this.setState({ tourContainer: { [stateName]: false } })
+    }
+  }
+
+
 
   /**
   * @method render
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, isMachineAssociated } = this.props;
+    const { handleSubmit, initialConfiguration, isMachineAssociated, t } = this.props;
     const { isLoader, isOpenAvailability, isEditFlag, isViewMode, isOpenMachineType, isOpenProcessDrawer,
-      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, CostingTypePermission, disableSendForApproval } = this.state;
+      isLoanOpen, isWorkingOpen, isDepreciationOpen, isVariableCostOpen, disableMachineType, isViewFlag, isPowerOpen, isLabourOpen, isProcessOpen, UniqueProcessId, isProcessGroupOpen, disableAllForm, UOMName, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
     return (
       <>
         {(isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}
@@ -2545,7 +2571,19 @@ class AddMoreDetails extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} More Details</h2>
+                        <h2>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} More Details
+                          <Button
+                            id="addPower_guide"
+                            variant={"ml-2"}
+                            className={`guide-bulb${tourContainer.initial ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                            onClick={() => this.updateTourContainer('initial', 'start')}
+                            title='Guide'
+                          />
+                          {tourContainer.initial && <TourWrapper steps={Steps(t).ADD_MACHINE_MORE_RATE_DETAILS} stepsEnable={true} start={tourContainer.initial}
+                            onExit={() => this.updateTourContainer('initial', 'exit')}
+                          />
+                          }
+                        </h2>
                       </div>
                     </div>
                   </div>
@@ -2702,7 +2740,7 @@ class AddMoreDetails extends Component {
                               Year of Manufacturing
                               {/* <span className="asterisk-required">*</span> */}
                             </label>
-                            <div className="inputbox date-section">
+                            <div id="AddMoreDetails_yearofManfacturing" className="inputbox date-section">
                               <DatePicker
                                 // label={`Year of Manufacturing`}
                                 name="YearOfManufacturing"
@@ -2879,10 +2917,25 @@ class AddMoreDetails extends Component {
                       </Row>
                       {/*  LOAN AND INTREST VALUE */}
                       <Row className="mb-3 accordian-container">
-                        <Col md="6">
+                        <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
                             title={'Loan & Interest:'}
-                            customClass={'Personal-Details'} />
+                            customClass={'Personal-Details'}
+                          />
+                          {isLoanOpen && (
+                            <div>
+                              <Button
+                                id="addPower_guide"
+                                variant={"ml-2"}
+                                className={`guide-bulb${tourContainer.loanTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                onClick={() => this.updateTourContainer('loanTour', 'start')}
+                                title='Guide'
+                              />
+                              {tourContainer.loanTour && <TourWrapper steps={Steps(t).ADD_MACHINE_LOAN_AND_INTEREST} stepsEnable={true} start={tourContainer.loanTour}
+                                onExit={() => this.updateTourContainer('loanTour', 'exit')}
+                              />
+                              }
+                            </div>)}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
@@ -3023,10 +3076,24 @@ class AddMoreDetails extends Component {
                       </Row>
                       {/* WORKING HOURS */}
                       <Row className="mb-3 accordian-container">
-                        <Col md="6">
+                        <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
                             title={'Working Hours:'}
                             customClass={'Personal-Details'} />
+                          {isWorkingOpen && (
+                            <div>
+                              <Button
+                                id="addPower_guide"
+                                variant={"ml-2"}
+                                className={`guide-bulb${tourContainer.workingHoursTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                onClick={() => this.updateTourContainer('workingHoursTour', 'start')}
+                                title='Guide'
+                              />
+                              {tourContainer.workingHoursTour && <TourWrapper steps={Steps(t).ADD_MACHINE_WORKING_HOURS} stepsEnable={true} start={tourContainer.workingHoursTour}
+                                onExit={() => this.updateTourContainer('workingHoursTour', 'exit')}
+                              />
+                              }
+                            </div>)}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
@@ -3141,10 +3208,24 @@ class AddMoreDetails extends Component {
 
                       {/* DEPRICIATION  */}
                       <Row className="mb-3 accordian-container">
-                        <Col md="6">
+                        <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
                             title={'Depreciation:'}
                             customClass={'Personal-Details'} />
+                          {isDepreciationOpen && (
+                            <div>
+                              <Button
+                                id="addPower_guide"
+                                variant={"ml-2"}
+                                className={`guide-bulb${tourContainer.depreciationTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                onClick={() => this.updateTourContainer('depreciationTour', 'start')}
+                                title='Guide'
+                              />
+                              {tourContainer.depreciationTour && <TourWrapper steps={Steps(t).ADD_MACHINE_DEPRECIATION} stepsEnable={true} start={tourContainer.depreciationTour}
+                                onExit={() => this.updateTourContainer('depreciationTour', 'exit')}
+                              />
+                              }
+                            </div>)}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
@@ -3249,6 +3330,7 @@ class AddMoreDetails extends Component {
                                     dropdownMode="select"
                                     dateFormat="dd/MM/yyyy"
                                     //maxDate={new Date()}
+                                    id="AddDetails_DateOfPurchase"
                                     placeholderText={disableAllForm ? '-' : "Select Date"}
                                     className="withBorder"
                                     autoComplete={'off'}
@@ -3281,10 +3363,24 @@ class AddMoreDetails extends Component {
 
                       {/* VARIABLE COST */}
                       <Row className="mb-3 accordian-container">
-                        <Col md="6">
+                        <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
                             title={'Variable Cost:'}
                             customClass={'Personal-Details'} />
+                          {isVariableCostOpen && (
+                            <div>
+                              <Button
+                                id="addPower_guide"
+                                variant={"ml-2"}
+                                className={`guide-bulb${tourContainer.variableCostTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                onClick={() => this.updateTourContainer('variableCostTour', 'start')}
+                                title='Guide'
+                              />
+                              {tourContainer.variableCostTour && <TourWrapper steps={Steps(t).ADD_VARIABLE_COST} stepsEnable={true} start={tourContainer.variableCostTour}
+                                onExit={() => this.updateTourContainer('variableCostTour', 'exit')}
+                              />
+                              }
+                            </div>)}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
@@ -3626,10 +3722,24 @@ class AddMoreDetails extends Component {
 
                       {/* POWER */}
                       <Row className="mb-3 accordian-container">
-                        <Col md="6">
+                        <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
                             title={'Power:'}
                             customClass={'Personal-Details'} />
+                          {isPowerOpen && (
+                            <div>
+                              <Button
+                                id="addPower_guide"
+                                variant={"ml-2"}
+                                className={`guide-bulb${tourContainer.powerTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                onClick={() => this.updateTourContainer('powerTour', 'start')}
+                                title='Guide'
+                              />
+                              {tourContainer.powerTour && <TourWrapper steps={Steps(t).ADD_MACHINE_POWER} stepsEnable={true} start={tourContainer.powerTour}
+                                onExit={() => this.updateTourContainer('powerTour', 'exit')}
+                              />
+                              }
+                            </div>)}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
@@ -3855,10 +3965,24 @@ class AddMoreDetails extends Component {
 
                       {/* LABOUR */}
                       <Row className="mb-3 accordian-container child-form-container">
-                        <Col md="6">
+                        <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
                             title={'Labour:'}
                             customClass={'Personal-Details'} />
+                          {isLabourOpen && (
+                            <div>
+                              <Button
+                                id="addPower_guide"
+                                variant={"ml-2"}
+                                className={`guide-bulb${tourContainer.labourTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                onClick={() => this.updateTourContainer('labourTour', 'start')}
+                                title='Guide'
+                              />
+                              {tourContainer.labourTour && <TourWrapper steps={Steps(t).ADD_MACHINE_LABOUR} stepsEnable={true} start={tourContainer.labourTour}
+                                onExit={() => this.updateTourContainer('labourTour', 'exit')}
+                              />
+                              }
+                            </div>)}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
@@ -3967,7 +4091,7 @@ class AddMoreDetails extends Component {
                                 </>
                                 :
                                 <>
-                                  <button
+                                  <button id="AddMoreDetails_Labour_Add"
                                     type="button"
                                     disabled={disableAllForm}
                                     className={'user-btn mt30 pull-left mr5'}
@@ -4035,10 +4159,24 @@ class AddMoreDetails extends Component {
                       {/* PROCEES */}
 
                       <Row className="mb-3 accordian-container child-form-container">
-                        <Col md="6">
+                        <Col md="6" className='d-flex align-items-center'>
                           <HeaderTitle
                             title={'Process:'}
                             customClass={'Personal-Details'} />
+                          {isProcessOpen && (
+                            <div>
+                              <Button
+                                id="addPower_guide"
+                                variant={"ml-2"}
+                                className={`guide-bulb${tourContainer.processTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                onClick={() => this.updateTourContainer('processTour', 'start')}
+                                title='Guide'
+                              />
+                              {tourContainer.processTour && <TourWrapper steps={Steps(t).ADD_MACHINE_PROCESS} stepsEnable={true} start={tourContainer.processTour}
+                                onExit={() => this.updateTourContainer('processTour', 'exit')}
+                              />
+                              }
+                            </div>)}
                         </Col>
                         <Col md="6">
                           <div className={'right-details text-right'}>
@@ -4067,7 +4205,7 @@ class AddMoreDetails extends Component {
                                   {this.state.errorObj.processName && this.state.processName.length === 0 && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
 
                                 </div>
-                                {!isEditFlag && <div
+                                {!isEditFlag && <div id="AddMoreDetails_Process"
                                   onClick={this.processToggler}
                                   className={'plus-icon-square right'}>
                                 </div>}
@@ -4165,7 +4303,7 @@ class AddMoreDetails extends Component {
                                   </>
                                   :
                                   <>
-                                    <button
+                                    <button id="AddMoreDetails_Process_Add"
                                       type="button"
                                       className={'user-btn pull-left'}
                                       disabled={this.state.isViewMode || (isEditFlag && isMachineAssociated)}
@@ -4226,9 +4364,23 @@ class AddMoreDetails extends Component {
                       {
                         this.state.isProcessGroup &&
                         <Row className='mb-3 accordian-container'>
-                          <Col md="6" className='mt-2'>
+                          <Col md="6" className='d-flex align-items-center'>
                             <HeaderTitle
                               title={'Process Group:'} />
+                            {isProcessGroupOpen && (
+                              <div>
+                                <Button
+                                  id="addPower_guide"
+                                  variant={"ml-2"}
+                                  className={`guide-bulb${tourContainer.processGroupTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                  onClick={() => this.updateTourContainer('processGroupTour', 'start')}
+                                  title='Guide'
+                                />
+                                {tourContainer.processGroupTour && <TourWrapper steps={Steps(t).ADD_MACHINE_PROCESS_GROUP} stepsEnable={true} start={tourContainer.processGroupTour}
+                                  onExit={() => this.updateTourContainer('processGroupTour', 'exit')}
+                                />
+                                }
+                              </div>)}
                           </Col>
                           <Col md="6">
                             <div className={'right-details text-right'}>
@@ -4250,6 +4402,7 @@ class AddMoreDetails extends Component {
                         </Col>
                         <Col md="6">
                           <Field
+                            id="AddMoreDetails_Remark"
                             label={'Remarks'}
                             name={`Remark`}
                             placeholder={this.state.isViewMode ? '-' : "Type here..."}
@@ -4270,7 +4423,7 @@ class AddMoreDetails extends Component {
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
-                          <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                          <div id="AddMoreDetails_UploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
@@ -4328,7 +4481,7 @@ class AddMoreDetails extends Component {
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                         {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
-                        <button
+                        <button id="AddMoreDetails_Cancel"
                           type={'button'}
                           className=" mr15 cancel-btn"
                           onClick={this.cancelHandler} >
@@ -4338,7 +4491,7 @@ class AddMoreDetails extends Component {
 
                         {!isViewMode && <>
                           {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
-                            <button type="submit"
+                            <button id="AddMoreDetails_SendForApproval" type="submit"
                               class="user-btn approval-btn save-btn mr5"
 
                               disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
@@ -4548,4 +4701,5 @@ export default connect(mapStateToProps, {
   },
   touchOnChange: true,
   enableReinitialize: true,
-})(AddMoreDetails));
+})(withTranslation(['MachineMaster'])(AddMoreDetails)),
+)

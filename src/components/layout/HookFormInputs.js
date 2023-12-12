@@ -80,7 +80,7 @@ export const TextFieldHookForm = (field) => {
             hidden={hidden}
             render={({ field: { onChange, onBlur, value } }) => {
               return (
-                <div className={`${isLoader ? "p-relative" : ''}`}>
+                <div className={`${isLoader ? "p-relative" : ''} input-container`}>
                   <input
                     {...field}
                     id={name}
@@ -282,7 +282,7 @@ export const SearchableSelectHookForm = (field) => {
   let isDisable = (disabled && disabled === true) ? true : false;
   let isLoader = (isLoading && isLoading?.isLoader === true) ? true : false;
   let isMultiple = (isMulti === true) ? true : false;
-  const className = `${isLoader ? 'p-relative' : ''} ${buttonCross ? 'cross-btn-container' : ''}`
+  const className = `${isLoader ? 'p-relative' : ''} ${buttonCross ? 'cross-btn-container' : ''} input-container`
   let containerId = `${name}_container`;
   let temp = 300;
   if (dropdownHeight < 6) {
@@ -340,7 +340,7 @@ export const SearchableSelectHookForm = (field) => {
             updatedValue = ''
           }
           return (
-            <div className={className} title={title ? title : isDisable ? value?.label : ''}>
+            <div className={className} title={title ? title : isDisable ? value?.label : ''} >
               <Select
                 {...field}
                 id={containerId}

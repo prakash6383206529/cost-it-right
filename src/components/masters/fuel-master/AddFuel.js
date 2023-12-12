@@ -9,7 +9,7 @@ import {
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountry, getVendorNameByVendorSelectList, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import DatePicker from "react-datepicker";
@@ -810,7 +810,7 @@ class AddFuel extends Component {
                           <Button
                             id="addFuel_Guide"
                             variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                             onClick={() => { this.setState({ showTour: !showTour }) }}
                             title='Guide'
                           />
@@ -828,7 +828,7 @@ class AddFuel extends Component {
                         <Row>
 
                           <Col md="12">
-                            <Label id="AddFuel_zerobased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="AddFuel_zerobased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -842,7 +842,7 @@ class AddFuel extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label id="AddFuel_vendorbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="AddFuel_vendorbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -856,7 +856,7 @@ class AddFuel extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddFuel_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddFuel_customerbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -976,7 +976,7 @@ class AddFuel extends Component {
                                 />
                               </div>
                               {!isEditFlag && (
-                                <div
+                                <div id="AddFuel_Toggle"
                                   onClick={this.fuelToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
@@ -1131,7 +1131,7 @@ class AddFuel extends Component {
                                 </>
                               ) : (
                                 <>
-                                  <button
+                                  <button id="AddFuel_AddData"
                                     type="button"
                                     className={"user-btn mt30 pull-left"}
                                     disabled={isViewMode}
@@ -1311,5 +1311,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
-})(withTranslation()(AddFuel)),
+})(withTranslation(['FuelPowerMaster'])(AddFuel)),
 )

@@ -18,8 +18,12 @@ export function Steps(t) {
                 intro: t("addfuel.AddFuel_plant_container"),
             },
             {
-                element: "#AddFuel_Fuel_container ",
-                intro: t("addfuel.AddFuel_Fuel_container "),
+                element: "#AddFuel_Fuel_container",
+                intro: t("addfuel.AddFuel_Fuel_container"),
+            },
+            {
+                element: "#AddFuel_Toggle",
+                intro: t("addfuel.AddFuel_Toggle"),
             },
             {
                 element: "#AddFuel_CountryId_container",
@@ -42,12 +46,17 @@ export function Steps(t) {
                 intro: t("addfuel.AddFuel_EffectiveDate"),
             },
             {
+                element: "#AddFuel_AddData",
+                intro: t("addfuel.AddFuel_AddData"),
+            },
+            {
                 element: "#AddFuel_Cancel",
                 intro: t("addfuel.AddFuel_Cancel"),
             },
             {
                 element: "#AddFuel_Save",
                 intro: t("addfuel.AddFuel_Save"),
+                position: 'left'
             },
         ],
         ADD_FUEL_NAME_DRAWERS: [
@@ -66,6 +75,7 @@ export function Steps(t) {
             {
                 element: "#AddFuelNameDrawer_Save",
                 intro: t("addfuelNameDrawers.AddFuelNameDrawer_Save"),
+                position: 'left'
             },
         ],
         ADD_POWER: [
@@ -98,12 +108,17 @@ export function Steps(t) {
                 intro: t("addPower.AddPower_NetPowerCostPerUnit"),
             },
             {
+                element: "#AddPower_AddMoreDetails",
+                intro: t("addPower.AddPower_AddMoreDetails"),
+            },
+            {
                 element: "#AddPower_Cancel",
                 intro: t("addPower.AddPower_Cancel"),
             },
             {
                 element: "#AddPower_Save",
                 intro: t("addPower.AddPower_Save"),
+                position: 'left'
             },
 
         ],

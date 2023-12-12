@@ -56,6 +56,7 @@ export function Steps(t) {
             {
                 element: "#AddAssemblyPart_Save",
                 intro: t("addAssemblyPart.AddAssemblyPart_Save"),
+                position:'left',
             },
         ],
         ADD_COMPONENT_PART: [
@@ -110,6 +111,7 @@ export function Steps(t) {
             {
                 element: "#AddIndivisualPart_Save",
                 intro: t("addComponentPart.AddIndivisualPart_Save"),
+                position:'left',
             },
         ],
         ADD_PRODUCT_PART: [
@@ -160,6 +162,7 @@ export function Steps(t) {
             {
                 element: "#AddIndivisualPart_Save",
                 intro: t("addProductPart.AddIndivisualPart_Save"),
+                position:'left',
             },
 
         ],

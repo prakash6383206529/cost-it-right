@@ -22,6 +22,10 @@ export function Steps(t) {
                 intro: t("overheadsdMaster.AddOverhead_Plant_container"),
             },
             {
+                element: "#AddOverhead_ApplyPartCheckbox",
+                intro: t("overheadsdMaster.AddOverhead_ApplyPartCheckbox"),
+            },
+            {
                 element: "#AddOverhead_OverheadApplicability_container",
                 intro: t("overheadsdMaster.AddOverhead_OverheadApplicability_container"),
             },
@@ -60,6 +64,7 @@ export function Steps(t) {
             {
                 element: "#AddOverhead_Save",
                 intro: t("overheadsdMaster.AddOverhead_Save"),
+                position:'left'
             },
         ],
         ADD_PROFIT_DETAILS: [
@@ -82,6 +87,10 @@ export function Steps(t) {
             {
                 element: "#AddProfit_Plant_container",
                 intro: t("overheadsProfits.AddProfit_Plant_container"),
+            },
+            {
+                element: "#AddProfit_ApplyPartCheckbox",
+                intro: t("overheadsProfits.AddProfit_ApplyPartCheckbox"),
             },
             {
                 element: "#AddProfit_ProfitApplicabilityId_container",
@@ -118,6 +127,7 @@ export function Steps(t) {
             {
                 element: "#AddProfit_Save",
                 intro: t("overheadsProfits.AddProfit_Save"),
+                position:'left'
             },
         ],
     }

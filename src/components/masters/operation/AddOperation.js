@@ -13,7 +13,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import AddUOM from '../uom-master/AddUOM';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
-import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE } from '../../../config/constants';
+import { FILE_URL, ZBC, OPERATIONS_ID, EMPTY_GUID, SPACEBAR, VBCTypeId, CBCTypeId, ZBCTypeId, searchCount, VBC_VENDOR_TYPE, GUIDE_BUTTON_SHOW } from '../../../config/constants';
 import { AcceptableOperationUOM } from '../../../config/masterData'
 import DayTime from '../../common/DayTimeWrapper'
 import imgRedcross from '../../../assests/images/red-cross.png';
@@ -920,7 +920,7 @@ class AddOperation extends Component {
                       <Button
                         id="addOperation_guide"
                         variant={"ml-2"}
-                        className={`guide-bulb${showTour ? "-on" : ""}`}
+                        className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                         onClick={() => { this.setState({ showTour: !showTour }) }}
                         title='Guide'
                       />
@@ -937,7 +937,7 @@ class AddOperation extends Component {
                   <div className="add-min-height">
                     <Row>
                       <Col md="12">
-                        <Label id="Add_operation_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        <Label id="Add_operation_zero_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -951,7 +951,7 @@ class AddOperation extends Component {
                           />{" "}
                           <span>Zero Based</span>
                         </Label>
-                        <Label id="Add_operation_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        <Label id="Add_operation_vendor_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -965,7 +965,7 @@ class AddOperation extends Component {
                           />{" "}
                           <span>Vendor Based</span>
                         </Label>
-                        {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="Add_operation_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                        {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="Add_operation_customer_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -1231,7 +1231,7 @@ class AddOperation extends Component {
 
                     <Row>
                       <Col md="8" className="mb-5 pb-1 st-operation">
-                        <label
+                        <label id="AddOperation_SurfaceTreatmentCheckbox"
                           className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                             }`}
                           onChange={this.onPressSurfaceTreatment}
@@ -1500,6 +1500,6 @@ export default connect(mapStateToProps, {
     focusOnError(errors)
   },
   enableReinitialize: true,
-})(withTranslation()(AddOperation)),
+})(withTranslation(['OperationMaster'])(AddOperation)),
 )
 

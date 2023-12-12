@@ -13,6 +13,7 @@ import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import { withTranslation } from 'react-i18next';
 import Button from '../../layout/Button';
+import { GUIDE_BUTTON_SHOW } from '../../../config/constants';
 
 class AddFuelNameDrawer extends Component {
   constructor(props) {
@@ -149,7 +150,7 @@ class AddFuelNameDrawer extends Component {
                       <Button
                         id="add_FuelNameDrawer_guide"
                         variant={"ml-2"}
-                        className={`guide-bulb${showTour ? "-on" : ""}`}
+                        className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                         onClick={() => { this.setState({ showTour: !showTour }) }}
                         title='Guide'
                       />
@@ -252,5 +253,5 @@ export default connect(mapStateToProps, {
   form: 'AddFuelNameDrawer',
   enableReinitialize: true,
   touchOnChange: true
-})(withTranslation()(AddFuelNameDrawer)),
+})(withTranslation(['FuelPowerMaster'])(AddFuelNameDrawer)),
 )

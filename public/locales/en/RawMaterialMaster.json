@@ -6,10 +6,11 @@
         "AddRMDomestic_TechnologyId_container": "Enter the Technology name.",
         "AddRMDomestic_RawMaterialId_container": "Select Your Raw Material",
         "addRMDomestic_RMToggle": "Add Your Raw Material from here",
-        "AddRMDomestic_RawMaterialGradeId": "Select Your RawMaterial GradeId",
+        "AddRMDomestic_RawMaterialGradeId_container": "Select Your RawMaterial GradeId",
         "AddRMDomestic_RawMaterialSpecificationId_container": "Select Your Specification",
         "AddRMDomestic_CategoryId_container": "Select Your CategoryId",
         "AddRMDomestic_SourceSupplierPlantId_container": "Select Plant (Code) from the dropdown.",
+        "AddRMDomestic_HasDifferentSource":"Check the checkbox to add Source and Source Location.",
         "AddRMDomestic_UnitOfMeasurementId_container": "Select UOM from the dropdown.",
         "AddRMDomestic_cutOffPrice": "Enter Your CutOffPrice",
         "AddRMDomestic_BasicRateBaseCurrency": "Enter Your Basic Rate",
@@ -35,6 +36,7 @@
         "AddRMImport_RawMaterialSpecificationId_container": "Select Your Specification",
         "AddRMImport_CategoryId_container": "Select Your CategoryId",
         "AddRMImport_SourceSupplierPlantId_container": "Select Plant (Code) from the dropdown.",
+        "addRMImport_HasDifferentSource":"Check the checkbox to add Source and Source Location.",
         "AddRMImport_Vendor": "Select Vendor Name from the dropdown.",
         "addRMImport_vendorToggle": "Add Vendor from here",
         "AddRMImport_UnitOfMeasurementId_container": "Select UOM from the dropdown.",
@@ -47,14 +49,15 @@
         "AddRMImport_Remark": "Add remarks if necessary.",
         "AddRMImport_UploadFiles": "Add attachements if necessary.",
         "addRMImport_cancel": "Click here to reset the form and go-back to the grid page.",
-        "addRMImport_sendForApproval": "Click here to Send For Approval"
+        "addRMImport_sendForApproval": "Click here to Send For Approval."
     },
     "addRawMaterialSpecification": {
-        "AddSpecification_RawMaterialName_container": "Select Your Raw Material",
-        "AddSpecification_GradeId_container": "Select Your RawMaterial GradeId",
-        "AddSpecification_Specification": "Select Your Specification",
+        "AddSpecification_RawMaterialName_container": "Select Your Raw Material.",
+        "RawMaterialName-add":"Add Raw Material Name from here.",
+        "AddSpecification_GradeId_container": "Select Your RawMaterial GradeId.",
+        "AddSpecification_Specification": "Select Your Specification.",
         "rm-specification-cancel": "Click here to reset the form and go-back to the grid page.",
-        "rm-specification-submit": "Click here to Send For Approval"
+        "rm-specification-submit": "Click here to Send For Approval."
     },
     "addRawMaterialAssociation": {
         "Association_RawMaterialName_container": "Select Your Raw Material",

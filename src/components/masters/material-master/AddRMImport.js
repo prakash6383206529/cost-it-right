@@ -24,7 +24,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE } from '../../../config/constants';
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, GUIDE_BUTTON_SHOW } from '../../../config/constants';
 import { ASSEMBLY, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
@@ -1772,7 +1772,7 @@ class AddRMImport extends Component {
                           <Button
                             id="addRMImport_guide"
                             variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW  ? "" :"d-none"}`}
                             onClick={() => { this.setState({ showTour: !showTour }) }}
                             title='Guide'
                           />
@@ -1789,7 +1789,7 @@ class AddRMImport extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label id="Add_rm_import_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="Add_rm_import_zero_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1805,7 +1805,7 @@ class AddRMImport extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label id="Add_rm_import_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="Add_rm_import_vendor_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1821,7 +1821,7 @@ class AddRMImport extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="Add_rm_import_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="Add_rm_import_customer_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -2037,7 +2037,7 @@ class AddRMImport extends Component {
                                 <div className=" flex-fills mb-2 pl-0 d-flex justify-content-between align-items-center">
                                   <h5>{"Vendor:"}</h5>
                                   {costingTypeId !== VBCTypeId && (
-                                    <label
+                                    <label id="addRMImport_HasDifferentSource"
                                       className={`custom-checkbox w-auto mb-0 ${costingTypeId === VBCTypeId ? "disabled" : ""
                                         }`}
                                       onChange={this.onPressDifferentSource}
@@ -3063,5 +3063,5 @@ export default connect(mapStateToProps, {
   form: 'AddRMImport',
   enableReinitialize: true,
   touchOnChange: true
-})(withTranslation()(AddRMImport)),
+})(withTranslation(['RawMaterialMaster'])(AddRMImport)),
 )

@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
@@ -960,7 +960,7 @@ class AddOverhead extends Component {
                         <Button
                           id="addOverHead_guide"
                           variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""}`}
+                          className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                           onClick={() => { this.setState({ showTour: !showTour }) }}
                           title='Guide'
                         />
@@ -977,7 +977,7 @@ class AddOverhead extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label id="AddOverhead_zerobased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <Label id="AddOverhead_zerobased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -991,7 +991,7 @@ class AddOverhead extends Component {
                             />{" "}
                             <span>Zero Based</span>
                           </Label>
-                          <Label id="AddOverhead_vendorbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <Label id="AddOverhead_vendorbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1005,7 +1005,7 @@ class AddOverhead extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddOverhead_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddOverhead_customerbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1173,7 +1173,7 @@ class AddOverhead extends Component {
                           </Col>
                         )}
                         <Col md="3" className="st-operation mt-4 pt-2">
-                          <label
+                          <label id="AddOverhead_ApplyPartCheckbox"
                             className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                               }`}
                             onChange={this.onPressAssemblyCheckbox}
@@ -1501,5 +1501,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddOverhead',
   enableReinitialize: true,
-})(withTranslation()(AddOverhead)),
+})(withTranslation(['OverheadsProfits'])(AddOverhead)),
 )

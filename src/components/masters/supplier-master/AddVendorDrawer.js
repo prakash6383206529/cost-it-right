@@ -19,7 +19,7 @@ import { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
-import { EMPTY_DATA, ZBC } from '../../../config/constants';
+import { EMPTY_DATA, GUIDE_BUTTON_SHOW, ZBC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -710,7 +710,7 @@ class AddVendorDrawer extends Component {
                                                 <Button
                                                     id="add_vendor_guide"
                                                     variant={"ml-2"}
-                                                    className={`guide-bulb${showTour ? "-on" : ""}`}
+                                                    className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                                                     onClick={() => { this.setState({ showTour: !showTour }) }}
                                                     title='Guide'
                                                 />

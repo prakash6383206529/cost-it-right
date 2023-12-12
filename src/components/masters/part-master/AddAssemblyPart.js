@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import "react-datepicker/dist/react-datepicker.css";
-import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount } from '../../../config/constants';
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, FILE_URL, SPACEBAR, ASSEMBLYNAME, searchCount, GUIDE_BUTTON_SHOW } from '../../../config/constants';
 import AddChildDrawer from './AddChildDrawer';
 import DayTime from '../../common/DayTimeWrapper'
 import BOMViewer from './BOMViewer';
@@ -912,8 +912,8 @@ class AddAssemblyPart extends Component {
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Assembly Part
                           <Button
                             id="addAssemblyPart_guide"
-                            variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""}`}
+                            variant="ml-2"
+                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
                             onClick={() => { this.setState({ showTour: !showTour }) }}
                             title='Guide'
                           />
@@ -1424,5 +1424,5 @@ export default connect(mapStateToProps, {
   },
   enableReinitialize: true,
   touchOnChange: true,
-})(withTranslation()(AddAssemblyPart)),
+})(withTranslation(['PartMaster'])(AddAssemblyPart)),
 )

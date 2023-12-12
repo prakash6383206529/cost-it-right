@@ -30,7 +30,7 @@ import activeReport from '../../assests/images/report-active.svg'
 import activeRFQ from '../../assests/images/rfqActive.svg'
 import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { CBC_COSTING, COSTING, SIMULATION, VERSION } from '../../config/constants';
+import { CBC_COSTING, COSTING, GUIDE_BUTTON_SHOW, SIMULATION, VERSION } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
@@ -927,7 +927,7 @@ class SideBar extends Component {
                   <li className="nav-item d-xl-inline-block">
                     <div className="d-flex align-items-center">
                       <LanguageDropdown />
-                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
+                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
                     </div>
                   </li>
                   <li className="nav-item d-xl-inline-block version">
