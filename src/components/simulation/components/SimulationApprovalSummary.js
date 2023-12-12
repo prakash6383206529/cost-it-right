@@ -136,7 +136,7 @@ function SimulationApprovalSummary(props) {
     useEffect(() => {
         dispatch(getTechnologySelectList(() => {
         }))
-        dispatch(getPlantSelectListByType(ZBC, () => {
+        dispatch(getPlantSelectListByType(ZBC, "SIMULATION", () => {
         }))
 
         const reqParams = {
