@@ -119,6 +119,7 @@ const ZBCPlantListing = (props) => {
   * @description Renders buttons
   */
     const buttonFormatter = (props) => {
+        console.log(props);
         const cellValue = props?.value;
         return (
             <>

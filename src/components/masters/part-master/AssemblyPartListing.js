@@ -1,474 +1,554 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Row, Col, } from 'reactstrap';
-import { getAssemblyPartDataList, deleteAssemblyPart, } from '../actions/Part';
-import { } from '../../../actions/Common';
-import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import NoContentFound from '../../common/NoContentFound';
-import DayTime from '../../common/DayTimeWrapper'
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import BOMViewer from './BOMViewer';
-import BOMUploadDrawer from '../../massUpload/BOMUpload';
-import LoaderCustom from '../../common/LoaderCustom';
-import { AssemblyPart } from '../../../config/constants';
-import ReactExport from 'react-export-excel';
-import { ASSEMBLYPART_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { filterParams } from '../../common/DateFilter'
-import { PaginationWrapper } from '../../common/commonPagination';
-import { loggedInUserId, searchNocontentFilter } from '../../../helper';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
+import React, { useState, useEffect, useCallback, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Row, Col } from "reactstrap";
+import { getAssemblyPartDataList, deleteAssemblyPart } from "../actions/Part";
+import Toaster from "../../common/Toaster";
+import { MESSAGES } from "../../../config/message";
+import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import NoContentFound from "../../common/NoContentFound";
+import DayTime from "../../common/DayTimeWrapper";
+import BOMViewer from "./BOMViewer";
+import BOMUploadDrawer from "../../massUpload/BOMUpload";
+import LoaderCustom from "../../common/LoaderCustom";
+import { AssemblyPart } from "../../../config/constants";
+import ReactExport from "react-export-excel";
+import { ASSEMBLYPART_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { AgGridColumn, AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import { filterParams } from "../../common/DateFilter";
+import { PaginationWrapper } from "../../common/commonPagination";
+import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { ApplyPermission } from ".";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
 const gridOptions = {};
 
+const AssemblyPartListing = React.memo((props) => {
+  const dispatch = useDispatch();
+  const partsListing = useSelector((state) => state.part.partsListing);
+  const [isLoader, setIsLoader] = useState(false);
+  const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
 
+  const [tableData, setTableData] = useState([]);
+  const [viewAccessibility, setViewAccessibility] = useState(props.ViewAccessibility);
 
-class AssemblyPartListing extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditFlag: false,
-            isOpen: false,
-            tableData: [],
-            disableDownload: false,
-            isOpenVisualDrawer: false,
-            visualAdId: '',
-            BOMId: '',
-            isBulkUpload: false,
-            showPopup: false,
-            deletedId: '',
-            isLoader: false,
-            selectedRowData: false,
-            noData: false,
-            dataCount: 0
+  const [state, setState] = useState({
+    isEditFlag: false,
+    isOpen: false,
+    disableDownload: false,
+    isOpenVisualDrawer: false,
+    visualAdId: "",
+    BOMId: "",
+    isBulkUpload: false,
+    showPopup: false,
+    deletedId: "",
+    isLoader: false,
+    selectedRowData: false,
+    noData: false,
+    dataCount: 0,
+    ID: "",
+    isViewMode: false,
+    isActivate: false,
+    isDownload: false,
+    gridApi: null,
+    columnApi: null,
+    paginationPageSize: defaultPageSize,
+  });
+
+  const permissions = 
+  useContext
+  (ApplyPermission);
+  console.log(permissions , 
+    "permissions");
+
+  const getTableListData = () => {
+    setIsLoader(true);
+    dispatch(
+      getAssemblyPartDataList((res) => {
+        setIsLoader(false);
+        if (res.status === 204 && res.data === "") {
+          setTableData([]);
+        } else if (res && res.data && res.data.DataList) {
+          let Data = res.data.DataList;
+          setTableData(Data);
         }
-    }
+      })
+    );
+  };
 
-    componentDidMount() {
-        setTimeout(() => {
-            if (!this.props.stopApiCallOnCancel) {
-                this.getTableListData();
-            }
-        }, 300);
-    }
+  const filterList = useCallback(() => {
+    getTableListData();
+  }, []);
 
-    // Get updated user list after any action performed.
-    getUpdatedData = () => {
-        if (!this.props.stopApiCallOnCancel) {
-            this.getTableListData()
-        }
-    }
+  useEffect(() => {
 
-    /**
-    * @method getTableListData
-    * @description Get user list data
-    */
-    getTableListData = () => {
-        this.setState({ isLoader: true })
-        this.props.getAssemblyPartDataList((res) => {
-            this.setState({ isLoader: false })
-            if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], isLoader: false })
-            } else if (res && res.data && res.data.DataList) {
-                let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                    isLoader: false
-                })
-            } else {
+    filterList();
+  }, [props]);
 
-            }
-        })
-    }
+  useEffect(() => {
+    setViewAccessibility(props.ViewAccessibility);
+  }, [props.ViewAccessibility]);
 
-    /**
-    * @method editItemDetails
-    * @description confirm edit item
-    */
-    viewOrEditItemDetails = (Id, isViewMode) => {
-        let requestData = {
-            isEditFlag: true,
-            Id: Id,
-            isViewMode: isViewMode,
-        }
-        this.props.getDetails(requestData)
-    }
+  const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
+    setState((prevState) => ({
+      ...prevState,
+      isOpen: true,
+      isEditFlag: true,
+      ID: Id,
+      isViewMode: isViewMode,
+    }));
+  }, [ViewAccessibility, EditAccessibility]);
 
-    /**
-    * @method deleteItem
-    * @description CONFIRM DELETE PART
-    */
-    deleteItem = (Id) => {
-        this.setState({ showPopup: true, deletedId: Id })
-    }
+  const deleteItem = useCallback((Id) => {
+    setState((prevState) => ({
+      ...prevState,
+      showPopup: true,
+      deletedId: Id,
+    }));
+  }, []);
 
-    /**
-    * @method confirmDeleteItem
-    * @description DELETE ASSEMBLY PART
-    */
-    confirmDeleteItem = (ID) => {
-        const loggedInUser = loggedInUserId()
-        this.props.deleteAssemblyPart(ID, loggedInUser, (res) => {
-            if (res.data.Result === true) {
-                Toaster.success(MESSAGES.DELETE_BOM_SUCCESS);
-                this.getTableListData();
-                this.setState({ dataCount: 0 })
-            }
-        });
-        this.setState({ showPopup: false })
-    }
-    onPopupConfirm = () => {
-        this.confirmDeleteItem(this.state.deletedId);
-    }
-    closePopUp = () => {
-        this.setState({ showPopup: false })
-    }
-    /**
-    * @method effectiveDateFormatter
-    * @description Renders buttons
-    */
-    effectiveDateFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-    }
-
-    renderEffectiveDate = () => {
-        return <> Effective <br /> Date </>
-    }
-
-    renderNumberOfParts = () => {
-        return <>No. of <br />Child Parts </>
-    }
-    renderBOMLevelCount = () => {
-        return <>BOM <br />Level Count</>
-    }
-
-
-    /**
-    * @method visualAdDetails
-    * @description Renders buttons
-    */
-    visualAdDetails = (cell) => {
-        this.setState({ visualAdId: cell, isOpenVisualDrawer: true })
-    }
-    /**
-       * @method onFloatingFilterChanged
-       * @description Filter data when user type in searching input
-       */
-    onFloatingFilterChanged = (value) => {
-        setTimeout(() => {
-            this.props.partsListing.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }, 500);
-    }
-    /**
-    * @method closeVisualDrawer
-    * @description CLOSE VISUAL AD DRAWER
-    */
-    closeVisualDrawer = () => {
-        this.setState({ isOpenVisualDrawer: false, visualAdId: '', })
-    }
-
-
-    /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    buttonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
-        return (
-            <>
-                {ViewAccessibility && <button title='View BOM' className="hirarchy-btn" type={'button'} onClick={() => this.visualAdDetails(cellValue)} />}
-                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && !rowData?.IsAssociate && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
-            </>
-        )
+  const confirmDeleteItem = (ID) => {
+    
+    setState((prevState) => ({
+        
+      ...prevState,
+      showPopup: false,
+      deletedId: "",
+    }));
+    dispatch(deleteAssemblyPart(ID, loggedInUserId,(res) => filterList()));
+    Toaster.success(MESSAGES.DELETE_SUCCESSFULLY);
     };
+  
 
-    /**
-    * @method hyphenFormatter
-    */
-    hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
+
+  const onPopupConfirm = () => {
+    confirmDeleteItem(state.deletedId);
+  };
+
+  const closePopUp = () => {
+    setState({ showPopup: false });
+  };
+
+  const effectiveDateFormatter = (props) => {
+    const cellValue = props?.valueFormatted
+      ? props.valueFormatted
+      : props?.value;
+    return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
+  };
+
+  const visualAdDetails = (cell) => {
+    setState({ visualAdId: cell, isOpenVisualDrawer: true });
+  };
+
+  const onFloatingFilterChanged = (value) => {
+    setTimeout(() => {
+      partsListing.length !== 0 &&
+        setState({ noData: searchNocontentFilter(value, state.noData) });
+    }, 500);
+  };
+
+  const closeVisualDrawer = () => {
+    setState({ isOpenVisualDrawer: false, visualAdId: "" });
+  };
+
+  const buttonFormatter = useCallback((props) => {
+    const cellValue = props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    console.log(permissions.ViewAccessibility , "permissions");
+    return (
+      <>
+        {permissions.ViewAccessibility && (
+          <button
+            title="button"
+            className="hirarchy-btn"
+            type={"button"}
+            onClick={() => visualAdDetails(cellValue)}
+          />
+        )}
+        {state.ViewAccessibility && (
+          <button
+            title="View"
+            className="View"
+            type={"button"}
+            onClick={() => viewOrEditItemDetails(cellValue, true)}
+          />
+        )}
+        {state.EditAccessibility && (
+          <button
+            title="Edit"
+            className="Edit"
+            type={"button"}
+            onClick={() => viewOrEditItemDetails(cellValue, false)}
+          />
+        )}
+        {state.DeleteAccessibility && !rowData?.IsAssociate && (
+          <button
+            title="Delete"
+            className="Delete"
+            type={"button"}
+            onClick={() => deleteItem(cellValue)}
+          />
+        )}
+      </>
+    );
+  }, [state.ViewAccessibility, state.EditAccessibility, state.DeleteAccessibility]);
+  
+
+  const hyphenFormatter = (props) => {
+    const cellValue = props?.value;
+    return cellValue !== " " &&
+      cellValue !== null &&
+      cellValue !== "" &&
+      cellValue !== undefined
+      ? cellValue
+      : "-";
+  };
+
+  const indexFormatter = (cell, row, enumObject, rowIndex) => {
+    let currentPage = state.gridApi.state.currPage;
+    let sizePerPage = state.gridApi.state.sizePerPage;
+    let serialNumber = "";
+    if (currentPage === 1) {
+      serialNumber = rowIndex + 1;
+    } else {
+      serialNumber = rowIndex + 1 + sizePerPage * (currentPage - 1);
     }
+    return serialNumber;
+  };
 
-    /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        let currentPage = this.refs.table.state.currPage;
-        let sizePerPage = this.refs.table.state.sizePerPage;
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
+  const displayForm = () => {
+    props.displayForm();
+  };
+
+  const bulkToggle = () => {
+    setState({ isBulkUpload: true });
+  };
+
+  const closeBulkUploadDrawer = (isCancel) => {
+    setState({ isBulkUpload: false }, () => {});
+    if (!isCancel) {
+      getTableListData();
+    }
+  };
+
+  const frameworkComponents = {
+    buttonRenderer: buttonFormatter,
+    indexRenderer: indexFormatter,
+    hyphenRenderer: hyphenFormatter,
+    effectiveDateRenderer: effectiveDateFormatter,
+  };
+
+  const onGridReady = (params) => {
+    window.screen.width >= 1600 && params.api.sizeColumnsToFit();
+    setState((prevState) => ({
+      ...prevState,
+      gridApi: params.api,
+      columnApi: params.columnApi,
+    }));
+    params.api.paginationGoToPage(0);
+  };
+
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
+  };
+
+  const onRowSelect = () => {
+    const selectedRows = state.gridApi?.getSelectedRows();
+    setState({ selectedRowData: selectedRows, dataCount: selectedRows.length });
+  };
+
+  const onBtExport = () => {
+    let tempArr = [];
+    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    tempArr =
+      tempArr && tempArr?.length > 0
+        ? tempArr
+        : partsListing
+        ? partsListing
+        : [];
+    return returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr);
+  };
+
+  const returnExcelColumn = (data = [], TempData) => {
+    let temp = [];
+    temp =
+      TempData &&
+      TempData.map((item) => {
+        if (item.Technology === "-") {
+          item.Technology = " ";
         }
-        return serialNumber;
-    }
-
-    onExportToCSV = (row) => {
-        return this.state.userData; // must return the data which you want to be exported
-    }
-
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
-
-    formToggle = () => {
-        this.props.formToggle()
-    }
-
-    displayForm = () => {
-        this.props.displayForm()
-    }
-
-
-    bulkToggle = () => {
-        this.setState({ isBulkUpload: true })
-    }
-
-    closeBulkUploadDrawer = (isCancel) => {
-        this.setState({ isBulkUpload: false }, () => {
-        })
-        if (!isCancel) {
-            this.getTableListData();
+        if (item.EffectiveDate?.includes("T")) {
+          item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
         }
+        return item;
+      });
+    return (
+      <ExcelSheet data={temp} name={AssemblyPart}>
+        {data &&
+          data.map((ele, index) => (
+            <ExcelColumn
+              key={index}
+              label={ele.label}
+              value={ele.value}
+              style={ele.style}
+            />
+          ))}
+      </ExcelSheet>
+    );
+  };
+
+  const onFilterTextBoxChanged = (e) => {
+    state.gridApi.setQuickFilter(e.target.value);
+  };
+
+  const resetState = () => {
+    state.gridApi.deselectAll();
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+    if (window.screen.width >= 1600) {
+      state.gridApi.sizeColumnsToFit();
     }
+  };
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
+  };
 
-    onGridReady = (params) => {
-        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(0);
-    };
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn,
+  };
 
-    onPageSizeChanged = (newPageSize) => {
-        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-    };
+  return (
+    <div
+      className={`ag-grid-react p-relative ${
+        props.DownloadAccessibility ? "show-table-btn" : ""
+      }`}
+    >
+      {state.isLoader && <LoaderCustom />}
+      <Row className="pt-4 no-filter-row">
+        <Col md="8" className="filter-block"></Col>
+        <Col md="6" className="search-user-block pr-0">
+          <div className="d-flex justify-content-end bd-highlight w100">
+            <div>
+              {props.AddAccessibility && (
+                <button
+                  type="button"
+                  className={"user-btn mr5"}
+                  title="Add"
+                  onClick={displayForm}
+                >
+                  <div className={"plus mr-0"}></div>
+                </button>
+              )}
+              {props.BulkUploadAccessibility && (
+                <button
+                  type="button"
+                  className={"user-btn mr5"}
+                  onClick={bulkToggle}
+                  title="Bulk Upload"
+                >
+                  <div className={"upload mr-0"}></div>
+                </button>
+              )}
+              {props.DownloadAccessibility && (
+                <>
+                  <ExcelFile
+                    filename={"BOM"}
+                    fileExtension={".xls"}
+                    element={
+                      <button
+                        title={`Download ${
+                          state?.dataCount === 0
+                            ? "All"
+                            : "(" + state?.dataCount + ")"
+                        }`}
+                        type="button"
+                        className={"user-btn mr5"}
+                      >
+                        <div className="download mr-1"></div>
+                        {`${
+                          state?.dataCount === 0
+                            ? "All"
+                            : "(" + state.dataCount + ")"
+                        }`}
+                      </button>
+                    }
+                  >
+                    {onBtExport()}
+                  </ExcelFile>
+                </>
+              )}
+              <button
+                type="button"
+                className="user-btn"
+                title="Reset Grid"
+                onClick={() => resetState()}
+              >
+                <div className="refresh mr-0"></div>
+              </button>
+            </div>
+          </div>
+        </Col>
+      </Row>
 
-    onRowSelect = () => {
-        const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
-    }
-    onBtExport = () => {
-        let tempArr = []
-        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = (tempArr && tempArr?.length > 0) ? tempArr : (this.props.partsListing ? this.props.partsListing : [])
-        return this.returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr)
-    };
+      <div
+        className={`ag-grid-wrapper height-width-wrapper ${
+          (partsListing && partsListing?.length <= 0) || state.noData
+            ? "overlay-contain"
+            : ""
+        }`}
+      >
+        <div className="ag-grid-header">
+          <input
+            type="text"
+            className="form-control table-search"
+            id="filter-text-box"
+            placeholder="Search"
+            autoComplete={"off"}
+            onChange={(e) => onFilterTextBoxChanged(e)}
+          />
+        </div>
+        <div
+          className={`ag-theme-material ${
+            state.isLoader && "max-loader-height"
+          }`}
+        >
+          {state.noData && (
+            <NoContentFound
+              title={EMPTY_DATA}
+              customClassName="no-content-found"
+            />
+          )}
+          <AgGridReact
+            defaultColDef={defaultColDef}
+            floatingFilter={true}
+            domLayout="autoHeight"
+            rowData={partsListing}
+            pagination={true}
+            paginationPageSize={defaultPageSize}
+            onGridReady={onGridReady}
+            gridOptions={gridOptions}
+            noRowsOverlayComponent={"customNoRowsOverlay"}
+            noRowsOverlayComponentParams={{
+              title: EMPTY_DATA,
+              imagClass: "imagClass",
+            }}
+            rowSelection={"multiple"}
+            onSelectionChanged={onRowSelect}
+            frameworkComponents={frameworkComponents}
+            onFilterModified={onFloatingFilterChanged}
+            suppressRowClickSelection={true}
+          >
+            <AgGridColumn
+              cellClass="has-checkbox"
+              field="Technology"
+              headerName="Technology"
+              cellRenderer={"checkBoxRenderer"}
+            ></AgGridColumn>
+            <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
+            <AgGridColumn
+              field="PartNumber"
+              headerName="Part No."
+            ></AgGridColumn>
+            <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+            {props.initialConfiguration?.IsSAPCodeRequired && (
+              <AgGridColumn
+                field="SAPCode"
+                headerName="SAP Code"
+                cellRenderer={"hyphenFormatter"}
+              ></AgGridColumn>
+            )}
+            <AgGridColumn
+              field="NumberOfParts"
+              headerName="No. of Child Parts"
+            ></AgGridColumn>
+            <AgGridColumn
+              field="BOMLevelCount"
+              headerName="BOM Level Count"
+            ></AgGridColumn>
+            <AgGridColumn
+              field="ECNNumber"
+              headerName="ECN No."
+              cellRenderer={"hyphenFormatter"}
+            ></AgGridColumn>
+            <AgGridColumn
+              field="RevisionNumber"
+              headerName="Revision No."
+              cellRenderer={"hyphenFormatter"}
+            ></AgGridColumn>
+            <AgGridColumn
+              field="DrawingNumber"
+              headerName="Drawing No."
+              cellRenderer={"hyphenFormatter"}
+            ></AgGridColumn>
+            <AgGridColumn
+              field="EffectiveDateNew"
+              headerName="Effective Date"
+              cellRenderer={"effectiveDateFormatter"}
+              filter="agDateColumnFilter"
+              filterParams={filterParams}
+            ></AgGridColumn>
+            <AgGridColumn
+              field="PartId"
+              width={180}
+              cellClass="ag-grid-action-container actions-wrapper"
+              headerName="Action"
+              pinned="right"
+              type="rightAligned"
+              floatingFilter={false}
+              cellRenderer={"buttonRenderer"}
+            ></AgGridColumn>
+          </AgGridReact>
 
-    returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData && TempData.map((item) => {
-            if (item.Technology === '-') {
-                item.Technology = ' '
-            }
-            if (item.EffectiveDate?.includes('T')) {
-                item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-            }
-            return item
-        })
-        return (
+          {
+            <PaginationWrapper
+              gridApi={state.gridApi}
+              setPage={onPageSizeChanged}
+            />
+          }
+        </div>
+      </div>
 
-            <ExcelSheet data={temp} name={AssemblyPart}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
-    }
+      {state.isOpenVisualDrawer && (
+        <BOMViewer
+          isOpen={state.isOpenVisualDrawer}
+          closeDrawer={closeVisualDrawer}
+          isEditFlag={true}
+          PartId={state.visualAdId}
+          anchor={"right"}
+          isFromVishualAd={true}
+          NewAddedLevelOneChilds={[]}
+        />
+      )}
+      {state.isBulkUpload && (
+        <BOMUploadDrawer
+          isOpen={state.isBulkUpload}
+          closeDrawer={closeBulkUploadDrawer}
+          isEditFlag={false}
+          fileName={"BOM"}
+          messageLabel={"BOM"}
+          anchor={"right"}
+        />
+      )}
+      {state.showPopup && (
+        <PopupMsgWrapper
+          isOpen={state.showPopup}
+          closePopUp={closePopUp}
+          confirmPopup={onPopupConfirm}
+          message={`${MESSAGES.BOM_DELETE_ALERT}`}
+        />
+      )}
+    </div>
+  );
+});
 
-    onFilterTextBoxChanged(e) {
-
-        this.state.gridApi.setQuickFilter(e.target.value);
-    }
-
-
-    resetState() {
-        this.state.gridApi.deselectAll()
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
-
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { isOpenVisualDrawer, isBulkUpload, noData } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
-
-        const isFirstColumn = (params) => {
-            var displayedColumns = params.columnApi.getAllDisplayedColumns();
-            var thisIsFirstColumn = displayedColumns[0] === params.column;
-            return thisIsFirstColumn;
-        }
-
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: false,
-            headerCheckboxSelectionFilteredOnly: true,
-            checkboxSelection: isFirstColumn
-        };
-
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter,
-            visualAdFormatter: this.visualAdFormatter,
-            effectiveDateFormatter: this.effectiveDateFormatter
-        };
-
-        return (
-            <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.state.isLoader && <LoaderCustom />}
-                <Row className="pt-4 no-filter-row">
-                    <Col md="8" className="filter-block">
-
-                    </Col>
-                    <Col md="6" className="search-user-block pr-0">
-                        <div className="d-flex justify-content-end bd-highlight w100">
-                            <div>
-                                {AddAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={'user-btn mr5'}
-                                        title="Add"
-                                        onClick={this.displayForm}>
-                                        <div className={'plus mr-0'}></div></button>
-                                )}
-                                {BulkUploadAccessibility && (
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5"}
-                                        onClick={this.bulkToggle}
-                                        title="Bulk Upload"
-                                    >
-                                        <div className={"upload mr-0"}></div>
-                                        {/* Bulk Upload */}
-                                    </button>
-                                )}
-                                {
-                                    DownloadAccessibility &&
-                                    <>
-                                        <ExcelFile filename={'BOM'} fileExtension={'.xls'} element={
-                                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
-                                            </button>}>
-                                            {this.onBtExport()}
-                                        </ExcelFile>
-                                    </>
-                                }
-                                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                    <div className="refresh mr-0"></div>
-                                </button>
-
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-
-
-                <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.partsListing && this.props.partsListing?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                    <div className="ag-grid-header">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                    </div>
-                    <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                        {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter={true}
-                            domLayout='autoHeight'
-                            rowData={this.props.partsListing}
-                            pagination={true}
-                            paginationPageSize={defaultPageSize}
-                            onGridReady={this.onGridReady}
-                            gridOptions={gridOptions}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                                title: EMPTY_DATA,
-                                imagClass: 'imagClass'
-                            }}
-                            rowSelection={'multiple'}
-                            onSelectionChanged={this.onRowSelect}
-                            frameworkComponents={frameworkComponents}
-                            onFilterModified={this.onFloatingFilterChanged}
-                            suppressRowClickSelection={true}
-                        >
-                            <AgGridColumn cellClass="has-checkbox" field="Technology" headerName="Technology" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
-                            <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
-                            <AgGridColumn field="PartNumber" headerName="Part No."></AgGridColumn>
-                            <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-                            {initialConfiguration?.IsSAPCodeRequired && <AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                            <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"></AgGridColumn>
-                            <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count"></AgGridColumn>
-                            <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                            <AgGridColumn field="PartId" width={180} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                        </AgGridReact>
-                        {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-                    </div>
-                </div>
-
-                {isOpenVisualDrawer && <BOMViewer
-                    isOpen={isOpenVisualDrawer}
-                    closeDrawer={this.closeVisualDrawer}
-                    isEditFlag={true}
-                    PartId={this.state.visualAdId}
-                    anchor={'right'}
-                    isFromVishualAd={true}
-                    NewAddedLevelOneChilds={[]}
-                />}
-                {isBulkUpload && <BOMUploadDrawer
-                    isOpen={isBulkUpload}
-                    closeDrawer={this.closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'BOM'}
-                    messageLabel={'BOM'}
-                    anchor={'right'}
-                />}
-                {
-                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`} />
-                }
-            </div >
-        );
-    }
-}
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ part, auth }) {
-    const { partsListing } = part
-    const { initialConfiguration } = auth;
-
-    return { partsListing, initialConfiguration };
-}
-
-/**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-
-export default connect(mapStateToProps,
-    {
-        getAssemblyPartDataList,
-        deleteAssemblyPart,
-    })(AssemblyPartListing);
+export default AssemblyPartListing;
