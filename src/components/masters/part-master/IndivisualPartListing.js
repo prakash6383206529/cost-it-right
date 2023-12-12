@@ -642,8 +642,8 @@ class IndivisualPartListing extends Component {
                                     {this.state.warningMessage && !this.state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                 </div>
                                 <div className='d-flex'>
-                                    {EditAccessibility && <button title='Associate part with technology' className="create-rfq mr-1" type={'button'} onClick={() => this.associatePartWithTechnology()} />}
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
+                                    {EditAccessibility && <button title='Associate part with technology' className="user-btn pl-2 pr-3 mr-1" type={'button'} onClick={() => this.associatePartWithTechnology()}><div className='associate'></div></button>}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
