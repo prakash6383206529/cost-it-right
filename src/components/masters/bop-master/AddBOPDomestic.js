@@ -118,7 +118,7 @@ class AddBOPDomestic extends Component {
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
-      this.props.getPlantSelectListByType(ZBC, () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
     }
   }
 

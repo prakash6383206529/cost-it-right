@@ -32,7 +32,7 @@ function AddVendorDrawer(props) {
 
   useEffect(() => {
     const { vbcVendorGrid } = props;
-    dispatch(getPlantSelectListByType(ZBC, () => { }))
+    dispatch(getPlantSelectListByType(ZBC, "COSTING", () => { }))
 
     let tempArr = [];
     vbcVendorGrid && vbcVendorGrid.map(el => {

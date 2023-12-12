@@ -90,7 +90,7 @@ class AddProfit extends Component {
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }
-    this.props.getPlantSelectListByType(ZBC, () => { })
+    this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
     this.props.fetchCostingHeadsAPI('master', res => { });
     if (!this.state.isViewMode) {
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
