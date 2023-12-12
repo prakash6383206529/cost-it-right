@@ -62,8 +62,7 @@ const AssemblyPartListing = React.memo((props) => {
   const permissions = 
   useContext
   (ApplyPermission);
-  console.log(permissions , 
-    "permissions");
+  
 
   const getTableListData = () => {
     setIsLoader(true);
@@ -158,7 +157,6 @@ const AssemblyPartListing = React.memo((props) => {
   const buttonFormatter = useCallback((props) => {
     const cellValue = props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    console.log(permissions.ViewAccessibility , "permissions");
     return (
       <>
         {permissions.ViewAccessibility && (

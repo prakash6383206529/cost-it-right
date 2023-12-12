@@ -36,7 +36,6 @@ const PartMaster = () => {
     stopApiCallOnCancel: false,
     loader: true,
   });
-  console.log(state);
 
   const topAndLeftMenuData = useSelector(
     (state) => state.auth.topAndLeftMenuData
@@ -73,7 +72,6 @@ const PartMaster = () => {
       const Data =
         topAndLeftMenuData &&
         topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-      console.log(Data);
       const accessData = Data && Data.Pages.find((el) => el.PageName === PART);
       const permmisionData =
         accessData && accessData.Actions && checkPermission(accessData.Actions);
@@ -131,7 +129,6 @@ const PartMaster = () => {
   }, []);
 
   const getDetails = useCallback((data) => {
-    console.log(data, "data");
     setState((prevState) => ({
       ...prevState,
       getDetails: data,
