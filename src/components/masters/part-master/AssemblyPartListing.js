@@ -30,11 +30,9 @@ const gridOptions = {};
 const AssemblyPartListing = React.memo((props) => {
   const dispatch = useDispatch();
   const partsListing = useSelector((state) => state.part.partsListing);
-  const [isLoader, setIsLoader] = useState(false);
-  const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = props;
 
   const [tableData, setTableData] = useState([]);
-  const [viewAccessibility, setViewAccessibility] = useState(props.ViewAccessibility);
+
 
   const [state, setState] = useState({
     isEditFlag: false,
@@ -59,16 +57,22 @@ const AssemblyPartListing = React.memo((props) => {
     paginationPageSize: defaultPageSize,
   });
 
-  const permissions = 
-  useContext
-  (ApplyPermission);
-  
+
+  const permissions = useContext(ApplyPermission);
+  console.log('permissions: ', permissions);
+
 
   const getTableListData = () => {
-    setIsLoader(true);
+    setState(prevState => ({
+      ...prevState,
+      isLoader: true
+    }))
     dispatch(
       getAssemblyPartDataList((res) => {
-        setIsLoader(false);
+        setState(prevState => ({
+          ...prevState,
+          isLoader: false
+        }))
         if (res.status === 204 && res.data === "") {
           setTableData([]);
         } else if (res && res.data && res.data.DataList) {
@@ -79,18 +83,14 @@ const AssemblyPartListing = React.memo((props) => {
     );
   };
 
-  const filterList = useCallback(() => {
-    getTableListData();
-  }, []);
 
   useEffect(() => {
+    getTableListData()
+  }, [])
 
-    filterList();
-  }, [props]);
 
-  useEffect(() => {
-    setViewAccessibility(props.ViewAccessibility);
-  }, [props.ViewAccessibility]);
+
+
 
   const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
     setState((prevState) => ({
@@ -100,7 +100,7 @@ const AssemblyPartListing = React.memo((props) => {
       ID: Id,
       isViewMode: isViewMode,
     }));
-  }, [ViewAccessibility, EditAccessibility]);
+  }, []);
 
   const deleteItem = useCallback((Id) => {
     setState((prevState) => ({
@@ -111,17 +111,17 @@ const AssemblyPartListing = React.memo((props) => {
   }, []);
 
   const confirmDeleteItem = (ID) => {
-    
+
     setState((prevState) => ({
-        
+
       ...prevState,
       showPopup: false,
       deletedId: "",
     }));
-    dispatch(deleteAssemblyPart(ID, loggedInUserId,(res) => filterList()));
+    dispatch(deleteAssemblyPart(ID, loggedInUserId, (res) => getTableListData()));
     Toaster.success(MESSAGES.DELETE_SUCCESSFULLY);
-    };
-  
+  };
+
 
 
   const onPopupConfirm = () => {
@@ -157,9 +157,10 @@ const AssemblyPartListing = React.memo((props) => {
   const buttonFormatter = useCallback((props) => {
     const cellValue = props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+    console.log(permissions, "permissions");
     return (
       <>
-        {permissions.ViewAccessibility && (
+        {permissions.View && (
           <button
             title="button"
             className="hirarchy-btn"
@@ -167,7 +168,7 @@ const AssemblyPartListing = React.memo((props) => {
             onClick={() => visualAdDetails(cellValue)}
           />
         )}
-        {state.ViewAccessibility && (
+        {permissions.View && (
           <button
             title="View"
             className="View"
@@ -175,7 +176,7 @@ const AssemblyPartListing = React.memo((props) => {
             onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
         )}
-        {state.EditAccessibility && (
+        {permissions.Edit && (
           <button
             title="Edit"
             className="Edit"
@@ -183,7 +184,7 @@ const AssemblyPartListing = React.memo((props) => {
             onClick={() => viewOrEditItemDetails(cellValue, false)}
           />
         )}
-        {state.DeleteAccessibility && !rowData?.IsAssociate && (
+        {permissions.Delete && !rowData?.IsAssociate && (
           <button
             title="Delete"
             className="Delete"
@@ -193,8 +194,8 @@ const AssemblyPartListing = React.memo((props) => {
         )}
       </>
     );
-  }, [state.ViewAccessibility, state.EditAccessibility, state.DeleteAccessibility]);
-  
+  }, []);
+
 
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
@@ -227,7 +228,7 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const closeBulkUploadDrawer = (isCancel) => {
-    setState({ isBulkUpload: false }, () => {});
+    setState({ isBulkUpload: false }, () => { });
     if (!isCancel) {
       getTableListData();
     }
@@ -266,8 +267,8 @@ const AssemblyPartListing = React.memo((props) => {
       tempArr && tempArr?.length > 0
         ? tempArr
         : partsListing
-        ? partsListing
-        : [];
+          ? partsListing
+          : [];
     return returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -304,6 +305,7 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const resetState = () => {
+    console.log("COMING IN RESET FUNCTION", state);
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -327,11 +329,10 @@ const AssemblyPartListing = React.memo((props) => {
 
   return (
     <div
-      className={`ag-grid-react p-relative ${
-        props.DownloadAccessibility ? "show-table-btn" : ""
-      }`}
+      className={`ag-grid-react p-relative ${props.DownloadAccessibility ? "show-table-btn" : ""
+        }`}
     >
-      {state.isLoader && <LoaderCustom />}
+      {state.isLoader ? <LoaderCustom /> : ''}
       <Row className="pt-4 no-filter-row">
         <Col md="8" className="filter-block"></Col>
         <Col md="6" className="search-user-block pr-0">
@@ -364,20 +365,18 @@ const AssemblyPartListing = React.memo((props) => {
                     fileExtension={".xls"}
                     element={
                       <button
-                        title={`Download ${
-                          state?.dataCount === 0
-                            ? "All"
-                            : "(" + state?.dataCount + ")"
-                        }`}
+                        title={`Download ${state?.dataCount === 0
+                          ? "All"
+                          : "(" + state?.dataCount + ")"
+                          }`}
                         type="button"
                         className={"user-btn mr5"}
                       >
                         <div className="download mr-1"></div>
-                        {`${
-                          state?.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                        }`}
+                        {`${state?.dataCount === 0
+                          ? "All"
+                          : "(" + state.dataCount + ")"
+                          }`}
                       </button>
                     }
                   >
@@ -397,125 +396,125 @@ const AssemblyPartListing = React.memo((props) => {
           </div>
         </Col>
       </Row>
+      {
+        Object.keys(permissions).length > 0 &&
 
-      <div
-        className={`ag-grid-wrapper height-width-wrapper ${
-          (partsListing && partsListing?.length <= 0) || state.noData
+        <div
+          className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || state.noData
             ? "overlay-contain"
             : ""
-        }`}
-      >
-        <div className="ag-grid-header">
-          <input
-            type="text"
-            className="form-control table-search"
-            id="filter-text-box"
-            placeholder="Search"
-            autoComplete={"off"}
-            onChange={(e) => onFilterTextBoxChanged(e)}
-          />
-        </div>
-        <div
-          className={`ag-theme-material ${
-            state.isLoader && "max-loader-height"
-          }`}
+            }`}
         >
-          {state.noData && (
-            <NoContentFound
-              title={EMPTY_DATA}
-              customClassName="no-content-found"
+          <div className="ag-grid-header">
+            <input
+              type="text"
+              className="form-control table-search"
+              id="filter-text-box"
+              placeholder="Search"
+              autoComplete={"off"}
+              onChange={(e) => onFilterTextBoxChanged(e)}
             />
-          )}
-          <AgGridReact
-            defaultColDef={defaultColDef}
-            floatingFilter={true}
-            domLayout="autoHeight"
-            rowData={partsListing}
-            pagination={true}
-            paginationPageSize={defaultPageSize}
-            onGridReady={onGridReady}
-            gridOptions={gridOptions}
-            noRowsOverlayComponent={"customNoRowsOverlay"}
-            noRowsOverlayComponentParams={{
-              title: EMPTY_DATA,
-              imagClass: "imagClass",
-            }}
-            rowSelection={"multiple"}
-            onSelectionChanged={onRowSelect}
-            frameworkComponents={frameworkComponents}
-            onFilterModified={onFloatingFilterChanged}
-            suppressRowClickSelection={true}
+          </div>
+          <div
+            className={`ag-theme-material ${state.isLoader && "max-loader-height"
+              }`}
           >
-            <AgGridColumn
-              cellClass="has-checkbox"
-              field="Technology"
-              headerName="Technology"
-              cellRenderer={"checkBoxRenderer"}
-            ></AgGridColumn>
-            <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
-            <AgGridColumn
-              field="PartNumber"
-              headerName="Part No."
-            ></AgGridColumn>
-            <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-            {props.initialConfiguration?.IsSAPCodeRequired && (
+            {state.noData && (
+              <NoContentFound
+                title={EMPTY_DATA}
+                customClassName="no-content-found"
+              />
+            )}
+            <AgGridReact
+              defaultColDef={defaultColDef}
+              floatingFilter={true}
+              domLayout="autoHeight"
+              rowData={partsListing}
+              pagination={true}
+              paginationPageSize={defaultPageSize}
+              onGridReady={onGridReady}
+              gridOptions={gridOptions}
+              noRowsOverlayComponent={"customNoRowsOverlay"}
+              noRowsOverlayComponentParams={{
+                title: EMPTY_DATA,
+                imagClass: "imagClass",
+              }}
+              rowSelection={"multiple"}
+              onSelectionChanged={onRowSelect}
+              frameworkComponents={frameworkComponents}
+              onFilterModified={onFloatingFilterChanged}
+              suppressRowClickSelection={true}
+            >
               <AgGridColumn
-                field="SAPCode"
-                headerName="SAP Code"
+                cellClass="has-checkbox"
+                field="Technology"
+                headerName="Technology"
+                cellRenderer={"checkBoxRenderer"}
+              ></AgGridColumn>
+              <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
+              <AgGridColumn
+                field="PartNumber"
+                headerName="Part No."
+              ></AgGridColumn>
+              <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+              {props.initialConfiguration?.IsSAPCodeRequired && (
+                <AgGridColumn
+                  field="SAPCode"
+                  headerName="SAP Code"
+                  cellRenderer={"hyphenFormatter"}
+                ></AgGridColumn>
+              )}
+              <AgGridColumn
+                field="NumberOfParts"
+                headerName="No. of Child Parts"
+              ></AgGridColumn>
+              <AgGridColumn
+                field="BOMLevelCount"
+                headerName="BOM Level Count"
+              ></AgGridColumn>
+              <AgGridColumn
+                field="ECNNumber"
+                headerName="ECN No."
                 cellRenderer={"hyphenFormatter"}
               ></AgGridColumn>
-            )}
-            <AgGridColumn
-              field="NumberOfParts"
-              headerName="No. of Child Parts"
-            ></AgGridColumn>
-            <AgGridColumn
-              field="BOMLevelCount"
-              headerName="BOM Level Count"
-            ></AgGridColumn>
-            <AgGridColumn
-              field="ECNNumber"
-              headerName="ECN No."
-              cellRenderer={"hyphenFormatter"}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="RevisionNumber"
-              headerName="Revision No."
-              cellRenderer={"hyphenFormatter"}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="DrawingNumber"
-              headerName="Drawing No."
-              cellRenderer={"hyphenFormatter"}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="EffectiveDateNew"
-              headerName="Effective Date"
-              cellRenderer={"effectiveDateFormatter"}
-              filter="agDateColumnFilter"
-              filterParams={filterParams}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="PartId"
-              width={180}
-              cellClass="ag-grid-action-container actions-wrapper"
-              headerName="Action"
-              pinned="right"
-              type="rightAligned"
-              floatingFilter={false}
-              cellRenderer={"buttonRenderer"}
-            ></AgGridColumn>
-          </AgGridReact>
+              <AgGridColumn
+                field="RevisionNumber"
+                headerName="Revision No."
+                cellRenderer={"hyphenFormatter"}
+              ></AgGridColumn>
+              <AgGridColumn
+                field="DrawingNumber"
+                headerName="Drawing No."
+                cellRenderer={"hyphenFormatter"}
+              ></AgGridColumn>
+              <AgGridColumn
+                field="EffectiveDateNew"
+                headerName="Effective Date"
+                cellRenderer={"effectiveDateFormatter"}
+                filter="agDateColumnFilter"
+                filterParams={filterParams}
+              ></AgGridColumn>
+              <AgGridColumn
+                field="PartId"
+                width={180}
+                cellClass="ag-grid-action-container actions-wrapper"
+                headerName="Action"
+                pinned="right"
+                type="rightAligned"
+                floatingFilter={false}
+                cellRenderer={"buttonRenderer"}
+              ></AgGridColumn>
+            </AgGridReact>
 
-          {
-            <PaginationWrapper
-              gridApi={state.gridApi}
-              setPage={onPageSizeChanged}
-            />
-          }
+            {
+              <PaginationWrapper
+                gridApi={state.gridApi}
+                setPage={onPageSizeChanged}
+              />
+            }
+          </div>
         </div>
-      </div>
-
+      }
       {state.isOpenVisualDrawer && (
         <BOMViewer
           isOpen={state.isOpenVisualDrawer}
