@@ -91,6 +91,7 @@ function RMSimulation(props) {
         if (!isImpactedMaster) {
             list && list?.map(item => {
                 item.NewBasicRate = item.BasicRatePerUOM
+                item.NewScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
                 return null
             })
         }
