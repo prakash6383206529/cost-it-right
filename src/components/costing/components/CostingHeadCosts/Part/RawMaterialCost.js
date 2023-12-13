@@ -1334,7 +1334,7 @@ function RawMaterialCost(props) {
                             <td>{item.RMRate}</td>
                             <td>{item.ScrapRate}</td>
                             <td>{item.UOM}</td>
-                            {getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
+                            {showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
                               <td className="text-center">
                                 {showCalculatorFunction(item) ? <button
                                   className="CalculatorIcon cr-cl-icon "
