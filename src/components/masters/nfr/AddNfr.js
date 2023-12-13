@@ -12,13 +12,12 @@ import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
-import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails, setOpenAllTabs } from './actions/nfr';
 import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails, getCodeBySplitting, getNameBySplitting, } from '../../../helper';
-import { checkFinalUser, createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { checkFinalUser, createCosting, deleteDraftCosting, emptyCostingData, getBriefCostingById, gridDataAdded, isDataChange, isDiscountDataChange, saveAssemblyBOPHandlingCharge, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setCostingDataList, setCostingEffectiveDate, setDiscountErrors, setIncludeOverheadProfitIcc, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOverheadProfitData, setOverheadProfitErrors, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCBOPCostData, setRMCCData, setRMCCErrors, setSurfaceCostData, setToolTabData, setToolsErrors } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
-import { dataLiist } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
@@ -111,6 +110,53 @@ function AddNfr(props) {
             }, 50);
         }
     }
+
+    useEffect(() => {
+        dispatch(isDataChange(false))
+        dispatch(setRMCCData([], () => { }))
+        dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))
+        dispatch(emptyCostingData())
+        dispatch(setRMCCBOPCostData([], () => { }))
+        dispatch(setOpenAllTabs(false))
+
+        dispatch(getBriefCostingById('', (res) => { }))
+        dispatch(isDiscountDataChange(false))
+        dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
+
+        reactLocalStorage.setObject('costingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        dispatch(setRMCCData([], () => { }))
+        dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
+        dispatch(setComponentItemData({}, () => { }))
+
+        dispatch(setOverheadProfitData([], () => { }))
+        dispatch(setComponentOverheadItemData({}, () => { }))
+
+        dispatch(setPackageAndFreightData([], () => { }))
+        dispatch(setComponentPackageFreightItemData({}, () => { }))
+
+        dispatch(setToolTabData([], () => { }))
+        dispatch(setComponentToolItemData({}, () => { }))
+
+        dispatch(setComponentDiscountOtherItemData({}, () => { }))
+
+        dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+
+        dispatch(gridDataAdded(false))
+        dispatch(setSurfaceCostData({}, () => { }))
+
+        dispatch(setProcessGroupGrid([]))
+        dispatch(savePartNumber(''))
+        dispatch(saveBOMLevel(''))
+        dispatch(setPartNumberArrayAPICALL([]))
+        dispatch(saveAssemblyNumber([]))
+        dispatch(setRMCCErrors({}))
+        dispatch(setOverheadProfitErrors({}))
+        dispatch(setToolsErrors({}))
+        dispatch(setDiscountErrors({}))
+        dispatch(setIncludeOverheadProfitIcc(false, () => { }))
+        dispatch(setCostingEffectiveDate(null))
+    }, [])
 
     useEffect(() => {
         let rowtemp = rowData.filter(element => element?.groupName === existingGroupNameVersion)
@@ -290,7 +336,6 @@ function AddNfr(props) {
         let vendorList = vendorName && vendorName?.map((item) => {
             item.vendorName = getNameBySplitting(item?.label)
             item.vendorCode = getCodeBySplitting(item?.label)
-            console.log('item: ', item);
             return item
         })
         const newCosting = {

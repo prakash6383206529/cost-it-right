@@ -52,7 +52,6 @@ class AddSpecification extends Component {
   * @description Called before render the component
   */
   UNSAFE_componentWillMount() {
-    console.log(this.state.Id, "Id");
     this.props.getRawMaterialNameChild(() => { })
     // this.props.getMaterialTypeSelectList(() => { })
     this.props.getRMGradeSelectListByRawMaterial('', false, res => { })

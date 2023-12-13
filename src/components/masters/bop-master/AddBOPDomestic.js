@@ -615,7 +615,6 @@ class AddBOPDomestic extends Component {
     const { FinalConditionCostBaseCurrency, costingTypeId } = this.state
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
 
-    console.log('fieldsObj?.BasicRateBase: ', fieldsObj?.BasicRateBase);
     const basicRateBaseCurrency = checkForNull(fieldsObj?.BasicRateBase)
     const basicPriceBaseTemp = checkForNull(basicRateBaseCurrency) / checkForNull(NoOfPieces)
     let basicPriceBaseCurrency
