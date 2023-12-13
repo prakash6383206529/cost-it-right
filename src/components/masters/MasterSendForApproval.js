@@ -720,7 +720,7 @@ function MasterSendForApproval(props) {
                     </Col>
                     <Col md="6">
                         <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Conversion Ratio", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                            label={`Conversion Ratio (${approvalObj?.ScrapUnitOfMeasurement}/${props?.UOM?.label})`}
                             name={"UOMToScrapUOMRatio"}
                             type="text"
                             Controller={Controller}
@@ -737,7 +737,7 @@ function MasterSendForApproval(props) {
                     <Col md="6">
                         <TooltipCustom id="conversion-factor-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextCalculatedFactor} />
                         <TextFieldHookForm
-                            label={labelWithUOMAndCurrency("Calculated Factor", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                            label={`Calculated Factor (${props?.UOM?.label}/${approvalObj?.ScrapUnitOfMeasurement})`}
                             name={"CalculatedFactor"}
                             type="text"
                             Controller={Controller}
@@ -768,6 +768,7 @@ function MasterSendForApproval(props) {
                         />
                     </Col>
                     {props?.IsImportEntry && <Col md="6">
+                        <TooltipCustom id="scrap-rate-per-scrap-conversion-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextScrapRatePerScrapUOMBaseCurrency} />
                         <TextFieldHookForm
                             label={labelForScrapRate()?.labelBaseCurrency}
                             name={"ScrapRatePerScrapUOMConversion"}
@@ -825,6 +826,7 @@ function MasterSendForApproval(props) {
                 {showScrapKeys?.showForging &&
                     <>
                         <Col md="6">
+                            <TooltipCustom id="rm-forging-scrap-selected-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextForgingScrapCostSelectedCurrency} />
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Forging Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ForgingScrap"}
@@ -898,6 +900,7 @@ function MasterSendForApproval(props) {
                 {showScrapKeys?.showCircleJali &&
                     <>
                         <Col md="6">
+                            <TooltipCustom id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Jali Scrap Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"JaliScrapCost"}

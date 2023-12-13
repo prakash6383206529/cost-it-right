@@ -14,6 +14,7 @@ import { } from 'reactstrap';
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import PermissionsTabIndex from "./PermissionsTabIndex";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import TooltipCustom from "../../common/Tooltip";
 
 class Role extends Component {
 	constructor(props) {
@@ -30,6 +31,7 @@ class Role extends Component {
 			Modules: [],
 			isNewRole: true,
 			showPopup: false,
+			accessibility: false,
 			updatedObj: {}
 		};
 	}
@@ -71,6 +73,7 @@ class Role extends Component {
 					RoleId: data.RoleId,
 					Modules: Data.Modules,
 					isLoader: false,
+					accessibility: Data.IsDataAccessibleToAllRole
 				}, () => this.child.getUpdatedData(Data.Modules))
 
 			}
@@ -196,7 +199,8 @@ class Role extends Component {
 				RoleName: values.RoleName,
 				Description: '',
 				CreatedBy: loggedInUserId(),
-				Modules: Modules
+				Modules: Modules,
+				IsDataAccessibleToAllRole: this.state.accessibility
 			}
 			this.setState({ showPopup: true, updatedObj: updateData })
 
@@ -216,7 +220,8 @@ class Role extends Component {
 				RoleName: values.RoleName,
 				Description: '',
 				CreatedBy: loggedInUserId(),
-				Modules: Modules
+				Modules: Modules,
+				IsDataAccessibleToAllRole: this.state.accessibility
 			}
 
 
@@ -238,9 +243,12 @@ class Role extends Component {
 	closePopUp = () => {
 		this.setState({ showPopup: false })
 	}
+	AccessibilityHandler = () => {
+		this.setState({ accessibility: !this.state.accessibility })
+	}
 	render() {
 		const { handleSubmit, } = this.props;
-		const { isLoader, isSubmitted, isEditFlag } = this.state;
+		const { isLoader, isSubmitted, isEditFlag, accessibility } = this.state;
 
 		return (
 			<div className="container-fluid role-permision-page">
@@ -268,6 +276,22 @@ class Role extends Component {
 														component={renderText}
 														customClassName={'withBorder mb-0 mn-height-auto hide-text-help-mb-0'}
 													/>
+													<label
+														className={`custom-checkbox ml-2 mt-1`}
+														onChange={this.AccessibilityHandler}
+													>
+														Accessibility to All Data
+														<input
+															type="checkbox"
+															checked={accessibility}
+														/>
+														<span
+															className=" before-box"
+															checked={accessibility}
+															onChange={this.AccessibilityHandler}
+														/>
+													</label>
+													<TooltipCustom customClass="mt-1" id="bop-net-cost" tooltipText={"All data will be visible to this role"} />
 												</div>
 											</div>
 										</div>
