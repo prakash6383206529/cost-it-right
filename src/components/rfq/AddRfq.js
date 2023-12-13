@@ -115,7 +115,7 @@ function AddRfq(props) {
 
     useEffect(() => {
         const { vbcVendorGrid } = props;
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "RFQ", () => { }))
         dispatch(getRawMaterialNameChild(() => { }))
         if (initialConfiguration.IsNFRConfigured) {
             dispatch(getNfrSelectList(() => { }))
