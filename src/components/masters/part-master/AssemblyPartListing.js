@@ -30,9 +30,11 @@ const gridOptions = {};
 const AssemblyPartListing = React.memo((props) => {
   const dispatch = useDispatch();
   const partsListing = useSelector((state) => state.part.partsListing);
-
+  const initialConfiguration = useSelector(
+    (state) => state.auth.initialConfiguration
+  );
   const [tableData, setTableData] = useState([]);
-
+  const [selectedRowData, setSelectedRowData] = useState(false);
 
   const [state, setState] = useState({
     isEditFlag: false,
@@ -57,22 +59,19 @@ const AssemblyPartListing = React.memo((props) => {
     paginationPageSize: defaultPageSize,
   });
 
-
   const permissions = useContext(ApplyPermission);
-  console.log('permissions: ', permissions);
-
 
   const getTableListData = () => {
-    setState(prevState => ({
+    setState((prevState) => ({
       ...prevState,
-      isLoader: true
-    }))
+      isLoader: true,
+    }));
     dispatch(
       getAssemblyPartDataList((res) => {
-        setState(prevState => ({
+        setState((prevState) => ({
           ...prevState,
-          isLoader: false
-        }))
+          isLoader: false,
+        }));
         if (res.status === 204 && res.data === "") {
           setTableData([]);
         } else if (res && res.data && res.data.DataList) {
@@ -83,14 +82,9 @@ const AssemblyPartListing = React.memo((props) => {
     );
   };
 
-
   useEffect(() => {
-    getTableListData()
-  }, [])
-
-
-
-
+    getTableListData();
+  }, []);
 
   const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
     setState((prevState) => ({
@@ -111,27 +105,28 @@ const AssemblyPartListing = React.memo((props) => {
   }, []);
 
   const confirmDeleteItem = (ID) => {
-
     setState((prevState) => ({
-
       ...prevState,
       showPopup: false,
       deletedId: "",
     }));
-    dispatch(deleteAssemblyPart(ID, loggedInUserId, (res) => getTableListData()));
+    dispatch(
+      deleteAssemblyPart(ID, loggedInUserId, (res) => getTableListData())
+    );
     Toaster.success(MESSAGES.DELETE_SUCCESSFULLY);
   };
-
-
 
   const onPopupConfirm = () => {
     confirmDeleteItem(state.deletedId);
   };
 
   const closePopUp = () => {
-    setState({ showPopup: false });
+    // Correctly access the previous state using a callback function
+    setState((prevState) => ({
+      ...prevState,
+      showPopup: false,
+    }));
   };
-
   const effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted
       ? props.valueFormatted
@@ -140,18 +135,28 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const visualAdDetails = (cell) => {
-    setState({ visualAdId: cell, isOpenVisualDrawer: true });
+    setState((prevState) => ({
+      ...prevState,
+      isOpenVisualDrawer: true,
+      visualAdId: cell,
+    }));
   };
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       partsListing.length !== 0 &&
-        setState({ noData: searchNocontentFilter(value, state.noData) });
+        setState((prevState) => ({
+          ...prevState,
+          tableData: searchNocontentFilter(partsListing, value),
+        }));
     }, 500);
   };
 
   const closeVisualDrawer = () => {
-    setState({ isOpenVisualDrawer: false, visualAdId: "" });
+    setState((prevState) => ({
+      ...prevState,
+      isOpenVisualDrawer: false,
+    }));
   };
 
   const buttonFormatter = useCallback((props) => {
@@ -196,7 +201,6 @@ const AssemblyPartListing = React.memo((props) => {
     );
   }, []);
 
-
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
     return cellValue !== " " &&
@@ -224,11 +228,17 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const bulkToggle = () => {
-    setState({ isBulkUpload: true });
+    setState((prevState) => ({
+      ...prevState,
+      isBulkUpload: true,
+    }));
   };
 
   const closeBulkUploadDrawer = (isCancel) => {
-    setState({ isBulkUpload: false }, () => { });
+    setState((prevState) => ({
+      ...prevState,
+      isBulkUpload: false,
+    }));
     if (!isCancel) {
       getTableListData();
     }
@@ -255,22 +265,24 @@ const AssemblyPartListing = React.memo((props) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  const onRowSelect = () => {
-    const selectedRows = state.gridApi?.getSelectedRows();
-    setState({ selectedRowData: selectedRows, dataCount: selectedRows.length });
-  };
+  const onRowSelect = useCallback(() => {
+    if (state.gridApi) {
+      const selectedRows = state.gridApi.getSelectedRows();
+      console.log(selectedRows, "selec");
+      setSelectedRowData(selectedRows);
+      setState((prevState) => ({
+        ...prevState,
+        dataCount: selectedRows.length,
+      }));
+    }
+  }, [state.gridApi]);
 
-  const onBtExport = () => {
-    let tempArr = [];
-    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
-    tempArr =
-      tempArr && tempArr?.length > 0
-        ? tempArr
-        : partsListing
-          ? partsListing
-          : [];
+  const onBtExport = useCallback(() => {
+    // Use the selectedRowData for export
+    const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
+    console.log(tempArr);
     return returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr);
-  };
+  }, [selectedRowData, tableData]);
 
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
@@ -313,6 +325,7 @@ const AssemblyPartListing = React.memo((props) => {
       state.gridApi.sizeColumnsToFit();
     }
   };
+
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -329,16 +342,17 @@ const AssemblyPartListing = React.memo((props) => {
 
   return (
     <div
-      className={`ag-grid-react p-relative ${props.DownloadAccessibility ? "show-table-btn" : ""
-        }`}
+      className={`ag-grid-react p-relative ${
+        permissions.Download ? "show-table-btn" : ""
+      }`}
     >
-      {state.isLoader ? <LoaderCustom /> : ''}
+      {state.isLoader ? <LoaderCustom /> : ""}
       <Row className="pt-4 no-filter-row">
         <Col md="8" className="filter-block"></Col>
         <Col md="6" className="search-user-block pr-0">
           <div className="d-flex justify-content-end bd-highlight w100">
             <div>
-              {props.AddAccessibility && (
+              {permissions.Add && (
                 <button
                   type="button"
                   className={"user-btn mr5"}
@@ -348,7 +362,7 @@ const AssemblyPartListing = React.memo((props) => {
                   <div className={"plus mr-0"}></div>
                 </button>
               )}
-              {props.BulkUploadAccessibility && (
+              {permissions.BulkUpload && (
                 <button
                   type="button"
                   className={"user-btn mr5"}
@@ -358,25 +372,28 @@ const AssemblyPartListing = React.memo((props) => {
                   <div className={"upload mr-0"}></div>
                 </button>
               )}
-              {props.DownloadAccessibility && (
+              {permissions.Download && (
                 <>
                   <ExcelFile
                     filename={"BOM"}
                     fileExtension={".xls"}
                     element={
                       <button
-                        title={`Download ${state?.dataCount === 0
-                          ? "All"
-                          : "(" + state?.dataCount + ")"
-                          }`}
+                        title={`Download ${
+                          selectedRowData.length === 0
+                            ? "All"
+                            : `(${selectedRowData.length})`
+                        }`}
                         type="button"
                         className={"user-btn mr5"}
+                        onClick={onBtExport}
                       >
                         <div className="download mr-1"></div>
-                        {`${state?.dataCount === 0
-                          ? "All"
-                          : "(" + state.dataCount + ")"
-                          }`}
+                        {`${
+                          selectedRowData.length === 0
+                            ? "All"
+                            : `(${selectedRowData.length})`
+                        }`}
                       </button>
                     }
                   >
@@ -396,14 +413,13 @@ const AssemblyPartListing = React.memo((props) => {
           </div>
         </Col>
       </Row>
-      {
-        Object.keys(permissions).length > 0 &&
-
+      {Object.keys(permissions).length > 0 && (
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || state.noData
-            ? "overlay-contain"
-            : ""
-            }`}
+          className={`ag-grid-wrapper height-width-wrapper ${
+            (partsListing && partsListing?.length <= 0) || state.noData
+              ? "overlay-contain"
+              : ""
+          }`}
         >
           <div className="ag-grid-header">
             <input
@@ -416,8 +432,9 @@ const AssemblyPartListing = React.memo((props) => {
             />
           </div>
           <div
-            className={`ag-theme-material ${state.isLoader && "max-loader-height"
-              }`}
+            className={`ag-theme-material ${
+              state.isLoader && "max-loader-height"
+            }`}
           >
             {state.noData && (
               <NoContentFound
@@ -451,13 +468,16 @@ const AssemblyPartListing = React.memo((props) => {
                 headerName="Technology"
                 cellRenderer={"checkBoxRenderer"}
               ></AgGridColumn>
-              <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
+              <AgGridColumn
+                field="BOMNumber"
+                headerName="BOM No."
+              ></AgGridColumn>
               <AgGridColumn
                 field="PartNumber"
                 headerName="Part No."
               ></AgGridColumn>
               <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-              {props.initialConfiguration?.IsSAPCodeRequired && (
+              {initialConfiguration?.IsSAPCodeRequired && (
                 <AgGridColumn
                   field="SAPCode"
                   headerName="SAP Code"
@@ -514,7 +534,7 @@ const AssemblyPartListing = React.memo((props) => {
             }
           </div>
         </div>
-      }
+      )}
       {state.isOpenVisualDrawer && (
         <BOMViewer
           isOpen={state.isOpenVisualDrawer}

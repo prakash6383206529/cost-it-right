@@ -1,21 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import {} from "../../../actions/Common";
 import {
   getPartDataList,
   deletePart,
-  activeInactivePartStatus,
-  checkStatusCodeAPI,
+  //   activeInactivePartStatus,
+  //   checkStatusCodeAPI,
 } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
-import Switch from "react-switch";
-import { loggedInUserId } from "../../../helper/auth";
 import BulkUpload from "../../massUpload/BulkUpload";
-import { GridTotalFormate } from "../../common/TableGridFunctions";
 import LoaderCustom from "../../common/LoaderCustom";
 import { ComponentPart } from "../../../config/constants";
 import ReactExport from "react-export-excel";
@@ -26,21 +23,12 @@ import "ag-grid-community/dist/styles/ag-theme-material.css";
 import WarningMessage from "../../common/WarningMessage";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import DayTime from "../../common/DayTimeWrapper";
-import { MASTERS, PART } from "../../../config/constants";
-
 import _ from "lodash";
-import {
-  onFloatingFilterChanged,
-  onSearch,
-  resetState,
-  onBtPrevious,
-  onBtNext,
-  onPageSizeChanged,
-  PaginationWrapper,
-} from "../../common/commonPagination";
+import { PaginationWrapper } from "../../common/commonPagination";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
-import { checkPermission, searchNocontentFilter } from "../../../helper";
+import { searchNocontentFilter } from "../../../helper";
 import { disabledClass } from "../../../actions/Common";
+import { ApplyPermission } from ".";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -52,29 +40,18 @@ const IndivisualPartListing = (props) => {
   const [gridApi, setGridApi] = useState(null);
   const [showPopup, setShowPopup] = useState(false);
   const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [addAccessibility, setAddAccessibility] = useState(false);
-  const [editAccessibility, setEditAccessibility] = useState(false);
-  const [deleteAccessibility, setDeleteAccessibility] = useState(false);
-  const [bulkUploadAccessibility, setBulkUploadAccessibility] = useState(false);
-  const [downloadAccessibility, setDownloadAccessibility] = useState(false);
   const [dataCount, setDataCount] = useState(0);
-
   const [totalRecordCount, setTotalRecordCount] = useState(1);
   const [currentRowIndex, setCurrentRowIndex] = useState(0);
   const [pageNoNew, setPageNoNew] = useState(1);
   const [globalTake, setGlobalTake] = useState(defaultPageSize);
   const [isLoader, setIsLoader] = useState(false);
-  const [viewAccessibility, setViewAccessibility] = useState(false);
   const [disableDownload, setDisableDownload] = useState(false);
-
   const [noData, setNoData] = useState(false);
-
-  //   const [dataCount, setDataCount] = useState(0);
-  const [disableFilter, setDisableFilter] = useState(true); // STATE MADE FOR CHECKBOX SELECTION
+  const [disableFilter, setDisableFilter] = useState(true);
   const [filterModel, setFilterModel] = useState({});
   const [warningMessage, setWarningMessage] = useState(false);
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
-
   const [pageSize, setPageSize] = useState({
     pageSize10: true,
     pageSize50: false,
@@ -89,20 +66,10 @@ const IndivisualPartListing = (props) => {
     DrawingNumber: "",
     EffectiveDate: "",
   });
-
-  const [state, setState] = useState({
-    isEditFlag: false,
-    isOpen: false,
-    tableData: [],
-    startIndexCurrentPage: 0,
-    endIndexCurrentPage: 9,
-    isBulkUpload: false,
-    ActivateAccessibility: true,
-    showPopup: false,
-    deletedId: "",
-    noData: false,
-  });
-  const { topAndLeftMenuData } = useSelector((state) => state.auth);
+  const [tableData, setTableData] = useState([]);
+  const [isBulkUpload, setIsBulkUpload] = useState(false);
+  const [deletedId, setDeletedId] = useState("");
+  const [selectedRowData, setSelectedRowData] = useState(false);
 
   const {
     partsListing,
@@ -118,17 +85,10 @@ const IndivisualPartListing = (props) => {
       state.simulation.selectedCostingListSimulation,
     selectedRowForPagination: state.simulation.selectedRowForPagination,
   }));
-  console.log(
-    "selectedRowForPagination",
-    selectedRowForPagination,
-    selectedCostingListSimulation,
-    partsListing,
-    // productDataList,
-    initialConfiguration
-  );
+
+  const permissions = useContext(ApplyPermission);
   useEffect(() => {
-    ApiActionCreator(0, defaultPageSize, {}, false);
-    applyPermission(topAndLeftMenuData);
+    getTableListData(0, defaultPageSize, floatingFilterData, true);
     return () => {
       dispatch(setSelectedRowForPagination([]));
     };
@@ -136,85 +96,55 @@ const IndivisualPartListing = (props) => {
 
   useEffect(() => {
     setIsLoader(true);
-    applyPermission(topAndLeftMenuData);
     setTimeout(() => {
       setIsLoader(false);
     }, 200);
-  }, [topAndLeftMenuData]);
+  }, []);
   useEffect(() => {
     if (partsListing?.length > 0) {
-      setTotalRecordCount(partsListing[0].TotalRecordCount);
+      setTotalRecordCount(partsListing?.length);
     } else {
       setNoData(false);
     }
   }, [partsListing]);
 
-  const applyPermission = (topAndLeftMenuData) => {
-    if (topAndLeftMenuData !== undefined) {
-      const Data =
-        topAndLeftMenuData &&
-        topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-      const accessData = Data && Data.Pages.find((el) => el.PageName === PART);
-      const permmisionData =
-        accessData && accessData.Actions && checkPermission(accessData.Actions);
-      if (permmisionData !== undefined) {
-        setAddAccessibility(
-          permmisionData && permmisionData.Add ? permmisionData.Add : false
-        );
-        setEditAccessibility(
-          permmisionData && permmisionData.Edit ? permmisionData.Edit : false
-        );
-        setDeleteAccessibility(
-          permmisionData && permmisionData.Delete
-            ? permmisionData.Delete
-            : false
-        );
-        setBulkUploadAccessibility(
-          permmisionData && permmisionData.BulkUpload
-            ? permmisionData.BulkUpload
-            : false
-        );
-        setDownloadAccessibility(
-          permmisionData && permmisionData.Download
-            ? permmisionData.Download
-            : false
-        );
-      }
-    }
-  };
-
-  const ApiActionCreator = (skip, take, obj, isPagination) => {
-    setState({ isLoader: isPagination ? true : false });
+  const getTableListData = (skip, take, obj, isPagination) => {
+    setIsLoader(true);
 
     let constantFilterData = filterModel;
     let object = { ...floatingFilterData };
+
     dispatch(
       getPartDataList(skip, take, obj, isPagination, (res) => {
-        setState({ isLoader: false });
-        setState({ noData: false });
-        if ((res && res.status === 204) || res.length === 0) {
+        setTimeout(() => {
+          setIsLoader(false);
+        }, 300);
+
+        if (res.status === 202) {
           setTotalRecordCount(0);
-          setPageNo(1);
-
-          //   setState({ totalRecordCount: 0 });
-
-          return;
-        } else if (res.status === 204 && res.data === "") {
-          setState({ tableData: [] });
-        } else if (res && res.data && res.data.DataList) {
+          setPageNo(0);
+        } else if (res.status === 204 && (!res.data || res.data === "")) {
+          setTableData([]);
+          setNoData(true);
+          setTotalRecordCount(0);
+          setPageNo(0);
+          // if (isPagination) {
+          //   console.log("No more data available for pagination.");
+          // } else {
+          //   setTableData([]);
+          //   setNoData(true);
+          //   setTotalRecordCount(0);
+          //   setPageNo(0);
+          // }
+        } else if (res.status === 200 && res.data && res.data.DataList) {
           let Data = res.data.DataList;
-
-          setState({
-            tableData: Data,
-            // totalRecordCount: Data[0].TotalRecordCount,
-          });
-        }
-        if (res && res.status === 204) {
-          //   setState({ totalRecordCount: 0, pageNo: 0 });
+          setTableData(Data);
+          setTotalRecordCount(Data[0].TotalRecordCount);
+          setNoData(false);
         }
 
-        if (res && isPagination === false) {
-          setState({ disableDownload: false });
+        if (isPagination === false) {
+          setDisableDownload(false);
           dispatch(disabledClass(false));
           setTimeout(() => {
             let button = document.getElementById(
@@ -224,36 +154,26 @@ const IndivisualPartListing = (props) => {
           }, 500);
         }
 
-        if (res) {
-          if (res && res.data && res.data.DataList.length > 0) {
-            setState({
-              totalRecordCount: res.data.DataList[0].TotalRecordCount,
-            });
+        let isReset = true;
+        for (let prop in object) {
+          if (object[prop] !== "") {
+            isReset = false;
+            break;
           }
-          let isReset = true;
-          setTimeout(() => {
-            for (var prop in object) {
-              if (prop !== "DepartmentCode" && object[prop] !== "") {
-                isReset = false;
-              }
-            }
-            // Sets the filter model via the grid API
-            isReset
-              ? gridOptions?.api?.setFilterModel({})
-              : gridOptions?.api?.setFilterModel(constantFilterData);
-            setTimeout(() => {
-              setState({ warningMessage: false });
-            }, 23);
-          }, 300);
-
-          setTimeout(() => {
-            setState({ warningMessage: false });
-          }, 335);
-
-          setTimeout(() => {
-            setState({ isFilterButtonClicked: false });
-          }, 600);
         }
+
+        if (isReset) {
+          gridOptions?.api?.setFilterModel({});
+        } else {
+          gridOptions?.api?.setFilterModel(constantFilterData);
+        }
+        setTotalRecordCount(
+          (res.data && res.data.DataList[0].TotalRecordCount) || 0
+        );
+        setTableData(res.data.DataList || []);
+        setNoData(!res.data.DataList || res.data.DataList.length === 0);
+        setWarningMessage(false);
+        setIsFilterButtonClicked(false);
       })
     );
   };
@@ -318,7 +238,7 @@ const IndivisualPartListing = (props) => {
     setPageNoNew(1);
     setCurrentRowIndex(0);
     gridOptions?.columnApi?.resetColumnState();
-    getTableListData(0, globalTake, true);
+    getTableListData(0, globalTake, floatingFilterData, true);
   };
 
   const resetState = () => {
@@ -336,7 +256,7 @@ const IndivisualPartListing = (props) => {
     setPageNo(1);
     setPageNoNew(1);
     setCurrentRowIndex(0);
-    getTableListData(0, 10, true);
+    getTableListData(0, 10, floatingFilterData, true);
     dispatch(setSelectedRowForPagination([]));
     setGlobalTake(10);
     setPageSize((prevState) => ({
@@ -345,110 +265,53 @@ const IndivisualPartListing = (props) => {
       pageSize50: false,
       pageSize100: false,
     }));
-    // setDataCount(0);
   };
+
   const onBtPrevious = () => {
-    onBtPrevious(this, "Part"); //COMMON PAGINATION FUNCTION
+    const newPageNo = pageNo - 1;
+    if (newPageNo > 0) {
+      const skip = (newPageNo - 1) * globalTake;
+      setPageNo(newPageNo);
+      getTableListData(skip, globalTake, floatingFilterData, true);
+    }
   };
 
   const onBtNext = () => {
-    if (pageSize.pageSize50 && pageNo >= Math.ceil(totalRecordCount / 50)) {
-      return false;
-    }
+    const newPageNo = pageNo + 1;
+    const totalPages = Math.ceil(totalRecordCount / globalTake);
 
-    if (pageSize.pageSize100 && pageNo >= Math.ceil(totalRecordCount / 100)) {
-      return false;
-    }
-
-    if (currentRowIndex < totalRecordCount - 10) {
-      setPageNo(pageNo + 1);
-      setPageNoNew(pageNo + 1);
-      const nextNo = currentRowIndex + 10;
-      getTableListData(nextNo, globalTake, true);
-      // skip, take, isPagination, floatingFilterData, (res)
-      setCurrentRowIndex(nextNo);
+    if (newPageNo <= totalPages) {
+      const skip = (newPageNo - 1) * globalTake;
+      setPageNo(newPageNo);
+      getTableListData(skip, globalTake, floatingFilterData, true);
     }
   };
 
   const onPageSizeChanged = (newPageSize) => {
+    let pageSize, totalRecordCount;
+
     if (Number(newPageSize) === 10) {
-      getTableListData(currentRowIndex, 10, true);
-      setPageSize((prevState) => ({
-        ...prevState,
-        pageSize10: true,
-        pageSize50: false,
-        pageSize100: false,
-      }));
-      setGlobalTake(10);
-      setPageNo(pageNoNew);
+      pageSize = 10;
     } else if (Number(newPageSize) === 50) {
-      getTableListData(currentRowIndex, 50, true);
-      setPageSize((prevState) => ({
-        ...prevState,
-        pageSize50: true,
-        pageSize10: false,
-        pageSize100: false,
-      }));
-      setGlobalTake(50);
-      setPageNo(pageNoNew);
-      if (pageNo >= Math.ceil(totalRecordCount / 50)) {
-        setPageNo(Math.ceil(totalRecordCount / 50));
-        getTableListData(0, 50, true);
-      }
+      pageSize = 50;
     } else if (Number(newPageSize) === 100) {
-      getTableListData(currentRowIndex, 100, true);
-      setPageSize((prevState) => ({
-        ...prevState,
-        pageSize100: true,
-        pageSize10: false,
-        pageSize50: false,
-      }));
-      setGlobalTake(100);
-      if (pageNo >= Math.ceil(totalRecordCount / 100)) {
-        setPageNo(Math.ceil(totalRecordCount / 100));
-        getTableListData(0, 100, true);
-      }
+      pageSize = 100;
     }
 
+    totalRecordCount = Math.ceil(totalRecordCount / pageSize);
+
+    getTableListData(currentRowIndex, pageSize, floatingFilterData, true);
+
+    setGlobalTake(pageSize);
+    setPageNo(1);
+    setPageNoNew(Math.min(pageNo, totalRecordCount));
+    setPageSize({
+      pageSize10: pageSize === 10,
+      pageSize50: pageSize === 50,
+      pageSize100: pageSize === 100,
+    });
+
     gridApi.paginationSetPageSize(Number(newPageSize));
-  };
-
-  // componentDidMount() {
-  //     setTimeout(() => {
-  //         if (!props.stopApiCallOnCancel) {
-  //             ApiActionCreator(0, 100, floatingFilterData, true)
-  //         }
-  //     }, 200);
-  // }
-
-  //   Get updated list after any action performed.
-  const getUpdatedData = () => {
-    setTimeout(() => {
-      if (!props.stopApiCallOnCancel) {
-        setState(() => {
-          getTableListData();
-        });
-      }
-    }, 200);
-  };
-
-  const getTableListData = () => {
-    setState({ isLoader: true });
-    dispatch(
-      getPartDataList((res) => {
-        setState({ isLoader: false });
-        setState({ noData: false });
-        if (res.status === 204 && res.data === "") {
-          setState({ tableData: [] });
-        } else if (res && res.data && res.data.DataList) {
-          let Data = res.data.DataList;
-          setState({
-            tableData: Data,
-          });
-        } else {
-        }
-      })
-    );
   };
 
   const viewOrEditItemDetails = (Id, isViewMode) => {
@@ -458,10 +321,12 @@ const IndivisualPartListing = (props) => {
       isViewMode: isViewMode,
     };
     props.getDetails(requestData);
+    // dispatch(getDetails(requestData));
   };
 
-  const deleteItem = (Id) => {
-    setState({ showPopup: true, deletedId: Id });
+  const deleteItem = (ID) => {
+    setShowPopup(true);
+    setDeletedId(ID);
   };
 
   const confirmDeleteItem = (ID) => {
@@ -480,24 +345,23 @@ const IndivisualPartListing = (props) => {
   };
 
   const onPopupConfirm = () => {
-    confirmDeleteItem(state.deletedId);
+    confirmDeleteItem(deletedId);
   };
   const closePopUp = () => {
-    setState({ showPopup: false });
+    setShowPopup(false);
   };
 
-  console.log(viewAccessibility, "set");
   const buttonFormatter = (props) => {
     const cellValue = props?.value;
     const rowData = props?.data;
-    let obj = {};
-    obj.partId = rowData.PartId;
-    obj.partApprovedId = rowData.PartApprovedId;
-    obj.partBudgetedId = rowData.PartBudgetedId;
+    let ID = {};
+    ID.partId = rowData.PartId;
+    ID.partApprovedId = rowData.PartApprovedId;
+    ID.partBudgetedId = rowData.PartBudgetedId;
 
     return (
       <>
-        {viewAccessibility && (
+        {permissions.View && (
           <button
             title="View"
             className="View"
@@ -505,7 +369,7 @@ const IndivisualPartListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, true)}
           />
         )}
-        {editAccessibility && (
+        {permissions.View && (
           <button
             title="Edit"
             className="Edit mr-2"
@@ -513,12 +377,12 @@ const IndivisualPartListing = (props) => {
             onClick={() => viewOrEditItemDetails(cellValue, rowData)}
           />
         )}
-        {deleteAccessibility && (
+        {permissions.Delete && (
           <button
             title="Delete"
             className="Delete"
             type={"button"}
-            onClick={() => deleteItem(obj)}
+            onClick={() => deleteItem(ID)}
           />
         )}
       </>
@@ -585,29 +449,13 @@ const IndivisualPartListing = (props) => {
     return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
     // return cellValue != null ? cellValue : '';
   };
-  //   const renderEffectiveDate = () => {
-  //     return (
-  //       <>
-  //         {" "}
-  //         Effective <br /> Date{" "}
-  //       </>
-  //     );
-  //   };
-
-  //   const onExportToCSV = (row) => {
-  //     return state.userData; // must return the data which you want to be exported
-  //   };
-
-  //   const renderPaginationShowsTotal = (start, to, total) => {
-  //     return <GridTotalFormate start={start} to={to} total={total} />;
-  //   };
 
   const bulkToggle = () => {
-    setState({ isBulkUpload: true });
+    setIsBulkUpload(true);
   };
 
   const closeBulkUploadDrawer = (event, type) => {
-    setState({ isBulkUpload: false });
+    setIsBulkUpload(false);
     if (type !== "cancel") {
       resetState();
     }
@@ -623,36 +471,33 @@ const IndivisualPartListing = (props) => {
     params.api.paginationGoToPage(0);
   };
 
-    const onExcelDownload = () => {
-      setState({ disableDownload: true });
-      dispatch(disabledClass(false));
+  const onExcelDownload = () => {
+    setDisableDownload(true);
+    dispatch(disabledClass(true));
 
-      //let tempArr = gridApi && gridApi?.getSelectedRows()
-      let tempArr = props.selectedCostingListSimulation;
-      if (tempArr?.length > 0) {
-        setTimeout(() => {
-          setState({ disableDownload: false });
-          dispatch(disabledClass(false));
-          let button = document.getElementById("Excel-Downloads-component-part");
-          button && button.click();
-        }, 400);
-      } else {
-        ApiActionCreator(0, defaultPageSize, floatingFilterData, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
-      }
-    };
+    let tempArr = selectedCostingListSimulation; // Assuming `selectedCostingListSimulation` is an array
 
-  const onBtExport = () => {
-    let tempArr = [];
-    //tempArr = gridApi && gridApi?.getSelectedRows()
-    tempArr = props.selectedRowForPagination;
-    tempArr =
-      tempArr && tempArr.length > 0
-        ? tempArr
-        : productDataList
-        ? productDataList
-        : [];
-    return returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr);
+    if (tempArr?.length > 0) {
+      setTimeout(() => {
+        setDisableDownload(false);
+        dispatch(disabledClass(false));
+
+        const button = document.getElementById(
+          "Excel-Downloads-component-part"
+        );
+        button?.click();
+      }, 500);
+    } else {
+      getTableListData(0, defaultPageSize, floatingFilterData, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+    }
   };
+
+  const onBtExport = useCallback(() => {
+    // Use the selectedRowData for export
+    const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
+    console.log(tempArr);
+    return returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr);
+  }, [selectedRowData, tableData]);
 
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
@@ -687,17 +532,10 @@ const IndivisualPartListing = (props) => {
   };
 
   const onFilterTextBoxChanged = (e) => {
+    console.log(e.target.value, "e");
     gridApi.setQuickFilter(e.target.value);
   };
 
-  /**
-   * @method render
-   * @description Renders the component
-   */
-
-  const { isBulkUpload } = state;
-  const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } =
-    props;
   const ExcelFile = ReactExport.ExcelFile;
 
   var filterParams = {
@@ -732,9 +570,10 @@ const IndivisualPartListing = (props) => {
   };
 
   var setDate = (date) => {
-    setState({
-      floatingFilterData: { ...floatingFilterData, newDate: date },
-    });
+    setFloatingFilterData((prevData) => ({
+      ...prevData,
+      newDate: date,
+    }));
   };
 
   const isFirstColumn = (params) => {
@@ -743,43 +582,17 @@ const IndivisualPartListing = (props) => {
     return thisIsFirstColumn;
   };
 
-  const onRowSelect = (event) => {
-    var selectedRows = gridApi && gridApi?.getSelectedRows();
-    if (selectedRows === undefined || selectedRows === null) {
-      //CONDITION FOR FIRST RENDERING OF COMPONENT
-      selectedRows = selectedRowForPagination;
-    } else if (
-      selectedRowForPagination &&
-      selectedRowForPagination.length > 0
-    ) {
-      // CHECKING IF REDUCER HAS DATA
-      let finalData = [];
-      if (event.node.isSelected() === false) {
-        // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
-        for (let i = 0; i < selectedRowForPagination.length; i++) {
-          if (
-            selectedRowForPagination[i].VolumeApprovedId ===
-              event.data.VolumeApprovedId &&
-            selectedRowForPagination[i].VolumeBudgetedId ===
-              event.data.VolumeBudgetedId
-          ) {
-            // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
-            continue;
-          }
-          finalData.push(selectedRowForPagination[i]);
-        }
-      } else {
-        finalData = selectedRowForPagination;
-      }
-      selectedRows = [...selectedRows, ...finalData];
-    }
 
-    let uniqeArrayVolumeBudgetedId = _.uniqBy(selectedRows, (v) =>
-      [v.VolumeApprovedId, v.VolumeBudgetedId].join()
-    ); //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId)); //SETTING CHECKBOX STATE DATA IN REDUCER
-    // setDataCount(uniqeArrayVolumeBudgetedId.length);
-  };
+  const onRowSelect = useCallback(() => {
+    if (gridApi) {
+      const selectedRows = gridApi.getSelectedRows();
+      console.log(selectedRows, "selec");
+      setSelectedRowData(selectedRows);
+      setDataCount(
+        selectedRows.length
+      )
+    }
+  }, [gridApi]);
 
   const defaultColDef = {
     resizable: true,
@@ -800,7 +613,7 @@ const IndivisualPartListing = (props) => {
     <>
       <div
         className={`ag-grid-react custom-pagination ${
-          DownloadAccessibility ? "show-table-btn" : ""
+          permissions.Download ? "show-table-btn" : ""
         }`}
       >
         {isLoader && <LoaderCustom />}
@@ -811,7 +624,7 @@ const IndivisualPartListing = (props) => {
           <Col md="9" className="search-user-block pr-0">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div className="warning-message d-flex align-items-center">
-                {state.warningMessage && !disableDownload && (
+                {warningMessage && !disableDownload && (
                   <>
                     <WarningMessage
                       dClass="mr-3"
@@ -833,7 +646,7 @@ const IndivisualPartListing = (props) => {
                 >
                   <div className="filter mr-0"></div>
                 </button>
-                {AddAccessibility && (
+                {permissions.Add && (
                   <button
                     type="button"
                     className={"user-btn mr5"}
@@ -843,7 +656,7 @@ const IndivisualPartListing = (props) => {
                     <div className={"plus mr-0"}></div>
                   </button>
                 )}
-                {BulkUploadAccessibility && (
+                {permissions.BulkUpload && (
                   <button
                     type="button"
                     className={"user-btn mr5"}
@@ -854,41 +667,35 @@ const IndivisualPartListing = (props) => {
                     {/* Bulk Upload */}
                   </button>
                 )}
-                {/* {DownloadAccessibility && (
-                  <>
-                    <button
-                      title={`Download ${
-                        state.dataCount === 0
-                          ? "All"
-                          : "(" + state.dataCount + ")"
-                      }`}
-                      type="button"
-                      onClick={onExcelDownload}
-                      className={"user-btn mr5"}
-                    >
-                      <div className="download mr-1"></div>
-                      {`${
-                        state.dataCount === 0
-                          ? "All"
-                          : "(" + state.dataCount + ")"
-                      }`}
-                    </button>
-                    <ExcelFile
-                      filename={"Component Part"}
-                      fileExtension={".xls"}
-                      element={
-                        <button
-                          id={"Excel-Downloads-component-part"}
-                          className="p-absolute"
-                          type="button"
-                        ></button>
-                      }
-                    >
-                      {onBtExport()}
-                    </ExcelFile>
-                  </>
-                )
-                } */}
+                {permissions.Download && (
+                <>
+                  <ExcelFile
+                    filename={"BOM"}
+                    fileExtension={".xls"}
+                    element={
+                      <button
+                        title={`Download ${
+                          selectedRowData.length === 0
+                            ? "All"
+                            : `(${selectedRowData.length})`
+                        }`}
+                        type="button"
+                        className={"user-btn mr5"}
+                        onClick={onBtExport}
+                      >
+                        <div className="download mr-1"></div>
+                        {`${
+                          selectedRowData.length === 0
+                            ? "All"
+                            : `(${selectedRowData.length})`
+                        }`}
+                      </button>
+                    }
+                  >
+                    {onBtExport()}
+                  </ExcelFile>
+                </>
+              )}
                 <button
                   type="button"
                   className="user-btn"
@@ -927,11 +734,12 @@ const IndivisualPartListing = (props) => {
                 customClassName="no-content-found"
               />
             )}
+
             <AgGridReact
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout="autoHeight"
-              rowData={partsListing}
+              rowData={tableData}
               pagination={true}
               paginationPageSize={globalTake}
               onGridReady={onGridReady}
@@ -991,6 +799,7 @@ const IndivisualPartListing = (props) => {
                 cellClass="ag-grid-action-container"
                 headerName="Action"
                 width={160}
+                pinned="right"
                 type="rightAligned"
                 floatingFilter={false}
                 cellRenderer={"totalValueRenderer"}
@@ -1004,53 +813,44 @@ const IndivisualPartListing = (props) => {
                   globalTake={globalTake}
                 />
               )}
+
               <div className="d-flex pagination-button-container">
                 <p>
-                  {/* <button
+                  <button
                     className="previous-btn"
                     type="button"
                     disabled={pageNo === 1 ? true : false}
-                    onClick={() => onBtPrevious(this)}
+                    onClick={() => onBtPrevious()}
                   >
                     {" "}
-                  </button> */}
-                  <p>
-                    <button
-                      className="previous-btn"
-                      type="button"
-                      disabled={false}
-                      onClick={() => onBtPrevious()}
-                    >
-                      {" "}
-                    </button>
+                  </button>
+                </p>
+                {pageSize.pageSize10 && (
+                  <p className="next-page-pg custom-left-arrow">
+                    Page <span className="text-primary">{pageNo}</span> of{" "}
+                    {Math.ceil(totalRecordCount / 10)}
                   </p>
-                  {pageSize.pageSize10 && (
-                    <p className="next-page-pg custom-left-arrow">
-                      Page <span className="text-primary">{pageNo}</span> of{" "}
-                      {Math.ceil(totalRecordCount / 10)}
-                    </p>
-                  )}
-                  {pageSize.pageSize50 && (
-                    <p className="next-page-pg custom-left-arrow">
-                      Page <span className="text-primary">{pageNo}</span> of{" "}
-                      {Math.ceil(totalRecordCount / 50)}
-                    </p>
-                  )}
-                  {pageSize.pageSize100 && (
-                    <p className="next-page-pg custom-left-arrow">
-                      Page <span className="text-primary">{pageNo}</span> of{" "}
-                      {Math.ceil(totalRecordCount / 100)}
-                    </p>
-                  )}
-                  <p>
-                    <button
-                      className="next-btn"
-                      type="button"
-                      onClick={() => onBtNext()}
-                    >
-                      {" "}
-                    </button>
+                )}
+                {pageSize.pageSize50 && (
+                  <p className="next-page-pg custom-left-arrow">
+                    Page <span className="text-primary">{pageNo}</span> of{" "}
+                    {Math.ceil(totalRecordCount / 50)}
                   </p>
+                )}
+                {pageSize.pageSize100 && (
+                  <p className="next-page-pg custom-left-arrow">
+                    Page <span className="text-primary">{pageNo}</span> of{" "}
+                    {Math.ceil(totalRecordCount / 100)}
+                  </p>
+                )}
+                <p>
+                  <button
+                    className="next-btn"
+                    type="button"
+                    onClick={() => onBtNext()}
+                  >
+                    {" "}
+                  </button>
                 </p>
               </div>
             </div>
