@@ -34,7 +34,7 @@ const AssemblyPartListing = React.memo((props) => {
     (state) => state.auth.initialConfiguration
   );
   const [tableData, setTableData] = useState([]);
-  const [selectedRowData, setSelectedRowData] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState([]);
 
   const [state, setState] = useState({
     isEditFlag: false,

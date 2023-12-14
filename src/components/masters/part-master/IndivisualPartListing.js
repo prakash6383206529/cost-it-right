@@ -69,7 +69,7 @@ const IndivisualPartListing = (props) => {
   const [tableData, setTableData] = useState([]);
   const [isBulkUpload, setIsBulkUpload] = useState(false);
   const [deletedId, setDeletedId] = useState("");
-  const [selectedRowData, setSelectedRowData] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState([]);
 
   const {
     partsListing,
@@ -664,7 +664,6 @@ const IndivisualPartListing = (props) => {
                     title="Bulk Upload"
                   >
                     <div className={"upload mr-0"}></div>
-                    {/* Bulk Upload */}
                   </button>
                 )}
                 {permissions.Download && (

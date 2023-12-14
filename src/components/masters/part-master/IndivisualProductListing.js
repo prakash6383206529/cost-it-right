@@ -187,17 +187,6 @@ const IndivisualProductListing = (props) => {
     }
   };
 
-  // const renderEffectiveDate = () => {
-  //     return <> Effective <br /> Date </>
-  // }
-
-  // const onExportToCSV = (row) => {
-  //     return userData; // must return the data which you want to be exported
-  // }
-
-  // const renderPaginationShowsTotal=(start, to, total)=> {
-  //     return <GridTotalFormate start={start} to={to} total={total} />
-  // }
 
   const bulkToggle = () => {
     setIsBulkUpload(true);
