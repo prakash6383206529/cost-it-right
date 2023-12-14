@@ -62,10 +62,10 @@ const IndivisualProductListing = (props) => {
   const permissions = useContext(ApplyPermission);
   console.log(tableData);
   useEffect(() => {
-    if (!props.stopApiCallOnCancel) {
+  
       getTableListData();
-    }
-  }, [initialConfiguration]);
+    
+  }, []);
 
  
   const getTableListData = () => {

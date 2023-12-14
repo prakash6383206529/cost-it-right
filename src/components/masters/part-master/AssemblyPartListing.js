@@ -28,11 +28,14 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const AssemblyPartListing = React.memo((props) => {
+  console.log(props);
   const dispatch = useDispatch();
   const partsListing = useSelector((state) => state.part.partsListing);
   const initialConfiguration = useSelector(
     (state) => state.auth.initialConfiguration
   );
+  const { getDetails } = props;
+
   const [tableData, setTableData] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
 
@@ -86,23 +89,24 @@ const AssemblyPartListing = React.memo((props) => {
     getTableListData();
   }, []);
 
-  const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpen: true,
+  const viewOrEditItemDetails = (Id, isViewMode) => {
+    let requestData = {
       isEditFlag: true,
-      ID: Id,
+      Id: Id,
       isViewMode: isViewMode,
-    }));
-  }, []);
+    }
+    getDetails(requestData);
+  }
 
-  const deleteItem = useCallback((Id) => {
+  
+  const deleteItem = (Id) => {
+
     setState((prevState) => ({
       ...prevState,
       showPopup: true,
       deletedId: Id,
     }));
-  }, []);
+  }
 
   const confirmDeleteItem = (ID) => {
     setState((prevState) => ({
@@ -152,12 +156,16 @@ const AssemblyPartListing = React.memo((props) => {
     }, 500);
   };
 
+
+
+  
   const closeVisualDrawer = () => {
     setState((prevState) => ({
       ...prevState,
       isOpenVisualDrawer: false,
     }));
   };
+  console.log(permissions);
 
   const buttonFormatter = useCallback((props) => {
     const cellValue = props?.value;
@@ -178,7 +186,10 @@ const AssemblyPartListing = React.memo((props) => {
             title="View"
             className="View"
             type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, true)}
+            onClick={() => viewOrEditItemDetails(
+              cellValue,
+              true
+            )}
           />
         )}
         {permissions.Edit && (
@@ -200,6 +211,7 @@ const AssemblyPartListing = React.memo((props) => {
       </>
     );
   }, []);
+
 
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;

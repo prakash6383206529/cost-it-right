@@ -250,7 +250,9 @@ const IndivisualPartListing = (props) => {
     for (var prop in floatingFilterData) {
       floatingFilterData[prop] = "";
     }
-
+    setIsFilterButtonClicked(
+      false
+    )
     setFloatingFilterData(floatingFilterData);
     setWarningMessage(false);
     setPageNo(1);
@@ -259,12 +261,10 @@ const IndivisualPartListing = (props) => {
     getTableListData(0, 10, floatingFilterData, true);
     dispatch(setSelectedRowForPagination([]));
     setGlobalTake(10);
-    setPageSize((prevState) => ({
-      ...prevState,
-      pageSize10: true,
-      pageSize50: false,
-      pageSize100: false,
-    }));
+    setPageSize({ pageSize10: true, pageSize50: false, pageSize100: false });
+    setDisableFilter(
+      false
+    )
   };
 
   const onBtPrevious = () => {
@@ -321,6 +321,7 @@ const IndivisualPartListing = (props) => {
       isViewMode: isViewMode,
     };
     props.getDetails(requestData);
+    console.log(requestData);
     // dispatch(getDetails(requestData));
   };
 
