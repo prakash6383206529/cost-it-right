@@ -124,13 +124,18 @@ const VendorListing = () => {
           warningMessage: true,
           floatingFilterData: {
             ...prevState.floatingFilterData,
-            VendorType: statusColumnData.data || "",
+            VendorType: statusColumnData.data,
           },
         }));
       } else {
         setState((prevState) => ({
           ...prevState,
           warningMessage: false,
+          disableFilter: false,
+          floatingFilterData: {
+            ...prevState.floatingFilterData,
+            VendorType: "",
+          },
         }));
       }
     }, 500);
@@ -369,16 +374,6 @@ const VendorListing = () => {
       pageNoNew: 1,
       currentRowIndex: 0,
     }));
-    if (statusColumnData?.data === "") {
-      for (var prop in state.floatingFilterData) {
-        state.floatingFilterData[prop] = "";
-      }
-      setState((prevState) => ({
-        ...prevState,
-        floatingFilterData: state.floatingFilterData,
-      }));
-    }
-
     getTableListData(0, state.floatingFilterData, state.globalTake, true);
   };
 
@@ -604,7 +599,6 @@ const VendorListing = () => {
       })
     );
     setState((prevState) => ({ ...prevState, showPopupToggle: false }));
-    // getTableListData(0, state.floatingFilterData, defaultPageSize, true);
   };
   /**
    * @method statusButtonFormatter
@@ -781,6 +775,12 @@ const VendorListing = () => {
       ...prevState,
       noData: false,
     }));
+    dispatch(isResetClick(true, "vendorType"));
+    setState((prevState) => ({
+      ...prevState,
+
+      isFilterButtonClicked: false,
+    }));
 
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
@@ -793,6 +793,7 @@ const VendorListing = () => {
       ...prevState,
       floatingFilterData: state.floatingFilterData,
       warningMessage: false,
+
       pageNo: 1,
       pageNoNew: 1,
       currentRowIndex: 0,
@@ -804,6 +805,7 @@ const VendorListing = () => {
       ...prevState,
       globalTake: 10,
       dataCount: 0,
+
       pageSize: {
         ...prevState.pageSize,
         pageSize10: true,
