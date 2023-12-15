@@ -69,11 +69,13 @@ const IndivisualPartListing = (props) => {
   const [tableData, setTableData] = useState([]);
   const [isBulkUpload, setIsBulkUpload] = useState(false);
   const [deletedId, setDeletedId] = useState("");
+  // const [ searchPrompt,
+  //   setSearchPrompt] = 
+  //   useState('');
   const [selectedRowData, setSelectedRowData] = useState([]);
 
   const {
     partsListing,
-    productDataList,
     initialConfiguration,
     selectedCostingListSimulation,
     selectedRowForPagination,
@@ -128,14 +130,7 @@ const IndivisualPartListing = (props) => {
           setNoData(true);
           setTotalRecordCount(0);
           setPageNo(0);
-          // if (isPagination) {
-          //   console.log("No more data available for pagination.");
-          // } else {
-          //   setTableData([]);
-          //   setNoData(true);
-          //   setTotalRecordCount(0);
-          //   setPageNo(0);
-          // }
+        
         } else if (res.status === 200 && res.data && res.data.DataList) {
           let Data = res.data.DataList;
           setTableData(Data);
@@ -178,19 +173,23 @@ const IndivisualPartListing = (props) => {
     );
   };
 
+ 
+
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (partsListing?.length !== 0) {
-        setNoData(searchNocontentFilter(value, noData));
+        setNoData(searchNocontentFilter(value, partsListing));
+ 
       }
     }, 500);
     setDisableFilter(false);
     const model = gridOptions?.api?.getFilterModel();
-    setFilterModel(model);
+setFilterModel(model);
+
     if (!isFilterButtonClicked) {
       setWarningMessage(true);
     }
-
+console.log( value?.filterInstance?.appliedModel?.filter , "value");
     if (
       value?.filterInstance?.appliedModel === null ||
       value?.filterInstance?.appliedModel?.filter === ""
@@ -203,23 +202,28 @@ const IndivisualPartListing = (props) => {
 
           for (var property in floatingFilterData) {
             if (property === value.column.colId) {
+              console.log(value, " value");
               floatingFilterData[property] = "";
             }
           }
+          // const searchPrompt = generateSearchPrompt(floatingFilterData);
+          // setSearchPrompt(searchPrompt);
           setFloatingFilterData(floatingFilterData);
         }
-
+      
         if (isFilterEmpty) {
           setWarningMessage(false);
           for (var prop in floatingFilterData) {
             floatingFilterData[prop] = "";
           }
           setFloatingFilterData(floatingFilterData);
+          console.log(floatingFilterData);
+      
         }
       }
     } else {
       if (
-        value.column.colId === "EffectiveDate" ||
+        value.column.colId === "EffectiveDateNew" ||
         value.column.colId === "CreatedDate"
       ) {
         return false;
@@ -230,6 +234,11 @@ const IndivisualPartListing = (props) => {
       });
     }
   };
+  // const generateSearchPrompt = (filterData) => {
+  //   // Implement logic to generate search prompt based on filter data
+  //   // Example: concatenate filter values into a single string
+  //   return Object.values(filterData).join(" ");
+  // };
 
   const onSearch = () => {
     setWarningMessage(false);
@@ -250,9 +259,7 @@ const IndivisualPartListing = (props) => {
     for (var prop in floatingFilterData) {
       floatingFilterData[prop] = "";
     }
-    setIsFilterButtonClicked(
-      false
-    )
+    // setIsFilterButtonClicked(false);
     setFloatingFilterData(floatingFilterData);
     setWarningMessage(false);
     setPageNo(1);
@@ -262,9 +269,7 @@ const IndivisualPartListing = (props) => {
     dispatch(setSelectedRowForPagination([]));
     setGlobalTake(10);
     setPageSize({ pageSize10: true, pageSize50: false, pageSize100: false });
-    setDisableFilter(
-      false
-    )
+    setDisableFilter(false);
   };
 
   const onBtPrevious = () => {
@@ -426,8 +431,8 @@ const IndivisualPartListing = (props) => {
       : props?.value;
     // var selectedRows = gridApi?.getSelectedRows();
 
-    if (props.selectedCostingListSimulation?.length > 0) {
-      props.selectedCostingListSimulation.map((item) => {
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
         if (item.RawMaterialId === props.node.data.RawMaterialId) {
           props.node.setSelected(true);
         }
@@ -531,9 +536,8 @@ const IndivisualPartListing = (props) => {
       </ExcelSheet>
     );
   };
-
   const onFilterTextBoxChanged = (e) => {
-    console.log(e.target.value, "e");
+    console.log(e.target.value , "e");
     gridApi.setQuickFilter(e.target.value);
   };
 
@@ -583,15 +587,12 @@ const IndivisualPartListing = (props) => {
     return thisIsFirstColumn;
   };
 
-
   const onRowSelect = useCallback(() => {
     if (gridApi) {
       const selectedRows = gridApi.getSelectedRows();
       console.log(selectedRows, "selec");
       setSelectedRowData(selectedRows);
-      setDataCount(
-        selectedRows.length
-      )
+      setDataCount(selectedRows.length);
     }
   }, [gridApi]);
 
@@ -668,34 +669,34 @@ const IndivisualPartListing = (props) => {
                   </button>
                 )}
                 {permissions.Download && (
-                <>
-                  <ExcelFile
-                    filename={"BOM"}
-                    fileExtension={".xls"}
-                    element={
-                      <button
-                        title={`Download ${
-                          selectedRowData.length === 0
-                            ? "All"
-                            : `(${selectedRowData.length})`
-                        }`}
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={onBtExport}
-                      >
-                        <div className="download mr-1"></div>
-                        {`${
-                          selectedRowData.length === 0
-                            ? "All"
-                            : `(${selectedRowData.length})`
-                        }`}
-                      </button>
-                    }
-                  >
-                    {onBtExport()}
-                  </ExcelFile>
-                </>
-              )}
+                  <>
+                    <ExcelFile
+                      filename={"BOM"}
+                      fileExtension={".xls"}
+                      element={
+                        <button
+                          title={`Download ${
+                            selectedRowData.length === 0
+                              ? "All"
+                              : `(${selectedRowData.length})`
+                          }`}
+                          type="button"
+                          className={"user-btn mr5"}
+                          onClick={onBtExport}
+                        >
+                          <div className="download mr-1"></div>
+                          {`${
+                            selectedRowData.length === 0
+                              ? "All"
+                              : `(${selectedRowData.length})`
+                          }`}
+                        </button>
+                      }
+                    >
+                      {onBtExport()}
+                    </ExcelFile>
+                  </>
+                )}
                 <button
                   type="button"
                   className="user-btn"
