@@ -144,9 +144,9 @@ class IndivisualProductListing extends Component {
         const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {<button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {<button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {<button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -368,7 +368,7 @@ class IndivisualProductListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-                                {AddAccessibility && (
+                                {(
                                     <button
                                         type="button"
                                         className={'user-btn mr5'}
@@ -377,7 +377,7 @@ class IndivisualProductListing extends Component {
                                         <div className={'plus mr-0'}></div></button>
                                 )}
 
-                                {BulkUploadAccessibility && (
+                                {(
                                     <button
                                         type="button"
                                         className={"user-btn mr5"}
@@ -391,7 +391,7 @@ class IndivisualProductListing extends Component {
 
 
                                 {
-                                    DownloadAccessibility &&
+
                                     <>
                                         <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
                                             <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
