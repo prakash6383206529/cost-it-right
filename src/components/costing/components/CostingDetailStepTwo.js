@@ -72,6 +72,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         //CONDITION FOR OVERALL & PROCESS WISE TOOL COST.
@@ -116,6 +117,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
@@ -189,6 +191,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
@@ -223,7 +226,7 @@ function CostingDetailStepTwo(props) {
       setTimeout(() => {
         let DataList = CostingDataList;
         let tempData = CostingDataList && CostingDataList[headerIndex];
-
+        if (tempData === undefined) return false
         let OverAllCost = 0;
         if (tempData && tempData !== undefined) {
           const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
@@ -324,6 +327,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         //SUM OF ALL TAB EXCEPT DISCOUNT TAB
@@ -341,7 +345,7 @@ function CostingDetailStepTwo(props) {
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
 
         const discountValues = {
-          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
+          BasicRateINR: checkForNull(SumOfTab) - checkForNull(discountedCost) + checkForNull(data?.AnyOtherCost),
           NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
           AnyOtherCost: checkForNull(data.AnyOtherCost),
