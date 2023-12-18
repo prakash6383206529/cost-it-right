@@ -78,7 +78,9 @@ function SheetMetalBaicDrawer(props) {
   }, [quantFieldValue])
 
   useEffect(() => {
-    calculateCycleTime()
+    if (ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME) {
+      calculateCycleTime()
+    }
   }, [cycleTime])
   useEffect(() => {
 
