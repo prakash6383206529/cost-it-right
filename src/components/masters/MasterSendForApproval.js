@@ -458,16 +458,16 @@ function MasterSendForApproval(props) {
     }
 
     const labelForScrapRate = () => {
-        let labelSelectedCurrency = `Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : 'Currency'}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+        let labelSelectedCurrency = `Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : (getConfigurationKey()?.BaseCurrency ? getConfigurationKey()?.BaseCurrency : 'Currency')}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
         let labelBaseCurrency = `Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
         if (showScrapKeys?.showCircleJali) {
-            labelSelectedCurrency = `Jali Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : 'Currency'}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+            labelSelectedCurrency = `Jali Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : (getConfigurationKey()?.BaseCurrency ? getConfigurationKey()?.BaseCurrency : 'Currency')}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
             labelBaseCurrency = `Jali Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
         } else if (showScrapKeys?.showForging) {
-            labelSelectedCurrency = `Forging Scrap Cost (${approvalObj?.Currency ? approvalObj?.Currency : 'Currency'}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+            labelSelectedCurrency = `Forging Scrap Cost (${approvalObj?.Currency ? approvalObj?.Currency : (getConfigurationKey()?.BaseCurrency ? getConfigurationKey()?.BaseCurrency : 'Currency')}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
             labelBaseCurrency = `Forging Scrap Cost (${getConfigurationKey()?.BaseCurrency}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
         } else if (showScrapKeys?.showScrap) {
-            labelSelectedCurrency = `Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : 'Currency'}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
+            labelSelectedCurrency = `Scrap Rate (${approvalObj?.Currency ? approvalObj?.Currency : (getConfigurationKey()?.BaseCurrency ? getConfigurationKey()?.BaseCurrency : 'Currency')}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
             labelBaseCurrency = `Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(approvalObj?.ScrapUnitOfMeasurement ? approvalObj?.ScrapUnitOfMeasurement : 'UOM')})`
         }
         return { labelSelectedCurrency: labelSelectedCurrency, labelBaseCurrency: labelBaseCurrency }
@@ -1240,7 +1240,7 @@ function MasterSendForApproval(props) {
                                             !isBulkUpload && checkForNull(masterId) === 1 &&
                                             <>
                                                 <div className="input-group form-group col-md-6">
-                                                    <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <label className='height-0'>Effective Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
@@ -1268,7 +1268,7 @@ function MasterSendForApproval(props) {
                                             !isBulkUpload && checkForNull(masterId) === 2 &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
-                                                    <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <label className='height-0'>Effective Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
@@ -1298,7 +1298,7 @@ function MasterSendForApproval(props) {
                                             !isBulkUpload && checkForNull(masterId) === 3 &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
-                                                    <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <label className='height-0'>Effective Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
@@ -1342,7 +1342,7 @@ function MasterSendForApproval(props) {
                                             !isBulkUpload && checkForNull(masterId) === 4 &&
                                             <>
                                                 <div className="input-group form-group col-md-12">
-                                                    <label className='height-0'>Effective Date<span className="asterisk-required">*</span></label>
+                                                    <label className='height-0'>Effective Date</label>
                                                     <div className="inputbox date-section">
                                                         <DatePicker
                                                             name="EffectiveDate"
