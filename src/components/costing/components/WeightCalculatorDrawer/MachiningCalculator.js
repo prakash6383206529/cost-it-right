@@ -78,6 +78,9 @@ function Machining(props) {
     const calculateNetRm = () => {
         const rmPerPiece = getValues('rmPerPiece')
         const scrapCost = getValues('ScrapCost')
+        if (checkForNull(rmPerPiece) < checkForNull(scrapCost)) {
+            Toaster.warning('RM/Pc should not be less than scrap cost/piece. Please verify the values for "Thickness", "Net length", and "Parting Margin".')
+        }
         const netRm = rmPerPiece - scrapCost
         setValue('netRm', checkForDecimalAndNull(netRm, getConfigurationKey().NoOfDecimalForPrice))
     }
@@ -162,6 +165,10 @@ function Machining(props) {
         props.toggleDrawer('')
     }
     const onSubmit = debounce(handleSubmit((values) => {
+        if (checkForNull(getValues('netRm')) <= 0) {
+            Toaster.warning('"Net RM Cost" should not be negative or zero.')
+            return false
+        }
         let obj = {
             MachiningCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.MachiningCalculatorId ? WeightCalculatorRequest.MachiningCalculatorId : "0",
             BaseCostingIdRef: item.CostingId,
