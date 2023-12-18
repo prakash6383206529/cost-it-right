@@ -147,7 +147,7 @@ function Machining(props) {
    */
     const calculateScrapCost = () => {
         const ScrapWeight = getValues('ScrapWeight')
-        const ScrapRate = props.rmRowData.ScrapRatePerScrapUOM
+        const ScrapRate = props.rmRowData.ScrapRatePerScrapUOMConversion
         const ScrapCost = ScrapWeight * ScrapRate
         const updatedValue = dataToSend
         updatedValue.ScrapCost = ScrapCost
@@ -485,7 +485,7 @@ function Machining(props) {
                                             required: false,
                                         }}
                                         handleChange={() => { }}
-                                        defaultValue={props.rmRowData.ScrapRatePerScrapUOM}
+                                        defaultValue={props.rmRowData.ScrapRatePerScrapUOMConversion}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.ScrapRate}
