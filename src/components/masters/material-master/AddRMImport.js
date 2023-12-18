@@ -2253,7 +2253,7 @@ class AddRMImport extends Component {
                                     <input
                                       type="checkbox"
                                       checked={this.state.IsApplyHasDifferentUOM}
-                                      disabled={(isViewFlag) ? true : false}
+                                      disabled={(isViewFlag || (isEditFlag && isRMAssociated)) ? true : false}
                                     />
                                     <span
                                       className=" before-box"
@@ -2273,11 +2273,11 @@ class AddRMImport extends Component {
                                   component={searchableSelect}
                                   placeholder={"Select"}
                                   options={this.renderListing("uom", true)}
-                                  validate={this.state.ScrapRateUOM == null || this.state.ScrapRateUOM?.length === 0 ? [required] : []}
+                                  validate={!this.state.ScrapRateUOM?.value || this.state.ScrapRateUOM?.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleSelectConversion}
                                   valueDescription={this.state.ScrapRateUOM}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>}
                             {this.state.IsApplyHasDifferentUOM && this.state.ScrapRateUOM?.value && <>
