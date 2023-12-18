@@ -403,6 +403,7 @@ function SimulationApprovalListing(props) {
         return (
             <Fragment>
                 <div
+                    id={`simulation_approval_listing_${props?.rowIndex}`}
                     onClick={() => viewDetails(rowData)}
                     className={'link'}
                 >
@@ -636,10 +637,14 @@ function SimulationApprovalListing(props) {
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
                     if (selectedRowData[0].Status === DRAFT) {
-                        setApproveDrawer(res.data.Data.IsFinalApprover ? false : true)
-                        if (res.data.Data.IsFinalApprover) {
+                        if (res.data.Data.IsUserInApprovalFlow === false) {
+                            Toaster.warning("User does not have permission to send simulation for approval.")
+                            gridApi.deselectAll()
+                        } if (res.data.Data.IsFinalApprover) {
                             Toaster.warning("Final level approver can not send draft token for approval")
                             gridApi.deselectAll()
+                        } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
+                            setApproveDrawer(true)
                         }
                     }
                     else {
@@ -709,7 +714,19 @@ function SimulationApprovalListing(props) {
         setGridApi(params.api)
         setGridColumnApi(params.columnApi)
         params.api.paginationGoToPage(0);
+        setTimeout(() => {
+            const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
 
+            checkBoxInstance.forEach((checkBox, index) => {
+                const specificId = `Simulation_Approval_Checkbox${index / 14}`;
+                checkBox.id = specificId;
+            })
+        }, 1500);
+        const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+        floatingFilterInstances.forEach((floatingFilter, index) => {
+            const specificId = `Simulation_Approval_Floating${index}`;
+            floatingFilter.id = specificId;
+        });
         //if resolution greater than 1920 table listing fit to 100%
         window.screen.width > 1920 && params.api.sizeColumnsToFit()
         //if resolution greater than 1920 table listing fit to 100%
@@ -754,13 +771,14 @@ function SimulationApprovalListing(props) {
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                            <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            <button disabled={disableFilter} id="Simulation_Approval_Filter" title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                         </div>
-                                        <button type="button" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
+                                        <button type="button" id="Simulation_Approval_Reset" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
                                         {!props.hidesendBtn && <button
                                             class="user-btn approval-btn"
+                                            id="Simulation_Approval_Send"
                                             onClick={sendForApproval}
                                             title="Send For Approval"
                                             disabled={((isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) || isSuperAdmin) ? true : false}

@@ -75,7 +75,7 @@ function CostReportForm(props) {
 
 
     useEffect(() => {
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "REPORT", () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getPartInfo('', () => { }))
         dispatch(getProductGroupSelectList(() => { }))
@@ -653,7 +653,7 @@ function CostReportForm(props) {
                                     rules={{ required: false }}
                                     register={register}
                                     defaultValue={vendor.length !== 0 ? vendor : ""}
-                                    options={renderListing("vendor")}
+                                    options={renderListing("Vendor")}
                                     mandatory={true}
                                     handleChange={handleVendorChange}
                                     // handleChange={() => { }}

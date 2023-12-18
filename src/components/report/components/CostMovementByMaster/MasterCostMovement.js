@@ -70,7 +70,7 @@ function MasterCostMovement() {
         dispatch(getApprovalTypeSelectList(() => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(fetchPlantDataAPI(() => { }))
-        dispatch(getPlantSelectListByType(ZBC, () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "REPORT", () => { }))
     }, [])
     const { handleSubmit, control, register, getValues, setValue, formState: { errors } } = useForm({
         mode: 'onChange',
@@ -626,13 +626,14 @@ function MasterCostMovement() {
     };
     const runReport = () => {
         let fixedData = {
-            "FromDate": fromDate,
-            "ToDate": toDate,
+            "FromDate": DayTime(fromDate).format('YYYY-MM-DD HH:mm:ss'),
+            "ToDate": DayTime(toDate).format('YYYY-MM-DD HH:mm:ss'),
             "CostingHeadId": Number(costingHeadType.value),
             "TechnologyId": Number(technology.value),
             "PlantId": plant.value,
             "VendorId": vendor.value,
             "IsCustomerDataShow": showCustomer,
+            "CustomerId": getValues('Customer').value
         }
 
         let masterData = {}

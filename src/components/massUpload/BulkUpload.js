@@ -265,7 +265,7 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === CBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_CBC_DOMESTIC), fileHeads)
                             } else if (this.state.bopType === DETAILED_BOP) {
-                                checkForFileHead = checkForSameFileUpload(BOP_DETAILED_DOMESTIC, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_DETAILED_DOMESTIC), fileHeads)
                             }
                             break;
                         case String(BOPIMPORTBULKUPLOAD):
@@ -275,7 +275,7 @@ class BulkUpload extends Component {
                             else if (this.state.costingTypeId === VBCTypeId) {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_VBC_IMPORT, VBCTypeId), fileHeads)
                             } else if (this.state.bopType === DETAILED_BOP) {
-                                checkForFileHead = checkForSameFileUpload(BOP_DETAILED_IMPORT, fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_DETAILED_IMPORT), fileHeads)
                             } else {
                                 checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(BOP_CBC_IMPORT, CBCTypeId), fileHeads)
                             }
@@ -301,7 +301,7 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(VENDORBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(Vendor), fileHeads)
+                            checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(Vendor, '', '', true), fileHeads)
                             break;
                         case String(LABOURBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(Labour, fileHeads)
@@ -469,6 +469,7 @@ class BulkUpload extends Component {
     }
 
     responseHandler = (res) => {
+
         const { messageLabel, } = this.props;
         if (res?.data?.Data) {
             let Data = res?.data?.Data;
@@ -674,11 +675,13 @@ class BulkUpload extends Component {
         const { handleSubmit, isEditFlag, fileName, messageLabel, isZBCVBCTemplate = '', isMachineMoreTemplate } = this.props;
         const { faildRecords, failedData, costingTypeId, setDisable, noApprovalCycle, bopType } = this.state;
         if (faildRecords) {
+
             return <Downloadxls
                 isFailedFlag={true}
                 fileName={fileName}
                 failedData={failedData}
                 costingTypeId={costingTypeId}
+                bopType={bopType}
             />
         }
         return (

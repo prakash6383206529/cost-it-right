@@ -12,9 +12,11 @@ import { getCostingSpecificTechnology, getPartSelectListByTechnology } from "../
 import { loggedInUserId } from "../../../../helper"
 import { reactLocalStorage } from "reactjs-localstorage"
 import { autoCompleteDropdown } from "../../../common/CommonFunctions"
-import { searchCount } from "../../../../config/constants"
+import { VBC_VENDOR_TYPE, ZBC, searchCount } from "../../../../config/constants"
 import GotGivenSummary from "./GotGivenSummary"
 import Toaster from "../../../common/Toaster"
+import { getClientSelectList } from "../../../masters/actions/Client"
+import { getPlantSelectListByType, getVendorNameByVendorSelectList } from "../../../../actions/Common"
 
 const GotGivenReport = (props) => {
     const [runGotGivenReport, setRunGotGivenReport] = useState(false)
@@ -23,21 +25,27 @@ const GotGivenReport = (props) => {
     const [part, setPart] = useState('')
     const [inputLoader, setInputLoader] = useState(false)
     const [partName, setpartName] = useState('')
+    const [vendor, setVendor] = useState([])
     const dispatch = useDispatch()
 
-    const { control, register, reset, formState: { errors } } = useForm({
+    const { control, register, reset, getValues, formState: { errors } } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
     })
 
     const productGroupSelectList = useSelector(state => state.part.productGroupSelectList)
     const technologySelectList = useSelector((state) => state.costing.costingSpecifiTechnology)
-
+    const clientSelectList = useSelector((state) => state.client.clientSelectList)
+    const vendorSelectList = useSelector((state) => state.costing.costingVendorList)
+    const plantSelectList = useSelector((state) => state.comman.plantSelectList)
 
     useEffect(() => {
         dispatch(getFormGridData({}))
         dispatch(getProductGroupSelectList(() => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
+        dispatch(getClientSelectList((res) => {
+        }))
+        dispatch(getPlantSelectListByType(ZBC, "REPORT", () => { }))
     }, [])
     /**
     * @Method runReport
@@ -103,6 +111,30 @@ const GotGivenReport = (props) => {
             })
             return temp
         }
+        if (label === 'Customer') {
+            clientSelectList && clientSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'Vendor') {
+            vendorSelectList && vendorSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+            return temp
+        }
+        if (label === 'Plant') {
+            plantSelectList && plantSelectList.map((item) => {
+                if (item.PlantId === '0') return false
+                temp.push({ label: item.PlantNameCode, value: item.PlantId })
+                return null
+            })
+            return temp
+        }
     }
 
     const filterList = async (inputValue) => {
@@ -148,6 +180,38 @@ const GotGivenReport = (props) => {
         setProduct('')
     }
 
+    const handleVendorChange = (value) => {
+        setVendor(value)
+
+    }
+    const vendorFilterList = async (inputValue) => {
+        if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
+            inputValue = inputValue.trim();
+        }
+        const resultInput = inputValue.slice(0, searchCount)
+        if (inputValue?.length >= searchCount && vendor !== resultInput) {
+            let res
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput)
+            setVendor(resultInput)
+            let vendorDataAPI = res?.data?.SelectList
+            if (inputValue) {
+                return autoCompleteDropdown(inputValue, vendorDataAPI, false, [], true)
+            } else {
+                return vendorDataAPI
+            }
+        }
+        else {
+            if (inputValue?.length < searchCount) return false
+            else {
+                let VendorData = reactLocalStorage?.getObject('Data')
+                if (inputValue) {
+                    return autoCompleteDropdown(inputValue, VendorData, false, [], false)
+                } else {
+                    return VendorData
+                }
+            }
+        }
+    };
     return (
         <>
             {!runGotGivenReport && <div className="container-fluid ">
@@ -192,8 +256,42 @@ const GotGivenReport = (props) => {
                                 />
 
                             </Col>
+                            <Col md="3">
+                                <SearchableSelectHookForm
+                                    label={"Customer (Code)"}
+                                    name={"Customer"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={control}
+                                    rules={{ required: true }}
+                                    register={register}
+                                    handleChange={() => { }}
+                                    options={renderListing("Customer")}
+                                    mandatory={true}
+                                    errors={errors.Customer}
 
-
+                                />
+                            </Col>
+                            <Col md="3">
+                                <AsyncSearchableSelectHookForm
+                                    label={"Vendor (Code)"}
+                                    name={"vendor"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={control}
+                                    rules={{ required: false }}
+                                    register={register}
+                                    defaultValue={vendor.length !== 0 ? vendor : ""}
+                                    options={renderListing("vendor")}
+                                    mandatory={true}
+                                    handleChange={handleVendorChange}
+                                    // handleChange={() => { }}
+                                    errors={errors.vendor}
+                                    asyncOptions={vendorFilterList}
+                                    disabled={props.isSaleAndPurchase ? false : (part.length === 0 ? true : false)}
+                                    NoOptionMessage={MESSAGES.ASYNC_MESSAGE_FOR_DROPDOWN}
+                                />
+                            </Col>
                             <Col md="3">
                                 <SearchableSelectHookForm
                                     label={"Product"}
@@ -209,6 +307,24 @@ const GotGivenReport = (props) => {
                                     errors={errors.Technology}
                                 />
                             </Col>
+                            <Col md="3">
+                                <SearchableSelectHookForm
+                                    label={"Plant (Code)"}
+                                    name={"Plant"}
+                                    placeholder={"Select"}
+                                    Controller={Controller}
+                                    control={control}
+                                    rules={{ required: true }}
+                                    register={register}
+                                    handleChange={() => { }}
+                                    options={renderListing("Plant")}
+                                    mandatory={true}
+
+                                    errors={errors.Plant}
+
+                                />
+                            </Col>
+
                             <Col md="3" className="mt-2">
                                 <button
                                     type="button"
@@ -229,7 +345,7 @@ const GotGivenReport = (props) => {
                     </Col>
                 </Row>
             </div >}
-            {runGotGivenReport && <GotGivenSummary closeDrawer={closeDrawer} part={part} product={product} />}
+            {runGotGivenReport && <GotGivenSummary closeDrawer={closeDrawer} part={part} product={product} customerId={getValues('Customer')?.value} plantId={getValues('Plant')?.value} vendorId={getValues('vendor')?.value} />}
         </>
     )
 }
