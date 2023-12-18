@@ -263,10 +263,10 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
-    this.props.getUOMSelectList(() => { })
     this.getDetails(data);
     this.props.change('NetLandedCostINR', 0)
     this.props.change('NetLandedCostSelectedCurrency', 0)
+    this.props.getUOMSelectList(() => { })
     if (!this.state.isViewFlag) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
@@ -659,16 +659,16 @@ class AddRMImport extends Component {
       this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
       const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
       if (showScrapKeys?.showCircleJali) {
-        obj.FinalJaliScrapCostBaseCurrency = scrapRateTemp
+        obj.FinalJaliScrapCostSelectedCurrency = scrapRateTemp
         this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
       } else if (showScrapKeys?.showForging) {
-        obj.FinalForgingScrapCostBaseCurrency = scrapRateTemp
+        obj.FinalForgingScrapCostSelectedCurrency = scrapRateTemp
         this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
       } else if (showScrapKeys?.showScrap) {
-        obj.FinalScrapRateBaseCurrency = scrapRateTemp
+        obj.FinalScrapRateSelectedCurrency = scrapRateTemp
         this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
       }
-      obj.ScrapRateBaseCurrency = scrapRateTemp
+      obj.ScrapRateSelectedCurrency = scrapRateTemp
       obj.CalculatedFactor = conversionFactorTemp
     }
 
@@ -1443,7 +1443,6 @@ class AddRMImport extends Component {
     let machiningRateBaseCurrency = ''
 
     if (showScrapKeys?.showCircleJali) {
-
       if (checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalJaliScrapCostSelectedCurrency) || checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalCircleScrapCostSelectedCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
