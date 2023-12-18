@@ -176,7 +176,6 @@ class AddRMImport extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getCurrencySelectList(() => { })
-      this.props.getUOMSelectList(() => { })
     }
   }
 
@@ -267,6 +266,7 @@ class AddRMImport extends Component {
     this.getDetails(data);
     this.props.change('NetLandedCostINR', 0)
     this.props.change('NetLandedCostSelectedCurrency', 0)
+    this.props.getUOMSelectList(() => { })
     if (!this.state.isViewFlag) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
@@ -545,7 +545,7 @@ class AddRMImport extends Component {
   */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, })
+      this.setState({ UOM: newValue, ScrapRateUOM: [] })
     } else {
       this.setState({ UOM: [] })
     }
@@ -659,16 +659,16 @@ class AddRMImport extends Component {
       this.props.change('CalculatedFactor', checkForDecimalAndNull(conversionFactorTemp, initialConfiguration.NoOfDecimalForPrice));
       const scrapRateTemp = checkForNull(fieldsObj?.ScrapRatePerScrapUOM) * checkForNull(conversionFactorTemp)
       if (showScrapKeys?.showCircleJali) {
-        obj.FinalJaliScrapCostBaseCurrency = scrapRateTemp
+        obj.FinalJaliScrapCostSelectedCurrency = scrapRateTemp
         this.props.change('JaliScrapCostSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
       } else if (showScrapKeys?.showForging) {
-        obj.FinalForgingScrapCostBaseCurrency = scrapRateTemp
+        obj.FinalForgingScrapCostSelectedCurrency = scrapRateTemp
         this.props.change('ForgingScrapSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
       } else if (showScrapKeys?.showScrap) {
-        obj.FinalScrapRateBaseCurrency = scrapRateTemp
+        obj.FinalScrapRateSelectedCurrency = scrapRateTemp
         this.props.change('ScrapRateSelectedCurrency', checkForDecimalAndNull(scrapRateTemp, initialConfiguration.NoOfDecimalForPrice));
       }
-      obj.ScrapRateBaseCurrency = scrapRateTemp
+      obj.ScrapRateSelectedCurrency = scrapRateTemp
       obj.CalculatedFactor = conversionFactorTemp
     }
 
@@ -1138,7 +1138,7 @@ class AddRMImport extends Component {
   * @method renderListing
   * @description Used to show type of listing
   */
-  renderListing = (label) => {
+  renderListing = (label, isScrapRateUOM) => {
     const { gradeSelectList, rmSpecification,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
       UOMSelectList, currencySelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props;
@@ -1220,6 +1220,7 @@ class AddRMImport extends Component {
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map((item) => {
         const accept = AcceptableRMUOM.includes(item.Type)
+        if (isScrapRateUOM === true && this.state.UOM?.value === item?.Value) return false
         if (accept === false) return false
         if (item.Value === '0') return false
         temp.push({ label: item.Display, value: item.Value })
@@ -1442,7 +1443,6 @@ class AddRMImport extends Component {
     let machiningRateBaseCurrency = ''
 
     if (showScrapKeys?.showCircleJali) {
-
       if (checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalJaliScrapCostSelectedCurrency) || checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalCircleScrapCostSelectedCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
@@ -1566,12 +1566,12 @@ class AddRMImport extends Component {
     formData.RawMaterialConditionsDetails = conditionTableData
 
     formData.IsScrapUOMApply = IsApplyHasDifferentUOM ? true : false
-    formData.ScrapUnitOfMeasurementId = this.state.ScrapRateUOM?.value
-    formData.ScrapUnitOfMeasurement = this.state.ScrapRateUOM?.label
-    formData.UOMToScrapUOMRatio = this.state.UOMToScrapUOMRatio
-    formData.CalculatedFactor = this.state.CalculatedFactor
-    formData.ScrapRatePerScrapUOM = this.state.ScrapRatePerScrapUOM
-    formData.ScrapRatePerScrapUOMConversion = ScrapRatePerScrapUOMConversion
+    formData.ScrapUnitOfMeasurementId = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRateUOM?.value : ''
+    formData.ScrapUnitOfMeasurement = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRateUOM?.label : ''
+    formData.UOMToScrapUOMRatio = this.state.IsApplyHasDifferentUOM === true ? this.state.UOMToScrapUOMRatio : ''
+    formData.CalculatedFactor = this.state.IsApplyHasDifferentUOM === true ? this.state.CalculatedFactor : ''
+    formData.ScrapRatePerScrapUOM = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRatePerScrapUOM : ''
+    formData.ScrapRatePerScrapUOMConversion = this.state.IsApplyHasDifferentUOM === true ? ScrapRatePerScrapUOMConversion : ''
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
@@ -2253,7 +2253,7 @@ class AddRMImport extends Component {
                                     <input
                                       type="checkbox"
                                       checked={this.state.IsApplyHasDifferentUOM}
-                                      disabled={(isViewFlag) ? true : false}
+                                      disabled={(isViewFlag || (isEditFlag && isRMAssociated)) ? true : false}
                                     />
                                     <span
                                       className=" before-box"
@@ -2272,12 +2272,12 @@ class AddRMImport extends Component {
                                   type="text"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing("uom")}
-                                  validate={this.state.ScrapRateUOM == null || this.state.ScrapRateUOM?.length === 0 ? [required] : []}
+                                  options={this.renderListing("uom", true)}
+                                  validate={!this.state.ScrapRateUOM?.value || this.state.ScrapRateUOM?.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleSelectConversion}
                                   valueDescription={this.state.ScrapRateUOM}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>}
                             {this.state.IsApplyHasDifferentUOM && this.state.ScrapRateUOM?.value && <>

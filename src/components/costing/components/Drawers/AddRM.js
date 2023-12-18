@@ -89,6 +89,12 @@ function AddRM(props) {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue !== '-' ? cellValue : 'INR'
   }
+
+  const priceFormatter = (props) => {
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    return cellValue ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
+  }
+
   /**
   * @method cancel
   * @description used to Reset form
@@ -198,6 +204,7 @@ function AddRM(props) {
     //  specificationFormat: specificationFormat,
     customLoadingOverlay: LoaderCustom,
     customNoRowsOverlay: NoContentFound,
+    priceFormatter: priceFormatter
   };
 
   const isRowSelectable = rowNode => rowNode.data ? !Ids.includes(rowNode.data.RawMaterialId) : false;
@@ -323,8 +330,8 @@ function AddRM(props) {
                         {costData && costData.VendorType === ZBC && <AgGridColumn dataAlign="center" field="VendorLocation" headerName="Vendor Location" ></AgGridColumn>}
                         <AgGridColumn field="Currency" cellRenderer={'currencyFormatter'}></AgGridColumn>
                         <AgGridColumn field="UOM"></AgGridColumn>
-                        <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'currencyFormatter'}></AgGridColumn>
-                        <AgGridColumn field="ScrapRate" headerName='Scrap Rate/UOM' cellRenderer={'currencyFormatter'}></AgGridColumn>
+                        <AgGridColumn field="BasicRatePerUOM" headerName="Basic Rate/UOM" cellRenderer={'priceFormatter'}></AgGridColumn>
+                        <AgGridColumn field="ScrapRate" headerName='Scrap Rate/UOM' cellRenderer={'priceFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
