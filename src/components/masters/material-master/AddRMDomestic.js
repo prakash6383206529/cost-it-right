@@ -251,11 +251,11 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    this.props.getUOMSelectList(() => { })
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.getDetails(data)
     }
 
-    this.props.getUOMSelectList(() => { })
     this.getDetails(data)
     if (!this.state.isViewFlag) {
       this.props.getRawMaterialNameChild(() => { })
@@ -1382,11 +1382,11 @@ class AddRMDomestic extends Component {
     }
     formData.RawMaterialConditionsDetails = conditionTableData
     formData.IsScrapUOMApply = IsApplyHasDifferentUOM ? true : false
-    formData.ScrapUnitOfMeasurementId = this.state.ScrapRateUOM?.value
-    formData.ScrapUnitOfMeasurement = this.state.ScrapRateUOM?.label
-    formData.UOMToScrapUOMRatio = this.state.ConversionRatio
-    formData.CalculatedFactor = this.state.CalculatedFactor
-    formData.ScrapRatePerScrapUOM = this.state.ScrapRatePerScrapUOM
+    formData.ScrapUnitOfMeasurementId = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRateUOM?.value : ""
+    formData.ScrapUnitOfMeasurement = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRateUOM?.label : ""
+    formData.UOMToScrapUOMRatio = this.state.IsApplyHasDifferentUOM === true ? this.state.ConversionRatio : ""
+    formData.CalculatedFactor = this.state.IsApplyHasDifferentUOM === true ? this.state.CalculatedFactor : ""
+    formData.ScrapRatePerScrapUOM = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRatePerScrapUOM : ""
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
