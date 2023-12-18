@@ -790,6 +790,7 @@ function MasterSendForApproval(props) {
                 {showScrapKeys?.showScrap &&
                     <>
                         <Col md="6">
+                            <TooltipCustom id="rm-scrap-rate-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />
                             <TextFieldHookForm
                                 label={labelWithUOMAndCurrency("Scrap Rate", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
                                 name={"ScrapRateCurrency"}
