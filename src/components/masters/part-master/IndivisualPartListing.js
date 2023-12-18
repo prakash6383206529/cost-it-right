@@ -287,9 +287,9 @@ class IndivisualPartListing extends Component {
 
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit ml-1" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && !rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {<button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {<button title='Edit' className="Edit ml-1" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {!rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -627,7 +627,7 @@ class IndivisualPartListing extends Component {
                                 </div>
                                 <div className='d-flex'>
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
-                                    {AddAccessibility && (
+                                    {(
                                         <button
                                             type="button"
                                             className={'user-btn mr5'}
@@ -635,7 +635,7 @@ class IndivisualPartListing extends Component {
                                             onClick={this.formToggle}>
                                             <div className={'plus mr-0'}></div></button>
                                     )}
-                                    {BulkUploadAccessibility && (
+                                    {(
                                         <button
                                             type="button"
                                             className={"user-btn mr5"}
@@ -647,7 +647,7 @@ class IndivisualPartListing extends Component {
                                         </button>
                                     )}
                                     {
-                                        DownloadAccessibility &&
+
                                         <>
                                             <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                 {/* DOWNLOAD */}

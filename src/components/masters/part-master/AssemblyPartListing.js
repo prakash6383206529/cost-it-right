@@ -338,7 +338,7 @@ const AssemblyPartListing = React.memo((props) => {
         <Col md="6" className="search-user-block pr-0">
           <div className="d-flex justify-content-end bd-highlight w100">
             <div>
-              {props.AddAccessibility && (
+              {permissions.Add && (
                 <button
                   type="button"
                   className={"user-btn mr5"}
@@ -348,7 +348,7 @@ const AssemblyPartListing = React.memo((props) => {
                   <div className={"plus mr-0"}></div>
                 </button>
               )}
-              {props.BulkUploadAccessibility && (
+              {permissions.BulkUpload && (
                 <button
                   type="button"
                   className={"user-btn mr5"}
@@ -358,7 +358,7 @@ const AssemblyPartListing = React.memo((props) => {
                   <div className={"upload mr-0"}></div>
                 </button>
               )}
-              {props.DownloadAccessibility && (
+              {permissions.Download && (
                 <>
                   <ExcelFile
                     filename={"BOM"}
