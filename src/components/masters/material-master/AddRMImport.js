@@ -157,7 +157,7 @@ class AddRMImport extends Component {
       FinalShearingCostSelectedCurrency: '',
       toolTipTextObject: {},
       IsApplyHasDifferentUOM: false,
-      ScrapRateUOM: {},
+      ScrapRateUOM: [],
       CalculatedFactor: '',
       UOMToScrapUOMRatio: '',
       ScrapRatePerScrapUOMConversion: '',
@@ -230,8 +230,9 @@ class AddRMImport extends Component {
         ...obj,
         toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) = Circle Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
         toolTipTextJaliScrapCostBaseCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Jali Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-        toolTipTextJaliScrapCostSelectedCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost ()`,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = Forging Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextJaliScrapCostSelectedCurrency: `Jali Scrap Cost (${this.state.currency?.label ? this.state.currency?.label : 'Currency'}/${(this.state.UOM?.label ? this.state.UOM?.label : 'UOM')}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost (${this.state.currency?.label ? this.state.currency?.label : 'Currency'}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = Jali Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextJaliScrapCostBaseCurrencyPerOldUOM: `Jali Scrap Cost (${currency?.label ? currency?.label : 'Currency'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost (${currency?.label ? currency?.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
       }
     } else if (showScrapKeys?.showForging) {
       obj = {
@@ -244,9 +245,14 @@ class AddRMImport extends Component {
     } else if (showScrapKeys?.showScrap) {
       obj = {
         ...obj,
-        toolTipTextScrapCostBaseCurrency: `Scrap Rate (${initialConfiguration?.BaseCurrency}) = Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-        toolTipTextScrapCostSelectedCurrency: `Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Scrap Cost ()`,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = Forging Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextScrapCostBaseCurrency: `Scrap Rate (${initialConfiguration?.BaseCurrency}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Scrap Rate (${currency.label === undefined ? 'Currency' : currency?.label}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+        toolTipTextScrapCostSelectedCurrency: `Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
+      }
+    } else {
+      obj = {
+        ...obj,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: `Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = Scrap Cost (${currency.label ? currency.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
       }
     }
     if (setData) {
@@ -979,6 +985,9 @@ class AddRMImport extends Component {
      * @description Used for Vendor checked
      */
   onPressVendor = (costingHeadFlag) => {
+    if (costingHeadFlag === this.state.costingTypeId) {
+      return false;
+    }
     const fieldsToClear = ['TechnologyId',
       'RawMaterialId',
       'RawMaterialGradeId',
@@ -1738,17 +1747,17 @@ class AddRMImport extends Component {
     }
 
     const labelForScrapRate = () => {
-      let labelSelectedCurrency = `Scrap Rate (${this.state.currency?.label ? this.state.currency?.label : 'Currency'}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`
-      let labelBaseCurrency = `Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`
+      let labelSelectedCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (this.state.currency?.label ? this.state.currency?.label : 'Currency'))
+      let labelBaseCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
       if (showScrapKeys?.showCircleJali) {
-        labelSelectedCurrency = `Jali Scrap Rate (${this.state.currency?.label ? this.state.currency?.label : 'Currency'}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`
-        labelBaseCurrency = `Jali Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`
+        labelSelectedCurrency = labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (this.state.currency?.label ? this.state.currency?.label : 'Currency'))
+        labelBaseCurrency = labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
       } else if (showScrapKeys?.showForging) {
-        labelSelectedCurrency = `Forging Scrap Cost (${this.state.currency?.label ? this.state.currency?.label : 'Currency'}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`
-        labelBaseCurrency = `Forging Scrap Cost (${getConfigurationKey()?.BaseCurrency}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`
+        labelSelectedCurrency = labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (this.state.currency?.label ? this.state.currency?.label : 'Currency'))
+        labelBaseCurrency = labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
       } else if (showScrapKeys?.showScrap) {
-        labelSelectedCurrency = `Scrap Rate (${this.state.currency?.label ? this.state.currency?.label : 'Currency'}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`
-        labelBaseCurrency = `Scrap Rate (${getConfigurationKey()?.BaseCurrency}/${(this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')})`
+        labelSelectedCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (this.state.currency?.label ? this.state.currency?.label : 'Currency'))
+        labelBaseCurrency = labelWithUOMAndCurrency("Scrap Rate", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))
       }
       return { labelSelectedCurrency: labelSelectedCurrency, labelBaseCurrency: labelBaseCurrency }
     }
@@ -2235,7 +2244,7 @@ class AddRMImport extends Component {
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                                 component={renderTextInputField}
-                                required={true}
+                                required={false}
                                 disabled={true}
                                 maxLength="15"
                                 className=" "
@@ -2297,7 +2306,7 @@ class AddRMImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom id="conversion-factor-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
+                                <TooltipCustom id="conversion-factor-base-currency" width={'400px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
                                 <Field
                                   label={`Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`}
                                   name={"CalculatedFactor"}
@@ -2305,7 +2314,7 @@ class AddRMImport extends Component {
                                   placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                                   component={renderTextInputField}
-                                  required={true}
+                                  required={false}
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
@@ -2336,7 +2345,7 @@ class AddRMImport extends Component {
                                   placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                                   component={renderTextInputField}
-                                  required={true}
+                                  required={false}
                                   className=""
                                   maxLength="15"
                                   customClassName=" withBorder"
@@ -2347,6 +2356,7 @@ class AddRMImport extends Component {
                             {showScrapKeys?.showScrap &&
                               <>
                                 <Col md="3">
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="rm-forging-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostSelectedCurrency} />}
                                   <Field
                                     label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                     name={"ScrapRateSelectedCurrency"}
@@ -2354,7 +2364,7 @@ class AddRMImport extends Component {
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                                     component={renderTextInputField}
-                                    required={true}
+                                    required={this.state.IsApplyHasDifferentUOM ? false : true}
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
@@ -2371,7 +2381,7 @@ class AddRMImport extends Component {
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                                     component={renderTextInputField}
-                                    required={true}
+                                    required={false}
                                     className=""
                                     maxLength="15"
                                     customClassName=" withBorder"
@@ -2383,7 +2393,7 @@ class AddRMImport extends Component {
                             {showScrapKeys?.showForging &&
                               <>
                                 <Col md="3">
-                                  <TooltipCustom id="rm-forging-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostSelectedCurrency} />
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="rm-forging-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostSelectedCurrency} />}
                                   <Field
                                     label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                     name={"ForgingScrapSelectedCurrency"}
@@ -2407,7 +2417,7 @@ class AddRMImport extends Component {
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                     component={renderTextInputField}
-                                    required={true}
+                                    required={false}
                                     className=""
                                     customClassName=" withBorder"
                                     maxLength="15"
@@ -2485,7 +2495,7 @@ class AddRMImport extends Component {
 
 
                                 <Col md="3">
-                                  <TooltipCustom id="jali-scrap-cost-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostSelectedCurrency} />
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="jali-scrap-cost-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostSelectedCurrency} />}
                                   <Field
                                     label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                     name={"JaliScrapCostSelectedCurrency"}
@@ -2508,7 +2518,7 @@ class AddRMImport extends Component {
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, maxLength15, decimalLengthsix]}
                                     component={renderText}
-                                    required={true}
+                                    required={false}
                                     disabled={true}
                                     className=" "
                                     customClassName=" withBorder"
@@ -2598,7 +2608,7 @@ class AddRMImport extends Component {
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                   component={renderTextInputField}
-                                  required={true}
+                                  required={false}
                                   disabled={true}
                                   className=" "
                                   customClassName=" withBorder"
@@ -2613,7 +2623,7 @@ class AddRMImport extends Component {
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                   component={renderTextInputField}
-                                  required={true}
+                                  required={false}
                                   disabled={true}
                                   className=" "
                                   customClassName=" withBorder"
