@@ -771,7 +771,6 @@ export function updateMultipleComponentTechnology(requestData, callback) {
             .then((response) => {
                 callback(response);
             }).catch((error) => {
-                console.log('error: ', error);
                 apiErrors(error);
                 dispatch({ type: API_FAILURE });
                 callback(error);

@@ -80,7 +80,7 @@ function RMSimulation(props) {
         setIsLoader(true)
         let scrapUOMApplyList = _.map(list, 'IsScrapUOMApply')
         setTimeout(() => {
-            if (scrapUOMApplyList?.includes("Yes")) {
+            if (scrapUOMApplyList?.includes("Yes") || scrapUOMApplyList?.includes(true)) {
                 setIsScrapUOMApplyTemp(true)
                 setIsLoader(false)
             } else {
