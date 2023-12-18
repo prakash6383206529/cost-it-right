@@ -176,7 +176,6 @@ class AddRMImport extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getCurrencySelectList(() => { })
-      this.props.getUOMSelectList(() => { })
     }
   }
 
@@ -264,6 +263,7 @@ class AddRMImport extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    this.props.getUOMSelectList(() => { })
     this.getDetails(data);
     this.props.change('NetLandedCostINR', 0)
     this.props.change('NetLandedCostSelectedCurrency', 0)
@@ -545,7 +545,7 @@ class AddRMImport extends Component {
   */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, })
+      this.setState({ UOM: newValue, ScrapRateUOM: [] })
     } else {
       this.setState({ UOM: [] })
     }
@@ -1138,7 +1138,7 @@ class AddRMImport extends Component {
   * @method renderListing
   * @description Used to show type of listing
   */
-  renderListing = (label) => {
+  renderListing = (label, isScrapRateUOM) => {
     const { gradeSelectList, rmSpecification,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
       UOMSelectList, currencySelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props;
@@ -1220,6 +1220,7 @@ class AddRMImport extends Component {
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map((item) => {
         const accept = AcceptableRMUOM.includes(item.Type)
+        if (isScrapRateUOM === true && this.state.UOM?.value === item?.Value) return false
         if (accept === false) return false
         if (item.Value === '0') return false
         temp.push({ label: item.Display, value: item.Value })
@@ -2272,7 +2273,7 @@ class AddRMImport extends Component {
                                   type="text"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing("uom")}
+                                  options={this.renderListing("uom", true)}
                                   validate={this.state.ScrapRateUOM == null || this.state.ScrapRateUOM?.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleSelectConversion}

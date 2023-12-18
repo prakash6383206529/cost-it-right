@@ -177,7 +177,6 @@ class AddRMDomestic extends Component {
    */
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
-      this.props.getUOMSelectList(() => { })
       this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
     }
   }
@@ -256,6 +255,7 @@ class AddRMDomestic extends Component {
       this.getDetails(data)
     }
 
+    this.props.getUOMSelectList(() => { })
     this.getDetails(data)
     if (!this.state.isViewFlag) {
       this.props.getRawMaterialNameChild(() => { })
@@ -517,7 +517,7 @@ class AddRMDomestic extends Component {
    */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, isDropDownChanged: true })
+      this.setState({ UOM: newValue, isDropDownChanged: true, ScrapRateUOM: [] })
     } else {
       this.setState({ UOM: [] })
     }
@@ -975,7 +975,7 @@ class AddRMDomestic extends Component {
    * @method renderListing
    * @description Used to show type of listing
    */
-  renderListing = (label) => {
+  renderListing = (label, isScrapRateUOM) => {
     const { gradeSelectList, rmSpecification, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props
     const temp = []
 
@@ -1065,6 +1065,7 @@ class AddRMDomestic extends Component {
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map((item) => {
         const accept = AcceptableRMUOM.includes(item.Type)
+        if (isScrapRateUOM === true && this.state.UOM?.value === item?.Value) return false
         if (accept === false) return false
         if (item.Value === '0') return false
         temp.push({ label: item.Display, value: item.Value })
@@ -1993,7 +1994,7 @@ class AddRMDomestic extends Component {
                                   type="text"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing("uom")}
+                                  options={this.renderListing("uom", true)}
                                   validate={this.state.ScrapRateUOM == null || this.state.ScrapRateUOM?.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleSelectConversion}
