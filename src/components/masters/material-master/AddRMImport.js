@@ -979,6 +979,9 @@ class AddRMImport extends Component {
      * @description Used for Vendor checked
      */
   onPressVendor = (costingHeadFlag) => {
+    if (costingHeadFlag === this.state.costingTypeId) {
+      return false;
+    }
     const fieldsToClear = ['TechnologyId',
       'RawMaterialId',
       'RawMaterialGradeId',
