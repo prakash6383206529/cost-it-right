@@ -61,6 +61,7 @@ function SummaryDrawer(props) {
     const [isBudgetApproval, setIsBudgetApproval] = useState(false)
     const [showImport, setShowImport] = useState(false)
     const [bopDataResponse, setBopDataResponse] = useState([])
+    const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when master is approved and need to push it for scheduling
 
     // const { rmDomesticListing, rmImportListing, bopDomesticList, bopImportList } = useSelector(state => state.material)
 
@@ -91,8 +92,8 @@ function SummaryDrawer(props) {
                 } else {
                     setShowImport(true)
                 }
-
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                setShowPushButton(Data?.IsPushedButtonShow)
             } else if (checkForNull(props.masterId) === OPERATIONS_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Attachements)
@@ -252,11 +253,13 @@ function SummaryDrawer(props) {
                                 </Col>
                             </Row>
                         }
-                        {(checkForNull(props.masterId) === BOP_MASTER_ID) && costingTypeId === ZBCTypeId &&
-                            <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
-                                <div className={"save-icon"}></div>
-                                {"Repush"}
-                            </button>
+                        {(checkForNull(props.masterId) === BOP_MASTER_ID) && costingTypeId === ZBCTypeId && showPushButton &&
+                            <div className='d-flex justify-content-end'>
+                                <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
+                                    <div className={"save-icon"}></div>
+                                    {"Repush"}
+                                </button>
+                            </div>
                         }
                         {
                             !approvalDetails.IsSent &&
