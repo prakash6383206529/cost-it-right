@@ -177,7 +177,6 @@ class AddRMDomestic extends Component {
    */
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
-      this.props.getUOMSelectList(() => { })
       this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
     }
   }
@@ -252,6 +251,7 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    this.props.getUOMSelectList(() => { })
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.getDetails(data)
     }
@@ -517,7 +517,7 @@ class AddRMDomestic extends Component {
    */
   handleUOM = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, isDropDownChanged: true })
+      this.setState({ UOM: newValue, isDropDownChanged: true, ScrapRateUOM: [] })
     } else {
       this.setState({ UOM: [] })
     }
@@ -975,7 +975,7 @@ class AddRMDomestic extends Component {
    * @method renderListing
    * @description Used to show type of listing
    */
-  renderListing = (label) => {
+  renderListing = (label, isScrapRateUOM) => {
     const { gradeSelectList, rmSpecification, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props
     const temp = []
 
@@ -1065,6 +1065,7 @@ class AddRMDomestic extends Component {
     if (label === 'uom') {
       UOMSelectList && UOMSelectList.map((item) => {
         const accept = AcceptableRMUOM.includes(item.Type)
+        if (isScrapRateUOM === true && this.state.UOM?.value === item?.Value) return false
         if (accept === false) return false
         if (item.Value === '0') return false
         temp.push({ label: item.Display, value: item.Value })
@@ -1381,11 +1382,11 @@ class AddRMDomestic extends Component {
     }
     formData.RawMaterialConditionsDetails = conditionTableData
     formData.IsScrapUOMApply = IsApplyHasDifferentUOM ? true : false
-    formData.ScrapUnitOfMeasurementId = this.state.ScrapRateUOM?.value
-    formData.ScrapUnitOfMeasurement = this.state.ScrapRateUOM?.label
-    formData.UOMToScrapUOMRatio = this.state.ConversionRatio
-    formData.CalculatedFactor = this.state.CalculatedFactor
-    formData.ScrapRatePerScrapUOM = this.state.ScrapRatePerScrapUOM
+    formData.ScrapUnitOfMeasurementId = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRateUOM?.value : ""
+    formData.ScrapUnitOfMeasurement = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRateUOM?.label : ""
+    formData.UOMToScrapUOMRatio = this.state.IsApplyHasDifferentUOM === true ? this.state.ConversionRatio : ""
+    formData.CalculatedFactor = this.state.IsApplyHasDifferentUOM === true ? this.state.CalculatedFactor : ""
+    formData.ScrapRatePerScrapUOM = this.state.IsApplyHasDifferentUOM === true ? this.state.ScrapRatePerScrapUOM : ""
 
     // CHECK IF CREATE MODE OR EDIT MODE !!!  IF: EDIT  ||  ELSE: CREATE
     if (isEditFlag) {
@@ -1974,7 +1975,7 @@ class AddRMDomestic extends Component {
                                     <input
                                       type="checkbox"
                                       checked={this.state.IsApplyHasDifferentUOM}
-                                      disabled={(isViewFlag) ? true : false}
+                                      disabled={(isViewFlag || (isEditFlag && isRMAssociated)) ? true : false}
                                     />
                                     <span
                                       className=" before-box"
@@ -1993,12 +1994,12 @@ class AddRMDomestic extends Component {
                                   type="text"
                                   component={searchableSelect}
                                   placeholder={"Select"}
-                                  options={this.renderListing("uom")}
-                                  validate={this.state.ScrapRateUOM == null || this.state.ScrapRateUOM?.length === 0 ? [required] : []}
+                                  options={this.renderListing("uom", true)}
+                                  validate={!this.state.ScrapRateUOM?.value || this.state.ScrapRateUOM?.length === 0 ? [required] : []}
                                   required={true}
                                   handleChangeDescription={this.handleSelectConversion}
                                   valueDescription={this.state.ScrapRateUOM}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 />
                               </Col>}
                             {this.state.IsApplyHasDifferentUOM && this.state.ScrapRateUOM?.value && <>

@@ -228,9 +228,10 @@ function RawMaterialCost(props) {
             CutOffPrice: el.CutOffPrice,
             IsCutOffApplicable: el.IsCutOffApplicable,
             MachiningScrapRate: el.MachiningScrapRate,
-            ScrapRatePerScrapUOM: el.ScrapRatePerScrapUOM,
+            ScrapRatePerScrapUOMConversion: el.ScrapRatePerScrapUOMConversion,
             IsScrapUOMApply: el.IsScrapUOMApply,
             ScrapUnitOfMeasurement: el.ScrapUnitOfMeasurement,
+            Currency: el.Currency,
           }
         })
 
@@ -257,6 +258,8 @@ function RawMaterialCost(props) {
           MachiningScrapRate: rowData.MachiningScrapRate,
           IsScrapUOMApply: rowData.IsScrapUOMApply,
           ScrapUnitOfMeasurement: rowData.ScrapUnitOfMeasurement,
+          ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
+          Currency: rowData.Currency,
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -1331,8 +1334,8 @@ function RawMaterialCost(props) {
                         return (
                           <tr key={index} className=''>
                             <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
-                            <td>{item.RMRate}</td>
-                            <td>{item.ScrapRate}</td>
+                            <td>{checkForDecimalAndNull(item.RMRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                            <td>{checkForDecimalAndNull(item.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{item.UOM}</td>
                             {showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
                               <td className="text-center">
