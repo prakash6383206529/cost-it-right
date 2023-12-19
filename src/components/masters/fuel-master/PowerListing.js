@@ -1,530 +1,594 @@
-
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { reduxForm, } from "redux-form";
-import { Row, Col, } from 'reactstrap';
+import React, { useContext, useEffect, useState } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { reduxForm } from "redux-form";
+import { Row, Col } from "reactstrap";
 import { checkForDecimalAndNull } from "../../../helper/validation";
 import {
-  getPowerDetailDataList, getVendorPowerDetailDataList, getPlantListByState,
-  deletePowerDetail, deleteVendorPowerDetail,
-} from '../actions/Fuel';
-import { getPlantBySupplier } from '../../../actions/Common';
-import { EMPTY_DATA } from '../../../config/constants';
-import NoContentFound from '../../common/NoContentFound';
-import { MESSAGES } from '../../../config/message';
-import Toaster from '../../common/Toaster';
-import DayTime from '../../common/DayTimeWrapper'
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import LoaderCustom from '../../common/LoaderCustom';
-import { PowerMaster } from '../../../config/constants';
-import ReactExport from 'react-export-excel';
-import { POWERLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { loggedInUserId, searchNocontentFilter } from '../../../helper';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import { PaginationWrapper } from '../../common/commonPagination';
-import { reactLocalStorage } from 'reactjs-localstorage';
+  getPowerDetailDataList,
+  getVendorPowerDetailDataList,
+  getPlantListByState,
+  deletePowerDetail,
+  deleteVendorPowerDetail,
+} from "../actions/Fuel";
+import { getPlantBySupplier } from "../../../actions/Common";
+import { EMPTY_DATA } from "../../../config/constants";
+import NoContentFound from "../../common/NoContentFound";
+import { MESSAGES } from "../../../config/message";
+import Toaster from "../../common/Toaster";
+import DayTime from "../../common/DayTimeWrapper";
+import { GridTotalFormate } from "../../common/TableGridFunctions";
+import LoaderCustom from "../../common/LoaderCustom";
+import { PowerMaster } from "../../../config/constants";
+import ReactExport from "react-export-excel";
+import { POWERLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { AgGridColumn, AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import { PaginationWrapper } from "../../common/commonPagination";
+import { reactLocalStorage } from "reactjs-localstorage";
+import { ApplyPermission } from ".";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
+const PowerListing = (props) => {
+  const [state, setState] = useState({
+    isOpen: false,
+    isEditFlag: false,
+    IsVendor: false,
+    tableData: [],
+    shown: false,
+    StateName: [],
+    plant: [],
+    vendorName: [],
+    vendorPlant: [],
+    showPopup: false,
+    deletedId: "",
+    isLoader: false,
+    selectedRowData: false,
+    noData: false,
+    dataCount: 0,
+  });
+  const dispatch = useDispatch();
+  const permissions = useContext(ApplyPermission);
 
+  const { powerDataList } = useSelector((state) => state.fuel);
+  const { initialConfiguration } = useSelector((state) => state.auth);
 
-class PowerListing extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOpen: false,
-      isEditFlag: false,
-      IsVendor: false,
-      tableData: [],
-      shown: false,
-      StateName: [],
-      plant: [],
-      vendorName: [],
-      vendorPlant: [],
-      showPopup: false,
-      deletedId: '',
-      isLoader: false,
-      selectedRowData: false,
-      noData: false,
-      dataCount: 0
+  console.log("powerDataList", powerDataList);
+
+  useEffect(() => {
+    if (permissions) {
+      getDataList(null, null);
     }
-  }
+  }, [permissions]);
 
-  /**
-  * @method componentDidMount
-  * @description Called after rendering the component
-  */
-  componentDidMount() {
-    setTimeout(() => {
-      if (!this.props.stopApiCallOnCancel) {
-        this.getDataList()
-      }
-    }, 300);
-
-  }
-
-  getDataList = () => {
-    const { StateName, plant, vendorName, vendorPlant } = this.state;
-    this.setState({ isLoader: true })
-    if (!this.state.IsVendor) {
+  const getDataList = () => {
+    setState((prevState) => ({ ...prevState, isLoader: true }));
+    if (!state.IsVendor) {
       const filterData = {
-        plantID: plant ? plant.value : '',
-        stateID: StateName ? StateName.value : '',
-      }
-      this.props.getPowerDetailDataList(filterData, (res) => {
-        this.setState({ isLoader: false })
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          this.setState({ tableData: Data, isLoader: false })
-        } else if (res && res.response && res.response.status === 412) {
-          this.setState({ tableData: [], isLoader: false })
-        } else {
-          this.setState({ tableData: [], isLoader: false })
-        }
-      })
-
+        plantID: state.plant ? state.plant.value : "",
+        stateID: state.StateName ? state.StateName.value : "",
+      };
+      dispatch(
+        getPowerDetailDataList(filterData, (res) => {
+          setState((prevState) => ({ ...prevState, isLoader: false }));
+          if (res && res.status === 200) {
+            let Data = res.data.DataList;
+            setState((prevState) => ({
+              ...prevState,
+              tableData: Data,
+              isLoader: false,
+            }));
+          } else if (res && res.response && res.response.status === 412) {
+            setState((prevState) => ({
+              ...prevState,
+              tableData: [],
+              isLoader: false,
+            }));
+          } else {
+            setState((prevState) => ({
+              ...prevState,
+              tableData: [],
+              isLoader: false,
+            }));
+          }
+        })
+      );
     } else {
-
       const filterData = {
-        vendorID: vendorName && vendorName !== undefined ? vendorName.value : '',
-        plantID: vendorPlant && vendorPlant !== undefined ? vendorPlant.value : '',
-      }
-      this.props.getVendorPowerDetailDataList(filterData, (res) => {
-        this.setState({ isLoader: false })
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          this.setState({ tableData: Data })
-        } else if (res && res.response && res.response.status === 412) {
-          this.setState({ tableData: [] })
-        } else {
-          this.setState({ tableData: [] })
-        }
-      })
-
+        vendorID:
+          state.vendorName && state.vendorName !== undefined
+            ? state.vendorName.value
+            : "",
+        plantID:
+          state.vendorPlant && state.vendorPlant !== undefined
+            ? state.vendorPlant.value
+            : "",
+      };
+      dispatch(
+        getVendorPowerDetailDataList(filterData, (res) => {
+          setState((prevState) => ({ ...prevState, isLoader: false }));
+          if (res && res.status === 200) {
+            let Data = res.data.DataList;
+            setState((prevState) => ({ ...prevState, tableData: Data }));
+          } else if (res && res.response && res.response.status === 412) {
+            setState((prevState) => ({ ...prevState, tableData: [] }));
+          } else {
+            setState((prevState) => ({ ...prevState, tableData: [] }));
+          }
+        })
+      );
     }
-
-  }
+  };
 
   /**
-  * @method viewOrEditItemDetails
-  * @description edit or view material type
-  */
-  viewOrEditItemDetails = (Id, isViewMode) => {
+   * @method viewOrEditItemDetails
+   * @description edit or view material type
+   */
+  const viewOrEditItemDetails = (Id, isViewMode) => {
     let data = {
       isEditFlag: true,
-      Id: this.state.IsVendor ? Id?.PowerDetailId : Id?.PowerId,
-      IsVendor: this.state.IsVendor,
+      Id: state.IsVendor ? Id?.PowerDetailId : Id?.PowerId,
+      IsVendor: state.IsVendor,
       isViewMode: isViewMode,
-      plantId: Id?.PlantId
-    }
-    this.props.getDetails(data);
-  }
+      plantId: Id?.PlantId,
+    };
+    props.getDetails(data);
+  };
 
   /**
-  * @method deleteItem
-  * @description confirm delete Raw Material details
-  */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
-  }
+   * @method deleteItem
+   * @description confirm delete Raw Material details
+   */
+  const deleteItem = (Id) => {
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
+  };
 
   /**
-  * @method confirmDelete
-  * @description confirm delete Raw Material details
-  */
-  confirmDelete = (ID) => {
-    const loggedInUser = loggedInUserId()
-    if (this.state.IsVendor) {
-      this.props.deleteVendorPowerDetail(ID?.PowerDetailId, loggedInUser, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
-          this.getDataList()
-        }
-      });
-      this.setState({ showPopup: false })
+   * @method confirmDelete
+   * @description confirm delete Raw Material details
+   */
+  const confirmDelete = (ID) => {
+    const loggedInUser = loggedInUserId();
+    if (state.IsVendor) {
+      dispatch(
+        deleteVendorPowerDetail(ID?.PowerDetailId, loggedInUser, (res) => {
+          if (res.data.Result === true) {
+            Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
+            getDataList();
+          }
+        })
+      );
+      setState((prevState) => ({ ...prevState, showPopup: false }));
     } else {
-      this.props.deletePowerDetail(ID, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
-          this.getDataList()
-          this.setState({ dataCount: 0 })
-        }
-      });
-      this.setState({ showPopup: false })
+      dispatch(
+        deletePowerDetail(ID, (res) => {
+          if (res.data.Result === true) {
+            Toaster.success(MESSAGES.DELETE_POWER_SUCCESS);
+            getDataList();
+            setState((prevState) => ({ ...prevState, dataCount: 0 }));
+          }
+        })
+      );
+      setState((prevState) => ({ ...prevState, showPopup: false }));
     }
-  }
-  onPopupConfirm = () => {
-    this.confirmDelete(this.state.deletedId);
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  renderPaginationShowsTotal(start, to, total) {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
+  };
+  const onPopupConfirm = () => {
+    confirmDelete(state.deletedId);
+  };
+  const closePopUp = () => {
+    setState((prevState) => ({ ...prevState, showPopup: false }));
+  };
 
-  /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
-  buttonFormatter = (props) => {
+  const buttonFormatter = (props) => {
     const rowData = props?.data;
-    let obj = {}
-    obj.PowerId = rowData?.PowerId
-    obj.PlantId = rowData?.PlantId
-    obj.PowerDetailId = rowData?.PowerDetailId
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
+    let obj = {};
+    obj.PowerId = rowData?.PowerId;
+    obj.PlantId = rowData?.PlantId;
+    obj.PowerDetailId = rowData?.PowerDetailId;
     return (
       <>
-        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(obj, true)} />}
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(obj, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(obj)} />}
+        {permissions.View && (
+          <button
+            title="View"
+            className="View mr-2"
+            type={"button"}
+            onClick={() => viewOrEditItemDetails(obj, true)}
+          />
+        )}
+        {[permissions.Edit] && (
+          <button
+            title="Edit"
+            className="Edit mr-2"
+            type={"button"}
+            onClick={() => viewOrEditItemDetails(obj, false)}
+          />
+        )}
+        {permissions.Delete && (
+          <button
+            title="Delete"
+            className="Delete"
+            type={"button"}
+            onClick={() => deleteItem(obj)}
+          />
+        )}
       </>
-    )
+    );
   };
 
-
   /**
-* @method effectiveDateFormatter
-* @description Renders buttons
-*/
-  effectiveDateFormatter = (props) => {
+   * @method effectiveDateFormatter
+   * @description Renders buttons
+   */
+  const effectiveDateFormatter = (props) => {
     let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    if (cellValue?.includes('T')) {
-      cellValue = DayTime(cellValue).format('DD/MM/YYYY')
+    if (cellValue?.includes("T")) {
+      cellValue = DayTime(cellValue).format("DD/MM/YYYY");
     }
-    return (!cellValue ? '-' : cellValue)
-  }
+    return !cellValue ? "-" : cellValue;
+  };
 
-  /**
-  * @method costingHeadFormatter
-  * @description Renders Costing head
-  */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'VBC' : 'ZBC';
-  }
-
-  /**
-  * @method indexFormatter
-  * @description Renders serial number
-  */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    const { table } = this.refs;
-    let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-    let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-    let serialNumber = '';
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1;
-    } else {
-      serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-    }
-    return serialNumber;
-  }
-
-  renderSerialNumber = () => {
-    return <>Sr. <br />No. </>
-  }
-
-  costFormatter = (props) => {
-    const { initialConfiguration } = this.props
+  const costFormatter = (props) => {
     const cellValue = props?.value;
-    return cellValue != null ? checkForDecimalAndNull(cellValue, initialConfiguration.NoOfDecimalForPrice) : '';
-  }
+    return cellValue != null
+      ? checkForDecimalAndNull(
+          cellValue,
+          initialConfiguration.NoOfDecimalForPrice
+        )
+      : "";
+  };
 
-  costFormatterForVBC = (props) => {
-    const cellValue = props?.value;
-    return cellValue != null ? cellValue : '';
-  }
-
-  renderEffectiveDate = () => {
-    return <>Effective <br />Date</>
-  }
-
-  /**
-     * @method onFloatingFilterChanged
-     * @description Filter data when user type in searching input
-     */
-  onFloatingFilterChanged = (value) => {
+  const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      this.props.powerDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+      powerDataList.length !== 0 &&
+        setState((prevState) => ({
+          ...prevState,
+          noData: searchNocontentFilter(value, state.noData),
+        }));
     }, 500);
-  }
-  /**
-  * @method onPressVendor
-  * @description Used for Vendor checked
-  */
-  onPressVendor = () => {
-    this.setState({
-      IsVendor: !this.state.IsVendor,
-      dataCount: 0
-    }, () => {
-      this.getDataList()
-    });
-  }
-
-
-
-  formToggle = () => {
-    this.props.formToggle()
-  }
-
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  onSubmit = (values) => { }
-
-  returnExcelColumn = (data = [], TempData) => {
-    let temp = []
-    temp = TempData && TempData.map((item) => {
-      if (item.Plants === '-') {
-        item.Plants = ' '
-      } if (item.Vendor === '-') {
-        item.Vendor = ' '
-      } else if (item?.EffectiveDate?.includes('T')) {
-        item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
-      }
-      return item
-    })
-
-    return (<ExcelSheet data={temp} name={`${PowerMaster}`}>
-      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-      }
-    </ExcelSheet>);
-  }
-
-  onGridReady = (params) => {
-    this.gridApi = params.api;
-    window.screen.width >= 1600 && this.gridApi.sizeColumnsToFit();
-    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-    params.api.paginationGoToPage(0);
-  };
-  onPageSizeChanged = (newPageSize) => {
-    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-  };
-  onRowSelect = () => {
-    const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
-  }
-  onBtExport = () => {
-    let tempArr = []
-    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.powerDataList ? this.props.powerDataList : [])
-    return this.returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr)
   };
 
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
-  }
+  const formToggle = () => {
+    props.formToggle();
+  };
 
-  resetState() {
-    this.state.gridApi.deselectAll()
-    gridOptions.columnApi.resetColumnState();
-    gridOptions.api.setFilterModel(null);
-  }
-
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-    const { noData } = this.state;
-    const ExcelFile = ReactExport.ExcelFile;
-
-    var filterParams = {
-      date: "",
-      comparator: function (filterLocalDateAtMidnight, cellValue) {
-        var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-        if (dateAsString == null) return -1;
-        var dateParts = dateAsString.split('/');
-        var cellDate = new Date(
-          Number(dateParts[2]),
-          Number(dateParts[1]) - 1,
-          Number(dateParts[0])
-        );
-        if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
-          return 0;
+  const returnExcelColumn = (data = [], TempData) => {
+    let temp = [];
+    temp =
+      TempData &&
+      TempData.map((item) => {
+        if (item.Plants === "-") {
+          item.Plants = " ";
         }
-        if (cellDate < filterLocalDateAtMidnight) {
-          return -1;
+        if (item.Vendor === "-") {
+          item.Vendor = " ";
+        } else if (item?.EffectiveDate?.includes("T")) {
+          item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
         }
-        if (cellDate > filterLocalDateAtMidnight) {
-          return 1;
-        }
-      },
-      browserDatePicker: true,
-      minValidYear: 2000,
-    };
-
-    const isFirstColumn = (params) => {
-
-      var displayedColumns = params.columnApi.getAllDisplayedColumns();
-      var thisIsFirstColumn = displayedColumns[0] === params.column;
-      return thisIsFirstColumn;
-
-    }
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: false,
-      headerCheckboxSelectionFilteredOnly: true,
-      checkboxSelection: isFirstColumn
-    };
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      customNoRowsOverlay: NoContentFound,
-      costFormatter: this.costFormatter,
-      effectiveDateFormatter: this.effectiveDateFormatter,
-    };
+        return item;
+      });
 
     return (
+      <ExcelSheet data={temp} name={`${PowerMaster}`}>
+        {data &&
+          data.map((ele, index) => (
+            <ExcelColumn
+              key={index}
+              label={ele.label}
+              value={ele.value}
+              style={ele.style}
+            />
+          ))}
+      </ExcelSheet>
+    );
+  };
 
-      <div className={`ag-grid-react pt-4 ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {this.state.isLoader && <LoaderCustom />}
-        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-          <Row>
+  const onGridReady = (params) => {
+    state.gridApi = params.api;
+    window.screen.width >= 1600 && state.gridApi.sizeColumnsToFit();
+    setState((prevState) => ({
+      ...prevState,
+      gridApi: params.api,
+      gridColumnApi: params.columnApi,
+    }));
+    params.api.paginationGoToPage(0);
+  };
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
+  };
+  const onRowSelect = () => {
+    const selectedRows = state.gridApi?.getSelectedRows();
+    setState((prevState) => ({
+      ...prevState,
+      selectedRowData: selectedRows,
+      dataCount: selectedRows.length,
+    }));
+  };
+  const onBtExport = () => {
+    let tempArr = [];
+    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    tempArr =
+      tempArr && tempArr.length > 0
+        ? tempArr
+        : powerDataList
+        ? powerDataList
+        : [];
+    return returnExcelColumn(POWERLISTING_DOWNLOAD_EXCEl, tempArr);
+  };
 
-            <Col md="6" className="search-user-block mb-3">
-              <div className="d-flex justify-content-end bd-highlight w100">
-                <div>
-                  <>
-                    {this.state.shown ? (
-                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="cancel-icon-white"></div></button>
-                    ) : (
-                      ""
-                    )}
-                    {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.formToggle}
-                        title="Add"
-                      >
-                        <div className={"plus mr-0"}></div>
-                        {/* ADD */}
-                      </button>
-                    )}
-                    {
-                      DownloadAccessibility &&
-                      <>
+  const onFilterTextBoxChanged = (e) => {
+    state.gridApi.setQuickFilter(e.target.value);
+  };
 
-                        <ExcelFile filename={'Power'} fileExtension={'.xls'} element={
-                          <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
-                            {/* DOWNLOAD */}
-                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
-                          </button>}>
+  const resetState = () => {
+    setState((prevState) => ({
+      ...prevState,
+      gridApi: null,
+      gridColumnApi: null,
+      selectedRowData: null,
+      dataCount: 0,
+    }));
+    state.gridApi.deselectAll();
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+  };
 
-                          {this.onBtExport()}
-                        </ExcelFile>
+  const { handleSubmit, AddAccessibility, DownloadAccessibility } = props;
+  const { noData } = state;
+  const ExcelFile = ReactExport.ExcelFile;
 
-                      </>
+  var filterParams = {
+    date: "",
+    comparator: function (filterLocalDateAtMidnight, cellValue) {
+      var dateAsString =
+        cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
+      if (dateAsString == null) return -1;
+      var dateParts = dateAsString.split("/");
+      var cellDate = new Date(
+        Number(dateParts[2]),
+        Number(dateParts[1]) - 1,
+        Number(dateParts[0])
+      );
+      if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+        return 0;
+      }
+      if (cellDate < filterLocalDateAtMidnight) {
+        return -1;
+      }
+      if (cellDate > filterLocalDateAtMidnight) {
+        return 1;
+      }
+    },
+    browserDatePicker: true,
+    minValidYear: 2000,
+  };
 
-                    }
-                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                      <div className="refresh mr-0"></div>
-                    </button>
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
+  };
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn,
+  };
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    customNoRowsOverlay: NoContentFound,
+    costFormatter: costFormatter,
+    effectiveDateFormatter: effectiveDateFormatter,
+  };
 
-                  </>
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </form>
+  return (
+    <div
+      className={`ag-grid-react pt-4 ${
+        DownloadAccessibility ? "show-table-btn" : ""
+      }`}
+    >
+      {state.isLoader && <LoaderCustom />}
+      <form
+        // onSubmit={handleSubmit(onSubmit.bind(this))}
+        noValidate
+      >
         <Row>
-          <Col>
-
-
-            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.powerDataList && this.props.powerDataList?.length <= 0) || noData || this.state.tableData.length === 0 ? "overlay-contain" : ""}`}>
-              {/* ZBC Listing */}
-              <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-              </div>
-              <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                {!this.state.IsVendor &&
-                  <AgGridReact
-                    defaultColDef={defaultColDef}
-                    floatingFilter={true}
-                    domLayout='autoHeight'
-                    // columnDefs={c}
-                    rowData={this.props.powerDataList}
-                    pagination={true}
-                    paginationPageSize={10}
-                    onGridReady={this.onGridReady}
-                    gridOptions={gridOptions}
-                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                    noRowsOverlayComponentParams={{
-                      title: EMPTY_DATA,
-                      imagClass: 'imagClass power-listing'
-                    }}
-                    rowSelection={'multiple'}
-                    onFilterModified={this.onFloatingFilterChanged}
-                    onSelectionChanged={this.onRowSelect}
-                    frameworkComponents={frameworkComponents}
-                    suppressRowClickSelection={true}
+          <Col md="6" className="search-user-block mb-3">
+            <div className="d-flex justify-content-end bd-highlight w100">
+              <div>
+                <>
+                  {state.shown ? (
+                    <button
+                      type="button"
+                      className="user-btn mr5 filter-btn-top"
+                      onClick={() =>
+                        setState((prevState) => ({
+                          ...prevState,
+                          shown: !state.shown,
+                        }))
+                      }
+                    >
+                      <div className="cancel-icon-white"></div>
+                    </button>
+                  ) : (
+                    ""
+                  )}
+                  {permissions.Add && (
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={formToggle}
+                      title="Add"
+                    >
+                      <div className={"plus mr-0"}></div>
+                      {/* ADD */}
+                    </button>
+                  )}
+                  {permissions.Dowmload && (
+                    <>
+                      <ExcelFile
+                        filename={"Power"}
+                        fileExtension={".xls"}
+                        element={
+                          <button
+                            title={`Download ${
+                              state.dataCount === 0
+                                ? "All"
+                                : "(" + state.dataCount + ")"
+                            }`}
+                            type="button"
+                            className={"user-btn mr5"}
+                          >
+                            <div className="download mr-1"></div>
+                            {/* DOWNLOAD */}
+                            {`${
+                              state.dataCount === 0
+                                ? "All"
+                                : "(" + state.dataCount + ")"
+                            }`}
+                          </button>
+                        }
+                      >
+                        {onBtExport()}
+                      </ExcelFile>
+                    </>
+                  )}
+                  <button
+                    type="button"
+                    className="user-btn"
+                    title="Reset Grid"
+                    onClick={() => resetState()}
                   >
-                    <AgGridColumn field="CostingType"></AgGridColumn>
-                    <AgGridColumn field="StateName"></AgGridColumn>
-                    <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
-                    <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
-                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
-                    <AgGridColumn field="NetPowerCostPerUnit" cellRenderer={'costFormatter'}></AgGridColumn>
-                    <AgGridColumn field="EffectiveDate" cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                    <AgGridColumn field="PowerId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                  </AgGridReact>}
-                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                    <div className="refresh mr-0"></div>
+                  </button>
+                </>
               </div>
             </div>
           </Col>
         </Row>
-        {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.POWER_DELETE_ALERT}`} />
-        }
-      </div >
-    );
-  }
-}
+      </form>
+      <Row>
+        <Col>
+          <div
+            className={`ag-grid-wrapper height-width-wrapper ${
+              (powerDataList && powerDataList?.length <= 0) ||
+              noData ||
+              state.tableData.length === 0
+                ? "overlay-contain"
+                : ""
+            }`}
+          >
+            {/* ZBC Listing */}
+            <div className="ag-grid-header">
+              <input
+                type="text"
+                className="form-control table-search"
+                id="filter-text-box"
+                placeholder="Search"
+                autoComplete={"off"}
+                onChange={(e) => onFilterTextBoxChanged(e)}
+              />
+            </div>
+            <div
+              className={`ag-theme-material ${
+                state.isLoader && "max-loader-height"
+              }`}
+            >
+              {noData && (
+                <NoContentFound
+                  title={EMPTY_DATA}
+                  customClassName="no-content-found"
+                />
+              )}
+              {!state.IsVendor && (
+                <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout="autoHeight"
+                  // columnDefs={c}
+                  rowData={powerDataList}
+                  pagination={true}
+                  paginationPageSize={10}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  noRowsOverlayComponent={"customNoRowsOverlay"}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: "imagClass power-listing",
+                  }}
+                  rowSelection={"multiple"}
+                  onFilterModified={onFloatingFilterChanged}
+                  onSelectionChanged={onRowSelect}
+                  frameworkComponents={frameworkComponents}
+                  suppressRowClickSelection={true}
+                >
+                  <AgGridColumn field="CostingType"></AgGridColumn>
+                  <AgGridColumn field="StateName"></AgGridColumn>
+                  <AgGridColumn
+                    field="PlantWithCode"
+                    headerName="Plant (Code)"
+                  ></AgGridColumn>
+                  <AgGridColumn
+                    field="VendorWithCode"
+                    headerName="Vendor (Code)"
+                  ></AgGridColumn>
+                  {reactLocalStorage.getObject("cbcCostingPermission") && (
+                    <AgGridColumn
+                      field="CustomerWithCode"
+                      headerName="Customer (Code)"
+                    ></AgGridColumn>
+                  )}
+                  <AgGridColumn
+                    field="NetPowerCostPerUnit"
+                    cellRenderer={"costFormatter"}
+                  ></AgGridColumn>
+                  <AgGridColumn
+                    field="EffectiveDate"
+                    cellRenderer="effectiveDateFormatter"
+                    filter="agDateColumnFilter"
+                    filterParams={filterParams}
+                  ></AgGridColumn>
+                  <AgGridColumn
+                    field="PowerId"
+                    cellClass="ag-grid-action-container"
+                    headerName="Action"
+                    pinned="right"
+                    type="rightAligned"
+                    floatingFilter={false}
+                    cellRenderer={"totalValueRenderer"}
+                  ></AgGridColumn>
+                </AgGridReact>
+              )}
+              {
+                <PaginationWrapper
+                  gridApi={state.gridApi}
+                  setPage={onPageSizeChanged}
+                />
+              }
+            </div>
+          </div>
+        </Col>
+      </Row>
+      {state.showPopup && (
+        <PopupMsgWrapper
+          isOpen={state.showPopup}
+          closePopUp={closePopUp}
+          confirmPopup={onPopupConfirm}
+          message={`${MESSAGES.POWER_DELETE_ALERT}`}
+        />
+      )}
+    </div>
+  );
+};
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ fuel, comman, supplier, auth }) {
-  const { plantSelectList, stateSelectList, powerDataList, vendorPowerDataList } = fuel;
-  const { vendorWithVendorCodeSelectList } = supplier;
-  const { filterPlantList, } = comman;
-  const { initialConfiguration } = auth;
-  return { vendorWithVendorCodeSelectList, filterPlantList, plantSelectList, stateSelectList, powerDataList, initialConfiguration, vendorPowerDataList }
-}
-
-/**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-  getPowerDetailDataList,
-  getVendorPowerDetailDataList,
-  getPlantListByState,
-  getPlantBySupplier,
-  deletePowerDetail,
-  deleteVendorPowerDetail,
-})(reduxForm({
-  form: 'PowerListing',
+export default reduxForm({
+  form: "PowerListing",
   enableReinitialize: true,
-  touchOnChange: true
-})(PowerListing));
+  touchOnChange: true,
+})(PowerListing);
