@@ -4,7 +4,7 @@ import { Row, Col } from "reactstrap";
 import { getAssemblyPartDataList, deleteAssemblyPart } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
-import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { ASSEMBLYNAME, defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import DayTime from "../../common/DayTimeWrapper";
 import BOMViewer from "./BOMViewer";
@@ -21,6 +21,7 @@ import { filterParams } from "../../common/DateFilter";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { loggedInUserId, searchNocontentFilter } from "../../../helper";
 import { ApplyPermission } from ".";
+import TechnologyUpdateDrawer from './TechnologyUpdateDrawer';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -55,6 +56,7 @@ const AssemblyPartListing = React.memo((props) => {
     gridApi: null,
     columnApi: null,
     paginationPageSize: defaultPageSize,
+    openTechnologyUpdateDrawer: false
   });
 
 
@@ -327,6 +329,20 @@ const AssemblyPartListing = React.memo((props) => {
     checkboxSelection: isFirstColumn,
   };
 
+  const associatePartWithTechnology = () => {
+    setState((prevState) => ({ ...prevState, openTechnologyUpdateDrawer: true }));
+
+  }
+
+  const closeTechnologyUpdateDrawer = (type = '') => {
+    setState((prevState) => ({ ...prevState, openTechnologyUpdateDrawer: false }));
+    if (type === 'submit') {
+      getTableListData()
+    }
+
+  }
+
+
   return (
     <div
       className={`ag-grid-react p-relative ${props.DownloadAccessibility ? "show-table-btn" : ""
@@ -338,6 +354,7 @@ const AssemblyPartListing = React.memo((props) => {
         <Col md="6" className="search-user-block pr-0">
           <div className="d-flex justify-content-end bd-highlight w100">
             <div>
+              {permissions.Edit && <button title='Associate part with technology' className="user-btn pl-2 pr-3 mb-0 mr-1" type={'button'} onClick={() => associatePartWithTechnology()} ><div className='associate'></div></button>}
               {permissions.Add && (
                 <button
                   type="button"
@@ -512,39 +529,48 @@ const AssemblyPartListing = React.memo((props) => {
                 setPage={onPageSizeChanged}
               />
             }
-          </div>
-        </div>
+          </div >
+        </div >
       }
-      {state.isOpenVisualDrawer && (
-        <BOMViewer
-          isOpen={state.isOpenVisualDrawer}
-          closeDrawer={closeVisualDrawer}
-          isEditFlag={true}
-          PartId={state.visualAdId}
-          anchor={"right"}
-          isFromVishualAd={true}
-          NewAddedLevelOneChilds={[]}
-        />
-      )}
-      {state.isBulkUpload && (
-        <BOMUploadDrawer
-          isOpen={state.isBulkUpload}
-          closeDrawer={closeBulkUploadDrawer}
-          isEditFlag={false}
-          fileName={"BOM"}
-          messageLabel={"BOM"}
-          anchor={"right"}
-        />
-      )}
-      {state.showPopup && (
-        <PopupMsgWrapper
-          isOpen={state.showPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          message={`${MESSAGES.BOM_DELETE_ALERT}`}
-        />
-      )}
-    </div>
+      {
+        state.isOpenVisualDrawer && (
+          <BOMViewer
+            isOpen={state.isOpenVisualDrawer}
+            closeDrawer={closeVisualDrawer}
+            isEditFlag={true}
+            PartId={state.visualAdId}
+            anchor={"right"}
+            isFromVishualAd={true}
+            NewAddedLevelOneChilds={[]}
+          />
+        )
+      }
+      {
+        state.isBulkUpload && (
+          <BOMUploadDrawer
+            isOpen={state.isBulkUpload}
+            closeDrawer={closeBulkUploadDrawer}
+            isEditFlag={false}
+            fileName={"BOM"}
+            messageLabel={"BOM"}
+            anchor={"right"}
+          />
+        )
+      }
+      {
+        state.showPopup && (
+          <PopupMsgWrapper
+            isOpen={state.showPopup}
+            closePopUp={closePopUp}
+            confirmPopup={onPopupConfirm}
+            message={`${MESSAGES.BOM_DELETE_ALERT}`}
+          />
+        )
+      }
+      {
+        state.openTechnologyUpdateDrawer && <TechnologyUpdateDrawer isOpen={state.openTechnologyUpdateDrawer} anchor={'right'} closeDrawer={closeTechnologyUpdateDrawer} partType={ASSEMBLYNAME} />
+      }
+    </div >
   );
 });
 

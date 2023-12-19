@@ -90,6 +90,7 @@ function RawMaterialCost(props) {
       NetWeight: 2,        // FINISH WEIGHT
     },
   ])
+  const [isScrapRateUOMApplied, setIsScrapRateUOMApplied] = useState(false)
 
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
@@ -160,6 +161,7 @@ function RawMaterialCost(props) {
       if (gridData && gridData?.length > 0) {
         let isCutOffApplicableCount = 0
         let totalCutOff = 0
+        let isScrapRateUOMApplied = false
         gridData && gridData.map(item => {
           if (item.IsCutOffApplicable) {
             isCutOffApplicableCount = isCutOffApplicableCount + 1
@@ -168,8 +170,16 @@ function RawMaterialCost(props) {
           else {
             totalCutOff = totalCutOff + checkForNull(item.NetLandedCost)
           }
+          if (item?.UOM === "Meter" && item?.IsScrapUOMApply) {
+            isScrapRateUOMApplied = true
+          }
           return null
         })
+        if (isScrapRateUOMApplied === true) {
+          setIsScrapRateUOMApplied(true)
+        } else {
+          setIsScrapRateUOMApplied(false)
+        }
         dispatch(setRMCutOff({ IsCutOffApplicable: isCutOffApplicableCount > 0 ? true : false, CutOffRMC: totalCutOff }))
       }
     }, 500)
@@ -218,7 +228,10 @@ function RawMaterialCost(props) {
             CutOffPrice: el.CutOffPrice,
             IsCutOffApplicable: el.IsCutOffApplicable,
             MachiningScrapRate: el.MachiningScrapRate,
-            ScrapRatePerScrapUOM: el.ScrapRatePerScrapUOM
+            ScrapRatePerScrapUOMConversion: el.ScrapRatePerScrapUOMConversion,
+            IsScrapUOMApply: el.IsScrapUOMApply,
+            ScrapUnitOfMeasurement: el.ScrapUnitOfMeasurement,
+            Currency: el.Currency,
           }
         })
 
@@ -242,7 +255,11 @@ function RawMaterialCost(props) {
           RawMaterialCategory: rowData.Category,
           CutOffPrice: rowData.CutOffPrice,
           IsCutOffApplicable: rowData.IsCutOffApplicable,
-          MachiningScrapRate: rowData.MachiningScrapRate
+          MachiningScrapRate: rowData.MachiningScrapRate,
+          IsScrapUOMApply: rowData.IsScrapUOMApply,
+          ScrapUnitOfMeasurement: rowData.ScrapUnitOfMeasurement,
+          ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
+          Currency: rowData.Currency,
         }
         setGridData([...gridData, tempObj])
         tempArray = [...gridData, tempObj]
@@ -1186,6 +1203,34 @@ function RawMaterialCost(props) {
     setMasterBatch(true)
   }
 
+  const showCalculatorFunction = (item) => {
+    let value
+    if (costData?.TechnologyId === MACHINING) {
+      if (isScrapRateUOMApplied && item?.UOM === "Meter" && item?.IsScrapUOMApply && getConfigurationKey().IsShowMachiningCalculatorForMeter) {
+        value = true
+      } else {
+        value = false
+      }
+    } else if (getTechnology.includes(costData?.TechnologyId)) {
+      value = true
+    }
+    return value
+  }
+
+  const showCalculatorFunctionHeader = () => {
+    let value
+    if (costData?.TechnologyId === MACHINING) {
+      if (isScrapRateUOMApplied && getConfigurationKey().IsShowMachiningCalculatorForMeter) {
+        value = true
+      } else {
+        value = false
+      }
+    } else if (getTechnology.includes(costData?.TechnologyId)) {
+      value = true
+    }
+    return value
+  }
+
   /**
    * @method render
    * @description Renders the component
@@ -1269,7 +1314,7 @@ function RawMaterialCost(props) {
                       <th>{`RM Rate`}</th>
                       <th>{`Scrap Rate`}</th>
                       <th>{`UOM`}</th>
-                      {(getTechnology.includes(costData?.TechnologyId)) && <th className={`text-center weight-calculator`}>{`Weight Calculator`}</th>}
+                      {showCalculatorFunctionHeader() && <th className={`text-center weight-calculator`}>{`Weight Calculator`}</th>}
                       {<th>{`Gross Weight`}</th>}
                       {<th>{`Finish Weight`}</th>}
                       {(costData?.TechnologyId === Ferrous_Casting) && <th>Percentage</th>}
@@ -1289,18 +1334,17 @@ function RawMaterialCost(props) {
                         return (
                           <tr key={index} className=''>
                             <td className='text-overflow'><span title={item.RMName}>{item.RMName}</span></td>
-                            <td>{item.RMRate}</td>
-                            <td>{item.ScrapRate}</td>
+                            <td>{checkForDecimalAndNull(item.RMRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                            <td>{checkForDecimalAndNull(item.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{item.UOM}</td>
-                            {
-                              getTechnology.includes(costData?.TechnologyId) &&
+                            {showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
                               <td className="text-center">
-                                <button
+                                {showCalculatorFunction(item) ? <button
                                   className="CalculatorIcon cr-cl-icon "
                                   type={'button'}
                                   onClick={() => toggleWeightCalculator(index)}
                                   disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
-                                />
+                                /> : '-'}
                               </td>
                             }
                             {
@@ -1401,7 +1445,7 @@ function RawMaterialCost(props) {
                             <td><div className='w-fit' id={`scrap-weight${index}`}>{checkForDecimalAndNull(item.ScrapWeight, initialConfiguration.NoOfDecimalForPrice)} <TooltipCustom disabledIcon={true} tooltipClass={isScrapRecoveryPercentageApplied && "net-rm-cost"} id={`scrap-weight${index}`} tooltipText={isScrapRecoveryPercentageApplied ? "Scrap weight = ((Gross Weight - Finish Weight) * Recovery Percentage / 100)" : "Scrap weight = (Gross Weight - Finish Weight)"} /></div> </td>
                             <td>
                               <div className='d-flex'>
-                                <div className='w-fit' id={`net-rm-cost${index}`}>{!(getConfigurationKey().IsShowMachiningCalculatorForMeter) && <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText="Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)" />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                <div className='w-fit' id={`net-rm-cost${index}`}>{!(getConfigurationKey().IsShowMachiningCalculatorForMeter) && <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(Number(costData?.TechnologyId) === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}{item?.NetLandedCost !== undefined ? checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice) : 0}
                                 </div>
                                 {forgingInfoIcon[index] && costData?.TechnologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}
                                 {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}
