@@ -64,6 +64,7 @@ export const Masters = [
 */
 export const RMDomesticZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
+    { label: "Note", value: "Note" }, //*
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "Grade", value: "RMGrade" }, //*
     { label: "Spec", value: "RMSpec" }, //*
@@ -93,6 +94,7 @@ export const RMDomesticZBC = [
 export const RMDomesticZBCTempData = [
     {
         //"CostingHead": "ZBC",
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -107,7 +109,7 @@ export const RMDomesticZBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "20",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -161,7 +163,7 @@ export const RMDomesticZBCTempData = [
         "UOM": "shot/stroke/Number",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -188,7 +190,7 @@ export const RMDomesticZBCTempData = [
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -206,6 +208,7 @@ export const RMDomesticZBCTempData = [
 */
 export const RMDomesticVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
+    { label: "Note", value: "Note" }, //*
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "Grade", value: "RMGrade" }, //*
     { label: "Spec", value: "RMSpec" }, //*
@@ -234,6 +237,7 @@ export const RMDomesticVBC = [
 export const RMDomesticVBCTempData = [
     {
         //"CostingHead": "VBC",
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -247,7 +251,7 @@ export const RMDomesticVBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -273,7 +277,7 @@ export const RMDomesticVBCTempData = [
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -325,7 +329,7 @@ export const RMDomesticVBCTempData = [
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -343,6 +347,7 @@ export const RMDomesticVBCTempData = [
 */
 export const RMImportZBC = [
     //{ label: "CostingHead", value: "CostingHead" },
+    { label: "Note", value: "Note" }, //*
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "Grade", value: "RMGrade" }, //*
     { label: "Spec", value: "RMSpec" }, //*
@@ -372,6 +377,7 @@ export const RMImportZBC = [
 
 export const RMDomesticCBCTempData = [
     {
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -382,7 +388,7 @@ export const RMDomesticCBCTempData = [
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -405,7 +411,7 @@ export const RMDomesticCBCTempData = [
         "UOM": "Gallon/Cubic Centimeter/Cubic Meter/Milliliter/Liter",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -451,7 +457,7 @@ export const RMDomesticCBCTempData = [
         "UOM": "micrometer/kilometer/Feet/Inch/Millimeter/Centimeter/Meter",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -468,6 +474,7 @@ export const RMDomesticCBCTempData = [
 export const RMImportZBCTempData = [
     {
         //"CostingHead": "ZBC",
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -483,7 +490,7 @@ export const RMImportZBCTempData = [
         "Currency": "INR",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -539,7 +546,7 @@ export const RMImportZBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -567,7 +574,7 @@ export const RMImportZBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -580,6 +587,7 @@ export const RMImportZBCTempData = [
     }
 ]
 export const RMDomesticCBC = [
+    { label: "Note", value: "Note" }, //*
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "Grade", value: "RMGrade" }, //*
     { label: "Spec", value: "RMSpec" }, //*
@@ -608,6 +616,7 @@ export const RMDomesticCBC = [
 */
 export const RMImportVBC = [
     //{ label: "CostingHead", value: "CostingHead" },
+    { label: "Note", value: "Note" }, //*
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "Grade", value: "RMGrade" }, //*
     { label: "Spec", value: "RMSpec" }, //*
@@ -637,6 +646,7 @@ export const RMImportVBC = [
 export const RMImportVBCTempData = [
     {
         //"CostingHead": "VBC",
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -651,7 +661,7 @@ export const RMImportVBCTempData = [
         "Currency": "INR",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -705,7 +715,7 @@ export const RMImportVBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -732,7 +742,7 @@ export const RMImportVBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -746,6 +756,7 @@ export const RMImportVBCTempData = [
 ]
 export const RMImportCBC = [
     //{ label: "CostingHead", value: "CostingHead" },
+    { label: "Note", value: "Note" }, //*
     { label: "RawMaterial", value: "RawMaterial" }, //*
     { label: "Grade", value: "RMGrade" }, //*
     { label: "Spec", value: "RMSpec" }, //*
@@ -772,6 +783,7 @@ export const RMImportCBC = [
 
 export const RMImportCBCTempData = [
     {
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -783,7 +795,7 @@ export const RMImportCBCTempData = [
         "Currency": "INR",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -831,7 +843,7 @@ export const RMImportCBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
@@ -855,7 +867,7 @@ export const RMImportCBCTempData = [
         "Currency": "USD",
         "BasicRate": "500",
         "IsScrapUOMApply": "Yes",
-        "ScrapUnitOfMeasurement": "Kg",
+        "ScrapUnitOfMeasurement": "Kilogram",
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
