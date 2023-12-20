@@ -793,7 +793,7 @@ class BOPImportListing extends Component {
                                             <button type="button" className="user-btn mr-1" title="Reset Grid" onClick={() => { this.resetState(); }}>
                                                 <div className="refresh mr-0"></div>
                                             </button>
-                                            {this.props.isSimulation && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
+                                            {this.props.isSimulation && this.props?.isFromVerifyPage && <button type="button" className={"apply"} onClick={cancel}><div className={'back-icon'}></div>Back</button>}
                                         </div>
                                     </Col>
                                 </Row>
@@ -882,9 +882,9 @@ class BOPImportListing extends Component {
                                     {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
                                 </Col>
                             </Row>
-                            {this.props.isSimulation && <Row>
+                            {this.props.isSimulation && this.props?.isFromVerifyPage && <Row>
                                 <Col md="12" className="d-flex justify-content-end">
-                                    <button type="button" className={"apply"} onClick={editSelectedData}> <div className={'edit-icon'}></div>Edit</button>
+                                    <button type="button" className={"apply"} onClick={editSelectedData}><div className={'edit-icon'}></div>Edit</button>
                                 </Col>
                             </Row>}
                         </>}
