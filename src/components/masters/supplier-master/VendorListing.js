@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { reduxForm } from "redux-form";
 import { Row, Col } from "reactstrap";
-import { focusOnError } from "../../layout/FormInputs";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
@@ -1275,11 +1273,4 @@ const VendorListing = () => {
   );
 };
 
-export default reduxForm({
-  form: "VendorListing",
-  onSubmitFail: (errors) => {
-    focusOnError(errors);
-  },
-  enableReinitialize: true,
-  touchOnChange: true,
-})(VendorListing);
+export default VendorListing

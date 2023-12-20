@@ -21,12 +21,7 @@ import CommonApproval from "../material-master/CommonApproval";
 import { MESSAGES } from "../../../config/message";
 import { checkPermission } from "../../../helper/util";
 import {
-  APPROVAL_CYCLE_STATUS_MASTER,
-  BOP,
-  BOP_MASTER_ID,
-  MASTERS,
-  NON_APPROVAL_CYCLE_STATUS_MASTER,
-} from "../../../config/constants";
+  APPROVAL_CYCLE_STATUS_MASTER,  BOP,  BOP_MASTER_ID,  MASTERS,  NON_APPROVAL_CYCLE_STATUS_MASTER,} from "../../../config/constants";
 
 /* Create context for ApplyPermission */
 export const ApplyPermission = React.createContext();
@@ -52,8 +47,7 @@ const BOPMaster = () => {
     state;
 
   const { disabledClass } = useSelector((state) => state.comman);
-
-  const { topAndLeftMenuData, initialConfiguration } = useSelector(
+const { topAndLeftMenuData, initialConfiguration } = useSelector(
     (state) => state.auth
   );
   const [permissionData, setPermissionData] = useState({});
@@ -169,10 +163,7 @@ const BOPMaster = () => {
   if (isBOPDomesticForm) {
     return (
       <AddBOPDomestic
-        data={data}
-        hideForm={hideForm}
-        isBOPAssociated={state.isBOPAssociated}
-        stopApiCallOnCancel={state.stopApiCallOnCancel}
+        data={data} hideForm={hideForm}  isBOPAssociated={state.isBOPAssociated} stopApiCallOnCancel={state.stopApiCallOnCancel}
       />
     );
   }
@@ -264,12 +255,6 @@ const BOPMaster = () => {
                       <BOPDomesticListing
                         displayForm={displayDomesticForm}
                         getDetails={getDetails}
-                        AddAccessibility={state.AddAccessibility}
-                        EditAccessibility={state.EditAccessibility}
-                        DeleteAccessibility={state.DeleteAccessibility}
-                        ViewAccessibility={state.ViewAccessibility}
-                        BulkUploadAccessibility={state.BulkUploadAccessibility}
-                        DownloadAccessibility={state.DownloadAccessibility}
                         isMasterSummaryDrawer={false}
                         selectionForListingMasterAPI="Master"
                         stopApiCallOnCancel={state.stopApiCallOnCancel}
@@ -283,12 +268,6 @@ const BOPMaster = () => {
                       <BOPImportListing
                         displayForm={displayImportForm}
                         getDetails={getImportDetails}
-                        AddAccessibility={state.AddAccessibility}
-                        EditAccessibility={state.EditAccessibility}
-                        ViewAccessibility={state.ViewAccessibility}
-                        DeleteAccessibility={state.DeleteAccessibility}
-                        BulkUploadAccessibility={state.BulkUploadAccessibility}
-                        DownloadAccessibility={state.DownloadAccessibility}
                         stopApiCallOnCancel={state.stopApiCallOnCancel}
                         selectionForListingMasterAPI="Master"
                         approvalStatus={approvalStatusState}
@@ -301,11 +280,7 @@ const BOPMaster = () => {
                       <SOBListing
                         displayForm={displayImportForm}
                         getDetails={getImportDetails}
-                        AddAccessibility={state.AddAccessibility}
-                        EditAccessibility={state.EditAccessibility}
-                        DeleteAccessibility={state.DeleteAccessibility}
-                        BulkUploadAccessibility={state.BulkUploadAccessibility}
-                        DownloadAccessibility={state.DownloadAccessibility}
+                       
                       />
                     </TabPane>
                   )}

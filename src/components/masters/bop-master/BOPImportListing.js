@@ -356,6 +356,7 @@ const BOPImportListing = (props) => {
   };
 
   const onFloatingFilterChanged = (value) => {
+    console.log("onFloatingFilterChanged", value);
     setTimeout(() => {
       if (bopImportList?.length !== 0) {
         setState((prevState) => ({
@@ -652,7 +653,6 @@ const BOPImportListing = (props) => {
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    console.log("permission.Edit",permissions)
     let isEditable = false;
     let isDeleteButton = false;
 
@@ -925,12 +925,7 @@ const BOPImportListing = (props) => {
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
   };
-  const {
-    handleSubmit,
-    AddAccessibility,
-    BulkUploadAccessibility,
-    DownloadAccessibility,
-  } = props;
+  
   const { isBulkUpload, noData, editSelectedList } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const headerNames = {
@@ -1104,7 +1099,7 @@ const BOPImportListing = (props) => {
       {!editSelectedList && (
         <div
           className={`ag-grid-react custom-pagination ${
-            DownloadAccessibility ? "show-table-btn" : ""
+            permissions.Download ? "show-table-btn" : ""
           } ${
             props.isSimulation
               ? "simulation-height"
@@ -1120,7 +1115,7 @@ const BOPImportListing = (props) => {
               {state.disableDownload && (
                 <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />
               )}
-              <form onSubmit={handleSubmit(onSubmit.bind(this))} noValidate>
+              <form noValidate>
                 <Row
                   className={`pt-4  ${
                     props?.benchMark ? "zindex-2" : "filter-row-large"
@@ -1188,7 +1183,7 @@ const BOPImportListing = (props) => {
                         </>
                       )}
 
-                      {AddAccessibility && (
+                      {permissions.Add && (
                         <button
                           type="button"
                           className={"user-btn mr5"}
@@ -1199,7 +1194,7 @@ const BOPImportListing = (props) => {
                           {/* ADD */}
                         </button>
                       )}
-                      {BulkUploadAccessibility && (
+                      {permissions.BulkUpload && (
                         <button
                           type="button"
                           className={"user-btn mr5"}
@@ -1210,7 +1205,7 @@ const BOPImportListing = (props) => {
                           {/* Bulk Upload */}
                         </button>
                       )}
-                      {DownloadAccessibility && (
+                      {permissions.Download && (
                         <>
                           <button
                             title={`Download ${

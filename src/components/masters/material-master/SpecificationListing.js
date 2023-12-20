@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { reduxForm } from "redux-form";
 import { Row, Col } from "reactstrap";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
@@ -516,7 +515,4 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
   );
 };
 
-export default reduxForm({
-  form: "SpecificationListing",
-  enableReinitialize: true,
-})(SpecificationListing);
+export default SpecificationListing

@@ -288,14 +288,9 @@ function RowMaterialMaster(props) {
                                 <TabPane tabId="3">
                                     <SpecificationListing
                                         toggle={toggle}
-                                        AddAccessibility={AddAccessibility}
-                                        EditAccessibility={EditAccessibility}
-                                        DeleteAccessibility={DeleteAccessibility}
-                                        BulkUploadAccessibility={BulkUploadAccessibility}
                                         AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
                                         EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
-                                        DownloadAccessibility={DownloadAccessibility}
-                                        stopApiCallOnCancel={stopApiCallOnCancel}
+                                       stopApiCallOnCancel={stopApiCallOnCancel}
 
                                     />
                                 </TabPane>}
@@ -303,11 +298,7 @@ function RowMaterialMaster(props) {
                             {Number(activeTab) === 4 &&
                                 <TabPane tabId="4">
                                     <RMListing
-                                        AddAccessibility={AddAccessibility}
-                                        EditAccessibility={EditAccessibility}
-                                        DeleteAccessibility={DeleteAccessibility}
-                                        DownloadAccessibility={DownloadAccessibility}
-                                        stopApiCallOnCancel={stopApiCallOnCancel}
+                                       stopApiCallOnCancel={stopApiCallOnCancel}
 
                                     />
                                 </TabPane>}

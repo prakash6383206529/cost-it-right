@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { reduxForm } from "redux-form";
 import { Row, Col } from "reactstrap";
 import {
   EMPTY_DATA,
@@ -165,7 +164,7 @@ const BOPDomesticListing = (props) => {
     if (props.isSimulation) {
       props.callBackLoader(state.isLoader);
     }
-  }, [bopDomesticList, state.isLoader]);
+  }, []);
 
   /**
    * @method getDataList
@@ -437,43 +436,41 @@ const BOPDomesticListing = (props) => {
     );
   };
 
-  const resetStates = () => {
-    setState((prevState) => ({
-      ...prevState,
-      noData: false,
-    }));
+  const resetState = () => {
+    setState((prevState) => {
+      const updatedFloatingFilterData = {};
+      for (var prop in prevState.floatingFilterData) {
+        updatedFloatingFilterData[prop] = "";
+      }
+  
+      return {
+        ...prevState,
+        noData: false,
+        floatingFilterData: updatedFloatingFilterData,
+        warningMessage: false,
+        pageNo: 1,
+        pageNoNew: 1,
+        currentRowIndex: 0,
+        globalTake: 10,
+        dataCount: 0,
+        pageSize: {
+          ...prevState.pageSize,
+          pageSize10: true,
+          pageSize50: false,
+          pageSize100: false,
+        },
+      };
+    });
+  
     state.gridApi.deselectAll();
     gridOptions?.columnApi?.resetColumnState(null);
-    gridOptions?.api?.setFilterModel(null); // COMMON PAGINATION FUNCTION
-    for (var prop in state.floatingFilterData) {
-      state.floatingFilterData[prop] = "";
-    }
-    setState((prevState) => ({
-      ...prevState,
-      floatingFilterData: state.floatingFilterData,
-      warningMessage: false,
-
-      pageNo: 1,
-      pageNoNew: 1,
-      currentRowIndex: 0,
-    }));
+    gridOptions?.api?.setFilterModel(null);
+  
+    // You can now use the updated state immediately after the setState call.
     getDataList("", 0, "", "", 0, 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
-
-    setState((prevState) => ({
-      ...prevState,
-      globalTake: 10,
-      dataCount: 0,
-     
-
-      pageSize: {
-        ...prevState.pageSize,
-        pageSize10: true,
-        pageSize50: false,
-        pageSize100: false,
-      },
-    }));
   };
+  
 
   const onBtPrevious = () => {
     if (state.currentRowIndex >= 10) {
@@ -609,7 +606,7 @@ console.log("totalRecordCount",totalRecordCount)
       deleteBOP(ID, loggedInUser, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.BOP_DELETE_SUCCESS);
-          resetStates();
+          resetState();
         }
       })
     );
@@ -633,7 +630,7 @@ console.log("totalRecordCount",totalRecordCount)
       isBulkUpload: false,
     }));
     if (type !== "cancel") {
-      resetStates();
+      resetState();
     }
   };
 
@@ -654,7 +651,6 @@ console.log("totalRecordCount",totalRecordCount)
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-console.log("permission.Edit",permissions)
     let isEditbale = false;
     let isDeleteButton = false;
     if (permissions.Edit) {
@@ -714,8 +710,8 @@ console.log("permission.Edit",permissions)
       : props?.value;
     // var selectedRows = gridApi?.getSelectedRows();
 
-    if (props.selectedRowForPagination?.length > 0) {
-      props.selectedRowForPagination.map((item) => {
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
         if (item.RawMaterialId === props.node.data.RawMaterialId) {
           props.node.setSelected(true);
         }
@@ -747,8 +743,8 @@ console.log("permission.Edit",permissions)
       cellValue = "Zero Based";
     }
     //return cellValue          // IN SUMMARY DRAWER COSTING HEAD IS ROWDATA.COSTINGHEAD & IN MAIN DOMESTIC LISTING IT IS CELLVALUE
-    if (props.selectedRowForPagination?.length > 0) {
-      props.selectedRowForPagination.map((item) => {
+    if (selectedRowForPagination?.length > 0) {
+      selectedRowForPagination.map((item) => {
         if (item.BoughtOutPartId === props.node.data.BoughtOutPartId) {
           props.node.setSelected(true);
         }
@@ -871,8 +867,8 @@ console.log("permission.Edit",permissions)
 
   const onBtExport = () => {
     let tempArr = [];
-    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
-    // tempArr = selectedRowForPagination;
+    // tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    tempArr = selectedRowForPagination;
     tempArr =
       tempArr && tempArr.length > 0
         ? tempArr
@@ -938,8 +934,7 @@ console.log("permission.Edit",permissions)
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
   };
-  const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } =
-    props;
+ 
   const { isBulkUpload, noData } = state;
 
   var filterParams = {
@@ -1046,10 +1041,10 @@ console.log("permission.Edit",permissions)
 
     if (selectedRows === undefined || selectedRows === null) {
       //CONDITION FOR FIRST RENDERING OF COMPONENT
-      selectedRows = props.selectedRowForPagination;
+      selectedRows = selectedRowForPagination;
     } else if (
-      props.selectedRowForPagination &&
-      props.selectedRowForPagination.length > 0
+      selectedRowForPagination &&
+      selectedRowForPagination.length > 0
     ) {
       // CHECKING IF REDUCER HAS DATA
 
@@ -1057,18 +1052,18 @@ console.log("permission.Edit",permissions)
       if (event.node.isSelected() === false) {
         // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
-        for (let i = 0; i < props.selectedRowForPagination.length; i++) {
+        for (let i = 0; i < selectedRowForPagination.length; i++) {
           if (
-            props.selectedRowForPagination[i].BoughtOutPartId ===
+            selectedRowForPagination[i].BoughtOutPartId ===
             event.data.BoughtOutPartId
           ) {
             // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
-          finalData.push(props.selectedRowForPagination[i]);
+          finalData.push(selectedRowForPagination[i]);
         }
       } else {
-        finalData = props.selectedRowForPagination;
+        finalData = selectedRowForPagination;
       }
       selectedRows = [...selectedRows, ...finalData];
     }
@@ -1088,7 +1083,7 @@ console.log("permission.Edit",permissions)
     if (props?.benchMark) {
       let uniqueArrayNew = _.uniqBy(uniqueArray, "CategoryId");
       if (uniqueArrayNew.length > 1) {
-        props.setSelectedRowForPagination([]);
+        dispatch(setSelectedRowForPagination([]));
         state.gridApi.deselectAll();
         Toaster.warning("Please select multiple bop's with same category");
       }
@@ -1102,7 +1097,7 @@ console.log("permission.Edit",permissions)
         props?.isMasterSummaryDrawer === false
           ? "custom-pagination"
           : ""
-      } ${DownloadAccessibility ? "show-table-btn" : ""} ${
+      } ${permissions.Download ? "show-table-btn" : ""} ${
         props.isSimulation
           ? "simulation-height"
           : props?.isMasterSummaryDrawer
@@ -1139,8 +1134,8 @@ console.log("permission.Edit",permissions)
                 <button
                   type="button"
                   className="user-btn mr5 filter-btn-top"
-                  onClick={(prevState) =>
-                    setState(() => ({ ...prevState, shown: !state.shown }))
+                  onClick={() =>
+                    setState((prevState) => ({ ...prevState, shown: !state.shown }))
                   }
                 >
                   <div className="cancel-icon-white"></div>
@@ -1178,7 +1173,7 @@ console.log("permission.Edit",permissions)
                 />
               )}
 
-              {AddAccessibility && (
+              {permissions.Add && (
                 <Button
                   id="bopDomesticListing_add"
                   className={"mr5"}
@@ -1187,7 +1182,7 @@ console.log("permission.Edit",permissions)
                   icon={"plus"}
                 />
               )}
-              {BulkUploadAccessibility && (
+              {permissions.BulkDownload && (
                 <Button
                   id="bopDomesticListing_add"
                   className={"mr5"}
@@ -1196,7 +1191,7 @@ console.log("permission.Edit",permissions)
                   icon={"upload"}
                 />
               )}
-              {DownloadAccessibility && (
+              {permissions.Download && (
                 <>
                   <Button
                     className="mr5"
@@ -1230,7 +1225,7 @@ console.log("permission.Edit",permissions)
               )}
               <Button
                 id={"bopDomesticListing_refresh"}
-                onClick={() => resetStates()}
+                onClick={() => resetState()}
                 title={"Reset Grid"}
                 icon={"refresh"}
               />
@@ -1245,7 +1240,7 @@ console.log("permission.Edit",permissions)
             className={`ag-grid-wrapper ${
               props?.isDataInMaster && !noData ? "master-approval-overlay" : ""
             } ${
-              (props.bopDomesticList && props.bopDomesticList?.length <= 0) ||
+              (bopDomesticList && bopDomesticList?.length <= 0) ||
               noData
                 ? "overlay-contain"
                 : ""
@@ -1348,7 +1343,7 @@ console.log("permission.Edit",permissions)
 
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                   ((props.isMasterSummaryDrawer &&
-                    props.bopDomesticList[0]?.CostingTypeId === ZBCTypeId) ||
+                   bopDomesticList[0]?.CostingTypeId === ZBCTypeId) ||
                     !props.isMasterSummaryDrawer) && (
                     <AgGridColumn
                       field="NetCostWithoutConditionCost"
@@ -1358,7 +1353,7 @@ console.log("permission.Edit",permissions)
                   )}
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible &&
                   ((props.isMasterSummaryDrawer &&
-                    props.bopDomesticList[0]?.CostingTypeId === ZBCTypeId) ||
+                    bopDomesticList[0]?.CostingTypeId === ZBCTypeId) ||
                     !props.isMasterSummaryDrawer) && (
                     <AgGridColumn
                       field="NetConditionCost"
@@ -1527,8 +1522,4 @@ console.log("permission.Edit",permissions)
   );
 };
 
-export default reduxForm({
-  form: "BOPDomesticListing",
-  enableReinitialize: true,
-  touchOnChange: true,
-})(BOPDomesticListing);
+export default BOPDomesticListing

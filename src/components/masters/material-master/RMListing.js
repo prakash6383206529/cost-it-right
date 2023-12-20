@@ -270,7 +270,6 @@ const RMListing = (props) => {
    
   };
   const { isOpen, isEditFlag, ID, noData } = state;
-  // const { AddAccessibility, DownloadAccessibility } = props;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
