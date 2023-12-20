@@ -116,6 +116,7 @@ export const API = {
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
+  updateMultiplecomponentTechnology: `${BASE_URL}/masters-part/update-technology-for-multiple-component`,
 
   // PRODUCT MASTER 
   getProductDataList: `${BASE_URL}/masters-product/get-all`,
@@ -867,6 +868,7 @@ export const API = {
   checkRegularizationLimit: `${BASE_URL}/app-approval-system/get-ncc-costing-regularization-limit-data`,
   getPartSelectListWtihRevNo: `${BASE_URL}/configuration/get-part-number-and-revision-number`,
   bulkUploadVolume: `${BASE_URL}/masters-volume/save-actual-volume-details`,
+  getUnassociatedPartNumber: `${BASE_URL}/configuration/get-part-number-and-revision-number-unupdated-technology`,
 
   //BUDGET MASTER
   getBudgetDataList: `${BASE_URL}/master-budgeting/get-all`,
@@ -1324,6 +1326,8 @@ export const GET_GRID_HEIGHT = 'GET_GRID_HEIGHT'
 export const GET_STATE_WHILE_DOWNLOADING = 'GET_STATE_WHILE_DOWNLOADING';
 export const GET_DATA_WHILE_LOADING = 'GET_DATA_WHILE_LOADING';
 export const CORRUGATED_DATA = 'CORRUGATED_DATA';
+export const TOUR_START_DATA = 'TOUR_START_DATA';
+export const GUIDE_BUTTON_SHOW = true;
 
 //OPERATION
 export const GET_OPERATION_SUCCESS = 'GET_OPERATION_SUCCESS'
@@ -2605,6 +2609,12 @@ export const CRMHeads = [
 ]
 
 
+export const LANGUAGES = [
+  { value: 'en-US', label: 'English - EN', },
+  { value: 'hi', label: 'हिन्दी - HI', },
+  { value: 'mr', label: 'मराठी - MR', },
+]
+
 //CONSTANTS FOR COSTING HEAD
 export const ZBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[ZBC])
 export const VBCTypeId = Number(reactLocalStorage.getObject('CostingHeadsListShortForm')[VBC])
@@ -2688,7 +2698,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.283";
+export const VERSION = "V2.1.289";
 
 
 

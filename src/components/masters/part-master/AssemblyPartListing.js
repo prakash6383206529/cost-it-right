@@ -4,7 +4,7 @@ import { Row, Col } from "reactstrap";
 import { getAssemblyPartDataList, deleteAssemblyPart } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
-import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { ASSEMBLYNAME, defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import DayTime from "../../common/DayTimeWrapper";
 import BOMViewer from "./BOMViewer";
@@ -21,6 +21,7 @@ import { filterParams } from "../../common/DateFilter";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { loggedInUserId, searchNocontentFilter } from "../../../helper";
 import { ApplyPermission } from ".";
+import TechnologyUpdateDrawer from './TechnologyUpdateDrawer';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -60,6 +61,7 @@ const AssemblyPartListing = React.memo((props) => {
     gridApi: null,
     columnApi: null,
     paginationPageSize: defaultPageSize,
+    openTechnologyUpdateDrawer: false
   });
 
   const permissions = useContext(ApplyPermission);
@@ -351,6 +353,20 @@ const AssemblyPartListing = React.memo((props) => {
     headerCheckboxSelectionFilteredOnly: true,
     checkboxSelection: isFirstColumn,
   };
+
+  const associatePartWithTechnology = () => {
+    setState((prevState) => ({ ...prevState, openTechnologyUpdateDrawer: true }));
+
+  }
+
+  const closeTechnologyUpdateDrawer = (type = '') => {
+    setState((prevState) => ({ ...prevState, openTechnologyUpdateDrawer: false }));
+    if (type === 'submit') {
+      getTableListData()
+    }
+
+  }
+
 
   return (
     <div

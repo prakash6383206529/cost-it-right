@@ -1,0 +1,17 @@
+{
+    "costingInitial": {
+        "Technology": "Select the Technology",
+        "PartType": "Choose Part Type, once you select technology you will be able to choose part type",
+        "Part": "Choose Part, Once you choose part type you will be able to choose part",
+        "clear": "If you want to clear form you can clear from here"
+    },
+    "vendorCreateCosting": {
+        "editSob": "You can edit SOB here",
+        "version": "If already costing done then you can select your version and edit costing",
+        "createCosting": "Create new Costing",
+        "viewCosting": "View Costing",
+        "editCosting": "Edit Costing",
+        "deleteCosting": "Delete Costing",
+        "discard": "If you want to remove this plant and vendor from list you can remove it from here"
+    }
+}

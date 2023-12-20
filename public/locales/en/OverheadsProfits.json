@@ -1,0 +1,37 @@
+{
+    "overheadsdMaster": {
+        "AddOverhead_zerobased": "Select Zero based Costing Head.",
+        "AddOverhead_vendorbased": "Select Vendor based Costing Head.",
+        "AddOverhead_customerbased": "Select Customer based Costing Head.",
+        "AddOverhead_ModelType_container": "Enter the Model type.",
+        "AddOverhead_Plant_container": "Select Plant (Code) from the dropdown.",
+        "AddOverhead_ApplyPartCheckbox":"Check the checkbox.",
+        "AddOverhead_OverheadApplicability_container": "Enter Your Overhead",
+        "AddOverhead_OverheadPercentage": "Enter Your Overhead Percentage",
+        "AddOverhead_OverheadRMPercentage": "Enter Your Overhead RMPercentage",
+        "AddOverhead_OverheadMachiningCCPercentage": "Enter Your Overhead CCPercentage",
+        "AddOverhead_OverheadBOPPercentage": "Enter Your Overhead BOP Percentage",
+        "AddOverhead_EffectiveDate": "Select Effective Date from the calendar.",
+        "AddOverhead_Remark": "Add remarks if necessary.",
+        "AddOverhead_UploadFiles": "Add attachements if necessary.",
+        "AddOverhead_Cancel": "Click here to reset the form and go-back to the grid page.",
+        "AddOverhead_Save": "Click here to Save"
+    },
+    "overheadsProfits": {
+        "AddProfit_zeroBased": "Select Zero based Costing Head.",
+        "AddProfit_vendorBased": "Select Vendor based Costing Head.",
+        "AddProfit_customerBased": "Select Customer based Costing Head.",
+        "AddProfit_ModelType_container": "Enter the Model type.",
+        "AddProfit_Plant_container": "Select Plant (Code) from the dropdown.",
+        "AddProfit_ApplyPartCheckbox":"Check the checkbox",
+        "AddProfit_ProfitApplicabilityId_container": "Enter Your Profit ApplicabilityId",
+        "AddProfit_ProfitPercentage": "Enter Your Profit Percentage",
+        "AddProfit_ProfitRMPercentage": "Enter Your Profit RM Percentage",
+        "AddProfit_ProfitMachiningCCPercentage": "Enter Your Profit Machining CC Percentage",
+        "AddProfit_ProfitBOPPercentage": "Enter Your Profit BOP Percentage",
+        "AddProfit_Remark": "Add remarks if necessary.",
+        "AddProfit_UploadFiles": "Add attachements if necessary.",
+        "AddProfit_Cancel": "Click here to reset the form and go-back to the grid page.",
+        "AddProfit_Save": "Click here to Save."
+    }
+}

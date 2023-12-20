@@ -61,11 +61,15 @@ import {
   GET_REPORTER_LIST,
   GET_APPROVAL_TYPE_SELECT_LIST,
   GET_DATA_WHILE_LOADING,
-  GET_DATA_FROM_REPORT
+  GET_DATA_FROM_REPORT,
+  TOUR_START_DATA
 } from '../config/constants';
 
 const initialState = {
-  technologyList: []
+  technologyList: [],
+  tourStartData: {
+    showTour: false
+  }
 };
 
 export default function commanReducer(state = initialState, action) {
@@ -493,6 +497,11 @@ export default function commanReducer(state = initialState, action) {
       return {
         ...state,
         sidebarAndNavbarHide: action.payload
+      }
+    case TOUR_START_DATA:
+      return {
+        ...state,
+        tourStartData: action.payload
       }
     default:
       return state;

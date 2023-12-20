@@ -12,7 +12,7 @@ import {
 import { fetchRMGradeAPI } from '../../../actions/Common';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { SPECIFICATION } from '../../../config/constants';
+import { GUIDE_BUTTON_SHOW, SPECIFICATION } from '../../../config/constants';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import AddGrade from './AddGrade';
@@ -21,6 +21,9 @@ import AddRawMaterial from './AddRawMaterial';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import Button from '../../layout/Button';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next'
 
 class AddSpecification extends Component {
   constructor(props) {
@@ -477,7 +480,7 @@ class AddSpecification extends Component {
   render() {
     const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer, setDisable } = this.state;
     const { handleSubmit, isEditFlag, specificationData, AddAccessibilityRMANDGRADE,
-      EditAccessibilityRMANDGRADE, } = this.props;
+      EditAccessibilityRMANDGRADE, t } = this.props;
     return (
       <div>
         <Drawer
@@ -500,6 +503,11 @@ class AddSpecification extends Component {
                         {isEditFlag
                           ? "Update  Specification"
                           : "Add Raw Material Specification"}
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "RM_Spec_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).ADD_RAW_MATERIAL_SPEC
+                          }} />
                       </h3>
                     </div>
                     <div
@@ -770,4 +778,6 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(AddSpecification));
+})(withTranslation(['RawMaterialMaster'])(AddSpecification)),
+
+)

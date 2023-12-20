@@ -1,0 +1,19 @@
+{
+    "vendorForm": {
+        "AddVendorDrawer_VendorType_container": "Select the vendor type from the dropdown.",
+        "AddVendorDrawer_VendorName": "Enter the vendor name.",
+        "AddVendorDrawer_VendorCode": "Enter the vendor code",
+        "AddVendorDrawer_VendorEmail": "Enter the vendor email.",
+        "AddVendorDrawer_PhoneNumber": "Enter the vendor phone number.",
+        "AddVendorDrawer_Extension": "Enter the vendor extension.",
+        "AddVendorDrawer_MobileNumber": "Enter the vendor mobile number.",
+        "AddVendorDrawer_CountryId_container": "Select the country from the dropdown.",
+        "AddVendorDrawer_StateId_container": "Select the state from the dropdown.",
+        "AddVendorDrawer_CityId_container": "Select the city from the dropdown.",
+        "AddVendorDrawer_ZipCode": "Enter the postal code.",
+        "AddVendorDrawer_AddressLine1": "Enter the address line 1 if necessary.",
+        "AddVendorDrawer_AddressLine2": "Enter the address line 2 if necessary.",
+        "AddVendorDrawer_Cancel": "Click here to go-back to the Page.",
+        "AddVendorDrawer_Save": "Click here to save the vendor."
+    }
+}

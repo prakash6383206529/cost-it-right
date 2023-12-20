@@ -14,7 +14,7 @@ import {
 } from '../actions/MachineMaster';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, EMPTY_GUID, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBCTypeId, searchCount } from '../../../config/constants'
 import { getConfigurationKey, loggedInUserId, userDetails } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
@@ -41,7 +41,10 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
 import WarningMessage from '../../common/WarningMessage';
-
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddMachineRate');
 
@@ -112,7 +115,11 @@ class AddMachineRate extends Component {
       levelDetails: {},
       vendorFilterList: [],
       CostingTypePermission: false,
-      disableSendForApproval: false
+      disableSendForApproval: false,
+      tourContainer: {
+        initial: false,
+        processTour: false,
+      },
     }
   }
 
@@ -1373,8 +1380,8 @@ class AddMachineRate extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated } = this.props;
-    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval } = this.state;
+    const { handleSubmit, AddAccessibility, EditAccessibility, initialConfiguration, isMachineAssociated, t } = this.props;
+    const { isEditFlag, isOpenMachineType, isOpenProcessDrawer, disableMachineType, IsCopied, isViewFlag, isViewMode, setDisable, lockUOMAndRate, UniqueProcessId, costingTypeId, IsDetailedEntry, CostingTypePermission, disableSendForApproval, tourContainer } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1419,7 +1426,13 @@ class AddMachineRate extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
-                        <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate</h2>
+                        <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "addMachineRate_guide" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_MACHINE_RATE
+                            }} />
+                        </h2>
                       </div>
                     </div>
                   </div>
@@ -1432,7 +1445,7 @@ class AddMachineRate extends Component {
                     <div class="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <Label id="AddMachineRate_zeroBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1446,7 +1459,7 @@ class AddMachineRate extends Component {
                             />{" "}
                             <span>Zero Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                          <Label id="AddMachineRate_vendorBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1460,7 +1473,7 @@ class AddMachineRate extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddMachineRate_customerBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1685,7 +1698,7 @@ class AddMachineRate extends Component {
                                     <div className={`${isViewMode ? 'fa fa-eye' : 'edit_pencil_icon'}  d-inline-block mr5`}></div> {isViewMode ? "View" : "Edit"} MORE MACHINE DETAILS</button>
                                   :
                                   AddAccessibility && !isEditFlag &&
-                                  <button
+                                  <button id="addMoreMachine_Details"
                                     type="button"
                                     className={this.state.isViewFlag ? 'disabled-button user-btn' : 'user-btn'}
                                     disabled={this.state.isViewFlag || (isEditFlag && !IsDetailedEntry) ? true : false}
@@ -1699,10 +1712,15 @@ class AddMachineRate extends Component {
                       </Row>
 
                       <Row className='child-form-container'>
-                        <Col md="12">
+                        <Col md="12" className='d-flex align-items-center'>
                           <HeaderTitle
                             title={'Process:'}
                             customClass={'Personal-Details'} />
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "addMachineRate_Process" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_MACHINERATE_MORE_PROCESS
+                            }} />
                         </Col>
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">
@@ -1724,7 +1742,7 @@ class AddMachineRate extends Component {
                               />
                               {this.state.errorObj?.processName && (this.state.processName && this.state.processName?.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
                             </div>
-                            <div
+                            <div id="Add_Machine_Process"
                               onClick={this.processToggler}
                               className={`${isViewMode ? 'disabled' : ''} plus-icon-square mr5 right`}>
                             </div>
@@ -1783,7 +1801,7 @@ class AddMachineRate extends Component {
                               :
                               // !this.state.IsDetailedEntry &&
                               <>
-                                <button
+                                <button id="AddMachineRate_addmore"
                                   type="button"
                                   className={`${isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
                                   disabled={(this.state.isViewFlag || (isEditFlag && isMachineAssociated) || isViewMode || (isEditFlag && IsDetailedEntry)) ? true : false}
@@ -1881,7 +1899,7 @@ class AddMachineRate extends Component {
                           <div className={`alert alert-danger mt-2 ${this.state.files?.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
-                          <div className={`${this.state.files?.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                          <div id="AddMachineRate_UploadFiles" className={`${this.state.files?.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
@@ -1942,7 +1960,7 @@ class AddMachineRate extends Component {
                         {
                           !isViewFlag ?
                             <>
-                              <button
+                              <button id="AddMachineRate_Cancel"
                                 type={'button'}
                                 className=" mr15 cancel-btn"
                                 onClick={this.cancelHandler}
@@ -1953,7 +1971,7 @@ class AddMachineRate extends Component {
                               {!isViewMode && <>
 
                                 {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || (initialConfiguration.IsMasterApprovalAppliedConfigure && !CostingTypePermission) ?
-                                  <button type="submit"
+                                  <button id="AddMachineRate_SendForApproval" type="submit"
                                     class="user-btn approval-btn save-btn mr5"
                                     disabled={isViewMode || setDisable || disableSendForApproval || (isEditFlag && IsDetailedEntry)}
                                   >
@@ -2111,4 +2129,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
-})(AddMachineRate));
+})(withTranslation(['MachineMaster'])(AddMachineRate)),
+)

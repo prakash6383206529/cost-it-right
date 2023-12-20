@@ -19,8 +19,12 @@ import { debounce } from 'lodash';
 import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
-import { EMPTY_DATA, ZBC } from '../../../config/constants';
+import { EMPTY_DATA, GUIDE_BUTTON_SHOW, ZBC } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 class AddVendorDrawer extends Component {
     constructor(props) {
@@ -674,7 +678,7 @@ class AddVendorDrawer extends Component {
             selectedPlants: [],
             selectedIndex: -1, // Reset the selectedIndex
             isEditIndex: false,
-            disablePlant: false
+            disablePlant: false,
         });
     };
 
@@ -683,7 +687,7 @@ class AddVendorDrawer extends Component {
     * @description Renders the component
     */
     render() {
-        const { handleSubmit, isEditFlag, initialConfiguration } = this.props;
+        const { handleSubmit, isEditFlag, initialConfiguration, t } = this.props;
         const { country, isOpenVendorPlant, isViewMode, setDisable, isCriticalVendor } = this.state;
         return (
             <div>
@@ -701,7 +705,13 @@ class AddVendorDrawer extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor</h3>
+                                            <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor
+                                                <TourWrapper
+                                                    buttonSpecificProp={{ id: "Vendor_form" }}
+                                                    stepsSpecificProp={{
+                                                        steps: Steps(t).VENDOR_FORM
+                                                    }} />
+                                            </h3>
                                         </div>
                                         <div
                                             onClick={(e) => this.toggleDrawer(e, '', 'cancel')}
@@ -764,6 +774,7 @@ class AddVendorDrawer extends Component {
                                         <Field
                                             label={`Email Id`}
                                             name={"Email"}
+                                            id='AddVendorDrawer_VendorEmail'
                                             type="email"
                                             placeholder={isViewMode ? '-' : 'Enter'}
                                             validate={[email, minLength7, maxLength70]}
@@ -1060,13 +1071,15 @@ class AddVendorDrawer extends Component {
                                             type={'button'}
                                             disabled={this.state.isLoader || setDisable}
                                             className=" mr15 cancel-btn"
+                                            id='AddVendorDrawer_Cancel'
                                             onClick={this.cancelHandler} >
                                             <div className={'cancel-icon'}></div> {'Cancel'}
                                         </button>
                                         <button
                                             type="submit"
                                             disabled={this.state.isLoader || isViewMode || setDisable ? true : false}
-                                            className="user-btn save-btn">
+                                            className="user-btn save-btn"
+                                            id='AddVendorDrawer_Save'>
                                             <div className={"save-icon"}></div>
                                             {isEditFlag ? 'Update' : 'Save'}
                                         </button>
@@ -1150,4 +1163,4 @@ export default connect(mapStateToProps, {
     onSubmitFail: (errors) => {
         focusOnError(errors)
     },
-})(AddVendorDrawer));
+})(withTranslation(['VendorMaster'])(AddVendorDrawer)));

@@ -375,6 +375,17 @@
     @include extra-icon-styles;
 }
 
+.associate {
+    @include icons("../../images/associate.svg");
+    @include extra-icon-styles;
+    border-radius: 5px;
+
+    &:focus {
+        border: unset !important;
+        box-shadow: unset !important;
+    }
+}
+
 .lock_icon {
     @include icons("../../images/lock.svg", 17px, 17px);
     cursor: pointer;
@@ -445,6 +456,17 @@
             max-width: 20px;
         }
     }
+}
+
+.guide-bulb {
+    @include icons("../../images/guide-off.png", 26px, 26px);
+    border-radius: 5px;
+    vertical-align: middle;
+}
+
+.guide-bulb-on {
+    @extend .guide-bulb;
+    @include icons("../../images/guide-bulb-on.svg", 26px, 26px);
 }
 
 .CalculatorIcon:disabled,

@@ -199,12 +199,14 @@ function RowMaterialMaster(props) {
 
 
     return (
+      
         <Container fluid>
             <Row id="go-top-top">
                 <ScrollToTop pointProp={"go-top-top"} />
             </Row>
             <Row>
                 <Col>
+                {Object.keys(permissionData).length > 0 && (
                     <div>
                         <Nav tabs className="subtabs mt-0 p-relative">
                             {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
@@ -330,10 +332,12 @@ function RowMaterialMaster(props) {
                         </TabContent>
                         </ApplyPermission.Provider>
                     </div>
+                )}
                 </Col>
             </Row>
 
         </Container >
+                                    
     );
 
 }

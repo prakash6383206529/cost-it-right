@@ -1,4 +1,4 @@
-import React, { useState, useEffect, } from 'react';
+import React, { useState, useEffect, useMemo, } from 'react';
 import { useForm, Controller, useWatch } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR, VBC, BOUGHTOUTPARTSPACING, COMPONENT_PART } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR, VBC, BOUGHTOUTPARTSPACING, COMPONENT_PART, GUIDE_BUTTON_SHOW } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails, number, decimalNumberLimit6, percentageLimitValidation } from '../../../helper';
@@ -36,6 +36,10 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { getUOMSelectList } from '../../../actions/Common';
 import { Redirect } from 'react-router';
 import { getSelectListPartType } from '../../masters/actions/Part';
+import { useTranslation } from 'react-i18next';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import Button from '../../layout/Button';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -62,6 +66,7 @@ function CostingDetails(props) {
     reValidateMode: 'onChange',
   });
 
+  const { t } = useTranslation("Costing")
   const [technology, setTechnology] = useState([]);
   const [IsTechnologySelected, setIsTechnologySelected] = useState(false);
   const [part, setPart] = useState([]);
@@ -108,6 +113,8 @@ function CostingDetails(props) {
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
   const costingMode = useSelector(state => state.costing.costingMode);
+  const [step, setStep] = useState([])
+  const [tourType, setTourType] = useState('')
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
@@ -168,6 +175,7 @@ function CostingDetails(props) {
       reactLocalStorage.setObject('PartData', [])
     }
   }, [])
+
 
   useEffect(() => {
     if (costingMode?.editMode === true && costingMode?.viewMode === false) {
@@ -497,6 +505,7 @@ function CostingDetails(props) {
               zbvArray.push(item)
             } else if (Number(item.CostingTypeId) === CBCTypeId) {
               cbcArray.push(item)
+
             } else if (Number(item.CostingTypeId) === WACTypeId) {
               wacArray.push(item)
             }
@@ -760,7 +769,7 @@ function CostingDetails(props) {
         return false;
       }
 
-      let tempArr = [...cbcGrid, { ...clientData, Status: '' }]
+      let tempArr = [...cbcGrid, { ...clientData, Status: '', CostingOptions: [] }]
       setTimeout(() => {
         setCBCGrid(tempArr)
       }, 200)
@@ -1985,11 +1994,44 @@ function CostingDetails(props) {
       }}
     />
   }
+  const tourStart = (costingType, costingData) => {
+    if (costingData.length !== 0) {
+      if (costingData[0].CostingOptions.length === 0) {
+        const elementsToCheck = ['edit-details-btn', 'Add-file', 'CancelIcon'];
+        if (costingType === 'ncc' || costingType === 'cbc' || costingType === 'wac') {
+          elementsToCheck.shift()
+        }
+        const stepArr = Steps(t, costingType).VENDOR_COSTING_GRID
+          .filter(el => elementsToCheck.some(keyword => el.element.includes(keyword)));
+        setStep(stepArr)
+      } else {
 
+        const status = costingData[0].Status;
+        const elementsToCheckMapping = {
+          '': ['edit-details-btn', 'Costing-version', 'Add-file'],
+          'Draft': ['edit-details-btn', 'Add-file', 'View', 'Edit', 'Copy', 'Delete'],
+          'History': ['edit-details-btn', 'Add-file', 'View', 'Copy'],
+          'Approved': ['edit-details-btn', 'Add-file', 'View', 'Copy'],
+          'ApprovedByAssembly': ['edit-details-btn', 'Add-file', 'View', 'Copy'],
+          'ApprovedByASMSimulation': ['edit-details-btn', 'Add-file', 'View', 'Copy'],
+          'RejectedBySystem': ['edit-details-btn', 'Add-file', 'View'],
+        };
+
+        const elementsToCheck = elementsToCheckMapping[status] || [];
+        if (costingType === 'ncc' || costingType === 'cbc') {
+          elementsToCheck.shift()
+        }
+        const stepArr = Steps(t, costingType).VENDOR_COSTING_GRID
+          .filter(el => elementsToCheck.some(keyword => el.element.includes(keyword)));
+        setStep(stepArr);
+      }
+    }
+  }
   const loaderObj = { isLoader: inputLoader, }
   return (
     <>
       <span className="position-relative costing-page-tabs d-block w-100">
+
         <div className="right-actions">
 
           {/* BELOW BUTTONS ARE TEMPORARY HIDDEN FROM UI  */}
@@ -2019,12 +2061,20 @@ function CostingDetails(props) {
           <Col md="12">
             <div className="shadow-lgg login-formg">
               {/* BASIS OF TECHNOLOGY AND PART GET THE DETAILS OF PART.  */}
-              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}              >
+              <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
                 {stepOne && (
                   <>
                     <Row>
                       <Col md="12">
-                        <div className="left-border mt-3 ">{"Part Details:"}</div>
+                        <div className="left-border mt-3 ">{"Part Details:"}{IsOpenVendorSOBDetails ? <TourWrapper
+                          buttonSpecificProp={{ id: "Costing_Details_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).COSTING_STEP_TWO
+                          }} /> : <TourWrapper
+                          buttonSpecificProp={{ id: "Costing_Details_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).COSTING_INITIAL
+                          }} />}</div>
                       </Col>
                       <Col className="col-md-15">
                         <SearchableSelectHookForm
@@ -2238,13 +2288,18 @@ function CostingDetails(props) {
                           <>
                             <Row className="align-items-center">
                               <Col md="6" className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">ZBC:</h6>
+                                <h6 className="dark-blue-text sec-heading">ZBC:{zbcPlantGrid && zbcPlantGrid.length !== 0 && <TourWrapper
+                                  buttonSpecificProp={{ id: "zbc_Costing", onClick: () => tourStart("zbc", zbcPlantGrid) }}
+                                  stepsSpecificProp={{
+                                    steps: step
+                                  }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
                                 <button
                                   type="button"
                                   className={"user-btn"}
                                   onClick={plantDrawerToggle}
+                                  id="ZBC_Costing_Add_Plant"
                                 >
                                   <div className={"plus"}></div>PLANT
                                 </button>
@@ -2321,6 +2376,7 @@ function CostingDetails(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={item.SelectedCostingVersion}
+                                                customClassName={`Costing-version-${index}`}
                                                 options={renderCostingOption(item.CostingOptions)}
                                                 mandatory={false}
                                                 handleChange={(newValue) =>
@@ -2369,7 +2425,11 @@ function CostingDetails(props) {
                           <>
                             <Row className="align-items-center">
                               <Col md={'6'} className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">NCC:</h6>
+                                <h6 className="dark-blue-text sec-heading">NCC:{nccGrid && nccGrid.length !== 0 && <TourWrapper
+                                  buttonSpecificProp={{ id: "ncc_Costing", onClick: () => tourStart("ncc", nccGrid) }}
+                                  stepsSpecificProp={{
+                                    steps: step
+                                  }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
                                 {nccGrid && nccGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
@@ -2377,6 +2437,7 @@ function CostingDetails(props) {
                                     type="button"
                                     className={"user-btn"}
                                     onClick={nccDrawerToggle}
+                                    id="NCC_Costing_Add_Vendor"
                                   >
                                     <div className={"plus"}></div>Vendor
                                   </button>
@@ -2390,7 +2451,7 @@ function CostingDetails(props) {
                             <Row>
                               <Col md="12" className={"costing-table-container"}>
                                 <Table
-                                  className="table cr-brdr-main costing-table-next costing-table-vbc"
+                                  className="table cr-brdr-main costing-table-next costing-table-ncc"
                                   size="sm"
                                 >
                                   <thead>
@@ -2425,6 +2486,7 @@ function CostingDetails(props) {
                                               register={register}
                                               defaultValue={item.SelectedCostingVersion}
                                               options={renderCostingOption(item.CostingOptions)}
+                                              customClassName={`Costing-version-${index}`}
                                               mandatory={false}
                                               handleChange={(newValue) => handleCostingChange(newValue, NCCTypeId, index)}
                                               errors={`${nccGridFields}[${index}]CostingVersion`}
@@ -2470,7 +2532,11 @@ function CostingDetails(props) {
                           <>
                             <Row className="align-items-center">
                               <Col md={'6'} className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">VBC:</h6>
+                                <h6 className="dark-blue-text sec-heading">VBC: {vbcVendorGrid && vbcVendorGrid.length !== 0 && <TourWrapper
+                                  buttonSpecificProp={{ id: "Vendor_Costing", onClick: () => tourStart("vbc", vbcVendorGrid) }}
+                                  stepsSpecificProp={{
+                                    steps: step
+                                  }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
                                 {!breakupBOP && vbcVendorGrid && vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
@@ -2478,6 +2544,7 @@ function CostingDetails(props) {
                                     type="button"
                                     className={"user-btn"}
                                     onClick={vendorDrawerToggle}
+                                    id='VBC_Costing_Add_Vendor'
                                   >
                                     <div className={"plus"}></div>VENDOR
                                   </button>
@@ -2556,6 +2623,7 @@ function CostingDetails(props) {
                                               defaultValue={item.SelectedCostingVersion}
                                               options={renderCostingOption(item.CostingOptions)}
                                               mandatory={false}
+                                              customClassName={`Costing-version-${index}`}
                                               handleChange={(newValue) => handleCostingChange(newValue, VBCTypeId, index)}
                                               errors={`${vbcGridFields}[${index}]CostingVersion`}
                                             />
@@ -2599,7 +2667,11 @@ function CostingDetails(props) {
                           <>
                             <Row className="align-items-center">
                               <Col md={'6'} className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">CBC:</h6>
+                                <h6 className="dark-blue-text sec-heading">CBC: {cbcGrid && cbcGrid.length !== 0 && <TourWrapper
+                                  buttonSpecificProp={{ id: "cbc_Costing", onClick: () => tourStart("cbc", cbcGrid) }}
+                                  stepsSpecificProp={{
+                                    steps: step
+                                  }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
                                 {cbcGrid && cbcGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
@@ -2607,6 +2679,7 @@ function CostingDetails(props) {
                                     type="button"
                                     className={"user-btn"}
                                     onClick={clientDrawerToggle}
+                                    id='CBC_Costing_Add_Customer'
                                   >
                                     <div className={"plus"}></div>Customer
                                   </button>
@@ -2620,7 +2693,7 @@ function CostingDetails(props) {
                             <Row>
                               <Col md="12" className={"costing-table-container"}>
                                 <Table
-                                  className="table cr-brdr-main costing-table-next costing-table-vbc"
+                                  className="table cr-brdr-main costing-table-next costing-table-cbc"
                                   size="sm"
                                 >
                                   <thead>
@@ -2654,6 +2727,7 @@ function CostingDetails(props) {
                                               register={register}
                                               defaultValue={item.SelectedCostingVersion}
                                               options={renderCostingOption(item.CostingOptions)}
+                                              customClassName={`Costing-version-${index}`}
                                               mandatory={false}
                                               handleChange={(newValue) => handleCostingChange(newValue, CBCTypeId, index)}
                                               errors={`${cbcGridFields}[${index}]CostingVersion`}
@@ -2699,13 +2773,18 @@ function CostingDetails(props) {
                           <>
                             <Row className="align-items-center">
                               <Col md="6" className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">WAC:</h6>
+                                <h6 className="dark-blue-text sec-heading">WAC:{wacPlantGrid && wacPlantGrid.length !== 0 && <TourWrapper
+                                  buttonSpecificProp={{ id: "wac_Costing", onClick: () => tourStart("wac", wacPlantGrid) }}
+                                  stepsSpecificProp={{
+                                    steps: step
+                                  }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
                                 <button
                                   type="button"
                                   className={"user-btn"}
                                   onClick={plantDrawerToggleWac}
+                                  id='WAC_Costing_Add_Plant'
                                 >
                                   <div className={"plus"}></div>PLANT
                                 </button>
@@ -2716,7 +2795,7 @@ function CostingDetails(props) {
                             <Row>
                               <Col md="12" className={"costing-table-container"}>
                                 <Table
-                                  className="table cr-brdr-main costing-table-next costing-table-zbc"
+                                  className="table cr-brdr-main costing-table-next costing-table-wac"
                                   size="sm"
                                 >
                                   <thead>
@@ -2755,6 +2834,7 @@ function CostingDetails(props) {
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={item.SelectedCostingVersion}
+                                                customClassName={`Costing-version-${index}`}
                                                 options={renderCostingOption(item.CostingOptions)}
                                                 mandatory={false}
                                                 handleChange={(newValue) =>
@@ -2802,7 +2882,7 @@ function CostingDetails(props) {
                     {!IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
-                          <button type={"button"} className="reset-btn" onClick={cancel} >
+                          <button type={"button"} id="costing-cancel" className="reset-btn" onClick={cancel} >
                             <div className="cancel-icon"></div>
                             {"Clear"}
                           </button>

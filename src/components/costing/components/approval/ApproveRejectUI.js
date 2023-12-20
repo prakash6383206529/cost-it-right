@@ -19,6 +19,7 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import WarningMessage from '../../../common/WarningMessage'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
+import Button from '../../../layout/Button'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -565,25 +566,23 @@ function ApproveRejectUI(props) {
               </Row>
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
-                  <button
-                    type={'button'}
-                    className="reset mr15 cancel-btn"
-                    onClick={toggleDrawer}
+                  <Button
+                    id="Approval_cancel"
+                    className="mr15 my-0"
+                    variant={"cancel-btn"}
                     disabled={isDisable}
-                  >
-                    <div className={'cancel-icon'}></div>
-                    {'Cancel'}
-                  </button>
-
-                  <button
-                    type="button"
-                    className="submit-button  save-btn"
+                    onClick={toggleDrawer}
+                    icon={"cancel-icon"}
+                    buttonName={"Cancel"}
+                  />
+                  <Button
+                    id="Approval_Submit"
+                    className="submit-button"
                     onClick={onSubmit}
                     disabled={isDisable}
-                  >
-                    <div className={'save-icon'}></div>
-                    {'Submit'}
-                  </button>
+                    icon={"save-icon"}
+                    buttonName={"Submit"}
+                  />
                 </div>
               </Row>
             </form>

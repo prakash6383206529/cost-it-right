@@ -8,7 +8,6 @@ import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
 import AddSpecification from "./AddSpecification";
 import BulkUpload from "../../massUpload/BulkUpload";
-import { GridTotalFormate } from "../../common/TableGridFunctions";
 import LoaderCustom from "../../common/LoaderCustom";
 import { RmSpecification } from "../../../config/constants";
 import { SPECIFICATIONLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
@@ -32,8 +31,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const SpecificationListing = (props) => {
   const dispatch = useDispatch();
-  const { rmSpecificationList } =
-    useSelector((state) => state.material);
+  const { rmSpecificationList } = useSelector((state) => state.material);
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
     isOpen: false,
@@ -58,14 +56,12 @@ const SpecificationListing = (props) => {
 
   useEffect(() => {
     getSpecificationListData("", "");
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const getSpecificationListData = useCallback(
     (materialId = "", gradeId = "") => {
-      const data = {
-        MaterialId: materialId,
-        GradeId: gradeId,
-      };
+      const data = { MaterialId: materialId,  GradeId: gradeId,};
 
       setState((prev) => ({ ...prev, isLoader: true }));
       dispatch(
@@ -87,46 +83,44 @@ const SpecificationListing = (props) => {
         })
       );
     },
-    [dispatch]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   const closeDrawer = useCallback(
     (e = "", data, type) => {
       setState(
         (prev) => ({
-          ...prev,
-          isOpen: false,
-          dataCount: 0,
-        }),
+          ...prev, isOpen: false,dataCount: 0,}),
         () => {
           if (type === "submit") getSpecificationListData("", "");
         }
       );
     },
-    [getSpecificationListData]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   const editItemDetails = useCallback((Id) => {
     setState((prev) => ({
-      ...prev,
-      isEditFlag: true,
-      isOpen: true,
-      ID: Id,
-    }));
+      ...prev, isEditFlag: true,isOpen: true, ID: Id,  }));
   }, []);
 
   const openModel = useCallback(() => {
     setState((prev) => ({
-      ...prev,
-      isOpen: true,
-      isEditFlag: false,
-    }));
+      ...prev, isOpen: true,  isEditFlag: false, }));
   }, []);
-
+ /**
+    * @method deleteItem
+    * @description confirm delete RM Specification
+    */
   const deleteItem = useCallback((Id) => {
     setState((prev) => ({ ...prev, showPopup: true, deletedId: Id }));
   }, []);
-
+/**
+    * @method confirmDelete
+    * @description confirm delete RM Specification
+    */
   const confirmDelete = useCallback(
     (ID) => {
       const loggedInUser = loggedInUserId();
@@ -145,14 +139,18 @@ const SpecificationListing = (props) => {
         })
       );
     },
-    [dispatch, getSpecificationListData]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
   const onPopupConfirm = useCallback(() => {
     confirmDelete(state.deletedId);
   }, [confirmDelete, state.deletedId]);
-
- const buttonFormatter = useCallback(
+  /**
+* @method buttonFormatter
+* @description Renders buttons
+*/
+  const buttonFormatter = useCallback(
     (props) => {
       const cellValue = props?.value;
       const rowData = props?.data;
@@ -179,49 +177,41 @@ const SpecificationListing = (props) => {
         </>
       );
     },
-    [editItemDetails, deleteItem]
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []
   );
 
-   /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-  const indexFormatter = (cell, row, enumObject, rowIndex) => {
-    const { table } = state.refs;
-    let currentPage =
-      table && table.state && table.state.currPage ? table.state.currPage : "";
-    let sizePerPage =
-      table && table.state && table.state.sizePerPage
-        ? table.state.sizePerPage
-        : "";
-    let serialNumber = "";
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1;
-    } else {
-      serialNumber = rowIndex + 1 + sizePerPage * (currentPage - 1);
-    }
-    return serialNumber;
-  };
-
-  const onFloatingFilterChanged = (value) => {
+ const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       rmSpecificationList.length !== 0 &&
-        setState({ noData: searchNocontentFilter(value, state.noData) });
+        setState((prevState) => ({
+          ...prevState,
+          noData: searchNocontentFilter(value, state.noData),
+        }));
     }, 500);
   };
 
   const bulkToggle = () => {
-    setState({ isBulkUpload: true });
+    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
   };
 
   const closeBulkUploadDrawer = () => {
-    setState({ isBulkUpload: false }, () => {
-      getSpecificationListData("", "");
-    });
+    setState(
+      (prevState) => {
+        return {
+          ...prevState,
+          isBulkUpload: false,
+        };
+      },
+      () => {
+        getSpecificationListData("", "");
+      }
+    );
   };
+  
 
   const densityAlert = () => {
-    setState({ showPopup2: true });
+    setState((prevState) => ({ ...prevState, showPopup2: true }));
   };
 
   const confirmDensity = () => {
@@ -243,7 +233,11 @@ const SpecificationListing = (props) => {
   const onGridReady = (params) => {
     state.gridApi = params.api;
     state.gridApi.sizeColumnsToFit();
-    setState({ gridApi: params.api, gridColumnApi: params.columnApi });
+    setState((prevState) => ({
+      ...prevState,
+      gridApi: params.api,
+      gridColumnApi: params.columnApi,
+    }));
     params.api.paginationGoToPage(0);
   };
 
@@ -297,9 +291,9 @@ const SpecificationListing = (props) => {
 
   const resetState = () => {
     state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState();
+    gridOptions.columnApi.resetColumnState(null);
     state.gridApi.setFilterModel(null);
-  };
+   };
 
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
@@ -316,13 +310,11 @@ const SpecificationListing = (props) => {
     setState((prevState) => ({
       ...prevState,
       selectedRowData: selectedRows,
-      dataCount: selectedRows.length,
+      dataCount: selectedRows?.length,
     }));
   };
-
-  const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
-  const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } =
-    props;
+  
+const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
   const isFirstColumn = (params) => {
     const displayedColumns = params.columnApi.getAllDisplayedColumns();
     const thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -330,11 +322,7 @@ const SpecificationListing = (props) => {
   };
 
   const defaultColDef = {
-    resizable: true,
-    filter: true,
-    sortable: false,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: isFirstColumn,
+    resizable: true, filter: true,sortable: false, headerCheckboxSelectionFilteredOnly: true,checkboxSelection: isFirstColumn,
   };
 
   const frameworkComponents = {
@@ -342,18 +330,17 @@ const SpecificationListing = (props) => {
     hyphenFormatter: hyphenFormatter,
     customNoRowsOverlay: NoContentFound,
   };
-
   return (
     <div
       className={`ag-grid-react min-height100vh ${
-        DownloadAccessibility ? "show-table-btn" : ""
+        permissions.Download ? "show-table-btn" : ""
       }`}
     >
       {state.isLoader && <LoaderCustom />}
       <form noValidate>
         <Row className="pt-4">
           <Col md={6} className="text-right mb-3 search-user-block">
-            {AddAccessibility && (
+            {permissions.Add && (
               <Button
                 id="rmSpecification_filter"
                 className={"mr5"}
@@ -362,7 +349,7 @@ const SpecificationListing = (props) => {
                 icon={"plus"}
               />
             )}
-            {BulkUploadAccessibility && (
+            {permissions.BulkUpload && (
               <Button
                 id="rmSpecification_add"
                 className={"mr5"}
@@ -371,7 +358,7 @@ const SpecificationListing = (props) => {
                 icon={"upload"}
               />
             )}
-            {DownloadAccessibility && (
+            {permissions.Download && (
               <>
                 <>
                   <ExcelFile
@@ -480,10 +467,7 @@ const SpecificationListing = (props) => {
                 ></AgGridColumn>
               </AgGridReact>
               {
-                <PaginationWrapper
-                  gridApi={state.gridApi}
-                  setPage={onPageSizeChanged}
-                />
+                <PaginationWrapper  gridApi={state.gridApi}  setPage={onPageSizeChanged} />
               }
             </div>
           </div>

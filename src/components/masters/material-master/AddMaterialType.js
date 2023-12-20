@@ -11,6 +11,11 @@ import { loggedInUserId } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
+import { GUIDE_BUTTON_SHOW } from '../../../config/constants';
 
 class AddMaterialType extends Component {
   constructor(props) {
@@ -21,7 +26,7 @@ class AddMaterialType extends Component {
       MaterialTypeId: '',
       DataToChange: [],
       setDisable: false,
-      showPopup: false
+      showPopup: false,
     }
   }
 
@@ -139,7 +144,7 @@ class AddMaterialType extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag } = this.props;
+    const { handleSubmit, isEditFlag, t } = this.props;
     const { setDisable } = this.state
     return (
       <div>
@@ -161,6 +166,11 @@ class AddMaterialType extends Component {
                     <div className={"header-wrapper left"}>
                       <h3>
                         {isEditFlag ? "Update Material" : "Add Material"}
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "Material_Type_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).ADD_MATERIAL
+                          }} />
                       </h3>
                     </div>
                     <div
@@ -216,7 +226,7 @@ class AddMaterialType extends Component {
                                                 value={isEditFlag ? 'Update' : 'Save'}
                                                 className="submit-button mr5 save-btn"
                                             /> */}
-                      <button
+                      <button id="AddMaterialType_Cancel"
                         onClick={this.cancelHandler}
                         type="button"
                         value="CANCEL"
@@ -226,7 +236,7 @@ class AddMaterialType extends Component {
                         <div className={"cancel-icon"}></div>
                         CANCEL
                       </button>
-                      <button
+                      <button id="AddMaterialType_Save"
                         type="submit"
                         // disabled={isSubmitted ? true : false}
                         className="user-btn save-btn"
@@ -283,4 +293,5 @@ export default connect(mapStateToProps, {
   form: 'AddMaterialType',
   enableReinitialize: true,
   touchOnChange: true
-})(AddMaterialType));
+})(withTranslation(['RawMaterialMaster'])(AddMaterialType)),
+)

@@ -14,7 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
-import { CBCTypeId, FILE_URL, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
+import { CBCTypeId, FILE_URL, GUIDE_BUTTON_SHOW, SPACEBAR, VBCTypeId, VBC_VENDOR_TYPE, ZBC, ZBCTypeId, searchCount } from '../../../config/constants';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import attachClose from '../../../assests/images/red-cross.png'
@@ -26,6 +26,10 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 import { ASSEMBLY } from '../../../config/masterData';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 const selector = formValueSelector('AddProfit');
 
@@ -919,7 +923,7 @@ class AddProfit extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, } = this.props;
+    const { handleSubmit, t } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
       isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged } = this.state;
     const filterList = async (inputValue) => {
@@ -965,6 +969,11 @@ class AddProfit extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <h1> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit Details
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "add_profit_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).ADD_PROFIT_DETAILS
+                          }} />
                       </h1>
                     </div>
                   </div>
@@ -976,7 +985,7 @@ class AddProfit extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          <Label id="AddProfit_zeroBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -990,7 +999,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Zero Based</span>
                           </Label>
-                          <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          <Label id="AddProfit_vendorBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1004,7 +1013,7 @@ class AddProfit extends Component {
                             />{" "}
                             <span>Vendor Based</span>
                           </Label>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 radio-box pt-0"} check>
+                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddProfit_customerBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 radio-box pt-0"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1174,7 +1183,7 @@ class AddProfit extends Component {
                           </Col>
                         )}
                         <Col md="3" className="st-operation mt-4 pt-2">
-                          <label
+                          <label id="AddProfit_ApplyPartCheckbox"
                             className={`custom-checkbox ${this.state.isEditFlag ? "disabled" : ""
                               }`}
                             onChange={this.onPressAssemblyCheckbox}
@@ -1341,7 +1350,7 @@ class AddProfit extends Component {
                           <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                             Maximum file upload limit reached.
                           </div>
-                          <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                          <div id="AddProfit_UploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                             <Dropzone
                               ref={this.dropzone}
                               onChangeStatus={this.handleChangeStatus}
@@ -1422,7 +1431,7 @@ class AddProfit extends Component {
                     </div>
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn">
-                        <button
+                        <button id="AddProfit_Cancel"
                           type={"button"}
                           className=" mr15 cancel-btn"
                           onClick={this.cancelHandler}
@@ -1431,7 +1440,7 @@ class AddProfit extends Component {
                           <div className={"cancel-icon"}></div>
                           {"Cancel"}
                         </button>
-                        {!isViewMode && <button
+                        {!isViewMode && <button id="AddProfit_Save"
                           type="submit"
                           className="user-btn mr5 save-btn"
                           disabled={isViewMode || setDisable}
@@ -1510,4 +1519,5 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddProfit',
   enableReinitialize: true,
-})(AddProfit));
+})(withTranslation(['OverheadsProfits'])(AddProfit)),
+)

@@ -1,166 +1,197 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
-import classnames from 'classnames';
-import AddBOPDomestic from './AddBOPDomestic';
-import AddBOPImport from './AddBOPImport';
-import BOPDomesticListing from './BOPDomesticListing';
-import BOPImportListing from './BOPImportListing';
-import { APPROVAL_CYCLE_STATUS_MASTER, BOP, BOP_MASTER_ID, MASTERS, NON_APPROVAL_CYCLE_STATUS_MASTER } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
-import SOBListing from './SOBListing';
-import ScrollToTop from '../../common/ScrollToTop';
+import React, { useState, useEffect, useCallback } from "react";
+import { useSelector } from "react-redux";
+import {
+  Row,
+  Col,
+  TabContent,
+  TabPane,
+  Nav,
+  NavItem,
+  NavLink,
+} from "reactstrap";
+import classnames from "classnames";
+import AddBOPDomestic from "./AddBOPDomestic";
+import AddBOPImport from "./AddBOPImport";
+import BOPDomesticListing from "./BOPDomesticListing";
+import BOPImportListing from "./BOPImportListing";
+import SOBListing from "./SOBListing";
+import ScrollToTop from "../../common/ScrollToTop";
 import { CheckApprovalApplicableMaster } from "../../../helper";
-import CommonApproval from '../material-master/CommonApproval';
-import { MESSAGES } from '../../../config/message';
+import CommonApproval from "../material-master/CommonApproval";
+import { MESSAGES } from "../../../config/message";
+import { checkPermission } from "../../../helper/util";
+import {
+  APPROVAL_CYCLE_STATUS_MASTER,
+  BOP,
+  BOP_MASTER_ID,
+  MASTERS,
+  NON_APPROVAL_CYCLE_STATUS_MASTER,
+} from "../../../config/constants";
 
-class BOPMaster extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      activeTab: '1',
+/* Create context for ApplyPermission */
+export const ApplyPermission = React.createContext();
+
+const BOPMaster = () => {
+  const [state, setState] = useState({
+    activeTab: "1",
+    isBOPDomesticForm: false,
+    isBOPImportForm: false,
+    data: {},
+    ViewAccessibility: false,
+    AddAccessibility: false,
+    EditAccessibility: false,
+    DeleteAccessibility: false,
+    BulkUploadAccessibility: false,
+    DownloadAccessibility: false,
+    isBOPAssociated: false,
+    stopApiCallOnCancel: false,
+    approvalStatusState: "",
+  });
+
+  const { isBOPDomesticForm, isBOPImportForm, data, approvalStatusState } =
+    state;
+
+  const { disabledClass } = useSelector((state) => state.comman);
+
+  const { topAndLeftMenuData, initialConfiguration } = useSelector(
+    (state) => state.auth
+  );
+  const [permissionData, setPermissionData] = useState({});
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData);
+
+    if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
+      setState((prevState) => ({
+        ...prevState,
+        approvalStatusState: APPROVAL_CYCLE_STATUS_MASTER,
+      }));
+    } else {
+      setState((prevState) => ({
+        ...prevState,
+        approvalStatusState: NON_APPROVAL_CYCLE_STATUS_MASTER,
+      }));
+    }
+  }, [initialConfiguration, topAndLeftMenuData]);
+
+  const applyPermission = useCallback((topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data =
+        topAndLeftMenuData &&
+        topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === BOP);
+      const permmisionData =
+        accessData && accessData.Actions && checkPermission(accessData.Actions);
+
+      if (permmisionData !== undefined) {
+        setPermissionData(permmisionData);
+        setState((prevState) => ({
+          ...prevState,
+          ViewAccessibility:
+            permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility:
+            permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility:
+            permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility:
+            permmisionData && permmisionData.Delete
+              ? permmisionData.Delete
+              : false,
+          BulkUploadAccessibility:
+            permmisionData && permmisionData.BulkUpload
+              ? permmisionData.BulkUpload
+              : false,
+          DownloadAccessibility:
+            permmisionData && permmisionData.Download
+              ? permmisionData.Download
+              : false,
+        }));
+      }
+    }
+  }, []);
+
+  const toggle = (tab) => {
+    if (state.activeTab !== tab) {
+      setState((prevState) => ({
+        ...prevState,
+        activeTab: tab,
+        stopApiCallOnCancel: false,
+      }));
+    }
+  };
+
+  const displayDomesticForm = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isBOPDomesticForm: true,
+      isBOPImportForm: false,
+      data: {},
+    }));
+  };
+
+  const displayImportForm = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isBOPDomesticForm: false,
+      isBOPImportForm: true,
+      data: {},
+    }));
+  };
+
+  const hideForm = (type) => {
+    setState((prevState) => ({
+      ...prevState,
       isBOPDomesticForm: false,
       isBOPImportForm: false,
       data: {},
-
-      ViewAccessibility: false,
-      AddAccessibility: false,
-      EditAccessibility: false,
-      DeleteAccessibility: false,
-      BulkUploadAccessibility: false,
-      isBOPAssociated: false,
       stopApiCallOnCancel: false,
-      approvalStatusState: ''
+    }));
+    if (type === "cancel") {
+      setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true }));
     }
-  }
+  };
 
-  componentDidMount() {
-    const { initialConfiguration } = this.props;
+  const getDetails = (data, isBOPAssociate) => {
+    setState((prevState) => ({ ...prevState, isBOPDomesticForm: true, data }));
+    setState((prevState) => ({
+      ...prevState,
+      isBOPAssociated: isBOPAssociate,
+    }));
+  };
 
-    this.applyPermission(this.props.topAndLeftMenuData)
-    if (initialConfiguration?.IsMasterApprovalAppliedConfigure) {
-      this.setState({ approvalStatusState: APPROVAL_CYCLE_STATUS_MASTER })
-    } else {
-      this.setState({ approvalStatusState: NON_APPROVAL_CYCLE_STATUS_MASTER })
-    }
-  }
+  const getImportDetails = (data, isBOPAssociate) => {
+    setState((prevState) => ({ ...prevState, isBOPImportForm: true, data }));
+    setState((prevState) => ({
+      ...prevState,
+      isBOPAssociated: isBOPAssociate,
+    }));
+  };
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-      this.applyPermission(nextProps.topAndLeftMenuData)
-    }
-  }
-
-  /**
-  * @method applyPermission
-  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
-  */
-  applyPermission = (topAndLeftMenuData) => {
-    if (topAndLeftMenuData !== undefined) {
-      const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
-      const accessData = Data && Data.Pages.find(el => el.PageName === BOP)
-      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
-      if (permmisionData !== undefined) {
-        this.setState({
-          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-        })
-      }
-    }
-  }
-
-  /**
-  * @method toggle
-  * @description toggling the tabs
-  */
-  toggle = (tab) => {
-    if (this.state.activeTab !== tab) {
-      this.setState({
-        activeTab: tab,
-        stopApiCallOnCancel: false
-      });
-    }
-  }
-
-  /**
-  * @method displayDomesticForm
-  * @description DISPLAY BOP DOMESTIC FORM
-  */
-  displayDomesticForm = () => {
-    this.setState({ isBOPDomesticForm: true, isBOPImportForm: false, data: {} })
-  }
-
-  /**
-  * @method displayImportForm
-  * @description DISPLAY BOP IMPORT FORM
-  */
-  displayImportForm = () => {
-    this.setState({ isBOPDomesticForm: false, isBOPImportForm: true, data: {} })
-  }
-
-  /**
-  * @method hideForm
-  * @description HIDE DOMESTIC AND IMPORT FORMS
-  */
-  hideForm = (type) => {
-    this.setState({ isBOPDomesticForm: false, isBOPImportForm: false, data: {}, stopApiCallOnCancel: false })
-    if (type === 'cancel') {
-      this.setState({ stopApiCallOnCancel: true })
-    }
-  }
-
-  /**
-  * @method getDetails
-  * @description GET DETAILS FOR DEOMESTIC FORM
-  */
-  getDetails = (data, isBOPAssociate) => {
-    this.setState({ isBOPDomesticForm: true, data: data })
-    this.setState({ isBOPAssociated: isBOPAssociate })
-  }
-
-  /**
-  * @method getImportDetails
-  * @description GET DETAILS FOR IMPORT FORM
-  */
-  getImportDetails = (data, isBOPAssociate) => {
-    this.setState({ isBOPImportForm: true, data: data })
-    this.setState({ isBOPAssociated: isBOPAssociate })
-  }
-
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { isBOPDomesticForm, isBOPImportForm, data, approvalStatusState } = this.state;
-
-    if (isBOPDomesticForm === true) {
-      return <AddBOPDomestic
-        data={data}
-        hideForm={this.hideForm}
-        isBOPAssociated={this.state.isBOPAssociated}
-        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-      />
-    }
-
-    if (isBOPImportForm === true) {
-      return <AddBOPImport
-        data={data}
-        hideForm={this.hideForm}
-        isBOPAssociated={this.state.isBOPAssociated}
-        stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-      />
-    }
-
+  if (isBOPDomesticForm) {
     return (
-      <>
+      <AddBOPDomestic
+        data={data}
+        hideForm={hideForm}
+        isBOPAssociated={state.isBOPAssociated}
+        stopApiCallOnCancel={state.stopApiCallOnCancel}
+      />
+    );
+  }
+
+  if (isBOPImportForm) {
+    return (
+      <AddBOPImport
+        data={data}
+        hideForm={hideForm}
+        isBOPAssociated={state.isBOPAssociated}
+        stopApiCallOnCancel={state.stopApiCallOnCancel}
+      />
+    );
+  }
+
+  return (
+    <>
+      {Object.keys(permissionData).length > 0 && (
         <div className="container-fluid" id="go-top-top">
-          {/* {this.props.loading && <Loader/>} */}
           <Row>
             <ScrollToTop pointProp={"go-top-top"} />
           </Row>
@@ -168,14 +199,19 @@ class BOPMaster extends Component {
           <Row>
             <Col>
               <Nav tabs className="subtabs mt-0 p-relative">
-                {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
+                {disabledClass && (
+                  <div
+                    title={MESSAGES.DOWNLOADING_MESSAGE}
+                    className="disabled-overflow"
+                  ></div>
+                )}
                 <NavItem>
                   <NavLink
                     className={classnames({
-                      active: this.state.activeTab === "1",
+                      active: state.activeTab === "1",
                     })}
                     onClick={() => {
-                      this.toggle("1");
+                      toggle("1");
                     }}
                   >
                     Manage BOP (Domestic)
@@ -185,10 +221,10 @@ class BOPMaster extends Component {
                 <NavItem>
                   <NavLink
                     className={classnames({
-                      active: this.state.activeTab === "2",
+                      active: state.activeTab === "2",
                     })}
                     onClick={() => {
-                      this.toggle("2");
+                      toggle("2");
                     }}
                   >
                     Manage BOP (Import)
@@ -196,108 +232,103 @@ class BOPMaster extends Component {
                 </NavItem>
 
                 <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
+                  <NavLink
+                    className={classnames({ active: state.activeTab === "3" })}
+                    onClick={() => {
+                      toggle("3");
+                    }}
+                  >
                     Manage SOB
                   </NavLink>
                 </NavItem>
 
-
-
-                {CheckApprovalApplicableMaster(BOP_MASTER_ID) && <NavItem>
-                  <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
-                    Approval Status
-                  </NavLink>
-                </NavItem>}
-
+                {CheckApprovalApplicableMaster(BOP_MASTER_ID) && (
+                  <NavItem>
+                    <NavLink
+                      className={classnames({
+                        active: state.activeTab === "4",
+                      })}
+                      onClick={() => {
+                        toggle("4");
+                      }}
+                    >
+                      Approval Status
+                    </NavLink>
+                  </NavItem>
+                )}
               </Nav>
+              <ApplyPermission.Provider value={permissionData}>
+                <TabContent activeTab={state.activeTab}>
+                  {Number(state.activeTab) === 1 && (
+                    <TabPane tabId="1">
+                      <BOPDomesticListing
+                        displayForm={displayDomesticForm}
+                        getDetails={getDetails}
+                        AddAccessibility={state.AddAccessibility}
+                        EditAccessibility={state.EditAccessibility}
+                        DeleteAccessibility={state.DeleteAccessibility}
+                        ViewAccessibility={state.ViewAccessibility}
+                        BulkUploadAccessibility={state.BulkUploadAccessibility}
+                        DownloadAccessibility={state.DownloadAccessibility}
+                        isMasterSummaryDrawer={false}
+                        selectionForListingMasterAPI="Master"
+                        stopApiCallOnCancel={state.stopApiCallOnCancel}
+                        approvalStatus={approvalStatusState}
+                      />
+                    </TabPane>
+                  )}
 
-              <TabContent activeTab={this.state.activeTab}>
+                  {Number(state.activeTab) === 2 && (
+                    <TabPane tabId="2">
+                      <BOPImportListing
+                        displayForm={displayImportForm}
+                        getDetails={getImportDetails}
+                        AddAccessibility={state.AddAccessibility}
+                        EditAccessibility={state.EditAccessibility}
+                        ViewAccessibility={state.ViewAccessibility}
+                        DeleteAccessibility={state.DeleteAccessibility}
+                        BulkUploadAccessibility={state.BulkUploadAccessibility}
+                        DownloadAccessibility={state.DownloadAccessibility}
+                        stopApiCallOnCancel={state.stopApiCallOnCancel}
+                        selectionForListingMasterAPI="Master"
+                        approvalStatus={approvalStatusState}
+                      />
+                    </TabPane>
+                  )}
 
+                  {Number(state.activeTab) === 3 && (
+                    <TabPane tabId="3">
+                      <SOBListing
+                        displayForm={displayImportForm}
+                        getDetails={getImportDetails}
+                        AddAccessibility={state.AddAccessibility}
+                        EditAccessibility={state.EditAccessibility}
+                        DeleteAccessibility={state.DeleteAccessibility}
+                        BulkUploadAccessibility={state.BulkUploadAccessibility}
+                        DownloadAccessibility={state.DownloadAccessibility}
+                      />
+                    </TabPane>
+                  )}
 
-                {Number(this.state.activeTab) === 1 && (
-                  <TabPane tabId="1">
-                    <BOPDomesticListing
-                      displayForm={this.displayDomesticForm}
-                      getDetails={this.getDetails}
-                      AddAccessibility={this.state.AddAccessibility}
-                      EditAccessibility={this.state.EditAccessibility}
-                      DeleteAccessibility={this.state.DeleteAccessibility}
-                      ViewAccessibility={this.state.ViewAccessibility}
-                      BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                      DownloadAccessibility={this.state.DownloadAccessibility}
-                      isMasterSummaryDrawer={false}
-                      selectionForListingMasterAPI='Master'
-                      stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                      approvalStatus={approvalStatusState}
-                    />
-                  </TabPane>
-                )}
-
-                {Number(this.state.activeTab) === 2 && (
-                  <TabPane tabId="2">
-                    <BOPImportListing
-                      displayForm={this.displayImportForm}
-                      getDetails={this.getImportDetails}
-                      AddAccessibility={this.state.AddAccessibility}
-                      EditAccessibility={this.state.EditAccessibility}
-                      ViewAccessibility={this.state.ViewAccessibility}
-                      DeleteAccessibility={this.state.DeleteAccessibility}
-                      BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                      DownloadAccessibility={this.state.DownloadAccessibility}
-                      stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                      selectionForListingMasterAPI='Master'
-                      approvalStatus={approvalStatusState}
-                    />
-                  </TabPane>
-                )}
-
-                {Number(this.state.activeTab) === 3 &&
-                  <TabPane tabId="3">
-                    <SOBListing
-                      displayForm={this.displayImportForm}
-                      getDetails={this.getImportDetails}
-                      AddAccessibility={this.state.AddAccessibility}
-                      EditAccessibility={this.state.EditAccessibility}
-                      DeleteAccessibility={this.state.DeleteAccessibility}
-                      BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                      DownloadAccessibility={this.state.DownloadAccessibility}
-                    />
-                  </TabPane>}
-
-
-
-                {Number(this.state.activeTab) === 4 &&
-                  <TabPane tabId="4">
-                    <CommonApproval
-                      AddAccessibility={this.state.AddAccessibility}
-                      EditAccessibility={this.state.EditAccessibility}
-                      DeleteAccessibility={this.state.DeleteAccessibility}
-                      DownloadAccessibility={this.state.DownloadAccessibility}
-                      MasterId={BOP_MASTER_ID}
-                    />
-                  </TabPane>}
-
-              </TabContent>
+                  {Number(state.activeTab) === 4 && (
+                    <TabPane tabId="4">
+                      <CommonApproval
+                        AddAccessibility={state.AddAccessibility}
+                        EditAccessibility={state.EditAccessibility}
+                        DeleteAccessibility={state.DeleteAccessibility}
+                        DownloadAccessibility={state.DownloadAccessibility}
+                        MasterId={BOP_MASTER_ID}
+                      />
+                    </TabPane>
+                  )}
+                </TabContent>
+              </ApplyPermission.Provider>
             </Col>
           </Row>
         </div>
-      </>
-    );
-  }
-}
+      )}
+    </>
+  );
+};
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ boughtOutparts, auth, comman }) {
-  const { BOPListing, loading } = boughtOutparts;
-  const { leftMenuData, topAndLeftMenuData, initialConfiguration } = auth;
-  const { disabledClass } = comman
-  return { BOPListing, leftMenuData, topAndLeftMenuData, loading, disabledClass, initialConfiguration }
-}
-
-
-export default connect(mapStateToProps, {})(BOPMaster);
-
+export default BOPMaster;
