@@ -94,7 +94,7 @@ export const RMDomesticZBC = [
 export const RMDomesticZBCTempData = [
     {
         //"CostingHead": "ZBC",
-        "Note": 'If you wish to include various Scrap UOMs for Scrap Rate, then add the value of the scrap rate in the "ScrapRatePerScrapUOM" key.Otherwise, add the scrap rate in the "ScrapRate" field.',
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -237,7 +237,7 @@ export const RMDomesticVBC = [
 export const RMDomesticVBCTempData = [
     {
         //"CostingHead": "VBC",
-        "Note": 'If you wish to include various Scrap UOMs for Scrap Rate, then add the value of the scrap rate in the "ScrapRatePerScrapUOM" key.Otherwise, add the scrap rate in the "ScrapRate" field.',
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -377,7 +377,7 @@ export const RMImportZBC = [
 
 export const RMDomesticCBCTempData = [
     {
-        "Note": 'If you wish to include various Scrap UOMs for Scrap Rate, then add the value of the scrap rate in the "ScrapRatePerScrapUOM" key.Otherwise, add the scrap rate in the "ScrapRate" field.',
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -474,7 +474,7 @@ export const RMDomesticCBCTempData = [
 export const RMImportZBCTempData = [
     {
         //"CostingHead": "ZBC",
-        "Note": 'If you wish to include various Scrap UOMs for Scrap Rate, then add the value of the scrap rate in the "ScrapRatePerScrapUOM" key.Otherwise, add the scrap rate in the "ScrapRate" field.',
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -646,7 +646,7 @@ export const RMImportVBC = [
 export const RMImportVBCTempData = [
     {
         //"CostingHead": "VBC",
-        "Note": 'If you wish to include various Scrap UOMs for Scrap Rate, then add the value of the scrap rate in the "ScrapRatePerScrapUOM" key.Otherwise, add the scrap rate in the "ScrapRate" field.',
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
@@ -783,7 +783,7 @@ export const RMImportCBC = [
 
 export const RMImportCBCTempData = [
     {
-        "Note": 'If you wish to include various Scrap UOMs for Scrap Rate, then add the value of the scrap rate in the "ScrapRatePerScrapUOM" key.Otherwise, add the scrap rate in the "ScrapRate" field.',
+        "Note": "If you add different Scrap UOMs for the 'Scrap Rate,' enter the scrap rate in the 'ScrapRatePerScrapUOM' column. Otherwise, add the scrap rate in the 'ScrapRate' field.",
         "RawMaterial": "CRCA",
         "RMGrade": "15Cr3",
         "RMSpec": "50 mm",
