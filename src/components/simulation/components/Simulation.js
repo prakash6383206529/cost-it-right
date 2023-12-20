@@ -747,7 +747,7 @@ function Simulation(props) {
                             setEditWarning(true);
                             vendorFlag = false
                         }
-                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {         //CIR-I6194
+                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false
