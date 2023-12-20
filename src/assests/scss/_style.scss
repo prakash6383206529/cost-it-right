@@ -6911,6 +6911,10 @@ body {
 
 .imagClass {
   margin-top: 45px !important;
+
+  &.mt-0 {
+    margin-top: 0 !important;
+  }
 }
 
 .imagClass.power-listing {
