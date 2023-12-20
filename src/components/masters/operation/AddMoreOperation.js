@@ -99,22 +99,21 @@ function AddMoreOperation(props) {
     })
 
     useEffect(() => {
+        let obj = {}
         if (isWelding) {
-            setMaterialCostWelding()
-            setPowerCostWelding()
-            setLabourCostWelding()
-            setNetCostWelding()
+            obj = { ...setMaterialCostWelding(), ...setPowerCostWelding(), ...setLabourCostWelding() }
+            setDataToSend(prevState => ({ ...prevState, ...obj }))
+            setNetCostWelding(obj)
         } else if (other) {
             setRejectionReworkAndProfitCost()
         } else {
-            setMaterialCostWelding()
-            setPowerCostWelding()
-            setRejectionReworkAndProfitCostPlating()
-            setNetCostPlating()
+            obj = { ...setMaterialCostWelding(), ...setPowerCostWelding() }
+            setDataToSend(prevState => ({ ...prevState, ...obj }))
+            setRejectionReworkAndProfitCostPlating(obj)
+            setNetCostPlating(obj)
         }
 
     }, [fieldValues, includeInterestInRejection])
-
 
     const setMaterialCostWelding = () => {
 
@@ -122,18 +121,18 @@ function AddMoreOperation(props) {
         let consumptionWire = Number(getValues('consumptionWire'))
         let gasRate = Number(getValues('gasRate'))
         let consumptionGas = Number(getValues('consumptionGas'))
-
+        let wireCost
+        let gasCost
         if (wireRate && consumptionWire) {
-            let wireCost = checkForNull(wireRate) * checkForNull(consumptionWire)
-            setDataToSend(prevState => ({ ...prevState, wireCostWelding: wireCost }))
+            wireCost = checkForNull(wireRate) * checkForNull(consumptionWire)
             setValue('wireCost', checkForDecimalAndNull(wireCost, initialConfiguration.NoOfDecimalForPrice))
         }
 
         if (gasRate && consumptionGas) {
-            let gasCost = checkForNull(gasRate) * checkForNull(consumptionGas)
-            setDataToSend(prevState => ({ ...prevState, gasCostWelding: gasCost }))
+            gasCost = checkForNull(gasRate) * checkForNull(consumptionGas)
             setValue('gasCostWelding', checkForDecimalAndNull(gasCost, initialConfiguration.NoOfDecimalForPrice))
         }
+        return { wireCost: wireCost, gasCost: gasCost }
     }
 
 
@@ -141,31 +140,31 @@ function AddMoreOperation(props) {
 
         let electricityRate = Number(getValues('electricityRate'))
         let consumptionPower = Number(getValues('consumptionPower'))
-
+        let electricityCost
         if (electricityRate && consumptionPower) {
-            let electricityCost = checkForNull(electricityRate) * checkForNull(consumptionPower)
-            setDataToSend(prevState => ({ ...prevState, electricityCostWelding: electricityCost }))
+            electricityCost = checkForNull(electricityRate) * checkForNull(consumptionPower)
             setValue('electricityCostWelding', checkForDecimalAndNull(electricityCost, initialConfiguration.NoOfDecimalForPrice))
         }
+        return { electricityCost: electricityCost }
     }
 
     const setLabourCostWelding = () => {
 
         let labourRate = Number(getValues('labourRate'))
         let weldingShift = Number(getValues('weldingShift'))
-
+        let labourCost
         if (labourRate && weldingShift) {
-            let labourCost = checkForNull(labourRate / weldingShift)
-            setDataToSend(prevState => ({ ...prevState, labourCostWelding: labourCost }))
+            labourCost = checkForNull(labourRate / weldingShift)
             setValue('labourCost', checkForDecimalAndNull(labourCost, initialConfiguration.NoOfDecimalForPrice))
         }
+        return { labourCost: labourCost }
     }
 
-    const setNetCostWelding = () => {
-        let wireCost = checkForNull(dataToSend.wireCostWelding)
-        let gasCost = checkForNull(dataToSend.gasCostWelding)
-        let electricityCost = checkForNull(dataToSend.electricityCostWelding)
-        let labourCost = checkForNull(dataToSend.labourCostWelding)
+    const setNetCostWelding = (obj) => {
+        let wireCost = checkForNull(obj.wireCost)
+        let gasCost = checkForNull(obj.gasCost)
+        let electricityCost = checkForNull(obj.electricityCost)
+        let labourCost = checkForNull(obj.labourCost)
         let machineConsumableCost = checkForNull(Number(getValues('machineConsumableCost')))
         let welderCost = checkForNull(Number(getValues('welderCost')))
         let otherCostWelding = checkForNull(Number(getValues('otherCostWelding')))
@@ -216,11 +215,11 @@ function AddMoreOperation(props) {
     }
 
 
-    const setRejectionReworkAndProfitCostPlating = () => {
+    const setRejectionReworkAndProfitCostPlating = (obj) => {
 
-        let wireCost = checkForNull(dataToSend.wireCostWelding)
-        let gasCost = checkForNull(dataToSend.gasCostWelding)
-        let electricityCost = checkForNull(dataToSend.electricityCostWelding)
+        let wireCost = checkForNull(obj.wireCost)
+        let gasCost = checkForNull(obj.gasCost)
+        let electricityCost = checkForNull(obj.electricityCost)
         let manPowerCost = checkForNull(Number(getValues('manPowerCost')))
         let staffCost = checkForNull(Number(getValues('staffCost')))
         let waterCost = checkForNull(Number(getValues('waterCost'))) //used for Additional chemical cost
@@ -237,14 +236,14 @@ function AddMoreOperation(props) {
         setValue('rejoinReworkCost', checkForDecimalAndNull(rejectionReworkCost, initialConfiguration.NoOfDecimalForPrice))
         setValue('profitCost', checkForDecimalAndNull(profitCost, initialConfiguration.NoOfDecimalForPrice))
 
-        setNetCostPlating()
+        setNetCostPlating(obj)
     }
 
-    const setNetCostPlating = () => {
+    const setNetCostPlating = (obj) => {
 
-        let wireCost = checkForNull(dataToSend.wireCostWelding)
-        let gasCost = checkForNull(dataToSend.gasCostWelding)
-        let electricityCost = checkForNull(dataToSend.electricityCostWelding)
+        let wireCost = checkForNull(obj.wireCost)
+        let gasCost = checkForNull(obj.gasCost)
+        let electricityCost = checkForNull(obj.electricityCost)
         let manPowerCost = checkForNull(Number(getValues('manPowerCost')))
         let staffCost = checkForNull(Number(getValues('staffCost')))
         let waterCost = checkForNull(Number(getValues('waterCost'))) //used for Additional chemical cost
@@ -409,21 +408,21 @@ function AddMoreOperation(props) {
 
             MaterialGasRate: values?.gasRate,//welding
             MaterialGasConsumption: values?.consumptionGas,//welding
-            MaterialGasCost: (isWelding || isPlating) ? dataToSend?.gasCostWelding : values?.gasCost,
+            MaterialGasCost: (isWelding || isPlating) ? dataToSend?.gasCost : values?.gasCost,
             MaterialWireCRMHead: values?.crmHeadWireRate?.label,//welding
             MaterialWireRate: values?.wireRate,//welding
             MaterialWireConsumption: values?.consumptionWire,//welding
-            MaterialWireCost: dataToSend?.wireCostWelding,//welding  
+            MaterialWireCost: dataToSend?.wireCost,//welding  
 
             PowerCRMHead: (isWelding || isPlating) ? values?.crmHeadPowerWelding?.label : values?.crmHeadPower?.label,
             PowerElectricityRate: values?.electricityRate,//welding
             PowerElectricityConsumption: values?.consumptionPower,//welding
-            PowerElectricityCost: (isWelding || isPlating) ? dataToSend?.electricityCostWelding : values?.electricityCost,
+            PowerElectricityCost: (isWelding || isPlating) ? dataToSend?.electricityCost : values?.electricityCost,
 
             LabourCRMHead: isWelding ? values?.crmHeadLabourWelding?.label : values?.crmHeadLabour?.label,
             LabourManPowerRate: values?.labourRate,
             LabourManPowerConsumption: values?.weldingShift,//welding/shift
-            LabourManPowerCost: isWelding ? dataToSend?.labourCostWelding : values?.manPowerCost,
+            LabourManPowerCost: isWelding ? dataToSend?.labourCost : values?.manPowerCost,
             LabourStaffCRMHead: values?.crmHeadLabourStaffCost?.label,
             LabourStaffCost: values?.staffCost,
 
