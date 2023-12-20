@@ -9,13 +9,18 @@ import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import Drawer from '@material-ui/core/Drawer';
 import { AcceptableFuelUOM } from '../../../config/masterData';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
+import { GUIDE_BUTTON_SHOW } from '../../../config/constants';
 
 class AddFuelNameDrawer extends Component {
   constructor(props) {
     super(props);
     this.state = {
       unitTypes: [],
-      UOM: ''
+      UOM: '',
     }
   }
 
@@ -121,7 +126,7 @@ class AddFuelNameDrawer extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, isEditFlag, } = this.props;
+    const { handleSubmit, isEditFlag, t } = this.props;
     return (
       <Drawer
         anchor={this.props.anchor}
@@ -139,7 +144,13 @@ class AddFuelNameDrawer extends Component {
               <Row className="drawer-heading">
                 <Col>
                   <div className={"header-wrapper left"}>
-                    <h3>{isEditFlag ? "Update " : "Add "}Fuel</h3>
+                    <h3>{isEditFlag ? "Update " : "Add "}Fuel
+                      <TourWrapper
+                        buttonSpecificProp={{ id: "Fuel_form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t).ADD_FUEL_NAME_DRAWERS
+                        }} />
+                    </h3>
                   </div>
                   <div
                     onClick={(e) => this.toggleDrawer(e)}
@@ -187,7 +198,7 @@ class AddFuelNameDrawer extends Component {
 
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right px-3">
-                  <button
+                  <button id="AddFuelNameDrawer_Cancel"
                     type={"button"}
                     className=" mr15 cancel-btn"
                     onClick={this.cancel}
@@ -195,7 +206,7 @@ class AddFuelNameDrawer extends Component {
                     <div className={"cancel-icon"}></div>
                     {"Cancel"}
                   </button>
-                  <button
+                  <button id="AddFuelNameDrawer_Save"
                     type="submit"
                     className="user-btn  save-btn"
                   >
@@ -237,4 +248,5 @@ export default connect(mapStateToProps, {
   form: 'AddFuelNameDrawer',
   enableReinitialize: true,
   touchOnChange: true
-})(AddFuelNameDrawer));
+})(withTranslation(['FuelPowerMaster'])(AddFuelNameDrawer)),
+)

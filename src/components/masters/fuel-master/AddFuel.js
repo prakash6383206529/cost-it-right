@@ -9,7 +9,7 @@ import {
 import { getUOMSelectList, fetchStateDataAPI, getAllCity, getPlantSelectListByType, fetchCountryDataAPI, fetchCityDataAPI, getCityByCountry, getVendorNameByVendorSelectList, } from '../../../actions/Common';
 import { getFuelByPlant, createFuelDetail, updateFuelDetail, getFuelDetailData, getUOMByFuelId, getAllFuelAPI } from '../actions/Fuel';
 import { MESSAGES } from '../../../config/message';
-import { CBCTypeId, EMPTY_DATA, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
+import { CBCTypeId, EMPTY_DATA, GUIDE_BUTTON_SHOW, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBC, ZBCTypeId } from '../../../config/constants'
 import { loggedInUserId } from "../../../helper/auth";
 import Toaster from '../../common/Toaster';
 import DatePicker from "react-datepicker";
@@ -26,6 +26,11 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { onFocus } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
+
 const selector = formValueSelector('AddFuel');
 
 class AddFuel extends Component {
@@ -67,7 +72,7 @@ class AddFuel extends Component {
         effectiveDate: false
       },
       isGridEdit: false,
-      showPopup: false
+      showPopup: false,
     }
   }
 
@@ -756,7 +761,7 @@ class AddFuel extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, } = this.props;
+    const { handleSubmit, initialConfiguration, t } = this.props;
     const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit, costingTypeId } = this.state;
 
     const filterList = async (inputValue) => {
@@ -800,7 +805,13 @@ class AddFuel extends Component {
                   <div className="shadow-lgg login-formg">
                     <div className="row">
                       <div className="col-md-6">
-                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Fuel</h1>
+                        <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Fuel
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "Add_fuel_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_FUEL
+                            }} />
+                        </h1>
                       </div>
                     </div>
                     <form
@@ -813,7 +824,7 @@ class AddFuel extends Component {
                         <Row>
 
                           <Col md="12">
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="AddFuel_zerobased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -827,7 +838,7 @@ class AddFuel extends Component {
                               />{" "}
                               <span>Zero Based</span>
                             </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            <Label id="AddFuel_vendorbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -841,7 +852,7 @@ class AddFuel extends Component {
                               />{" "}
                               <span>Vendor Based</span>
                             </Label>
-                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddFuel_customerbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -961,7 +972,7 @@ class AddFuel extends Component {
                                 />
                               </div>
                               {!isEditFlag && (
-                                <div
+                                <div id="AddFuel_Toggle"
                                   onClick={this.fuelToggler}
                                   className={"plus-icon-square  right"}
                                 ></div>
@@ -1079,7 +1090,7 @@ class AddFuel extends Component {
                             <div className="form-group">
                               <label>Effective Date<span className="asterisk-required">*</span>
                               </label>
-                              <div className="inputbox date-section">
+                              <div id="AddFuel_EffectiveDate" className="inputbox date-section">
                                 <DatePicker
                                   required
                                   name="EffectiveDate"
@@ -1116,7 +1127,7 @@ class AddFuel extends Component {
                                 </>
                               ) : (
                                 <>
-                                  <button
+                                  <button id="AddFuel_AddData"
                                     type="button"
                                     className={"user-btn mt30 pull-left"}
                                     disabled={isViewMode}
@@ -1202,7 +1213,7 @@ class AddFuel extends Component {
 
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
-                          <button
+                          <button id="AddFuel_Cancel"
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={this.cancelHandler}
@@ -1211,7 +1222,7 @@ class AddFuel extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {!isViewMode && <button
+                          {!isViewMode && <button id="AddFuel_Save"
                             type="submit"
                             className="user-btn mr5 save-btn"
                             disabled={isViewMode || setDisable}
@@ -1296,4 +1307,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: errors => {
     focusOnError(errors);
   },
-})(AddFuel));
+})(withTranslation(['FuelPowerMaster'])(AddFuel)),
+)

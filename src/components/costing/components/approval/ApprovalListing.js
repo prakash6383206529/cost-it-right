@@ -442,7 +442,7 @@ function ApprovalListing(props) {
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <Fragment>
-        {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={'link'}>{cell}</div>}
+        {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div id={`Costing_Approval_No_${props?.rowIndex}`} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={'link'}>{cell}</div>}
       </Fragment>
     )
   }
@@ -478,6 +478,7 @@ function ApprovalListing(props) {
     return (
       <>
         <div
+          id={`Costing_Approval_Costing_Id_${props?.rowIndex}`}
           onClick={() => viewDetailCostingID(row.UserId, cell, row)}
           className={'link'}
         >{cell}</div>
@@ -882,11 +883,35 @@ function ApprovalListing(props) {
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
-  };
+  }; setTimeout(() => {
+    const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
+
+    checkBoxInstance.forEach((checkBox, index) => {
+      const specificId = `Simulation_Approval_Checkbox${index}`;
+      checkBox.id = specificId;
+    })
+  }, 2000);
+  const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+  floatingFilterInstances.forEach((floatingFilter, index) => {
+    const specificId = `Simulation_Approval_Floating${index}`;
+    floatingFilter.id = specificId;
+  });
 
   const onGridReady = (params) => {
     setGridApi(params.api)
     setGridColumnApi(params.columnApi)
+    const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
+
+    checkBoxInstance.forEach((checkBox, index) => {
+      const specificId = `Costing_Approval_Checkbox${index}`;
+      checkBox.id = specificId;
+    })
+
+    const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+    floatingFilterInstances.forEach((floatingFilter, index) => {
+      const specificId = `Costing_Approval_Floating${index}`;
+      floatingFilter.id = specificId;
+    });
     params.api.paginationGoToPage(0);
   };
 
@@ -989,13 +1014,14 @@ function ApprovalListing(props) {
                     <div className="d-flex justify-content-end bd-highlight w100">
                       <div className="warning-message d-flex align-items-center">
                         {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                        <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                        <button id='Costing_Approval_Filter' disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                       </div>
                       <div>
-                        <button type="button" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
+                        <button type="button" id="Costing_Approval_Reset" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
                           <div className="refresh mr-0"></div>
                         </button>
                         {!props.hidesendBtn && <button
+                          id={"Costing_Approval_Send"}
                           title="Send For Approval"
                           class="user-btn approval-btn"
                           type='button'

@@ -12,7 +12,7 @@ import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css'
 import DayTime from '../../common/DayTimeWrapper'
 import "react-datepicker/dist/react-datepicker.css";
-import { FILE_URL } from '../../../config/constants';
+import { FILE_URL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from "../../../assests/images/red-cross.png";
 import _, { debounce } from 'lodash';
@@ -20,6 +20,10 @@ import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { ASSEMBLY } from '../../../config/masterData';
+import TourWrapper from '../../common/Tour/TourWrapper';
+import { Steps } from './TourMessages';
+import { withTranslation } from 'react-i18next';
+import Button from '../../layout/Button';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -48,7 +52,7 @@ class AddIndivisualPart extends Component {
       minEffectiveDate: '',
       disablePartName: false,
       attachmentLoader: false,
-      showPopup: false
+      showPopup: false,
     }
   }
 
@@ -467,7 +471,7 @@ class AddIndivisualPart extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration } = this.props;
+    const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, isViewMode, setDisable } = this.state;
 
     return (
@@ -485,6 +489,11 @@ class AddIndivisualPart extends Component {
                         <div className="form-heading mb-0">
                           <h1>
                             {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Component/ Part
+                            <TourWrapper
+                              buttonSpecificProp={{ id: "Part_form" }}
+                              stepsSpecificProp={{
+                                steps: Steps(t).ADD_COMPONENT_PART
+                              }} />
                           </h1>
                         </div>
                       </Col>
@@ -713,7 +722,7 @@ class AddIndivisualPart extends Component {
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                            <div id="AddIndivisualPart_UploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
@@ -790,7 +799,7 @@ class AddIndivisualPart extends Component {
 
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
-                          <button
+                          <button id="AddIndivisualPart_Cancel"
                             type={"button"}
                             className="mr15 cancel-btn"
                             onClick={() => { this.cancelHandler() }}
@@ -800,7 +809,7 @@ class AddIndivisualPart extends Component {
                             {"Cancel"}
                           </button>
                           {!isViewMode &&
-                            <button
+                            <button id="AddIndivisualPart_Save"
                               type="submit"
                               className="user-btn mr5 save-btn"
                               disabled={isViewMode || setDisable}
@@ -876,4 +885,5 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(AddIndivisualPart));
+})(withTranslation(['PartMaster'])(AddIndivisualPart)),
+)

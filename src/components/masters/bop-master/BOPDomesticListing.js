@@ -1,16 +1,7 @@
 import React, { useState, useEffect, useCallback, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
-import {
-  EMPTY_DATA,
-  BOP_MASTER_ID,
-  BOPDOMESTIC,
-  defaultPageSize,
-  ENTRY_TYPE_DOMESTIC,
-  FILE_URL,
-  DRAFTID,
-  ZBCTypeId,
-} from "../../../config/constants";
+import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID, ZBCTypeId, } from "../../../config/constants";
 import { getBOPDataList, deleteBOP } from "../actions/BoughtOutParts";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
@@ -21,11 +12,7 @@ import DayTime from "../../common/DayTimeWrapper";
 import BulkUpload from "../../massUpload/BulkUpload";
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
-import {
-  getConfigurationKey,
-  loggedInUserId,
-  searchNocontentFilter,
-} from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, } from "../../../helper";
 import { ApplyPermission } from ".";
 import { BopDomestic } from "../../../config/constants";
 import ReactExport from "react-export-excel";
@@ -33,21 +20,13 @@ import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
 import "ag-grid-community/dist/styles/ag-theme-material.css";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
-import {
-  getListingForSimulationCombined,
-  setSelectedRowForPagination,
-} from "../../simulation/actions/Simulation";
+import { getListingForSimulationCombined, setSelectedRowForPagination, } from "../../simulation/actions/Simulation";
 import WarningMessage from "../../common/WarningMessage";
 import { hyphenFormatter } from "../masterUtil";
-
 import _ from "lodash";
 import AnalyticsDrawer from "../material-master/AnalyticsDrawer";
 import { reactLocalStorage } from "reactjs-localstorage";
-import {
-  hideCustomerFromExcel,
-  hideMultipleColumnFromExcel,
-  hideColumnFromExcel,
-} from "../../common/CommonFunctions";
+import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel, } from "../../common/CommonFunctions";
 import Attachament from "../../costing/components/Drawers/Attachament";
 import Button from "../../layout/Button";
 
@@ -61,8 +40,8 @@ const BOPDomesticListing = (props) => {
   const { bopDomesticList, allBopDataList } = useSelector(
     (state) => state.boughtOutparts
   );
- 
- const permissions = useContext(ApplyPermission);
+
+  const permissions = useContext(ApplyPermission);
 
   const { initialConfiguration } = useSelector((state) => state.auth);
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
@@ -128,20 +107,11 @@ const BOPDomesticListing = (props) => {
 
   useEffect(() => {
     if (!props.stopApiCallOnCancel) {
-      getDataList(
-        "",
-        0,
-        "",
-        "",
-        0,
-        defaultPageSize,
-        true,
-        state.floatingFilterData
-      );
+      getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
     }
-  }, 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  []);
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []);
 
   useEffect(() => {
     return () => {
@@ -149,16 +119,12 @@ const BOPDomesticListing = (props) => {
         dispatch(setSelectedRowForPagination([]));
       }
     };
-  }, 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  []);
+  },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    []);
   useEffect(() => {
-   
     if (bopDomesticList?.length > 0) {
-      setState((prevState) => ({
-        ...prevState,
-        totalRecordCount: bopDomesticList[0].TotalRecordCount,
-      }));
+      setState((prevState) => ({ ...prevState, totalRecordCount: bopDomesticList[0].TotalRecordCount, }));
     }
 
     if (props.isSimulation) {
@@ -171,31 +137,13 @@ const BOPDomesticListing = (props) => {
    * @description GET DETAILS OF BOP DOMESTIC
    */
   const getDataList = useCallback(
-    (
-      bopFor = "",
-      CategoryId = 0,
-      vendorId = "",
-      plantId = "",
-      skip = 0,
-      take = 100,
-      isPagination = true,
-      dataObj,
-      isReset = false
-    ) => {
+    (bopFor = "", CategoryId = 0, vendorId = "", plantId = "", skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
       const { floatingFilterData } = state;
       if (state.filterModel?.EffectiveDateNew && !isReset) {
         if (state.filterModel.EffectiveDateNew.dateTo) {
           let temp = [];
-          temp.push(
-            DayTime(state.filterModel.EffectiveDateNew.dateFrom).format(
-              "DD/MM/YYYY"
-            )
-          );
-          temp.push(
-            DayTime(state.filterModel.EffectiveDateNew.dateTo).format(
-              "DD/MM/YYYY"
-            )
-          );
+          temp.push(DayTime(state.filterModel.EffectiveDateNew.dateFrom).format("DD/MM/YYYY"));
+          temp.push(DayTime(state.filterModel.EffectiveDateNew.dateTo).format("DD/MM/YYYY"));
           dataObj.dateArray = temp;
         }
       }
@@ -219,15 +167,11 @@ const BOPDomesticListing = (props) => {
         props.selectionForListingMasterAPI === "Combined"
       ) {
         props?.changeSetLoader(true);
-        dispatch(
-          getListingForSimulationCombined(
-            props.objectForMultipleSimulation,
-            BOPDOMESTIC,
-            (res) => {
-              props?.changeSetLoader(false);
-              setState((prevState) => ({ ...prevState, isLoader: false }));
-            }
-          )
+        dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, BOPDOMESTIC, (res) => {
+          props?.changeSetLoader(false);
+          setState((prevState) => ({ ...prevState, isLoader: false }));
+        }
+        )
         );
       } else {
         setState((prevState) => ({
@@ -242,103 +186,75 @@ const BOPDomesticListing = (props) => {
           let constantFilterData = state.filterModel;
           let obj = { ...state.floatingFilterData };
           dataObj.EntryType = ENTRY_TYPE_DOMESTIC;
-          dispatch(
-            getBOPDataList(
-              filterData,
-              skip,
-              take,
-              isPagination,
-              dataObj,
-              false,
-              (res) => {
+          dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
+            setState((prevState) => ({ ...prevState, isLoader: false, }));
+            setState((prevState) => ({ ...prevState, noData: false, }));
+            if (props.isSimulation) {
+              props?.changeTokenCheckBox(true);
+            }
+            if (res && res.status === 200) {
+              let Data = res.data.DataList;
+              setState((prevState) => ({ ...prevState, tableData: Data }));
+            } else if (res && res.response && res.response.status === 412) {
+              setState((prevState) => ({ ...prevState, tableData: [] }));
+            } else {
+              setState((prevState) => ({ ...prevState, tableData: [] }));
+            }
+
+            if (res && res.status === 204) {
+              setState((prevState) => ({
+                ...prevState, totalRecordCount: 0, pageNo: 0,
+              }));
+            }
+
+            if (res && isPagination === false) {
+              setState((prevState) => ({ ...prevState, disableDownload: false, }));
+              setTimeout(() => {
+                dispatch(disabledClass(false));
+                let button = document.getElementById(
+                  "Excel-Downloads-bop-domestic"
+                );
+                button && button.click();
+              }, 500);
+            }
+
+            if (res) {
+              if (res && res.data && res.data.DataList.length > 0) {
+                console.log("total1", res.data.DataList[0].TotalRecordCount);
                 setState((prevState) => ({
                   ...prevState,
-                  isLoader: false,
+                  totalRecordCount: res.data.DataList[0].TotalRecordCount,
                 }));
-                setState((prevState) => ({
-                  ...prevState,
-                  noData: false,
-                }));
-                if (props.isSimulation) {
-                  props?.changeTokenCheckBox(true);
-                }
-                if (res && res.status === 200) {
-                  let Data = res.data.DataList;
-                  setState((prevState) => ({ ...prevState, tableData: Data }));
-                } else if (res && res.response && res.response.status === 412) {
-                  setState((prevState) => ({ ...prevState, tableData: [] }));
-                } else {
-                  setState((prevState) => ({ ...prevState, tableData: [] }));
-                }
-
-                if (res && res.status === 204) {
-                  setState((prevState) => ({
-                    ...prevState,
-                    totalRecordCount: 0,
-                    pageNo: 0,
-                  }));
-                }
-
-                if (res && isPagination === false) {
-                  setState((prevState) => ({
-                    ...prevState,
-                    disableDownload: false,
-                  }));
-                  setTimeout(() => {
-                    dispatch(disabledClass(false));
-                    let button = document.getElementById(
-                      "Excel-Downloads-bop-domestic"
-                    );
-                    button && button.click();
-                  }, 500);
-                }
-
-                if (res) {
-                  if (res && res.data && res.data.DataList.length > 0) {
-                    console.log("total1", res.data.DataList[0].TotalRecordCount);
-                    setState((prevState) => ({
-                      ...prevState,
-                      totalRecordCount: res.data.DataList[0].TotalRecordCount,
-                    }));
-                  }
-                  let isReset = true;
-                  setTimeout(() => {
-                    for (var prop in obj) {
-                      if (
-                        props.isSimulation &&
-                        getConfigurationKey().IsCompanyConfigureOnPlant
-                      ) {
-                        if (prop !== "DepartmentName" && obj[prop] !== "") {
-                          isReset = false;
-                        }
-                      } else {
-                        if (obj[prop] !== "") {
-                          isReset = false;
-                        }
-                      }
-                    }
-                    // Sets the filter model via the grid API
-                    isReset
-                      ? gridOptions?.api?.setFilterModel({})
-                      : gridOptions?.api?.setFilterModel(constantFilterData);
-                  }, 300);
-
-                  setTimeout(() => {
-                    setState((prevState) => ({
-                      ...prevState,
-                      warningMessage: false,
-                    }));
-                  }, 335);
-
-                  setTimeout(() => {
-                    setState((prevState) => ({
-                      ...prevState,
-                      isFilterButtonClicked: false,
-                    }));
-                  }, 600);
-                }
               }
-            )
+              let isReset = true;
+              setTimeout(() => {
+                for (var prop in obj) {
+                  if (props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant) {
+                    if (prop !== "DepartmentName" && obj[prop] !== "") {
+                      isReset = false;
+                    }
+                  } else {
+                    if (obj[prop] !== "") {
+                      isReset = false;
+                    }
+                  }
+                }
+                // Sets the filter model via the grid API
+                isReset
+                  ? gridOptions?.api?.setFilterModel({})
+                  : gridOptions?.api?.setFilterModel(constantFilterData);
+              }, 300);
+
+              setTimeout(() => {
+                setState((prevState) => ({ ...prevState, warningMessage: false, }));
+              }, 335);
+
+              setTimeout(() => {
+                setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
+              }, 600);
+            }
+          }
+          )
           );
         } else {
           setState((prevState) => ({ ...prevState, isLoader: false }));
@@ -352,10 +268,7 @@ const BOPDomesticListing = (props) => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (bopDomesticList?.length !== 0) {
-        setState((prevState) => ({
-          ...prevState,
-          noData: searchNocontentFilter(value, state.noData),
-        }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -424,16 +337,7 @@ const BOPDomesticListing = (props) => {
       pageNoNew: 1,
       currentRowIndex: 0,
     }));
-    getDataList(
-      "",
-      0,
-      "",
-      "",
-      0,
-      state.globalTake,
-      true,
-      state.floatingFilterData
-    );
+    getDataList("", 0, "", "", 0, state.globalTake, true, state.floatingFilterData);
   };
 
   const resetState = () => {
@@ -464,11 +368,17 @@ const BOPDomesticListing = (props) => {
   
     state.gridApi.deselectAll();
     gridOptions?.columnApi?.resetColumnState(null);
-    gridOptions?.api?.setFilterModel(null);
-  
-    // You can now use the updated state immediately after the setState call.
+    gridOptions?.api?.setFilterModel(null); // COMMON PAGINATION FUNCTION
+    for (var prop in state.floatingFilterData) {
+      state.floatingFilterData[prop] = "";
+    }
+    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
     getDataList("", 0, "", "", 0, 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
+
+    setState((prevState) => ({
+      ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, },
+    }));
   };
   
 
@@ -478,22 +388,9 @@ const BOPDomesticListing = (props) => {
       const newPageNo = state.pageNo - 1;
 
       setState((prevState) => ({
-        ...prevState,
-        pageNo: newPageNo >= 1 ? newPageNo : 1,
-        pageNoNew: newPageNo >= 1 ? newPageNo : 1,
-        currentRowIndex: previousNo,
+        ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo,
       }));
-
-      getDataList(
-        "",
-        0,
-        "",
-        "",
-        previousNo,
-        state.globalTake,
-        true,
-        state.floatingFilterData
-      );
+      getDataList("", 0, "", "", previousNo, state.globalTake, true, state.floatingFilterData);
     }
   };
 
@@ -519,16 +416,7 @@ const BOPDomesticListing = (props) => {
         pageNoNew: state.pageNo + 1,
       }));
       const nextNo = state.currentRowIndex + 10;
-      getDataList(
-        "",
-        0,
-        "",
-        "",
-        nextNo,
-        state.globalTake,
-        true,
-        state.floatingFilterData
-      );
+      getDataList("", 0, "", "", nextNo, state.globalTake, true, state.floatingFilterData);
       // skip, take, isPagination, floatingFilterData, (res)
       setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
     }
@@ -545,17 +433,8 @@ const BOPDomesticListing = (props) => {
     }
 
     totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-console.log("totalRecordCount",totalRecordCount)
-    getDataList(
-      "",
-      0,
-      "",
-      "",
-      state.currentRowIndex,
-      pageSize,
-      true,
-      state.floatingFilterData
-    );
+    console.log("totalRecordCount", totalRecordCount)
+    getDataList("", 0, "", "", state.currentRowIndex, pageSize, true, state.floatingFilterData);
 
     setState((prevState) => ({
       ...prevState,
@@ -873,8 +752,8 @@ console.log("totalRecordCount",totalRecordCount)
       tempArr && tempArr.length > 0
         ? tempArr
         : allBopDataList
-        ? allBopDataList
-        : [];
+          ? allBopDataList
+          : [];
     return returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -986,7 +865,7 @@ console.log("totalRecordCount",totalRecordCount)
       floatingFilterData: { ...prevState.floatingFilterData, newDate: date },
     }));
   };
-  
+
 
   var handleDate = (newDate) => {
     let temp = state.inRangeDate || []; // Ensure that state.inRangeDate is an array
@@ -1092,8 +971,7 @@ console.log("totalRecordCount",totalRecordCount)
 
   return (
     <div
-      className={`ag-grid-react ${
-        props?.isMasterSummaryDrawer === undefined ||
+      className={`ag-grid-react ${props?.isMasterSummaryDrawer === undefined ||
         props?.isMasterSummaryDrawer === false
           ? "custom-pagination"
           : ""
@@ -1101,9 +979,9 @@ console.log("totalRecordCount",totalRecordCount)
         props.isSimulation
           ? "simulation-height"
           : props?.isMasterSummaryDrawer
-          ? ""
-          : "min-height100vh"
-      }`}
+            ? ""
+            : "min-height100vh"
+        }`}
     >
       {/* {state.isLoader && <LoaderCustom />} */}
       {state.isLoader && !props.isMasterSummaryDrawer && (
@@ -1114,9 +992,8 @@ console.log("totalRecordCount",totalRecordCount)
       )}
       <form noValidate>
         <Row
-          className={`${props?.isMasterSummaryDrawer ? "" : "pt-4"} ${
-            props?.benchMark ? "zindex-2" : "filter-row-large"
-          }  ${props.isSimulation ? "simulation-filter zindex-0 " : ""}`}
+          className={`${props?.isMasterSummaryDrawer ? "" : "pt-4"} ${props?.benchMark ? "zindex-2" : "filter-row-large"
+            }  ${props.isSimulation ? "simulation-filter zindex-0 " : ""}`}
         >
           <Col md="3" lg="3">
             <input
@@ -1146,32 +1023,32 @@ console.log("totalRecordCount",totalRecordCount)
 
               {(props?.isMasterSummaryDrawer === undefined ||
                 props?.isMasterSummaryDrawer === false) && (
-                <div className="warning-message d-flex align-items-center">
-                  {state.warningMessage && !state.disableDownload && (
-                    <>
-                      <WarningMessage
-                        dClass="mr-3"
-                        message={
-                          "Please click on filter button to filter all data"
-                        }
-                      />
-                      <div className="right-hand-arrow mr-2"></div>
-                    </>
-                  )}
-                </div>
-              )}
+                  <div className="warning-message d-flex align-items-center">
+                    {state.warningMessage && !state.disableDownload && (
+                      <>
+                        <WarningMessage
+                          dClass="mr-3"
+                          message={
+                            "Please click on filter button to filter all data"
+                          }
+                        />
+                        <div className="right-hand-arrow mr-2"></div>
+                      </>
+                    )}
+                  </div>
+                )}
 
               {(props?.isMasterSummaryDrawer === undefined ||
                 props?.isMasterSummaryDrawer === false) && (
-                <Button
-                  id="bopDomesticListing_filter"
-                  className={"mr5"}
-                  onClick={() => onSearch()}
-                  title={"Filtered data"}
-                  icon={"filter"}
-                  disabled={state.disableFilter}
-                />
-              )}
+                  <Button
+                    id="bopDomesticListing_filter"
+                    className={"mr5"}
+                    onClick={() => onSearch()}
+                    title={"Filtered data"}
+                    icon={"filter"}
+                    disabled={state.disableFilter}
+                  />
+                )}
 
               {permissions.Add && (
                 <Button
@@ -1197,17 +1074,15 @@ console.log("totalRecordCount",totalRecordCount)
                     className="mr5"
                     id={"bopDomesticListing_excel_download"}
                     onClick={onExcelDownload}
-                    title={`Download ${
-                      state.dataCount === 0
-                        ? "All"
-                        : "(" + state.dataCount + ")"
-                    }`}
+                    title={`Download ${state.dataCount === 0
+                      ? "All"
+                      : "(" + state.dataCount + ")"
+                      }`}
                     icon={"download mr-1"}
-                    buttonName={`${
-                      state.dataCount === 0
-                        ? "All"
-                        : "(" + state.dataCount + ")"
-                    }`}
+                    buttonName={`${state.dataCount === 0
+                      ? "All"
+                      : "(" + state.dataCount + ")"
+                      }`}
                   />
                   <ExcelFile
                     filename={"BOP Domestic"}
@@ -1244,14 +1119,13 @@ console.log("totalRecordCount",totalRecordCount)
               noData
                 ? "overlay-contain"
                 : ""
-            }`}
+              }`}
           >
             <div
-              className={`ag-theme-material p-relative ${
-                state.isLoader &&
+              className={`ag-theme-material p-relative ${state.isLoader &&
                 !props.isMasterSummaryDrawer &&
                 "max-loader-height"
-              }`}
+                }`}
             >
               {noData && (
                 <NoContentFound
@@ -1415,9 +1289,8 @@ console.log("totalRecordCount",totalRecordCount)
                 )}
               </AgGridReact>
               <div
-                className={`button-wrapper ${
-                  props?.isMasterSummaryDrawer ? "mb-5" : ""
-                }`}
+                className={`button-wrapper ${props?.isMasterSummaryDrawer ? "mb-5" : ""
+                  }`}
               >
                 {!state.isLoader && !props.isMasterSummaryDrawer && (
                   <PaginationWrapper

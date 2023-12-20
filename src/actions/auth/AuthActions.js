@@ -1858,3 +1858,11 @@ export function forgetPassword(UserName, callback) {
         });
     };
 }
+
+export function getUnassociatedPartNumber(partNumber, technologyId, nfrId, partTypeId, isTechnologyUpdateRequired, callback) {
+    return axios.get(`${API.getUnassociatedPartNumber}?${partNumber ? `&partNumber=${partNumber}` : ''}${technologyId ? `&technologyId=${technologyId}` : ''}${nfrId ? `&nfrId=${nfrId}` : ''}${partTypeId ? `&partTypeId=${partTypeId}` : ''}&isTechnologyUpdateRequired=${isTechnologyUpdateRequired}`, config()).catch(error => {
+        apiErrors(error);
+        callback(error);
+        return Promise.reject(error)
+    });
+}

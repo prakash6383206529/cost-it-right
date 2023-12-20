@@ -250,13 +250,14 @@ export const ProcessGroup = (props) => {
                             rules={{ required: false }}
                             register={register}
                             options={renderListing("process")}
+                            customClassName ={'process-group-container'}
                             mandatory={true}
                             handleChange={(value) => { setProcessDropdown(value) }}
                             disabled={props.isViewFlag}
                             errors={errors.process}
                         />
                         {errorObj.processAdd && Object.keys(processDropdown).length === 0 && <div className='text-help p-absolute'>Please select at least one process.</div>}
-                        <div onClick={props.isViewFlag ? '' : handleProcess} disabled={true} className={`plus-icon-square mr5 right ${props.isViewFlag ? 'disabled' : ''}`}> </div>
+                        <div id="AddMoreDetails_Toggle" onClick={props.isViewFlag ? '' : handleProcess} disabled={true} className={`plus-icon-square mr5 right ${props.isViewFlag ? 'disabled' : ''}`}> </div>
                     </Col>
 
                     <Col md="4" className='process-group-wrapper'>
@@ -274,7 +275,7 @@ export const ProcessGroup = (props) => {
                             {
                                 editIndex === '' ?
                                     <>
-                                        <button
+                                        <button id="AddMoreDetails_ProcessGroup_Add"
                                             type="button"
                                             className={`${props.isViewFlag ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
                                             onClick={processTableHandler}

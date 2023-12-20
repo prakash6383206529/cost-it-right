@@ -20,6 +20,9 @@ import { autoCompleteDropdown } from '../../common/CommonFunctions'
 import { MESSAGES } from '../../../config/message'
 import { getSelectListPartType } from '../../masters/actions/Part'
 import { ASSEMBLY, DETAILED_BOP_ID } from '../../../config/masterData'
+import TourWrapper from '../../common/Tour/TourWrapper'
+import { Steps } from './TourMessages'
+import { useTranslation } from 'react-i18next'
 
 function CostingSummary(props) {
 
@@ -55,7 +58,7 @@ function CostingSummary(props) {
   const [costingIdExist, setCostingIdExist] = useState(true);
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
   const [partType, setPartType] = useState([]);
-
+  const { t } = useTranslation("Costing")
   /******************CALLED WHENEVER SUMARY TAB IS CLICKED AFTER DETAIL TAB(FOR REFRESHING DATA IF THERE IS EDITING IN CURRENT COSTING OPENED IN SUMMARY)***********************/
   useEffect(() => {
     if (Object.keys(costingData).length > 0 && reactLocalStorage.get('location') === '/costing-summary') {
@@ -465,9 +468,12 @@ function CostingSummary(props) {
                   <>
                     <Row>
                       <Col md="12" className="mt-3">
-                        <div className="left-border">{'Part Details:'}</div>
+                        <div className="left-border">{'Part Details:'}  {<TourWrapper
+                          buttonSpecificProp={{ id: "costing_summary" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).COSTING_INITIAL
+                          }} />}</div>
                       </Col>
-
                       <Col className="col-md-15">
                         <SearchableSelectHookForm
                           label={'Technology'}
@@ -689,6 +695,7 @@ function CostingSummary(props) {
                           type="button"
                           //disabled={pristine || submitting}
                           onClick={resetData}
+                          id="costing-cancel"
                           className="reset-btn"
                         ><div className={'cancel-icon'}></div>
                           {"Clear"}

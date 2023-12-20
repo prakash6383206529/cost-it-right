@@ -1,0 +1,36 @@
+{
+    "addfuel": {
+        "AddFuel_zerobased": "Select Zero based Costing Head.",
+        "AddFuel_vendorbased": "Select Vendor based Costing Head.",
+        "AddFuel_customerbased": "Select Customer based Costing Head.",
+        "AddFuel_plant_container": "Select Plant (Code) from the dropdown.",
+        "AddFuel_Fuel_container": "Select Your Fuel Name",
+        "AddFuel_Toggle":"Add Fuel Name form here.",    
+        "AddFuel_CountryId_container": "Select Your Country",
+        "AddFuel_StateId_container": "Select Your State",
+        "AddFuel_CityId_container": "Select Your City",
+        "AddFuel_Rate": "Enter Your Rate",
+        "AddFuel_EffectiveDate": "Select Your Effective Date",
+        "AddFuel_Cancel": "Click here to reset the form and go-back to the grid page.",
+        "AddFuel_AddData":"Click here to add More data in the table.",
+        "AddFuel_Save": "Click here to Save."
+    },
+    "addfuelNameDrawers": {
+        "AddFuelNameDrawer_FuelName": "Select Your Fuel Name ",
+        "AddFuelNameDrawer_UnitOfMeasurementId_container": "Select Your UOM",
+        "AddFuelNameDrawer_Cancel": "Click here to cancel the form and go-back form page",
+        "AddFuelNameDrawer_Save": "Click here to Save."
+    },
+    "addPower": {
+        "AddPower_zerobased": "Select Zero based Costing Head.",
+        "AddPower_vendorbased": "Select Vendor based Costing Head.",
+        "AddPower_customerbased": "Select Customer based Costing Head.",
+        "AddPower_state_container": "Select Your State",
+        "AddPower_Plant_container": "Select Plant (Code) from the dropdown.",
+        "AddPower_EffectiveDate": "Select Your Effective Date",
+        "AddPower_NetPowerCostPerUnit": "Enter Your Net Cost",
+        "AddPower_AddMoreDetails":"Click here the checkbox to add more details.",
+        "AddPower_Cancel": "Click here to reset the form and go-back to the grid page.",
+        "AddPower_Save": "Click here to Save."
+    }
+}

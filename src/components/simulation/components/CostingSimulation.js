@@ -107,6 +107,7 @@ function CostingSimulation(props) {
     const [storeTechnology, setStoreTechnology] = useState(0)
     const [isBreakupBoughtOutPart, setIsBreakupBoughtOutPart] = useState(false)
     const [disableSendForApproval, setDisableSendForApproval] = useState(false);
+    const [message, setMessage] = useState('');
 
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
 
@@ -205,7 +206,7 @@ function CostingSimulation(props) {
                                 setCount(countTemp)
                             }
                         }))
-                    } else if (res?.data?.Result === false) {
+                    } else if ((res?.data?.Result === false) || (res?.data?.Data?.IsPFSOrBudgetingDetailsExist === true && res?.data?.Data?.IsUserInApprovalFlow === false)) {
                         showIsPFSOrBudgetingDetailsExistWarning(true)
                         setWarningMessage("This user is not in the approval cycle")
                     } else {
@@ -232,8 +233,14 @@ function CostingSimulation(props) {
                 dispatch(checkFinalUser(obj, res => {
                     if (res && res.data && res.data.Result) {
                         setIsFinalLevelApprover(res.data.Data?.IsFinalApprover)
-                        if (res.data?.Data?.IsUserInApprovalFlow === false) {
+                        if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                            setMessage("This user is not in the approval cycle")
                             setDisableSendForApproval(true)
+                        } if (res.data.Data.IsFinalApprover) {
+                            setDisableSendForApproval(true)
+                            setMessage("Final level approver can not send draft token for approval")
+                        } if (res.data.Data.IsUserInApprovalFlow && !res.data.Data.IsFinalApprover) {
+                            setDisableSendForApproval(false)
                         }
                         let countTemp = count + 1
                         setCount(countTemp)
@@ -1659,7 +1666,7 @@ function CostingSimulation(props) {
                                 </div>
                                 <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                                     <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
-                                        {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
+                                        {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={message} />}
                                         {isPFSOrBudgetingDetailsExistWarning && <WarningMessage message={warningMessage} />}
                                         <button
                                             class="user-btn approval-btn mr5"
