@@ -1047,6 +1047,12 @@ export const labelWithUOMAndCurrency = (label, UOM, currency) => {
   </div>
 }
 
+export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
+  return <div>
+    <span className='d-flex'>{label} ({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</span>
+  </div>
+}
+
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
 export const showTitleForActiveToggle = (index) => {
   setTimeout(() => {
