@@ -19,7 +19,6 @@ class AddBOPCategory extends Component {
         super(props);
         this.state = {
             isEditFlag: false,
-            showTour: false,
         }
     }
 
@@ -76,7 +75,6 @@ class AddBOPCategory extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, t } = this.props;
-        const { showTour } = this.state;
         return (
             <>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -94,14 +92,11 @@ class AddBOPCategory extends Component {
                                     <Col>
                                         <div className={'header-wrapper left'}>
                                             <h3>{isEditFlag ? 'Update BOP Category' : 'Add BOP Category'}
-                                                <Button
-                                                    id="addBOP_Category_guide"
-                                                    variant={"ml-2"}
-                                                    className={`guide-bulb${showTour ? "-on" : ""}`}
-                                                    onClick={() => { this.setState({ showTour: !showTour }) }}
-                                                    title='Guide'
-                                                />
-                                                {showTour && <TourWrapper steps={Steps(t).BOP_DOMESTIC_CATEGORY_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                                                <TourWrapper
+                                                    buttonSpecificProp={{ id: "BOP_Domestic_Category_form" }}
+                                                    stepsSpecificProp={{
+                                                        steps: Steps(t).BOP_DOMESTIC_CATEGORY_FORM
+                                                    }} />
                                             </h3>
                                         </div>
                                         <div

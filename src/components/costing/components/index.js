@@ -130,7 +130,7 @@ function Costing(props) {
             </NavItem>
           </Nav>
           <TabContent activeTab={activeTab}>
-            <TabPane tabId="1">
+            {activeTab === "1" && <TabPane tabId="1">
               <CostingDetails
                 partInfoStepTwo={partInfoStepTwo}
                 costingData={costingData}
@@ -140,13 +140,13 @@ function Costing(props) {
                 isNFR={props?.location?.state?.isNFR}
                 isViewModeCosting={props?.location?.state?.isViewMode}
               />
-            </TabPane>
-            <TabPane tabId="2">
+            </TabPane>}
+            {activeTab === "2" && <TabPane tabId="2">
               <CostingSummary activeTab={activeTab} showDetail={showDetail} setcostingOptionsSelectFromSummary={setcostingOptionsSelectFromSummary} />
-            </TabPane>
-            <TabPane tabId="3">
+            </TabPane>}
+            {activeTab === "3" && <TabPane tabId="3">
               <ApprovalListing activeTab={activeTab} />
-            </TabPane>
+            </TabPane>}
           </TabContent>
         </div>
       </div>

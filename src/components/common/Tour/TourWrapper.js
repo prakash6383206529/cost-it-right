@@ -1,36 +1,79 @@
-import React, { useState } from "react"
+// TourWrapper.js
+import React, { useEffect, useState } from "react";
 import { Steps, Hints } from "intro.js-react";
 import 'intro.js/introjs.css';
 import { useSelector } from "react-redux";
-import { useEffect } from "react";
+import Button from "../../layout/Button";
+import { GUIDE_BUTTON_SHOW } from "../../../config/constants";
 
-function TourWrapper(props) {
-    const [stepsEnabled, setStepsEnabled] = useState(false);      // HERE WE DO HANDLE THE STATE CLICK ON THE TOUR BUTTON 
+const TourButton = ({ onClick, showTour, buttonSpecificProp }) => {
+    const { id, className } = buttonSpecificProp;
 
-    const [hintsEnabled, setHintsEnabled] = useState(props.initialHintEnable);
-    const tourStartData = useSelector(state => state.comman.tourStartData);
-    const onExit = (data) => {
-        if (props.onExit) {
-            props.onExit()
-        }
-        setStepsEnabled(false)
-        setHintsEnabled(true)
-    }
-
-    const onChange = (e) => {
-    }
-    return <>
-        <Steps
-            enabled={props.start}
-            steps={props.steps ? props.steps : []}
-            onExit={onExit}
-            initialStep={0}
-            options={{ hideNext: false, hidePrev: true, doneLabel: 'Got it', skipLabel: 'Skip', }}
-            onComplete={props.onComplete ?? null}
-            onChange={props.onChange ?? onChange}
+    return (
+        <Button
+            id={id + "_Guide"}
+            variant={"ml-2"}
+            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" : "d-none"} ${className}`}
+            onClick={onClick}
+            title='Guide'
         />
-        <Hints enabled={hintsEnabled} hints={props.hints ? props.hints : []} onClose={() => setHintsEnabled(false)} options={{ tooltipClass: 'hint-tooltip' }} />
-    </>
-}
+    );
+};
+
+const GuidedSteps = ({ showTour, onExit, steps, hints, initialHintEnable, onChange, onComplete, stepsSpecificProp }) => {
+    return (
+        <>
+            {showTour && <Steps
+                enabled={stepsSpecificProp.start ?? showTour}
+                steps={stepsSpecificProp.steps ? stepsSpecificProp.steps : []}
+                onExit={onExit ?? (() => { })}
+                initialStep={0}
+                options={{ hideNext: false, hidePrev: true, doneLabel: 'Got it', skipLabel: 'Skip', }}
+                onComplete={onComplete ?? (() => { })}
+                onChange={onChange ?? (() => { })}
+            />}
+            {/* <Hints enabled={initialHintEnable} hints={hints ? hints : []} onClose={() => setHintsEnabled(false)} options={{ tooltipClass: 'hint-tooltip' }} /> */}
+        </>
+    );
+};
+
+const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp }) => {
+    const tourStartData = useSelector(state => state.comman.tourStartData);
+    const [showTour, setShowTour] = useState(false);
+
+    const handleClick = () => {
+        buttonSpecificProp.onClick && buttonSpecificProp.onClick();
+        setShowTour(!showTour);
+    };
+    useEffect(() => {
+        setShowTour(tourStartData.showTour);
+    }, [tourStartData.showTour])
+    const onExit = () => {
+        if (stepsSpecificProp.onExit) {
+            stepsSpecificProp.onExit()
+        }
+        setShowTour(false);
+    }
+
+    return (
+        <>
+            <TourButton
+                onClick={handleClick}
+                showTour={showTour}
+                buttonSpecificProp={buttonSpecificProp}
+            />
+            <GuidedSteps
+                showTour={showTour}
+                onExit={onExit}
+                steps={stepsSpecificProp.steps}
+                hints={stepsSpecificProp.hints}
+                initialHintEnable={stepsSpecificProp.initialHintEnable}
+                onChange={stepsSpecificProp.onChange}
+                onComplete={stepsSpecificProp.onComplete}
+                stepsSpecificProp={stepsSpecificProp}
+            />
+        </>
+    );
+};
 
 export default TourWrapper;

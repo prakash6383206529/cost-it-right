@@ -100,7 +100,6 @@ class AddPower extends Component {
       client: [],
       costPerUnitTooltipText: 'Please fill in the mandatory fields of State Electricity Board Power Changes section, as the calculation will be based on them.',
       segCostUnittooltipText: 'Please select the Source of Power, as the calculation will be based on them.',
-      showTour: false,
     }
   }
 
@@ -1374,7 +1373,7 @@ class AddPower extends Component {
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
     const { isEditFlag, source, isOpenVendor, isCostPerUnitConfigurable, isEditFlagForStateElectricity,
-      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry, showTour } = this.state;
+      checkPowerContribution, netContributionValue, isViewMode, setDisable, costingTypeId, isDetailEntry } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1416,14 +1415,11 @@ class AddPower extends Component {
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
                         <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Power
-                          <Button
-                            id="addPower_guide"
-                            variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                            onClick={() => { this.setState({ showTour: !showTour }) }}
-                            title='Guide'
-                          />
-                          {showTour && <TourWrapper steps={Steps(t).ADD_POWER} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "Power_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_POWER
+                            }} />
                         </h1>
                       </div>
                     </div>

@@ -21,7 +21,6 @@ class AddFuelNameDrawer extends Component {
     this.state = {
       unitTypes: [],
       UOM: '',
-      showTour: false,
     }
   }
 
@@ -128,7 +127,6 @@ class AddFuelNameDrawer extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag, t } = this.props;
-    const { showTour } = this.state;
     return (
       <Drawer
         anchor={this.props.anchor}
@@ -147,14 +145,11 @@ class AddFuelNameDrawer extends Component {
                 <Col>
                   <div className={"header-wrapper left"}>
                     <h3>{isEditFlag ? "Update " : "Add "}Fuel
-                      <Button
-                        id="add_FuelNameDrawer_guide"
-                        variant={"ml-2"}
-                        className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                        onClick={() => { this.setState({ showTour: !showTour }) }}
-                        title='Guide'
-                      />
-                      {showTour && <TourWrapper steps={Steps(t).ADD_FUEL_NAME_DRAWERS} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                      <TourWrapper
+                        buttonSpecificProp={{ id: "Fuel_form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t).ADD_FUEL_NAME_DRAWERS
+                        }} />
                     </h3>
                   </div>
                   <div

@@ -42,6 +42,24 @@ export function Steps(t) {
                 intro: t("dashboard.simulationApproval.dashboard_simulation_Approved"),
             },
         ],
+        DASHBOARD_COSTING_TAB: [
+            {
+                element: "#dashboard_simulation_Pending_For_Approval",
+                intro: t("dashboard.simulationApproval.dashboard_simulation_Pending_For_Approval"),
+            },
+            {
+                element: "#dashboard_simulation_Awaiting_Approval",
+                intro: t("dashboard.simulationApproval.dashboard_simulation_Awaiting_Approval"),
+            },
+            {
+                element: "#dashboard_simulation_Rejected",
+                intro: t("dashboard.simulationApproval.dashboard_simulation_Rejected"),
+            },
+            {
+                element: "#dashboard_simulation_Approved",
+                intro: t("dashboard.simulationApproval.dashboard_simulation_Approved"),
+            },
+        ],
 
     }
 }

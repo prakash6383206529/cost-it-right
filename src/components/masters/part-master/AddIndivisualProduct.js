@@ -45,7 +45,6 @@ class AddIndivisualProduct extends Component {
             setDisable: false,
             attachmentLoader: false,
             showPopup: false,
-            showTour: false,
         }
     }
 
@@ -360,7 +359,7 @@ class AddIndivisualProduct extends Component {
     */
     render() {
         const { handleSubmit, initialConfiguration, t } = this.props;
-        const { isEditFlag, isViewMode, setDisable, showTour } = this.state;
+        const { isEditFlag, isViewMode, setDisable } = this.state;
         return (
             <>
                 {this.state.isLoader && <LoaderCustom />}
@@ -375,14 +374,11 @@ class AddIndivisualProduct extends Component {
                                                 <div className="form-heading mb-0">
                                                     <h1>
                                                         {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add "} Product
-                                                        <Button
-                                                            id="addIndivisualProduct_guide"
-                                                            variant={"ml-2"}
-                                                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                                                            onClick={() => { this.setState({ showTour: !showTour }) }}
-                                                            title='Guide'
-                                                        />
-                                                        {showTour && <TourWrapper steps={Steps(t).ADD_PRODUCT_PART} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                                                        <TourWrapper
+                                                            buttonSpecificProp={{ id: "product_form" }}
+                                                            stepsSpecificProp={{
+                                                                steps: Steps(t).ADD_PRODUCT_PART
+                                                            }} />
                                                     </h1>
                                                 </div>
                                             </Col>

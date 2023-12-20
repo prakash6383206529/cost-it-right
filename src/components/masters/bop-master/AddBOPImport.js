@@ -131,7 +131,6 @@ class AddBOPImport extends Component {
       toolTipTextObject: {},
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: {},
-      showTour: false,
     }
   }
 
@@ -1239,7 +1238,7 @@ class AddBOPImport extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, isOpenUOM, isEditFlag, isViewMode, setDisable, costingTypeId, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject, showTour } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, toolTipTextNetCost, toolTipTextBasicPrice, toolTipTextObject } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1289,14 +1288,11 @@ class AddBOPImport extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Import)
-                          <Button
-                            id="addBOP_import_guide"
-                            variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""}`}
-                            onClick={() => { this.setState({ showTour: !showTour }) }}
-                            title='Guide'
-                          />
-                          {showTour && <TourWrapper steps={Steps(t).BOP_IMPORT_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "BOP_Import_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).BOP_IMPORT_FORM
+                            }} />
                         </h1>
                       </div>
                     </div>

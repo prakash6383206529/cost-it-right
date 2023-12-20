@@ -82,7 +82,6 @@ class AddProfit extends Component {
       RawMaterial: [],
       RMGrade: [],
       isAssemblyCheckbox: false,
-      showTour: false,
     }
   }
 
@@ -926,7 +925,7 @@ class AddProfit extends Component {
   render() {
     const { handleSubmit, t } = this.props;
     const { isRM, isCC, isBOP, isProfitPercent, costingTypeId, isEditFlag,
-      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged, showTour } = this.state;
+      isHideProfit, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -970,14 +969,11 @@ class AddProfit extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <h1> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Profit Details
-                        <Button
-                          id="addProfit_guide"
-                          variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                          onClick={() => { this.setState({ showTour: !showTour }) }}
-                          title='Guide'
-                        />
-                        {showTour && <TourWrapper steps={Steps(t).ADD_PROFIT_DETAILS} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "add_profit_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).ADD_PROFIT_DETAILS
+                          }} />
                       </h1>
                     </div>
                   </div>

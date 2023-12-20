@@ -108,7 +108,6 @@ class AddBOPDomestic extends Component {
       FinalNetLandedCostBaseCurrency: '',
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: '',
-      showTour: false,
     }
   }
 
@@ -1000,7 +999,7 @@ class AddBOPDomestic extends Component {
   render() {
     const { handleSubmit, isBOPAssociated, initialConfiguration, t } = this.props;
     const { isCategoryDrawerOpen, isOpenVendor, costingTypeId, isOpenUOM, isEditFlag, isViewMode, setDisable, isClientVendorBOP, CostingTypePermission,
-      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice, showTour } = this.state;
+      isTechnologyVisible, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, IsFinancialDataChanged, toolTipTextNetCost, toolTipTextBasicPrice } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1051,14 +1050,11 @@ class AddBOPDomestic extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} BOP (Domestic)
-                          <Button
-                            id="addBOP_Domestic_guide"
-                            variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""}`}
-                            onClick={() => { this.setState({ showTour: !showTour }) }}
-                            title='Guide'
-                          />
-                          {showTour && <TourWrapper steps={Steps(t).BOP_DOMESTIC_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "BOP_Domestic_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).BOP_DOMESTIC_FORM
+                            }} />
                         </h1>
                       </div>
                     </div>

@@ -33,7 +33,6 @@ class AddProcessDrawer extends Component {
       DataToChange: [],
       processName: "",
       showPopup: false,
-      showTour: false,
     }
   }
 
@@ -252,7 +251,7 @@ class AddProcessDrawer extends Component {
    */
   render() {
     const { handleSubmit, isEditFlag, initialConfiguration, t } = this.props
-    const { setDisable, showTour } = this.state
+    const { setDisable } = this.state
     return (
       <div>
 
@@ -270,14 +269,12 @@ class AddProcessDrawer extends Component {
                   <Col>
                     <div className={'header-wrapper left'}>
                       <h3>{isEditFlag ? 'Update Process' : 'Add Process'}
-                        <Button
-                          id="AddProcessDrawer_"
-                          variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""}`}
-                          onClick={() => { this.setState({ showTour: !showTour }) }}
-                          title='Guide'
-                        />
-                        {showTour && <TourWrapper steps={Steps(t).ADD_MANAGE_PROCESS} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "Process_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).ADD_MANAGE_PROCESS
+                          }} />
                       </h3>
                     </div>
                     <div

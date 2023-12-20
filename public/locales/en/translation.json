@@ -4,20 +4,6 @@
         "form_vendor_based": "Select Vendor based Costing Head.",
         "form_customer_based": "Select Customer based Costing Head."
     },
-    "dashboard": {
-        "simulationApproval": {
-            "dashboard_simulation_Pending_For_Approval": "Check you Pending Approvals from here.",
-            "dashboard_simulation_Awaiting_Approval": "Check you Awaiting Approvals from here.",
-            "dashboard_simulation_Approved": "Check you Approved Approvals from here.",
-            "dashboard_simulation_Rejected": "Check you Rejected Approvals from here."
-        },
-        "costingApproval": {
-            "dashboard_costing_Pending_For_Approval": "Check you Pending Approvals from here.",
-            "dashboard_costing_Awaiting_Approval": "Check you Awaiting Approvals from here.",
-            "dashboard_costing_Approved": "Check you Approved Approvals from here.",
-            "dashboard_costing_Rejected": "Check you Rejected Approvals from here."
-        }
-    },
     "operationMaster": {
         "Add_operation_zero_based": "Select Zero based Costing Head.",
         "Add_operation_vendor_based": "Select Vendor based Costing Head.",
@@ -87,17 +73,6 @@
         "AddFuelNameDrawer_Cancel": "Click here to cancel the form and go-back form page",
         "AddFuelNameDrawer_Save": "Click here to Save."
     },
-    "addPower": {
-        "AddPower_zerobased": "Select Zero based Costing Head.",
-        "AddPower_vendorbased": "Select Vendor based Costing Head.",
-        "AddPower_customerbased": "Select Customer based Costing Head.",
-        "AddPower_state_container": "Select Your State",
-        "AddPower_Plant_container": "Select Plant (Code) from the dropdown.",
-        "AddPower_EffectiveDate": "Select Your Effective Date",
-        "AddPower_NetPowerCostPerUnit": "Enter Your Net Cost",
-        "AddPower_Cancel": "Click here to reset the form and go-back to the grid page.",
-        "AddPower_Save": "Click here to Save."
-    },    
     "addMachineRate": {
         "AddMachineRate_zeroBased": "Select Zero based Costing Head.",
         "AddMachineRate_customerBased": "Select Vendor based Costing Head.",
@@ -129,5 +104,5 @@
         "AddMoreDetails_AccessoriesCost": "Enter Your Accessories ",
         "AddMoreDetails_InstallationCharges": "Enter Your Installation Charges",
         "AddMoreDetails_EffectiveDate": "Select Your Effective Date."
-    }   
+    }
 }

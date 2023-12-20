@@ -26,7 +26,6 @@ class Association extends Component {
             setDisable: false,
             showPopup: false,
             isDropDownChanged: false,
-            showTour: false,
         }
 
     }
@@ -151,7 +150,7 @@ class Association extends Component {
     }
     render() {
         const { handleSubmit, t } = this.props;
-        const { setDisable, showTour } = this.state
+        const { setDisable } = this.state
 
         return (
             <div>
@@ -172,14 +171,11 @@ class Association extends Component {
                                         <div className={"header-wrapper left"}>
                                             <h3>
                                                 {"Add Association"}
-                                                <Button
-                                                    id="add_RMAddAssociation_Guide"
-                                                    variant={"ml-2"}
-                                                    className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                                                    onClick={() => { this.setState({ showTour: !showTour }) }}
-                                                    title='Guide'
-                                                />
-                                                {showTour && <TourWrapper steps={Steps(t).ADD_RM_ASSOCIATION} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                                                <TourWrapper
+                                                    buttonSpecificProp={{ id: "Association_form" }}
+                                                    stepsSpecificProp={{
+                                                        steps: Steps(t).ADD_RM_ASSOCIATION
+                                                    }} />
                                             </h3>
                                         </div>
                                         <div

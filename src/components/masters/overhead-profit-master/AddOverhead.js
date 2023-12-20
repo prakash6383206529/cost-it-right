@@ -82,7 +82,6 @@ class AddOverhead extends Component {
       RMGrade: [],
       IsFinancialDataChanged: true,
       isAssemblyCheckbox: false,
-      showTour: false,
     }
   }
 
@@ -914,7 +913,7 @@ class AddOverhead extends Component {
   */
   render() {
     const { handleSubmit, t } = this.props;
-    const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged, costingTypeId, showTour } = this.state;
+    const { isRM, isCC, isBOP, isOverheadPercent, isEditFlag, isHideOverhead, isHideBOP, isHideRM, isHideCC, isViewMode, setDisable, IsFinancialDataChanged, costingTypeId } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -957,14 +956,11 @@ class AddOverhead extends Component {
                   <div className="row">
                     <div className="col-md-6">
                       <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Overhead Details
-                        <Button
-                          id="addOverHead_guide"
-                          variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                          onClick={() => { this.setState({ showTour: !showTour }) }}
-                          title='Guide'
-                        />
-                        {showTour && <TourWrapper steps={Steps(t).ADD_OVERHEADS_DETAILS} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "Overhead_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).ADD_OVERHEADS_DETAILS
+                          }} />
                       </h1>
                     </div>
                   </div>

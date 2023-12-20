@@ -2575,7 +2575,7 @@ class AddMoreDetails extends Component {
                           <Button
                             id="addPower_guide"
                             variant={"ml-2"}
-                            className={`guide-bulb${tourContainer.initial ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                            className={`guide-bulb${tourContainer.initial ? "-on" : ""} ${false ? "" : "d-none"}`}
                             onClick={() => this.updateTourContainer('initial', 'start')}
                             title='Guide'
                           />
@@ -2927,7 +2927,7 @@ class AddMoreDetails extends Component {
                               <Button
                                 id="addPower_guide"
                                 variant={"ml-2"}
-                                className={`guide-bulb${tourContainer.loanTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                className={`guide-bulb${tourContainer.loanTour ? "-on" : ""} ${false ? "" : "d-none"}`}
                                 onClick={() => this.updateTourContainer('loanTour', 'start')}
                                 title='Guide'
                               />
@@ -3085,7 +3085,7 @@ class AddMoreDetails extends Component {
                               <Button
                                 id="addPower_guide"
                                 variant={"ml-2"}
-                                className={`guide-bulb${tourContainer.workingHoursTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                className={`guide-bulb${tourContainer.workingHoursTour ? "-on" : ""} ${false ? "" : "d-none"}`}
                                 onClick={() => this.updateTourContainer('workingHoursTour', 'start')}
                                 title='Guide'
                               />
@@ -3217,7 +3217,7 @@ class AddMoreDetails extends Component {
                               <Button
                                 id="addPower_guide"
                                 variant={"ml-2"}
-                                className={`guide-bulb${tourContainer.depreciationTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                className={`guide-bulb${tourContainer.depreciationTour ? "-on" : ""} ${false ? "" : "d-none"}`}
                                 onClick={() => this.updateTourContainer('depreciationTour', 'start')}
                                 title='Guide'
                               />
@@ -3372,7 +3372,7 @@ class AddMoreDetails extends Component {
                               <Button
                                 id="addPower_guide"
                                 variant={"ml-2"}
-                                className={`guide-bulb${tourContainer.variableCostTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                className={`guide-bulb${tourContainer.variableCostTour ? "-on" : ""} ${false ? "" : "d-none"}`}
                                 onClick={() => this.updateTourContainer('variableCostTour', 'start')}
                                 title='Guide'
                               />
@@ -3731,7 +3731,7 @@ class AddMoreDetails extends Component {
                               <Button
                                 id="addPower_guide"
                                 variant={"ml-2"}
-                                className={`guide-bulb${tourContainer.powerTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                className={`guide-bulb${tourContainer.powerTour ? "-on" : ""} ${false ? "" : "d-none"}`}
                                 onClick={() => this.updateTourContainer('powerTour', 'start')}
                                 title='Guide'
                               />
@@ -3974,7 +3974,7 @@ class AddMoreDetails extends Component {
                               <Button
                                 id="addPower_guide"
                                 variant={"ml-2"}
-                                className={`guide-bulb${tourContainer.labourTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                className={`guide-bulb${tourContainer.labourTour ? "-on" : ""} ${false ? "" : "d-none"}`}
                                 onClick={() => this.updateTourContainer('labourTour', 'start')}
                                 title='Guide'
                               />
@@ -4168,7 +4168,7 @@ class AddMoreDetails extends Component {
                               <Button
                                 id="addPower_guide"
                                 variant={"ml-2"}
-                                className={`guide-bulb${tourContainer.processTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                className={`guide-bulb${tourContainer.processTour ? "-on" : ""} ${false ? "" : "d-none"}`}
                                 onClick={() => this.updateTourContainer('processTour', 'start')}
                                 title='Guide'
                               />
@@ -4372,7 +4372,7 @@ class AddMoreDetails extends Component {
                                 <Button
                                   id="addPower_guide"
                                   variant={"ml-2"}
-                                  className={`guide-bulb${tourContainer.processGroupTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
+                                  className={`guide-bulb${tourContainer.processGroupTour ? "-on" : ""} ${false ? "" : "d-none"}`}
                                   onClick={() => this.updateTourContainer('processGroupTour', 'start')}
                                   title='Guide'
                                 />

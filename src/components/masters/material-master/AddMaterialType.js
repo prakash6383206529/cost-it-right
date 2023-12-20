@@ -27,7 +27,6 @@ class AddMaterialType extends Component {
       DataToChange: [],
       setDisable: false,
       showPopup: false,
-      showTour: false,
     }
   }
 
@@ -146,7 +145,7 @@ class AddMaterialType extends Component {
   */
   render() {
     const { handleSubmit, isEditFlag, t } = this.props;
-    const { setDisable, showTour } = this.state
+    const { setDisable } = this.state
     return (
       <div>
         <Drawer
@@ -167,14 +166,11 @@ class AddMaterialType extends Component {
                     <div className={"header-wrapper left"}>
                       <h3>
                         {isEditFlag ? "Update Material" : "Add Material"}
-                        <Button
-                          id="addMaterialType_Guide"
-                          variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                          onClick={() => { this.setState({ showTour: !showTour }) }}
-                          title='Guide'
-                        />
-                        {showTour && <TourWrapper steps={Steps(t).ADD_MATERIAL} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "Material_Type_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).ADD_MATERIAL
+                          }} />
                       </h3>
                     </div>
                     <div

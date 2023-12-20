@@ -46,7 +46,6 @@ class AddSpecification extends Component {
       rmCode: '',
       showPopup: false,
       isDropDownChanged: false,
-      showTour: false,
     }
   }
 
@@ -479,7 +478,7 @@ class AddSpecification extends Component {
   * @description Renders the component
   */
   render() {
-    const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer, setDisable, showTour } = this.state;
+    const { isOpenRMDrawer, isOpenGrade, isOpenMaterialDrawer, setDisable } = this.state;
     const { handleSubmit, isEditFlag, specificationData, AddAccessibilityRMANDGRADE,
       EditAccessibilityRMANDGRADE, t } = this.props;
     return (
@@ -504,14 +503,11 @@ class AddSpecification extends Component {
                         {isEditFlag
                           ? "Update  Specification"
                           : "Add Raw Material Specification"}
-                        <Button
-                          id="add_RMAddSpecification_Guide"
-                          variant={"ml-2"}
-                          className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                          onClick={() => { this.setState({ showTour: !showTour }) }}
-                          title='Guide'
-                        />
-                        {showTour && <TourWrapper steps={Steps(t).ADD_RAW_MATERIAL_SPEC} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                        <TourWrapper
+                          buttonSpecificProp={{ id: "RM_Spec_form" }}
+                          stepsSpecificProp={{
+                            steps: Steps(t).ADD_RAW_MATERIAL_SPEC
+                          }} />
                       </h3>
                     </div>
                     <div

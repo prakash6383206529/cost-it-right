@@ -159,7 +159,6 @@ class AddRMImport extends Component {
       FinalShearingCostBaseCurrency: '',
       FinalShearingCostSelectedCurrency: '',
       toolTipTextObject: {},
-      showTour: false,
       IsApplyHasDifferentUOM: false,
       ScrapRateUOM: [],
       CalculatedFactor: '',
@@ -1707,7 +1706,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated, t } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval,
-      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, showScrapKeys, toolTipTextObject, showTour } = this.state;
+      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, showScrapKeys, toolTipTextObject } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1778,14 +1777,11 @@ class AddRMImport extends Component {
                       <div className="col-md-6">
                         <h2>
                           {isViewFlag ? "View" : isEditFlag ? "Update" : "Add"} Raw Material (Import)
-                          <Button
-                            id="addRMImport_guide"
-                            variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW  ? "" :"d-none"}`}
-                            onClick={() => { this.setState({ showTour: !showTour }) }}
-                            title='Guide'
-                          />
-                          {showTour && <TourWrapper steps={Steps(t).ADD_RAW_MATERIAL_IMPORT} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "RM_Import_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_RAW_MATERIAL_IMPORT
+                            }} />
                         </h2>
                       </div>
                     </div>

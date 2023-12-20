@@ -83,7 +83,6 @@ class AddAssemblyPart extends Component {
       partName: '',
       showPopup: false,
       partAssembly: '',
-      showTour: false,
     }
   }
 
@@ -870,7 +869,7 @@ class AddAssemblyPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
-    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData, showTour } = this.state;
+    const { isEditFlag, isOpenChildDrawer, isOpenBOMViewerDrawer, isViewMode, setDisable, convertPartToAssembly, BOMViewerData } = this.state;
     const filterList = async (inputValue) => {
       const { partName, selectedParts } = this.state
       const resultInput = inputValue.slice(0, searchCount)
@@ -910,14 +909,11 @@ class AddAssemblyPart extends Component {
                       <div className="form-heading mb-0">
                         <h1>
                           {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Assembly Part
-                          <Button
-                            id="addAssemblyPart_guide"
-                            variant="ml-2"
-                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                            onClick={() => { this.setState({ showTour: !showTour }) }}
-                            title='Guide'
-                          />
-                          {showTour && <TourWrapper steps={Steps(t).ADD_ASSEMBLY_PART} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "assembly_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_ASSEMBLY_PART
+                            }} />
                         </h1>
                       </div>
                     </Col>

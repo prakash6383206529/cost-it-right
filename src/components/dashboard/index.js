@@ -15,13 +15,13 @@ import MasterApprovalTabs from "./MasterApprovalTabs";
 import ScrollToTop from "../common/ScrollToTop";
 import { MESSAGES } from "../../config/message";
 import TourWrapper from "../common/Tour/TourWrapper";
-import { Steps } from "../common/Tour/TourMessages";
+import { Steps } from "./TourMessages";
 import { useTranslation } from "react-i18next";
 
 
 function Dashboard(props) {
   const { handleSubmit } = props
-  const { t } = useTranslation()
+  const { t } = useTranslation("Dashboard")
   const [acc1, setAcc1] = useState(false)
   const [acc2, setAcc2] = useState(true)
   const [acc3, setAcc3] = useState(false)
@@ -124,7 +124,14 @@ function Dashboard(props) {
               {viewSimulation && JSON.parse(localStorage.getItem('simulationViewPermission'))?.length !== 0 && <Row className="m-0">
                 <div className="graph-box w-100" id={`${pageDropDownRef === 'simulation' ? 'refresh-to-top' : ''}`}>
                   <Row>
-                    <Col md="8"><h3 className="mb-0">Amendments Approval Status {acc2 && <button className={`guide-bulb${showTour ? "-on" : ""} ml-2 ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`} onClick={() => { setShowTour(!showTour) }} title='Guide'></button>}</h3></Col>
+                    <Col md="8"><h3 className="mb-0">Amendments Approval Status {acc2 &&
+
+                      <TourWrapper
+                        buttonSpecificProp={{ id: "Dashboard_simulation_form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t).DASHBOARD_SIMULATION_TAB
+                        }} />}
+                    </h3></Col>
                     <Col md="4" className="text-right">
                       <button id="Dashboard_Simulation_Accordian" className="btn btn-small-primary-circle ml-1" type="button" disabled={dashboardTabLock} onClick={() => { setAcc2(!acc2) }}>
                         {acc2 ? (
@@ -138,7 +145,6 @@ function Dashboard(props) {
 
                   {acc2 && <Row>
                     <Col md="12" className="mt-3">{acc2 && <>
-                      {showTour && <TourWrapper steps={Steps(t).DASHBOARD_SIMULATION_TAB} stepsEnable={true} start={showTour} onExit={() => { setShowTour(false) }} />}
                       <Tabs isPageNoChange={isPageNoChange} costing={false} accordion={false} module={'simulation'} />
                     </>}</Col>
                   </Row>}
@@ -148,7 +154,11 @@ function Dashboard(props) {
               {viewCosting && <Row className="m-0" id={`${pageDropDownRef === 'costing' ? 'refresh-to-top' : ''}`}>
                 <div className={`graph-box w-100 ${acc1 ? "dashboard-height" : ''}`}>
                   <Row>
-                    <Col md="8"><h3 className="mb-0">Costings Approval Status</h3></Col>
+                    <Col md="8"><h3 className="mb-0">Costings Approval Status  {acc1 && <TourWrapper
+                      buttonSpecificProp={{ id: "Dashboard_costing_form" }}
+                      stepsSpecificProp={{
+                        steps: Steps(t).DASHBOARD_COSTING_TAB
+                      }} />}</h3></Col>
                     <Col md="4" className="text-right">
                       <button id="Dashboard_Costing_Accordian" className="btn btn-small-primary-circle ml-1 " disabled={dashboardTabLock} type="button" onClick={() => { setAcc1(!acc1) }}>
                         {acc1 ? (

@@ -1427,22 +1427,11 @@ class AddMachineRate extends Component {
                     <div className="col-md-6">
                       <div className="form-heading mb-0">
                         <h2> {isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Machine Rate
-                          <Button
-                            id="addMachineRate_guide"
-                            variant={"ml-2"}
-                            className={`guide-bulb${tourContainer.initial ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                            onClick={() => {
-                              this.setState({
-                                tourContainer: {
-                                  ...tourContainer,
-                                  initial: !tourContainer.initial
-                                }
-                              });
-                            }}
-                            title='Guide'
-                          />
-                          {tourContainer.initial && <TourWrapper steps={Steps(t).ADD_MACHINE_RATE} stepsEnable={true} start={tourContainer.initial}
-                            onExit={() => { this.setState({ tourContainer: { ...tourContainer, initial: false } }); }} />}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "addMachineRate_guide" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_MACHINE_RATE
+                            }} />
                         </h2>
                       </div>
                     </div>
@@ -1727,22 +1716,11 @@ class AddMachineRate extends Component {
                           <HeaderTitle
                             title={'Process:'}
                             customClass={'Personal-Details'} />
-                          <Button
-                            id="addMachineRate_Process"
-                            variant={"guide-bulb"}
-                            className={`guide-bulb${tourContainer.processTour ? "-on" : ""} ml-2 mb-2 ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                            onClick={() => {
-                              this.setState({
-                                tourContainer: {
-                                  ...tourContainer,
-                                  processTour: !tourContainer.processTour
-                                }
-                              });
-                            }}
-                            title='Guide'
-                          />
-                          {tourContainer.processTour && <TourWrapper steps={Steps(t).ADD_MACHINERATE_MORE_PROCESS} stepsEnable={true} start={tourContainer.processTour}
-                            onExit={() => { this.setState({ tourContainer: { ...tourContainer, processTour: false } }); }} />}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "addMachineRate_Process" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_MACHINERATE_MORE_PROCESS
+                            }} />
                         </Col>
                         <Col md="3">
                           <div className="d-flex justify-space-between align-items-center inputwith-icon">

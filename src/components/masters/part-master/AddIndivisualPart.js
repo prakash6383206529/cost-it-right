@@ -53,7 +53,6 @@ class AddIndivisualPart extends Component {
       disablePartName: false,
       attachmentLoader: false,
       showPopup: false,
-      showTour: false,
     }
   }
 
@@ -473,7 +472,7 @@ class AddIndivisualPart extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
-    const { isEditFlag, isViewMode, setDisable, showTour } = this.state;
+    const { isEditFlag, isViewMode, setDisable } = this.state;
 
     return (
       <>
@@ -490,14 +489,11 @@ class AddIndivisualPart extends Component {
                         <div className="form-heading mb-0">
                           <h1>
                             {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Component/ Part
-                            <Button
-                              id="addIndivisualPart_guide"
-                              variant={"ml-2"}
-                              className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                              onClick={() => { this.setState({ showTour: !showTour }) }}
-                              title='Guide'
-                            />
-                            {showTour && <TourWrapper steps={Steps(t).ADD_COMPONENT_PART} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                            <TourWrapper
+                              buttonSpecificProp={{ id: "Part_form" }}
+                              stepsSpecificProp={{
+                                steps: Steps(t).ADD_COMPONENT_PART
+                              }} />
                           </h1>
                         </div>
                       </Col>

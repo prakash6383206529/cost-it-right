@@ -73,7 +73,6 @@ class AddFuel extends Component {
       },
       isGridEdit: false,
       showPopup: false,
-      showTour: false,
     }
   }
 
@@ -763,7 +762,7 @@ class AddFuel extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, t } = this.props;
-    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit, costingTypeId, showTour } = this.state;
+    const { isOpenFuelDrawer, isEditFlag, isViewMode, setDisable, isGridEdit, costingTypeId } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -807,14 +806,11 @@ class AddFuel extends Component {
                     <div className="row">
                       <div className="col-md-6">
                         <h1>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Fuel
-                          <Button
-                            id="addFuel_Guide"
-                            variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                            onClick={() => { this.setState({ showTour: !showTour }) }}
-                            title='Guide'
-                          />
-                          {showTour && <TourWrapper steps={Steps(t).ADD_FUEL} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                          <TourWrapper
+                            buttonSpecificProp={{ id: "Add_fuel_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).ADD_FUEL
+                            }} />
                         </h1>
                       </div>
                     </div>

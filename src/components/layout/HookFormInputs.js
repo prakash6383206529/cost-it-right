@@ -657,7 +657,7 @@ export const AsyncSearchableSelectHookForm = (field) => {
         defaultValue={defaultValue}
         render={({ field: { onChange, onBlur, value, name } }) => {
           return (
-            <div className={`${isLoader ? "p-relative" : ''} ${buttonCross ? 'cross-btn-container' : ''}`} title={disabled ? value?.label : ''}>
+            <div className={`input-container ${isLoader ? "p-relative" : ''} ${buttonCross ? 'cross-btn-container' : ''}`} title={disabled ? value?.label : ''}>
               <AsyncSelect
                 {...field}
                 {...register}

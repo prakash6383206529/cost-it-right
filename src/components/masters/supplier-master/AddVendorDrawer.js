@@ -679,7 +679,6 @@ class AddVendorDrawer extends Component {
             selectedIndex: -1, // Reset the selectedIndex
             isEditIndex: false,
             disablePlant: false,
-            showTour: false,
         });
     };
 
@@ -689,7 +688,7 @@ class AddVendorDrawer extends Component {
     */
     render() {
         const { handleSubmit, isEditFlag, initialConfiguration, t } = this.props;
-        const { country, isOpenVendorPlant, isViewMode, setDisable, isCriticalVendor, showTour } = this.state;
+        const { country, isOpenVendorPlant, isViewMode, setDisable, isCriticalVendor } = this.state;
         return (
             <div>
                 <Drawer anchor={this.props.anchor} open={this.props.isOpen}
@@ -707,14 +706,11 @@ class AddVendorDrawer extends Component {
                                     <Col>
                                         <div className={'header-wrapper left'}>
                                             <h3>{isViewMode ? "View" : isEditFlag ? "Update" : "Add"} Vendor
-                                                <Button
-                                                    id="add_vendor_guide"
-                                                    variant={"ml-2"}
-                                                    className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                                                    onClick={() => { this.setState({ showTour: !showTour }) }}
-                                                    title='Guide'
-                                                />
-                                                {showTour && <TourWrapper steps={Steps(t).VENDOR_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+                                                <TourWrapper
+                                                    buttonSpecificProp={{ id: "Vendor_form" }}
+                                                    stepsSpecificProp={{
+                                                        steps: Steps(t).VENDOR_FORM
+                                                    }} />
                                             </h3>
                                         </div>
                                         <div

@@ -164,12 +164,11 @@ class AddRMDomestic extends Component {
       FinalFreightCostBaseCurrency: '',
       FinalShearingCostBaseCurrency: '',
       toolTipTextObject: {},
-      showTour: false,
       IsApplyHasDifferentUOM: false,
       ScrapRateUOM: [],
       CalculatedFactor: '',
       ConversionRatio: '',
-
+      showTour: false
     }
   }
 
@@ -292,13 +291,6 @@ class AddRMDomestic extends Component {
 
   componentDidUpdate(prevProps, prevState) {
     const { initialConfiguration } = this.props
-    if (prevProps.tourStartData.showTour !== this.props.tourStartData.showTour) {
-      setTimeout(() => {
-        this.setState({ showTour: this.props.tourStartData.showTour })
-      }, 700);
-    }
-
-
     if (this.props.fieldsObj !== prevProps.fieldsObj && !this.state.isEditFlag) {
       this.setInStateToolTip()
       this.calculateNetCost()
@@ -705,7 +697,7 @@ class AddRMDomestic extends Component {
    */
   getDetails = (data) => {
 
-    const { initialConfiguration, tourStartData } = this.props
+    const { initialConfiguration } = this.props
     const { showScrapKeys } = this.state
 
     if (data && data.isEditFlag) {
@@ -785,7 +777,7 @@ class AddRMDomestic extends Component {
               singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               showForgingMachiningScrapCost: showScrapKeys?.showForging,
               showExtraCost: showScrapKeys?.showCircleJali,
-            }, () => this.setState({ isLoader: false }))
+            }, () => this.setState({ isLoader: false, showTour: true }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
               item.meta = {}
@@ -806,6 +798,7 @@ class AddRMDomestic extends Component {
       this.setState({
         isEditFlag: false,
         isLoader: false,
+        showTour: true,
         RawMaterialID: EMPTY_GUID
       })
       this.props.getRMDataById('', false, (res) => { })
@@ -1501,7 +1494,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, isRMAssociated, t } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, showScrapKeys, IsFinancialDataChanged, showTour } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, showScrapKeys, IsFinancialDataChanged } = this.state
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1569,14 +1562,13 @@ class AddRMDomestic extends Component {
                       <div className="col-md-6">
                         <h1>
                           {isViewFlag ? 'View' : isEditFlag ? 'Update' : 'Add'} Raw Material (Domestic)
-                          <Button
-                            id="addRMDomestic_guide"
-                            variant={"ml-2"}
-                            className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                            onClick={() => { this.setState({ showTour: !showTour }) }}
-                            title='Guide'
-                          />
-                          {showTour && <TourWrapper steps={Steps(t).RM_DOMESTIC_FORM} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+
+                          {console.log('showTour: ', this.state.showTour)}
+                          {this.state.showTour && <TourWrapper
+                            buttonSpecificProp={{ id: "RM_domestic_form" }}
+                            stepsSpecificProp={{
+                              steps: Steps(t).RM_DOMESTIC_FORM
+                            }} />}
                         </h1>
                       </div>
                     </div>

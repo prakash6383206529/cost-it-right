@@ -99,7 +99,6 @@ class AddOperation extends Component {
       detailObject: {},
       CostingTypePermission: false,
       disableSendForApproval: false,
-      showTour: false,
     }
   }
 
@@ -874,7 +873,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated, t } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval, showTour } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -917,14 +916,12 @@ class AddOperation extends Component {
                 <div className="row">
                   <div className="col-md-6">
                     <h2>{this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Operation
-                      <Button
-                        id="addOperation_guide"
-                        variant={"ml-2"}
-                        className={`guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`}
-                        onClick={() => { this.setState({ showTour: !showTour }) }}
-                        title='Guide'
-                      />
-                      {showTour && <TourWrapper steps={Steps(t).ADD_OPERATION} stepsEnable={true} start={showTour} onExit={() => { this.setState({ showTour: false }) }} />}
+
+                      <TourWrapper
+                        buttonSpecificProp={{ id: "Add_Operation_form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t).ADD_OPERATION
+                        }} />
                     </h2>
                   </div>
                 </div>
