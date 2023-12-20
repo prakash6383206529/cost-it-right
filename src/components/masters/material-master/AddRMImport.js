@@ -1454,38 +1454,39 @@ class AddRMImport extends Component {
     let machiningRateBaseCurrency = ''
 
     if (showScrapKeys?.showCircleJali) {
-      if (checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalJaliScrapCostSelectedCurrency) || checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalCircleScrapCostSelectedCurrency)) {
-        this.setState({ setDisable: false })
-        Toaster.warning("Scrap Cost/cost should not be greater than or equal to the basic rate.")
-        return false
-      }
 
       scrapRateSelectedCurrency = FinalJaliScrapCostSelectedCurrency
       scrapRateBaseCurrency = FinalJaliScrapCostBaseCurrency
       jaliRateSelectedCurrency = FinalCircleScrapCostSelectedCurrency
       jaliRateBaseCurrency = FinalCircleScrapCostBaseCurrency
-    } else if (showScrapKeys?.showForging) {
 
-      if (checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalForgingScrapCostSelectedCurrency) || checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalMachiningScrapCostSelectedCurrency)) {
+      if (checkForNull(FinalBasicRateSelectedCurrency) < checkForNull(scrapRateSelectedCurrency) || checkForNull(FinalBasicRateSelectedCurrency) < checkForNull(jaliRateSelectedCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap Cost/cost should not be greater than or equal to the basic rate.")
         return false
       }
+    } else if (showScrapKeys?.showForging) {
 
       scrapRateSelectedCurrency = FinalForgingScrapCostSelectedCurrency
       scrapRateBaseCurrency = FinalForgingScrapCostBaseCurrency
       machiningRateSelectedCurrency = FinalMachiningScrapCostSelectedCurrency
       machiningRateBaseCurrency = FinalMachiningScrapCostBaseCurrency
-    } else if (showScrapKeys?.showScrap) {
 
-      if (checkForNull(FinalBasicRateSelectedCurrency) <= checkForNull(FinalScrapRateSelectedCurrency)) {
+      if (checkForNull(FinalBasicRateSelectedCurrency) < checkForNull(scrapRateSelectedCurrency) || checkForNull(FinalBasicRateSelectedCurrency) < checkForNull(machiningRateSelectedCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap Cost/cost should not be greater than or equal to the basic rate.")
         return false
       }
+    } else if (showScrapKeys?.showScrap) {
 
       scrapRateSelectedCurrency = FinalScrapRateSelectedCurrency
       scrapRateBaseCurrency = FinalScrapRateBaseCurrency
+
+      if (checkForNull(FinalBasicRateSelectedCurrency) < checkForNull(scrapRateSelectedCurrency)) {
+        this.setState({ setDisable: false })
+        Toaster.warning("Scrap Cost/cost should not be greater than or equal to the basic rate.")
+        return false
+      }
     }
 
 

@@ -1280,33 +1280,33 @@ class AddRMDomestic extends Component {
 
     if (showScrapKeys?.showCircleJali) {
 
-      if (checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalJaliScrapCostBaseCurrency) || checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalCircleScrapCostBaseCurrency)) {
-        this.setState({ setDisable: false })
-        Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
-        return false
-      }
-
       scrapRateBaseCurrency = checkForNull(FinalJaliScrapCostBaseCurrency)
       jaliRateBaseCurrency = checkForNull(FinalCircleScrapCostBaseCurrency)
-    } else if (showScrapKeys?.showForging) {
-
-      if (checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalForgingScrapCostBaseCurrency) || checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalMachiningScrapCostBaseCurrency)) {
+      if (checkForNull(FinalBasicRateBaseCurrency) < checkForNull(jaliRateBaseCurrency) || checkForNull(FinalBasicRateBaseCurrency) < checkForNull(scrapRateBaseCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
       }
+
+    } else if (showScrapKeys?.showForging) {
 
       scrapRateBaseCurrency = checkForNull(FinalForgingScrapCostBaseCurrency)
       machiningRateBaseCurrency = checkForNull(FinalMachiningScrapCostBaseCurrency)
-    } else if (showScrapKeys?.showScrap) {
-
-      if (checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalScrapRateBaseCurrency)) {
+      if (checkForNull(FinalBasicRateBaseCurrency) < checkForNull(scrapRateBaseCurrency) || checkForNull(FinalBasicRateBaseCurrency) < checkForNull(machiningRateBaseCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
       }
 
+    } else if (showScrapKeys?.showScrap) {
+
       scrapRateBaseCurrency = checkForNull(FinalScrapRateBaseCurrency)
+      if (checkForNull(FinalBasicRateBaseCurrency) < checkForNull(scrapRateBaseCurrency)) {
+        this.setState({ setDisable: false })
+        Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
+        return false
+      }
+
     }
 
     const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
