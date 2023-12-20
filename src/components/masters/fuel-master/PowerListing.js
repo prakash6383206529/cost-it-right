@@ -16,7 +16,6 @@ import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
 import DayTime from "../../common/DayTimeWrapper";
-import { GridTotalFormate } from "../../common/TableGridFunctions";
 import LoaderCustom from "../../common/LoaderCustom";
 import { PowerMaster } from "../../../config/constants";
 import ReactExport from "react-export-excel";
@@ -338,8 +337,6 @@ const PowerListing = (props) => {
     gridOptions.api.setFilterModel(null);
   };
 
-  const { handleSubmit, AddAccessibility, DownloadAccessibility } = props;
-  const { noData } = state;
   const ExcelFile = ReactExport.ExcelFile;
 
   var filterParams = {
@@ -390,7 +387,7 @@ const PowerListing = (props) => {
   return (
     <div
       className={`ag-grid-react pt-4 ${
-        DownloadAccessibility ? "show-table-btn" : ""
+        permissions.Download ? "show-table-btn" : ""
       }`}
     >
       {state.isLoader && <LoaderCustom />}
@@ -430,7 +427,7 @@ const PowerListing = (props) => {
                       {/* ADD */}
                     </button>
                   )}
-                  {permissions.Dowmload && (
+                  {permissions.Download && (
                     <>
                       <ExcelFile
                         filename={"Power"}
@@ -478,7 +475,7 @@ const PowerListing = (props) => {
           <div
             className={`ag-grid-wrapper height-width-wrapper ${
               (powerDataList && powerDataList?.length <= 0) ||
-              noData ||
+              state.noData ||
               state.tableData.length === 0
                 ? "overlay-contain"
                 : ""
@@ -500,7 +497,7 @@ const PowerListing = (props) => {
                 state.isLoader && "max-loader-height"
               }`}
             >
-              {noData && (
+              {state.noData && (
                 <NoContentFound
                   title={EMPTY_DATA}
                   customClassName="no-content-found"

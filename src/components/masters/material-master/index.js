@@ -17,7 +17,7 @@ import { CheckApprovalApplicableMaster } from '../../../helper';
 import CommonApproval from './CommonApproval';
 import { MESSAGES } from '../../../config/message';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
-
+export const ApplyPermission = React.createContext();
 function RowMaterialMaster(props) {
 
     const [stopApiCallOnCancel, setStopApiCallOnCancel] = useState(false);
@@ -26,7 +26,7 @@ function RowMaterialMaster(props) {
     const [isRMDomesticForm, setisRMDomesticForm] = useState(false);
 
     const [isRMImportForm, setisRMImportForm] = useState(false);
-
+    const [permissionData, setPermissionData] = useState({});
     const [data, setdata] = useState({});
     const [ViewRMAccessibility, setViewRMAccessibility] = useState(false);
     const [AddAccessibility, setAddAccessibility] = useState(false);
@@ -87,6 +87,7 @@ function RowMaterialMaster(props) {
             const permmisionDataRMANDGRADE = accessDataRMANDGRADE && accessDataRMANDGRADE.Actions && checkPermission(accessDataRMANDGRADE.Actions)
 
             if (permmisionData !== undefined) {
+                setPermissionData(permmisionData);
                 setViewRMAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false);
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false);
                 setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false);
@@ -240,7 +241,7 @@ function RowMaterialMaster(props) {
                                 </NavLink>
                             </NavItem>}
                         </Nav>
-
+                        <ApplyPermission.Provider value={permissionData}>
                         <TabContent activeTab={activeTab}>
 
 
@@ -327,6 +328,7 @@ function RowMaterialMaster(props) {
                                 </TabPane>}
 
                         </TabContent>
+                        </ApplyPermission.Provider>
                     </div>
                 </Col>
             </Row>

@@ -1,441 +1,485 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Row, Col, } from 'reactstrap';
-import AddMaterialType from './AddMaterialType';
-import { getMaterialTypeDataListAPI, deleteMaterialTypeAPI } from '../actions/Material';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import NoContentFound from '../../common/NoContentFound';
-import { MESSAGES } from '../../../config/message';
-import Toaster from '../../common/Toaster';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import Association from './Association';
-import { RmMaterial } from '../../../config/constants';
-import ReactExport from 'react-export-excel';
-import { RMLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import LoaderCustom from '../../common/LoaderCustom';
-import { PaginationWrapper } from '../../common/commonPagination';
-import { searchNocontentFilter } from '../../../helper';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
-import Button from '../../layout/Button';
-
+import React, { useState, useEffect, useContext } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Row, Col } from "reactstrap";
+import AddMaterialType from "./AddMaterialType";
+import {
+  getMaterialTypeDataListAPI,
+  deleteMaterialTypeAPI,
+} from "../actions/Material";
+import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import NoContentFound from "../../common/NoContentFound";
+import { MESSAGES } from "../../../config/message";
+import Toaster from "../../common/Toaster";
+import Association from "./Association";
+import { RmMaterial } from "../../../config/constants";
+import ReactExport from "react-export-excel";
+import { RMLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { AgGridColumn, AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import LoaderCustom from "../../common/LoaderCustom";
+import { PaginationWrapper } from "../../common/commonPagination";
+import { searchNocontentFilter } from "../../../helper";
+import Button from "../../layout/Button";
+import { ApplyPermission } from ".";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
 const gridOptions = {};
+const RMListing = (props) => {
+  const dispatch = useDispatch();
+  const { rawMaterialTypeDataList } = useSelector((state) => state.material);
+  const permissions = useContext(ApplyPermission);
+  const [state, setState] = useState({
+    isOpen: false,
+    isEditFlag: false,
+    ID: "",
+    isOpenAssociation: false,
+    gridApi: null,
+    gridColumnApi: null,
+    rowData: null,
+    showPopup: false,
+    deletedId: "",
+    isLoader: false,
+    selectedRowData: false,
+    noData: false,
+    dataCount: 0,
+  });
 
-class RMListing extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isOpen: false,
-            isEditFlag: false,
-            ID: '',
-            isOpenAssociation: false,
-            gridApi: null,
-            gridColumnApi: null,
-            rowData: null,
-            showPopup: false,
-            deletedId: '',
-            isLoader: false,
-            selectedRowData: false,
-            noData: false,
-            dataCount: 0
+  useEffect(() => {
+    getListData();
+  }, []);
+
+  /**+-
+   * @method getListData
+   * @description Get list data
+   */
+  const getListData = () => {
+    setState((prevState) => ({ ...prevState, isLoader: true }));
+    dispatch(
+      getMaterialTypeDataListAPI((res) =>
+        setState((prevState) => ({ ...prevState, isLoader: false }))
+      )
+    );
+  };
+  /**
+   * @method closeDrawer
+   * @description  used to cancel filter form
+   */
+  const closeDrawer = (e = "", formData, type) => {
+    setState((prevState) => ({
+      ...prevState,
+      isOpen: false,
+      isLoader: type === "submit" ? true : prevState.isLoader,
+      dataCount: type === "submit" ? 0 : prevState.dataCount,
+    }));
+    if (type === "submit") {
+      getListData();
+    }
+  };
+  /**
+   * @method onFloatingFilterChanged
+   * @description Filter data when user type in searching input
+   */
+  const onFloatingFilterChanged = (value) => {
+    setTimeout(() => {
+      rawMaterialTypeDataList.length !== 0 &&
+        setState((prevState) => ({
+          ...prevState,
+          noData: searchNocontentFilter(value, prevState.noData),
+        }));
+    }, 500);
+  };
+  /**
+   * @method closeDrawer
+   * @description  used to cancel filter form
+   */
+  const closeAssociationDrawer = (e = "") => {
+    setState((prevState) => ({ ...prevState, isOpenAssociation: false }));
+    getListData();
+  };
+  /**
+   * @method editItemDetails
+   * @description edit Raw Material
+   */
+  const editItemDetails = (Id) => {
+    setState((prevState) => ({
+      ...prevState,
+      isEditFlag: true,
+      isOpen: true,
+      ID: Id,
+    }));
+  };
+  /**
+   * @method deleteItem
+   * @description confirm delete Raw Material
+   */
+  const deleteItem = (Id) => {
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
+  };
+  /**
+   * @method confirmDelete
+   * @description confirm delete Raw Material
+   */
+
+  const confirmDelete = (ID) => {
+    dispatch(
+      deleteMaterialTypeAPI(ID, (res) => {
+        if (res.status === 417 && res.data.Result === false) {
+          Toaster.error(res.data.Message);
+        } else if (res && res.data && res.data.Result === true) {
+          Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
+          setState((prevState) => ({ ...prevState, dataCount: 0 }));
+          getListData();
         }
-    }
+      })
+    );
+    setState((prevState) => ({ ...prevState, showPopup: false }));
+  };
 
-    /**
-   * @method componentDidMount
-   * @description Called after rendering the component
+  const onPopupConfirm = () => {
+    confirmDelete(state.deletedId);
+  };
+
+  const closePopUp = () => {
+    setState((prevState) => ({ ...prevState, showPopup: false }));
+  };
+
+  const openModel = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isOpen: true,
+      isEditFlag: false,
+    }));
+  };
+
+  const openAssociationModel = () => {
+    setState((prevState) => ({ ...prevState, isOpenAssociation: true }));
+  };
+
+  /**
+   * @method buttonFormatter
+   * @description show and hide edit and delete
    */
-    componentDidMount() {
-        this.getListData();
-    }
-    /**+-
-    * @method getListData
-    * @description Get list data
-    */
-    getListData = () => {
-        this.setState({ isLoader: true })
-        this.props.getMaterialTypeDataListAPI(res => { this.setState({ isLoader: false }) });
-    }
+  const buttonFormatter = (props) => {
+    const cellValue = props?.valueFormatted
+      ? props.valueFormatted
+      : props?.value;
+    const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    /**
-    * @method closeDrawer
-    * @description  used to cancel filter form
-    */
-    closeDrawer = (e = '', formData, type) => {
-        this.setState({ isOpen: false }, () => {
-            if (type === 'submit') {
-                this.setState({ isLoader: true })
-                this.getListData()
-                this.setState({ dataCount: 0 })
-            }
-        })
-    }
-    /**
-       * @method onFloatingFilterChanged
-       * @description Filter data when user type in searching input
-       */
-    onFloatingFilterChanged = (value) => {
-        setTimeout(() => {
-            this.props.rawMaterialTypeDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }, 500);
-    }
-
-    /**
-  * @method closeDrawer
-  * @description  used to cancel filter form
-  */
-    closeAssociationDrawer = (e = '') => {
-        this.setState({ isOpenAssociation: false }, () => {
-            this.getListData()
-        })
-        this.setState({ dataCount: 0 })
-    }
-
-    /**
-    * @method editItemDetails
-    * @description edit Raw Material
-    */
-    editItemDetails = (Id) => {
-        this.setState({
-            isEditFlag: true,
-            isOpen: true,
-            ID: Id,
-        })
-    }
-
-    /**
-    * @method deleteItem
-    * @description confirm delete Raw Material
-    */
-    deleteItem = (Id) => {
-        this.setState({ showPopup: true, deletedId: Id })
-    }
-
-    /**
-    * @method confirmDelete
-    * @description confirm delete Raw Material
-    */
-    confirmDelete = (ID) => {
-        this.props.deleteMaterialTypeAPI(ID, (res) => {
-            if (res.status === 417 && res.data.Result === false) {
-                Toaster.error(res.data.Message)
-            } else if (res && res.data && res.data.Result === true) {
-                Toaster.success(MESSAGES.DELETE_MATERIAL_SUCCESS);
-                this.setState({ dataCount: 0 })
-                this.getListData();
-            }
-        });
-        this.setState({ showPopup: false })
-    }
-    onPopupConfirm = () => {
-        this.confirmDelete(this.state.deletedId);
-    }
-    closePopUp = () => {
-        this.setState({ showPopup: false })
-    }
-    /**
-   * @method openModel
-   * @description  used to open filter form 
+    return (
+      <>
+        {permissions.Edit && (
+          <Button
+            title="Edit"
+            variant="Edit"
+            id={`addSpecificationList_edit${props?.rowIndex}`}
+            className="mr-2"
+            onClick={() => editItemDetails(cellValue, rowData)}
+          />
+        )}
+        {permissions.Delete && (
+          <Button
+            title="Delete"
+            variant="Delete"
+            id={`addSpecificationList_delete${props?.rowIndex}`}
+            onClick={() => deleteItem(cellValue)}
+          />
+        )}
+      </>
+    );
+  };
+  /**
+   * @method hyphenFormatter
    */
-    openModel = () => {
-        this.setState({
-            isOpen: true,
-            isEditFlag: false
-        })
-    }
+  const hyphenFormatter = (props) => {
+    const cellValue = props?.value;
+    return cellValue !== " " &&
+      cellValue !== null &&
+      cellValue !== "" &&
+      cellValue !== undefined
+      ? cellValue
+      : "-";
+  };
 
-    openAssociationModel = () => {
-        this.setState({
-            isOpenAssociation: true
-        })
-    }
+  const onGridReady = (params) => {
+    setState((prevState) => ({
+      ...prevState,
+      gridApi: params.api,
+      gridColumnApi: params.columnApi,
+    }));
+    params.api.paginationGoToPage(0);
+  };
 
-    /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-    // indexFormatter = (cell, row, enumObject, rowIndex) => {
-    //     const { table } = this.refs;
-    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-    //     let serialNumber = '';
-    //     if (currentPage === 1) {
-    //         serialNumber = rowIndex + 1;
-    //     } else {
-    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-    //     }
-    //     return serialNumber;
-    // }
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
+  };
 
-    // indexFormatter = (props) => {
-    //     const { table } = this.refs;
-    //     let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-    //     let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-    //     let serialNumber = '';
-    //     if (currentPage === 1) {
-    //         serialNumber = rowIndex + 1;
-    //     } else {
-    //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-    //     }
-    //     return serialNumber;
-    // }
+  const onRowSelect = () => {
+    const selectedRows = state.gridApi?.getSelectedRows();
+    setState((prevState) => ({
+      ...prevState,
+      selectedRowData: selectedRows,
+      dataCount: selectedRows.length,
+    }));
+  };
 
-    /**
-    * @method renderPaginationShowsTotal
-    * @description Pagination
-    */
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
+  const onBtExport = () => {
+    let tempArr = [];
+    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    tempArr =
+      tempArr && tempArr.length > 0
+        ? tempArr
+        : rawMaterialTypeDataList
+        ? rawMaterialTypeDataList
+        : [];
+    return returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr);
+  };
 
+  const returnExcelColumn = (data = [], TempData) => {
+    let temp = [];
+    temp =
+      TempData &&
+      TempData.map((item) => {
+        if (item.RMName === "-") {
+          item.RMName = " ";
+        }
+        if (item.RMGrade === "-") {
+          item.RMGrade = " ";
+        }
+        return item;
+      });
+    return (
+      <ExcelSheet data={temp} name={RmMaterial}>
+        {data &&
+          data.map((ele, index) => (
+            <ExcelColumn
+              key={index}
+              label={ele.label}
+              value={ele.value}
+              style={ele.style}
+            />
+          ))}
+      </ExcelSheet>
+    );
+  };
 
-    /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    buttonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+  const onFilterTextBoxChanged = (e) => {
+    state.gridApi.setQuickFilter(e.target.value);
+  };
 
-        const { EditAccessibility, DeleteAccessibility } = this.props;
-        return (
+  /**
+   * @method resetState
+   * @description Resets the state
+   */
+  const resetState = () => {
+    state.gridApi.deselectAll();
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null);
+  };
+  const { isOpen, isEditFlag, ID, noData } = state;
+  const { AddAccessibility, DownloadAccessibility } = props;
+
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
+  };
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn,
+  };
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    hyphenFormatter: hyphenFormatter,
+    customNoRowsOverlay: NoContentFound,
+  };
+
+  return (
+    <div
+      className={`ag-grid-react min-height100vh ${
+        DownloadAccessibility ? "show-table-btn" : ""
+      }`}
+    >
+      {state.isLoader && <LoaderCustom />}
+      <Row className="pt-4 no-filter-row">
+        <Col md={6} className="text-right search-user-block pr-0">
+          {AddAccessibility && (
+            <Button
+              id="rmSpecification_addAssociation"
+              className="mr5"
+              onClick={openAssociationModel}
+              title="Add Association"
+              icon="plus mr-0 ml5"
+              buttonName="A"
+            />
+          )}
+          {AddAccessibility && (
+            <Button
+              id="rmSpecification_addMaterial"
+              className="mr5"
+              onClick={openModel}
+              title="Add Material"
+              icon={"plus mr-0 ml5"}
+              buttonName="M"
+            />
+          )}
+          {DownloadAccessibility && (
             <>
-                {EditAccessibility && <Button title='Edit' variant="Edit" id={`addSpecificationList_edit${props?.rowIndex}`} className="mr-2" onClick={() => this.editItemDetails(cellValue, rowData)} />}
-                {DeleteAccessibility && <Button title='Delete' variant="Delete" id={`addSpecificationList_delete${props?.rowIndex}`} onClick={() => this.deleteItem(cellValue)} />}
+              <>
+                <ExcelFile
+                  filename={"Rm Material"}
+                  fileExtension={".xls"}
+                  element={
+                    <button
+                      title={`Download ${
+                        state.dataCount === 0
+                          ? "All"
+                          : "(" + state.dataCount + ")"
+                      }`}
+                      type="button"
+                      className={"user-btn mr5"}
+                    >
+                      <div className="download mr-1"></div>
+                      {`${
+                        state.dataCount === 0
+                          ? "All"
+                          : "(" + state.dataCount + ")"
+                      }`}
+                    </button>
+                  }
+                >
+                  {onBtExport()}
+                </ExcelFile>
+              </>
             </>
-        )
-    };
+          )}
+          <Button
+            id={"rmSpecification_refresh"}
+            onClick={() => resetState()}
+            title={"Reset Grid"}
+            icon={"refresh"}
+          />
+        </Col>
+      </Row>
 
-    /**
-    * @method hyphenFormatter
-    */
-    hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
-
-    renderDensity = (cell, row, enumObject, rowIndex) => {
-
-        // return applySuperScripts('Density(g/cm^3)')
-        // return <>Density(g/cm)       </>
-        // return <>Vendor <br />Location </>
-        return (<>
-            Density(g/cm<sup>3</sup>)
-        </>)
-
-    }
-
-    onGridReady = (params) => {
-        this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
-        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(0);
-    };
-
-    onPageSizeChanged = (newPageSize) => {
-        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-    };
-    onRowSelect = () => {
-        const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
-    }
-
-    onBtExport = () => {
-        let tempArr = []
-        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.rawMaterialTypeDataList ? this.props.rawMaterialTypeDataList : [])
-        return this.returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr)
-    };
-
-    returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData && TempData.map((item) => {
-            if (item.RMName === '-') {
-                item.RMName = ' '
-            } if (item.RMGrade === '-') {
-                item.RMGrade = ' '
-            }
-            return item
-        })
-        return (
-
-            <ExcelSheet data={temp} name={RmMaterial}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
-    }
-
-    onFilterTextBoxChanged(e) {
-        this.state.gridApi.setQuickFilter(e.target.value);
-    }
-
-    resetState() {
-        this.state.gridApi.deselectAll()
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { isOpen, isEditFlag, ID, noData, dataCount } = this.state;
-        const { AddAccessibility, DownloadAccessibility } = this.props;
-
-        const isFirstColumn = (params) => {
-
-            var displayedColumns = params.columnApi.getAllDisplayedColumns();
-            var thisIsFirstColumn = displayedColumns[0] === params.column;
-            return thisIsFirstColumn;
-
-        }
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            headerCheckboxSelectionFilteredOnly: true,
-            checkboxSelection: isFirstColumn
-        };
-
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            hyphenFormatter: this.hyphenFormatter,
-            customNoRowsOverlay: NoContentFound
-        };
-
-
-        return (
-            <div className={`ag-grid-react min-height100vh ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-                {this.state.isLoader && <LoaderCustom />}
-                <Row className="pt-4 no-filter-row">
-                    <Col md={6} className="text-right search-user-block pr-0">
-                        {AddAccessibility && (
-                            <Button
-                                id="rmSpecification_addAssociation"
-                                className="mr5"
-                                onClick={this.openAssociationModel}
-                                title="Add Association"
-                                icon="plus mr-0 ml5"
-                                buttonName="A"
-                            />
-                        )}
-                        {AddAccessibility && (
-
-                            <Button
-                                id="rmSpecification_addMaterial"
-                                className="mr5"
-                                onClick={this.openModel}
-                                title="Add Material"
-                                icon={"plus mr-0 ml5"}
-                                buttonName="M"
-                            />
-                        )}
-                        {
-                            DownloadAccessibility &&
-                            <>
-                                <>
-                                    <ExcelFile filename={'Rm Material'} fileExtension={'.xls'} element={
-                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
-                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
-                                        {this.onBtExport()}
-                                    </ExcelFile>
-                                </>
-                            </>
-                        }
-                        <Button
-                            id={"rmSpecification_refresh"}
-                            onClick={() => this.resetState()}
-                            title={"Reset Grid"}
-                            icon={"refresh"}
-                        />
-
-                    </Col>
-
-                </Row>
-
-                <Row>
-                    <Col>
-                        <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.rawMaterialTypeDataList && this.props.rawMaterialTypeDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                            <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                            </div>
-                            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                                <AgGridReact
-                                    defaultColDef={defaultColDef}
-                                    floatingFilter={true}
-                                    domLayout='autoHeight'
-                                    // columnDefs={c}
-                                    rowData={this.props.rawMaterialTypeDataList}
-                                    pagination={true}
-                                    paginationPageSize={defaultPageSize}
-                                    onGridReady={this.onGridReady}
-                                    gridOptions={gridOptions}
-                                    // loadingOverlayComponent={'customLoadingOverlay'}
-                                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass'
-                                    }}
-                                    rowSelection={'multiple'}
-                                    frameworkComponents={frameworkComponents}
-                                    onSelectionChanged={this.onRowSelect}
-                                    onFilterModified={this.onFloatingFilterChanged}
-                                    suppressRowClickSelection={true}
-                                >
-                                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                                    <AgGridColumn field="RawMaterial" headerName="Material"></AgGridColumn>
-                                    <AgGridColumn field="Density"></AgGridColumn>
-                                    <AgGridColumn field="RMName" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="RMGrade" headerName="Grade" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                                </AgGridReact>
-                                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
-                {isOpen && <AddMaterialType
-                    isOpen={isOpen}
-                    closeDrawer={this.closeDrawer}
-                    isEditFlag={isEditFlag}
-                    ID={ID}
-                    anchor={'right'}
-                />}
-                {
-                    this.state.isOpenAssociation && <Association
-                        isOpen={this.state.isOpenAssociation}
-                        closeDrawer={this.closeAssociationDrawer}
-                        anchor={'right'} />
-                }
-                {
-                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`} />
-                }
+      <Row>
+        <Col>
+          <div
+            className={`ag-grid-wrapper height-width-wrapper ${
+              (rawMaterialTypeDataList &&
+                props.rawMaterialTypeDataList?.length <= 0) ||
+              noData
+                ? "overlay-contain"
+                : ""
+            }`}
+          >
+            <div className="ag-grid-header">
+              <input
+                type="text"
+                className="form-control table-search"
+                id="filter-text-box"
+                placeholder="Search"
+                autoComplete={"off"}
+                onChange={(e) => onFilterTextBoxChanged(e)}
+              />
             </div>
-        );
-    }
-}
+            <div
+              className={`ag-theme-material ${
+                state.isLoader && "max-loader-height"
+              }`}
+            >
+              {noData && (
+                <NoContentFound
+                  title={EMPTY_DATA}
+                  customClassName="no-content-found"
+                />
+              )}
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                floatingFilter={true}
+                domLayout="autoHeight"
+                // columnDefs={c}
+                rowData={rawMaterialTypeDataList}
+                pagination={true}
+                paginationPageSize={defaultPageSize}
+                onGridReady={onGridReady}
+                gridOptions={gridOptions}
+                // loadingOverlayComponent={'customLoadingOverlay'}
+                noRowsOverlayComponent={"customNoRowsOverlay"}
+                noRowsOverlayComponentParams={{
+                  title: EMPTY_DATA,
+                  imagClass: "imagClass",
+                }}
+                rowSelection={"multiple"}
+                frameworkComponents={frameworkComponents}
+                onSelectionChanged={onRowSelect}
+                onFilterModified={onFloatingFilterChanged}
+                suppressRowClickSelection={true}
+              >
+                {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                <AgGridColumn
+                  field="RawMaterial"
+                  headerName="Material"
+                ></AgGridColumn>
+                <AgGridColumn field="Density"></AgGridColumn>
+                <AgGridColumn
+                  field="RMName"
+                  cellRenderer={"hyphenFormatter"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="RMGrade"
+                  headerName="Grade"
+                  cellRenderer={"hyphenFormatter"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="MaterialId"
+                  cellClass="ag-grid-action-container"
+                  headerName="Action"
+                  type="rightAligned"
+                  floatingFilter={false}
+                  cellRenderer={"totalValueRenderer"}
+                ></AgGridColumn>
+              </AgGridReact>
+              {
+                <PaginationWrapper
+                  gridApi={state.gridApi}
+                  setPage={onPageSizeChanged}
+                />
+              }
+            </div>
+          </div>
+        </Col>
+      </Row>
+      {isOpen && (
+        <AddMaterialType
+          isOpen={isOpen}
+          closeDrawer={closeDrawer}
+          isEditFlag={isEditFlag}
+          ID={ID}
+          anchor={"right"}
+        />
+      )}
+      {state.isOpenAssociation && (
+        <Association
+          isOpen={state.isOpenAssociation}
+          closeDrawer={closeAssociationDrawer}
+          anchor={"right"}
+        />
+      )}
+      {state.showPopup && (
+        <PopupMsgWrapper
+          isOpen={state.showPopup}
+          closePopUp={closePopUp}
+          confirmPopup={onPopupConfirm}
+          message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}
+        />
+      )}
+    </div>
+  );
+};
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ material }) {
-    const { rawMaterialTypeDataList } = material;
-    return { rawMaterialTypeDataList }
-}
-
-export default connect(
-    mapStateToProps, {
-    getMaterialTypeDataListAPI,
-    deleteMaterialTypeAPI,
-}
-)(RMListing);
-
+export default RMListing;
