@@ -49,7 +49,7 @@ const RMListing = (props) => {
 
   useEffect(() => {
     getListData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, []);
 
   /**+-
@@ -70,8 +70,11 @@ const RMListing = (props) => {
    */
   const closeDrawer = (e = "", formData, type) => {
     setState((prevState) => ({
-      ...prevState,isOpen: false,isLoader: type === "submit" ? true : prevState.isLoader, dataCount: type === "submit" ? 0 : prevState.dataCount,
-   }));
+      ...prevState,
+      isOpen: false,
+      isLoader: type === "submit" ? true : prevState.isLoader,
+      dataCount: type === "submit" ? 0 : prevState.dataCount,
+    }));
     if (type === "submit") {
       getListData();
     }
@@ -84,7 +87,9 @@ const RMListing = (props) => {
     setTimeout(() => {
       rawMaterialTypeDataList.length !== 0 &&
         setState((prevState) => ({
-          ...prevState,  noData: searchNocontentFilter(value, prevState.noData),}));
+          ...prevState,
+          noData: searchNocontentFilter(value, prevState.noData),
+        }));
     }, 500);
   };
   /**
@@ -101,7 +106,11 @@ const RMListing = (props) => {
    */
   const editItemDetails = (Id) => {
     setState((prevState) => ({
-      ...prevState,isEditFlag: true, isOpen: true, ID: Id, }));
+      ...prevState,
+      isEditFlag: true,
+      isOpen: true,
+      ID: Id,
+    }));
   };
   /**
    * @method deleteItem
@@ -140,7 +149,10 @@ const RMListing = (props) => {
 
   const openModel = () => {
     setState((prevState) => ({
-      ...prevState, isOpen: true,isEditFlag: false,}));
+      ...prevState,
+      isOpen: true,
+      isEditFlag: false,
+    }));
   };
 
   const openAssociationModel = () => {
@@ -266,11 +278,9 @@ const RMListing = (props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-    
-   
   };
   const { isOpen, isEditFlag, ID, noData } = state;
-  // const { AddAccessibility, DownloadAccessibility } = props;
+  const { AddAccessibility, DownloadAccessibility } = props;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -292,13 +302,13 @@ const RMListing = (props) => {
   return (
     <div
       className={`ag-grid-react min-height100vh ${
-        permissions.Download ? "show-table-btn" : ""
+        DownloadAccessibility ? "show-table-btn" : ""
       }`}
     >
       {state.isLoader && <LoaderCustom />}
       <Row className="pt-4 no-filter-row">
         <Col md={6} className="text-right search-user-block pr-0">
-          {permissions.Add && (
+          {AddAccessibility && (
             <Button
               id="rmSpecification_addAssociation"
               className="mr5"
@@ -308,7 +318,7 @@ const RMListing = (props) => {
               buttonName="A"
             />
           )}
-          {permissions.Add && (
+          {AddAccessibility && (
             <Button
               id="rmSpecification_addMaterial"
               className="mr5"
@@ -318,7 +328,7 @@ const RMListing = (props) => {
               buttonName="M"
             />
           )}
-          {permissions.Download && (
+          {DownloadAccessibility && (
             <>
               <>
                 <ExcelFile

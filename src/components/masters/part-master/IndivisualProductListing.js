@@ -1,20 +1,17 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Row, Col } from "reactstrap";
 import {} from "../../../actions/Common";
 import {
   getProductDataList,
   deleteProduct,
-  activeInactivePartStatus,
-  checkStatusCodeAPI,
+
 } from "../actions/Part";
 import { MESSAGES } from "../../../config/message";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import DayTime from "../../common/DayTimeWrapper";
-import { loggedInUserId } from "../../../helper/auth";
 import BulkUpload from "../../massUpload/BulkUpload";
-import { GridTotalFormate } from "../../common/TableGridFunctions";
 import LoaderCustom from "../../common/LoaderCustom";
 import Toaster from "../../common/Toaster";
 import { ComponentPart } from "../../../config/constants";
@@ -28,7 +25,6 @@ import { filterParams } from "../../common/DateFilter";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { hyphenFormatter } from "../masterUtil";
 import { searchNocontentFilter } from "../../../helper";
-import SelectRowWrapper from "../../common/SelectRowWrapper";
 import { ApplyPermission } from ".";
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -38,8 +34,8 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const IndivisualProductListing = (props) => {
-  const [isEditFlag, setIsEditFlag] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
+  // const [isEditFlag, setIsEditFlag] = useState(false);
+  // const [isOpen, setIsOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState(false);
   const [gridApi, setGridApi] = useState(null);
@@ -57,14 +53,16 @@ const IndivisualProductListing = (props) => {
   // );
   // console.log(partsListing);
   const dispatch = useDispatch();
-
-  const { initialConfiguration } = useSelector((state) => state.auth);
+console.log(
+  gridColumnApi,selectedRowData
+);
+  // const { initialConfiguration } = useSelector((state) => state.auth);
   const permissions = useContext(ApplyPermission);
   console.log(tableData);
   useEffect(() => {
   
       getTableListData();
-    
+    // eslint-disable-next-line
   }, []);
 
  

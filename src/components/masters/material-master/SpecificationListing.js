@@ -31,7 +31,8 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const SpecificationListing = (props) => {
   const dispatch = useDispatch();
-  const { rmSpecificationList } = useSelector((state) => state.material);
+  const { rmSpecificationList } =
+    useSelector((state) => state.material);
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
     isOpen: false,
@@ -56,12 +57,15 @@ const SpecificationListing = (props) => {
 
   useEffect(() => {
     getSpecificationListData("", "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, []);
 
   const getSpecificationListData = useCallback(
     (materialId = "", gradeId = "") => {
-      const data = { MaterialId: materialId,  GradeId: gradeId,};
+      const data = {
+        MaterialId: materialId,
+        GradeId: gradeId,
+      };
 
       setState((prev) => ({ ...prev, isLoader: true }));
       dispatch(
@@ -83,44 +87,46 @@ const SpecificationListing = (props) => {
         })
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [dispatch]
   );
 
   const closeDrawer = useCallback(
     (e = "", data, type) => {
       setState(
         (prev) => ({
-          ...prev, isOpen: false,dataCount: 0,}),
+          ...prev,
+          isOpen: false,
+          dataCount: 0,
+        }),
         () => {
           if (type === "submit") getSpecificationListData("", "");
         }
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [getSpecificationListData]
   );
 
   const editItemDetails = useCallback((Id) => {
     setState((prev) => ({
-      ...prev, isEditFlag: true,isOpen: true, ID: Id,  }));
+      ...prev,
+      isEditFlag: true,
+      isOpen: true,
+      ID: Id,
+    }));
   }, []);
 
   const openModel = useCallback(() => {
     setState((prev) => ({
-      ...prev, isOpen: true,  isEditFlag: false, }));
+      ...prev,
+      isOpen: true,
+      isEditFlag: false,
+    }));
   }, []);
- /**
-    * @method deleteItem
-    * @description confirm delete RM Specification
-    */
+
   const deleteItem = useCallback((Id) => {
     setState((prev) => ({ ...prev, showPopup: true, deletedId: Id }));
   }, []);
-/**
-    * @method confirmDelete
-    * @description confirm delete RM Specification
-    */
+
   const confirmDelete = useCallback(
     (ID) => {
       const loggedInUser = loggedInUserId();
@@ -139,18 +145,14 @@ const SpecificationListing = (props) => {
         })
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [dispatch, getSpecificationListData]
   );
 
   const onPopupConfirm = useCallback(() => {
     confirmDelete(state.deletedId);
   }, [confirmDelete, state.deletedId]);
-  /**
-* @method buttonFormatter
-* @description Renders buttons
-*/
-  const buttonFormatter = useCallback(
+
+ const buttonFormatter = useCallback(
     (props) => {
       const cellValue = props?.value;
       const rowData = props?.data;
@@ -177,41 +179,35 @@ const SpecificationListing = (props) => {
         </>
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    // eslint-disable-next-line
+    [editItemDetails, deleteItem]
   );
 
- const onFloatingFilterChanged = (value) => {
+   /**
+    * @method indexFormatter
+    * @description Renders serial number
+    */
+ 
+
+  const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       rmSpecificationList.length !== 0 &&
-        setState((prevState) => ({
-          ...prevState,
-          noData: searchNocontentFilter(value, state.noData),
-        }));
+        setState({ noData: searchNocontentFilter(value, state.noData) });
     }, 500);
   };
 
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+    setState({ isBulkUpload: true });
   };
 
   const closeBulkUploadDrawer = () => {
-    setState(
-      (prevState) => {
-        return {
-          ...prevState,
-          isBulkUpload: false,
-        };
-      },
-      () => {
-        getSpecificationListData("", "");
-      }
-    );
+    setState({ isBulkUpload: false }, () => {
+      getSpecificationListData("", "");
+    });
   };
-  
 
   const densityAlert = () => {
-    setState((prevState) => ({ ...prevState, showPopup2: true }));
+    setState({ showPopup2: true });
   };
 
   const confirmDensity = () => {
@@ -233,11 +229,7 @@ const SpecificationListing = (props) => {
   const onGridReady = (params) => {
     state.gridApi = params.api;
     state.gridApi.sizeColumnsToFit();
-    setState((prevState) => ({
-      ...prevState,
-      gridApi: params.api,
-      gridColumnApi: params.columnApi,
-    }));
+    setState({ gridApi: params.api, gridColumnApi: params.columnApi });
     params.api.paginationGoToPage(0);
   };
 
@@ -291,9 +283,9 @@ const SpecificationListing = (props) => {
 
   const resetState = () => {
     state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState(null);
+    gridOptions.columnApi.resetColumnState();
     state.gridApi.setFilterModel(null);
-   };
+  };
 
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
@@ -310,11 +302,13 @@ const SpecificationListing = (props) => {
     setState((prevState) => ({
       ...prevState,
       selectedRowData: selectedRows,
-      dataCount: selectedRows?.length,
+      dataCount: selectedRows.length,
     }));
   };
-  
-const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
+
+  const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
+  const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } =
+    props;
   const isFirstColumn = (params) => {
     const displayedColumns = params.columnApi.getAllDisplayedColumns();
     const thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -322,7 +316,11 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
   };
 
   const defaultColDef = {
-    resizable: true, filter: true,sortable: false, headerCheckboxSelectionFilteredOnly: true,checkboxSelection: isFirstColumn,
+    resizable: true,
+    filter: true,
+    sortable: false,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn,
   };
 
   const frameworkComponents = {
@@ -330,17 +328,18 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
     hyphenFormatter: hyphenFormatter,
     customNoRowsOverlay: NoContentFound,
   };
+
   return (
     <div
       className={`ag-grid-react min-height100vh ${
-        permissions.Download ? "show-table-btn" : ""
+        DownloadAccessibility ? "show-table-btn" : ""
       }`}
     >
       {state.isLoader && <LoaderCustom />}
       <form noValidate>
         <Row className="pt-4">
           <Col md={6} className="text-right mb-3 search-user-block">
-            {permissions.Add && (
+            {AddAccessibility && (
               <Button
                 id="rmSpecification_filter"
                 className={"mr5"}
@@ -349,7 +348,7 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
                 icon={"plus"}
               />
             )}
-            {permissions.BulkUpload && (
+            {BulkUploadAccessibility && (
               <Button
                 id="rmSpecification_add"
                 className={"mr5"}
@@ -358,7 +357,7 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
                 icon={"upload"}
               />
             )}
-            {permissions.Download && (
+            {DownloadAccessibility && (
               <>
                 <>
                   <ExcelFile
@@ -467,7 +466,10 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
                 ></AgGridColumn>
               </AgGridReact>
               {
-                <PaginationWrapper  gridApi={state.gridApi}  setPage={onPageSizeChanged} />
+                <PaginationWrapper
+                  gridApi={state.gridApi}
+                  setPage={onPageSizeChanged}
+                />
               }
             </div>
           </div>

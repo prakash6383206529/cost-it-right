@@ -37,6 +37,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 
+
 function RMDomesticListing(props) {
     const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, apply, selectionForListingMasterAPI, objectForMultipleSimulation, ListFor, initialConfiguration } = props;
     const [value, setvalue] = useState({ min: 0, max: 0 });
