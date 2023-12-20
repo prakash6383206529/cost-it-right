@@ -333,10 +333,10 @@ export const checkForDecimalAndNull = (floatValue, decimalPlaces) => {
     const value = (floatValue != null) ? new BigNumber(floatValue) : new BigNumber(0);
     // Return a number, rounded as a string, as per the defined number of decimal places
     if (localStorage.IsRoundingVisible) {
-        return value.decimalPlaces(decimalPlaces).toNumber();
+        return checkForNull(value.decimalPlaces(decimalPlaces).toNumber());
     } else {
         // Use trimDecimalPlace which already returns a number
-        return trimDecimalPlace(value, decimalPlaces);
+        return checkForNull(trimDecimalPlace(value, decimalPlaces));
     }
 };
 
