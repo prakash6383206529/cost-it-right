@@ -78,6 +78,9 @@ function Machining(props) {
     const calculateNetRm = () => {
         const rmPerPiece = getValues('rmPerPiece')
         const scrapCost = getValues('ScrapCost')
+        if (checkForNull(rmPerPiece) < checkForNull(scrapCost)) {
+            Toaster.warning('RM/Pc should not be less than scrap cost/piece. Please verify the values for "Thickness", "Net length", and "Parting Margin".')
+        }
         const netRm = rmPerPiece - scrapCost
         setValue('netRm', checkForDecimalAndNull(netRm, getConfigurationKey().NoOfDecimalForPrice))
     }
@@ -147,7 +150,7 @@ function Machining(props) {
    */
     const calculateScrapCost = () => {
         const ScrapWeight = getValues('ScrapWeight')
-        const ScrapRate = props.rmRowData.ScrapRatePerScrapUOM
+        const ScrapRate = props.rmRowData.ScrapRatePerScrapUOMConversion
         const ScrapCost = ScrapWeight * ScrapRate
         const updatedValue = dataToSend
         updatedValue.ScrapCost = ScrapCost
@@ -162,6 +165,10 @@ function Machining(props) {
         props.toggleDrawer('')
     }
     const onSubmit = debounce(handleSubmit((values) => {
+        if (checkForNull(getValues('netRm')) <= 0) {
+            Toaster.warning('"Net RM Cost" should not be negative or zero.')
+            return false
+        }
         let obj = {
             MachiningCalculatorId: WeightCalculatorRequest && WeightCalculatorRequest.MachiningCalculatorId ? WeightCalculatorRequest.MachiningCalculatorId : "0",
             BaseCostingIdRef: item.CostingId,
@@ -385,7 +392,7 @@ function Machining(props) {
                                         register={register}
                                         mandatory={false}
                                         handleChange={() => { }}
-                                        defaultValue={200}
+                                        defaultValue={rmRowData.RMRate}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.rmRate}
@@ -485,7 +492,7 @@ function Machining(props) {
                                             required: false,
                                         }}
                                         handleChange={() => { }}
-                                        defaultValue={props.rmRowData.ScrapRatePerScrapUOM}
+                                        defaultValue={props.rmRowData.ScrapRatePerScrapUOMConversion}
                                         className=""
                                         customClassName={'withBorder'}
                                         errors={errors.ScrapRate}

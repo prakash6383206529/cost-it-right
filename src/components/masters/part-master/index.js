@@ -1,311 +1,313 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect, useCallback } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { TabContent, TabPane, Nav, NavItem, NavLink } from "reactstrap";
-import classnames from 'classnames';
-import AddAssemblyPart from './AddAssemblyPart';
-import AddIndivisualPart from './AddIndivisualPart';
-import AssemblyPartListing from './AssemblyPartListing';
-import IndivisualPartListing from './IndivisualPartListing';
-import { MASTERS, PART } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
-import IndivisualProductListing from './IndivisualProductListing';
-import AddIndivisualProduct from './AddIndivisualProduct';
-import FetchDrawer from './FetchBOMDrawer'
-import ScrollToTop from '../../common/ScrollToTop';
-import { MESSAGES } from '../../../config/message';
+import classnames from "classnames";
+import AddAssemblyPart from "./AddAssemblyPart";
+import AddIndivisualPart from "./AddIndivisualPart";
+import AssemblyPartListing from "./AssemblyPartListing";
+import IndivisualPartListing from "./IndivisualPartListing";
+import IndivisualProductListing from "./IndivisualProductListing";
+import AddIndivisualProduct from "./AddIndivisualProduct";
+import FetchDrawer from "./FetchBOMDrawer";
+import ScrollToTop from "../../common/ScrollToTop";
+import { MASTERS, PART } from "../../../config/constants";
+import { checkPermission } from "../../../helper/util";
+import { MESSAGES } from "../../../config/message";
 
-class PartMaster extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isOpen: false,
-            activeTab: '1',
-            isAddBOMForm: false,
-            isPartForm: false,
-            isProductForm: false,
-            getDetails: {},
-            ViewAccessibility: false,
-            AddAccessibility: false,
-            EditAccessibility: false,
-            DeleteAccessibility: false,
-            BulkUploadAccessibility: false,
-            DownloadAccessibility: false,
-            openDrawer: false,
-            isHover: false,
-            stopApiCallOnCancel: false
-        }
+export const ApplyPermission = React.createContext();
+
+const PartMaster = () => {
+  const [state, setState] = useState({
+    isOpen: false,
+    activeTab: "1",
+    isAddBOMForm: false,
+    isPartForm: false,
+    isProductForm: false,
+    getDetails: {},
+    ViewAccessibility: false,
+    AddAccessibility: false,
+    EditAccessibility: false,
+    DeleteAccessibility: false,
+    BulkUploadAccessibility: false,
+    DownloadAccessibility: false,
+    openDrawer: false,
+    isHover: false,
+    stopApiCallOnCancel: false,
+  });
+
+  const topAndLeftMenuData = useSelector(
+    (state) => state.auth.topAndLeftMenuData
+  );
+  const initialConfiguration = useSelector(
+    (state) => state.auth.initialConfiguration
+  );
+  const disabledClass = useSelector((state) => state.comman.disabledClass);
+
+  const [permissionData, setPermissionData] = useState({});
+
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData);
+    toggle("1");
+  }, [topAndLeftMenuData]);
+
+
+  const applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data =
+        topAndLeftMenuData &&
+        topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === PART);
+      const permmisionDataAccess = accessData && accessData.Actions && checkPermission(accessData.Actions);
+
+      if (permmisionDataAccess !== undefined) {
+        setPermissionData(permmisionDataAccess);
+      }
     }
+  };
 
-    componentDidMount() {
-        this.applyPermission(this.props.topAndLeftMenuData)
+  const toggleFetchDrawer = () => {
+    setState((prevState) => ({
+      ...prevState,
+      openDrawer: false,
+    }));
+  };
+
+  const toggle = (tab) => {
+    if (state.activeTab !== tab) {
+      setState((prevState) => ({
+        ...prevState,
+        activeTab: tab,
+      }));
     }
+  };
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-            this.applyPermission(nextProps.topAndLeftMenuData)
-        }
-    }
+  const displayForm = useCallback(() => {
+    setState((prevState) => ({
+      ...prevState,
+      isAddBOMForm: true,
+      isPartForm: false,
+      getDetails: {},
+    }));
+  }, []);
 
-    toggleFetchDrawer = () => {
+  const getDetails = useCallback((data) => {
+    setState((prevState) => ({
+      ...prevState,
+      getDetails: data,
+      isAddBOMForm: true,
+      isPartForm: false,
+    }));
+  }, []);
 
-        this.setState({
-            openDrawer: false,
-        });
-    }
+  const hideForm = (type) => {
+    setState((prevState) => ({
+      ...prevState,
+      isAddBOMForm: false,
+      isPartForm: false,
+      isProductForm: false,
+      getDetails: {},
+      stopApiCallOnCancel: type === "cancel",
+    }));
+  };
 
-    /**
-    * @method applyPermission
-    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
-    */
-    applyPermission = (topAndLeftMenuData) => {
-        if (topAndLeftMenuData !== undefined) {
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
-            const accessData = Data && Data.Pages.find(el => el.PageName === PART)
-            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+  const displayIndividualForm = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isPartForm: true,
+      isAddBOMForm: false,
+      getDetails: {},
+    }));
+  };
 
-            if (permmisionData !== undefined) {
-                this.setState({
-                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                })
-            }
-        }
-    }
+  const getIndividualPartDetails = (data) => {
+    setState((prevState) => ({
+      ...prevState,
+      getDetails: data,
+      isPartForm: true,
+      isAddBOMForm: false,
+    }));
+  };
 
-    /**
-    * @method toggle
-    * @description toggling the tabs
-    */
-    toggle = (tab) => {
-        if (this.state.activeTab !== tab) {
-            this.setState({
-                activeTab: tab,
-                stopApiCallOnCancel: false
-            });
-        }
-    }
+  const displayIndividualProductForm = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isProductForm: true,
+      getDetails: {},
+    }));
+  };
 
-    // DISPLAY BOM FORM
-    displayForm = () => {
-        this.setState({ isAddBOMForm: true, isPartForm: false, getDetails: {} })
-    }
+  const getIndividualProductDetails = (data) => {
+    setState((prevState) => ({
+      ...prevState,
+      getDetails: data,
+      isProductForm: true,
+      isAddBOMForm: false,
+    }));
+  };
 
-    //GET DETAILS OF BOM 
-    getDetails = (data) => {
-        this.setState({ getDetails: data, isAddBOMForm: true, isPartForm: false, })
-    }
+  const openFetchDrawer = () => {
+    setState((prevState) => ({
+      ...prevState,
+      openDrawer: true,
+    }));
+  };
 
-    //HIDE BOM & PART INDIVIDUAL FORM
-    hideForm = (type) => {
-        this.setState({ isAddBOMForm: false, isPartForm: false, isProductForm: false, getDetails: {}, stopApiCallOnCancel: false })
-        if (type === 'cancel') {
-            this.setState({ stopApiCallOnCancel: true })
-        }
-    }
+  const handleMouse = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isHover: true,
+    }));
+  };
 
-    //DISPLAY INDIVIDUAL PART FORM
-    displayIndividualForm = () => {
-        this.setState({ isPartForm: true, isAddBOMForm: false, getDetails: {} })
-    }
+  const handleMouseOut = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isHover: false,
+    }));
+  };
 
-    //GET DETAILS OF INDIVIDUAL PART
-    getIndividualPartDetails = (data) => {
-        this.setState({ getDetails: data, isPartForm: true, isAddBOMForm: false, })
-    }
+  if (state.isAddBOMForm) {
+    return (
+      <AddAssemblyPart
+        hideForm={hideForm}
+        data={state.getDetails}
+        displayBOMViewer={state.displayBOMViewer}
+        stopApiCallOnCancel={state.stopApiCallOnCancel}
+      />
+    );
+  }
 
-    //DISPLAY INDIVIDUAL PART FORM
-    displayIndividualProductForm = () => {
-        this.setState({ isProductForm: true, getDetails: {} })
-    }
+  if (state.isPartForm) {
+    return (
+      <AddIndivisualPart
+        hideForm={hideForm}
+        data={state.getDetails}
+        stopApiCallOnCancel={state.stopApiCallOnCancel}
+      />
+    );
+  }
 
-    //GET DETAILS OF INDIVIDUAL PART
-    getIndividualProductDetails = (data) => {
-        this.setState({ getDetails: data, isProductForm: true, isAddBOMForm: false, })
-    }
+  if (state.isProductForm) {
+    return (
+      <AddIndivisualProduct
+        hideForm={hideForm}
+        data={state.getDetails}
+        stopApiCallOnCancel={state.stopApiCallOnCancel}
+      />
+    );
+  }
 
-    //Open the Fetch Drawer
-
-    openFetchDrawer = () => {
-        this.setState({ openDrawer: true })
-    }
-    /**
-    * @method handleMouse
-    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE HOVER
-    */
-    handleMouse = () => {
-        this.setState({ isHover: true })
-    }
-    /**
-    * @method handleMouseOut
-    * @description FOR FETCH BUTTON CHANGE CSS ON MOUSE LEAVE
-    */
-    handleMouseOut = () => {
-        this.setState({ isHover: false })
-    }
-
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { isAddBOMForm, isPartForm, isProductForm } = this.state;
-        const { initialConfiguration } = this.props;
-        if (isAddBOMForm === true) {
-            return <AddAssemblyPart
-                hideForm={this.hideForm}
-                data={this.state.getDetails}
-                displayBOMViewer={this.displayBOMViewer}
-                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-            />
-        }
-
-        if (isPartForm === true) {
-            return <AddIndivisualPart
-                hideForm={this.hideForm}
-                data={this.state.getDetails}
-                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-            />
-        }
-
-        if (isProductForm === true) {
-            return <AddIndivisualProduct
-                hideForm={this.hideForm}
-                data={this.state.getDetails}
-                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-
-            />
-        }
-
-        return (
-            <>
-                <div className="container-fluid" id='go-to-top'>
-                    <ScrollToTop pointProp="go-to-top" />
-                    <div className="user-page p-0">
-                        {/* {this.props.loading && <Loader/>} */}
-                        <div>
-                            <div className="d-flex justify-content-between">
-                                <div className='p-relative'>
-
-                                    {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
-                                </div>
-
-                            </div>
-
-                            <Nav tabs className="subtabs mt-0 p-relative">
-                                {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                        Manage Assembly
-                                    </NavLink>
-                                </NavItem>
-                                <NavItem>
-                                    <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                        Manage Component
-                                    </NavLink>
-                                </NavItem>
-                                {/* {getConfigurationKey().IsVendorPlantConfigurable && <NavItem> */}
-                                {initialConfiguration?.IsProductMasterConfigurable &&
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                            Manage Products
-                                        </NavLink>
-                                    </NavItem>
-                                }
-                                <button
-                                    type="button"
-                                    className={'secondary-btn mr5 mt-1 fetch-btn'}
-                                    title="Fetch"
-                                    onClick={this.openFetchDrawer}
-                                    onMouseOver={this.handleMouse}
-                                    onMouseOut={this.handleMouseOut}>
-                                    <div className={`${this.state.isHover ? "swap-hover" : "swap"} mr-0`}></div>
-                                </button>
-                            </Nav>
-                            <TabContent activeTab={this.state.activeTab}>
-                                {this.state.activeTab === '1' &&
-                                    <TabPane tabId="1">
-                                        <AssemblyPartListing
-                                            displayForm={this.displayForm}
-                                            getDetails={this.getDetails}
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                            DownloadAccessibility={this.state.DownloadAccessibility}
-                                            ViewAccessibility={this.state.ViewAccessibility}
-                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                                        />
-                                    </TabPane>}
-                                {this.state.activeTab === '2' &&
-                                    <TabPane tabId="2">
-                                        <IndivisualPartListing
-                                            formToggle={this.displayIndividualForm}
-                                            getDetails={this.getIndividualPartDetails}
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                            DownloadAccessibility={this.state.DownloadAccessibility}
-                                            ViewAccessibility={this.state.ViewAccessibility}
-                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                                        />
-                                    </TabPane>}
-                                {this.state.activeTab === '3' &&
-                                    <TabPane tabId="3">
-                                        <IndivisualProductListing
-                                            formToggle={this.displayIndividualProductForm}
-                                            getDetails={this.getIndividualProductDetails}
-                                            AddAccessibility={this.state.AddAccessibility}
-                                            EditAccessibility={this.state.EditAccessibility}
-                                            DeleteAccessibility={this.state.DeleteAccessibility}
-                                            BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                            DownloadAccessibility={this.state.DownloadAccessibility}
-                                            ViewAccessibility={this.state.ViewAccessibility}
-                                            stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-
-                                        />
-                                    </TabPane>}
-                            </TabContent>
-
-
-                            {this.state.openDrawer &&
-                                <FetchDrawer
-
-                                    isOpen={this.state.openDrawer}
-                                    toggleDrawer={this.toggleFetchDrawer}
-                                    anchor={"right"}
-
-
-                                />
-
-                            }
-                        </div>
-                    </div >
+  return (
+    <>
+      {
+        Object.keys(permissionData).length > 0 &&
+        <div className="container-fluid" id="go-to-top">
+          <ScrollToTop pointProp="go-to-top" />
+          <div className="user-page p-0">
+            <div>
+              <div className="d-flex justify-content-between">
+                <div className="p-relative">
+                  {disabledClass && (
+                    <div
+                      title={MESSAGES.DOWNLOADING_MESSAGE}
+                      className="disabled-overflow"
+                    ></div>
+                  )}
                 </div>
-            </ >
-        );
-    }
-}
+              </div>
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ auth, comman }) {
-    const { leftMenuData, topAndLeftMenuData, initialConfiguration } = auth;
-    const { disabledClass } = comman
-    return { leftMenuData, topAndLeftMenuData, initialConfiguration, disabledClass }
-}
+              <Nav tabs className="subtabs mt-0 p-relative">
+                {disabledClass && (
+                  <div
+                    title={MESSAGES.DOWNLOADING_MESSAGE}
+                    className="disabled-overflow"
+                  ></div>
+                )}
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: state.activeTab === "1" })}
+                    onClick={() => toggle("1")}
+                  >
+                    Manage Assembly
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: state.activeTab === "2" })}
+                    onClick={() => toggle("2")}
+                  >
+                    Manage Component
+                  </NavLink>
+                </NavItem>
+                {initialConfiguration?.IsProductMasterConfigurable && (
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: state.activeTab === "3" })}
+                      onClick={() => toggle("3")}
+                    >
+                      Manage Products
+                    </NavLink>
+                  </NavItem>
+                )}
+                <button
+                  type="button"
+                  className={`secondary-btn mr5 mt-1 fetch-btn`}
+                  title="Fetch"
+                  onClick={openFetchDrawer}
+                  onMouseOver={handleMouse}
+                  onMouseOut={handleMouseOut}
+                >
+                  <div
+                    className={`${state.isHover ? "swap-hover" : "swap"} mr-0`}
+                  ></div>
+                </button>
+              </Nav>
+              <ApplyPermission.Provider value={permissionData}>
+                <TabContent activeTab={state.activeTab}>
+                  {state.activeTab === "1" && (
+                    <TabPane tabId="1">
+                      <AssemblyPartListing
+                        displayForm={displayForm}
+                        getDetails={getDetails}
+                        stopApiCallOnCancel={state.stopApiCallOnCancel}
+                      />
+                    </TabPane>
+                  )}
+                  {state.activeTab === "2" && (
+                    <TabPane tabId="2">
+                      <IndivisualPartListing
+                        formToggle={displayIndividualForm}
+                        getDetails={getIndividualPartDetails}
+                        ViewAccessibility={state.ViewAccessibility}
+                        stopApiCallOnCancel={state.stopApiCallOnCancel}
+                      />
+                    </TabPane>
+                  )}
+                  {state.activeTab === "3" && (
+                    <TabPane tabId="3">
+                      <IndivisualProductListing
+                        formToggle={displayIndividualProductForm}
+                        getDetails={getIndividualProductDetails}
+                        stopApiCallOnCancel={state.stopApiCallOnCancel}
+                      />
+                    </TabPane>
+                  )}
+                </TabContent>
+              </ApplyPermission.Provider>
 
+              {state.openDrawer && (
+                <FetchDrawer
+                  isOpen={state.openDrawer}
+                  toggleDrawer={toggleFetchDrawer}
+                  anchor={"right"}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      }
+    </>
+  );
+};
 
-export default connect(mapStateToProps,
-    {
-    }
-)(PartMaster);
-
+export default PartMaster;

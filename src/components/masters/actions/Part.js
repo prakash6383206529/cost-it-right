@@ -71,6 +71,7 @@ export function getPartData(PartId, callback) {
         if (PartId !== '') {
             axios.get(`${API.getPartData}/${PartId}`, config())
                 .then((response) => {
+                    
                     if (response.data.Result === true) {
                         dispatch({
                             type: GET_UNIT_PART_DATA_SUCCESS,
@@ -103,9 +104,10 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
 
         var queryParams2 = `take=${take}`
         var queryParams1 = `skip=${skip}`
-        var queryParams3 = `effectiveDate=${obj.newDate !== null && obj.newDate !== undefined ? obj.newDate : ""}&partNumber=${obj.PartNumber !== null || obj.PartNumber !== "" ? obj.PartNumber : ""}&partName=${obj.PartName !== null || obj.PartName !== "" ? obj.PartName : ""}&ecnNumber=${obj.ECNNumber !== null || obj.ECNNumber !== "" ? obj.ECNNumber : ""}&revisionNumber=${obj.RevisionNumber !== null || obj.RevisionNumber !== "" ? obj.RevisionNumber : ""}&drawingNumber=${obj.DrawingNumber !== null || obj.DrawingNumber !== "" ? obj.DrawingNumber : ""}&technology=${obj.Technology ? obj.Technology : ""}&sapCode=${obj.SAPCode ? obj.SAPCode : ""}`
+        var queryParams3 = `effectiveDate=${obj?.newDate !== null && obj?.newDate !== undefined ? obj?.newDate : ""}&partNumber=${obj.PartNumber !== null || obj.PartNumber !== "" ? obj.PartNumber : ""}&partName=${obj.PartName !== null || obj.PartName !== "" ? obj.PartName : ""}&ecnNumber=${obj.ECNNumber !== null || obj.ECNNumber !== "" ? obj.ECNNumber : ""}&revisionNumber=${obj.RevisionNumber !== null || obj.RevisionNumber !== "" ? obj.RevisionNumber : ""}&drawingNumber=${obj.DrawingNumber !== null || obj.DrawingNumber !== "" ? obj.DrawingNumber : ""}&technology=${obj.Technology ? obj.Technology : ""}&sapCode=${obj.SAPCode ? obj.SAPCode : ""}`
         const request = axios.get(`${API.getPartDataList}?${queryParams}&${queryParams1}&${queryParams2}&${queryParams3}`, config());
         request.then((response) => {
+
             if (response?.data?.Result === true || response.status === 204) {
 
                 if (isPagination === true) {
@@ -298,11 +300,12 @@ export function getAssemblyPartDataList(callback) {
 * @description GET ASSEMBLY PART DETAIL
 */
 export function getAssemblyPartDetail(PartId, callback) {
+    
     return (dispatch) => {
         if (PartId !== '') {
             const request = axios.get(`${API.getAssemblyPartDetail}/${PartId}`, config());
             request.then((response) => {
-                if (response.data.Result || response.status === 204) {
+                                if (response.data.Result || response.status === 204) {
                     dispatch({
                         type: GET_UNIT_PART_DATA_SUCCESS,
                         payload: response.status === 204 ? [] : response.data.Data,
@@ -368,7 +371,7 @@ export function getSelectListPartType(callback) {
     return (dispatch) => {
         const request = axios.get(`${API.getSelectListPartType}`, config());
         request.then((response) => {
-            callback(response);
+                        callback(response);
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             callback(error);
@@ -750,6 +753,24 @@ export function convertPartToAssembly(requestData, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
         axios.put(`${API.convertPartToAssembly}`, requestData, config())
+            .then((response) => {
+                callback(response);
+            }).catch((error) => {
+                apiErrors(error);
+                dispatch({ type: API_FAILURE });
+                callback(error);
+            });
+    };
+}
+
+/**
+ * @method updatePart
+ * @description update Part
+ */
+export function updateMultipleComponentTechnology(requestData, callback) {
+    return (dispatch) => {
+        //dispatch({ type: API_REQUEST });
+        axios.put(`${API.updateMultiplecomponentTechnology}`, requestData, config())
             .then((response) => {
                 callback(response);
             }).catch((error) => {

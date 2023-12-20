@@ -179,7 +179,7 @@ class AddMachineRate extends Component {
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
       this.props.getMachineTypeSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
-      this.props.getPlantSelectListByType(ZBC, () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
       this.props.getClientSelectList(() => { })
     }
 

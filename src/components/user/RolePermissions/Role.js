@@ -1,360 +1,326 @@
-import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+// eslint-disable-next-line react-hooks/exhaustive-deps
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { useDispatch } from "react-redux";
 import Toaster from "../../common/Toaster";
-import { connect } from "react-redux";
 import { Loader } from "../../common/Loader";
-import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength26, } from "../../../helper/validation";
-import { renderText } from "../../layout/FormInputs";
 import {
-	addRoleAPI, getAllRoleAPI, getRoleDataAPI, updateRoleAPI, setEmptyRoleDataAPI,
-	getActionHeadsSelectList, getModuleActionInit,
+  addRoleAPI,
+  getAllRoleAPI,
+  getRoleDataAPI,
+  updateRoleAPI,
+  setEmptyRoleDataAPI,
 } from "../../../actions/auth/AuthActions";
 import { MESSAGES } from "../../../config/message";
-import { } from 'reactstrap';
 import { userDetails, loggedInUserId } from "../../../helper/auth";
 import PermissionsTabIndex from "./PermissionsTabIndex";
 import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import TooltipCustom from "../../common/Tooltip";
+import { TextFieldHookForm } from "../../layout/HookFormInputs";
+const Role = (props) => {
+  const dispatch = useDispatch();
+  const {
+    handleSubmit,
+    register,
+    control,
+    setValue,
+    reset,
+    formState: { errors },
+  } = useForm({
+    mode: "onChange",
+    reValidateMode: "onChange",
+  });
+  const [isLoader, setIsLoader] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isEditFlag, setIsEditFlag] = useState(false);
+  const [RoleId, setRoleId] = useState("");
+  const [Modules, setModules] = useState([]);
+  const [isNewRole, setIsNewRole] = useState(true);
+  const [showPopup, setShowPopup] = useState(false);
+  const [accessibility, setAccessibility] = useState(false);
+  const [updatedObj, setUpdatedObj] = useState({});
+  const childRef = useRef();
 
-class Role extends Component {
-	constructor(props) {
-		super(props);
-		this.child = React.createRef();
-		this.state = {
-			isLoader: false,
-			isSubmitted: false,
-			isEditFlag: false,
-			activeTab: '1',
-			permissions: [],
-			checkedAll: false,
-			RoleId: '',
-			Modules: [],
-			isNewRole: true,
-			showPopup: false,
-			updatedObj: {}
-		};
-	}
+  const getRoleDetail = useCallback(() => {
+    const { data } = props;
+    setIsLoader(true);
+    dispatch(
+      getRoleDataAPI(data.RoleId, (res) => {
+        if (res && res.data && res.data.Data) {
+          let Data = res.data.Data;
+          setValue("RoleName", Data.RoleName);
+          setModules(Data.Modules);
+          setIsEditFlag(true);
+          setIsNewRole(false);
+          setRoleId(data.RoleId);
+          setAccessibility(Data.IsDataAccessibleToAllRole);
+          childRef.current.getUpdatedData(Data.Modules);
+          setIsLoader(false);
+        }
+      })
+    );
+  }, []);
 
-	/**
-	* @method componentDidMount
-	* @description used to called after mounting component
-	*/
-	UNSAFE_componentWillMount() {
-		const { data } = this.props;
-		if (data && data.isEditFlag) {
-			this.getRoleDetail()
-		}
-	}
+  useEffect(() => {
+    const { data } = props;
+    if (data && data.isEditFlag) {
+      getRoleDetail();
+    }
+  }, []);
 
-	componentDidMount() {
+  const setInitialModuleData = (data) => {
+    setModules(data);
+  };
 
-		const { data } = this.props;
-		if (data && data.isEditFlag) {
-		} else {
-			this.props.change("RoleName", "")
-		}
-	}
+  const moduleDataHandler = (data, ModuleName) => {
+    let oldData = data;
+    let isSelectAll = true;
 
-	/**
-	* @method getRoleDetail
-	* @description used to get role detail
-	*/
-	getRoleDetail = () => {
-		const { data } = this.props;
-		this.setState({ isLoader: true })
-		this.props.getRoleDataAPI(data.RoleId, (res) => {
-			if (res && res.data && res.data.Data) {
-				let Data = res.data.Data;
+    let isParentChecked = oldData.findIndex((el) => el.IsChecked === true);
 
-				this.setState({
-					isEditFlag: true,
-					isNewRole: false,
-					RoleId: data.RoleId,
-					Modules: Data.Modules,
-					isLoader: false,
-				}, () => this.child.getUpdatedData(Data.Modules))
+    if (ModuleName === "Costing" || ModuleName === "Simulation") {
+      oldData &&
+        oldData.map((ele, index) => {
+          if (ele.Sequence !== 0) {
+            if (ele.IsChecked === false) {
+              isSelectAll = false;
+            }
+          }
+          return null;
+        });
+    } else {
+      oldData &&
+        oldData.map((ele, index) => {
+          if (ele.IsChecked === false) {
+            isSelectAll = false;
+          }
+          return null;
+        });
+    }
 
-			}
-		})
-	}
+    const isAvailable =
+      Modules && Modules.findIndex((a) => a.ModuleName === ModuleName);
 
-	/**
-		* @method toggle
-		* @description toggling the tabs
-		*/
-	toggle = (tab) => {
-		if (this.state.activeTab !== tab) {
-			this.setState({
-				activeTab: tab
-			});
-		}
-	}
+    if (isAvailable !== -1 && Modules) {
+      let tempArray = Object.assign([...Modules], {
+        [isAvailable]: Object.assign({}, Modules[isAvailable], {
+          SelectAll: isSelectAll,
+          IsChecked: isParentChecked !== -1 ? true : false,
+          Pages: oldData,
+        }),
+      });
+      setModules(tempArray);
+    }
+  };
+  /**
+   * @method cancel
+   * @description used to cancel role edit
+   */
 
-	/**
-		* @method setInitialModuleData
-		* @description SET INITIAL MODULE DATA FROM PERMISSION TAB
-		*/
-	setInitialModuleData = (data) => {
-		this.setState({ Modules: data })
-	}
+  const cancel = () => {
+    reset();
+    dispatch(setEmptyRoleDataAPI("", () => {}));
+    setIsEditFlag(false);
+    setModules([]);
+    setRoleId("");
+    props.hideForm();
+  };
 
-	moduleDataHandler = (data, ModuleName) => {
-		const { Modules } = this.state;
-		let oldData = data;
-		let isSelectAll = true
+  const clearForm = () => {
+    reset();
+    setIsLoader(false);
+    setIsEditFlag(false);
+    setModules([]);
+    dispatch(getAllRoleAPI((res) => {}));
+    dispatch(setEmptyRoleDataAPI("", () => {}));
+    props.hideForm();
+  };
 
-		let isParentChecked = oldData.findIndex(el => el.IsChecked === true)
+  const confirmUpdate = (updateData) => {
+    setIsLoader(true);
+    dispatch(
+      updateRoleAPI(updateData, (res) => {
+        if (res.data.Result) {
+          Toaster.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY);
+          clearForm();
+        }
+        setIsLoader(false);
+      })
+    );
+  };
+  /**
+   * @name onSubmit
+   * @param values
+   * @desc Submit the signup form values.
+   * @returns {{}}
+   */
+  const onSubmit = (values) => {
+    let userDetail = userDetails();
+    if (isEditFlag) {
+      let updateData = {
+        RoleId: RoleId,
+        IsActive: true,
+        CreatedDate: "",
+        CreatedByName: userDetail.Name,
+        RoleName: values.RoleName,
+        Description: "",
+        CreatedBy: loggedInUserId(),
+        Modules: Modules,
+        IsDataAccessibleToAllRole: accessibility,
+      };
+      setShowPopup(true);
+      setUpdatedObj(updateData);
+    } else {
+      const isSelected = Modules.filter((el) => el.IsChecked === true);
 
-		if (ModuleName === "Costing" || ModuleName === "Simulation") {
-			oldData && oldData.map((ele, index) => {
-				if (ele.Sequence !== 0) {
-					if (ele.IsChecked === false) {
-						isSelectAll = false
-					}
-				}
-				return null
-			})
-		} else {
-			oldData && oldData.map((ele, index) => {
-				if (ele.IsChecked === false) {
-					isSelectAll = false
-				}
-				return null
-			})
-		}
+      if (isSelected.length < 1) {
+        Toaster.warning("Please select at least one module.");
+        return false;
+      }
 
-		const isAvailable = Modules && Modules.findIndex(a => a.ModuleName === ModuleName)
-		if (isAvailable !== -1 && Modules) {
-			let tempArray = Object.assign([...Modules], { [isAvailable]: Object.assign({}, Modules[isAvailable], { SelectAll: isSelectAll, IsChecked: isParentChecked !== -1 ? true : false, Pages: oldData, }) })
-			this.setState({ Modules: tempArray })
-		}
-	}
+      let formData = {
+        RoleName: values.RoleName,
+        Description: "",
+        CreatedBy: loggedInUserId(),
+        Modules: Modules,
+        IsDataAccessibleToAllRole: accessibility,
+      };
 
-	/**
-	* @method cancel
-	* @description used to cancel role edit
-	*/
-	cancel = () => {
-		const { reset } = this.props;
-		reset();
-		this.props.setEmptyRoleDataAPI('', () => { })
-		this.setState({
-			isEditFlag: false,
-			Modules: [],
-			RoleId: '',
-		})
-		//this.getRolePermission()
-		this.props.hideForm()
-	}
+      setIsLoader(true);
+      dispatch(
+        addRoleAPI(formData, (res) => {
+          if (res && res.data && res.data.Result) {
+            Toaster.success(MESSAGES.ADD_ROLE_SUCCESSFULLY);
+            clearForm();
+          }
+          setIsLoader(false);
+        })
+      );
+    }
+  };
 
-	clearForm = () => {
-		const { reset } = this.props;
-		reset();
-		this.setState({
-			isLoader: false,
-			isEditFlag: false,
-			Modules: [],
-		})
-		this.props.getAllRoleAPI(res => { })
-		//this.getRolePermission()
-		this.props.setEmptyRoleDataAPI('', () => { })
-		this.props.hideForm()
-	}
+  const onPopupConfirm = () => {
+    confirmUpdate(updatedObj);
+  };
 
-	/**
-	* @method confirmUpdate
-	* @description confirm Update
-	*/
-	confirmUpdate = (updateData) => {
-		this.setState({ isLoader: true })
-		this.props.updateRoleAPI(updateData, (res) => {
-			if (res.data.Result) {
-				Toaster.success(MESSAGES.UPDATE_ROLE_SUCCESSFULLY)
-				this.clearForm()
-			}
-			this.setState({ isLoader: false })
-		})
-	}
+  const closePopUp = () => {
+    setShowPopup(false);
+  };
 
-	/**
-	 * @name onSubmit
-	 * @param values
-	 * @desc Submit the signup form values.
-	 * @returns {{}}
-	 */
-	onSubmit(values) {
-		const { isEditFlag, Modules, RoleId } = this.state;
+  const AccessibilityHandler = () => {
+    setAccessibility(!accessibility);
+  };
 
-		let userDetail = userDetails()
+  return (
+    <div className="container-fluid role-permision-page">
+      {isLoader && <Loader />}
+      <div className="login-container signup-form ">
+        <div className="row">
+          <div className="col-md-12">
+            <div className="shadow-lgg login-formg ">
+              <div className="form-headingg">
+                <h2>{isEditFlag ? "Update Role" : "Add Role"}</h2>
+              </div>
+              <form
+                className="form"
+                onSubmit={handleSubmit(onSubmit)}
+                noValidate
+              >
+                <div className="add-min-height">
+                  <div className="row role-form mb-0">
+                    <div className="col-md-6 ">
+                      <div className="d-flex">
+                        <div className="header-title d-flex Personal-Details pr-3">
+                          <h5>Role Name:</h5>
+                          <span className="asterisk-required">*</span>
+                        </div>
+                        <TextFieldHookForm
+                          label={"RoleName"}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          name={"RoleName"}
+                          defaultValue={""}
+                          mandatory
+                          errors={errors.RoleName}
+                          rules={{}}
+                          handleChange={(e) => {}}
+                        />
+                        <label
+                          className={`custom-checkbox ml-2 mt-1`}
+                          onChange={AccessibilityHandler}
+                        >
+                          Accessibility to All Data
+                          <input
+                            type="checkbox"
+                            checked={accessibility}
+                            onChange={AccessibilityHandler}
+                          />
+                          <span
+                            className=" before-box"
+                            checked={accessibility}
+                            onChange={AccessibilityHandler}
+                          />
+                        </label>
+                        <TooltipCustom
+                          customClass="mt-1"
+                          id="bop-net-cost"
+                          tooltipText={"All data will be visible to this role"}
+                        />
+                      </div>
+                    </div>
+                  </div>
 
-		if (isEditFlag) {
+                  <div className="row form-group grant-user-grid">
+                    <div className="col-md-12">
+                      {isLoader && <Loader />}
+                      <PermissionsTabIndex
+                        onRef={(ref) => (childRef.current = ref)}
+                        isEditFlag={isEditFlag}
+                        setInitialModuleData={setInitialModuleData}
+                        moduleData={moduleDataHandler}
+                        isNewRole={isNewRole}
+                        refVariable={true}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-			let updateData = {
-				RoleId: RoleId,
-				IsActive: true,
-				CreatedDate: '',
-				CreatedByName: userDetail.Name,
-				RoleName: values.RoleName,
-				Description: '',
-				CreatedBy: loggedInUserId(),
-				Modules: Modules
-			}
-			this.setState({ showPopup: true, updatedObj: updateData })
-
-
-		} else {
-			// Add new role
-
-			const isSelected = Modules.filter(el => el.IsChecked === true)
-
-
-			if (isSelected.length < 1) {
-				Toaster.warning("Please select atleast one module.")
-				return false
-			}
-
-			let formData = {
-				RoleName: values.RoleName,
-				Description: '',
-				CreatedBy: loggedInUserId(),
-				Modules: Modules
-			}
-
-
-			this.setState({ isLoader: true })
-			this.props.addRoleAPI(formData, (res) => {
-				if (res && res.data && res.data.Result) {
-					Toaster.success(MESSAGES.ADD_ROLE_SUCCESSFULLY)
-					this.clearForm()
-				}
-				this.setState({ isLoader: false })
-			})
-		}
-
-	}
-
-	onPopupConfirm = () => {
-		this.confirmUpdate(this.state.updatedObj)
-	}
-	closePopUp = () => {
-		this.setState({ showPopup: false })
-	}
-	render() {
-		const { handleSubmit, } = this.props;
-		const { isLoader, isSubmitted, isEditFlag } = this.state;
-
-		return (
-			<div className="container-fluid role-permision-page">
-				{isLoader && <Loader />}
-				<div className="login-container signup-form ">
-					<div className="row">
-						<div className="col-md-12">
-							<div className="shadow-lgg login-formg ">
-								<div className="form-headingg">
-									<h2>{isEditFlag ? 'Update Role' : 'Add Role'}</h2>
-								</div>
-								<form className="form" onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-									<div className="add-min-height">
-										<div className="row role-form mb-0">
-											<div className="col-md-6 ">
-												<div className="d-flex">
-
-													<div class="header-title d-flex Personal-Details pr-3"><h5>Role Name:</h5><span className="asterisk-required">*</span></div>
-
-													<Field
-														name={"RoleName"}
-														type="text"
-														placeholder={'Enter'}
-														validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength26]}
-														component={renderText}
-														customClassName={'withBorder mb-0 mn-height-auto hide-text-help-mb-0'}
-													/>
-												</div>
-											</div>
-										</div>
-
-										<div className="row form-group grant-user-grid">
-											<div className="col-md-12">
-												{isLoader && <Loader />}
-												<PermissionsTabIndex
-													onRef={ref => (this.child = ref)}
-													isEditFlag={this.state.isEditFlag}
-													setInitialModuleData={this.setInitialModuleData}
-													moduleData={this.moduleDataHandler}
-													isNewRole={this.state.isNewRole}
-													refVariable={true}
-												/>
-											</div>
-										</div>
-									</div>
-
-									<div className="row sf-btn-footer no-gutters justify-content-between bottom-footer">
-										<div className="col-sm-12 text-right bluefooter-butn">
-											<button
-												//disabled={pristine || submitting}
-												onClick={this.cancel}
-												type="button"
-												value="Cancel"
-												className="mr15 cancel-btn">
-												<div className={"cancel-icon"}></div> Cancel</button>
-											<button
-												disabled={isSubmitted ? true : false}
-												type="submit"
-												className="user-btn save-btn"
-											>
-												<div className={"save-icon"}></div>
-												{isEditFlag ? 'Update' : 'Save'}
-											</button>
-										</div>
-									</div>
-								</form>
-							</div>
-						</div>
-					</div>
-				</div>
-				{
-					this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.ROLE_UPDATE_ALERT}`} />
-				}
-			</div>
-		);
-	}
-}
-
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-const mapStateToProps = (state, ownProps) => {
-	const { auth } = state;
-	const { roleList, roleDetail, actionSelectList, loading } = auth;
-	let initialValues = {};
-
-	if (roleDetail && roleDetail !== undefined) {
-		initialValues = {
-			RoleName: roleDetail.RoleName,
-			Description: roleDetail.Description,
-		}
-	}
-
-	return { loading, roleList, initialValues, actionSelectList };
+                <div className="row sf-btn-footer no-gutters justify-content-between bottom-footer">
+                  <div className="col-sm-12 text-right bluefooter-butn">
+                    <button
+                      onClick={cancel}
+                      type="button"
+                      value="Cancel"
+                      className="mr15 cancel-btn"
+                    >
+                      <div className={"cancel-icon"}></div> Cancel
+                    </button>
+                    <button
+                      disabled={isSubmitted ? true : false}
+                      type="submit"
+                      className="user-btn save-btn"
+                    >
+                      <div className={"save-icon"}></div>
+                      {isEditFlag ? "Update" : "Save"}
+                    </button>
+                  </div>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+      {showPopup && (
+        <PopupMsgWrapper
+          isOpen={showPopup}
+          closePopUp={closePopUp}
+          confirmPopup={onPopupConfirm}
+          message={`${MESSAGES.ROLE_UPDATE_ALERT}`}
+        />
+      )}
+    </div>
+  );
 };
 
-/**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-	addRoleAPI,
-	getAllRoleAPI,
-	getRoleDataAPI,
-	setEmptyRoleDataAPI,
-	updateRoleAPI,
-	getActionHeadsSelectList,
-	getModuleActionInit,
-})(reduxForm({
-	form: 'Role',
-	enableReinitialize: true,
-})(Role));
+export default Role;

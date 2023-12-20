@@ -174,7 +174,7 @@ class AddMoreDetails extends Component {
    */
   componentDidMount() {
     const { initialConfiguration } = this.props
-    this.props.getPlantSelectListByType(ZBC, () => { })
+    this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
     this.props.getMachineTypeSelectList(() => { })
     this.props.getUOMSelectList(() => { })
     this.props.getProcessesSelectList(() => { })

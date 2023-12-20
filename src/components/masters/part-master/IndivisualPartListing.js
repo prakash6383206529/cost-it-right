@@ -5,7 +5,7 @@ import { } from '../../../actions/Common';
 import { getPartDataList, deletePart, activeInactivePartStatus, checkStatusCodeAPI, } from '../actions/Part';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
+import { COMPONENT_PART, defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
 import { loggedInUserId } from '../../../helper/auth';
@@ -27,6 +27,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import { searchNocontentFilter } from '../../../helper';
 import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
+import TechnologyUpdateDrawer from './TechnologyUpdateDrawer';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -67,7 +68,8 @@ class IndivisualPartListing extends Component {
             disableFilter: true,
             disableDownload: false,
             noData: false,
-            dataCount: 0
+            dataCount: 0,
+            openTechnologyUpdateDrawer: false
         }
     }
 
@@ -191,7 +193,7 @@ class IndivisualPartListing extends Component {
     componentDidMount() {
         setTimeout(() => {
             if (!this.props.stopApiCallOnCancel) {
-                this.ApiActionCreator(0, 100, this.state.floatingFilterData, true)
+                this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, true)
             }
         }, 200);
     }
@@ -262,7 +264,7 @@ class IndivisualPartListing extends Component {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.PART_DELETE_SUCCESS);
                 //this.getTableListData();
-                this.ApiActionCreator(this.state.currentRowIndex, 100, this.state.floatingFilterData, true)
+                this.ApiActionCreator(this.state.currentRowIndex, defaultPageSize, this.state.floatingFilterData, true)
                 this.setState({ dataCount: 0 })
             }
         });
@@ -287,9 +289,9 @@ class IndivisualPartListing extends Component {
 
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit ml-1" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && !rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+                {<button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
+                {<button title='Edit' className="Edit ml-1" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
+                {!rowData?.IsAssociate && <button title='Delete ' className="Delete ml-1" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
     };
@@ -519,13 +521,25 @@ class IndivisualPartListing extends Component {
         this.state.gridApi.setQuickFilter(e.target.value);
     }
 
+    associatePartWithTechnology = () => {
+        this.setState({ openTechnologyUpdateDrawer: true })
+    }
+
+    closeTechnologyUpdateDrawer = (type = '') => {
+        this.setState({ openTechnologyUpdateDrawer: false })
+        if (type === 'submit') {
+            this.ApiActionCreator(0, defaultPageSize, this.state.floatingFilterData, true)
+        }
+
+    }
+
     /**
     * @method render
     * @description Renders the component
     */
     render() {
         const { isBulkUpload, noData } = this.state;
-        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration } = this.props;
+        const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, initialConfiguration, EditAccessibility } = this.props;
         const ExcelFile = ReactExport.ExcelFile;
 
         var filterParams = {
@@ -614,6 +628,8 @@ class IndivisualPartListing extends Component {
             effectiveDateFormatter: this.effectiveDateFormatter,
             checkBoxRenderer: this.checkBoxRenderer,
         };
+
+
         return (
             <>
                 <div className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""}`}>
@@ -627,6 +643,7 @@ class IndivisualPartListing extends Component {
                                 </div>
                                 <div className='d-flex'>
                                     <button title="Filtered data" type="button" class="user-btn mr5" onClick={() => this.onSearch(this)} disabled={this.state.disableFilter}><div class="filter mr-0"></div></button>
+                                    {/* {EditAccessibility && <button title='Associate part with technology' className="user-btn pl-2 pr-3 mr-1" type={'button'} onClick={() => this.associatePartWithTechnology()}><div className='associate'></div></button>} */}
                                     {AddAccessibility && (
                                         <button
                                             type="button"
@@ -635,7 +652,7 @@ class IndivisualPartListing extends Component {
                                             onClick={this.formToggle}>
                                             <div className={'plus mr-0'}></div></button>
                                     )}
-                                    {BulkUploadAccessibility && (
+                                    {(
                                         <button
                                             type="button"
                                             className={"user-btn mr5"}
@@ -647,7 +664,7 @@ class IndivisualPartListing extends Component {
                                         </button>
                                     )}
                                     {
-                                        DownloadAccessibility &&
+
                                         <>
                                             <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" onClick={this.onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                                                 {/* DOWNLOAD */}
@@ -731,6 +748,11 @@ class IndivisualPartListing extends Component {
                     {
                         this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
                     }
+
+                    {
+                        this.state.openTechnologyUpdateDrawer && <TechnologyUpdateDrawer partType={COMPONENT_PART} isOpen={this.state.openTechnologyUpdateDrawer} anchor={'right'} closeDrawer={this.closeTechnologyUpdateDrawer} />
+                    }
+
                 </div >
             </>
         );

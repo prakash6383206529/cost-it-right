@@ -1,483 +1,429 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect, useCallback } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { reduxForm } from "redux-form";
-import { Row, Col, } from 'reactstrap';
-import { focusOnError, } from "../../layout/FormInputs";
-import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
-import NoContentFound from '../../common/NoContentFound';
-import { getClientDataList, deleteClient } from '../actions/Client';
-import AddClientDrawer from './AddClientDrawer';
-import { checkPermission, searchNocontentFilter } from '../../../helper/util';
-import { CLIENT, Clientmaster, MASTERS } from '../../../config/constants';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import LoaderCustom from '../../common/LoaderCustom';
-import ReactExport from 'react-export-excel';
-import { CLIENT_DOWNLOAD_EXCEl } from '../../../config/masterData';
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper';
-import ScrollToTop from '../../common/ScrollToTop';
-import { PaginationWrapper } from '../../common/commonPagination';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
-import { loggedInUserId } from '../../../helper';
+import { Row, Col } from "reactstrap";
+import { focusOnError } from "../../layout/FormInputs";
+import Toaster from "../../common/Toaster";
+import { MESSAGES } from "../../../config/message";
+import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import NoContentFound from "../../common/NoContentFound";
+import { getClientDataList, deleteClient } from "../actions/Client";
+import AddClientDrawer from "./AddClientDrawer";
+import { checkPermission, searchNocontentFilter } from "../../../helper/util";
+import { CLIENT, Clientmaster, MASTERS } from "../../../config/constants";
+import LoaderCustom from "../../common/LoaderCustom";
+import ReactExport from "react-export-excel";
+import { CLIENT_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { AgGridColumn, AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import ScrollToTop from "../../common/ScrollToTop";
+import { PaginationWrapper } from "../../common/commonPagination";
+import { loggedInUserId } from "../../../helper";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-class ClientListing extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            isEditFlag: false,
-            isOpenVendor: false,
+const ClientListing = () => {
+  const dispatch = useDispatch();
+  const clientDataList = useSelector((state) => state.client.clientDataList);
+  const { topAndLeftMenuData } = useSelector((state) => state.auth);
+  const [state, setState] = useState({
+    isEditFlag: false,
+    isOpenVendor: false,
+    tableData: [],
+    ID: "",
+    isViewMode: false,
+    ViewAccessibility: false,
+    AddAccessibility: false,
+    EditAccessibility: false,
+    DeleteAccessibility: false,
+    DownloadAccessibility: false,
+    gridApi: null,
+    gridColumnApi: null,
+    rowData: null,
+    sideBar: { toolPanels: ["columns"] },
+    showData: false,
+    showPopup: false,
+    deletedId: "",
+    isLoader: false,
+    selectedRowData: false,
+    noData: false,
+    dataCount: 0,
+  });
+
+
+
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData);
+    getTableListData(null, null);
+
+  }, []);
+
+
+  useEffect(() => {
+    if (topAndLeftMenuData) {
+      setState((prevState) => ({ ...prevState, isLoader: true }));
+      applyPermission(topAndLeftMenuData);
+      setTimeout(() => {
+        setState((prevState) => ({ ...prevState, isLoader: false }));
+      }, 200);
+    }
+  }, [topAndLeftMenuData]);
+
+
+  /**
+   * @method applyPermission
+   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+   */
+  const applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+
+      const accessData = Data && Data.Pages.find((el) => el.PageName === CLIENT);
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
+
+      if (permmisionData !== undefined) {
+        setState((prevState) => ({
+          ...prevState,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+
+        }));
+      }
+    }
+  };
+
+  /**
+   * @method buttonFormatter
+   * @description Renders buttons
+   */
+
+  const buttonFormatter = (props) => {
+    const { ViewAccessibility, EditAccessibility, DeleteAccessibility } = state;
+
+    const cellValue = props?.value;
+
+    return (
+      <>
+        {ViewAccessibility && (<button title="View" className="View mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, true)} />)}
+        {EditAccessibility && (<button title="Edit" className="Edit mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, false)} />)}
+        {DeleteAccessibility && (<button title="Delete" className="Delete" type="button" onClick={() => deleteItem(cellValue)} />
+        )}
+      </>
+    );
+  }
+
+
+  /**
+   * @method getTableListData
+   * @description Get user list data
+   */
+
+  const getTableListData = (clientName = null, companyName = null) => {
+    const filterData = {
+      clientName: clientName,
+      companyName: companyName,
+    };
+
+    dispatch(
+      getClientDataList(filterData, (res) => {
+        if (res.status === 204 && res.data === "") {
+          setState((prevState) => ({
+            ...prevState,
             tableData: [],
-            ID: '',
-            isViewMode: false,
-            ViewAccessibility: false,
-            AddAccessibility: false,
-            EditAccessibility: false,
-            DeleteAccessibility: false,
-            DownloadAccessibility: false,
-            gridApi: null,
-            gridColumnApi: null,
-            rowData: null,
-            sideBar: { toolPanels: ['columns'] },
-            showData: false,
-            showPopup: false,
-            deletedId: '',
             isLoader: false,
-            selectedRowData: false,
-            noData: false,
-            dataCount: 0
+          }));
+        } else if (res && res.data && res.data.DataList) {
+          const Data = res.data.DataList;
+          setState((prevState) => ({
+            ...prevState,
+            tableData: Data,
+            isLoader: false,
+          }));
         }
-    }
+      })
+    );
+  };
 
-    componentDidMount() {
-        this.setState({ isLoader: true })
-        this.applyPermission(this.props.topAndLeftMenuData)
-        setTimeout(() => {
-            this.getTableListData(null, null)
-        }, 500);
-    }
+  /**
+   * @method editItemDetails
+   * @description confirm edit item
+   */
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-            this.applyPermission(nextProps.topAndLeftMenuData)
+  const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
+    setState((prevState) => ({
+      ...prevState,
+      isOpenVendor: true,
+      isEditFlag: true,
+      ID: Id,
+      isViewMode: isViewMode,
+    }));
+  }, []);
+  /**
+   * @method deleteItem
+   * @description confirm delete Item.
+   */
+  const deleteItem = useCallback((Id) => {
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
+  }, []);
+  /**
+   * @method confirmDeleteItem
+   * @description confirm delete item
+   */
+  const confirmDeleteItem = (ID) => {
+    const loggedInUser = loggedInUserId();
+    dispatch(
+      deleteClient(ID, loggedInUser, (res) => {
+        if (res.data.Result === true) {
+          Toaster.success(MESSAGES.DELETE_CLIENT_SUCCESS);
+          setState((prevState) => ({ ...prevState, dataCount: 0 }));
+          getTableListData(null, null);
         }
-    }
+      })
+    );
+    setState((prevState) => ({ ...prevState, showPopup: false }));
+  };
 
-    /**
-    * @method applyPermission
-    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
-    */
-    applyPermission = (topAndLeftMenuData) => {
-        if (topAndLeftMenuData !== undefined) {
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
-            const accessData = Data && Data.Pages.find(el => el.PageName === CLIENT)
-            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+  const onPopupConfirm = () => {
+    confirmDeleteItem(state.deletedId);
+  };
 
-            if (permmisionData !== undefined) {
-                this.setState({
-                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                })
-            }
-        }
-    }
+  const closePopUp = () => {
+    setState((prevState) => ({ ...prevState, showPopup: false }));
+  };
 
+  /**
+   * @method hyphenFormatter
+   */
+  const hyphenFormatter = (props) => {
+    const cellValue = props?.value;
+    return cellValue !== " " &&
+      cellValue !== null &&
+      cellValue !== "" &&
+      cellValue !== undefined
+      ? cellValue
+      : "-";
+  };
 
+  const formToggle = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isOpenVendor: true,
+      isViewMode: false,
+    }));
+  };
+  const closeVendorDrawer = (e = "", type) => {
+    setState(
+      (prevState) => ({
+        ...prevState,
+        isOpenVendor: false,
+        isEditFlag: false,
+        ID: "",
+      }),
+      () => {
+        if (type === "submit") getTableListData(null, null);
+        setState((prevState) => ({ ...prevState, dataCount: 0 }));
+      }
+    );
+  };
 
-    /**
-    * @method getTableListData
-    * @description Get user list data
-    */
-    getTableListData = (clientName = null, companyName = null) => {
-        let filterData = {
-            clientName: clientName,
-            companyName: companyName,
-        }
-        this.props.getClientDataList(filterData, res => {
-            this.setState({ isLoader: false })
-            if (res.status === 204 && res.data === '') {
-                this.setState({ tableData: [], isLoader: false })
-            } else if (res && res.data && res.data.DataList) {
-                let Data = res.data.DataList;
-                this.setState({
-                    tableData: Data,
-                    isLoader: false
-                })
-            } else {
-
-            }
-        });
-    }
-
-    /**
-    * @method editItemDetails
-    * @description confirm edit item
-    */
-    viewOrEditItemDetails = (Id, isViewMode) => {
-        this.setState({
-            isOpenVendor: true,
-            isEditFlag: true,
-            ID: Id,
-            isViewMode: isViewMode,
-        })
-    }
-
-
-
-    /**
-    * @method deleteItem
-    * @description confirm delete Item.
-    */
-    deleteItem = (Id) => {
-        this.setState({ showPopup: true, deletedId: Id })
-    }
-
-    /**
-    * @method confirmDeleteItem
-    * @description confirm delete item
-    */
-    confirmDeleteItem = (ID) => {
-        const loggedInUser = loggedInUserId()
-        this.props.deleteClient(ID, loggedInUser, (res) => {
-            if (res.data.Result === true) {
-                Toaster.success(MESSAGES.DELETE_CLIENT_SUCCESS);
-                this.setState({ dataCount: 0 })
-                this.getTableListData(null, null)
-            }
-        });
-        this.setState({ showPopup: false })
-    }
-    onPopupConfirm = () => {
-        this.confirmDeleteItem(this.state.deletedId);
-    }
-    closePopUp = () => {
-        this.setState({ showPopup: false })
-    }
-    /**
-    * @method buttonFormatter
-    * @description Renders buttons
-    */
-    buttonFormatter = (props) => {
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
-        const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
-        return (
-            <>
-                {ViewAccessibility && <button title='View' className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-                {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
-            </>
-        )
-    };
-
-    /**
-     * @method hyphenFormatter
-     */
-    hyphenFormatter = (props) => {
-        const cellValue = props?.value;
-        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-    }
-
-    /**
-    * @method handlePlant
-    * @description called
-    */
-    handlePlant = (newValue, actionMeta) => {
-        if (newValue && newValue !== '') {
-            this.setState({ plant: newValue });
-        } else {
-            this.setState({ plant: [] })
-        }
-    };
-
-    /**
-    * @method indexFormatter
-    * @description Renders serial number
-    */
-    indexFormatter = (cell, row, enumObject, rowIndex) => {
-        let currentPage = this.refs.table.state.currPage;
-        let sizePerPage = this.refs.table.state.sizePerPage;
-        let serialNumber = '';
-        if (currentPage === 1) {
-            serialNumber = rowIndex + 1;
-        } else {
-            serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-        }
-        return serialNumber;
-    }
-
-    renderSerialNumber = () => {
-        return <>Sr. <br />No. </>
-    }
-
-    onExportToCSV = (row) => {
-        // ...
-        return this.state.userData; // must return the data which you want to be exported
-    }
-
-    renderPaginationShowsTotal(start, to, total) {
-        return <GridTotalFormate start={start} to={to} total={total} />
-    }
-
-
-
-    formToggle = () => {
-        this.setState({ isOpenVendor: true, isViewMode: false })
-    }
-
-    closeVendorDrawer = (e = '', type) => {
-        this.setState({
-            isOpenVendor: false,
-            isEditFlag: false,
-            ID: '',
-        }, () => {
-            if (type === 'submit')
-                this.getTableListData(null, null)
-            this.setState({ dataCount: 0 })
-        })
-    }
-
-    /**
+  /**
    * @method onFloatingFilterChanged
    * @description Filter data when user type in searching input
    */
-    onFloatingFilterChanged = (value) => {
-        setTimeout(() => {
-            this.props.clientDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-        }, 500);
-    }
-    /**
-    * @name onSubmit
-    * @param values
-    * @desc Submit the signup form values.
-    * @returns {{}}
-    */
-    onSubmit(values) {
-    }
+  const onFloatingFilterChanged = (value) => {
+    setTimeout(() => {
+      setState((prevState) => ({
+        ...prevState,
+        noData: searchNocontentFilter(value, prevState.noData),
+      }));
+    }, 500);
+  };
 
-    onGridReady = (params) => {
-        this.gridApi = params.api;
-        this.gridApi.sizeColumnsToFit();
-        this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
-        params.api.paginationGoToPage(0);
-    };
+  const onGridReady = (params) => {
+    state.gridApi = params.api;
+    state.gridApi.sizeColumnsToFit();
+    setState((prevState) => ({
+      ...prevState,
+      gridApi: params.api,
+      gridColumnApi: params.columnApi,
+    }));
+    params.api.paginationGoToPage(0);
+  };
 
-    onPageSizeChanged = (newPageSize) => {
-        this.state.gridApi.paginationSetPageSize(Number(newPageSize));
-    };
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
+  };
 
-    onRowSelect = () => {
-        const selectedRows = this.state.gridApi?.getSelectedRows()
-        this.setState({ selectedRowData: selectedRows, dataCount: selectedRows?.length })
-    }
-    onBtExport = () => {
-        let tempArr = []
-        tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.clientDataList ? this.props.clientDataList : [])
-        return this.returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr)
-    };
+  const onRowSelect = () => {
+    const selectedRows = state.gridApi?.getSelectedRows();
+    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows?.length, }));
+  };
 
-    returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData && TempData.map((item) => {
-            if (item.ClientName === null) {
-                item.ClientName = ' '
-            }
-            return item
-        })
-        return (
+  const onBtExport = () => {
+    let tempArr = [];
+    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    tempArr = tempArr && tempArr.length > 0 ? tempArr : clientDataList ? clientDataList : [];
+    return returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr);
+  };
 
-            <ExcelSheet data={temp} name={Clientmaster}>
-                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
-            </ExcelSheet>);
-    }
-
-    onFilterTextBoxChanged(e) {
-        this.state.gridApi.setQuickFilter(e.target.value);
-    }
-
-
-    resetState() {
-        this.state.gridApi.deselectAll()
-        gridOptions.columnApi.resetColumnState();
-        gridOptions.api.setFilterModel(null);
-    }
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { handleSubmit, } = this.props;
-        const { isOpenVendor, isEditFlag, AddAccessibility, DownloadAccessibility, noData } = this.state;
-        const ExcelFile = ReactExport.ExcelFile;
-
-        const isFirstColumn = (params) => {
-
-            var displayedColumns = params.columnApi.getAllDisplayedColumns();
-            var thisIsFirstColumn = displayedColumns[0] === params.column;
-            return thisIsFirstColumn;
-
+  const returnExcelColumn = (data = [], TempData) => {
+    let temp = [];
+    temp =
+      TempData && TempData.map((item) => {
+        if (item.ClientName === null) {
+          item.ClientName = " ";
         }
-        const defaultColDef = {
-            resizable: true,
-            filter: true,
-            sortable: false,
-            headerCheckboxSelectionFilteredOnly: true,
-            checkboxSelection: isFirstColumn
-        };
+        return item;
+      });
+    return (
+      <ExcelSheet data={temp} name={Clientmaster}>
+        {data && data.map((ele, index) => (
+          <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+        ))}
+      </ExcelSheet>
+    );
+  };
 
-        const frameworkComponents = {
-            totalValueRenderer: this.buttonFormatter,
-            // customLoadingOverlay: LoaderCustom,
-            customNoRowsOverlay: NoContentFound,
-            hyphenFormatter: this.hyphenFormatter
-        };
+  const onFilterTextBoxChanged = (e) => {
+    state.gridApi.setQuickFilter(e.target.value);
+  };
 
-        return (
-            // <div className="">
-            <div className={`ag-grid-react p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
-                <ScrollToTop pointProp="go-to-top" />
-                {this.state.isLoader && <LoaderCustom />}
-                < div className="container-fluid" >
-                    <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-                        <Row className="no-filter-row">
-                            <Col md="10" className="filter-block"></Col>
-                            <Col md="2" className="search-user-block">
-                                <div className="d-flex justify-content-end bd-highlight">
-                                    {AddAccessibility && (
-                                        <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={this.formToggle}
-                                            title="Add"
-                                        >
-                                            <div className={"plus mr-0"}></div>
-                                        </button>
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
-                                        <>
-                                            <>
-                                                <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1"></div>
-                                                    {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
-                                                    {this.onBtExport()}
-                                                </ExcelFile>
-                                            </>
-
-                                        </>
-
-                                    }
-
-                                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                                        <div className="refresh mr-0"></div>
-                                    </button>
-
-                                </div>
-                            </Col>
-                        </Row>
-
-                    </form>
-
-
-
-                    <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.clientDataList && this.props.clientDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                        <div className="ag-grid-header">
-                            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-                        </div>
-                        <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                            <AgGridReact
-                                defaultColDef={defaultColDef}
-                                floatingFilter={true}
-
-
-                                domLayout='autoHeight'
-                                // columnDefs={c}
-                                rowData={this.props.clientDataList}
-                                pagination={true}
-                                paginationPageSize={defaultPageSize}
-                                onGridReady={this.onGridReady}
-                                gridOptions={gridOptions}
-                                noRowsOverlayComponent={'customNoRowsOverlay'}
-                                onFilterModified={this.onFloatingFilterChanged}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass'
-                                }}
-                                rowSelection={'multiple'}
-                                onSelectionChanged={this.onRowSelect}
-                                frameworkComponents={frameworkComponents}
-                                suppressRowClickSelection={true}
-                            >
-                                <AgGridColumn field="CompanyName" headerName="Customer Name"></AgGridColumn>
-                                <AgGridColumn field="CompanyCode" headerName="Customer Code"></AgGridColumn>
-                                <AgGridColumn field="ClientName" headerName="Contact Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                <AgGridColumn field="ClientEmailId" headerName="Email Id"></AgGridColumn>
-                                <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
-                                <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
-                                <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
-                                <AgGridColumn field="ClientId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                            </AgGridReact>
-                            {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-                        </div>
-                    </div>
-
-                    {
-                        isOpenVendor && <AddClientDrawer
-                            isOpen={isOpenVendor}
-                            closeDrawer={this.closeVendorDrawer}
-                            isEditFlag={isEditFlag}
-                            isViewMode={this.state.isViewMode}
-                            ID={this.state.ID}
-                            anchor={'right'}
-                        />
-                    }
-                </div >
-                {
-                    this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CLIENT_DELETE_ALERT}`} />
-                }
-            </div >
-        );
+  const resetState = () => {
+    state.gridApi.deselectAll();
+    gridOptions.columnApi.resetColumnState();
+    gridOptions.api.setFilterModel(null); // Reset any header filters
+    if (window.screen.width >= 1600) {
+      state.gridApi.sizeColumnsToFit();
     }
-}
+  };
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ auth, client }) {
-    const { leftMenuData, topAndLeftMenuData } = auth;
-    const { clientDataList } = client;
-    return { leftMenuData, clientDataList, topAndLeftMenuData };
-}
 
-/**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-    getClientDataList,
-    deleteClient,
-})(reduxForm({
-    form: 'ClientListing',
-    onSubmitFail: errors => {
-        focusOnError(errors);
-    },
-    enableReinitialize: true,
-    touchOnChange: true
-})(ClientListing));
+  const { isOpenVendor, noData } = state;
+  const ExcelFile = ReactExport.ExcelFile;
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
+  };
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn,
+  };
+
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    // customLoadingOverlay: LoaderCustom,
+    customNoRowsOverlay: NoContentFound,
+    hyphenFormatter: hyphenFormatter,
+  };
+  return (
+    <div
+      className={`ag-grid-react p-relative ${state.DownloadAccessibility ? "show-table-btn" : ""}`} id="go-to-top"    >
+      <ScrollToTop pointProp="go-to-top" />
+      {state.isLoader ? <LoaderCustom /> : <div className="container-fluid">
+        <form noValidate>
+          <Row className="no-filter-row">
+            <Col md="10" className="filter-block"></Col>
+            <Col md="2" className="search-user-block">
+              <div className="d-flex justify-content-end bd-highlight">
+                {state.AddAccessibility && (
+                  <button type="button" className={"user-btn mr5"} onClick={formToggle} title="Add"                  >
+                    <div className={"plus mr-0"}></div>
+                  </button>
+                )}
+                {state?.DownloadAccessibility && (
+
+                  <ExcelFile filename={Clientmaster} fileExtension={".xls"}
+                    element={<button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`}
+                      type="button" className={"user-btn mr5"}>
+                      <div className="download mr-1"></div>
+                      {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`}
+                    </button>
+                    }>{onBtExport()} </ExcelFile>
+                )}
+
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}                >
+                  <div className="refresh mr-0"></div>
+                </button>
+              </div>
+            </Col>
+          </Row>
+        </form>
+
+        <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0 && !state.isLoader) || noData ? "overlay-contain" : ""}`}>
+          <div className="ag-grid-header">
+            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+          </div>
+          <div
+            className={`ag-theme-material ${state.isLoader && "max-loader-height"}`} >
+            {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
+            <AgGridReact
+              defaultColDef={defaultColDef}
+              floatingFilter={true}
+              domLayout="autoHeight"
+              // columnDefs={c}
+              rowData={clientDataList}
+              pagination={true}
+              paginationPageSize={defaultPageSize}
+              onGridReady={onGridReady}
+              gridOptions={gridOptions}
+              noRowsOverlayComponent={"customNoRowsOverlay"}
+              onFilterModified={onFloatingFilterChanged}
+              noRowsOverlayComponentParams={{
+                title: EMPTY_DATA,
+                imagClass: "imagClass",
+              }}
+              rowSelection={"multiple"}
+              onSelectionChanged={onRowSelect}
+              frameworkComponents={frameworkComponents}
+              suppressRowClickSelection={true}
+            >
+              <AgGridColumn field="CompanyName" headerName="Customer Name"></AgGridColumn>
+              <AgGridColumn field="CompanyCode" headerName="Customer Code"></AgGridColumn>
+              <AgGridColumn field="ClientName" headerName="Contact Name" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+              <AgGridColumn field="ClientEmailId" headerName="Email Id"></AgGridColumn>
+              <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
+              <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
+              <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
+              <AgGridColumn field="ClientId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+            </AgGridReact>
+            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+          </div>
+        </div>
+
+        {isOpenVendor && (
+          <AddClientDrawer
+            isOpen={state.isOpenVendor}
+            closeDrawer={closeVendorDrawer}
+            isEditFlag={state.isEditFlag}
+            isViewMode={state.isViewMode}
+            ID={state.ID}
+            anchor={"right"}
+          />
+        )}
+      </div>}
+
+      {state.showPopup && (
+        <PopupMsgWrapper
+          isOpen={state.showPopup}
+          closePopUp={closePopUp}
+          confirmPopup={onPopupConfirm}
+          message={`${MESSAGES.CLIENT_DELETE_ALERT}`}
+        />
+      )}
+    </div>
+  );
+};
+
+export default ClientListing
