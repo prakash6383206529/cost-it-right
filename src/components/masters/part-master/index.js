@@ -278,7 +278,6 @@ const PartMaster = () => {
                       <IndivisualPartListing
                         formToggle={displayIndividualForm}
                         getDetails={getIndividualPartDetails}
-                        ViewAccessibility={state.ViewAccessibility}
                         stopApiCallOnCancel={state.stopApiCallOnCancel}
                       />
                     </TabPane>

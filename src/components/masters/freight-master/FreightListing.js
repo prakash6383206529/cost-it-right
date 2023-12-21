@@ -1,6 +1,5 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { reduxForm, } from "redux-form";
+import React, {  useState, useEffect, useContext } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getFreightDataList, deleteFright, } from '../actions/Freight';
@@ -18,52 +17,52 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId, searchNocontentFilter } from '../../../helper';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { ApplyPermission } from '.';
 
 const gridOptions = {};
-class FreightListing extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOpen: false,
-      isEditFlag: false,
-      tableData: [],
-      isBulkUpload: false,
-      shown: false,
-      costingHead: [],
-      destinationLocation: [],
-      sourceLocation: [],
-      vendor: [],
-      isLoader: false,
-      showPopup: false,
-      deletedId: '',
-      selectedRowData: false,
-      noData: false,
-      dataCount: 0
-    }
-  }
+const FreightListing = (props) => {
+  const dispatch = useDispatch();
+  const [state, setState] = useState({
+    isOpen: false,
+    isEditFlag: false,
+    tableData: [],
+    isBulkUpload: false,
+    shown: false,
+    costingHead: [],
+    destinationLocation: [],
+    sourceLocation: [],
+    vendor: [],
+    isLoader: false,
+    showPopup: false,
+    deletedId: '',
+    selectedRowData: false,
+    noData: false,
+    dataCount: 0
+  })
+const permissions = useContext(ApplyPermission);
+console.log(permissions);
+  const { freightDetail } = useSelector((state) => state.freight);
 
-  /**
-  * @method componentDidMount
-  * @description Called after rendering the component
-  */
-  componentDidMount() {
-    !this.props.stopApiCallOnCancel && this.setState({ isLoader: true })
+  useEffect(() => {
+    !props.stopApiCallOnCancel && setState((prevState) => ({
+      ...prevState, isLoader: true
+    }))
     setTimeout(() => {
-      if (!this.props.stopApiCallOnCancel) {
+      if (!props.stopApiCallOnCancel) {
         setTimeout(() => {
-          this.getDataList()
+          getDataList()
         }, 500);
       }
     }, 300);
-  }
+  }, [props.stopApiCallOnCancel])
+
 
   /**
   * @method getDataList
   * @description GET DETAILS OF BOP DOMESTIC
   */
-  getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
+  const getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
     const filterData = {
       freight_for: freight_for,
       vendor_id: vendor_id,
@@ -71,77 +70,95 @@ class FreightListing extends Component {
       destination_city_id: destination_city_id,
       IsCustomerDataShow: reactLocalStorage.getObject('cbcCostingPermission')
     }
-    this.props.getFreightDataList(filterData, (res) => {
-      this.setState({ isLoader: false })
+    dispatch(getFreightDataList(filterData, (res) => {
+      setState((prevState) => ({
+        ...prevState, isLoader: false
+      }))
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        this.setState({ tableData: Data, isLoader: false })
+        setState((prevState) => ({
+          ...prevState, tableData: Data, isLoader: false
+        }))
       } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [], isLoader: false })
+        setState((prevState) => ({
+          ...prevState, tableData: [], isLoader: false
+        }))
       } else {
-        this.setState({ tableData: [], isLoader: false })
+        setState((prevState) => ({
+          ...prevState, tableData: [], isLoader: false
+        }))
       }
-    })
+    }))
   }
 
   /**
   * @method viewOrEditItemDetails
   * @description edit or view material type
   */
-  viewOrEditItemDetails = (Id, rowData, isViewMode) => {
+  const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
     let data = {
       isEditFlag: true,
       Id: Id,
       IsVendor: rowData.CostingHead,
       isViewMode: isViewMode
     }
-    this.props.getDetails(data);
+    props.getDetails(data);
   }
 
   /**
   * @method deleteItem
   * @description confirm delete Raw Material details
   */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
+  const deleteItem = (Id) => {
+    setState((prevState) => ({
+      ...prevState, showPopup: true, deletedId: Id
+    }))
   }
 
   /**
   * @method confirmDelete
   * @description confirm delete Raw Material details
   */
-  confirmDelete = (ID) => {
+  const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId()
-    this.props.deleteFright(ID, loggedInUser, (res) => {
+    dispatch(deleteFright(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
-        this.setState({ dataCount: 0 })
-        this.getDataList()
+        setState((prevState) => ({
+          ...prevState, dataCount: 0
+        }))
+        getDataList()
       }
-    });
-    this.setState({ showPopup: false })
+    }));
+    setState((prevState) => ({
+      ...prevState, showPopup: false
+    }))
   }
-  onPopupConfirm = () => {
-    this.confirmDelete(this.state.deletedId);
+  const onPopupConfirm = () => {
+    confirmDelete(state.deletedId);
   }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
+  const closePopUp = () => {
+    setState((prevState) => ({
+      ...prevState, showPopup: false
+    }))
   }
 
   /**
      * @method onFloatingFilterChanged
      * @description Filter data when user type in searching input
      */
-  onFloatingFilterChanged = (value) => {
+  const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      this.props.freightDetail.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+      freightDetail.length !== 0 && setState((prevState) => ({
+        ...prevState, noData: searchNocontentFilter(value, state.noData)
+      }))
     }, 500);
   }
   /**
   * @method renderPaginationShowsTotal
   * @description Pagination
   */
-  renderPaginationShowsTotal(start, to, total) {
+  const renderPaginationShowsTotal = (start, to, total) => {
     return <GridTotalFormate start={start} to={to} total={total} />
   }
 
@@ -149,16 +166,15 @@ class FreightListing extends Component {
   * @method buttonFormatter
   * @description Renders buttons
   */
-  buttonFormatter = (props) => {
+  const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.props;
     return (
       <>
-        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {permissions.View && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
+        {permissions.Edit && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
+        {permissions.Delete && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
       </>
     )
   };
@@ -167,44 +183,23 @@ class FreightListing extends Component {
   * @method costingHeadFormatter
   * @description Renders Costing head
   */
-  costingHeadFormatter = (props) => {
+  const costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue ? cellValue : ""
 
   }
 
 
-  /**
-  * @method indexFormatter
-  * @description Renders serial number
-  */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    const { table } = this.refs;
-    let currentPage = table && table.state && table.state.currPage ? table.state.currPage : '';
-    let sizePerPage = table && table.state && table.state.sizePerPage ? table.state.sizePerPage : '';
-    let serialNumber = '';
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1;
-    } else {
-      serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-    }
-    return serialNumber;
-  }
-
-  renderCostingHead = () => {
-    return <>Costing Head </>
-  }
 
 
-
-  formToggle = () => {
-    this.props.displayForm()
+  const formToggle = () => {
+    props.displayForm()
   }
 
   /**
   * @method hyphenFormatter
   */
-  hyphenFormatter = (props) => {
+  const hyphenFormatter = (props) => {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
@@ -213,11 +208,11 @@ class FreightListing extends Component {
   * @method onSubmit
   * @description Used to Submit the form
   */
-  onSubmit = (values) => {
+  const onSubmit = (values) => {
 
   }
 
-  returnExcelColumn = (data = [], TempData) => {
+  const returnExcelColumn = (data = [], TempData) => {
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
     let temp = []
@@ -234,187 +229,166 @@ class FreightListing extends Component {
     </ExcelSheet>);
   }
 
-  onGridReady = (params) => {
-    this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
-    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+  const onGridReady = (params) => {
+    state.gridApi = params.api;
+    state.gridApi.sizeColumnsToFit();
+    setState((prevState) => ({
+      ...prevState, gridApi: params.api, gridColumnApi: params.columnApi
+    }))
     params.api.paginationGoToPage(0);
   };
-  onPageSizeChanged = (newPageSize) => {
-    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  onRowSelect = () => {
-    const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
+  const onRowSelect = () => {
+    const selectedRows = state.gridApi?.getSelectedRows()
+    setState((prevState) => ({
+      ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length
+    }))
   }
 
-  onBtExport = () => {
+  const onBtExport = () => {
     let tempArr = []
-    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.freightDetail ? this.props.freightDetail : [])
-    return this.returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
+    tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (freightDetail ? freightDetail : [])
+    return returnExcelColumn(FREIGHT_DOWNLOAD_EXCEl, tempArr)
   };
 
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
+  const onFilterTextBoxChanged = (e) => {
+    state.gridApi.setQuickFilter(e.target.value);
   }
 
-  resetState() {
-    this.state.gridApi.deselectAll()
+  const resetState = () => {
+    state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
 
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-    const ExcelFile = ReactExport.ExcelFile;
-    const { noData, dataCount } = this.state;
 
-    const isFirstColumn = (params) => {
-      var displayedColumns = params.columnApi.getAllDisplayedColumns();
-      var thisIsFirstColumn = displayedColumns[0] === params.column;
-      return thisIsFirstColumn;
-    }
+  const { handleSubmit, AddAccessibility, DownloadAccessibility } = props;
+  const ExcelFile = ReactExport.ExcelFile;
+  const { noData, dataCount } = state;
 
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: false,
-      headerCheckboxSelectionFilteredOnly: true,
-      checkboxSelection: isFirstColumn
-    };
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
+  }
 
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      costingHeadRenderer: this.costingHeadFormatter,
-      customLoadingOverlay: LoaderCustom,
-      customNoRowsOverlay: NoContentFound,
-      hyphenFormatter: this.hyphenFormatter
-    };
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn
+  };
 
-    return (
-      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {this.state.isLoader && <LoaderCustom />}
-        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-          <Row className="pt-4">
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    costingHeadRenderer: costingHeadFormatter,
+    customLoadingOverlay: LoaderCustom,
+    customNoRowsOverlay: NoContentFound,
+    hyphenFormatter: hyphenFormatter
+  };
 
-            <Col md="6" className="search-user-block mb-3">
-              <div className="d-flex justify-content-end bd-highlight w100">
-                <div>
-                  {this.state.shown ? (
-                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                      <div className="cancel-icon-white"></div></button>
-                  ) : (
-                    ""
-                  )}
-                  {AddAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn mr5"}
-                      onClick={this.formToggle}
-                      title="Add"
-                    >
-                      <div className={"plus mr-0"}></div>
-                    </button>
-                  )}
-                  {
-                    DownloadAccessibility &&
-                    <>
-                      <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
-                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1"></div>
-                          {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
-                        {this.onBtExport()}
-                      </ExcelFile>
-                    </>
+  return (
+    <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}>
+      {state.isLoader && <LoaderCustom />}
+      <form
+        // onSubmit={handleSubmit(onSubmit.bind(this))}
+        noValidate>
+        <Row className="pt-4">
 
-                  }
-
-                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                    <div className="refresh mr-0"></div>
+          <Col md="6" className="search-user-block mb-3">
+            <div className="d-flex justify-content-end bd-highlight w100">
+              <div>
+                {state.shown ? (
+                  <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({
+                    ...prevState, shown: !state.shown
+                  }))}>
+                    <div className="cancel-icon-white"></div></button>
+                ) : (
+                  ""
+                )}
+                {permissions.Add && (
+                  <button
+                    type="button"
+                    className={"user-btn mr5"}
+                    onClick={formToggle}
+                    title="Add"
+                  >
+                    <div className={"plus mr-0"}></div>
                   </button>
+                )}
+                {
+                  permissions.Download &&
+                  <>
+                    <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
+                      <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1"></div>
+                        {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}</button>}>
+                      {onBtExport()}
+                    </ExcelFile>
+                  </>
 
-                </div>
-              </div>
-            </Col>
-          </Row>
-        </form>
-        <Row>
-          <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.freightDetail && this.props.freightDetail?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-              <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-              </div>
-              <div className={`ag-theme-material`}>
-                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                <AgGridReact
-                  defaultColDef={defaultColDef}
-                  floatingFilter={true}
-                  domLayout='autoHeight'
-                  rowData={this.props.freightDetail}
-                  pagination={true}
-                  paginationPageSize={defaultPageSize}
-                  onGridReady={this.onGridReady}
-                  gridOptions={gridOptions}
-                  noRowsOverlayComponent={'customNoRowsOverlay'}
-                  onFilterModified={this.onFloatingFilterChanged}
-                  noRowsOverlayComponentParams={{
-                    title: EMPTY_DATA,
-                    imagClass: 'imagClass'
-                  }}
-                  rowSelection={'multiple'}
-                  onSelectionChanged={this.onRowSelect}
-                  frameworkComponents={frameworkComponents}
-                  suppressRowClickSelection={true}
-                >
-                  <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
-                  <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
-                  <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
-                  {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
-                  <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
-                  <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
-                  <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
-                </AgGridReact>
-                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                }
+
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                  <div className="refresh mr-0"></div>
+                </button>
+
               </div>
             </div>
           </Col>
         </Row>
-        {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.FREIGHT_DELETE_ALERT}`} />
-        }
-      </div >
-    );
-  }
+      </form>
+      <Row>
+        <Col>
+          <div className={`ag-grid-wrapper height-width-wrapper ${(freightDetail && freightDetail?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+            <div className="ag-grid-header">
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+            </div>
+            <div className={`ag-theme-material`}>
+              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                floatingFilter={true}
+                domLayout='autoHeight'
+                rowData={freightDetail}
+                pagination={true}
+                paginationPageSize={defaultPageSize}
+                onGridReady={onGridReady}
+                gridOptions={gridOptions}
+                noRowsOverlayComponent={'customNoRowsOverlay'}
+                onFilterModified={onFloatingFilterChanged}
+                noRowsOverlayComponentParams={{
+                  title: EMPTY_DATA,
+                  imagClass: 'imagClass'
+                }}
+                rowSelection={'multiple'}
+                onSelectionChanged={onRowSelect}
+                frameworkComponents={frameworkComponents}
+                suppressRowClickSelection={true}
+              >
+                <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
+                <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
+                <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
+                {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
+                <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
+                <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>
+              </AgGridReact>
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+            </div>
+          </div>
+        </Col>
+      </Row>
+      {
+        state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.FREIGHT_DELETE_ALERT}`} />
+      }
+    </div >
+  );
 }
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ freight, material, comman }) {
-  const { freightDetail } = freight;
-  const { vendorListByVendorType } = material;
-  const { cityList, vendorWithVendorCodeSelectList } = comman;
-  return { vendorListByVendorType, cityList, freightDetail, vendorWithVendorCodeSelectList }
-}
 
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-  getFreightDataList,
-  deleteFright,
-})(reduxForm({
-  form: 'FreightListing',
-  enableReinitialize: true,
-  touchOnChange: true
-})(FreightListing));
+export default FreightListing
