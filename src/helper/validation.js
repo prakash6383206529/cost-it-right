@@ -329,17 +329,25 @@ export const trimDecimalPlace = (floatValue, decimalPlaces) => {
 
 export const checkForDecimalAndNull = (floatValue, decimalPlaces) => {
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
-    // Ensure floatValue is wrapped in a BigNumber, even if null or undefined, for reliable comparison
-    const value = (floatValue != null) ? new BigNumber(floatValue) : new BigNumber(0);
-    // Return a number, rounded as a string, as per the defined number of decimal places
-    if (localStorage.IsRoundingVisible) {
-        return checkForNull(value.decimalPlaces(decimalPlaces).toNumber());
-    } else {
-        // Use trimDecimalPlace which already returns a number
-        return checkForNull(trimDecimalPlace(value, decimalPlaces));
-    }
-};
 
+    // Ensure floatValue is wrapped in a BigNumber, even if null or undefined
+    let value = new BigNumber(floatValue ?? 0);
+
+    if (localStorage && localStorage.IsRoundingVisible) {
+        // Make sure decimalPlaces is a valid number before rounding
+        if (typeof decimalPlaces === 'number' && decimalPlaces >= 0) {
+            value = value.decimalPlaces(decimalPlaces);
+        }
+    } else {
+        // Ensure trimDecimalPlace returns BigNumber and use decimalPlaces method
+        // Assuming trimDecimalPlace is supposed to handle null or undefined values inside
+        value = new BigNumber(trimDecimalPlace(value.toNumber(), decimalPlaces));
+    }
+
+    // Convert the resulting BigNumber to a number and use checkForNull to validate
+    const number = value.toNumber();
+    return checkForNull(number);
+};
 export const checkForNull = (ele) => {
     if (ele == null || ele === '' || isNaN(Number(ele)) || ele === undefined || ele === Infinity || ele === -Infinity) {
         return 0; // Return zero directly if the input is not a valid number.
