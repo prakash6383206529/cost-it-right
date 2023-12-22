@@ -404,7 +404,7 @@ function NfrPartsListing(props) {
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>NFR Id: </label>
-                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrNumber ? rowData[0]?.NfrNumber : ''}</p>
+                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrRefNumber ? rowData[0]?.NfrRefNumber : ''}</p>
                                                 </div>
                                             </div>
                                             <button type="button" className={"apply ml-1"} onClick={props?.closeDrawer}> <div className={'back-icon'}></div>Back</button>
@@ -447,7 +447,6 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="PartType" headerName='Part Type' width={150} cellRenderer={partTypeFormater}></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NumberOfSimulation" headerName='No. of Simulations' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="ComponentQty" headerName='Component Quantity' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NetLandedCost" headerName='Cost (Currency/UOM)' cellRenderer={netLandedFormatter}></AgGridColumn>
                                                 <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={costFormatter}></AgGridColumn>
@@ -495,7 +494,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrNumber} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrRefNumber} />}
             {showDrawer &&
                 <DrawerTechnologyUpdate
                     isOpen={showDrawer}
