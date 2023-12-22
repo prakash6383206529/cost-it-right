@@ -229,6 +229,7 @@ function RawMaterialCost(props) {
             IsCutOffApplicable: el.IsCutOffApplicable,
             MachiningScrapRate: el.MachiningScrapRate,
             ScrapRatePerScrapUOMConversion: el.ScrapRatePerScrapUOMConversion,
+            ScrapRatePerScrapUOM: el.ScrapRatePerScrapUOM,
             IsScrapUOMApply: el.IsScrapUOMApply,
             ScrapUnitOfMeasurement: el.ScrapUnitOfMeasurement,
             Currency: el.Currency,
@@ -258,6 +259,7 @@ function RawMaterialCost(props) {
           MachiningScrapRate: rowData.MachiningScrapRate,
           IsScrapUOMApply: rowData.IsScrapUOMApply,
           ScrapUnitOfMeasurement: rowData.ScrapUnitOfMeasurement,
+          ScrapRatePerScrapUOM: rowData.ScrapRatePerScrapUOM,
           ScrapRatePerScrapUOMConversion: rowData.ScrapRatePerScrapUOMConversion,
           Currency: rowData.Currency,
         }
