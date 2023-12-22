@@ -730,7 +730,7 @@ export const searchableSelect = ({
           {...input}
           id={specificIdContainer}
           inputId={specificId}
-          isClearable={false}
+          isClearable={isClearable ? true : false}
           options={options}
           instanceId={input.name}
           onChange={handleChangeDescription}
