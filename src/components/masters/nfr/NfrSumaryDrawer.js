@@ -10,7 +10,7 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA, ERRORID, NFRTypeId, defaultPageSize } from "../../../config/constants";
 import { useDispatch } from "react-redux";
 import { getNFRApprovalSummary, pushNfrOnSap } from "./actions/nfr";
-import { formViewData, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from "../../../helper";
+import { checkForDecimalAndNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from "../../../helper";
 import { costingTypeIdToApprovalTypeIdFunction } from "../../common/CommonFunctions";
 import { checkFinalUser, getSingleCostingDetails, setCostingViewData } from "../../costing/actions/Costing";
 import { getUsersTechnologyLevelAPI } from "../../../actions/auth/AuthActions";
@@ -228,9 +228,14 @@ function NfrSummaryDrawer(props) {
                         onClick={() => viewOutsourcing(rowData)}
                     >
                     </button>
-                    {cellValue}
+                    {checkForDecimalAndNull(cellValue, getConfigurationKey()?.NoOfDecimalForPrice)}
                 </div>
             ) : '-'
+    }
+
+    const netPOPriceFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? checkForDecimalAndNull(cellValue, getConfigurationKey().NoOfDecimalForPrice) : '-'
     }
 
     const frameworkComponents = {
@@ -238,7 +243,8 @@ function NfrSummaryDrawer(props) {
         plantFormatter: plantFormatter,
         vendorFormatter: vendorFormatter,
         checkBoxRenderer: checkBoxRenderer,
-        outsourcingFormatter: outsourcingFormatter
+        outsourcingFormatter: outsourcingFormatter,
+        netPOPriceFormatter: netPOPriceFormatter,
     }
 
     const onRowSelect = (event) => {
@@ -379,7 +385,7 @@ function NfrSummaryDrawer(props) {
                                                         <AgGridColumn field="VendorName" headerName="Vendor" cellRenderer={'vendorFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="PlantName" headerName='Plant' cellRenderer={'plantFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="CostingNumber" headerName='Costing' ></AgGridColumn>
-                                                        <AgGridColumn field="NetPOPrice" headerName='Net PO' ></AgGridColumn>
+                                                        <AgGridColumn field="NetPOPrice" headerName='Net PO' cellRenderer={'netPOPriceFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={'outsourcingFormatter'}></AgGridColumn>
                                                         <AgGridColumn field="CostingId" headerName='Actions' type="rightAligned" cellRenderer={'onAction'}></AgGridColumn>
 

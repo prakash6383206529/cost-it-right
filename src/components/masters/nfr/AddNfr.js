@@ -14,7 +14,7 @@ import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
 import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
 import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails, setOpenAllTabs } from './actions/nfr';
-import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails, getCodeBySplitting, getNameBySplitting, } from '../../../helper';
+import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails, getCodeBySplitting, getNameBySplitting, checkForDecimalAndNull, } from '../../../helper';
 import { checkFinalUser, createCosting, deleteDraftCosting, emptyCostingData, getBriefCostingById, gridDataAdded, isDataChange, isDiscountDataChange, saveAssemblyBOPHandlingCharge, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setCostingDataList, setCostingEffectiveDate, setDiscountErrors, setIncludeOverheadProfitIcc, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOverheadProfitData, setOverheadProfitErrors, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCBOPCostData, setRMCCData, setRMCCErrors, setSurfaceCostData, setToolTabData, setToolsErrors } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
@@ -1013,9 +1013,9 @@ function AddNfr(props) {
                                                     {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.DisplayStatus : ''}
                                                 </div>
                                             </td>
-                                            <td>{dataItem?.SelectedCostingVersion?.Price}</td>
+                                            <td>{checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.Price, initialConfiguration.NoOfDecimalForPrice)}</td>
                                             <td><div className='out-sourcing-wrapper'>
-                                                {checkForNull(dataItem?.SelectedCostingVersion?.OutsourcingCost)}
+                                                {checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.OutsourcingCost, initialConfiguration.NoOfDecimalForPrice)}
                                                 {dataItem?.SelectedCostingVersion && <button
                                                     type="button"
                                                     className={"add-out-sourcing"}
