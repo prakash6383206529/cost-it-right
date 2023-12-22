@@ -12,7 +12,7 @@ import {
 } from '../../../actions/Common'
 import {
   createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  fileUploadRMDomestic, fileUpdateRMDomestic, checkAndGetRawMaterialCode,
+  fileUploadRMDomestic, fileUpdateRMDomestic, checkAndGetRawMaterialCode, getRMSpecificationDataAPI, getRMSpecificationDataList
 } from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message'
@@ -161,7 +161,10 @@ class AddRMDomestic extends Component {
       FinalJaliScrapCostBaseCurrency: '',
       FinalFreightCostBaseCurrency: '',
       FinalShearingCostBaseCurrency: '',
-      toolTipTextObject: {}
+      toolTipTextObject: {},
+      isDisabled: false, // THIS STATE IS USED TO DISABLE NAME, GRADE, SPEC
+      isCodeDisabled: false, // THIS STATE IS USED TO DISABLE CODE,
+      rmCode: []
 
     }
   }
@@ -215,6 +218,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialNameChild(() => { })
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
+        this.props.getRMSpecificationDataList({ GradeId: null }, () => { });
       })
     }
     if (!(this.props.data.isEditFlag || this.state.isViewFlag) && this.state.Technology) {
@@ -290,7 +294,7 @@ class AddRMDomestic extends Component {
    */
   handleRMChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
+      this.setState({ RawMaterial: newValue, RMGrade: [], rmCode: [], isCodeDisabled: true }, () => {
         const { RawMaterial } = this.state
         this.props.getRMGradeSelectListByRawMaterial(
           RawMaterial.value,
@@ -299,7 +303,7 @@ class AddRMDomestic extends Component {
         )
       })
     } else {
-      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
+      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [], rmCode: [], isCodeDisabled: false })
       this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
       this.props.fetchSpecificationDataAPI(0, () => { })
     }
@@ -311,7 +315,7 @@ class AddRMDomestic extends Component {
    */
   handleGradeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RMGrade: newValue, RMSpec: [] }, () => {
+      this.setState({ RMGrade: newValue, RMSpec: [], rmCode: [], isCodeDisabled: true }, () => {
         const { RMGrade } = this.state
         this.props.fetchSpecificationDataAPI(RMGrade.value, (res) => { })
       })
@@ -319,6 +323,7 @@ class AddRMDomestic extends Component {
       this.setState({
         RMGrade: [],
         RMSpec: [],
+        isCodeDisabled: false
       })
       this.props.fetchSpecificationDataAPI(0, (res) => { })
     }
@@ -330,13 +335,31 @@ class AddRMDomestic extends Component {
    */
   handleSpecChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RMSpec: newValue })
-      this.props.change('Code', newValue.RawMaterialCode ? newValue.RawMaterialCode : '')
+      this.setState({ RMSpec: newValue, isCodeDisabled: true, rmCode: { label: newValue.RawMaterialCode, value: newValue.value } })
     } else {
-      this.setState({ RMSpec: [] })
+      this.setState({ RMSpec: [], isCodeDisabled: false, rmCode: [] })
     }
   }
 
+  /**
+ * @method handleCodeChange
+ * @description  used to handle code change
+ */
+  handleCodeChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ rmCode: newValue, isDisabled: true })
+      this.props.getRMSpecificationDataAPI(newValue.value, (res) => {
+        let Data = res.data.Data
+        this.setState({
+          RawMaterial: { label: Data.RawMaterialName, value: Data.RawMaterialId, },
+          RMGrade: { label: Data.GradeName, value: Data.GradeId },
+          RMSpec: { label: Data.Specification, value: Data.SpecificationId }
+        })
+      })
+    } else {
+      this.setState({ rmCode: [], RawMaterial: [], RMGrade: [], RMSpec: [], isDisabled: false })
+    }
+  }
   /**
    * @method handleCategoryChange
    * @description  used to handle category selection
@@ -627,11 +650,7 @@ class AddRMDomestic extends Component {
         if (res && res.data && res?.data?.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data })
-          this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
-          // this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
-          // this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
           setTimeout(() => {
-
             this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
@@ -687,6 +706,7 @@ class AddRMDomestic extends Component {
               singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               showForgingMachiningScrapCost: showScrapKeys?.showForging,
               showExtraCost: showScrapKeys?.showCircleJali,
+              rmCode: { label: Data.RawMaterialCode, value: Data.RMSpec },
             }, () => this.setState({ isLoader: false }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -763,8 +783,8 @@ class AddRMDomestic extends Component {
                 RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                 RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
                 RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value, RawMaterialCode: specObj.RawMaterialCode } : [],
+                rmCode: specObj !== undefined ? { label: specObj.RawMaterialCode, value: specObj.Value } : [],
               })
-              this.props.change('Code', specObj.RawMaterialCode ? specObj.RawMaterialCode : '')
             })
           })
         }
@@ -886,8 +906,8 @@ class AddRMDomestic extends Component {
    * @method renderListing
    * @description Used to show type of listing
    */
-  renderListing = (label) => {
-    const { gradeSelectList, rmSpecification, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props
+  renderListing = (label, isScrapRateUOM) => {
+    const { gradeSelectList, rmSpecification, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, plantSelectList, costingSpecifiTechnology, clientSelectList, rmSpecificationList } = this.props
     const temp = []
 
     if (label === 'material') {
@@ -997,6 +1017,14 @@ class AddRMDomestic extends Component {
       clientSelectList && clientSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'code') {
+      rmSpecificationList && rmSpecificationList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.RawMaterialCode, value: item.SpecificationId })
         return null;
       });
       return temp;
@@ -1392,7 +1420,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, isRMAssociated } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, showScrapKeys } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, showScrapKeys, isDisabled, isCodeDisabled } = this.state
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1544,7 +1572,8 @@ class AddRMDomestic extends Component {
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
                                   className="fullinput-icon"
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
+                                  isClearable={true}
                                 />
                               </div>
                               {(!isEditFlag) && (
@@ -1571,7 +1600,7 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
                                 />
                               </div>
                             </div>
@@ -1591,7 +1620,7 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleSpecChange}
                                   valueDescription={this.state.RMSpec}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
                                 />
                               </div>
                             </div>
@@ -1617,13 +1646,15 @@ class AddRMDomestic extends Component {
                               label={`Code`}
                               name={'Code'}
                               type="text"
-                              placeholder={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? '-' : "Enter"}
-                              validate={[required]}
-                              component={renderText}
-                              required={true}
-                              className=" "
-                              customClassName=" withBorder"
-                              disabled={true}
+                              component={searchableSelect}
+                              placeholder={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? 'Select' : "Enter"}
+                              options={this.renderListing("code")}
+                              validate={initialConfiguration?.IsAutoGeneratedRawMaterialCode || this.state.rmCode == null || this.state.rmCode.length === 0 ? [] : [required]}
+                              required={!initialConfiguration?.IsAutoGeneratedRawMaterialCode}
+                              handleChangeDescription={this.handleCodeChange}
+                              disabled={isEditFlag || isViewFlag || isCodeDisabled}
+                              isClearable={true}
+                              valueDescription={this.state.rmCode}
                             />
                           </Col>
 
@@ -2339,7 +2370,7 @@ function mapStateToProps(state) {
   const { clientSelectList } = client;
   const { initialConfiguration, userMasterLevelAPI } = auth;
 
-  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType } = material
+  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, rmSpecificationList } = material
 
 
   let initialValues = {}
@@ -2361,7 +2392,7 @@ function mapStateToProps(state) {
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
     filterPlantList, UOMSelectList, vendorListByVendorType, plantSelectList,
-    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI
+    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI, rmSpecificationList
   }
 }
 
@@ -2397,7 +2428,9 @@ export default connect(mapStateToProps, {
   getClientSelectList,
   checkFinalUser,
   getUsersMasterLevelAPI,
-  getVendorNameByVendorSelectList
+  getVendorNameByVendorSelectList,
+  getRMSpecificationDataAPI,
+  getRMSpecificationDataList
 })(
   reduxForm({
     form: 'AddRMDomestic',
