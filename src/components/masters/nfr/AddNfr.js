@@ -857,7 +857,7 @@ function AddNfr(props) {
                         <Table className='border cr-brdr-main sub-table' responsive>
                             <thead>
                                 <tr>
-                                    <th>NFR Number</th>
+                                    <th>NFR Ref. Number</th>
                                     <th>Part Number</th>
                                     <th>Part Name</th>
                                     <th>Plant (Code)</th>
