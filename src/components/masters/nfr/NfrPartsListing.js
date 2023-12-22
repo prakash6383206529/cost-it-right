@@ -12,7 +12,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { checkPermission, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, checkPermission, getConfigurationKey, labelWithUOMAndCurrency, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import { getNfrPartDetails, nfrDetailsForDiscountAction, pushNfrRmBopOnSap } from './actions/nfr';
@@ -270,6 +270,24 @@ function NfrPartsListing(props) {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null && cellValue === BOUGHTOUTPARTSPACING ? 'BOP (Standard)' : cellValue === COMPONENT_PART ? 'Component (Customized)' : cellValue === RAW_MATERIAL ? 'Raw Material' : ' -';
     }
+
+    /**
+     * @method costFormatter
+     */
+    const costFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? checkForDecimalAndNull(cellValue, getConfigurationKey()?.NoOfDecimalForPrice) : '-';
+    }
+
+    /**
+     * @method netLandedFormatter
+     */
+    const netLandedFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const tempValue = `${checkForDecimalAndNull(row?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)} (${row?.Currency ? row?.Currency : "Currency"}/${row?.UOM ? row?.UOM : 'UOM'})`
+        return tempValue;
+    }
+
     const viewAttachmentData = (index) => {
         setAttachment(true)
         setViewAttachment(index)
@@ -356,7 +374,9 @@ function NfrPartsListing(props) {
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
         dateFormater: dateFormater,
-        partTypeFormater: partTypeFormater
+        partTypeFormater: partTypeFormater,
+        costFormatter: costFormatter,
+        netLandedFormatter: netLandedFormatter,
     }
 
     const resetState = () => {
@@ -384,7 +404,7 @@ function NfrPartsListing(props) {
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
                                                     <label>NFR Id: </label>
-                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrNumber ? rowData[0]?.NfrNumber : ''}</p>
+                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrRefNumber ? rowData[0]?.NfrRefNumber : ''}</p>
                                                 </div>
                                             </div>
                                             <button type="button" className={"apply ml-1"} onClick={props?.closeDrawer}> <div className={'back-icon'}></div>Back</button>
@@ -427,10 +447,9 @@ function NfrPartsListing(props) {
                                                 <AgGridColumn field="PartType" headerName='Part Type' width={150} cellRenderer={partTypeFormater}></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NumberOfSimulation" headerName='No. of Simulations' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="ComponentQty" headerName='Component Quantity' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NetLandedCost" headerName='Cost/Rate' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NetLandedCost" headerName='Cost (Currency/UOM)' cellRenderer={netLandedFormatter}></AgGridColumn>
+                                                <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={costFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
@@ -475,7 +494,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrNumber} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrRefNumber} />}
             {showDrawer &&
                 <DrawerTechnologyUpdate
                     isOpen={showDrawer}
