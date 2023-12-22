@@ -284,7 +284,7 @@ function NfrPartsListing(props) {
      */
     const netLandedFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-        const tempValue = `${checkForDecimalAndNull(row?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)} (${row?.Currency ? row?.Currency : "Currency"}/${row?.UOM ? row?.UOM : 'UOM'})`
+        const tempValue = `${checkForDecimalAndNull(row?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)} (${row?.Currency ? row?.Currency : getConfigurationKey()?.BaseCurrency}/${row?.UOM ? row?.UOM : 'UOM'})`
         return tempValue;
     }
 
