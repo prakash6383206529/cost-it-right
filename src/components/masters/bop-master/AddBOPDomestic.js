@@ -129,7 +129,7 @@ class AddBOPDomestic extends Component {
     let basicPriceText = ''
     if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
-        basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`          //CIR-I6253
+        basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
       } else {
         basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
       }
