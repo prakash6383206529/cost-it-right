@@ -13,7 +13,6 @@ import _ from 'lodash';
 import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, SHEETMETAL } from '../config/masterData';
-
 /**
  * @method  apiErrors
  * @desc Response error handler.
@@ -1033,24 +1032,24 @@ export const displayUOM = (value) => {
       temp.push(value.charAt(i))
     }
     temp.splice(temp.length - 2, 1);
-    const UOMValue = <div className='p-relative'>{temp.map(item => {
-      return <span className='unit-text'>{item}</span>
+    const UOMValue = <span>{temp.map((item, ind) => {
+      if (temp.length !== ind + 1) {
+        return <>{item}</>
+      } else {
+        return <sup>{item}</sup>
+      }
     })}
-    </div>
+    </span>
     return UOMValue
   }
   return value
 }
 export const labelWithUOMAndCurrency = (label, UOM, currency) => {
-  return <div>
-    <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
-  </div>
+  return <>{label}({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</>
 }
 
 export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
-  return <div>
-    <span className='d-flex'>{label} ({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</span>
-  </div>
+  return <>{label}({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</>
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID

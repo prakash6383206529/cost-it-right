@@ -226,38 +226,38 @@ class AddRMImport extends Component {
       toolTipTextFreightCostBaseCurrency: `Freight Cost (${initialConfiguration?.BaseCurrency}) = Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
       toolTipTextShearingCostBaseCurrency: `Shearing Cost (${initialConfiguration?.BaseCurrency}) = Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
       toolTipTextConditionCostBaseCurrency: `Condition Cost (${initialConfiguration?.BaseCurrency}) = Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-      toolTipTextCalculatedFactor: <div className='d-flex'>{labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} = 1 / {labelWithUOMAndUOM("Calculated Ratio", this.state.ScrapRateUOM?.label, this.state.UOM?.label)}</div>,
+      toolTipTextCalculatedFactor: <>{labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} = 1 / {labelWithUOMAndUOM("Calculated Ratio", this.state.ScrapRateUOM?.label, this.state.UOM?.label)}</>,
     }
     if (showScrapKeys?.showCircleJali) {
       obj = {
         ...obj,
         toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) = Circle Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-        toolTipTextJaliScrapCostBaseCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</div>,
-        toolTipTextJaliScrapCostSelectedCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label, this.state.currency?.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label, this.state.currency?.label)}</div>,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)} *  Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</div>,
+        toolTipTextJaliScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label, currency?.label)}* Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextJaliScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label, this.state.currency?.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)}* {labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label, this.state.currency?.label)}</>,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)}* Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
         toolTipTextJaliScrapCostBaseCurrencyPerOldUOM: `Jali Scrap Cost (${currency?.label ? currency?.label : 'Currency'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost (${currency?.label ? currency?.label : 'Currency'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
       }
     } else if (showScrapKeys?.showForging) {
       obj = {
         ...obj,
-        toolTipTextForgingScrapCostBaseCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</div>,
+        toolTipTextForgingScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
         toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) = Machining Scrap Cost (${currency.label === undefined ? 'Currency' : currency?.label}) * Currency Rate (${currency.label === undefined ? 'Currency' : currencyValue})`,
-        toolTipTextForgingScrapCostSelectedCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label, currency.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)}</div>,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)} *  Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</div>,
+        toolTipTextForgingScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label, currency.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)}</>,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
       }
     } else if (showScrapKeys?.showScrap) {
       obj = {
         ...obj,
-        toolTipTextScrapCostBaseCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</div>,
-        toolTipTextScrapCostSelectedCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, currency.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} *  {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)}</div>,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)} *  Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</div>,
+        toolTipTextScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, currency.label)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)}</>,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)} *  Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
       }
     } else {
       obj = {
         ...obj,
-        toolTipTextScrapCostBaseCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</div>,
-        toolTipTextScrapCostSelectedCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} *  {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)}</div>,
-        toolTipTextScrapRatePerScrapUOMBaseCurrency: <div className='d-flex'>{labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)} *  Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</div>,
+        toolTipTextScrapCostBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, currency?.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
+        toolTipTextScrapCostSelectedCurrency: <>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)}</>,
+        toolTipTextScrapRatePerScrapUOMBaseCurrency: <>{labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, currency.label)} * Currency Rate ({currency.label === undefined ? 'Currency' : currencyValue})</>,
       }
     }
     if (setData) {
@@ -2243,11 +2243,12 @@ class AddRMImport extends Component {
                             </Col>
 
                             <Col md="3">
-                              <TooltipCustom id="rm-cut-off-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCutOffBaseCurrency} />
+                              <TooltipCustom disabledIcon={true} id="rm-cut-off-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCutOffBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                 name={"cutOffPriceBaseCurrency"}
                                 type="text"
+                                id="rm-cut-off-base-currency"
                                 placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, maxLength15, number]}
                                 component={renderTextInputField}
@@ -2273,10 +2274,11 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <TooltipCustom id="rm-basic-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />
+                              <TooltipCustom disabledIcon={true} id="rm-basic-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextBasicRateBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                 name={"BasicRateBaseCurrency"}
+                                id="rm-basic-rate-base-currency"
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2343,10 +2345,11 @@ class AddRMImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom id="conversion-factor-base-currency" width={'400px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
+                                <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" width={'400px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
                                 <Field
                                   label={labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label ? this.state.UOM?.label : 'UOM', this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')}
                                   name={"CalculatedFactor"}
+                                  id="conversion-factor-base-currency"
                                   type="text"
                                   placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2374,10 +2377,11 @@ class AddRMImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom id="scrap-rate-per-scrap-uom-base-currency" width={'550px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapRatePerScrapUOMBaseCurrency} />
+                                <TooltipCustom disabledIcon={true} id="scrap-rate-per-scrap-uom-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapRatePerScrapUOMBaseCurrency} />
                                 <Field
                                   label={labelForScrapRate()?.labelBaseCurrency}
                                   name={"ScrapRatePerScrapUOMBaseCurrency"}
+                                  id="scrap-rate-per-scrap-uom-base-currency"
                                   type="text"
                                   placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2393,11 +2397,12 @@ class AddRMImport extends Component {
                             {showScrapKeys?.showScrap &&
                               <>
                                 <Col md="3">
-                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="rm-forging-selected-currency" width={'550px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostSelectedCurrency} />}
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="rm-forging-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostSelectedCurrency} />}
                                   <Field
                                     label={labelWithUOMAndCurrency("Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                     name={"ScrapRateSelectedCurrency"}
                                     type="text"
+                                    id="rm-forging-selected-currency"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                                     component={renderTextInputField}
@@ -2410,11 +2415,12 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
-                                  <TooltipCustom id="rm-scrap-cost-base-currency" width={'550px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrency} />
+                                  <TooltipCustom disabledIcon={true} id="rm-scrap-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"ScrapRateBaseCurrency"}
                                     type="text"
+                                    id="rm-scrap-cost-base-currency"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
                                     component={renderTextInputField}
@@ -2430,8 +2436,9 @@ class AddRMImport extends Component {
                             {showScrapKeys?.showForging &&
                               <>
                                 <Col md="3">
-                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="rm-forging-selected-currency" width={'650px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostSelectedCurrency} />}
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="rm-forging-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostSelectedCurrency} />}
                                   <Field
+                                    id="rm-forging-selected-currency"
                                     label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                     name={"ForgingScrapSelectedCurrency"}
                                     type="text"
@@ -2446,10 +2453,11 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
-                                  <TooltipCustom id="rm-forging-base-currency" width={'550px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />
+                                  <TooltipCustom disabledIcon={true} id="rm-forging-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"ForgingScrapBaseCurrency"}
+                                    id="rm-forging-base-currency"
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
@@ -2480,10 +2488,11 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
-                                  <TooltipCustom id="rm-machining-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextMachiningScrapCostBaseCurrency} />
+                                  <TooltipCustom disabledIcon={true} id="rm-machining-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextMachiningScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Machining Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"MachiningScrapBaseCurrency"}
+                                    id="rm-machining-base-currency"
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
@@ -2514,10 +2523,11 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
-                                  <TooltipCustom id="rm-circle-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCircleScrapCostBaseCurrency} />
+                                  <TooltipCustom disabledIcon={true} id="rm-circle-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCircleScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Circle Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"CircleScrapCostBaseCurrency"}
+                                    id="rm-circle-base-currency"
                                     type="text"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[maxLength15, decimalLengthsix]}
@@ -2532,11 +2542,12 @@ class AddRMImport extends Component {
 
 
                                 <Col md="3">
-                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="jali-scrap-cost-selected-currency" width={'550px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostSelectedCurrency} />}
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostSelectedCurrency} />}
                                   <Field
                                     label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                     name={"JaliScrapCostSelectedCurrency"}
                                     type="text"
+                                    id="jali-scrap-cost-selected-currency"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, maxLength15, decimalLengthsix]}
                                     component={renderText}
@@ -2547,11 +2558,12 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                                 <Col md="3">
-                                  <TooltipCustom id="rm-jali-base-currency" width={'550px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrency} />
+                                  <TooltipCustom disabledIcon={true} id="rm-jali-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrency} />
                                   <Field
                                     label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                     name={"JaliScrapCostBaseCurrency"}
                                     type="text"
+                                    id="rm-jali-base-currency"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, maxLength15, decimalLengthsix]}
                                     component={renderText}
@@ -2581,10 +2593,11 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <TooltipCustom id="rm-freight-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />
+                              <TooltipCustom disabledIcon={true} id="rm-freight-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                 name={"FreightChargeBaseCurrency"}
+                                id="rm-freight-base-currency"
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2615,10 +2628,11 @@ class AddRMImport extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <TooltipCustom id="rm-shearing-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />
+                              <TooltipCustom disabledIcon={true} id="rm-shearing-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
                                 name={"ShearingCostBaseCurrency"}
+                                id="rm-shearing-base-currency"
                                 type="text"
                                 placeholder={isViewFlag ? '-' : "Enter"}
                                 validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2637,10 +2651,11 @@ class AddRMImport extends Component {
 
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                               <Col md="3">
-                                <TooltipCustom id="rm-basic-price-currency" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency} />
+                                <TooltipCustom disabledIcon={true} id="rm-basic-price-currency" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency} />
                                 <Field
                                   label={`Basic Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                   name={"BasicPriceSelectedCurrency"}
+                                  id="rm-basic-price-currency"
                                   type="text"
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
@@ -2652,10 +2667,11 @@ class AddRMImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom id="rm-basic-price-base" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
+                                <TooltipCustom disabledIcon={true} id="rm-basic-price-base" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
                                 <Field
                                   label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
                                   name={"BasicPriceBaseCurrency"}
+                                  id="rm-basic-price-base"
                                   type="text"
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
@@ -2687,10 +2703,11 @@ class AddRMImport extends Component {
                               <Col md="3">
                                 <div className='d-flex align-items-center'>
                                   <div className='w-100'>
-                                    <TooltipCustom id="rm-condition-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextConditionCostBaseCurrency} />
+                                    <TooltipCustom disabledIcon={true} id="rm-condition-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextConditionCostBaseCurrency} />
                                     <Field
                                       label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
                                       name={"FinalConditionCostBaseCurrency"}
+                                      id="rm-condition-cost-base-currency"
                                       type="text"
                                       placeholder={"-"}
                                       validate={[]}
@@ -2717,11 +2734,12 @@ class AddRMImport extends Component {
                             </>}
                             {this.state.showCurrency && <>
                               <Col md="3">
-                                <TooltipCustom id="rm-net-cost-currency" tooltipText={this.netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
+                                <TooltipCustom disabledIcon={true} id="rm-net-cost-currency" tooltipText={this.netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
                                 <Field
                                   label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostSelectedCurrency"}
                                   type="text"
+                                  id="rm-net-cost-currency"
                                   placeholder={"-"}
                                   validate={[]}
                                   component={renderTextInputField}
@@ -2732,11 +2750,12 @@ class AddRMImport extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom id="rm-net-cost-base" tooltipText={this.netCostTitle()?.toolTipTextNetCostBaseCurrency} />
+                                <TooltipCustom disabledIcon={true} id="rm-net-cost-base" tooltipText={this.netCostTitle()?.toolTipTextNetCostBaseCurrency} />
                                 <Field
                                   label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
                                   name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                   type="text"
+                                  id="rm-net-cost-base"
                                   placeholder={"-"}
                                   validate={[]}
                                   component={renderTextInputField}
