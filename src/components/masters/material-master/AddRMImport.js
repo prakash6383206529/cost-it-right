@@ -464,7 +464,7 @@ class AddRMImport extends Component {
  */
   handleTechnologyChange = (newValue) => {
     this.checkTechnology(newValue)
-    this.setState({ RawMaterial: [], isDropDownChanged: true, Technology: newValue })
+    this.setState({ isDropDownChanged: true, Technology: newValue })
     setTimeout(() => {
       this.allFieldsInfoIcon(true)
     }, 300);
