@@ -423,7 +423,7 @@ class AddRMDomestic extends Component {
   */
   handleTechnologyChange = (newValue) => {
     this.checkTechnology(newValue)
-    this.setState({ RawMaterial: [], isDropDownChanged: true, Technology: newValue })
+    this.setState({ isDropDownChanged: true, Technology: newValue })
   }
   /**
   * @method handleClient
