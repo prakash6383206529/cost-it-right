@@ -641,6 +641,7 @@ function MasterCostMovement() {
             case Number(1):
             case Number(2):
                 masterData = {
+                    "TypeOfEntry": Number(master) === Number(1) ? 0 : 1,
                     "RawMaterialChildId": rawMaterial.value,
                     "RawMaterialCategoryId": Number(category.value),
                     "RawMaterialGradeId": RMGrade.value,
@@ -650,6 +651,7 @@ function MasterCostMovement() {
             case Number(4):
             case Number(5):
                 masterData = {
+                    "TypeOfEntry": Number(master) === Number(4) ? 0 : 1,
                     "BoughtOutPartCategoryId": Number(BOPCategory.value),
                     "BoughtOutPartChildId": BOPData.value,
 
