@@ -19,7 +19,7 @@ import ReportsTab from "./ReportsTab";
 import AuditTab from "./AuditTab";
 import LoaderCustom from "../../common/LoaderCustom";
 import RfqTab from "./RfqTab";
-import { getConfigurationKey } from "../../../helper";
+import { getConfigurationKey, scrollReset } from "../../../helper";
 import NfrTab from "./NfrTab";
 
 class PermissionsTabIndex extends Component {
@@ -162,7 +162,7 @@ class PermissionsTabIndex extends Component {
         }
         if (Number(tab) === Number(4)) { //THIS CODE WILL EXECUTE ONLY FOR COSTING TAB
             setTimeout(() => {
-                this.setState({ scrollReset: !this.state.scrollReset })
+                scrollReset('costingTab')
             }, 100);
         }
     }
@@ -299,7 +299,6 @@ class PermissionsTabIndex extends Component {
                                             actionData={this.state.actionData}
                                             actionSelectList={this.props.actionSelectList}
                                             permissions={this.permissionHandler}
-                                            scrollRef={this.state.scrollReset}
                                         />
                                     </TabPane>
 

@@ -207,7 +207,9 @@ function UserRegistration(props) {
     }))
     dispatch(getSimulationTechnologySelectList(() => { }))
     dispatch(getMastersSelectList(() => { }))
-    dispatch(getReporterList(() => { }))
+    if (props?.RFQUser) {
+      dispatch(getReporterList(() => { }))
+    }
     dispatch(getApprovalTypeSelectList(() => { }))
     return () => {
       reactLocalStorage?.setObject('vendorData', [])

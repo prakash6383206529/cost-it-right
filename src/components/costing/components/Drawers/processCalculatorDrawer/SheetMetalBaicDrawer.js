@@ -5,7 +5,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
 import { costingInfoContext } from '../../CostingDetailStepTwo';
 import { NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
-import { checkForDecimalAndNull, checkForNull, checkPercentageValue, getConfigurationKey, loggedInUserId } from '../../../../../helper'
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../../helper'
 import { AREA, DIMENSIONLESS, MASS, TIME, VOLUMETYPE } from '../../../../../config/constants';
 import { saveDefaultProcessCostCalculationData } from '../../../actions/CostWorking';
 import Toaster from '../../../../common/Toaster';
@@ -14,7 +14,7 @@ import { findProcessCost } from '../../../CostingUtil';
 import { debounce } from 'lodash';
 import { nonZero } from '../../../../../helper/validation'
 import TooltipCustom from '../../../../common/Tooltip';
-import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit } from "../../../../../helper/validation";
 
 function SheetMetalBaicDrawer(props) {
   const { rmFinishWeight } = props
@@ -315,10 +315,7 @@ function SheetMetalBaicDrawer(props) {
                           mandatory={true}
                           rules={{
                             required: true,
-                            pattern: {
-                              value: /^\d{0,6}(\.\d{0,4})?$/i,
-                              message: 'Maximum length for integer is 6 and for decimal is 4',
-                            },
+                            validate: { number, checkWhiteSpaces, decimalNumberLimit },
                           }}
                           handleChange={() => { }}
                           defaultValue={''}
@@ -338,10 +335,7 @@ function SheetMetalBaicDrawer(props) {
                           mandatory={true}
                           rules={{
                             required: true,
-                            pattern: {
-                              value: /^\d{0,6}(\.\d{0,4})?$/i,
-                              message: 'Maximum length for integer is 6 and for decimal is 4',
-                            },
+                            validate: { number, checkWhiteSpaces, decimalNumberLimit },
                           }}
                           handleChange={() => { }}
                           defaultValue={''}

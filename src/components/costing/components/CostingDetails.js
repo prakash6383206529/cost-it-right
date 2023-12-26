@@ -2572,7 +2572,17 @@ function CostingDetails(props) {
                                               {ViewAccessibility && actionPermission.viewVBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBCTypeId)} />)}
                                               {EditAccessibility && actionPermission.editVBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBCTypeId)} />)}
                                               {String(partType.label) !== BOUGHTOUTPARTSPACING && CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} />)}
-                                              {DeleteAccessibility && actionPermission.deleteVBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBCTypeId)} />)}
+                                              {
+                                                DeleteAccessibility && actionPermission.deleteVBC && !item.IsNewCosting && displayDeleteBtn &&
+                                                (String(partType.label) !== BOUGHTOUTPARTSPACING || item?.CostingOptions?.length > 1) && (
+                                                  <button
+                                                    className="Delete All"
+                                                    title="Delete Costing"
+                                                    type="button"
+                                                    onClick={() => deleteItem(item, index, VBCTypeId)}
+                                                  />
+                                                )
+                                              }
                                               {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBCTypeId)} />}
                                             </div>
                                           </td>

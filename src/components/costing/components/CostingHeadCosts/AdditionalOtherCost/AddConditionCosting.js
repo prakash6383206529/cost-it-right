@@ -170,7 +170,7 @@ function AddConditionCosting(props) {
 
 
     const addData = () => {
-        if (((getValues('Type') === 'Fixed' || getValues('Type') === 'Quantity') && !getValues('CostCurrency')) || (getValues('Type') === 'Percentage' && !getValues('Percentage'))) {
+        if (!getValues('Type') || !getValues('Condition') || ((getValues('Type') === 'Fixed' || getValues('Type') === 'Quantity') && !getValues('CostCurrency')) || (getValues('Type') === 'Percentage' && !getValues('Percentage'))) {
             Toaster.warning("Please enter all details to add a row.");
             return false;
         }
