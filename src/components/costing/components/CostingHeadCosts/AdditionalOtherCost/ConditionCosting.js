@@ -45,7 +45,7 @@ function ConditionCosting(props) {
                                     return (
                                         <Fragment>
                                             <tr key={index}>
-                                                <td>{`${item.Description}`} </td>
+                                                <td>{item.condition ? item.condition : item.Description} </td>
                                                 {<td>{item.ConditionType}</td>}
                                                 {<td>{item.Percentage ? checkForDecimalAndNull(item?.Percentage, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
                                                 {<td>{item.ConditionQuantity ? checkForDecimalAndNull(item?.ConditionQuantity, getConfigurationKey().NoOfDecimalForPrice) : '-'}</td>}
