@@ -1,93 +1,70 @@
 import { Row, Col } from 'reactstrap'
 import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
-// import { getFgWiseImpactData } from '../actions/Simulation'
-import { checkForDecimalAndNull } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
-import { getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
+import { Link } from 'react-scroll';
+import { getExternalIntegrationFgWiseImpactData } from '../../costing/actions/Costing';
 import TooltipCustom from '../../common/Tooltip'
-import DayTime from '../../common/DayTimeWrapper'
 
 export function Fgwiseimactdata(props) {
     const [acc1, setAcc1] = useState({ currentIndex: -1, isClicked: false, })
     const [showTableData, setshowTableData] = useState(false)
-    const { headerName, dataForAssemblyImpact, impactType, tooltipEffectiveDate } = props
-    const [loader, setLoader] = useState(false)
-    const [count, setCount] = useState(0)
-
-    const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
-
     const dispatch = useDispatch()
+    const { SimulationId, approvalSummaryTrue, costingIdArray, isVerifyImpactDrawer, fgWiseAccDisable, headerName, dataForAssemblyImpact, impactType, tooltipEffectiveDate } = props
+    const [loader, setLoader] = useState(false)
+
+    const impactData = useSelector((state) => state.costing.impactData)
 
     useEffect(() => {
-        setLoader(true)
-        // if (SimulationId) {
-
-        switch (impactType) {
-            // ********** FOR THESE 2 CASES THE CODE BELOW THEM WILL BE EXECUTED **********
-            case 'AssemblySummary':
-            case 'Assembly':
-                if (dataForAssemblyImpact !== undefined && Object.keys(dataForAssemblyImpact).length !== 0 && count === 0) {
-                    const requestData = {
-                        costingHead: dataForAssemblyImpact?.CostingHead,
-                        impactPartNumber: dataForAssemblyImpact?.impactPartNumber,
-                        plantCode: dataForAssemblyImpact?.plantCode,
-                        vendorId: dataForAssemblyImpact?.vendorId,
-                        delta: dataForAssemblyImpact?.delta,
-                        quantity: 1,
-                    }
-                    setCount(1)
-                    dispatch(getSimulatedAssemblyWiseImpactDate(requestData, (res) => {
-
-                        if (res && res.data && res.data.DataList && res.data.DataList.length !== 0) {
-                            setshowTableData(true)
-                        }
-                        else if (res && res?.data && res?.data?.DataList && res?.data?.DataList?.length === 0) {
-                            setshowTableData(false)
-                        }
-                    }))
-
-                }
-                break;
-            case 'FgWise':
-                //  DON'T REMOVE THE CODE IT WILL USE FOR GF WISE DATA IN FUTURE
-                // if (approvalSummaryTrue) {
-                //     dispatch(getFgWiseImpactDataForCosting(SimulationId, (res) => {
-
-                //         if (res && res.data && res.data.Result) {
-                //             setshowTableData(true)
-                //         }
-                //         else if (res?.response?.status !== "200") {
-                //             setshowTableData(false)
-                //         }
-                //     }))
-                // }
-
-                //   else {
-                // dispatch(getFgWiseImpactData(SimulationId, (res) => {
-
-                //     if (res && res.data && res.data.Result) {
-                //         setshowTableData(true)
-                //     }
-                //     else if (res?.response?.status !== "200") {
-                //         setshowTableData(false)
-                //     }
-                // }))
-                // }
-                //  DON'T REMOVE THE CODE IT WILL USE FOR GF WISE DATA IN FUTURE
-                break;
-            default:
-                break;
+        let obj = {
+            "SimulationId": SimulationId,
+            ...costingIdArray
         }
-        setLoader(false)
+        if (((costingIdArray && Object.keys(costingIdArray).length > 0) || SimulationId)) {
+            setLoader(true)
+            fgWiseAccDisable(true)
 
-
-
-    }, [dataForAssemblyImpact])
+            dispatch(getExternalIntegrationFgWiseImpactData(obj, (res) => {
+                if (res && res?.data && res?.data?.Result) {
+                    setshowTableData(true)
+                }
+                else if (res?.response?.status !== "200") {
+                    setshowTableData(false)
+                } else {
+                    setLoader(false)
+                    fgWiseAccDisable(false)
+                }
+                setLoader(false)
+                fgWiseAccDisable(false)
+            }))
+        }
+    }, [SimulationId, costingIdArray])
 
     const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+
+    const DisplayCompareCostingFgWiseImpact = (SimulationApprovalProcessSummaryId, CostingApprovalProcessSummaryId) => {
+        if (approvalSummaryTrue) {
+            props.DisplayCompareCostingFgWise(CostingApprovalProcessSummaryId)
+        } else {
+            let obj = { CostingId: CostingApprovalProcessSummaryId }
+            props.DisplayCompareCosting(SimulationApprovalProcessSummaryId, obj)
+        }
+    }
+
+    const toggleAcc = (value) => {
+        let temp = acc1
+        if (temp.currentIndex !== value) {
+            setAcc1({ currentIndex: temp.currentIndex, isClicked: false })
+            setTimeout(() => {
+                setAcc1({ currentIndex: value, isClicked: true })
+            }, 200);
+        } else {
+            setAcc1({ currentIndex: value, isClicked: !acc1.isClicked })
+        }
+    }
 
     return (
         <>
@@ -96,136 +73,79 @@ export function Fgwiseimactdata(props) {
             <Row className="mb-3">
                 <Col md="12">
                     {/* {impactType} */}
-                    <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} ${loader ? 'dynamic-border' : ''}`}>
-                        <table className="table cr-brdr-main accordian-table-with-arrow">
+                    <div className={`table-responsive  fgwise-table ${showTableData ? 'hide-border' : ''} `}>
+                        <table className="table cr-brdr-main accordian-table-with-arrow fg-wise-table">
                             <thead>
                                 {loader && <LoaderCustom />}
-
                                 <tr>
-                                    {(impactType === 'Assembly' || impactType === 'AssemblySummary') ?
-                                        (<th className="text-center"><span>{headerName[9]}</span></th>)
-                                        : <th><span></span></th>
-                                    }
-                                    <th className="text-center"><span>{headerName[0]}</span></th>
-                                    {headerName[1] !== '' && <th><span>{headerName[1]}</span></th>}
-                                    {headerName[2] !== '' && <th><span>{headerName[2]}</span></th>}
-                                    {headerName[3] !== '' && <th><span>{headerName[3]}</span></th>}
-                                    {impactType === 'Assembly' ? '' : <th><span>{headerName[4]}</span></th>}
-                                    {headerName[5] !== '' && <th><span>{headerName[5]}</span></th>}
-                                    {headerName[6] !== '' && <th><span>{headerName[6]}</span><TooltipCustom id={"impact-volume"} customClass="mt-1" tooltipText={`The current impact is calculated based on the data present in the volume master (${tooltipEffectiveDate ? tooltipEffectiveDate : '-'})`} /></th>}
-                                    {headerName[7] !== '' && <th><span>{headerName[7]}</span></th>}
-                                    {headerName[8] !== '' && <th className="second-last-child"><span>{headerName[8]}</span></th>}
+                                    <th><span></span></th>
+                                    <th className="text-center"><span>Revision No.</span></th>
+                                    <th className='fg-name-heading'><span>Name</span></th>
+                                    <th><span>Old Cost/Pc</span></th>
+                                    <th><span>New Cost/pc</span></th>
+                                    <th><span>Quantity</span></th>
+                                    <th><span>Impact/Pc</span></th>
+                                    <th><span>SOB(%)</span></th>
+                                    <th><span>Impact/Pc(with SOB)</span></th>
+                                    <th><div className='d-flex justify-content-center'><span>Volume/Year</span><TooltipCustom id={"impact-volume"} customClass="mt-1 ml-2" tooltipText={`The current impact is calculated based on the data present in the volume master (${tooltipEffectiveDate ? tooltipEffectiveDate : '-'})`} /></div></th>
+                                    <th><span>Impact/Quater</span></th>
+                                    <th className="second-last-child"><span>Impact/Year</span></th>
+                                    <th><span></span></th>
+                                </tr >
+                            </thead >
 
-                                </tr>
-                            </thead>
-                            {/* {showTableData && impactData && impactData.map((item, index) => { */}
-                            {true && simulationAssemblyList && simulationAssemblyList.map((item, index) => {
-                                switch (impactType) {
-                                    case 'Assembly':
-                                        return (
-                                            <>
-                                                <tbody className="with-border-table">
-                                                    <tr >
-                                                        <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
-                                                        <td><span>{item.RevisionNumber}</span></td>
-                                                        <td><span>{item.PartName}</span></td>
-                                                        <td><span>{item.Level}</span></td>
-                                                        <td><span>{item.OldPrice}</span></td>
-                                                        {/* <td><span>{item.NewPrice}</span></td> */}
-                                                        <td><span>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                            {showTableData && impactData && impactData.map((item, index) => {
+                                return (<>
+                                    <tbody >
+                                        <tr className="accordian-with-arrow" key={index} id={"fg-wise"}>
+                                            <td className="arrow-accordian"><span><Link to={"fg-wise"} spy={true} smooth={true} delay={0}><div class="Close" onClick={() => { toggleAcc(index) }}></div></Link>{item.PartNumber ? item.PartNumber : "-"}</span></td>
+                                            <td><span>{'-'}</span></td>
+                                            <td className='text-overflow'><span title={item.PartName}>{item.PartName}</span></td>
+                                            <td><span>{'-'}</span></td>
+                                            <td><span>{'-'}</span></td>
+                                            <td><span>{'-'}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                            <td><span>{'-'}</span></td>
+                                            {/* //Impact/Pc(with SOB) */}
+                                            <td><span>{checkForDecimalAndNull(item?.VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                            <td><span>{item.VolumePerYear == null ? "" : checkForDecimalAndNull(item.VolumePerYear, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                            <td><span>{checkForDecimalAndNull(item.VendorSOBImpactPerQuater, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                            <td colSpan="2"><span> {checkForDecimalAndNull(item.VendorSOBImpactPerYear, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                            {/* <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
 
-                                                        <td><span>{item.Variance == null ? "" : item.Variance}</span></td>
-                                                        {/* <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                                        <td><span> {checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                                        <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
+                                        </tr>
 
-                                                    </tr>
-                                                </tbody>
-                                            </>)
-                                    case 'AssemblySummary':
-                                        return (
-                                            <>
-                                                {/* 'Revision No.', 'Name', 'Old PO Price/Assembly', 'New PO Price/Assembly', 'Level', 'Variance', '', '', '', 'Assembly Number'   */}
-                                                <tbody className="with-border-table">
-                                                    <tr >
-                                                        <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item.PartNumber ? item.PartNumber : "-"}</span></td>
-                                                        <td><span>{item.RevisionNumber}</span></td>
-                                                        <td><span>{item.PartName}</span></td>
-                                                        <td><span>{item.OldPrice}</span></td>
-                                                        <td><span>{item.NewPrice}</span></td>
-                                                        <td><span>{item.Level}</span></td>
-                                                        <td><span>{item.Variance == null ? "" : item.Variance}</span></td>
+                                        {acc1.currentIndex === index && acc1.isClicked && item.childPartsList.map((item, index) => {
+                                            let VendorSOBImpactPerPiece = checkForNull(item.VariancePerPiece) * checkForNull(checkForNull(item.VendorSOBPercentage) / 100)
 
-                                                        {/* <td><span>{item.Variance == null ? "" : item.Variance}</span></td> */}
-                                                        {/* <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                                            <td><span> {checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                                            <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td> */}
+                                            return (
+                                                <tr className="accordian-content">
+                                                    <td><span>{item.PartNumber}</span></td>
+                                                    <td className="text-center"><span>{item.RevisionNumber}</span></td>
+                                                    <td className='text-overflow'><span title={item.PartName}>{item.PartName}</span></td>
+                                                    <td><span>{checkForDecimalAndNull(item.OldCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                                    <td><span>{checkForDecimalAndNull(item.NewCost, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                                    <td><span>{item.Quantity}</span></td>
+                                                    <td ><span>{checkForDecimalAndNull(item.VariancePerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                                    <td ><span>{checkForDecimalAndNull(item.VendorSOBPercentage, initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
+                                                    <td ><span>{checkForDecimalAndNull(VendorSOBImpactPerPiece, initialConfiguration.NoOfDecimalForPrice)}</span></td>
+                                                    {(isVerifyImpactDrawer ? false : true) && item.BaseCostingId !== null && <td colSpan="4"><span> <Link to="compare-costing" spy={true} smooth={true}><button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId, item.BaseCostingId) }} /></Link></span></td>}
 
-                                                    </tr>
-                                                </tbody>
-                                            </>)
-                                    case 'FgWise':
-
-                                        // ***********  THIS IS FOR RE | IN FUTURE MAY COME IN BASE  ***********
-                                        // return (
-                                        //     <>
-                                        //         <tbody>{item.BOMNumber}
-                                        //             <tr className="accordian-with-arrow">
-                                        //                 <td className="arrow-accordian"><span><div class="Close" onClick={() => setAcc1(index)}></div>{item. ? item. : "-"}</span></td>
-                                        //                 <td><span>{item.BOMNumber}</span></td>
-                                        //                 <td><span>{item.}</span></td>
-                                        //                 <td><span>{item.}</span></td>
-                                        //                 <td><span>{item.}</span></td>
-                                        //                 <td><span>{item.}</span></td>
-                                        //                 <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-
-                                        //                 <td><span>{item. == null ? "" : item.}</span></td>
-                                        //                 <td><span>{checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                        //                 <td><span> {checkForDecimalAndNull(item., initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                        //                 <td><span> </span><a onClick={() => setAcc1({ currentIndex: index, isClicked: !acc1.isClicked })} className={`${acc1.currentIndex === index && acc1.isClicked ? 'minus-icon' : 'plus-icon'} pull-right pl-3`}></a></td>
-
-                                        //             </tr>
-
-
-                                        //             {acc1.currentIndex === index && acc1.isClicked && []?.childPartsList.map((item, index) => {
-
-                                        //                 return (
-                                        //                     <tr className="accordian-content">
-                                        //                         <td><span>{item.childField[0]}</span></td>
-                                        //                         <td className="text-center"><span>{item.childField[1]}</span></td>
-                                        //                         <td><span>{item.childField[2]}</span></td>
-                                        //                         <td><span>{checkForDecimalAndNull(item.childField[3], initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                        //                         <td><span>{checkForDecimalAndNull(item.childField[4], initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-                                        //                         <td><span>{item.childField[5]}</span></td>
-                                        //                         <td><span>{checkForDecimalAndNull(item.childField[6], initialConfiguration.NoOfDecimalForInputOutput)}</span></td>
-
-                                        //                         <td><span>{childField[7]}</span></td>
-                                        //                         <td><span>{childField[8]}</span></td>
-                                        //                         <td><span>{childField[9]}</span></td>
-                                        //                         <td><span> <button className="Balance mb-0 float-right" type={'button'} onClick={() => { DisplayCompareCostingFgWiseImpact(item.SimulationApprovalProcessSummaryId) }} /></span></td>
-
-                                        //                     </tr>)
-                                        //             })}
-                                        //         </tbody>
-                                        //     </>)
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                return null
-                            })
-                            }
-
-                        </table>
+                                                </tr>)
+                                        })}
+                                    </tbody>
+                                </>)
+                            })}
+                        </table >
                         {!loader && !showTableData &&
 
                             <Col md="12">
                                 <NoContentFound title={EMPTY_DATA} />
                             </Col>
                         }
-                    </div>
-                </Col>
-            </Row>
+                    </div >
+                </Col >
+            </Row >
             {/* FG wise Impact section end */}
         </>
     )

@@ -54,6 +54,7 @@ import {
   SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
   SET_COSTING_MODE,
   CORRUGATED_DATA,
+  GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2699,5 +2700,27 @@ export function corrugatedData(data) {
       type: CORRUGATED_DATA,
       payload: data,
     });
+  }
+}
+
+/**
+ * @method getExternalIntegrationFgWiseImpactData
+ * @description getExternalIntegrationFgWiseImpactData
+ */
+export function getExternalIntegrationFgWiseImpactData(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.getExternalIntegrationFgWiseImpactData, data, config())
+    request.then((response) => {
+      dispatch({
+        type: GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
+        payload: response.data.DataList,
+      })
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
   }
 }

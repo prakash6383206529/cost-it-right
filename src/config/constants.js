@@ -474,6 +474,7 @@ export const API = {
   getCostingLabourDetails: `${BASE_URL}/costing/get-costing-labour-details`,
   getLabourDetailsByFilter: `${BASE_URL}/masters-labour/get-all-by-filter`,
   checkPartNoExistInBop: `${BASE_URL}/masters-bought-out-part/check-part-number-exist-in-bought-out-parts-against-vendor`,
+  getExternalIntegrationFgWiseImpactData: `${BASE_URL}/ExternalIntegration/get-fg-wise-impact-data`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-costing-raw-materials-detail`,
@@ -1435,6 +1436,7 @@ export const SAVE_ASSEMBLY_NUMBER_STOP_API_CALL = 'SAVE_ASSEMBLY_NUMBER_STOP_API
 export const SET_BREAKUP_BOP = 'SET_BREAKUP_BOP'
 export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API'
 export const SET_COSTING_MODE = 'SET_COSTING_MODE'
+export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 
 //WEIGHT CALCULATION COSTING
 
