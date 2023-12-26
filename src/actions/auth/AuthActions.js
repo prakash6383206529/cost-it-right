@@ -985,7 +985,7 @@ export function getSimulationLevelDataList(callback) {
 export function getAllTechnologyAPI(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTechnology}?ListFor=${data}`, config());
+        const request = axios.get(`${API.getTechnology}?ListFor=${data ?? 'Users'}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1011,7 +1011,7 @@ export function getAllTechnologyAPI(callback, data) {
 export function getSimulationTechnologySelectList(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${data}`, config());
+        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${data ?? 'Users'}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1645,7 +1645,7 @@ export function getTopAndLeftMenuData(callback) {
 export function getMastersSelectList(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMastersSelectList}?ListFor=${data}`, config());
+        const request = axios.get(`${API.getMastersSelectList}?ListFor=${data ?? 'Users'}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

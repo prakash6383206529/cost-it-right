@@ -157,7 +157,7 @@ class Role extends Component {
 			isEditFlag: false,
 			Modules: [],
 		})
-		this.props.getAllRoleAPI(res => { })
+		// this.props.getAllRoleAPI(res => { })     THIS IS UNNECESSARY CALLING API THAT'S BY I AM COMMENTING THE CODE
 		//this.getRolePermission()
 		this.props.setEmptyRoleDataAPI('', () => { })
 		this.props.hideForm()
