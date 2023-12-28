@@ -879,7 +879,7 @@ class BOPImportListing extends Component {
                                     {
                                         this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
                                     }
-                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
+                                    {initialConfiguration?.IsBoughtOutPartCostingConfigured && !this.props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && !this.props?.benchMark && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
                                 </Col>
                             </Row>
                             {this.props.isSimulation && this.props?.isFromVerifyPage && <Row>
