@@ -36,106 +36,99 @@ const gridOptions = {};
 
 const IndivisualPartListing = (props) => {
   const dispatch = useDispatch();
-  const [pageNo, setPageNo] = useState(1);
-  const [gridApi, setGridApi] = useState(null);
-  const [showPopup, setShowPopup] = useState(false);
-  const [gridColumnApi, setGridColumnApi] = useState(null);
-  const [dataCount, setDataCount] = useState(0);
-  const [totalRecordCount, setTotalRecordCount] = useState(1);
-  const [currentRowIndex, setCurrentRowIndex] = useState(0);
-  const [pageNoNew, setPageNoNew] = useState(1);
-  const [globalTake, setGlobalTake] = useState(defaultPageSize);
-  const [isLoader, setIsLoader] = useState(false);
-  const [disableDownload, setDisableDownload] = useState(false);
-  const [noData, setNoData] = useState(false);
-  const [disableFilter, setDisableFilter] = useState(true);
-  const [filterModel, setFilterModel] = useState({});
-  const [warningMessage, setWarningMessage] = useState(false);
-  const [searchText, setSearchText] = useState("");
-  const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
-  const [pageSize, setPageSize] = useState({
-    pageSize10: true,
-    pageSize50: false,
-    pageSize100: false,
+  const [state, setState] = useState({
+    pageNo: 1,
+    gridApi: null,
+    showPopup: false,
+    gridColumnApi: null,
+    dataCount: 0,
+    totalRecordCount: 1,
+    currentRowIndex: 0,
+    pageNoNew: 1,
+    globalTake: defaultPageSize,
+    isLoader: false,
+    disableDownload: false,
+    noData: false,
+    disableFilter: true,
+    filterModel: {},
+    warningMessage: false,
+    searchText: "",
+    isFilterButtonClicked: false,
+    pageSize: {
+      pageSize10: true,
+      pageSize50: false,
+      pageSize100: false,
+    },
+    floatingFilterData: {
+      Technology: "",
+      PartNumber: "",
+      PartName: "",
+      ECNNumber: "",
+      RevisionNumber: "",
+      DrawingNumber: "",
+      EffectiveDate: "",
+    },
+    tableData: [],
+    isBulkUpload: false,
+    deletedId: "",
   });
-  const [floatingFilterData, setFloatingFilterData] = useState({
-    Technology: "",
-    PartNumber: "",
-    PartName: "",
-    ECNNumber: "",
-    RevisionNumber: "",
-    DrawingNumber: "",
-    EffectiveDate: "",
-  });
-  const [tableData, setTableData] = useState([]);
-  const [isBulkUpload, setIsBulkUpload] = useState(false);
-  const [deletedId, setDeletedId] = useState("");
+  const[searchText, setSearchText] = useState('');
+  console.log(state.dataCount,"COUNT")
 
   const {
     partsListing,
-    // productDataList,
     initialConfiguration,
     selectedRowForPagination,
   } = useSelector((state) => ({
     partsListing: state.part.partsListing,
-    productDataList: state.part.productDataList,
     initialConfiguration: state.auth.initialConfiguration,
-    selectedCostingListSimulation:
-      state.simulation.selectedCostingListSimulation,
     selectedRowForPagination: state.simulation.selectedRowForPagination,
   }));
   const permissions = useContext(ApplyPermission);
   useEffect(() => {
-    getTableListData(0, defaultPageSize, floatingFilterData, true);
+    getTableListData(0, defaultPageSize, state.floatingFilterData, true);
     return () => {
       dispatch(setSelectedRowForPagination([]));
     };
   }, []);
 
   useEffect(() => {
-    setIsLoader(true);
+   setState((prevState) => ({ ...prevState, isLoader: true }));
     setTimeout(() => {
-      setIsLoader(false);
+      setState((prevState) => ({ ...prevState, isLoader: false }));
     }, 200);
   }, []);
   useEffect(() => {
     if (partsListing?.length > 0) {
-      setTotalRecordCount(partsListing?.length);
+      setState((prevState) => ({ ...prevState, totalRecordCount: partsListing?.length }));
     } else {
-      setNoData(false);
+      setState((prevState) => ({ ...prevState, noData: 0 }));
     }
   }, [partsListing]);
 
   const getTableListData = (skip, take, obj, isPagination) => {
-    setIsLoader(true);
+    setState((prevState) => ({ ...prevState, isLoader: true }));
 
-    let constantFilterData = filterModel;
-    let object = { ...floatingFilterData };
+    let constantFilterData = state.filterModel;
+    let object = { ...state.floatingFilterData };
 
     dispatch(
       getPartDataList(skip, take, obj, isPagination, (res) => {
         setTimeout(() => {
-          setIsLoader(false);
+          setState((prevState) => ({ ...prevState, isLoader: false }));
         }, 300);
 
         if (res.status === 202) {
-          setTotalRecordCount(0);
-          setPageNo(0);
+          setState((prevState) => ({ ...prevState, totalRecordCount: 0 , pageNo: 0 }));
         } else if (res.status === 204 && (!res.data || res.data === "")) {
-          setTableData([]);
-          setNoData(true);
-          setTotalRecordCount(0);
-          setPageNo(0);
+          setState((prevState) => ({ ...prevState, noData: true, tableData: [] , pageNo: 0 , totalRecordCount: 0 }))
 
         } else if (res.status === 200 && res.data && res.data.DataList) {
           let Data = res.data.DataList;
-          setTableData(Data);
-          setTotalRecordCount(Data[0].TotalRecordCount);
-          setNoData(false);
-        }
+          setState((prevState) => ({ ...prevState, noData: false, tableData: Data, totalRecordCount: Data[0].TotalRecordCount })); }
 
         if (isPagination === false) {
-          setDisableDownload(false);
+          setState((prevState) => ({ ...prevState, disableFilter: false,disableDownload: false }));
           dispatch(disabledClass(false));
           setTimeout(() => {
             let button = document.getElementById(
@@ -158,13 +151,11 @@ const IndivisualPartListing = (props) => {
         } else {
           gridOptions?.api?.setFilterModel(constantFilterData);
         }
-        setTotalRecordCount(
-          (res.data && res.data.DataList[0].TotalRecordCount) || 0
-        );
-        setTableData(res.data.DataList || []);
-        setNoData(!res.data.DataList || res.data.DataList.length === 0);
-        setWarningMessage(false);
-        setIsFilterButtonClicked(false);
+        setState((prevState) => ({
+          ...prevState,
+          totalRecordCount : res.data && res.data.DataList[0].TotalRecordCount || 0 ,
+          tableData : res.data.DataList || [] , noData: !res.data.DataList || res.data.DataList.length === 0 ,isFilterButtonClicked : false
+        }))
       })
     );
   };
@@ -177,20 +168,24 @@ const IndivisualPartListing = (props) => {
 
     setTimeout(() => {  // <-- this may introduce asynchronous behavior
       if (partsListing?.length !== 0) {
-        setNoData(searchNocontentFilter(value, noData));
+        setState((prevState) => ({ ...prevState, noData 
+        :searchNocontentFilter(value, state.noData),disableFilter: false }));
       }
     }, 500);
-    setDisableFilter(false);
-
    
 
     const model = gridOptions?.api?.getFilterModel();
     console.log('model: ', model);
+    setState((prevState) => ({
+      ...prevState,
+      filterModel: model,
+    }))
     
-    setFilterModel(model);
-
-    if (!isFilterButtonClicked) {
-      setWarningMessage(true);
+    if (!state.isFilterButtonClicked) {
+      setState((prevState) => ({
+        ...prevState,
+        warningMessage: true
+      }))
     }
     console.log(value?.filterInstance?.appliedModel , "value");
 
@@ -203,20 +198,29 @@ const IndivisualPartListing = (props) => {
         if (Object.keys(model).length > 0) {
           isFilterEmpty = false;
 
-          for (var property in floatingFilterData) {
+          for (var property in state.floatingFilterData) {
             if (property === value.column.colId) {
-              floatingFilterData[property] = "";
+              state.floatingFilterData[property] = "";
             }
           }
-          setFloatingFilterData(floatingFilterData);
+          setState((prevState) => ({
+            ...prevState,
+            floatingFilterData: state.floatingFilterData
+          }))
         }
 
         if (isFilterEmpty) {
-          setWarningMessage(false);
-          for (var prop in floatingFilterData) {
-            floatingFilterData[prop] = "";
+          setState((prevState) => ({
+            ...prevState,
+            warningMessage: false
+          }))
+          for (var prop in state.floatingFilterData) {
+            state.floatingFilterData[prop] = "";
           }
-          setFloatingFilterData(floatingFilterData);
+          setState((prevState) => ({
+            ...prevState,
+            floatingFilterData: state.floatingFilterData
+          }))
         }
       }
     } else {
@@ -226,75 +230,89 @@ const IndivisualPartListing = (props) => {
       ) {
         return false;
       }
-
-      setFloatingFilterData({
-        ...floatingFilterData,
-        [value.column.colId]: value.filterInstance.appliedModel.filter,
-      });
+      setState((prevState) => ({
+        ...prevState,
+        floatingFilterData: {
+          ...prevState.floatingFilterData,
+          [value.column.colId]: value.filterInstance.appliedModel.filter
+        }
+      }))
     }
   };
 
 
   const onSearch = () => {
-   
+   setState((prevState) => ({ ...prevState, warningMessage: false,isFilterButtonClicked: true, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 }));
 
-    setWarningMessage(false);
-    setIsFilterButtonClicked(true);
-    setPageNo(1);
-    setPageNoNew(1);
-    setCurrentRowIndex(0);
-    // gridOptions?.columnApi?.resetColumnState();
-    getTableListData(0, globalTake, floatingFilterData, true);
+    getTableListData(0, state.globalTake, state.floatingFilterData, true);
   };
 
   const resetState = () => {
-    setNoData(false);
-    dispatch(isResetClick(true, "Part"));
-    setIsFilterButtonClicked(false)
+    setState((prevState) => ({
+      ...prevState,
+      noData: false,
+      warningMessage: false,
+      
+    }));
+    dispatch(isResetClick(true, "Operation"));
+    setState((prevState) => ({
+      ...prevState,
 
-    const searchBox = document.getElementById("filter-text-box");
-    if (searchBox) {
-      searchBox.value = ""; // Reset the input field's value
+      isFilterButtonClicked: false,
+    }));
+    setSearchText(''); // Clear the search text state
+    if (state.gridApi) {
+      state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
     }
-    gridApi.setQuickFilter(null)
-    gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState();
-    gridOptions.api.setFilterModel(null);
+    state.gridApi.deselectAll();
+    gridOptions?.columnApi?.resetColumnState(null);
+    for (var prop in state.floatingFilterData) {
+      state.floatingFilterData[prop] = "";
+    }
+    setState((prevState) => ({
+      ...prevState,
+      floatingFilterData: state.floatingFilterData,
+      warningMessage: false,
+      pageNo: 1,
+      pageNoNew: 1,
+      currentRowIndex: 0,
+    }));
 
-    for (var prop in floatingFilterData) {
-      floatingFilterData[prop] = "";
-    }
-    // setIsFilterButtonClicked(false);
-    setFloatingFilterData(floatingFilterData);
-    setWarningMessage(false);
-    setPageNo(1);
-    setPageNoNew(1);
-    setCurrentRowIndex(0);
-    getTableListData(0, 10, floatingFilterData, true);
+    getTableListData(0, 10, state.floatingFilterData, true);
     dispatch(setSelectedRowForPagination([]));
-    setGlobalTake(10);
-    setPageSize({ pageSize10: true, pageSize50: false, pageSize100: false });
-    setDisableFilter(false);
-    setDataCount(0);
+
+    setState((prevState) => ({
+      ...prevState,
+      globalTake: 10,
+      dataCount: 0,
+      pageSize: {
+        ...prevState.pageSize,
+        pageSize10: true,
+        pageSize50: false,
+        pageSize100: false,
+      },
+    }));
+    setSearchText(''); // Assuming this state is bound to the input value
+
   };
 
   const onBtPrevious = () => {
-    const newPageNo = pageNo - 1;
+    const newPageNo = state.pageNo - 1;
     if (newPageNo > 0) {
-      const skip = (newPageNo - 1) * globalTake;
-      setPageNo(newPageNo);
-      getTableListData(skip, globalTake, floatingFilterData, true);
+      const skip = (newPageNo - 1) * state.globalTake;
+      setState((prevState) => ({ ...prevState, pageNo: newPageNo }));
+      getTableListData(skip, state.globalTake, state.floatingFilterData, true);
     }
   };
 
   const onBtNext = () => {
-    const newPageNo = pageNo + 1;
-    const totalPages = Math.ceil(totalRecordCount / globalTake);
+    const newPageNo = state.pageNo + 1;
+    const totalPages = Math.ceil(state.totalRecordCount / state.globalTake);
 
     if (newPageNo <= totalPages) {
-      const skip = (newPageNo - 1) * globalTake;
-      setPageNo(newPageNo);
-      getTableListData(skip, globalTake, floatingFilterData, true);
+      const skip = (newPageNo - 1) * state.globalTake;
+      setState((prevState) => ({ ...prevState, pageNo: newPageNo }));
+      getTableListData(skip, state.globalTake, state.floatingFilterData, true);
     }
   };
 
@@ -311,18 +329,17 @@ const IndivisualPartListing = (props) => {
 
     totalRecordCount = Math.ceil(totalRecordCount / pageSize);
 
-    getTableListData(currentRowIndex, pageSize, floatingFilterData, true);
+    getTableListData(state.currentRowIndex, pageSize, state.floatingFilterData, true);
+    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: 1, pageNoNew: Math.min(state.pageNo, totalRecordCount),
+      pageSize: {
+        ...prevState.pageSize,
+        pageSize10: pageSize === 10,
+        pageSize50: pageSize === 50,
+        pageSize100: pageSize === 100,
+      },
+    }));
 
-    setGlobalTake(pageSize);
-    setPageNo(1);
-    setPageNoNew(Math.min(pageNo, totalRecordCount));
-    setPageSize({
-      pageSize10: pageSize === 10,
-      pageSize50: pageSize === 50,
-      pageSize100: pageSize === 100,
-    });
-
-    gridApi.paginationSetPageSize(Number(newPageSize));
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
   const viewOrEditItemDetails = (Id, isViewMode) => {
@@ -336,30 +353,27 @@ const IndivisualPartListing = (props) => {
   };
 
   const deleteItem = (ID) => {
-    setShowPopup(true);
-    setDeletedId(ID);
-  };
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: ID }));};
 
   const confirmDeleteItem = (ID) => {
     dispatch(
       deletePart(ID, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
-          getTableListData(0, globalTake, true);
-          gridApi.deselectAll();
-          // dispatch(setSelectedRowForPagination([]));
-          setDataCount(0);
+          getTableListData(0, state.globalTake, true);
+          state.gridApi.deselectAll();
+          setState((prevState) => ({ ...prevState, dataCount: 0 }));
         }
       })
     );
-    setShowPopup(false);
+    setState((prevState) => ({ ...prevState, showPopup: false }));
   };
 
   const onPopupConfirm = () => {
-    confirmDeleteItem(deletedId);
+    confirmDeleteItem(state.deletedId);
   };
   const closePopUp = () => {
-    setShowPopup(false);
+    setState((prevState) => ({ ...prevState, showPopup: false }));
   };
 
   const buttonFormatter = (props) => {
@@ -466,11 +480,11 @@ const IndivisualPartListing = (props) => {
   };
 
   const bulkToggle = () => {
-    setIsBulkUpload(true);
+    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
   };
 
   const closeBulkUploadDrawer = (event, type) => {
-    setIsBulkUpload(false);
+    setState((prevState) => ({ ...prevState, isBulkUpload: false }));
     if (type !== "cancel") {
       resetState();
     }
@@ -481,21 +495,24 @@ const IndivisualPartListing = (props) => {
   };
 
   const onGridReady = (params) => {
-    setGridApi(params.api);
-    setGridColumnApi(params.columnApi);
+    setState((prevState) => ({
+      ...prevState,
+      gridApi: params.api,
+      gridColumnApi: params.columnApi,
+    }))
     params.api.paginationGoToPage(0);
   };
 
   const onExcelDownload = () => {
-    setDisableDownload(true);
+    setState((prevState) => ({ ...prevState, disableDownload: true }));
     dispatch(disabledClass(true));
 
     // let tempArr = selectedRowForPagination; // Assuming `selectedCostingListSimulation` is an array
-        let tempArr = gridApi && gridApi?.getSelectedRows()
+        let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
 
     if (tempArr?.length > 0) {
       setTimeout(() => {
-        setDisableDownload(false);
+        setState((prevState) => ({ ...prevState, disableDownload: false }));
         dispatch(disabledClass(false));
 
         const button = document.getElementById(
@@ -504,7 +521,7 @@ const IndivisualPartListing = (props) => {
         button?.click();
       }, 500);
     } else {
-      getTableListData(0, defaultPageSize, floatingFilterData, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+      getTableListData(0, defaultPageSize, state.floatingFilterData, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   };
 
@@ -515,7 +532,7 @@ const IndivisualPartListing = (props) => {
     //tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination;
     tempArr =
-      tempArr && tempArr.length > 0 ? partsListing : tableData;
+      tempArr && tempArr.length > 0 ? partsListing : state.tableData;
     return returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -552,9 +569,8 @@ const IndivisualPartListing = (props) => {
     );
   };
   const onFilterTextBoxChanged = (e) => {
-   setSearchText(gridApi.setQuickFilter(e.target.value))
-  };
-
+    setSearchText(state.gridApi.setQuickFilter(e.target.value));
+}
   const ExcelFile = ReactExport.ExcelFile;
 
   var filterParams = {
@@ -589,10 +605,8 @@ const IndivisualPartListing = (props) => {
   };
 
   var setDate = (date) => {
-    setFloatingFilterData((prevData) => ({
-      ...prevData,
-      newDate: date,
-    }));
+    setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, newDate: date } }));
+
   };
 
   const isFirstColumn = (params) => {
@@ -602,8 +616,8 @@ const IndivisualPartListing = (props) => {
   };
 
   const onRowSelected = (event) => {
-
-    var selectedRows = gridApi && gridApi?.getSelectedRows();
+console.log("ON ROW SELECTED");
+    var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {
       selectedRows = selectedRowForPagination;
       console.log('selectedRowForPagination: ', selectedRowForPagination);
@@ -627,7 +641,7 @@ const IndivisualPartListing = (props) => {
     let uniqeArrayPartId = _.uniqBy(selectedRows, (v) =>
       [v.PartId, v.PartId].join()
     ); 
-    setDataCount(uniqeArrayPartId.length);
+    setState((prevState) => ({ ...prevState, dataCount: uniqeArrayPartId.length }));
     dispatch(setSelectedRowForPagination(uniqeArrayPartId)); //SETTING CHECKBOX STATE DATA IN REDUCER
   };
 
@@ -652,15 +666,15 @@ const IndivisualPartListing = (props) => {
         className={`ag-grid-react custom-pagination ${permissions.Download ? "show-table-btn" : ""
           }`}
       >
-        {isLoader && <LoaderCustom />}
-        {disableDownload && (
+        {state.isLoader && <LoaderCustom />}
+        {state.disableDownload && (
           <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />
         )}
         <Row className="pt-4 no-filter-row">
           <Col md="9" className="search-user-block pr-0">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div className="warning-message d-flex align-items-center">
-                {warningMessage && !disableDownload && (
+                {state.warningMessage && !state.disableDownload && (
                   <>
                     <WarningMessage
                       dClass="mr-3"
@@ -678,7 +692,7 @@ const IndivisualPartListing = (props) => {
                   type="button"
                   className="user-btn mr5"
                   onClick={() => onSearch(this)}
-                  disabled={disableFilter}
+                  disabled={state.disableFilter}
                 >
                   <div className="filter mr-0"></div>
                 </button>
@@ -704,9 +718,9 @@ const IndivisualPartListing = (props) => {
                 )}
                 {permissions.Download && (
                   <>
-                  <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                       {/* DOWNLOAD */}
-                      {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                      {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                   </button>
                   <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
                       <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
@@ -730,7 +744,7 @@ const IndivisualPartListing = (props) => {
           </Col>
         </Row>
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || noData
+          className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || state.noData
             ? "overlay-contain"
             : ""
             }`}
@@ -738,6 +752,7 @@ const IndivisualPartListing = (props) => {
           <div className="ag-grid-header">
             <input
               type="text"
+              value={searchText}
               className="form-control table-search"
               id="filter-text-box"
               placeholder="Search"
@@ -746,22 +761,22 @@ const IndivisualPartListing = (props) => {
             />
           </div>
           <div
-            className={`ag-theme-material ${isLoader && "max-loader-height"}`}
+            className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}
           >
-            {noData && (
+            {state.noData && (
               <NoContentFound
                 title={EMPTY_DATA}
                 customClassName="no-content-found"
               />
             )}
-
+ {!state.isLoader &&
             <AgGridReact
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout="autoHeight"
-              rowData={tableData}
+              rowData={state.tableData}
               pagination={true}
-              paginationPageSize={globalTake}
+              paginationPageSize={state.globalTake}
               onGridReady={onGridReady}
               gridOptions={gridOptions}
               onFilterModified={onFloatingFilterChanged}
@@ -825,13 +840,13 @@ const IndivisualPartListing = (props) => {
                 floatingFilter={false}
                 cellRenderer={"totalValueRenderer"}
               ></AgGridColumn>
-            </AgGridReact>
+            </AgGridReact>}
             <div className="button-wrapper">
-              {!isLoader && (
+              {!state.isLoader && (
                 <PaginationWrapper
-                  gridApi={gridApi}
+                  gridApi={state.gridApi}
                   setPage={onPageSizeChanged}
-                  globalTake={globalTake}
+                  globalTake={state.globalTake}
                 />
               )}
 
@@ -840,28 +855,28 @@ const IndivisualPartListing = (props) => {
                   <button
                     className="previous-btn"
                     type="button"
-                    disabled={pageNo === 1 ? true : false}
+                    disabled={state.pageNo === 1 ? true : false}
                     onClick={() => onBtPrevious()}
                   >
                     {" "}
                   </button>
                 </p>
-                {pageSize.pageSize10 && (
+                {state?.pageSize?.pageSize10 && (
                   <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{pageNo}</span> of{" "}
-                    {Math.ceil(totalRecordCount / 10)}
+                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
+                    {Math.ceil(state.totalRecordCount / 10)}
                   </p>
                 )}
-                {pageSize.pageSize50 && (
+                {state?.pageSize?.pageSize50 && (
                   <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{pageNo}</span> of{" "}
-                    {Math.ceil(totalRecordCount / 50)}
+                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
+                    {Math.ceil(state.totalRecordCount / 50)}
                   </p>
                 )}
-                {pageSize.pageSize100 && (
+                {state?.pageSize?.pageSize100 && (
                   <p className="next-page-pg custom-left-arrow">
-                    Page <span className="text-primary">{pageNo}</span> of{" "}
-                    {Math.ceil(totalRecordCount / 100)}
+                    Page <span className="text-primary">{state.pageNo}</span> of{" "}
+                    {Math.ceil(state.totalRecordCount / 100)}
                   </p>
                 )}
                 <p>
@@ -878,9 +893,9 @@ const IndivisualPartListing = (props) => {
           </div>
         </div>
 
-        {isBulkUpload && (
+        {state.isBulkUpload && (
           <BulkUpload
-            isOpen={isBulkUpload}
+            isOpen={state.isBulkUpload}
             closeDrawer={closeBulkUploadDrawer}
             isEditFlag={false}
             fileName={"Part Component"}
@@ -889,9 +904,9 @@ const IndivisualPartListing = (props) => {
             anchor={"right"}
           />
         )}
-        {showPopup && (
+        {state.showPopup && (
           <PopupMsgWrapper
-            isOpen={showPopup}
+            isOpen={state.showPopup}
             closePopUp={closePopUp}
             confirmPopup={onPopupConfirm}
             message={`${MESSAGES.CONFIRM_DELETE}`}

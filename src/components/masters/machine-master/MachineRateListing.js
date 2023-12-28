@@ -341,7 +341,7 @@ const MachineRateListing = (props) => {
       warningMessage: false,
       
     }));
-    dispatch(isResetClick(true, "Machine"));
+    dispatch(isResetClick(true, "Operation"));
     setState((prevState) => ({
       ...prevState,
 
@@ -353,7 +353,10 @@ const MachineRateListing = (props) => {
     }
     state.gridApi.deselectAll();
     gridOptions?.columnApi?.resetColumnState(null);
-    gridOptions?.api?.setFilterModel(null);
+   const val= gridOptions?.api?.setFilterModel({});
+   console.log('val: ', val);
+    console.log('gridOptions?.api?.setFilterModel(null): ', gridOptions?.api);
+
     for (var prop in state.floatingFilterData) {
       state.floatingFilterData[prop] = "";
     }
@@ -366,6 +369,7 @@ const MachineRateListing = (props) => {
       pageNoNew: 1,
       currentRowIndex: 0,
     }));
+
     getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
 
@@ -385,12 +389,12 @@ const MachineRateListing = (props) => {
     setSearchText(''); // Assuming this state is bound to the input value
 
   };
-
+  
   const onBtPrevious = () => {
     if (state.currentRowIndex >= 10) {
       const previousNo = state.currentRowIndex - 10;
       const newPageNo = state.pageNo - 1;
-
+      
       setState((prevState) => ({
         ...prevState,
         pageNo: newPageNo >= 1 ? newPageNo : 1,
@@ -978,6 +982,8 @@ const MachineRateListing = (props) => {
 
   return (
     <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
+      {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}            {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+
       <form
         // onSubmit={handleSubmit(onSubmit.bind(this))} 
         noValidate>
@@ -1076,7 +1082,7 @@ const MachineRateListing = (props) => {
           <div className={`ag-grid-wrapper height-width-wrapper ${(machineDatalist && machineDatalist?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-              <AgGridReact
+              {!state.isLoader &&  <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout='autoHeight'
@@ -1110,7 +1116,7 @@ const MachineRateListing = (props) => {
                 {!isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper ag-grid-action-container"} pinned="right" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-              </AgGridReact>
+              </AgGridReact>}
               <div className='button-wrapper'>
                 {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
                 {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
