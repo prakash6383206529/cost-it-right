@@ -1697,6 +1697,7 @@ class AddBOPDomestic extends Component {
               basicRateCurrency={FinalBasicPriceBaseCurrency}
               ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
               isFromMaster={true}
+              EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
             />
           }
           {

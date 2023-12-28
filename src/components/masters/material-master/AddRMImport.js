@@ -2771,6 +2771,7 @@ class AddRMImport extends Component {
               currency={this.state.currency}
               currencyValue={this.state.currencyValue}
               isFromImport={true}
+              EntryType={checkForNull(ENTRY_TYPE_IMPORT)}
             />
           }
           {

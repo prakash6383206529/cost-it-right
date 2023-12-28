@@ -2043,6 +2043,7 @@ class AddBOPImport extends Component {
               basicRateCurrency={FinalBasicPriceSelectedCurrency}
               basicRateBase={FinalBasicPriceBaseCurrency}
               isFromImport={true}
+              EntryType={checkForNull(ENTRY_TYPE_IMPORT)}
             />
           }
           {
