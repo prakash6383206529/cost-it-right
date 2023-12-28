@@ -1,20 +1,16 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { reduxForm } from "redux-form";
+import React, {useEffect, useState } from 'react';
+import {  useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
-import { getPlantListByState, } from '../actions/Fuel';
+import { getLabourDataList, deleteLabour } from '../actions/Labour';
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import DayTime from '../../common/DayTimeWrapper'
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { LABOUR_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -25,8 +21,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
+import {  loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -60,7 +55,7 @@ function LabourListing(props) {
     deletedId: '',
     selectedRowData: false,
     noData: false,
-    dataCount: 0
+    dataCount: 0,
   });
   const dispatch = useDispatch();
   const { labourDataList, topAndLeftMenuData } = useSelector(state => ({
@@ -71,8 +66,8 @@ function LabourListing(props) {
     if (topAndLeftMenuData !== undefined) {
       applyPermission(topAndLeftMenuData)
       setState(
-      (prevState
-      ) => ({ ...prevState, isLoader: true }))
+        (prevState
+        ) => ({ ...prevState, isLoader: true }))
     }
     setTimeout(() => {
       // getTableListData()
@@ -91,16 +86,18 @@ function LabourListing(props) {
 
       if (permmisionData !== undefined) {
         setState(
-      (prevState
-      ) => ({ ...prevState,
-          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-        })
-      )}
+          (prevState
+          ) => ({
+            ...prevState,
+            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+            BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+          })
+        )
+      }
     }
   }
 
@@ -119,17 +116,17 @@ function LabourListing(props) {
 
     dispatch(getLabourDataList(true, filterData, (res) => {
       setState(
-      (prevState
-      ) => ({ ...prevState, isLoader: false }))
+        (prevState
+        ) => ({ ...prevState, isLoader: false }))
       if (res.status === 204 && res.data === '') {
         setState(
-      (prevState
-      ) => ({ ...prevState, tableData: [] }))
+          (prevState
+          ) => ({ ...prevState, tableData: [] }))
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
         setState(
-      (prevState
-      ) => ({ ...prevState, tableData: Data, }))
+          (prevState
+          ) => ({ ...prevState, tableData: Data, }))
       } else {
       }
     }))
@@ -139,10 +136,11 @@ function LabourListing(props) {
   const viewOrEditItemDetails = (Id, isViewMode) => {
     setState(
       (prevState
-      ) => ({ ...prevState,
-      data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
-      toggleForm: true,
-    }))
+      ) => ({
+        ...prevState,
+        data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
+        toggleForm: true,
+      }))
   }
 
 
@@ -185,11 +183,13 @@ function LabourListing(props) {
 
     return (
       <>
-        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, true)} />}
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(props?.data?.LabourDetailsId)} />}
+        {ViewAccessibility && (<button title="View" className="View mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, true)} />)}
+        {EditAccessibility && (<button title="Edit" className="Edit mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, false)} />)}
+        {DeleteAccessibility && (<button title="Delete" className="Delete" type="button" onClick={() => deleteItem(cellValue)} />
+        )}
       </>
-    )
+    );
+
   };
 
 
@@ -240,8 +240,8 @@ function LabourListing(props) {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       labourDataList.length !== 0 && setState(
-      (prevState
-      ) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
+        (prevState
+        ) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
     }, 500);
   }
 
@@ -330,6 +330,11 @@ function LabourListing(props) {
   }
 
   const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+    state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -343,7 +348,6 @@ function LabourListing(props) {
     BulkUploadAccessibility,
     DownloadAccessibility,
     noData,
-    dataCount
   } = state
   const ExcelFile = ReactExport.ExcelFile;
 
@@ -381,7 +385,14 @@ function LabourListing(props) {
         {state.isLoader && <LoaderCustom customClass="loader-center" />}
         <ScrollToTop pointProp="go-to-top" />
         <form
-          // onSubmit={handleSubmit(onSubmit.bind(this))}
+
+
+
+
+
+
+
+
 
           noValidate
         >
@@ -392,8 +403,8 @@ function LabourListing(props) {
                 <div>
                   {state.shown ? (
                     <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => setState(
-      (prevState
-      ) => ({ ...prevState, shown: !state.shown }))}>
+                      (prevState
+                      ) => ({ ...prevState, shown: !state.shown }))}>
                       <div className="cancel-icon-white"></div></button>
                   ) : (
                     ""
@@ -454,7 +465,7 @@ function LabourListing(props) {
           </div>
           <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-            <AgGridReact
+          {!state.isLoader && <AgGridReact
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout='autoHeight'
@@ -484,7 +495,7 @@ function LabourListing(props) {
               <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
               <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
               <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-            </AgGridReact>
+            </AgGridReact>}
             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
           </div>
         </div>
@@ -508,28 +519,5 @@ function LabourListing(props) {
   )
 }
 
-
-/**
- * @method mapStateToProps
- * @description return state to component as props
- * @param {*} state
- */
-function mapStateToProps({ labour, auth, fuel, machine }) {
-  const { loading, labourTypeByPlantSelectList, labourDataList } = labour
-  const { plantSelectList, stateSelectList } = fuel
-  const { machineTypeSelectList } = machine
-  const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth
-  return {
-    loading,
-    leftMenuData,
-    plantSelectList,
-    stateSelectList,
-    labourTypeByPlantSelectList,
-    machineTypeSelectList,
-    labourDataList,
-    initialConfiguration,
-    topAndLeftMenuData,
-  }
-}
 
 export default LabourListing

@@ -38,6 +38,7 @@ const AssemblyPartListing = React.memo((props) => {
 
   const [tableData, setTableData] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
+  const[searchText,setSearchText]=useState("");
 
   const [state, setState] = useState({
     isEditFlag: false,
@@ -328,11 +329,18 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    state.gridApi.setQuickFilter(e.target.value);
+    setSearchText( state.gridApi.setQuickFilter(e.target.value))
   };
 
   const resetState = () => {
     console.log("COMING IN RESET FUNCTION", state);
+    
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+    state.gridApi.setQuickFilter(null)
+
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -396,9 +404,9 @@ const AssemblyPartListing = React.memo((props) => {
                     element={
                       <button
                         title={`Download ${
-                          selectedRowData.length === 0
+                          state.dataCount=== 0
                             ? "All"
-                            : `(${selectedRowData.length})`
+                            : `(${state.dataCount})`
                         }`}
                         type="button"
                         className={"user-btn mr5"}
@@ -406,9 +414,9 @@ const AssemblyPartListing = React.memo((props) => {
                       >
                         <div className="download mr-1"></div>
                         {`${
-                          selectedRowData.length === 0
+                          state.dataCount === 0
                             ? "All"
-                            : `(${selectedRowData.length})`
+                            : `(${state.dataCount})`
                         }`}
                       </button>
                     }

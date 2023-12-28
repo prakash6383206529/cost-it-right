@@ -101,10 +101,10 @@ export function getPartDataList(skip, take, obj, isPagination, callback) {
     console.log(
         "getPartDataList",
         obj,
-        // skip,
-        // take,
-        // isPagination,
-        // callback
+        skip,
+        take,
+        isPagination,
+        callback
     );
     return (dispatch) => {
 

@@ -1,14 +1,12 @@
 import React, { useState, useEffect, useContext } from 'react';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import { reduxForm, } from "redux-form";
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID, FILE_URL } from '../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, MACHINERATE, MACHINE_MASTER_ID, FILE_URL } from '../../../config/constants';
 import { getMachineDataList, deleteMachine, copyMachine, getProcessGroupByMachineId } from '../actions/MachineMaster';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
 import BulkUpload from '../../massUpload/BulkUpload';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { MACHINERATE_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import DayTime from '../../common/DayTimeWrapper'
@@ -25,7 +23,7 @@ import ProcessGroupDrawer from './ProcessGroupDrawer'
 import WarningMessage from '../../common/WarningMessage';
 import _ from 'lodash';
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation';
-import { disabledClass } from '../../../actions/Common';
+import { disabledClass, isResetClick } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
@@ -83,13 +81,11 @@ const MachineRateListing = (props) => {
     viewAttachment: []
 
   });
+  const [searchText, setSearchText] = useState('');
+
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
   const { selectedRowForPagination } = useSelector(state => state.simulation);
   const permissions = useContext(ApplyPermission);
-
-  // const { auth } = useSelector((state) => state); // state;
-  // const { initialConfiguration } = useSelector((state) => state.auth); // state.auth;
-
 
   useEffect(() => {
     const fetchData = async () => {
@@ -235,6 +231,7 @@ const MachineRateListing = (props) => {
       }))
     }
   }
+  console.log(gridOptions, "gridOptions");
 
 
   const onFloatingFilterChanged = (value) => {
@@ -248,7 +245,10 @@ const MachineRateListing = (props) => {
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
+    console.log(gridOptions, "gridOptions");
     const model = gridOptions?.api?.getFilterModel();
+    console.log(model, "model");
+
     setState((prevState) => ({ ...prevState, filterModel: model }));
 
     if (!state.isFilterButtonClicked) {
@@ -268,6 +268,8 @@ const MachineRateListing = (props) => {
           for (var property in state.floatingFilterData) {
             if (property === value.column.colId) {
               state.floatingFilterData[property] = "";
+              console.log(state.floatingFilterData, "1st ss");
+
             }
           }
 
@@ -281,6 +283,8 @@ const MachineRateListing = (props) => {
           setState((prevState) => ({ ...prevState, warningMessage: false }));
           for (var prop in state.floatingFilterData) {
             state.floatingFilterData[prop] = "";
+            console.log(state.floatingFilterData, "2nd ss");
+
           }
           setState((prevState) => ({
             ...prevState,
@@ -295,6 +299,8 @@ const MachineRateListing = (props) => {
       ) {
         return false;
       }
+      console.log(state.floatingFilterData, "floatingFilterData");
+
       setState((prevState) => ({
         ...prevState,
         floatingFilterData: {
@@ -332,7 +338,19 @@ const MachineRateListing = (props) => {
     setState((prevState) => ({
       ...prevState,
       noData: false,
+      warningMessage: false,
+      
     }));
+    dispatch(isResetClick(true, "Machine"));
+    setState((prevState) => ({
+      ...prevState,
+
+      isFilterButtonClicked: false,
+    }));
+    setSearchText(''); // Clear the search text state
+    if (state.gridApi) {
+      state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
+    }
     state.gridApi.deselectAll();
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
@@ -364,6 +382,8 @@ const MachineRateListing = (props) => {
         pageSize100: false,
       },
     }));
+    setSearchText(''); // Assuming this state is bound to the input value
+
   };
 
   const onBtPrevious = () => {
@@ -417,16 +437,6 @@ const MachineRateListing = (props) => {
         pageNoNew: state.pageNo + 1,
       }));
       const nextNo = state.currentRowIndex + 10;
-      getDataList(
-        "",
-        0,
-        "",
-        "",
-        nextNo,
-        state.globalTake,
-        true,
-        state.floatingFilterData
-      );
 
       getDataList(
         '',
@@ -441,7 +451,6 @@ const MachineRateListing = (props) => {
         state.floatingFilterData
 
       )
-      // skip, take, isPagination, floatingFilterData, (res)
       setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
     }
   };
@@ -649,9 +658,6 @@ const MachineRateListing = (props) => {
     }
   }
 
-  /**
-   * @method hyphenFormatter
-   */
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
@@ -811,7 +817,7 @@ const MachineRateListing = (props) => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    state.gridApi.setQuickFilter(e.target.value);
+    setSearchText(state.gridApi.setQuickFilter(e.target.value))
   }
 
 
@@ -916,38 +922,57 @@ const MachineRateListing = (props) => {
     attachmentFormatter: attachmentFormatter,
   };
 
-
   const onRowSelect = (event) => {
-    let selectedRows = state.gridApi.getSelectedRows();
- 
+    var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {
-      // CONDITION FOR FIRST RENDERING OF COMPONENT
+      //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination;
-    } else {
+    } else if (
+      selectedRowForPagination &&
+      selectedRowForPagination.length > 0
+    ) {
+      console.log("selectedRowForPagination", event.data, selectedRowForPagination);
+      // CHECKING IF REDUCER HAS DATA
+      let finalData = [];
       if (event.node.isSelected() === false) {
         // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
-        selectedRows = selectedRows.filter(row => row.BoughtOutPartId !== event.data.BoughtOutPartId);
+        for (let i = 0; i < selectedRowForPagination.length; i++) {
+          if (
+            selectedRowForPagination[i].MachineProcessRateId ===
+            event.data.MachineProcessRateId
+
+          ) {
+            // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+            continue;
+          }
+          finalData.push(selectedRowForPagination[i]);
+        }
+      } else {
+        finalData = selectedRowForPagination;
       }
+      selectedRows = [...selectedRows, ...finalData];
     }
- 
-    let uniqueArray = _.uniqBy(selectedRows, "MachineProcessRateId");
-    dispatch(setSelectedRowForPagination(uniqueArray));
- 
-    // Calculate dataCount based on the length of uniqueArray
-    const newDataCount = uniqueArray.length;
- 
-    setState((prevState) => ({ ...prevState, dataCount: newDataCount }));
- 
+
+    let uniqeArray = _.uniqBy(selectedRows, "MachineProcessRateId"); //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    dispatch(setSelectedRowForPagination(uniqeArray));
+    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length })); //SETTING CHECKBOX STATE DATA IN REDUCER
+    let finalArr = selectedRows;
+    let length = finalArr?.length;
+    let uniqueArray = _.uniqBy(finalArr, "MachineProcessRateId");
+
     if (props.isSimulation && !props?.isFromVerifyPage) {
-      props.apply(uniqueArray, newDataCount);
+      props.apply(uniqueArray, length);
     }
- 
     setState((prevState) => ({ ...prevState, selectedRowData: selectedRows }));
- 
-    if (props?.benchMark && newDataCount > 1) {
-      dispatch(setSelectedRowForPagination([]));
-      state.gridApi.deselectAll();
-      Toaster.warning("Please select a single BOP with the same category");
+
+    if (props?.benchMark) {
+      let uniqueArrayNew = _.uniqBy(uniqueArray, "CostingTypeId");
+      console.log("uniqueArrayNew", uniqueArrayNew);
+      if (uniqueArrayNew.length > 1) {
+        dispatch(setSelectedRowForPagination([]));
+        state.gridApi.deselectAll();
+        Toaster.warning("Please select multiple machinr rate's with same category");
+      }
     }
   };
 
@@ -960,8 +985,15 @@ const MachineRateListing = (props) => {
         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
         <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
           <Col md="3" lg="3">
-            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-          </Col>
+            <input
+              type="text"
+              className="form-control table-search"
+              value={searchText}
+              id="filter-text-box"
+              placeholder="Search"
+              autoComplete={'off'}
+              onChange={onFilterTextBoxChanged}
+            />          </Col>
           <Col md="9" lg="9" className="pl-0 mb-3">
             <div className="d-flex justify-content-end bd-highlight w100 p-relative">
               {state.shown ? (
@@ -1030,9 +1062,9 @@ const MachineRateListing = (props) => {
                   </ExcelFile>
                 </>
               }
-              <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+              <Button id='machineRateListing_reset' className="user-btn" onClick={() => resetState()}>
                 <div className="refresh mr-0"></div>
-              </button>
+              </Button>
 
             </div>
           </Col>
@@ -1054,12 +1086,8 @@ const MachineRateListing = (props) => {
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: 'imagClass'
-                }}
+                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                 frameworkComponents={frameworkComponents}
-
                 rowSelection={'multiple'}
                 onRowSelected={onRowSelect}
                 onFilterModified={onFloatingFilterChanged}
@@ -1068,7 +1096,6 @@ const MachineRateListing = (props) => {
               >
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                 {!isSimulation && <AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>}
-                {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                 <AgGridColumn field="MachineName" headerName="Machine Name" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineNumber" headerName="Machine Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="MachineTypeName" headerName="Machine Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
@@ -1090,7 +1117,8 @@ const MachineRateListing = (props) => {
                   <div className="d-flex pagination-button-container">
                     <p>
                       <Button
-                        id="bopDomesticListing_previous"
+                        id="machineRateListing_previous"
+                        className="previous-page-pg"
                         variant="previous-btn"
                         onClick={() => onBtPrevious()}
                       />
@@ -1124,7 +1152,9 @@ const MachineRateListing = (props) => {
                     )}
                     <p>
                       <Button
-                        id="bopDomesticListing_next"
+                        id="machineRateListing_next"
+                        className="next-page-pg"
+
                         variant="next-btn"
                         onClick={() => onBtNext()}
                       />

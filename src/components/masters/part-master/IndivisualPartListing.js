@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
-import {} from "../../../actions/Common";
+import { isResetClick } from "../../../actions/Common";
 import {
   getPartDataList,
   deletePart,
@@ -51,6 +51,7 @@ const IndivisualPartListing = (props) => {
   const [disableFilter, setDisableFilter] = useState(true);
   const [filterModel, setFilterModel] = useState({});
   const [warningMessage, setWarningMessage] = useState(false);
+  const [searchText, setSearchText] = useState("");
   const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false);
   const [pageSize, setPageSize] = useState({
     pageSize10: true,
@@ -69,15 +70,11 @@ const IndivisualPartListing = (props) => {
   const [tableData, setTableData] = useState([]);
   const [isBulkUpload, setIsBulkUpload] = useState(false);
   const [deletedId, setDeletedId] = useState("");
-  // const [ searchPrompt,
-  //   setSearchPrompt] = 
-  //   useState('');
-  const [selectedRowData, setSelectedRowData] = useState([]);
 
   const {
     partsListing,
+    // productDataList,
     initialConfiguration,
-    selectedCostingListSimulation,
     selectedRowForPagination,
   } = useSelector((state) => ({
     partsListing: state.part.partsListing,
@@ -87,7 +84,6 @@ const IndivisualPartListing = (props) => {
       state.simulation.selectedCostingListSimulation,
     selectedRowForPagination: state.simulation.selectedRowForPagination,
   }));
-
   const permissions = useContext(ApplyPermission);
   useEffect(() => {
     getTableListData(0, defaultPageSize, floatingFilterData, true);
@@ -130,7 +126,7 @@ const IndivisualPartListing = (props) => {
           setNoData(true);
           setTotalRecordCount(0);
           setPageNo(0);
-        
+
         } else if (res.status === 200 && res.data && res.data.DataList) {
           let Data = res.data.DataList;
           setTableData(Data);
@@ -173,85 +169,94 @@ const IndivisualPartListing = (props) => {
     );
   };
 
- 
+
+
 
   const onFloatingFilterChanged = (value) => {
-    setTimeout(() => {
+  
+
+    setTimeout(() => {  // <-- this may introduce asynchronous behavior
       if (partsListing?.length !== 0) {
-        setNoData(searchNocontentFilter(value, partsListing));
- 
+        setNoData(searchNocontentFilter(value, noData));
       }
     }, 500);
     setDisableFilter(false);
+
+   
+
     const model = gridOptions?.api?.getFilterModel();
-setFilterModel(model);
+    console.log('model: ', model);
+    
+    setFilterModel(model);
 
     if (!isFilterButtonClicked) {
       setWarningMessage(true);
     }
-console.log( value?.filterInstance?.appliedModel?.filter , "value");
+    console.log(value?.filterInstance?.appliedModel , "value");
+
     if (
       value?.filterInstance?.appliedModel === null ||
       value?.filterInstance?.appliedModel?.filter === ""
     ) {
       let isFilterEmpty = true;
-
       if (model !== undefined && model !== null) {
         if (Object.keys(model).length > 0) {
           isFilterEmpty = false;
 
           for (var property in floatingFilterData) {
             if (property === value.column.colId) {
-              console.log(value, " value");
               floatingFilterData[property] = "";
             }
           }
-          // const searchPrompt = generateSearchPrompt(floatingFilterData);
-          // setSearchPrompt(searchPrompt);
           setFloatingFilterData(floatingFilterData);
         }
-      
+
         if (isFilterEmpty) {
           setWarningMessage(false);
           for (var prop in floatingFilterData) {
             floatingFilterData[prop] = "";
           }
           setFloatingFilterData(floatingFilterData);
-          console.log(floatingFilterData);
-      
         }
       }
     } else {
       if (
-        value.column.colId === "EffectiveDateNew" ||
+        value.column.colId === "EffectiveDate" ||
         value.column.colId === "CreatedDate"
       ) {
         return false;
       }
+
       setFloatingFilterData({
         ...floatingFilterData,
         [value.column.colId]: value.filterInstance.appliedModel.filter,
       });
     }
   };
-  // const generateSearchPrompt = (filterData) => {
-  //   // Implement logic to generate search prompt based on filter data
-  //   // Example: concatenate filter values into a single string
-  //   return Object.values(filterData).join(" ");
-  // };
+
 
   const onSearch = () => {
+   
+
     setWarningMessage(false);
     setIsFilterButtonClicked(true);
     setPageNo(1);
     setPageNoNew(1);
     setCurrentRowIndex(0);
-    gridOptions?.columnApi?.resetColumnState();
+    // gridOptions?.columnApi?.resetColumnState();
     getTableListData(0, globalTake, floatingFilterData, true);
   };
 
   const resetState = () => {
     setNoData(false);
+    dispatch(isResetClick(true, "Part"));
+    setIsFilterButtonClicked(false)
+
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+    gridApi.setQuickFilter(null)
     gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -270,6 +275,7 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
     setGlobalTake(10);
     setPageSize({ pageSize10: true, pageSize50: false, pageSize100: false });
     setDisableFilter(false);
+    setDataCount(0);
   };
 
   const onBtPrevious = () => {
@@ -326,7 +332,6 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
       isViewMode: isViewMode,
     };
     props.getDetails(requestData);
-    console.log(requestData);
     // dispatch(getDetails(requestData));
   };
 
@@ -342,7 +347,7 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
           Toaster.success(MESSAGES.DELETE_VOLUME_SUCCESS);
           getTableListData(0, globalTake, true);
           gridApi.deselectAll();
-          dispatch(setSelectedRowForPagination([]));
+          // dispatch(setSelectedRowForPagination([]));
           setDataCount(0);
         }
       })
@@ -426,14 +431,17 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
   };
 
   const checkBoxRenderer = (props) => {
-    const cellValue = props?.valueFormatted
-      ? props.valueFormatted
-      : props?.value;
-    // var selectedRows = gridApi?.getSelectedRows();
+    console.log('props: ', props);
+    const cellValue = props?.valueFormatted? props.valueFormatted: props?.value;
 
+    console.log('selectedRowForPagination: ', selectedRowForPagination);
     if (selectedRowForPagination?.length > 0) {
+      console.log('selectedRowForPagination: ', selectedRowForPagination);
+
       selectedRowForPagination.map((item) => {
-        if (item.RawMaterialId === props.node.data.RawMaterialId) {
+        console.log('item: ', item);
+        if (item.PartId === props.node.data.PartId) {
+          console.log("In if");
           props.node.setSelected(true);
         }
         return null;
@@ -450,8 +458,9 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
    */
   const effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted
-      ? props.valueFormatted
-      : props?.value;
+    ? props.valueFormatted
+    : props?.value;
+    console.log('cellValue: ', cellValue);
     return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
     // return cellValue != null ? cellValue : '';
   };
@@ -481,7 +490,8 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
     setDisableDownload(true);
     dispatch(disabledClass(true));
 
-    let tempArr = selectedCostingListSimulation; // Assuming `selectedCostingListSimulation` is an array
+    // let tempArr = selectedRowForPagination; // Assuming `selectedCostingListSimulation` is an array
+        let tempArr = gridApi && gridApi?.getSelectedRows()
 
     if (tempArr?.length > 0) {
       setTimeout(() => {
@@ -489,7 +499,7 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
         dispatch(disabledClass(false));
 
         const button = document.getElementById(
-          "Excel-Downloads-component-part"
+          "Excel-Downloads-Component-part"
         );
         button?.click();
       }, 500);
@@ -498,12 +508,17 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
     }
   };
 
-  const onBtExport = useCallback(() => {
-    // Use the selectedRowData for export
-    const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
-    console.log(tempArr);
+
+  const onBtExport = () => {
+   
+    let tempArr = [];
+    //tempArr = gridApi && gridApi?.getSelectedRows()
+    tempArr = selectedRowForPagination;
+    tempArr =
+      tempArr && tempArr.length > 0 ? partsListing : tableData;
     return returnExcelColumn(INDIVIDUALPART_DOWNLOAD_EXCEl, tempArr);
-  }, [selectedRowData, tableData]);
+  };
+
 
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
@@ -537,8 +552,7 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
     );
   };
   const onFilterTextBoxChanged = (e) => {
-    console.log(e.target.value , "e");
-    gridApi.setQuickFilter(e.target.value);
+   setSearchText(gridApi.setQuickFilter(e.target.value))
   };
 
   const ExcelFile = ReactExport.ExcelFile;
@@ -587,14 +601,35 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
     return thisIsFirstColumn;
   };
 
-  const onRowSelect = useCallback(() => {
-    if (gridApi) {
-      const selectedRows = gridApi.getSelectedRows();
-      console.log(selectedRows, "selec");
-      setSelectedRowData(selectedRows);
-      setDataCount(selectedRows.length);
+  const onRowSelected = (event) => {
+
+    var selectedRows = gridApi && gridApi?.getSelectedRows();
+    if (selectedRows === undefined || selectedRows === null) {
+      selectedRows = selectedRowForPagination;
+      console.log('selectedRowForPagination: ', selectedRowForPagination);
+    } else if (selectedRowForPagination &&selectedRowForPagination.length > 0) {
+      console.log('selectedRowForPagination: ', selectedRowForPagination);
+      let finalData = [];
+      if (event.node.isSelected() === false) {
+        for (let i = 0; i < selectedRowForPagination.length; i++) {
+          if (selectedRowForPagination[i].PartId ===event.data.PartId
+          ) {
+            continue;
+          }
+          finalData.push(selectedRowForPagination[i]);
+        } 
+      } else {
+        finalData = selectedRowForPagination;
+      }
+      selectedRows = [...selectedRows, ...finalData];
     }
-  }, [gridApi]);
+
+    let uniqeArrayPartId = _.uniqBy(selectedRows, (v) =>
+      [v.PartId, v.PartId].join()
+    ); 
+    setDataCount(uniqeArrayPartId.length);
+    dispatch(setSelectedRowForPagination(uniqeArrayPartId)); //SETTING CHECKBOX STATE DATA IN REDUCER
+  };
 
   const defaultColDef = {
     resizable: true,
@@ -614,9 +649,8 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
   return (
     <>
       <div
-        className={`ag-grid-react custom-pagination ${
-          permissions.Download ? "show-table-btn" : ""
-        }`}
+        className={`ag-grid-react custom-pagination ${permissions.Download ? "show-table-btn" : ""
+          }`}
       >
         {isLoader && <LoaderCustom />}
         {disableDownload && (
@@ -670,33 +704,19 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
                 )}
                 {permissions.Download && (
                   <>
-                    <ExcelFile
-                      filename={"BOM"}
-                      fileExtension={".xls"}
-                      element={
-                        <button
-                          title={`Download ${
-                            selectedRowData.length === 0
-                              ? "All"
-                              : `(${selectedRowData.length})`
-                          }`}
-                          type="button"
-                          className={"user-btn mr5"}
-                          onClick={onBtExport}
-                        >
-                          <div className="download mr-1"></div>
-                          {`${
-                            selectedRowData.length === 0
-                              ? "All"
-                              : `(${selectedRowData.length})`
-                          }`}
-                        </button>
-                      }
-                    >
+                  <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                      {/* DOWNLOAD */}
+                      {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                  </button>
+                  <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                      <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
+                      </button>}>
                       {onBtExport()}
-                    </ExcelFile>
-                  </>
+                  </ExcelFile>
+              </>
+
                 )}
+
                 <button
                   type="button"
                   className="user-btn"
@@ -710,11 +730,10 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
           </Col>
         </Row>
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${
-            (partsListing && partsListing?.length <= 0) || noData
-              ? "overlay-contain"
-              : ""
-          }`}
+          className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || noData
+            ? "overlay-contain"
+            : ""
+            }`}
         >
           <div className="ag-grid-header">
             <input
@@ -723,7 +742,7 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
               id="filter-text-box"
               placeholder="Search"
               autoComplete={"off"}
-              onChange={(e) => onFilterTextBoxChanged(e)}
+              onChange={onFilterTextBoxChanged}
             />
           </div>
           <div
@@ -747,7 +766,7 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
               gridOptions={gridOptions}
               onFilterModified={onFloatingFilterChanged}
               rowSelection={"multiple"}
-              onRowSelected={onRowSelect}
+              onRowSelected={onRowSelected}
               noRowsOverlayComponent={"customNoRowsOverlay"}
               noRowsOverlayComponentParams={{
                 title: EMPTY_DATA,
@@ -759,8 +778,9 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
               <AgGridColumn
                 field="Technology"
                 headerName="Technology"
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
+                cellRenderer={checkBoxRenderer}      
+                
+                        ></AgGridColumn>
               <AgGridColumn
                 field="PartNumber"
                 headerName="Part No."
@@ -789,7 +809,7 @@ console.log( value?.filterInstance?.appliedModel?.filter , "value");
                 cellRenderer={"hyphenFormatter"}
               ></AgGridColumn>
               <AgGridColumn
-                field="EffectiveDateNew"
+                field="EffectiveDate"
                 headerName="Effective Date"
                 cellRenderer={"effectiveDateFormatter"}
                 filter="agDateColumnFilter"

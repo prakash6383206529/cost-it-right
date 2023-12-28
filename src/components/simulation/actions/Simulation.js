@@ -1238,6 +1238,9 @@ export function getMasterSelectListSimulation(loggedInUserId, callback) {
 }
 
 export function setSelectedRowForPagination(value) {
+    console.log('value: ', value);
+    
+    
     return (dispatch) => {
         dispatch({
             type: SET_SELECTED_ROW_FOR_PAGINATION,

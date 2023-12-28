@@ -293,6 +293,11 @@ const ReasonListing = (props) => {
 
 
   const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+   gridApi.setQuickFilter(null)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
     gridApi.sizeColumnsToFit();

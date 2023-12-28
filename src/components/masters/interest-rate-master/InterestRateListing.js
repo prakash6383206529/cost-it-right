@@ -64,6 +64,7 @@ const InterestRateListing = (props) => {
     dataCount: 0
   })
   const [gridApi, setGridApi] = useState(null);
+  const [searchText, setSearchText] = useState("");
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { interestRateDataList } = useSelector((state) => state.interestRate);
   const statusColumnData = useSelector((state) => state);
@@ -316,6 +317,11 @@ const InterestRateListing = (props) => {
   }
 
   const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+    gridApi.setQuickFilter(null)
     gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -438,7 +444,7 @@ const InterestRateListing = (props) => {
             </div>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-              <AgGridReact
+             {!state.isLoader && <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout='autoHeight'
@@ -473,7 +479,7 @@ const InterestRateListing = (props) => {
                 <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-              </AgGridReact>
+              </AgGridReact>}
               {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
             </div>
           </div>

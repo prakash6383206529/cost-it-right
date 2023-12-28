@@ -34,29 +34,22 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 const IndivisualProductListing = (props) => {
-  // const [isEditFlag, setIsEditFlag] = useState(false);
-  // const [isOpen, setIsOpen] = useState(false);
   const [tableData, setTableData] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState(false);
   const [gridApi, setGridApi] = useState(null);
-
   const [gridColumnApi, setGridColumnApi] = useState(null);
-
   const [isBulkUpload, setIsBulkUpload] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [deletedId, setDeletedId] = useState("");
   const [isLoader, setIsLoader] = useState(false);
   const [noData, setNoData] = useState(false);
   const [dataCount, setDataCount] = useState(0);
-  // const { partsListing, productDataList } = useSelector(
-  //   (state) => state.part
-  // );
-  // console.log(partsListing);
+  const[searchText,setSearchText]=useState("")
+
   const dispatch = useDispatch();
 console.log(
   gridColumnApi,selectedRowData
 );
-  // const { initialConfiguration } = useSelector((state) => state.auth);
   const permissions = useContext(ApplyPermission);
   console.log(tableData);
   useEffect(() => {
@@ -64,6 +57,7 @@ console.log(
       getTableListData();
     // eslint-disable-next-line
   }, []);
+
 
  
   const getTableListData = () => {
@@ -162,17 +156,6 @@ console.log(
     );
   };
 
-  // const indexFormatter = (cell, row, enumObject, rowIndex) => {
-  //     let currentPage = table.currPage;
-  //     let sizePerPage = table.sizePerPage;
-  //     let serialNumber = '';
-  //     if (currentPage === 1) {
-  //         serialNumber = rowIndex + 1;
-  //     } else {
-  //         serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-  //     }
-  //     return serialNumber;
-  // }
 
   const effectiveDateFormatter = (props) => {
     let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
@@ -205,18 +188,7 @@ console.log(
     setGridApi(params.api);
     setGridColumnApi(params.columnApi);
     params.api.paginationGoToPage(0);
-
-    // dont remove this
-    // var allColumnIds = [];
-    // params.columnApi.getAllColumns().forEach(function (column) {
-    //     allColumnIds.push(column.colId);
-    // });
-    // params.columnApi.autoSizeColumns(allColumnIds);
-    // dont remove this
-
-    //if resolution greater than 1920 table listing fit to 100%
     window.screen.width >= 1920 && params.api.sizeColumnsToFit();
-    //if resolution greater than 1920 table listing fit to 100%
   };
 
   const onPageSizeChanged = (newPageSize) => {
@@ -273,16 +245,25 @@ console.log(
   };
 
   const onFilterTextBoxChanged = (e) => {
-    console.log(e.target.value, "e");
-
-    gridApi.setQuickFilter(e.target.value);
+    setSearchText(gridApi.setQuickFilter(e.target.value))
   };
 
   const resetState = () => {
+    
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+  gridApi.setQuickFilter(null)
+
     gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    if (window.screen.width >= 1600) {
+      gridApi.sizeColumnsToFit();
+    }
   };
+
 
 
   const isFirstColumn = (params) => {
