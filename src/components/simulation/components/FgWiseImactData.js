@@ -3,7 +3,7 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper'
 import NoContentFound from '../../common/NoContentFound'
-import { EMPTY_DATA } from '../../../config/constants'
+import { EMPTY_DATA, EMPTY_GUID } from '../../../config/constants'
 import LoaderCustom from '../../common/LoaderCustom'
 import { Link } from 'react-scroll';
 import { getExternalIntegrationFgWiseImpactData } from '../../costing/actions/Costing';
@@ -20,7 +20,7 @@ export function Fgwiseimactdata(props) {
 
     useEffect(() => {
         let obj = {
-            "SimulationId": SimulationId,
+            "SimulationId": SimulationId ? SimulationId : EMPTY_GUID,
             ...costingIdArray
         }
         if (((costingIdArray && Object.keys(costingIdArray).length > 0) || SimulationId)) {
@@ -31,7 +31,7 @@ export function Fgwiseimactdata(props) {
                 if (res && res?.data && res?.data?.Result) {
                     setshowTableData(true)
                 }
-                else if (res?.response?.status !== "200") {
+                else if (res?.response?.status !== 200) {
                     setshowTableData(false)
                 } else {
                     setLoader(false)

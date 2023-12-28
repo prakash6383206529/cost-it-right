@@ -77,7 +77,7 @@ const SendForApproval = (props) => {
   const [approvalType, setApprovalType] = useState({});
   const [technologyLevelsList, setTechnologyLevelsList] = useState({});
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
-  const [costingIdArray, setCostingIdArray] = useState(["00000000-0000-0000-0000-000000000000"])
+  const [costingIdArray, setCostingIdArray] = useState([])
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
 

@@ -2711,11 +2711,11 @@ export function getExternalIntegrationFgWiseImpactData(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.getExternalIntegrationFgWiseImpactData, data, config())
     request.then((response) => {
-      dispatch({
-        type: GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
-        payload: response.data.DataList,
-      })
-      if (response.data.Result) {
+      if (response.data.Result || response?.status === 204) {
+        dispatch({
+          type: GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
+          payload: response?.status === 200 ? response?.data?.DataList : [],
+        })
         callback(response)
       }
     }).catch((error) => {
