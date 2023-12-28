@@ -403,7 +403,7 @@ class BulkUpload extends Component {
                                         el = dateTemp
                                     }
                                 }
-                                if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase' || fileHeads[i] === 'DateOfModification') && typeof el === 'number') {
                                     el = getJsDateFromExcel(el)
                                 }
                                 if (fileHeads[i] === 'NoOfPcs' && typeof el == 'number') {
