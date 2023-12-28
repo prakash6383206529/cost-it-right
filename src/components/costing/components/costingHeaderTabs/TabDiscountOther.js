@@ -111,6 +111,7 @@ function TabDiscountOther(props) {
   })
 
   const [otherCostArray, setOtherCostArray] = useState([])
+  const [costingConditionEntryType, setCostingConditionEntryType] = useState('')
   const isNFR = useContext(IsNFR);
   const isPartType = useContext(IsPartType);
 
@@ -265,6 +266,7 @@ function TabDiscountOther(props) {
               item.Description = `${item.Description} (${item.CostingConditionNumber})`
               temp.push(item)
             })
+            setCostingConditionEntryType(res?.data?.Data.CostingConditionEntryTypeId)
             seConditionTableData(temp)
             const sum = Data.reduce((acc, obj) => checkForNull(acc) + checkForNull(obj.ConditionCost), 0);
             setTotalConditionCost(sum)
@@ -1134,7 +1136,7 @@ function TabDiscountOther(props) {
       }
     }
   }
-  const openAndCloseAddConditionCosting = (type, data = conditionTableData) => {
+  const openAndCloseAddConditionCosting = (type, data = conditionTableData, costingConditionEntryType) => {
     if (type === 'Open') {
       setIsConditionCostingOpen(true)
     } else {
@@ -1159,6 +1161,7 @@ function TabDiscountOther(props) {
           obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
           obj.LoggedInUserId = loggedInUserId()
           obj.ConditionsData = data
+          obj.CostingConditionEntryTypeId = costingConditionEntryType
           dispatch(saveCostingDetailCondition(obj, () => { }))
         }
       }
@@ -1197,6 +1200,7 @@ function TabDiscountOther(props) {
       obj.CostingId = RMCCTabData && RMCCTabData[0]?.CostingId
       obj.LoggedInUserId = loggedInUserId()
       obj.ConditionsData = finalListCondition
+      obj.CostingConditionEntryTypeId = costingConditionEntryType
       dispatch(saveCostingDetailCondition(obj, () => { }))
     }
 
@@ -1680,6 +1684,7 @@ function TabDiscountOther(props) {
                         netPOPrice={netPOPrice}
                         basicRateCurrency={getValues('BasicRateINR')}
                         ViewMode={CostingViewMode}
+                        costingConditionEntryType={costingConditionEntryType}
                       />}
                     </Col>
                     {/* {initialConfiguration?.IsShowNpvCost && <Row>

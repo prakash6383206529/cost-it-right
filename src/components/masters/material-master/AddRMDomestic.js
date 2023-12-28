@@ -2519,6 +2519,7 @@ class AddRMDomestic extends Component {
               ViewMode={((isEditFlag && isRMAssociated) || isViewFlag)}
               isFromMaster={true}
               isFromImport={false}
+              EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
             />
           }
           {
