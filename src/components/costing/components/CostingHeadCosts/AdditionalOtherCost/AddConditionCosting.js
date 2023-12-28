@@ -76,7 +76,7 @@ function AddConditionCosting(props) {
             dispatch(getCostingCondition(entryTypeId, (res) => {
                 if (res?.data?.DataList) {
                     const temp = res.data.DataList.map(item => ({
-                        label: ` ${item.Description} (${item.CostingConditionNumber})`,
+                        label: `${item.Description} (${item.CostingConditionNumber})`,
                         value: item.CostingConditionMasterId,
                     }));
 
