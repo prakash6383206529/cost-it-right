@@ -981,6 +981,7 @@ export const API = {
   simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
   simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
   getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
+  getSimualtionInsightReport: `${BASE_URL}/app-simulation-approval-system/get-simulation-insights`,
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
@@ -1862,6 +1863,7 @@ export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
 export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
+export const INSIGHT_SIMULATION_REPORT = "Simulation Insights Report"
 
 //export const SIMULATION_HISTORY = 'Simulation History'
 
