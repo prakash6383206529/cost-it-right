@@ -102,7 +102,9 @@ function AddConditionCosting(props) {
                 cssClass = 'mt-4 pt-1';
             }
         } else {
-            if (type === "Percentage") {
+            if (type === "") {
+                cssClass = 'mb-3';
+            } else if (type === "Fixed") {
                 cssClass = 'mb-3';
             } else {
                 cssClass = 'mt-4 pt-1';
