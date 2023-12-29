@@ -15,7 +15,7 @@ import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectLis
 import { MESSAGES } from "../../config/message";
 import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
-import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, WACAPPROVALTYPEID, searchCount } from "../../config/constants";
+import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONALAPPROVALTYPEID, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, WACAPPROVALTYPEID, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
 import HeaderTitle from "../common/HeaderTitle";
 import PermissionsTabIndex from "./RolePermissions/PermissionsTabIndex";
@@ -390,8 +390,9 @@ function UserRegistration(props) {
     if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && label === 'approvalTypeSimulation') return false
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && label === 'approvalTypeSimulation') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && label === 'approvalTypeMaster') return false
+        if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!initialConfiguration.IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && label === 'approvalTypeCosting') return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
