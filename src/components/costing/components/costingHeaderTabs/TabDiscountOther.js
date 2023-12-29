@@ -402,7 +402,6 @@ function TabDiscountOther(props) {
             let attachmentCapacity = filterAttachments(Data.Attachements, CAPACITY)
             let attachmentTimeline = filterAttachments(Data.Attachements, TIMELINE)
             setIsRfqAttachement(Data.Attachements.length !== attachmentList.length)
-            setDiscountObj({ ...Data, ...Data?.CostingPartDetails, totalConditionCost: costDetail?.NetConditionCost, totalNpvCost: costDetail?.NetNpvCost, AnyOtherCost: costDetail.NetOtherCost !== null ? checkForNull(costDetail.NetOtherCost) : '', })
 
             setIsCurrencyChange(Data.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(Data.CurrencyExchangeRate)
@@ -421,9 +420,9 @@ function TabDiscountOther(props) {
             setValue('AnyOtherCost', costDetail.NetOtherCost !== null ? checkForDecimalAndNull(costDetail.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice) : '')
             setNetPoPriceCurrencyState(Data.NetPOPriceInOtherCurrency !== null ? Data.NetPOPriceInOtherCurrency : '')
             setValue('discountDescriptionRemark', Data !== undefined && Data?.CostingPartDetails?.DiscountCostDetails[0]?.Description)
-            if (costDetail?.DiscountCostDetails) {
+            if (costDetail?.DiscountCostDetails?.length !== 0) {
               setValue('HundiOrDiscountPercentage', costDetail?.DiscountCostDetails[0]?.Value !== null ? costDetail?.DiscountCostDetails[0]?.Value : '')
-              setValue('HundiOrDiscountValue', costDetail?.DiscountCostDetails[0]?.NetCost !== null ? checkForDecimalAndNull(costDetail?.DiscountCostDetails[0].NetCost, initialConfiguration?.NoOfDecimalForPrice) : '')
+              setValue('HundiOrDiscountValue', costDetail?.DiscountCostDetails[0]?.NetCost !== null ? checkForDecimalAndNull(costDetail?.DiscountCostDetails[0]?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '')
             }
             let temp = []
             let otherTotalCost = 0
@@ -441,21 +440,21 @@ function TabDiscountOther(props) {
             setOtherCostArray(temp)
             dispatch(setOtherCostData({ gridData: temp, otherCostTotal: otherTotalCost }))
 
-            setDiscountCostApplicability({ label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
-            setValue('DiscountCostApplicability', { label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
-            setValue('crmHeadDiscount', { label: costDetail.DiscountCostDetails[0].CRMHead, value: 1 })
+            costDetail?.DiscountCostDetails && setDiscountCostApplicability({ label: costDetail?.DiscountCostDetails[0]?.ApplicabilityType, value: costDetail?.DiscountCostDetails[0]?.ApplicabilityType })
+            costDetail?.DiscountCostDetails && setValue('DiscountCostApplicability', { label: costDetail?.DiscountCostDetails[0]?.ApplicabilityType, value: costDetail?.DiscountCostDetails[0]?.ApplicabilityType })
+            costDetail?.DiscountCostDetails && setValue('crmHeadDiscount', { label: costDetail?.DiscountCostDetails[0]?.CRMHead, value: 1 })
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
               BasicRateINR: Data.BasicRate !== null ? checkForNull(Data.BasicRate) : '',
               NetPOPriceINR: Data.NetPOPrice !== null ? checkForNull(Data.NetPOPrice) : '',
 
-              HundiOrDiscountValue: costDetail.DiscountCostDetails[0].NetCost !== null ? checkForNull(costDetail.DiscountCostDetails[0].NetCost) : '',
+              HundiOrDiscountValue: costDetail?.DiscountCostDetails && costDetail?.DiscountCostDetails[0]?.NetCost !== null ? checkForNull(costDetail?.DiscountCostDetails[0]?.NetCost) : '',
               AnyOtherCost: costDetail.NetOtherCost !== null ? checkForNull(costDetail.NetOtherCost) : '',
-              HundiOrDiscountPercentage: costDetail.DiscountCostDetails[0].Value !== null ? checkForNull(costDetail.DiscountCostDetails[0].Value) : '',
+              HundiOrDiscountPercentage: costDetail?.DiscountCostDetails && costDetail?.DiscountCostDetails[0]?.Value !== null ? checkForNull(costDetail?.DiscountCostDetails[0]?.Value) : '',
               //DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-              DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType,
+              DiscountApplicability: costDetail?.DiscountCostDetails ? costDetail?.DiscountCostDetails[0]?.ApplicabilityType : '',
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
@@ -463,15 +462,16 @@ function TabDiscountOther(props) {
 
             // setTimeout(() => {           // IF ANY ISSUE COME IN DISCOUNT TAB UNCOMMENT THE SETTIMEOUT ON FIRST PRIORITY AND TEST 
             let topHeaderData = {
-              DiscountsAndOtherCost: checkForNull(costDetail.DiscountCostDetails[0].NetCost),
+              ...Data, ...Data?.CostingPartDetails,
+              DiscountsAndOtherCost: costDetail?.DiscountCostDetails ? checkForNull(costDetail?.DiscountCostDetails[0]?.NetCost) : '',
               HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
               AnyOtherCost: checkForNull(costDetail.NetOtherCost),
               // OtherCostType: OtherCostDetails.OtherCostType,
               // PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
-              HundiOrDiscountValue: checkForNull(costDetail.DiscountCostDetails[0].NetCost !== null ? costDetail.DiscountCostDetails[0].NetCost : ''),
+              HundiOrDiscountValue: costDetail?.DiscountCostDetails && checkForNull(costDetail?.DiscountCostDetails[0]?.NetCost !== null ? costDetail?.DiscountCostDetails[0]?.NetCost : ''),
               //DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-              DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType,
+              DiscountApplicability: costDetail?.DiscountCostDetails ? costDetail?.DiscountCostDetails[0]?.ApplicabilityType : '',
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
@@ -2269,4 +2269,5 @@ function TabDiscountOther(props) {
   );
 };
 
-export default React.memo(TabDiscountOther); 
+export default React.memo(TabDiscountOther);
+// CIR-I6272
