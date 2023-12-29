@@ -625,18 +625,18 @@ function SimulationApprovalListing(props) {
             }))
         } else {
             let obj = {
-                DepartmentId: selectedRowData[0].Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
+                DepartmentId: selectedRowData[0]?.Status === DRAFT ? EMPTY_GUID : selectedRowData[0]?.DepartmentId,
                 UserId: loggedInUserId(),
-                TechnologyId: selectedRowData[0].SimulationTechnologyId,
+                TechnologyId: selectedRowData[0]?.SimulationTechnologyId,
                 Mode: 'simulation',
-                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0].SimulationHeadId),
+                approvalTypeId: costingTypeIdToApprovalTypeIdFunction(selectedRowData[0]?.SimulationHeadId),
             }
-            setSimulationDetail({ DepartmentId: selectedRowData[0].DepartmentId })
-            dispatch(setMasterForSimulation({ label: selectedRowData[0].SimulationTechnologyHead, value: selectedRowData[0].SimulationTechnologyId }))
+            setSimulationDetail({ DepartmentId: selectedRowData[0]?.DepartmentId, TokenNo: selectedRowData[0]?.SimulationTokenNumber, Status: selectedRowData[0]?.SimulationStatus, SimulationId: selectedRowData[0]?.SimulationId, SimulationAppliedOn: selectedRowData[0]?.SimulationAppliedOn, EffectiveDate: selectedRowData[0]?.EffectiveDate, IsExchangeRateSimulation: selectedRowData[0]?.IsExchangeRateSimulation })
+            dispatch(setMasterForSimulation({ label: selectedRowData[0]?.SimulationTechnologyHead, value: selectedRowData[0]?.SimulationTechnologyId }))
 
             dispatch(checkFinalUser(obj, res => {
                 if (res && res.data && res.data.Result) {
-                    if (selectedRowData[0].Status === DRAFT) {
+                    if (selectedRowData[0]?.Status === DRAFT) {
                         if (res.data.Data.IsUserInApprovalFlow === false) {
                             Toaster.warning("User does not have permission to send simulation for approval.")
                             gridApi.deselectAll()
@@ -869,11 +869,11 @@ function SimulationApprovalListing(props) {
                                         isSimulationApprovalListing={true}
                                         simulationDetail={simulationDetail}
                                         IsFinalLevel={showFinalLevelButtons}
-                                        costingTypeId={selectedRowData[0].SimulationHeadId}
-                                        approvalTypeIdValue={selectedRowData[0].SimulationHeadId}
+                                        costingTypeId={selectedRowData[0]?.SimulationHeadId}
+                                        approvalTypeIdValue={selectedRowData[0]?.SimulationHeadId}
                                         showApprovalTypeDropdown={selectedRowData && selectedRowData[0]?.Status === "Draft"}
                                         releaseStrategyDetails={releaseStrategyDetails}
-                                        technologyId={selectedRowData ? selectedRowData[0].SimulationTechnologyId : approvalData?.SimulationTechnologyId}
+                                        technologyId={selectedRowData ? selectedRowData[0]?.SimulationTechnologyId : approvalData?.SimulationTechnologyId}
                                         IsExchangeRateSimulation={selectedRowData[0]?.IsExchangeRateSimulation}
                                     />
                                 }
