@@ -52,6 +52,7 @@ const SpecificationListing = (props) => {
     noData: false,
     dataCount: 0,
   });
+  const [searchFilter, setSearchFilter] = useState("")
 
   useEffect(() => {
     getSpecificationListData("", "");
@@ -285,10 +286,15 @@ const SpecificationListing = (props) => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    state.gridApi.setQuickFilter(e.target.value);
+    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
   };
 
   const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+        if (searchBox) {
+            searchBox.value = ""; // Reset the input field's value
+        }
+        state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState(null);
     state.gridApi.setFilterModel(null);

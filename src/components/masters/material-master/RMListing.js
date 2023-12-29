@@ -46,7 +46,7 @@ const RMListing = (props) => {
     noData: false,
     dataCount: 0,
   });
-
+  const [searchFilter, setSearchFilter] = useState("")
   useEffect(() => {
     getListData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -255,7 +255,7 @@ const RMListing = (props) => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    state.gridApi.setQuickFilter(e.target.value);
+    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
   };
 
   /**
@@ -263,6 +263,11 @@ const RMListing = (props) => {
    * @description Resets the state
    */
   const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+        if (searchBox) {
+            searchBox.value = ""; // Reset the input field's value
+        }
+        state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);

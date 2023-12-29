@@ -89,9 +89,9 @@ const BOPImportListing = (props) => {
       Vendor: "",
       BasicRate: "",
       NetLandedCost: "",
-      EffectiveDateNew: "",
+      EffectiveDate: "",
       Currency: "",
-      
+
       DepartmentName:
         props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant
           ? userDepartmetList()
@@ -136,44 +136,42 @@ const BOPImportListing = (props) => {
   );
 
   useEffect(() => {
+    if (bopImportList?.length > 0) {
+      setState((prevState) => ({ ...prevState, totalRecordCount: bopImportList[0].TotalRecordCount }));
+    }
+    else {
+      setState((prevState) => ({ ...prevState, noData: false }));
+    }
+  }, [bopImportList])
+
+  useEffect(() => {
+    setTimeout(() => {
+      reactLocalStorage.setObject('selectedRow', {})
+      if (!props?.stopApiCallOnCancel) {
+
+        return () => {
+          dispatch(setSelectedRowForPagination([]))
+          reactLocalStorage.setObject('selectedRow', {})
+        }
+      }
+    }, 300);
+
+  }, [])
+  useEffect(() => {
     setTimeout(() => {
       if (!props?.stopApiCallOnCancel) {
         if (props.isSimulation) {
           if (props.selectionForListingMasterAPI === "Combined") {
             props?.changeSetLoader(true);
-            dispatch(
-              getListingForSimulationCombined(
-                props.objectForMultipleSimulation,
-                BOPIMPORT,
-                () => {
-                  props?.changeSetLoader(false);
-                  setState((prevState) => ({ ...prevState, isLoader: false }));
-                }
-              )
-            );
+            dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, BOPIMPORT, () => {
+              props?.changeSetLoader(false);
+              setState((prevState) => ({ ...prevState, isLoader: false }));
+            }))
           } else {
-            getDataList(
-              "",
-              0,
-              "",
-              "",
-              0,
-              defaultPageSize,
-              true,
-              state.floatingFilterData
-            );
+            getDataList("", 0, "", 0, defaultPageSize, true, state.floatingFilterData);
           }
         } else {
-          getDataList(
-            "",
-            0,
-            "",
-            "",
-            0,
-            defaultPageSize,
-            true,
-            state.floatingFilterData
-          );
+          getDataList("", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
         }
       } else {
         setState((prevState) => ({ ...prevState, isLoader: false }));
@@ -184,27 +182,18 @@ const BOPImportListing = (props) => {
     }
     if (props.isMasterSummaryDrawer) {
       setState((prevState) => ({
-        ...prevState,
-        totalRecordCount: bopImportList.length,
+        ...prevState, totalRecordCount: bopImportList.length,
       }));
     }
   }, []);
+
 
   /**
    * @method getDataList
    * @description GET DATALIST OF IMPORT BOP
    */
   const getDataList = (
-    bopFor = "",
-    CategoryId = 0,
-    vendorId = "",
-    plantId = "",
-    skip = 0,
-    take = 100,
-    isPagination = true,
-    dataObj,
-    isReset = false
-  ) => {
+    bopFor = "", CategoryId = 0, vendorId = "", plantId = "", skip = 0, take = 100, isPagination = true, dataObj, isReset = false) => {
     const { floatingFilterData } = state;
     if (props.isSimulation && !props?.isFromVerifyPage) {
       props?.changeTokenCheckBox(false);
@@ -212,21 +201,14 @@ const BOPImportListing = (props) => {
 
     if (state.filterModel?.EffectiveDateNew && !isReset) {
       if (state.filterModel.EffectiveDateNew.dateTo) {
-        let temp = [];
-        temp.push(
-          DayTime(state.filterModel.EffectiveDateNew.dateFrom).format(
-            "DD/MM/YYYY"
-          )
-        );
-        temp.push(
-          DayTime(state.filterModel.EffectiveDateNew.dateTo).format(
-            "DD/MM/YYYY"
-          )
-        );
+          let temp = []
+          temp.push(DayTime(state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
+          temp.push(DayTime(state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
 
-        dataObj.dateArray = temp;
+          dataObj.dateArray = temp
       }
-    }
+
+  }
 
     // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
     let statusString = [props?.approvalStatus].join(",");
@@ -241,19 +223,14 @@ const BOPImportListing = (props) => {
       StatusId: statusString,
       IsBOPAssociated: props?.isBOPAssociated,
     };
-    setState((prevState) => ({
-      ...prevState,
-      isLoader: isPagination ? true : false,
-    }));
-
-    let FloatingfilterData = state.filterModel;
-    let obj = { ...state.floatingFilterData };
-    dataObj.VendorId = filteredRMData?.VendorId;
-    dataObj.CustomerId = filteredRMData?.CustomerId;
+    if (isPagination === true) {
+     setState((prevState) => ({ ...prevState, isLoader: true }));
+    }
+   
     if (props?.isFromVerifyPage) {
       dataObj.VendorId =
         filteredRMData && filteredRMData?.VendorId
-          ? props?.filteredRMData?.VendorId
+          ? filteredRMData?.VendorId
           : vendorId;
       dataObj.CustomerId =
         filteredRMData && filteredRMData?.CustomerId
@@ -261,95 +238,85 @@ const BOPImportListing = (props) => {
           : "";
       dataObj.Currency = filteredRMData?.Currency;
     }
-    dataObj.EntryType = ENTRY_TYPE_IMPORT;
-    if (!props.isMasterSummaryDrawer) {
+    dataObj.EntryType = Number(ENTRY_TYPE_IMPORT);
+    if (!props?.isMasterSummaryDrawer) {
       dispatch(
-        getBOPDataList(
-          filterData,
-          skip,
-          take,
-          isPagination,
-          dataObj,
-          true,
-          (res) => {
-            setState((prevState) => ({ ...prevState, noData: false }));
-            if (props.isSimulation && !props?.isFromVerifyPage) {
-              props?.changeTokenCheckBox(true);
-            }
-            setState((prevState) => ({ ...prevState, isLoader: false }));
-            if (res && res.status === 200) {
-              let Data = res.data.DataList;
-              setState((prevState) => ({ ...prevState, tableData: Data }));
-            } else if (res && res.response && res.response.status === 412) {
-              setState((prevState) => ({ ...prevState, tableData: [] }));
-            } else {
-              setState((prevState) => ({ ...prevState, tableData: [] }));
-            }
-
-            if (res && isPagination === false) {
-              setState((prevState) => ({
-                ...prevState,
-                disableDownload: false,
-              }));
-              dispatch(disabledClass(false));
-              setTimeout(() => {
-                let button = document.getElementById(
-                  "Excel-Downloads-bop-import"
-                );
-                button && button.click();
-              }, 500);
-            }
-
-            if (res) {
-              if (res && res.status === 204) {
-                setState((prevState) => ({
-                  ...prevState,
-                  totalRecordCount: 0,
-                  pageNo: 0,
-                }));
-              }
-              if (res && res.data && res.data.DataList.length > 0) {
-                setState((prevState) => ({
-                  ...prevState,
-                  totalRecordCount: res.data.DataList[0].TotalRecordCount,
-                }));
-              }
-              let isReset = true;
-              setTimeout(() => {
-                for (var prop in obj) {
-                  if (
-                    props.isSimulation &&
-                    getConfigurationKey().IsCompanyConfigureOnPlant
-                  ) {
-                    if (prop !== "DepartmentName" && obj[prop] !== "") {
-                      isReset = false;
-                    }
-                  } else {
-                    if (obj[prop] !== "") {
-                      isReset = false;
-                    }
-                  }
-                }
-                // Sets the filter model via the grid API
-                isReset
-                  ? gridOptions?.api?.setFilterModel({})
-                  : gridOptions?.api?.setFilterModel(FloatingfilterData);
-              }, 300);
-              setTimeout(() => {
-                setState((prevState) => ({
-                  ...prevState,
-                  warningMessage: false,
-                }));
-              }, 335);
-
-              setTimeout(() => {
-                setState((prevState) => ({
-                  ...prevState,
-                  isFilterButtonClicked: false,
-                }));
-              }, 600);
-            }
+        getBOPDataList(filterData, skip, take, isPagination, dataObj, true, (res) => {
+          setState((prevState) => ({ ...prevState, noData: false }));
+          if (props.isSimulation && !props?.isFromVerifyPage) {
+            props?.changeTokenCheckBox(true);
           }
+          setState((prevState) => ({ ...prevState, isLoader: false }));
+          if (res && res.status === 200) {
+            let Data = res.data.DataList;
+            setState((prevState) => ({ ...prevState, tableData: Data }));
+          } else if (res && res.response && res.response.status === 412) {
+            setState((prevState) => ({ ...prevState, tableData: [] }));
+          } else {
+            setState((prevState) => ({ ...prevState, tableData: [] }));
+          }
+          if (res && res.status === 204) {
+            setState((prevState) => ({
+              ...prevState,
+              totalRecordCount: 0,
+              pageNo: 0,
+            }))
+            
+          }
+
+          if (res && isPagination === false) {
+            dispatch(disabledClass(false))
+            setState((prevState) => ({              ...prevState,
+              disableDownload: false,
+            }));
+           
+            setTimeout(() => {
+              let button = document.getElementById(
+                "Excel-Downloads-bop-import"
+              );
+              button && button.click();
+            }, 500);
+          }
+
+          if (res) {
+            if (res && res.status === 204) {
+              setState((prevState) => ({
+                ...prevState, totalRecordCount: 0, pageNo: 0,
+              }));
+            }
+            if (res && res.data && res.data.DataList.length > 0) {
+              setState((prevState) => ({
+                ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount,
+              }));
+            }
+            let isReset = true;
+              setTimeout(() => {
+                for (var prop in floatingFilterData) {
+
+                    if (prop !== "DepartmentName" && prop !== 'EntryType' && floatingFilterData[prop] !== "") {
+                        isReset = false
+                    }
+
+                }
+                console.log("isReset: ", isReset)
+                console.log("filterModel: ", state.filterModel)
+                // Sets the filter model via the grid API
+                isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
+            }, 300);
+            
+            setTimeout(() => {
+              setState((prevState) => ({
+                ...prevState, warningMessage: false,
+              }));
+            }, 335);
+
+            setTimeout(() => {
+              setState((prevState) => ({
+                ...prevState, isFilterButtonClicked: false,
+              }));
+            }, 600);
+          }
+        }
         )
       );
     }
@@ -390,8 +357,7 @@ const BOPImportListing = (props) => {
           }
 
           setState((prevState) => ({
-            ...prevState,
-            floatingFilterData: state.floatingFilterData,
+            ...prevState, floatingFilterData: state.floatingFilterData,
           }));
         }
 
@@ -401,8 +367,7 @@ const BOPImportListing = (props) => {
             state.floatingFilterData[prop] = "";
           }
           setState((prevState) => ({
-            ...prevState,
-            floatingFilterData: state.floatingFilterData,
+            ...prevState, floatingFilterData: state.floatingFilterData,
           }));
         }
       }
@@ -414,10 +379,8 @@ const BOPImportListing = (props) => {
         return false;
       }
       setState((prevState) => ({
-        ...prevState,
-        floatingFilterData: {
-          ...prevState.floatingFilterData,
-          [value.column.colId]: value.filterInstance.appliedModel.filter,
+        ...prevState, floatingFilterData: {
+          ...prevState.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter,
         },
       }));
     }
@@ -425,27 +388,13 @@ const BOPImportListing = (props) => {
 
   const onSearch = () => {
     setState((prevState) => ({
-      ...prevState,
-      warningMessage: false,
-      pageNo: 1,
-      pageNoNew: 1,
-      currentRowIndex: 0,
+      ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
     }));
-    getDataList(
-      "",
-      0,
-      "",
-      "",
-      0,
-      state.globalTake,
-      true,
-      state.floatingFilterData
-    );
+    getDataList("", 0, "", "", 0, state.globalTake, true, state.floatingFilterData);
   };
   const resetState = () => {
     setState((prevState) => ({
-      ...prevState,
-      noData: false,
+      ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false
     }));
     state.gridApi.deselectAll();
     gridOptions?.columnApi?.resetColumnState(null);
@@ -454,22 +403,14 @@ const BOPImportListing = (props) => {
       state.floatingFilterData[prop] = "";
     }
     setState((prevState) => ({
-      ...prevState,
-      floatingFilterData: state.floatingFilterData,
-      warningMessage: false,
-
-      pageNo: 1,
-      pageNoNew: 1,
-      currentRowIndex: 0,
+      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
     }));
     getDataList("", 0, "", "", 0, 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
+    console.log("resetfuc", state.dataCount);
 
     setState((prevState) => ({
-      ...prevState,
-      globalTake: 10,
-      dataCount: 0,
-     
+      ...prevState, globalTake: 10, dataCount: 0,
 
       pageSize: {
         ...prevState.pageSize,
@@ -478,6 +419,10 @@ const BOPImportListing = (props) => {
         pageSize100: false,
       },
     }));
+    setTimeout(() => {
+      console.log("settimeout", state.dataCount);
+
+    }, 2000)
   };
 
   const onBtPrevious = () => {
@@ -492,16 +437,7 @@ const BOPImportListing = (props) => {
         currentRowIndex: previousNo,
       }));
 
-      getDataList(
-        "",
-        0,
-        "",
-        "",
-        previousNo,
-        state.globalTake,
-        true,
-        state.floatingFilterData
-      );
+      getDataList("", 0, "", "", previousNo, state.globalTake, true, state.floatingFilterData);
     }
   };
 
@@ -522,21 +458,10 @@ const BOPImportListing = (props) => {
 
     if (state.currentRowIndex < state.totalRecordCount - 10) {
       setState((prevState) => ({
-        ...prevState,
-        pageNo: state.pageNo + 1,
-        pageNoNew: state.pageNo + 1,
+        ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1,
       }));
       const nextNo = state.currentRowIndex + 10;
-      getDataList(
-        "",
-        0,
-        "",
-        "",
-        nextNo,
-        state.globalTake,
-        true,
-        state.floatingFilterData
-      );
+      getDataList("", 0, "", "", nextNo, state.globalTake, true, state.floatingFilterData);
       // skip, take, isPagination, floatingFilterData, (res)
       setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
     }
@@ -555,21 +480,10 @@ const BOPImportListing = (props) => {
 
     totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
 
-    getDataList(
-      "",
-      0,
-      "",
-      "",
-      state.currentRowIndex,
-      pageSize,
-      true,
-      state.floatingFilterData
-    );
+    getDataList("", 0, "", "", state.currentRowIndex, pageSize, true, state.floatingFilterData);
 
     setState((prevState) => ({
-      ...prevState,
-      globalTake: pageSize,
-      pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
+      ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
       pageSize: {
         pageSize10: pageSize === 10,
         pageSize50: pageSize === 50,
@@ -805,7 +719,7 @@ const BOPImportListing = (props) => {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  const onSubmit = (values) => {};
+
 
   /**
    * @method hyphenFormatter
@@ -843,16 +757,7 @@ const BOPImportListing = (props) => {
         button && button.click();
       }, 400);
     } else {
-      getDataList(
-        "",
-        0,
-        "",
-        "",
-        0,
-        defaultPageSize,
-        false,
-        state.floatingFilterData
-      ); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+      getDataList("", 0, "", "", 0, defaultPageSize, false, state.floatingFilterData); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   };
 
@@ -864,8 +769,8 @@ const BOPImportListing = (props) => {
       tempArr && tempArr.length > 0
         ? tempArr
         : allBopDataList
-        ? allBopDataList
-        : [];
+          ? allBopDataList
+          : [];
     return returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -925,7 +830,6 @@ const BOPImportListing = (props) => {
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
   };
-  
   const { isBulkUpload, noData, editSelectedList } = state;
   const ExcelFile = ReactExport.ExcelFile;
   const headerNames = {
@@ -937,6 +841,8 @@ const BOPImportListing = (props) => {
 
   var filterParams = {
     date: "",
+    inRangeInclusive: true,
+    filterOptions: ['equals', 'inRange'],
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString =
         cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
@@ -945,6 +851,13 @@ const BOPImportListing = (props) => {
           ? DayTime(filterLocalDateAtMidnight).format("DD/MM/YYYY")
           : "";
       handleDate(newDate); // FOR COSTING BENCHMARK BOP REPORT
+      let date = document.getElementsByClassName('ag-input-field-input')
+      for (let i = 0; i < date.length; i++) {
+          if (date[i].type == 'radio') {
+              date[i].click()
+          }
+      }
+
       setDate(newDate);
       if (dateAsString == null) return -1;
       var dateParts = dateAsString.split("/");
@@ -969,8 +882,7 @@ const BOPImportListing = (props) => {
 
   var setDate = (date) => {
     setState((prevState) => ({
-      ...prevState,
-      floatingFilterData: { ...prevState.floatingFilterData, newDate: date },
+      ...prevState, floatingFilterData: { ...prevState.floatingFilterData, newDate: date },
     }));
   };
 
@@ -978,18 +890,18 @@ const BOPImportListing = (props) => {
     let temp = state.inRangeDate || []; // Ensure that state.inRangeDate is an array
     temp.push(newDate);
     setState((prevState) => ({ ...prevState, inRangeDate: temp }));
-  
+
     if (props?.benchMark) {
       handleDate(state.inRangeDate);
     }
-  
+
     setTimeout(() => {
       var y = document.getElementsByClassName("ag-radio-button-input");
       var radioBtn = y[0];
       radioBtn?.click();
     }, 300);
   };
-  
+
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -1060,6 +972,7 @@ const BOPImportListing = (props) => {
     setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length })); //SETTING CHECKBOX STATE DATA IN REDUCER
     let finalArr = selectedRows;
     let length = finalArr?.length;
+    console.log("finalArr", finalArr, length)
     let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId");
 
     if (props.isSimulation && !props?.isFromVerifyPage) {
@@ -1098,15 +1011,13 @@ const BOPImportListing = (props) => {
     <div>
       {!editSelectedList && (
         <div
-          className={`ag-grid-react custom-pagination ${
-            permissions.Download ? "show-table-btn" : ""
-          } ${
-            props.isSimulation
+          className={`ag-grid-react custom-pagination ${permissions.Download ? "show-table-btn" : ""
+            } ${props.isSimulation
               ? "simulation-height"
               : props.isMasterSummaryDrawer
-              ? ""
-              : "min-height100vh"
-          }`}
+                ? ""
+                : "min-height100vh"
+            }`}
         >
           {state.isLoader && !props.isMasterSummaryDrawer ? (
             <LoaderCustom customClass="simulation-Loader" />
@@ -1117,9 +1028,8 @@ const BOPImportListing = (props) => {
               )}
               <form noValidate>
                 <Row
-                  className={`pt-4  ${
-                    props?.benchMark ? "zindex-2" : "filter-row-large"
-                  } ${props.isSimulation ? "simulation-filter zindex-0" : ""}`}
+                  className={`pt-4  ${props?.benchMark ? "zindex-2" : "filter-row-large"
+                    } ${props.isSimulation ? "simulation-filter zindex-0" : ""}`}
                 >
                   <Col md="3" lg="3">
                     <input
@@ -1185,22 +1095,13 @@ const BOPImportListing = (props) => {
 
                       {permissions.Add && (
                         <button
-                          type="button"
-                          className={"user-btn mr5"}
-                          onClick={formToggle}
-                          title="Add"
-                        >
+                          type="button" className={"user-btn mr5"} onClick={formToggle} title="Add"                        >
                           <div className={"plus mr-0"}></div>
                           {/* ADD */}
                         </button>
                       )}
                       {permissions.BulkUpload && (
-                        <button
-                          type="button"
-                          className={"user-btn mr5"}
-                          onClick={bulkToggle}
-                          title="Bulk Upload"
-                        >
+                        <button type="button" className={"user-btn mr5"} onClick={bulkToggle} title="Bulk Upload"                        >
                           <div className={"upload mr-0"}></div>
                           {/* Bulk Upload */}
                         </button>
@@ -1208,22 +1109,20 @@ const BOPImportListing = (props) => {
                       {permissions.Download && (
                         <>
                           <button
-                            title={`Download ${
-                              state.dataCount === 0
-                                ? "All"
-                                : "(" + state.dataCount + ")"
-                            }`}
+                            title={`Download ${state.dataCount === 0
+                              ? "All"
+                              : "(" + state.dataCount + ")"
+                              }`}
                             type="button"
                             onClick={onExcelDownload}
                             className={"user-btn mr5"}
                           >
                             <div className="download mr-1"></div>
                             {/* DOWNLOAD */}
-                            {`${
-                              state.dataCount === 0
-                                ? "All"
-                                : "(" + state.dataCount + ")"
-                            }`}
+                            {`${state.dataCount === 0
+                              ? "All"
+                              : "(" + state.dataCount + ")"
+                              }`}
                           </button>
 
                           <ExcelFile
@@ -1242,12 +1141,7 @@ const BOPImportListing = (props) => {
                         </>
                       )}
                       <button
-                        type="button"
-                        className="user-btn mr-1"
-                        title="Reset Grid"
-                        onClick={() => {
-                          resetState();
-                        }}
+                        type="button" className="user-btn mr-1" title="Reset Grid" onClick={() => { resetState(); }}
                       >
                         <div className="refresh mr-0"></div>
                       </button>
@@ -1267,16 +1161,14 @@ const BOPImportListing = (props) => {
               <Row>
                 <Col>
                   <div
-                    className={`ag-grid-wrapper bop-import-listing ${
-                      (bopImportList && bopImportList?.length <= 0) || noData
-                        ? "overlay-contain"
-                        : ""
-                    }`}
+                    className={`ag-grid-wrapper bop-import-listing ${(bopImportList && bopImportList?.length <= 0) || noData
+                      ? "overlay-contain"
+                      : ""
+                      }`}
                   >
                     <div
-                      className={`ag-theme-material p-relative ${
-                        state.isLoader && "max-loader-height"
-                      }`}
+                      className={`ag-theme-material p-relative ${state.isLoader && "max-loader-height"
+                        }`}
                     >
                       {noData && (
                         <NoContentFound
@@ -1346,12 +1238,12 @@ const BOPImportListing = (props) => {
                         {reactLocalStorage.getObject(
                           "cbcCostingPermission"
                         ) && (
-                          <AgGridColumn
-                            field="CustomerName"
-                            headerName="Customer (Code)"
-                            cellRenderer={"hyphenFormatter"}
-                          ></AgGridColumn>
-                        )}
+                            <AgGridColumn
+                              field="CustomerName"
+                              headerName="Customer (Code)"
+                              cellRenderer={"hyphenFormatter"}
+                            ></AgGridColumn>
+                          )}
                         <AgGridColumn
                           field="IncoTermDescriptionAndInfoTerm"
                           headerName="Inco Terms"
@@ -1359,11 +1251,11 @@ const BOPImportListing = (props) => {
                         {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
                         {getConfigurationKey()
                           .IsMinimumOrderQuantityVisible && (
-                          <AgGridColumn
-                            field="NumberOfPieces"
-                            headerName="Minimum Order Quantity"
-                          ></AgGridColumn>
-                        )}
+                            <AgGridColumn
+                              field="NumberOfPieces"
+                              headerName="Minimum Order Quantity"
+                            ></AgGridColumn>
+                          )}
                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (
                           <AgGridColumn
@@ -1420,7 +1312,7 @@ const BOPImportListing = (props) => {
                           ?.IsBasicRateAndCostingConditionVisible &&
                           ((props.isMasterSummaryDrawer &&
                             props.bopImportList[0]?.CostingTypeId ===
-                              ZBCTypeId) ||
+                            ZBCTypeId) ||
                             !props.isMasterSummaryDrawer) &&
                           !props?.isFromVerifyPage && (
                             <AgGridColumn
@@ -1453,7 +1345,7 @@ const BOPImportListing = (props) => {
                           cellRenderer={"commonCostFormatter"}
                         ></AgGridColumn>
                         <AgGridColumn
-                          field="EffectiveDateNew"
+                          field="EffectiveDate"
                           headerName="Effective Date"
                           cellRenderer={"effectiveDateFormatter"}
                           filter="agDateColumnFilter"
@@ -1635,8 +1527,4 @@ const BOPImportListing = (props) => {
   );
 };
 
-export default reduxForm({
-  form: "BOPImportListing",
-  enableReinitialize: true,
-  touchOnChange: true,
-})(BOPImportListing);
+export default BOPImportListing

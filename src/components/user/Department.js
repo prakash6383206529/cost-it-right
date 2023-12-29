@@ -1,277 +1,213 @@
-import React, { Component } from "react";
-import { Field, reduxForm } from "redux-form";
+import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useForm, Controller } from "react-hook-form";
 import Toaster from "../common/Toaster";
-import { connect } from "react-redux";
 import { Loader } from "../common/Loader";
 import { required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, maxLength80, checkSpacesInString, excludeOnlySpecialCharacter, maxLength50, hashValidation } from "../../helper/validation";
-import { focusOnError, renderText } from "../layout/FormInputs";
-
 import { addDepartmentAPI, getDepartmentAPI, setEmptyDepartmentAPI, updateDepartmentAPI, addCompanyAPI, updateCompanyAPI } from "../../actions/auth/AuthActions";
 import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import DayTime from "../common/DayTimeWrapper"
 import { getConfigurationKey, loggedInUserId } from "../../helper";
+import { TextFieldHookForm } from "../layout/HookFormInputs";
+const Department = ({ DepartmentId, isEditFlag, anchor, isOpen, closeDrawer }) => {
+	const dispatch = useDispatch();
+	const { register, control, setValue, handleSubmit, getValues, reset, formState: { errors } } = useForm({
+		mode: "onChange",
+		reValidateMode: "onChange",
+	});
+	const { departmentDetail } = useSelector((state) => state.auth);
 
+	const [state, setState] = useState({
+		isLoader: false,
+		isSubmitted: false,
+		isEditFlag,
+		isCompanyConfigurable: getConfigurationKey().IsCompanyConfigureOnPlant,
+		dataToChange: null,
+	});
+	useEffect(() => {
+		if (state.isEditFlag) {
+			dispatch(getDepartmentAPI(DepartmentId, (res) => {
+				const dataToChange = res?.data?.Data;
+				// Set the values using setValue
+				setValue("DepartmentName", dataToChange?.DepartmentName);
+				setValue("DepartmentCode", dataToChange?.DepartmentCode);
 
-class Department extends Component {
-	constructor(props) {
-		super(props);
-		this.child = React.createRef();
-		this.state = {
-			isLoader: false,
-			isSubmitted: false,
-			isEditFlag: false,
-			isCompanyConfigurable: getConfigurationKey().IsCompanyConfigureOnPlant
-		};
-	}
-
-	/**
-	* @method componentDidMount
-	* @description used to called after mounting component
-	*/
-	componentDidMount() {
-		const { DepartmentId, isEditFlag } = this.props;
-		if (isEditFlag) {
-			this.props.getDepartmentAPI(DepartmentId, (res) => {
-				this.setState({ DataToChange: res?.data?.Data })
-			})
+				setState((prevState) => ({ ...prevState, dataToChange }));
+			}));
 		} else {
-			this.props.setEmptyDepartmentAPI('', () => { })
+			dispatch(setEmptyDepartmentAPI('', () => { }));
 		}
-
-	}
-
-	/**
-	* @method cancel
-	* @description used to cancel role edit
-	*/
-	cancel = () => {
-		const { reset } = this.props;
-		reset();
-		this.props.setEmptyDepartmentAPI('', () => { })
-		this.toggleDrawer('', 'cancel')
-	}
+	}, []);
 
 	/**
-	 * @method resetForm
-	 * @description used to Reset form
-	 */
-	resetForm = () => {
-		const { reset } = this.props;
-		reset();
-		this.props.setEmptyDepartmentAPI('', () => { })
-	}
+		* @method cancel
+		* @description used to cancel role edit
+		*/
 
-	toggleDrawer = (event, type) => {
+	const cancel = () => {
+		reset();
+		dispatch(setEmptyDepartmentAPI('', () => { }));
+		toggleDrawer('', 'cancel');
+	};
+
+	const toggleDrawer = (event, type) => {
 		if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
 			return;
 		}
-
-		this.props.closeDrawer('', type)
+		closeDrawer('', type);
 	};
-
 	/**
 	 * @name onSubmit
 	 * @param values
 	 * @desc Submit the signup form values.
 	 * @returns {{}}
 	 */
-	onSubmit(values) {
-		const { isEditFlag, DepartmentId, departmentDetail } = this.props;
-		const { reset } = this.props;
-		const { DataToChange } = this.state;
-		this.setState({ isLoader: true })
 
-		if (isEditFlag) {
-			if (DataToChange?.DepartmentName === values?.DepartmentName && DataToChange?.DepartmentCode === values?.DepartmentCode) {
-				this.toggleDrawer('', 'cancel')
-				return false
+	const onSubmit = (values) => {
+		console.log(values, "values")
+		const formValues = getValues();
+		console.log(formValues, "formValues");
+		const { DepartmentName, DepartmentCode } = values;
+		reset()
+
+		setState((prevState) => ({ ...prevState, isLoader: true }));
+
+		if (state.isEditFlag) {
+			if (state.dataToChange?.DepartmentName === DepartmentName && state.dataToChange?.DepartmentCode === DepartmentCode) {
+				toggleDrawer('', 'cancel');
+				return false;
 			}
+
 			// Update existing department
-			let formReq = {
+			const formReq = {
 				DepartmentId: DepartmentId,
 				IsActive: true,
 				CreatedDate: DayTime(new Date()).format('YYYY/MM/dd HH:mm:ss'),
-				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : '',
-				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : ''
-			}
-			this.setState({ isLoader: true })
-			this.props.updateDepartmentAPI(formReq, (res) => {
-				// IF COMPANY CONFIGURABLE IS TRUE
+				DepartmentName: DepartmentName ? DepartmentName.trim() : DepartmentName,
+				DepartmentCode: DepartmentCode ? DepartmentCode.trim() : '',
+				CompanyId: departmentDetail.CompanyId ? departmentDetail.CompanyId : '',
+			};
+
+			dispatch(updateDepartmentAPI(formReq, (res) => {
 				if (res && res.data && res.data.Result) {
-					if (this.state.isCompanyConfigurable) {
-						Toaster.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
-					}
-					else {
-						// IF COMPANY CONFIGURABLE IS FALSE
-						Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
+					if (state.isCompanyConfigurable) {
+						Toaster.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY);
+					} else {
+						Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY);
 					}
 				}
 				reset();
-				this.toggleDrawer('', 'submit')
-				this.props.setEmptyDepartmentAPI('', () => { })
-			})
-
+				toggleDrawer('', 'submit');
+				dispatch(setEmptyDepartmentAPI('', () => { }));
+			}));
 		} else {
-
-			let depObj = {
-				DepartmentName: values.DepartmentName ? values.DepartmentName.trim() : values.DepartmentName,
-				DepartmentCode: values.DepartmentCode ? values.DepartmentCode.trim() : ``,
+			const depObj = {
+				DepartmentName: DepartmentName ? DepartmentName.trim() : DepartmentName,
+				DepartmentCode: DepartmentCode ? DepartmentCode.trim() : '',
 				CompanyId: '',
-				LoggedInUserId: loggedInUserId()
-			}
-			this.props.addDepartmentAPI(depObj, (res) => {
+				LoggedInUserId: loggedInUserId(),
+			};
+
+			dispatch(addDepartmentAPI(depObj, (res) => {
 				if (res && res.data && res.data.Result) {
-					Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY)
+					Toaster.success(MESSAGES.ADD_DEPARTMENT_SUCCESSFULLY);
 					reset();
-					this.toggleDrawer('', 'submit')
+					toggleDrawer('', 'submit');
 				}
-			})
+			}));
 		}
-	}
+	};
 
-	render() {
-		const { handleSubmit, isEditFlag } = this.props;
-		const { isSubmitted } = this.state;
+	console.log("required",required)
+	console.log("checkSpacesInString",checkSpacesInString)
+	console.log("checkWhiteSpaces",checkWhiteSpaces)
+	return (
+		<div>
+		  {state.isLoader && <Loader />}
+		  <Drawer className="add-department-drawer" anchor={anchor} open={isOpen}>
+			<Container>
+			  <div className={'drawer-wrapper'}>
+				<form noValidate>
+				  <Row className="drawer-heading">
+					<Col>
+					  <div className={'header-wrapper left'}>
+						<h3>{isEditFlag ? `Update ${state.isCompanyConfigurable ? 'Company' : 'Department'}` : `Add ${state.isCompanyConfigurable ? 'Company' : 'Department'}`}</h3>
+					  </div>
+					  <div
+						onClick={(e) => toggleDrawer(e, 'cancel')}
+						className={'close-button right'}>
+					  </div>
+					</Col>
+				  </Row>
+				  <div className="drawer-body">
+					<Row className="pr-0">
+					  <div className="input-group col-md-12 input-withouticon">
+						<TextFieldHookForm
+						  label={"Name"}
+						  rules={{
+							required: true,
+							validate: { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation},
+						  }}
+						  handleChange={(e) => { }}
+						  Controller={Controller}
+						  control={control}
+						  register={register}
+						  name={"DepartmentName"}
+						  defaultValue={""}
+						  customClassName={'withBorder'}
+						  mandatory
+						  errors={errors?.DepartmentName && errors?.DepartmentName.message}
 
-		return (
-			<div>
-				{this.props.loading && <Loader />}
-				<Drawer className="add-department-drawer" anchor={this.props.anchor} open={this.props.isOpen}
-				//  onClose={(e) => this.toggleDrawer(e)}
-				>
-					<Container>
-						<div className={'drawer-wrapper'}>
-							<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-
-								<Row className="drawer-heading">
-									<Col>
-										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}`}</h3>
-										</div>
-										<div
-											onClick={(e) => this.toggleDrawer(e, 'cancel')}
-											className={'close-button right'}>
-										</div>
-									</Col>
-								</Row>
-
-								<div className="drawer-body">
-									<Row className="pr-0">
-										<div className="input-group col-md-12 input-withouticon" >
-											<Field
-												label="Name"
-												name={"DepartmentName"}
-												type="text"
-												placeholder={''}
-												validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
-												component={renderText}
-												required={true}
-												maxLength={26}
-												customClassName={'withBorder'}
-											/>
-										</div>
-										{
-
-											<div className="input-group col-md-12 input-withouticon" >
-												<Field
-													label="Code"
-													name={"DepartmentCode"}
-													type="text"
-													placeholder={''}
-													validate={[required, excludeOnlySpecialCharacter, checkWhiteSpaces, maxLength50, checkSpacesInString]}
-													component={renderText}
-													required={true}
-													customClassName={'withBorder'}
-												/>
-											</div>
-										}
-
-										<div className="col-md-12">
-											<div className="text-right mt-0">
-												{/* <input
-													//disabled={pristine || submitting}
-													onClick={this.cancel}
-													type="button"
-													value="Cancel"
-													className="reset mr15 cancel-btn"
-												/> */}
-												<button
-													//disabled={pristine || submitting}
-													onClick={this.cancel}
-													type="button"
-													value="CANCEL"
-													className="mr15 cancel-btn">
-													<div className={"cancel-icon"}></div>CANCEL</button>
-												{/* <input
-													disabled={isSubmitted ? true : false}
-													type="submit"
-													value={this.state.isEditFlag ? 'Update' : 'Save'}
-													className="submit-button mr5 save-btn"
-												/> */}
-												<button
-													type="submit"
-													disabled={isSubmitted ? true : false}
-													className="user-btn save-btn"
-												>
-													<div className={"save-icon"}></div>
-													{isEditFlag ? 'Update' : 'Save'}
-												</button>
-											</div>
-										</div>
-									</Row>
-
-								</div>
-							</form>
+						/>
+					  </div>
+					  <div className="input-group col-md-12 input-withouticon">
+						<TextFieldHookForm
+						  label={"Code"}
+						  name={"DepartmentCode"}
+						  Controller={Controller}
+						  control={control}
+						  register={register}
+						  mandatory
+						  handleChange={(e) => { }}
+						  customClassName={'withBorder'}
+						  rules={{
+							required: true,
+							validate: {required, excludeOnlySpecialCharacter, checkWhiteSpaces, maxLength50, checkSpacesInString},
+						  }}
+						errors={errors?.DepartmentCode && errors?.DepartmentCode.message}
+						/>
+						
+					  </div>
+					  <div className="col-md-12">
+						<div className="text-right mt-0">
+						  <button
+							onClick={cancel}
+							type="button"
+							value="CANCEL"
+							className="mr15 cancel-btn">
+							<div className={"cancel-icon"}></div>CANCEL
+						  </button>
+						  <button
+							type="submit"
+							disabled={state.isSubmitted ? true : false}
+							className="user-btn save-btn"
+							onClick={handleSubmit(onSubmit)}
+						  >
+							<div className={"save-icon"}></div>
+							{isEditFlag ? 'Update' : 'Save'}
+						  </button>
 						</div>
-					</Container>
-				</Drawer>
-			</div>
-		);
-	}
-}
-
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-const mapStateToProps = ({ auth }) => {
-	const { departmentDetail } = auth;
-	let initialValues = {};
-
-	if (departmentDetail && departmentDetail !== undefined) {
-		initialValues = {
-			DepartmentName: departmentDetail.DepartmentName,
-			DepartmentCode: departmentDetail.DepartmentCode,
-			Description: departmentDetail.Description,
-		}
-	}
-
-	return { initialValues, departmentDetail };
+					  </div>
+					</Row>
+				  </div>
+				</form>
+			  </div>
+			</Container>
+		  </Drawer>
+		</div>
+	  );
 };
 
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-	addDepartmentAPI,
-	getDepartmentAPI,
-	updateDepartmentAPI,
-	setEmptyDepartmentAPI,
-	addCompanyAPI,
-	updateCompanyAPI
-})(reduxForm({
-	form: 'Department',
-	enableReinitialize: true,
-	touchOnChange: true,
-	onSubmitFail: errors => {
-		focusOnError(errors);
-	},
-})(Department));
+export default Department;

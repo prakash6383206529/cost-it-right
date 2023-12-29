@@ -63,7 +63,7 @@ const [state, setState] = useState({
     noData: false,
     dataCount: 0
   });
-
+  const [searchFilter, setSearchFilter] = useState("")
   useEffect(() => {
     getUsersListData(null, null);
    if (props.tabId === '1') {
@@ -397,6 +397,7 @@ const filterList = () => {
 * @description Reset user filter
 */
 const resetFilter = () => {
+	
 	setState(
 	  (prevState) => ({
 		...prevState,
@@ -410,6 +411,7 @@ const resetFilter = () => {
 		getUsersListData(filterDepartment, filterRole);
 	  }
 	);
+	
   };
   
 
@@ -422,11 +424,17 @@ const onPageSizeChanged = (newPageSize) => {
 };
 
 const onFilterTextBoxChanged = (e) => {
-	state.gridApi.setQuickFilter(e.target.value);
+    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
 
 }
 
 const resetState = () => {
+	setState((prevState)=>({...prevState,noData:false}));
+	const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+        searchBox.value = ""; // Reset the input field's value
+    }
+    state.gridApi.setQuickFilter(null)
 	state.gridApi.deselectAll();
 	gridOptions.columnApi.resetColumnState();
 	gridOptions.api.setFilterModel(null);

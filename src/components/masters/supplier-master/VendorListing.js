@@ -96,6 +96,7 @@ const VendorListing = () => {
     noData: false,
     dataCount: 0,
   });
+  const [searchFilter, setSearchFilter] = useState("")
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
@@ -188,11 +189,7 @@ const VendorListing = () => {
    * @description Get Table data
    */
   const getTableListData = (
-    skip,
-
-    obj,
-    take,
-    isPagination
+    skip, obj, take, isPagination
   ) => {
     setState((prevState) => ({
       ...prevState,
@@ -209,8 +206,7 @@ const VendorListing = () => {
         setState((prevState) => ({ ...prevState, noData: false }));
         if (res.status === 202) {
           setState((prevState) => ({
-            ...prevState,
-            totalRecordCount: 0,
+            ...prevState, totalRecordCount: 0,
           }));
 
           return;
@@ -219,9 +215,7 @@ const VendorListing = () => {
         } else if (res && res.data && res.data.DataList) {
           let Data = res.data.DataList;
           setState((prevState) => ({
-            ...prevState,
-            tableData: Data,
-            totalRecordCount: Data[0].TotalRecordCount,
+            ...prevState, tableData: Data, totalRecordCount: Data[0].TotalRecordCount,
           }));
         }
 
@@ -237,15 +231,12 @@ const VendorListing = () => {
         if (res) {
           if (res && res.status === 204) {
             setState((prevState) => ({
-              ...prevState,
-              totalRecordCount: 0,
-              pageNo: 0,
+              ...prevState, totalRecordCount: 0, pageNo: 0,
             }));
           }
           if (res && res.data && res.data.DataList.length > 0) {
             setState((prevState) => ({
-              ...prevState,
-              totalRecordCount: res.data.DataList[0].TotalRecordCount,
+              ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount,
             }));
           }
           let isReset = true;
@@ -255,7 +246,6 @@ const VendorListing = () => {
                 isReset = false;
               }
             }
-
             // Sets the filter model via the grid API
             if (isReset) {
               gridOptions?.api?.setFilterModel({});
@@ -263,11 +253,9 @@ const VendorListing = () => {
             } else {
               gridOptions?.api?.setFilterModel(constantFilterData);
             }
-
             setTimeout(() => {
               setState((prevState) => ({
-                ...prevState,
-                warningMessage: false,
+                ...prevState, warningMessage: false
               }));
             }, 23);
           }, 300);
@@ -278,8 +266,7 @@ const VendorListing = () => {
 
           setTimeout(() => {
             setState((prevState) => ({
-              ...prevState,
-              isFilterButtonClicked: false,
+              ...prevState, isFilterButtonClicked: false,
             }));
           }, 600);
         }
@@ -288,9 +275,7 @@ const VendorListing = () => {
   };
 
   const floatingFilterVendorType = {
-    maxValue: 6,
-    suppressFilterButton: true,
-    component: "vendorType",
+    maxValue: 6, suppressFilterButton: true, component: "vendorType",
   };
 
   const onFloatingFilterChanged = (value) => {
@@ -327,8 +312,7 @@ const VendorListing = () => {
           }
 
           setState((prevState) => ({
-            ...prevState,
-            floatingFilterData: state.floatingFilterData,
+            ...prevState, floatingFilterData: state.floatingFilterData,
           }));
         }
 
@@ -338,8 +322,7 @@ const VendorListing = () => {
             state.floatingFilterData[prop] = "";
           }
           setState((prevState) => ({
-            ...prevState,
-            floatingFilterData: state.floatingFilterData,
+            ...prevState, floatingFilterData: state.floatingFilterData,
           }));
         }
       }
@@ -366,11 +349,7 @@ const VendorListing = () => {
    */
   const onSearch = () => {
     setState((prevState) => ({
-      ...prevState,
-      warningMessage: false,
-      pageNo: 1,
-      pageNoNew: 1,
-      currentRowIndex: 0,
+      ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
     }));
     getTableListData(0, state.floatingFilterData, state.globalTake, true);
   };
@@ -379,60 +358,39 @@ const VendorListing = () => {
    * pagination previous function
    */
   const onBtPrevious = () => {
+    if (state.pageNo === 1) {
+      return false
+    }
     if (state.currentRowIndex >= 10) {
+      setState((prevState) => ({ ...prevState, pageNo: state.pageNo - 1, pageNoNew: state.pageNo - 1 }))
       const previousNo = state.currentRowIndex - 10;
-      const newPageNo = state.pageNo - 1;
-
-      setState((prevState) => ({
-        ...prevState,
-        pageNo: newPageNo >= 1 ? newPageNo : 1,
-        pageNoNew: newPageNo >= 1 ? newPageNo : 1,
-        currentRowIndex: previousNo,
-      }));
-
       getTableListData(
-        previousNo,
-        state.floatingFilterData,
-        state.globalTake,
-        true
-      );
-    }
-  };
+        previousNo, state.floatingFilterData, state.globalTake, true);
 
+      setState((prevState) => ({ ...prevState, currentRowIndex: previousNo }))
+    };
+  }
   /**
-   * pagination next function
-   */
+     * pagination next function
+     */
+
   const onBtNext = () => {
-    if (
-      state.pageSize.pageSize50 &&
-      state.pageNo >= Math.ceil(state.totalRecordCount / 50)
-    ) {
-      return false;
+    if (state.pageSize.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)) {
+      return false
     }
-
-    if (
-      state.pageSize.pageSize100 &&
-      state.pageNo >= Math.ceil(state.totalRecordCount / 100)
-    ) {
-      return false;
+    if (state.pageSize.pageSize100 && state.pageNo >= Math.ceil(state.totalRecordCount / 100)) {
+      return false
     }
-
-    if (state.currentRowIndex < state.totalRecordCount - 10) {
-      setState((prevState) => ({
-        ...prevState,
-        pageNo: state.pageNo + 1,
-        pageNoNew: state.pageNo + 1,
-      }));
+    if (state.currentRowIndex < (state.totalRecordCount - 10)) {
+      setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1 }))
       const nextNo = state.currentRowIndex + 10;
+
       getTableListData(
-        nextNo,
-        state.floatingFilterData,
-        state.globalTake,
-        true
-      );
-      // skip, take, isPagination, floatingFilterData, (res)
-      setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
+        nextNo, state.floatingFilterData, state.globalTake, true);
+
+      setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }))
     }
+
   };
 
   /**
@@ -441,11 +399,7 @@ const VendorListing = () => {
    */
   const viewOrEditItemDetails = (Id, isViewMode) => {
     setState((prevState) => ({
-      ...prevState,
-      isOpenVendor: true,
-      isEditFlag: true,
-      ID: Id,
-      isViewMode: isViewMode,
+      ...prevState, isOpenVendor: true, isEditFlag: true, ID: Id, isViewMode: isViewMode,
     }));
   };
 
@@ -494,7 +448,6 @@ const VendorListing = () => {
    */
   const buttonFormatter = (props) => {
     const cellValue = props?.value;
-
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
@@ -541,40 +494,31 @@ const VendorListing = () => {
   };
 
   const checkBoxRenderer = (props) => {
-    const cellValue = props?.valueFormatted
-      ? props.valueFormatted
-      : props?.value;
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    // var selectedRows = gridApi?.getSelectedRows();
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
-        if (
-          item.VolumeApprovedId === props.node.data.VolumeApprovedId &&
-          item.VolumeBudgetedId === props.node.data.VolumeBudgetedId
-        ) {
-          props.node.setSelected(true);
+        if (item.VendorId === props.node.data.VendorId) {
+          props.node.setSelected(true)
         }
-        return null;
-      });
-      return cellValue;
+        return null
+      })
+      return cellValue
     } else {
-      return cellValue;
+      return cellValue
     }
-  };
 
+  }
   /**
-   * @method handleChange
-   * @description handle status change
-   */
+     * @method handleChange
+     * @description handle status change
+     */
   const handleChange = (cell, row) => {
     let data = {
-      Id: row.VendorId,
-      ModifiedBy: loggedInUserId(),
-      IsActive: !cell, //Status of the user.
+      Id: row.VendorId, ModifiedBy: loggedInUserId(), IsActive: !cell, //Status of the user.
     };
     setState((prevState) => ({
-      ...prevState,
-      showPopupToggle: true,
-      cellData: data,
-      cellValue: cell,
+      ...prevState, showPopupToggle: true, cellData: data, cellValue: cell,
     }));
   };
 
@@ -604,10 +548,10 @@ const VendorListing = () => {
    */
   const statusButtonFormatter = (props) => {
     const cellValue = props?.valueFormatted
-      ? props.valueFormatted // Fix: Change 'valueFormatted' to 'props.valueFormatted'
+      ? props?.valueFormatted // Fix: Change 'valueFormatted' to 'valueFormatted'
       : props?.value;
     const rowData = props?.valueFormatted
-      ? props.valueFormatted // Fix: Change 'valueFormatted' to 'props.valueFormatted'
+      ? props?.valueFormatted // Fix: Change 'valueFormatted' to 'valueFormatted'
       : props?.data;
     const { ActivateAccessibility } = state;
     if (rowData.UserId === loggedInUserId()) return null;
@@ -684,28 +628,19 @@ const VendorListing = () => {
    */
   const filterList = () => {
     getTableListData(
-      state.currentRowIndex,
-      state.floatingFilterData,
-      100,
-      true
-    );
+      state.currentRowIndex, state.floatingFilterData, 100, true);
   };
 
   const formToggle = () => {
     setState((prevState) => ({
-      ...prevState,
-      isOpenVendor: true,
-      isViewMode: false,
+      ...prevState, isOpenVendor: true, isViewMode: false,
     }));
   };
 
   const closeVendorDrawer = (e = "", formdata, type) => {
     setState(
       (prevState) => ({
-        ...prevState,
-        isOpenVendor: false,
-        isEditFlag: false,
-        ID: "",
+        ...prevState, isOpenVendor: false, isEditFlag: false, ID: "",
       }),
       () => {
         if (type === "submit") {
@@ -744,11 +679,7 @@ const VendorListing = () => {
     totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
 
     getTableListData(
-      state.currentRowIndex,
-      state.floatingFilterData,
-      pageSize,
-      true
-    );
+      state.currentRowIndex, state.floatingFilterData, pageSize, true);
 
     setState((prevState) => ({
       ...prevState,
@@ -769,6 +700,11 @@ const VendorListing = () => {
    * @description reset Column, filter, select cells
    */
   const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+        if (searchBox) {
+            searchBox.value = ""; // Reset the input field's value
+        }
+        state.gridApi.setQuickFilter(null)
     setState((prevState) => ({
       ...prevState,
       noData: false,
@@ -788,22 +724,12 @@ const VendorListing = () => {
       state.floatingFilterData[prop] = "";
     }
     setState((prevState) => ({
-      ...prevState,
-      floatingFilterData: state.floatingFilterData,
-      warningMessage: false,
-
-      pageNo: 1,
-      pageNoNew: 1,
-      currentRowIndex: 0,
+      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
     }));
     getTableListData(0, state.floatingFilterData, 10, true);
     dispatch(setSelectedRowForPagination([]));
-
     setState((prevState) => ({
-      ...prevState,
-      globalTake: 10,
-      dataCount: 0,
-
+      ...prevState, globalTake: 10, dataCount: 0,
       pageSize: {
         ...prevState.pageSize,
         pageSize10: true,
@@ -817,7 +743,9 @@ const VendorListing = () => {
     setState((prevState) => ({ ...prevState, disableDownload: true }));
     dispatch(disabledClass(false));
 
-    let tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    // let tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    let tempArr = selectedRowForPagination
+
     if (tempArr?.length > 0) {
       setTimeout(() => {
         setState((prevState) => {
@@ -838,49 +766,44 @@ const VendorListing = () => {
   };
 
   const onRowSelect = (event) => {
-    let selectedRows = state.gridApi?.getSelectedRows();
+    let selectedRows = state.gridApi?.getSelectedRows()
+    if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
+      selectedRows = selectedRowForPagination
+    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
 
-    if (selectedRows === undefined || selectedRows === null) {
-      //CONDITION FOR FIRST RENDERING OF COMPONENT
-      selectedRows = selectedRowForPagination;
-    } else if (
-      selectedRowForPagination &&
-      selectedRowForPagination.length > 0
-    ) {
-      // CHECKING IF REDUCER HAS DATA
-
-      let finalData = [];
-      if (event.node.isSelected() === false) {
-        // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+      let finalData = []
+      if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
         for (let i = 0; i < selectedRowForPagination.length; i++) {
-          if (selectedRowForPagination[i].VendorId === event.data.VendorId) {
-            // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+          if (selectedRowForPagination[i].VendorId === event.data.VendorId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
-          finalData.push(selectedRowForPagination[i]);
+          finalData.push(selectedRowForPagination[i])
         }
+
       } else {
-        finalData = selectedRowForPagination;
+        finalData = selectedRowForPagination
       }
-      selectedRows = [...selectedRows, ...finalData];
+      selectedRows = [...selectedRows, ...finalData]
     }
 
-    let uniqeArray = _.uniqBy(selectedRows, "VendorId"); //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
-    setSelectedRowForPagination(uniqeArray); //SETTING CHECKBOX STATE DATA IN REDUCER
-    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length }));
-    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows }));
-  };
+    let uniqeArray = _.uniqBy(selectedRows, "VendorId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    dispatch(setSelectedRowForPagination(uniqeArray))                     //SETTING CHECKBOX STATE DATA IN REDUCER
+    setState((prevState) => ({ ...prevState, dataCount: uniqeArray.length }))
+    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows }))
 
+  }
   const onBtExport = () => {
     let tempArr = [];
-    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    // tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    tempArr = selectedRowForPagination
+
     tempArr =
       tempArr && tempArr.length > 0
         ? tempArr
         : allSupplierDataList
-        ? allSupplierDataList
-        : [];
+          ? allSupplierDataList
+          : [];
     return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -922,15 +845,11 @@ const VendorListing = () => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    state.gridApi.setQuickFilter(e.target.value);
+    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
   };
 
   const {
-    isOpenVendor,
-    AddAccessibility,
-    BulkUploadAccessibility,
-    DownloadAccessibility,
-  } = state;
+    isOpenVendor, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, } = state;
   const ExcelFile = ReactExport.ExcelFile;
 
   const isFirstColumn = (params) => {
@@ -940,11 +859,7 @@ const VendorListing = () => {
   };
 
   const defaultColDef = {
-    resizable: true,
-    filter: true,
-    sortable: false,
-    headerCheckboxSelectionFilteredOnly: true,
-    checkboxSelection: isFirstColumn,
+    resizable: true, filter: true, sortable: false, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: isFirstColumn,
   };
 
   const frameworkComponents = {
@@ -959,9 +874,8 @@ const VendorListing = () => {
 
   return (
     <div
-      className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${
-        DownloadAccessibility ? "show-table-btn no-tab-page" : ""
-      }`}
+      className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""
+        }`}
       id="go-to-top"
     >
       <ScrollToTop pointProp="go-to-top" />
@@ -1000,20 +914,13 @@ const VendorListing = () => {
             </div>
             <div className="d-flex">
               <button
-                title="Filtered data"
-                type="button"
-                class="user-btn mr5"
-                onClick={() => onSearch(this)}
-                disabled={state.disableFilter}
+                title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch(this)} disabled={state.disableFilter}
               >
                 <div class="filter mr-0"></div>
               </button>
               {AddAccessibility && (
                 <button
-                  type="button"
-                  className={"user-btn mr5"}
-                  onClick={formToggle}
-                  title="Add"
+                  type="button" className={"user-btn mr5"} onClick={formToggle} title="Add"
                 >
                   <div className={"plus mr-0"}></div>
                 </button>
@@ -1031,21 +938,19 @@ const VendorListing = () => {
               {DownloadAccessibility && (
                 <>
                   <button
-                    title={`Download ${
-                      state.dataCount === 0
-                        ? "All"
-                        : "(" + state.dataCount + ")"
-                    }`}
+                    title={`Download ${state.dataCount === 0
+                      ? "All"
+                      : "(" + state.dataCount + ")"
+                      }`}
                     type="button"
                     onClick={onExcelDownload}
                     className={"user-btn mr5"}
                   >
                     <div className="download mr-1"></div>
-                    {`${
-                      state.dataCount === 0
-                        ? "All"
-                        : "(" + state.dataCount + ")"
-                    }`}
+                    {`${state.dataCount === 0
+                      ? "All"
+                      : "(" + state.dataCount + ")"
+                      }`}
                   </button>
 
                   <ExcelFile
@@ -1065,10 +970,7 @@ const VendorListing = () => {
               )}
 
               <button
-                type="button"
-                className="user-btn"
-                title="Reset Grid"
-                onClick={() => resetState()}
+                type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}
               >
                 <div className="refresh mr-0"></div>
               </button>
@@ -1078,17 +980,15 @@ const VendorListing = () => {
       </Row>
       {!state.isLoader && (
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${
-            (supplierDataList && supplierDataList?.length <= 0) || state.noData
-              ? "overlay-contain"
-              : ""
-          }`}
+          className={`ag-grid-wrapper height-width-wrapper ${(supplierDataList && supplierDataList?.length <= 0) || state.noData
+            ? "overlay-contain"
+            : ""
+            }`}
         >
           <div className="ag-grid-header col-md-4 pl-0"></div>
           <div
-            className={`ag-theme-material ${
-              state.isLoader && "max-loader-height"
-            }`}
+            className={`ag-theme-material ${state.isLoader && "max-loader-height"
+              }`}
           >
             {state.noData && (
               <NoContentFound
@@ -1185,10 +1085,7 @@ const VendorListing = () => {
               <div className="d-flex pagination-button-container">
                 <p>
                   <button
-                    className="previous-btn"
-                    type="button"
-                    disabled={false}
-                    onClick={() => onBtPrevious()}
+                    className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}
                   >
                     {" "}
                   </button>
@@ -1214,9 +1111,7 @@ const VendorListing = () => {
                 )}
                 <p>
                   <button
-                    className="next-btn"
-                    type="button"
-                    onClick={() => onBtNext()}
+                    className="next-btn" type="button" onClick={() => onBtNext()}
                   >
                     {" "}
                   </button>
@@ -1262,11 +1157,10 @@ const VendorListing = () => {
           isOpen={state.showPopupToggle}
           closePopUp={closePopUp}
           confirmPopup={onPopupConfirmToggle}
-          message={`${
-            state.cellValue
-              ? MESSAGES.VENDOR_DEACTIVE_ALERT
-              : MESSAGES.VENDOR_ACTIVE_ALERT
-          }`}
+          message={`${state.cellValue
+            ? MESSAGES.VENDOR_DEACTIVE_ALERT
+            : MESSAGES.VENDOR_ACTIVE_ALERT
+            }`}
         />
       )}
     </div>

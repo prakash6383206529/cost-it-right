@@ -1,5 +1,5 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Container, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
@@ -13,31 +13,47 @@ import UsersListing from './UsersListing';
 import RolesListing from './RolePermissions/RolesListing';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
+
 var isFirstTabActive = false
+export const ApplyPermission = React.createContext();
 
-class User extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOpen: false,
-      activeTab: '1',
-      isUserForm: false,
-      isRolePermissionForm: false,
-      data: {},
-      ViewUserAccessibility: false,
-      ViewRFQUserAccessibility: false,
-      ViewRoleAccessibility: false,
-      ViewDepartmentAccessibility: false,
-      ViewLevelAccessibility: false,
-      count: 0,
-      RFQUser: false
+const User = () => {
+  const { topAndLeftMenuData } = useSelector(state => state.auth);
+  // const [userData, setUserData] = useState({});
+  // const [roleData, setRoleData] = useState({});
+  // const [departmentData, setDepartmentData] = useState({});
+  // const [levelsData, setLevelsData] = useState({});
+  // const [rfqUserData, setRfqUserData] = useState({});
+
+  const [state, setState] = useState({
+    isOpen: false,
+    activeTab: '1',
+    isUserForm: false,
+    isRolePermissionForm: false,
+    data: {},
+    ViewUserAccessibility: false,
+    ViewRFQUserAccessibility: false,
+    ViewRoleAccessibility: false,
+    ViewDepartmentAccessibility: false,
+    ViewLevelAccessibility: false,
+    count: 0,
+    RFQUser: false
+  });
+
+  useEffect(() => {
+    topAndLeftMenuFunction();
+  }, []);
+  useEffect(() => {
+    if (topAndLeftMenuData !== undefined && state.count === 0) {
+      setState(prevState => ({ ...prevState, count: 1 }));
+      topAndLeftMenuFunction();
     }
-  }
+  }, [topAndLeftMenuData, state.count]);
 
-  topAndLeftMenuFunction = () => {
+
+  const topAndLeftMenuFunction = () => {
     let ModuleId = reactLocalStorage.get('ModuleId');
     let leftMenuFromAPI = []
-    const { topAndLeftMenuData } = this.props;
     topAndLeftMenuData && topAndLeftMenuData.map(el => {
       if (el.ModuleId === ModuleId) {
         leftMenuFromAPI = el.Pages
@@ -58,13 +74,18 @@ class User extends Component {
       const departmentData = departmentPermissions && departmentPermissions.Actions && checkPermission(departmentPermissions.Actions)
       const levelsData = levelsPermissions && levelsPermissions.Actions && checkPermission(levelsPermissions.Actions)
       const rfqUserData = RfqUserPermissions && RfqUserPermissions.Actions && checkPermission(RfqUserPermissions.Actions)
+      // setUserData(userData)
+      // setRoleData(roleData)
+      // setDepartmentData(departmentData)
+      // setLevelsData(levelsData)
+      // setRfqUserData(rfqUserData)
 
       if (userData !== undefined) {
 
         for (var prop in userData) {
           if (userData[prop] === true) {
             isFirstTabActive = true
-            this.setState({ ViewUserAccessibility: true, activeTab: '1' })
+            setState((prevState)=>({ ...prevState,ViewUserAccessibility: true, activeTab: '1' }))
           }
         }
       }
@@ -73,7 +94,7 @@ class User extends Component {
 
         for (var propRfq in rfqUserData) {
           if (rfqUserData[propRfq] === true) {
-            this.setState({ ViewRFQUserAccessibility: true, activeTab: isFirstTabActive ? '1' : '5' })
+            setState((prevState)=>({...prevState, ViewRFQUserAccessibility: true, activeTab: isFirstTabActive ? '1' : '5' }))
           }
         }
       }
@@ -81,7 +102,7 @@ class User extends Component {
       if (roleData !== undefined) {
         for (var propRole in roleData) {
           if (roleData[propRole] === true) {
-            this.setState({ ViewRoleAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : '2' })
+            setState((prevState)=>({...prevState, ViewRoleAccessibility: true, activeTab: state.ViewUserAccessibility || isFirstTabActive ? '1' : '2' }))
           }
         }
       }
@@ -89,7 +110,7 @@ class User extends Component {
       if (departmentData !== undefined) {
         for (var propDepart in departmentData) {
           if (departmentData[propDepart] === true) {
-            this.setState({ ViewDepartmentAccessibility: true, activeTab: this.state.ViewUserAccessibility || isFirstTabActive ? '1' : (this.state.ViewRoleAccessibility ? '2' : '3') })
+            setState((prevState)=>({...prevState, ViewDepartmentAccessibility: true, activeTab: state.ViewUserAccessibility || isFirstTabActive ? '1' : (state.ViewRoleAccessibility ? '2' : '3') }))
           }
         }
       }
@@ -97,7 +118,7 @@ class User extends Component {
       if (levelsData !== undefined) {
         for (var propLevel in levelsData) {
           if (levelsData[propLevel] === true) {
-            this.setState({ ViewLevelAccessibility: true })
+            setState((prevState)=>({...prevState, ViewLevelAccessibility: true }))
           }
         }
       }
@@ -105,163 +126,152 @@ class User extends Component {
     }
   }
 
-  componentDidMount() {
-    this.topAndLeftMenuFunction()
-
-  }
-
-  componentDidUpdate() {
-    if (this.props.topAndLeftMenuData !== undefined && this.state.count === 0) {
-      this.setState({ count: 1 })
-      this.topAndLeftMenuFunction()
-    }
-  }
-
-  /**
-  * @method toggle
-  * @description toggling the tabs
-  */
-  toggle = (tab) => {
-    if (this.state.activeTab !== tab) {
-      this.setState({
+  const toggle = tab => {
+    if (state.activeTab !== tab) {
+      setState(prevState => ({
+        ...prevState,
         activeTab: tab
-      });
+      }));
     }
+  };
+
+  const displayForm = RFQUser => {
+    setState(prevState => ({
+      ...prevState,
+      isUserForm: true,
+      isRolePermissionForm: false,
+      RFQUser: RFQUser
+    }));
+  };
+
+  const displayRoleForm = () => {
+    setState(prevState => ({
+      ...prevState,
+      isRolePermissionForm: true,
+      isUserForm: false,
+      data: {}
+    }));
+  };
+
+  const hideForm = () => {
+    setState(prevState => ({
+      ...prevState,
+      isUserForm: false,
+      isRolePermissionForm: false,
+      data: {}
+    }));
+  };
+
+  const getUserDetail = data => {
+    setState(prevState => ({
+      ...prevState,
+      isUserForm: true,
+      isRolePermissionForm: false,
+      data: data,
+      RFQUser: data.RFQUser
+    }));
+  };
+
+  const getRoleDetail = data => {
+    setState(prevState => ({
+      ...prevState,
+      isRolePermissionForm: true,
+      isUserForm: false,
+      data: data
+    }));
+  };
+  const { isUserForm, isRolePermissionForm, data, ViewUserAccessibility,
+    ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility } = state;
+
+  if (isUserForm === true) {
+    return <UserRegistration
+      data={data}
+      hideForm={hideForm}
+      RFQUser={state.RFQUser}
+    />
   }
 
-  displayForm = (RFQUser) => {
-    this.setState({ isUserForm: true, isRolePermissionForm: false, RFQUser: RFQUser })
+  if (isRolePermissionForm === true) {
+    return <Role
+      data={data}
+      hideForm={hideForm}
+    />
   }
 
-  displayRoleForm = () => {
-    this.setState({ isRolePermissionForm: true, isUserForm: false, data: {}, })
-  }
+  return (
+    <Container fluid className="user-page">
+      {/* {props.loading && <Loader/>} */}
+      <div>
+        <Nav tabs className="subtabs">
+          {ViewUserAccessibility && <NavItem>
+            <NavLink className={classnames({ active: state.activeTab === '1' })} onClick={() => { toggle('1'); }}>
+              Manage Users
+            </NavLink>
+          </NavItem>}
+          {ViewRoleAccessibility && <NavItem>
+            <NavLink className={classnames({ active: state.activeTab === '2' })} onClick={() => { toggle('2'); }}>
+              Manage Roles & Permission
+            </NavLink>
+          </NavItem>}
+          {ViewDepartmentAccessibility && <NavItem>
+            <NavLink className={classnames({ active: state.activeTab === '3' })} onClick={() => { toggle('3'); }}>
+              {`Manage ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+            </NavLink>
+          </NavItem>}
+          {ViewLevelAccessibility && <NavItem>
+            <NavLink className={classnames({ active: state.activeTab === '4' })} onClick={() => { toggle('4'); }}>
+              Manage Levels
+            </NavLink>
+          </NavItem>}
 
-  hideForm = () => {
-    this.setState({ isUserForm: false, isRolePermissionForm: false, data: {} })
-  }
+          {ViewRFQUserAccessibility && getConfigurationKey().IsRFQConfigured && <NavItem>
+            <NavLink className={classnames({ active: state.activeTab === '5' })} onClick={() => { toggle('5'); }}>
+              Manage RFQ Users
+            </NavLink>
+          </NavItem>}
 
-  getUserDetail = (data) => {
-    this.setState({ isUserForm: true, isRolePermissionForm: false, data: data, RFQUser: data.RFQUser })
-  }
+        </Nav>
+        <TabContent activeTab={state.activeTab}>
+          {state.activeTab === '1' && ViewUserAccessibility &&
+            <TabPane tabId="1">
+              <UsersListing
+                RFQUser={false}
+                formToggle={displayForm}
+                getUserDetail={getUserDetail}
+                tabId={state.activeTab}
+              />
+            </TabPane>}
+          {state.activeTab === '2' && ViewRoleAccessibility &&
+            <TabPane tabId="2">
+              <RolesListing
+                formToggle={displayRoleForm}
+                getDetail={getRoleDetail}
+              />
+            </TabPane>}
+          {state.activeTab === '3' && ViewDepartmentAccessibility &&
+            <TabPane tabId="3">
+              <DepartmentsListing
+                toggle={toggle} />
+            </TabPane>}
+          {state.activeTab === '4' && ViewLevelAccessibility &&
+            <TabPane tabId="4">
+              <LevelsListing
+                toggle={toggle} />
+            </TabPane>}
+          {state.activeTab === '5' && ViewRFQUserAccessibility &&
+            <TabPane tabId="5">
+              <UsersListing
+                RFQUser={true}
+                formToggle={displayForm}
+                getUserDetail={getUserDetail}
+                tabId={state.activeTab}
+              />
+            </TabPane>}
+        </TabContent>
+      </div>
+    </Container>
+  );
+};
 
-  getRoleDetail = (data) => {
-    this.setState({ isRolePermissionForm: true, isUserForm: false, data: data })
-  }
-
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { isUserForm, isRolePermissionForm, data, ViewUserAccessibility,
-      ViewRoleAccessibility, ViewDepartmentAccessibility, ViewLevelAccessibility, ViewRFQUserAccessibility } = this.state;
-
-    if (isUserForm === true) {
-      return <UserRegistration
-        data={data}
-        hideForm={this.hideForm}
-        RFQUser={this.state.RFQUser}
-      />
-    }
-
-    if (isRolePermissionForm === true) {
-      return <Role
-        data={data}
-        hideForm={this.hideForm}
-      />
-    }
-
-    return (
-      <Container fluid className="user-page">
-        {/* {this.props.loading && <Loader/>} */}
-        <div>
-          <Nav tabs className="subtabs">
-            {ViewUserAccessibility && <NavItem>
-              <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                Manage Users
-              </NavLink>
-            </NavItem>}
-            {ViewRoleAccessibility && <NavItem>
-              <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                Manage Roles & Permission
-              </NavLink>
-            </NavItem>}
-            {ViewDepartmentAccessibility && <NavItem>
-              <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                {`Manage ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
-              </NavLink>
-            </NavItem>}
-            {ViewLevelAccessibility && <NavItem>
-              <NavLink className={classnames({ active: this.state.activeTab === '4' })} onClick={() => { this.toggle('4'); }}>
-                Manage Levels
-              </NavLink>
-            </NavItem>}
-
-            {ViewRFQUserAccessibility && getConfigurationKey().IsRFQConfigured && <NavItem>
-              <NavLink className={classnames({ active: this.state.activeTab === '5' })} onClick={() => { this.toggle('5'); }}>
-                Manage RFQ Users
-              </NavLink>
-            </NavItem>}
-
-          </Nav>
-          <TabContent activeTab={this.state.activeTab}>
-            {this.state.activeTab === '1' && ViewUserAccessibility &&
-              <TabPane tabId="1">
-                <UsersListing
-                  RFQUser={false}
-                  formToggle={this.displayForm}
-                  getUserDetail={this.getUserDetail}
-                  tabId={this.state.activeTab}
-                />
-              </TabPane>}
-            {this.state.activeTab === '2' && ViewRoleAccessibility &&
-              <TabPane tabId="2">
-                <RolesListing
-                  formToggle={this.displayRoleForm}
-                  getDetail={this.getRoleDetail}
-                />
-              </TabPane>}
-            {this.state.activeTab === '3' && ViewDepartmentAccessibility &&
-              <TabPane tabId="3">
-                <DepartmentsListing
-                  toggle={this.toggle} />
-              </TabPane>}
-            {this.state.activeTab === '4' && ViewLevelAccessibility &&
-              <TabPane tabId="4">
-                <LevelsListing
-                  toggle={this.toggle} />
-              </TabPane>}
-            {this.state.activeTab === '5' && ViewRFQUserAccessibility &&
-              <TabPane tabId="5">
-                <UsersListing
-                  RFQUser={true}
-                  formToggle={this.displayForm}
-                  getUserDetail={this.getUserDetail}
-                  tabId={this.state.activeTab}
-                />
-              </TabPane>}
-          </TabContent>
-        </div>
-      </Container>
-    );
-  }
-}
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ auth }) {
-  const { leftMenuData, loading, topAndLeftMenuData } = auth;
-
-  return { leftMenuData, loading, topAndLeftMenuData };
-}
-
-
-export default connect(mapStateToProps,
-  {
-  }
-)(User);
+export default User;
 

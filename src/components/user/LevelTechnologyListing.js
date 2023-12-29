@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
 import { getAllLevelMappingAPI, deleteUserLevelAPI, getSimulationLevelDataList, getMasterLevelDataList } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { COSTING, EMPTY_DATA, MASTERS, SIMULATION } from '../../config/constants';
+import { EMPTY_DATA, } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -13,152 +13,142 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getConfigurationKey } from '../../helper/auth';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../common/commonPagination';
-
+import { ApplyPermission } from './LevelsListing';
+import { useContext } from 'react';
 const gridOptions = {};
 const defaultPageSize = 5;
-class LevelTechnologyListing extends Component {
-	constructor(props) {
-		super(props);
-		this.agGrid1 = React.createRef();
-		this.agGrid2 = React.createRef();
-		this.agGrid3 = React.createRef();
-		this.state = {
-			isEditFlag: false,
-			tableData: [],
-			gridApi: null,
-			gridColumnApi: null,
-			rowData: null,
-			sideBar: { toolPanels: ['columns'] },
-			showData: false,
-			showPopup: false,
-			deletedId: '',
-			isLoder: false
+const LevelTechnologyListing = (props) => {
+	const agGrid1 = useRef(null);
+	const agGrid2 = useRef(null);
+	const agGrid3 = useRef(null);
+	const [state, setState] = useState({
+		isEditFlag: false,
+		tableData: [],
+		gridApi: null,
+		gridColumnApi: null,
+		rowData: null,
+		sideBar: { toolPanels: ['columns'] },
+		showData: false,
+		showPopup: false,
+		deletedId: '',
+		isLoader: false,
+		
+	});
+	const permissions = useContext(ApplyPermission);
+	const dispatch = useDispatch();
+	const { simulationLevelDataList, masterLevelDataList } = useSelector((state) => state.auth)
+	const [levelMappingFilter, setLevelMappingFilter] = useState("")
+	const [simulationFilter, setSimulationFilter] = useState("")
+	const [masterFilter, setMasterFilter] = useState("")
 
+	useEffect(() => {
+		getLevelsListData();
+		getSimulationDataList();
+		getMasterDataList()
+		props.onRef(this);
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
+	useEffect(() => {
+		if (props.updateApi) {
+			if (!props.cancelButton) {
+				getUpdatedData();
+			}
 		}
-	}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, []);
 
-	componentDidMount() {
-		this.getLevelsListData();
-		this.getSimulationDataList();
-		this.getMasterDataList()
-		this.props.onRef(this);
-	}
-
-	getLevelsListData = () => {
-		this.setState({ isLoader: true })
-		this.props.getAllLevelMappingAPI(res => {
-			this.setState({ isLoader: false })
+	const getLevelsListData = () => {
+		setState((prevState) => ({ ...prevState, isLoader: true }))
+		dispatch(getAllLevelMappingAPI(res => {
+			setState((prevState) => ({ ...prevState, isLoader: false }))
 			if (res.status === 204 && res.data === '') {
-				this.setState({ tableData: [], })
+				setState((prevState) => ({ ...prevState, tableData: [], }))
 			} else if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
-				this.setState({
+				setState((prevState) => ({
+					...prevState,
 					tableData: Data,
-				})
+				}))
 			} else {
 
 			}
-		});
+		}));
 	}
 
-	getSimulationDataList = () => {
-		this.setState({ isLoader: true })
-		this.props.getSimulationLevelDataList(res => {
-			this.setState({ isLoader: false })
-		})
+	const getSimulationDataList = () => {
+		setState((prevState) => ({ ...prevState, isLoader: true }))
+		dispatch(getSimulationLevelDataList(res => {
+			setState((prevState) => ({ ...prevState, isLoader: false }))
+		}))
 	}
-	getMasterDataList = () => {
-		this.setState({ isLoader: true })
-		this.props.getMasterLevelDataList(res => {
-			this.setState({ isLoader: false })
-		})
+	const getMasterDataList = () => {
+		setState((prevState) => ({ ...prevState, isLoader: true }))
+		dispatch(getMasterLevelDataList(res => {
+			setState((prevState) => ({ ...prevState, isLoader: false }))
+		}))
 	}
-
-	componentDidUpdate(prevProps) {
-		if (this.props.updateApi !== prevProps.updateApi) {
-
-			if (this.props.cancelButton) {
-				return
-			} else {
-				this.getUpdatedData()
-			}
-		}
-	}
-
 	/**
-	* @method getUpdatedData
-	* @description get updated data after updatesuccess
-	*/
-	getUpdatedData = () => {
-		this.getLevelsListData()
-		this.getSimulationDataList()
-		this.getMasterDataList()
+	  * @method getUpdatedData
+	  * @description get updated data after updatesuccess
+	  */
+	const getUpdatedData = () => {
+		getLevelsListData()
+		getSimulationDataList()
+		getMasterDataList()
 	}
 
 	/**
 	 * @method editItemDetails
 	 * @description confirm edit item
 	 */
-	editItemDetails = (Id, levelType, rowData = []) => {
-		this.props.getLevelMappingDetail(Id, levelType, rowData?.ApprovalTypeId)
+	const editItemDetails = (Id, levelType, rowData = []) => {
+		props.getLevelMappingDetail(Id, levelType, rowData?.ApprovalTypeId)
 	}
-
-	/**
-	* @method deleteItem
-	* @description confirm delete level
-	*/
-	deleteItem = (Id) => {
-		this.setState({ showPopup: true, deletedId: Id })
-	}
-
-	/**
+/**
 	* @method confirmDeleteItem
 	* @description confirm delete level item
 	*/
-	confirmDeleteItem = (LevelId) => {
-		this.props.deleteUserLevelAPI(LevelId, (res) => {
+	const confirmDeleteItem = (LevelId) => {
+		dispatch(deleteUserLevelAPI(LevelId, (res) => {
 			if (res.data.Result === true) {
 				Toaster.success(MESSAGES.DELETE_LEVEL_SUCCESSFULLY);
-				this.getUpdatedData()
+				getUpdatedData()
 			}
-		});
-		this.setState({ showPopup: false })
+		}));
+		setState((prevState) => ({ ...prevState, showPopup: false }))
 	}
-	onPopupConfirm = () => {
-		this.confirmDeleteItem(this.state.deletedId);
+	const onPopupConfirm = () => {
+		confirmDeleteItem(state.deletedId);
 
 	}
-	closePopUp = () => {
-		this.setState({ showPopup: false })
+	const closePopUp = () => {
+		setState((prevState) => ({ ...prevState, showPopup: false }))
 	}
-	buttonFormatter = (props) => {
+	const buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-		const { EditAccessibility } = this.props;
+		console.log("button", permissions)
 		return (
 			<>
-				{EditAccessibility && <button title="Edit" type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Costing', rowData)} />}
-				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
+				{permissions.Edit && <button title="Edit" type={'button'} className="Edit " onClick={() => editItemDetails(cellValue, 'Costing', rowData)} />}
+				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => deleteItem(cell)} />} */}
 			</>
 		)
 	}
 
-
 	/**
-	* @method simulationButtonFormatter
-	* @description Renders buttons
-	*/
-	simulationButtonFormatter = (props) => {
+		* @method simulationButtonFormatter
+		* @description Renders buttons
+		*/
+
+	const simulationButtonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
-		const { EditAccessibility } = this.props;
+		console.log("simulation", permissions)
 		return (
 			<>
-				{EditAccessibility && <button title="Edit" type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Simulation', rowData)} />}
-				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
+				{permissions.Edit && <button title="Edit" type={'button'} className="Edit " onClick={() => editItemDetails(cellValue, 'Simulation', rowData)} />}
+				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => deleteItem(cell)} />} */}
 			</>
 		)
 	}
@@ -166,286 +156,279 @@ class LevelTechnologyListing extends Component {
 	* @method masterButtonFormatter
 	* @description Renders buttons
 	*/
-	masterButtonFormatter = (props) => {
+	const masterButtonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-
-		const { EditAccessibility } = this.props;
 		return (
 			<>
-				{EditAccessibility && <button title={"Edit"} type={'button'} className="Edit " onClick={() => this.editItemDetails(cellValue, 'Master', rowData)} />}
-				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => this.deleteItem(cell)} />} */}
+				{permissions.Edit && <button title={"Edit"} type={'button'} className="Edit " onClick={() => editItemDetails(cellValue, 'Master', rowData)} />}
+				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => deleteItem(cell)} />} */}
 			</>
 		)
 	}
 
-	onGridReady = (params) => {
-		this.gridApi = params.api;
-		this.gridApi.sizeColumnsToFit();
-		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+	const onGridReady = (params) => {
+		state.gridApi = params.api;
+		state.gridApi.sizeColumnsToFit();
+		setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
 		params.api.paginationGoToPage(0);
 	};
 
-	levelMappingFilterHandler(e) {
-		this.agGrid1?.current.api.setQuickFilter(e.target.value);
+	const levelMappingFilterHandler = (e) => {
+		setLevelMappingFilter(agGrid1?.current.api.setQuickFilter(e.target.value));
+
 	}
 
-	simulationFilterHandler(e) {
-		this.agGrid2?.current.api.setQuickFilter(e.target.value);
+	const simulationFilterHandler = (e) => {
+		setSimulationFilter(agGrid2?.current.api.setQuickFilter(e.target.value));
 	}
 
-	masterFilterHandler(e) {
-		this.agGrid3?.current.api.setQuickFilter(e.target.value);
+	const masterFilterHandler = (e) => {
+		setMasterFilter(agGrid3?.current.api.setQuickFilter(e.target.value));
 	}
 
-	levelMappingResetState() {
-		this.agGrid1?.current?.columnApi?.resetColumnState();
-		this.agGrid1?.current?.api.setFilterModel(null)
+	const levelMappingResetState = () => {
+		const searchBox = document.getElementById("filter-text-box");
+		if (searchBox) {
+			searchBox.value = ""; // Reset the input field's value
+		}
+		agGrid1?.current.api.setQuickFilter(null)
+		
+		agGrid1?.current?.columnApi?.resetColumnState();
+		agGrid1?.current?.api.setFilterModel(null)
 	}
-	simulationResetState() {
-		this.agGrid2?.current?.columnApi?.resetColumnState();
-		this.agGrid2?.current?.api.setFilterModel(null)
+	const simulationResetState = () => {
+		console.log("simulationResetState")
+		const searchBox1 = document.getElementById("filter-text-box-simulation");
+		if (searchBox1) {
+			searchBox1.value = ""; // Reset the input field's value
+		}
+		agGrid2?.current.api.setQuickFilter(null)
+		agGrid2?.current?.columnApi?.resetColumnState();
+		agGrid2?.current?.api.setFilterModel(null)
 	}
-	masterResetState() {
-		this.agGrid3?.current?.columnApi?.resetColumnState();
-		this.agGrid3?.current?.api.setFilterModel(null)
+	const masterResetState = () => {
+		const searchBox2 = document.getElementById("filter-text-box-master");
+		if (searchBox2) {
+			searchBox2.value = ""; // Reset the input field's value
+		}
+		agGrid3?.current.api.setQuickFilter(null)
+		agGrid3?.current?.columnApi?.resetColumnState();
+		agGrid3?.current?.api.setFilterModel(null)
 	}
 
-	levelMappingPagination = (newPageSize) => {
-		this.agGrid1?.current.api.paginationSetPageSize(Number(newPageSize + 1))
-		this.agGrid1?.current.api.paginationSetPageSize(Number(newPageSize))
+	const levelMappingPagination = (newPageSize) => {
+		agGrid1?.current.api.paginationSetPageSize(Number(newPageSize + 1))
+		agGrid1?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
-	simulationPagination = (newPageSize) => {
-		this.agGrid2?.current.api.paginationSetPageSize(Number(newPageSize + 1))
-		this.agGrid2?.current.api.paginationSetPageSize(Number(newPageSize))
+	const simulationPagination = (newPageSize) => {
+		agGrid2?.current.api.paginationSetPageSize(Number(newPageSize + 1))
+		agGrid2?.current.api.paginationSetPageSize(Number(newPageSize))
 	};
 
-	masterPagination = (newPageSize) => {
-		this.agGrid3?.current.api.paginationSetPageSize(Number(newPageSize + 1))
-		this.agGrid3?.current.api.paginationSetPageSize(Number(newPageSize))
+	const masterPagination = (newPageSize) => {
+		agGrid3?.current.api.paginationSetPageSize(Number(newPageSize + 1))
+		agGrid3?.current.api.paginationSetPageSize(Number(newPageSize))
+	};
+	const { AddAccessibility } = props;
+	const defaultColDef = {
+		resizable: true, filter: true, sortable: false,
+
 	};
 
+	const frameworkComponents = {
+		totalValueRenderer: buttonFormatter,
+		simulationButtonFormatter: simulationButtonFormatter,
+		customNoRowsOverlay: NoContentFound,
+		masterButtonFormatter: masterButtonFormatter
+	};
+	
 
-	/**
-	* @method render
-	* @description Renders the component
-	*/
-	render() {
-		const { AddAccessibility } = this.props;
-		const defaultColDef = {
-			resizable: true,
-			filter: true,
-			sortable: false,
-
-		};
-
-		const frameworkComponents = {
-			totalValueRenderer: this.buttonFormatter,
-			customNoRowsOverlay: NoContentFound,
-			simulationButtonFormatter: this.simulationButtonFormatter,
-			masterButtonFormatter: this.masterButtonFormatter
-		};
-
-		return (
-			<>
-				<div className='p-relative'>
-					{this.state.isLoader && <LoaderCustom />}
-					<Row className="levellisting-page">
-						<Col md="12">
-							<h2 className="manage-level-heading">{`Costing Level Mapping`}</h2>
-						</Col>
-					</Row>
-					<Row className="levellisting-page">
-						<Col md="6" className=""></Col>
-						<Col md="6" className="text-right search-user-block mb-3">
-							{AddAccessibility && <button
-								type="button"
-								className={'user-btn mr5'}
-								title="Add"
-								onClick={this.props.mappingToggler}>
-								<div className={'plus mr-0'}></div>
-							</button>}
-							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.levelMappingResetState()}>
-								<div className="refresh mr-0"></div>
-							</button>
-						</Col>
-					</Row>
-					<Row className="levellisting-page">
-						<Col className="level-table" md="12">
-							<div className={`ag-grid-wrapper height-width-wrapper ${this.state.tableData && this.state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
-								<div className="ag-grid-header">
-									<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.levelMappingFilterHandler(e)} />
-								</div>
-								<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-									<AgGridReact
-										defaultColDef={defaultColDef}
-										floatingFilter={true}
-										domLayout='autoHeight'
-										// columnDefs={c}
-										rowData={this.state.tableData}
-										pagination={true}
-										ref={this.agGrid1}
-										paginationPageSize={defaultPageSize}
-										onGridReady={this.onGridReady}
-										gridOptions={gridOptions}
-										loadingOverlayComponent={'customLoadingOverlay'}
-										noRowsOverlayComponent={'customNoRowsOverlay'}
-										noRowsOverlayComponentParams={{
-											title: EMPTY_DATA,
-											imagClass: 'imagClass'
-										}}
-										frameworkComponents={frameworkComponents}
-									>
-										{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-										<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
-										<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
-										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-										<AgGridColumn field="TechnologyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-									</AgGridReact>
-									{<PaginationWrapper gridApi={this.gridApi} setPage={this.levelMappingPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
-								</div>
+	return (
+		<>
+			<div className='p-relative'>
+				{state.isLoader && <LoaderCustom />}
+				<Row className="levellisting-page">
+					<Col md="12">
+						<h2 className="manage-level-heading">{`Costing Level Mapping`}</h2>
+					</Col>
+				</Row>
+				<Row className="levellisting-page">
+					<Col md="6" className=""></Col>
+					<Col md="6" className="text-right search-user-block mb-3">
+						{AddAccessibility && <button
+							type="button" className={'user-btn mr5'} title="Add" onClick={props.mappingToggler}>							<div className={'plus mr-0'}></div>
+						</button>}
+						<button type="button" className="user-btn" title="Reset Grid" onClick={() => levelMappingResetState()}>
+							<div className="refresh mr-0"></div>
+						</button>
+					</Col>
+				</Row>
+				<Row className="levellisting-page">
+					<Col className="level-table" md="12">
+						<div className={`ag-grid-wrapper height-width-wrapper ${state.tableData && state.tableData?.length <= 0 ? "overlay-contain" : ""}`}>
+							<div className="ag-grid-header">
+								<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => levelMappingFilterHandler(e)} />
 							</div>
-						</Col>
-					</Row>
-				</div>
-				<div className='p-relative'>
-					{this.state.isLoader && <LoaderCustom />}
-					<Row className="levellisting-page mt20">
-						<Col md="12">
-							<h2 className="manage-level-heading">{`Simulation Level Mapping`}</h2>
-						</Col>
-					</Row>
-					<Row className="levellisting-page">
-						<Col md="6" className=""></Col>
-						<Col md="6" className="text-right search-user-block mb-3">
-							<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.simulationResetState()}>
-								<div className="refresh mr-0"></div>
-							</button>
-						</Col>
-					</Row>
-
-					<Row className="levellisting-page">
-						<Col className="level-table" md="12 ">
-							<div className={`ag-grid-wrapper height-width-wrapper ${this.props.simulationLevelDataList && this.props.simulationLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
-								<div className="ag-grid-header">
-									<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.simulationFilterHandler(e)} />
-								</div>
-								<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-									<AgGridReact
-										defaultColDef={defaultColDef}
-										domLayout='autoHeight'
-										// columnDefs={c}
-										rowData={this.props.simulationLevelDataList}
-										pagination={true}
-										paginationPageSize={defaultPageSize}
-										ref={this.agGrid2}
-										onGridReady={this.onGridReady}
-										gridOptions={gridOptions}
-										loadingOverlayComponent={'customLoadingOverlay'}
-										noRowsOverlayComponent={'customNoRowsOverlay'}
-										noRowsOverlayComponentParams={{
-											title: EMPTY_DATA,
-											imagClass: 'imagClass'
-										}}
-										frameworkComponents={frameworkComponents}
-									>
-										{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-										<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
-										<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
-										<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-										<AgGridColumn field="TechnologyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
-									</AgGridReact>
-									{<PaginationWrapper gridApi={this.gridApi} setPage={this.simulationPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
-								</div>
+							<div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+								{!state.isLoader && <AgGridReact
+									defaultColDef={defaultColDef}
+									floatingFilter={true}
+									domLayout='autoHeight'
+									// columnDefs={c}
+									rowData={state.tableData}
+									pagination={true}
+									ref={agGrid1}
+									paginationPageSize={defaultPageSize}
+									onGridReady={onGridReady}
+									gridOptions={gridOptions}
+									loadingOverlayComponent={'customLoadingOverlay'}
+									noRowsOverlayComponent={'customNoRowsOverlay'}
+									noRowsOverlayComponentParams={{
+										title: EMPTY_DATA,
+										imagClass: 'imagClass'
+									}}
+									frameworkComponents={frameworkComponents}
+								>
+									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+									<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
+									<AgGridColumn field="Technology" headerName="Technology"></AgGridColumn>
+									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
+									<AgGridColumn field="TechnologyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+								</AgGridReact>
+								}
+								{<PaginationWrapper gridApi={state.gridApi} setPage={levelMappingPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
 							</div>
-						</Col>
-					</Row>
-				</div>
-				{
-					getConfigurationKey().IsMasterApprovalAppliedConfigure &&
-					<>
-						<div className='p-relative'>
-							{this.state.isLoader && <LoaderCustom />}
-							<Row className="levellisting-page mt20">
-								<Col md="12">
-									<h2 className="manage-level-heading">{`Master Level Mapping`}</h2>
-								</Col>
-							</Row>
-							<Row className="levellisting-page">
-								<Col md="6" className=""></Col>
-								<Col md="6" className="text-right search-user-block mb-3">
-									<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.masterResetState()}>
-										<div className="refresh mr-0"></div>
-									</button>
-								</Col>
-							</Row>
-
-							<Row className="levellisting-page">
-								<Col className="level-table" md="12 ">
-									<div className={`ag-grid-wrapper height-width-wrapper ${this.props.masterLevelDataList && this.props.masterLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
-										<div className="ag-grid-header">
-											<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.masterFilterHandler(e)} />
-										</div>
-										<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-											<AgGridReact
-												defaultColDef={defaultColDef}
-												domLayout='autoHeight'
-												// columnDefs={c}
-												rowData={this.props.masterLevelDataList}
-												pagination={true}
-												ref={this.agGrid3}
-												paginationPageSize={defaultPageSize}
-												onGridReady={this.onGridReady}
-												gridOptions={gridOptions}
-												loadingOverlayComponent={'customLoadingOverlay'}
-												noRowsOverlayComponent={'customNoRowsOverlay'}
-												noRowsOverlayComponentParams={{
-													title: EMPTY_DATA,
-													imagClass: 'imagClass'
-												}}
-												frameworkComponents={frameworkComponents}
-											>
-												{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-												<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
-												<AgGridColumn field="Master" headerName="Master"></AgGridColumn>
-												<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
-												<AgGridColumn field="MasterId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>
-											</AgGridReact>
-											{<PaginationWrapper gridApi={this.gridApi} setPage={this.masterPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
-										</div>
-									</div>
-
-									{
-										this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`} />
-									}
-								</Col>
-							</Row>
 						</div>
-					</>
-				}
-			</>
-		);
-	}
-}
+					</Col>
+				</Row>
+			</div>
+			<div className='p-relative'>
+				{state.isLoader && <LoaderCustom />}
+				<Row className="levellisting-page mt20">
+					<Col md="12">
+						<h2 className="manage-level-heading">{`Simulation Level Mapping`}</h2>
+					</Col>
+				</Row>
+				<Row className="levellisting-page">
+					<Col md="6" className=""></Col>
+					<Col md="6" className="text-right search-user-block mb-3">
+						{/* <Button
+                        id="Simulation_resetButton"
+						type="button"
+						title="Reset Grid"
+                        onClick={(e) => simulationResetState()}}
+                       className="user-btn"
+                        
+                      /> */}
+						<button type="button" className="user-btn" title="Reset Grid" onClick={() => simulationResetState()}>
+							<div className="refresh mr-0"></div>
+						</button>
+					</Col>
+				</Row>
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ auth }) {
-	const { loading, levelMappingList, simulationLevelDataList, masterLevelDataList } = auth;
+				<Row className="levellisting-page">
+					<Col className="level-table" md="12 ">
+						<div className={`ag-grid-wrapper height-width-wrapper ${simulationLevelDataList && simulationLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+							<div className="ag-grid-header">
+								<input type="text" className="form-control table-search" id="filter-text-box-simulation" placeholder="Search" autoComplete={'off'} onChange={(e) => simulationFilterHandler(e)} />
+							</div>
+							<div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+								{!state.isLoader &&<AgGridReact
+									defaultColDef={defaultColDef}
+									domLayout='autoHeight'
+									// columnDefs={c}
+									rowData={simulationLevelDataList}
+									pagination={true}
+									paginationPageSize={defaultPageSize}
+									ref={agGrid2}
+									onGridReady={onGridReady}
+									gridOptions={gridOptions}
+									loadingOverlayComponent={'customLoadingOverlay'}
+									noRowsOverlayComponent={'customNoRowsOverlay'}
+									noRowsOverlayComponentParams={{
+										title: EMPTY_DATA,
+										imagClass: 'imagClass'
+									}}
+									frameworkComponents={frameworkComponents}
+								>
+									{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+									<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
+									<AgGridColumn field="Technology" headerName="Heads"></AgGridColumn>
+									<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
+									<AgGridColumn field="TechnologyId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'simulationButtonFormatter'}></AgGridColumn>
+								</AgGridReact>}
+								{<PaginationWrapper gridApi={state.gridApi} setPage={simulationPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
+							</div>
+						</div>
+					</Col>
+				</Row>
+			</div>
+			{
+				getConfigurationKey().IsMasterApprovalAppliedConfigure &&
+				<>
+					<div className='p-relative'>
+						{state.isLoader && <LoaderCustom />}
+						<Row className="levellisting-page mt20">
+							<Col md="12">
+								<h2 className="manage-level-heading">{`Master Level Mapping`}</h2>
+							</Col>
+						</Row>
+						<Row className="levellisting-page">
+							<Col md="6" className=""></Col>
+							<Col md="6" className="text-right search-user-block mb-3">
+								<button type="button" className="user-btn" title="Reset Grid" onClick={() => masterResetState()}>
+									<div className="refresh mr-0"></div>
+								</button>
+							</Col>
+						</Row>
 
-	return { loading, levelMappingList, simulationLevelDataList, masterLevelDataList };
-}
+						<Row className="levellisting-page">
+							<Col className="level-table" md="12 ">
+								<div className={`ag-grid-wrapper height-width-wrapper ${masterLevelDataList && masterLevelDataList?.length <= 0 ? "overlay-contain" : ""}`}>
+									<div className="ag-grid-header">
+										<input type="text" className="form-control table-search" id="filter-text-box-master" placeholder="Search" autoComplete={'off'} onChange={(e) => masterFilterHandler(e)} />
+									</div>
+									<div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+										{!state.isLoader &&<AgGridReact
+											defaultColDef={defaultColDef}
+											domLayout='autoHeight'
+											// columnDefs={c}
+											rowData={masterLevelDataList}
+											pagination={true}
+											ref={agGrid3}
+											paginationPageSize={defaultPageSize}
+											onGridReady={onGridReady}
+											gridOptions={gridOptions}
+											loadingOverlayComponent={'customLoadingOverlay'}
+											noRowsOverlayComponent={'customNoRowsOverlay'}
+											noRowsOverlayComponentParams={{
+												title: EMPTY_DATA,
+												imagClass: 'imagClass'
+											}}
+											frameworkComponents={frameworkComponents}
+										>
+											{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+											<AgGridColumn field="ApprovalType" headerName="Approval Type"></AgGridColumn>
+											<AgGridColumn field="Master" headerName="Master"></AgGridColumn>
+											<AgGridColumn field="Level" headerName="Highest Approval Level"></AgGridColumn>
+											<AgGridColumn field="MasterId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'masterButtonFormatter'}></AgGridColumn>
+										</AgGridReact>}
+										{<PaginationWrapper gridApi={state.gridApi} setPage={masterPagination} pageSize1={5} pageSize2={15} pageSize3={25} />}
+									</div>
+								</div>
 
-export default connect(mapStateToProps,
-	{
-		getAllLevelMappingAPI,
-		deleteUserLevelAPI,
-		getSimulationLevelDataList,
-		getMasterLevelDataList
-	})(LevelTechnologyListing);
+								{
+									state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`} />
+								}
+							</Col>
+						</Row>
+					</div>
+				</>
+			}
+		</>
+	);
+};
 
+export default LevelTechnologyListing;

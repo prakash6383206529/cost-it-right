@@ -22,7 +22,7 @@ import { loggedInUserId } from "../../../helper";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
+const ExcelFile = ReactExport.ExcelFile;
 const gridOptions = {};
 
 const ClientListing = () => {
@@ -52,13 +52,14 @@ const ClientListing = () => {
     noData: false,
     dataCount: 0,
   });
+  const [searchFilter, setSearchFilter] = useState("")
 
 
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
     getTableListData(null, null);
-
+// eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
 
@@ -105,7 +106,6 @@ const ClientListing = () => {
 
   const buttonFormatter = (props) => {
     const { ViewAccessibility, EditAccessibility, DeleteAccessibility } = state;
-
     const cellValue = props?.value;
 
     return (
@@ -271,8 +271,8 @@ const ClientListing = () => {
     tempArr = tempArr && tempArr.length > 0 ? tempArr : clientDataList ? clientDataList : [];
     return returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr);
   };
-
   const returnExcelColumn = (data = [], TempData) => {
+    // let excelData = hideCustomerFromExcel(data, "CustomerName")
     let temp = [];
     temp =
       TempData && TempData.map((item) => {
@@ -281,8 +281,9 @@ const ClientListing = () => {
         }
         return item;
       });
+
     return (
-      <ExcelSheet data={temp} name={Clientmaster}>
+      <ExcelSheet data={temp} name={"Customer"}>
         {data && data.map((ele, index) => (
           <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
         ))}
@@ -291,10 +292,15 @@ const ClientListing = () => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    state.gridApi.setQuickFilter(e.target.value);
+    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
   };
 
   const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+        searchBox.value = ""; // Reset the input field's value
+    }
+    state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null); // Reset any header filters
@@ -305,7 +311,7 @@ const ClientListing = () => {
 
 
   const { isOpenVendor, noData } = state;
-  const ExcelFile = ReactExport.ExcelFile;
+
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -340,16 +346,19 @@ const ClientListing = () => {
                     <div className={"plus mr-0"}></div>
                   </button>
                 )}
-                {state?.DownloadAccessibility && (
+                {
+                  state.DownloadAccessibility &&
+                  <>
+                    <>
+                      <ExcelFile filename={Clientmaster} fileExtension={'.xls'} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1"></div>
+                        {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}</button>}>
+                        {onBtExport()}
+                      </ExcelFile>
+                    </>
 
-                  <ExcelFile filename={Clientmaster} fileExtension={".xls"}
-                    element={<button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`}
-                      type="button" className={"user-btn mr5"}>
-                      <div className="download mr-1"></div>
-                      {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`}
-                    </button>
-                    }>{onBtExport()} </ExcelFile>
-                )}
+                  </>
+
+                }
 
                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}                >
                   <div className="refresh mr-0"></div>
