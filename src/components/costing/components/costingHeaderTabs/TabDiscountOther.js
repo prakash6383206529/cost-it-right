@@ -2270,4 +2270,3 @@ function TabDiscountOther(props) {
 };
 
 export default React.memo(TabDiscountOther);
-// CIR-I6272
