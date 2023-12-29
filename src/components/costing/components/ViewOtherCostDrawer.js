@@ -188,7 +188,7 @@ function ViewOtherCostDrawer(props) {
                                     </>
                                 }
                                 {initialConfiguration?.IsShowNpvCost && costingSummary && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} />} */}
-                                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
+                                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary && !props?.isRfqCosting &&
                                     <div className='firefox-spaces pb-3'>
                                         <Col md="12" className={'mt-4 firefox-spaces '}>
                                             <HeaderTitle className="border-bottom firefox-spaces"
