@@ -70,14 +70,20 @@ function AddConditionCosting(props) {
             }
         }
 
-        if (isFromMaster || hasCostingConditionEntryTypeId || props?.costingConditionEntryType !== undefined) {
-            const entryTypeId = EntryType || tableData[0]?.CostingConditionEntryTypeId || props?.costingConditionEntryType;
+        if (isFromMaster || hasCostingConditionEntryTypeId || props?.costingConditionEntryType) {
+            const entryTypeId =
+                EntryType !== undefined
+                    ? EntryType
+                    : tableData[0]?.CostingConditionEntryTypeId !== undefined
+                        ? tableData[0].CostingConditionEntryTypeId
+                        : props?.costingConditionEntryType;
 
             dispatch(getCostingCondition(entryTypeId, (res) => {
                 if (res?.data?.DataList) {
                     const temp = res.data.DataList.map(item => ({
                         label: `${item.Description} (${item.CostingConditionNumber})`,
                         value: item.CostingConditionMasterId,
+                        ConditionType: item.ConditionType
                     }));
 
                     setConditionDropdown(temp);
@@ -102,7 +108,9 @@ function AddConditionCosting(props) {
                 cssClass = 'mt-4 pt-1';
             }
         } else {
-            if (type === "Percentage") {
+            if (type === "") {
+                cssClass = 'mb-3';
+            } else if (type === "Fixed") {
                 cssClass = 'mb-3';
             } else {
                 cssClass = 'mt-4 pt-1';

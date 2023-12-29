@@ -446,6 +446,9 @@ class BulkUpload extends Component {
                                 if (fileName === 'Product Component' && fileHeads[i] === 'PreferredForImpactCalculation') {
                                     fileHeads[i] = 'IsConsideredForMBOM'
                                 }
+                                if (fileName === 'Vendor' && fileHeads[i] === 'PlantCode') {
+                                    fileHeads[i] = 'Plants'
+                                }
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })
