@@ -137,7 +137,7 @@ const CostingSummaryTable = (props) => {
     process: false,
     operation: false
   })
-  const partType = IdForMultiTechnology.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
+  const partType = IdForMultiTechnology?.includes(String(viewCostingData[0]?.technologyId))       //CHECK IF MULTIPLE TECHNOLOGY DATA IN SUMMARY
   const { register, control, formState: { errors }, setValue, getValues } = useForm({
     mode: 'onChange',
     reValidateMode: 'onChange',
@@ -770,7 +770,7 @@ const CostingSummaryTable = (props) => {
 
   const checkWarning = (data) => {
     let final = _.map(data, 'IsApprovalLocked')
-    if (final?.length === 0 || final.includes(true)) {
+    if (final?.length === 0 || final?.includes(true)) {
       setIsWarningFlag(true)
     } else {
       setIsWarningFlag(false)
@@ -781,7 +781,7 @@ const CostingSummaryTable = (props) => {
     if (check === 'top') {                                                            // WHEN USER CLICK ON TOP SEND FOR APPROVAL
       let temp = multipleCostings
 
-      if (temp.includes(id)) {                                                        // WHEN DESELECT THE CHECKBOX
+      if (temp?.includes(id)) {                                                        // WHEN DESELECT THE CHECKBOX
         temp = multipleCostings.filter((item) => item !== id)                         // FILTER DESELECTED ID 
         const filteredData = dataSelected.filter((item) => item.costingId !== id)     // FLTER DATA TO SET IN ARRAY LIST 
         setDataSelected(filteredData)
@@ -932,7 +932,7 @@ const CostingSummaryTable = (props) => {
       plantArray.push(item.PlantCode)
       return null
     })
-    if (effectiveDateArray.includes('')) {
+    if (effectiveDateArray?.includes('')) {
       Toaster.warning('Please select the effective date.')
       return false
     }
@@ -1901,7 +1901,7 @@ const CostingSummaryTable = (props) => {
                         {<th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} ></th>}
                         {viewCostingData && viewCostingData?.map((data, index) => {
                           return (<>
-                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? "Best Cost" : ""}</th>
+                            <th style={{ width: cssObj.particularWidth + "%" }} key={index} scope="col" className='approval-summary-headers'>{props.uniqueShouldCostingId?.includes(data.costingId) ? "Should Cost" : data?.bestCost === true ? "Best Cost" : ""}</th>
                           </>
                           )
                         })}
@@ -1935,12 +1935,12 @@ const CostingSummaryTable = (props) => {
                                               value={"All"}
                                               id={`checkbox-${index}`}
                                               // disabled={true}
-                                              checked={multipleCostings.includes(data?.costingId)}
+                                              checked={multipleCostings?.includes(data?.costingId)}
                                             />
                                             <span
                                               id={`checkbox-${index}`}
                                               className=" before-box"
-                                              checked={multipleCostings.includes(data?.costingId)}
+                                              checked={multipleCostings?.includes(data?.costingId)}
                                               onChange={() => moduleHandler(data?.costingId, 'top', data)}
                                             />
                                           </label>
