@@ -19,6 +19,9 @@ import { required, maxLength15 } from "../../../../../helper/validation";
 import { number, decimalNumberLimit6, checkWhiteSpaces, alphaNumericValidation, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 import { swappingLogicCommon } from '../../../CostingUtil';
 import Button from '../../../../layout/Button';
+import TourWrapper from '../../../../common/Tour/TourWrapper';
+import { Steps } from '../../TourMessages';
+import { useTranslation } from 'react-i18next';
 
 let counter = 0;
 function OperationCost(props) {
@@ -46,7 +49,10 @@ function OperationCost(props) {
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const costData = useContext(costingInfoContext);
-
+  const { t } = useTranslation("Costing")
+  const [tourState, setTourState] = useState({
+    steps: []
+  })
   useEffect(() => {
     const Params = {
       index: 0,
@@ -174,7 +180,7 @@ function OperationCost(props) {
       Toaster.success('Remark saved successfully')
     }
     setGridData(tempArr)
-    var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
+    var button = document.getElementById(`operationCost_popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     button.click()
   }
 
@@ -190,7 +196,7 @@ function OperationCost(props) {
   }
 
   const onRemarkPopUpClose = (index) => {
-    var button = document.getElementById(`popUpTriggerss${props.IsAssemblyCalculation}${index}`)
+    var button = document.getElementById(`operationCost_popUpTriggerss${props.IsAssemblyCalculation}${index}`)
     if (errors && errors.OperationGridFields && errors.OperationGridFields[index].remarkPopUp) {
       delete errors.OperationGridFields[index].remarkPopUp;
       setOperationRemark(false)
@@ -331,7 +337,9 @@ function OperationCost(props) {
       })
     }
   }
+  const tourStart = () => {
 
+  }
   const OperationGridFields = 'OperationGridFields';
 
   /**
@@ -345,7 +353,12 @@ function OperationCost(props) {
           <Row className="align-items-center">
             <Col md="8">
               <div className="left-border">
-                {'Operation Cost:'}
+                {'Operation Cost:'}{gridData && gridData.length !== 0 &&
+                  <TourWrapper
+                    buttonSpecificProp={{ id: "Costing_RM_Cost", onClick: tourStart }}
+                    stepsSpecificProp={{
+                      steps: Steps(t).OPERATION_COST
+                    }} />}
               </div>
             </Col>
             <Col md={'4'}>
@@ -516,9 +529,9 @@ function OperationCost(props) {
                             </td>}
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked) && <button title='Edit' className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
-                                {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
-                                <Popup trigger={<button id={`popUpTriggerss${props.IsAssemblyCalculation}${index}`} title="Remark" className="Comment-box align-middle" type={'button'} />}
+                                {(!CostingViewMode && !IsLocked) && <button title='Edit' id={`operationCost_edit${index}`} className="Edit mb-0 align-middle" type={'button'} onClick={() => editItem(index)} />}
+                                {(!CostingViewMode && !IsLocked) && <button title='Delete' id={`operationCost_delete${index}`} className="Delete mb-0 align-middle" type={'button'} onClick={() => deleteItem(index, item.OperationId)} />}
+                                <Popup trigger={<button id={`operationCost_popUpTriggerss${props.IsAssemblyCalculation}${index}`} title="Remark" className="operation Comment-box align-middle" type={'button'} />}
                                   position={'top right'}>
                                   <TextAreaHookForm
                                     label="Remark:"

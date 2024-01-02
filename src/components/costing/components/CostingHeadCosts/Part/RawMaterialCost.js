@@ -978,7 +978,7 @@ function RawMaterialCost(props) {
     if (getValues(`${rmGridFields}.${index}.remarkPopUp`)) {
       Toaster.success('Remark saved successfully')
     }
-    var button = document.getElementById(`popUpTrigger${index}`)
+    var button = document.getElementById(`RM_popUpTrigger${index}`)
     button.click()
   }
 
@@ -994,7 +994,7 @@ function RawMaterialCost(props) {
   }
 
   const onRemarkPopUpClose = (index) => {
-    var button = document.getElementById(`popUpTrigger${index}`)
+    var button = document.getElementById(`RM_popUpTrigger${index}`)
     setValue(`${rmGridFields}.${index}.remarkPopUp`, gridData[index].Remark)
     if (errors && errors.rmGridFields && errors.rmGridFields[index].remarkPopUp) {
       delete errors.rmGridFields[index].remarkPopUp;
@@ -1242,9 +1242,9 @@ function RawMaterialCost(props) {
   const tourStart = () => {
     setTourState(prevState => ({
       ...prevState,
-      steps: Steps(t).TAB_RMC,
-      hints: []
+      steps: Steps(t).RAW_MATERIAL_COST,
     }))
+    console.log(tourState, "tourState");
   }
   /**
    * @method render
@@ -1259,11 +1259,12 @@ function RawMaterialCost(props) {
           <Row className="align-items-center">
             <Col md="6">
               <div className="left-border">{'Raw Material Cost:'}
-                <TourWrapper
-                  buttonSpecificProp={{ id: "Costing_RM_Cost", onClick: tourStart }}
-                  stepsSpecificProp={{
-                    steps: tourState.steps
-                  }} />
+                {gridData && gridData.length !== 0 &&
+                  <TourWrapper
+                    buttonSpecificProp={{ id: "Costing_RM_Cost", onClick: tourStart }}
+                    stepsSpecificProp={{
+                      steps: Steps(t).RAW_MATERIAL_COST
+                    }} />}
               </div>
             </Col>
             <Col md={'6'} className="btn-container">
@@ -1361,7 +1362,8 @@ function RawMaterialCost(props) {
                             {showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
                               <td className="text-center">
                                 {showCalculatorFunction(item) ? <button
-                                  className="CalculatorIcon cr-cl-icon "
+                                  id={`RM_calculator${index}`}
+                                  className={`CalculatorIcon cr-cl-icon RM_calculator${index}`}
                                   type={'button'}
                                   onClick={() => toggleWeightCalculator(index)}
                                   disabled={CostingViewMode ? item?.RawMaterialCalculatorId === null ? true : false : false}
@@ -1388,7 +1390,7 @@ function RawMaterialCost(props) {
                                     }}
                                     defaultValue={checkForDecimalAndNull(item.GrossWeight, getConfigurationKey().NoOfDecimalForInputOutput)}
                                     className=""
-                                    customClassName={'withBorder'}
+                                    customClassName={`withBorder Raw_material_grossWeight${index}`}
                                     handleChange={(e) => {
                                       e.preventDefault()
                                       handleGrossWeightChange(e?.target?.value, index)
@@ -1417,7 +1419,7 @@ function RawMaterialCost(props) {
                                       }}
                                       defaultValue={checkForDecimalAndNull(item.FinishWeight, getConfigurationKey().NoOfDecimalForInputOutput)}
                                       className=""
-                                      customClassName={'withBorder'}
+                                      customClassName={`withBorder Raw_material_finishWeight${index}`}
                                       handleChange={(e) => {
                                         e.preventDefault()
                                         handleFinishWeightChange(e?.target?.value, index)
@@ -1497,11 +1499,12 @@ function RawMaterialCost(props) {
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && < button
                                   className="Delete "
+                                  id={`RM_delete${index}`}
                                   title='Delete'
                                   type={'button'}
                                   onClick={() => (costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER) ? deleteMultiple(index) : deleteItem(index)}
                                 />}
-                                <Popup className='rm-popup' trigger={<button id={`popUpTrigger${index}`} title="Remark" className="Comment-box" type={'button'} />}
+                                <Popup className='rm-popup' trigger={<button id={`RM_popUpTrigger${index}`} title="Remark" className="Comment-box" type={'button'} />}
                                   position="top right">
                                   <TextAreaHookForm
                                     label="Remark:"

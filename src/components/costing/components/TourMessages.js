@@ -311,6 +311,73 @@ export function Steps(t, costingType) {
                 intro: t("addSTCost.addSt"),
             },
         ],
+        RAW_MATERIAL_COST: [
+            {
+                element: '.RM_calculator0',
+                intro: t("RawMaterialCost.calculator"),
+            },
+            {
+                element: '.Raw_material_grossWeight0',
+                intro: t("RawMaterialCost.grossWeigtht"),
+            },
+            {
+                element: '.Raw_material_finishWeight0',
+                intro: t("RawMaterialCost.finishWeight"),
+            },
+            {
+                element: '#RM_delete0',
+                intro: t("RawMaterialCost.delete"),
+            },
+            {
+                element: '#RM_popUpTrigger0',
+                intro: t("RawMaterialCost.remark"),
+            },
+        ],
+        BOP_COST: [
+
+            {
+                element: '#bopCost_edit0',
+                intro: t("RawMaterialCost.edit"),
+            },
+            {
+                element: '#bopCost_delete0',
+                intro: t("RawMaterialCost.delete"),
+            },
+            {
+                element: '#bop_handling_charge',
+                intro: t("RawMaterialCost.bopHanlding"),
+            },
+        ],
+        PROCESS_COST: [
+
+            {
+                element: '#process_Calculator0',
+                intro: t("processCost.calculator"),
+            },
+            {
+                element: '#process_delete0',
+                intro: t("processCost.delete"),
+            },
+            {
+                element: '#process_popUpTriggers0',
+                intro: t("processCost.remark"),
+            },
+        ],
+        OPERATION_COST: [
+
+            {
+                element: '#operationCost_edit0',
+                intro: t("operationCost.edit"),
+            },
+            {
+                element: '#operationCost_delete0',
+                intro: t("operationCost.delete"),
+            },
+            {
+                element: '.operation.Comment-box',
+                intro: t("operationCost.remark"),
+            },
+        ],
         PART_HINT: [{ element: '.part-name .Close', hint: t("Hints.partHint") }],
         OVERHEAD_HINT: [{ element: '#overhead_profit_arrow .Close', hint: t("Hints.overheadHint") }],
         ST_HINT: [{ element: '#costing_surface_treatment_btn', hint: t("Hints.surfaceTreamentButton") }]

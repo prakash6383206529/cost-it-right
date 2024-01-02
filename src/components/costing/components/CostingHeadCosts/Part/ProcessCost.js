@@ -21,6 +21,9 @@ import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 import Button from '../../../../layout/Button';
+import TourWrapper from '../../../../common/Tour/TourWrapper';
+import { Steps } from '../../TourMessages';
+import { useTranslation } from 'react-i18next';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -60,7 +63,10 @@ function ProcessCost(props) {
   const { CostingEffectiveDate, selectedProcessId, selectedProcessGroupId, processGroupGrid, ErrorObjRMCC } = useSelector(state => state.costing)
   const { rmFinishWeight } = props
   let dragEnd;
-
+  const [tourState, setTourState] = useState(
+    { step: [] }
+  )
+  const { t } = useTranslation("Costing")
   const formatMainArr = (arr) => {
     let apiArr = []
     arr && arr.map((item) => {
@@ -1318,6 +1324,9 @@ function ProcessCost(props) {
     }
   }
 
+  const tourStart = () => {
+
+  }
   /**
    * @method render
    * @description Renders the component
@@ -1344,7 +1353,12 @@ function ProcessCost(props) {
 
           <Row className="align-items-center">
             <Col md="10">
-              <div className="left-border">{'Process Cost:'}</div>
+              <div className="left-border">{'Process Cost:'}{gridData && gridData.length !== 0 &&
+                <TourWrapper
+                  buttonSpecificProp={{ id: "Costing_RM_Cost", onClick: tourStart }}
+                  stepsSpecificProp={{
+                    steps: Steps(t).PROCESS_COST
+                  }} />}</div>
             </Col>
             <Col md={'2'}>
               {(!CostingViewMode && !IsLocked) &&
@@ -1434,6 +1448,7 @@ function ProcessCost(props) {
                                     {
                                       (item.GroupName === '' || item.GroupName === null) &&
                                       <button
+                                        id={`process_Calculator${index}`}
                                         className="CalculatorIcon cr-cl-icon calc-icon-middle"
                                         type={'button'}
                                         onClick={() => toggleWeightCalculator(index)}
@@ -1491,8 +1506,8 @@ function ProcessCost(props) {
                             </td>}
                             <td>
                               <div className='action-btn-wrapper'>
-                                {(!CostingViewMode && !IsLocked) && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
-                                {(item?.GroupName === '' || item?.GroupName === null) && <Popup trigger={<button id={`popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
+                                {(!CostingViewMode && !IsLocked) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
+                                {(item?.GroupName === '' || item?.GroupName === null) && <Popup trigger={<button id={`process_popUpTriggers${index}`} title="Remark" className="Comment-box" type={'button'} />}
                                   position="top right">
                                   <TextAreaHookForm
                                     label="Remark:"

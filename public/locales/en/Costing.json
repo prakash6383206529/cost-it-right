@@ -82,7 +82,25 @@
         "nextData": "from here, you will go to summary drawer and data will save"
     },
     "RawMaterialCost": {
-        "grossWeigtht": "Add gross weight here.",
-        "finishWght": "Add finish weight here."
+        "calculator": "Add finish weight and gross weight using this calculator",
+        "grossWeight": "Add gross weight here.",
+        "finishWeight": "Add finish weight here.",
+        "delete": "You can delete the RM from here",
+        "remark": "You can add remarks or note here"
+    },
+    "BopCost": {
+        "edit": "You can edit the BOP from here",
+        "delete": "You can delete the BOP from here",
+        "bopHanlding": "You can add your BOP handling charge from here"
+    },
+    "processCost": {
+        "calculator": "You can fill data from calculator for process cost",
+        "delete": "You can delete the process from here",
+        "remark": "You can add remarks or notes from here.S"
+    },
+    "operationCost": {
+        "edit": "You can edit the operation from here",
+        "delete": "You can delete the operation from here",
+        "remark": "You can add remarks or notes from here."
     }
 }
