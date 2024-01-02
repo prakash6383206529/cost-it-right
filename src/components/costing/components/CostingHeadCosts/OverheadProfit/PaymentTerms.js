@@ -329,7 +329,7 @@ function PaymentTerms(props) {
         <>
             <Row className="mt-15 pt-15">
                 <Col md="12" className="switch mb-2">
-                    <label className="switch-level">
+                    <label className="switch-level" id="Payment_Terms_switch">
                         <Switch
                             onChange={onPressPaymentTerms}
                             checked={IsPaymentTermsApplicable}

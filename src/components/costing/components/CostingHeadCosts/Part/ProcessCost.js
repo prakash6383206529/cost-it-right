@@ -20,6 +20,7 @@ import { findProcessCost, findProductionPerHour, swappingLogicCommon } from '../
 import { debounce } from 'lodash';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
+import Button from '../../../../layout/Button';
 
 let counter = 0;
 function ProcessCost(props) {
@@ -1346,13 +1347,14 @@ function ProcessCost(props) {
               <div className="left-border">{'Process Cost:'}</div>
             </Col>
             <Col md={'2'}>
-              {(!CostingViewMode && !IsLocked) && <button
-                type="button"
-                className={'user-btn'}
-                onClick={DrawerToggle}
-              >
-                <div className={'plus'}></div>PROCESS
-              </button>}
+              {(!CostingViewMode && !IsLocked) &&
+
+                <Button
+                  id="Costing_addProcess"
+                  onClick={DrawerToggle}
+                  icon={"plus"}
+                  buttonName={"PROCESS"}
+                />}
             </Col>
           </Row>
 

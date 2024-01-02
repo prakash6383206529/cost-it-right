@@ -23,6 +23,10 @@ import PopupMsgWrapper from '../../../../common/PopupMsgWrapper';
 import { SHEETMETAL, RUBBER, FORGING, DIE_CASTING, PLASTIC, CORRUGATEDBOX, Ferrous_Casting, MACHINING } from '../../../../../config/masterData'
 import _, { debounce } from 'lodash'
 import { number, checkWhiteSpaces, hashValidation, percentageLimitValidation, decimalNumberLimit6, percentageOfNumber } from "../../../../../helper/validation";
+import Button from '../../../../layout/Button'
+import TourWrapper from '../../../../common/Tour/TourWrapper'
+import { Steps } from '../../TourMessages'
+import { useTranslation } from 'react-i18next'
 
 let counter = 0;
 let timerId = 0
@@ -41,7 +45,7 @@ function RawMaterialCost(props) {
 
     }
   })
-
+  const { t } = useTranslation("Costing")
   const rmGridFields = 'rmGridFields';
   const costData = useContext(costingInfoContext)
   const CostingViewMode = useContext(ViewCostingContext);
@@ -67,6 +71,9 @@ function RawMaterialCost(props) {
   const [deleteIndex, setDeleteIndex] = useState('');
   const [isMultiCalculatorData, setIsMultiCalculatorData] = useState(false);
   const [headerPinned, setHeaderPinned] = useState(true)
+  const [tourState, setTourState] = useState({
+    steps: []
+  })
   const [dataFromAPI, setDataFromAPI] = useState([
     {
       RMName: 'NFRCARM84',
@@ -1231,6 +1238,14 @@ function RawMaterialCost(props) {
     return value
   }
 
+
+  const tourStart = () => {
+    setTourState(prevState => ({
+      ...prevState,
+      steps: Steps(t).TAB_RMC,
+      hints: []
+    }))
+  }
   /**
    * @method render
    * @description Renders the component
@@ -1243,18 +1258,24 @@ function RawMaterialCost(props) {
         <div>
           <Row className="align-items-center">
             <Col md="6">
-              <div className="left-border">{'Raw Material Cost:'}</div>
+              <div className="left-border">{'Raw Material Cost:'}
+                <TourWrapper
+                  buttonSpecificProp={{ id: "Costing_RM_Cost", onClick: tourStart }}
+                  stepsSpecificProp={{
+                    steps: tourState.steps
+                  }} />
+              </div>
             </Col>
             <Col md={'6'} className="btn-container">
               {!CostingViewMode && !IsLocked && gridData && isShowAddBtn() &&
-                <button
-                  type="button"
-                  className={'user-btn'}
-                  onClick={DrawerToggle}
+
+                <Button
+                  id="Costing_addRM"
                   disabled={IsApplyMasterBatch}
-                >
-                  <div className={'plus'}></div>RM
-                </button>
+                  onClick={DrawerToggle}
+                  icon={"plus"}
+                  buttonName={"RM"}
+                />
               }
               {((costData?.TechnologyId === Ferrous_Casting || costData?.TechnologyId === RUBBER) && gridData?.length !== 0) && <button
                 className="secondary-btn"

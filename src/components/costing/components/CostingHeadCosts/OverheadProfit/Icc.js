@@ -383,7 +383,7 @@ function Icc(props) {
         <>
             <Row className="mt-15 pt-15">
                 <Col md="12" className="switch mb-2">
-                    <label className="switch-level">
+                    <label className="switch-level" id="Inventory_Carrying_Cost_switch">
                         <Switch
                             onChange={onPressInventory}
                             checked={IsInventoryApplicable}

@@ -1525,8 +1525,8 @@ function TabDiscountOther(props) {
                       <span >Total Cost:</span>
                       <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} />
                       <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
-                      <button type="button" id="overhead-refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
-                      <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Discount, Other cost and Cost" />
+                      <button type="button" id="total_refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
+                      <TooltipCustom disabledIcon={true} id="total_refresh" tooltipText="Refresh to update Discount, Other cost and Cost" />
                     </div>
                   </Col>
                 </Row>
@@ -1745,6 +1745,7 @@ function TabDiscountOther(props) {
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}
+                        id="change_currency_input"
                       >
                         Change Currency
                         <input
@@ -1839,7 +1840,7 @@ function TabDiscountOther(props) {
                         <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                           Maximum file upload limit reached.
                         </div>
-                        <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
+                        <div className={`${files.length >= 4 ? 'd-none' : ''}`} id="tabDiscount_attachments">
                           <Dropzone
                             ref={dropzone}
                             onChangeStatus={handleChangeStatus}
@@ -2222,18 +2223,21 @@ function TabDiscountOther(props) {
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
-                      {!CostingViewMode && <button
-                        type="button"
-                        className="submit-button mr5 save-btn"
-                        onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
-                        disabled={isDisable}
-                      >
-                        <div className={"save-icon"}></div>
-                        {"Save"}
-                      </button>}
+                      {!CostingViewMode &&
+                        <button
+                          id="discountTab_save"
+                          type="button"
+                          className="submit-button mr5 save-btn"
+                          onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
+                          disabled={isDisable}
+                        >
+                          <div className={"save-icon"}></div>
+                          {"Save"}
+                        </button>}
 
                       {!CostingViewMode && <button
                         type="button"
+                        id="discountTab_next"
                         className="submit-button save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                         disabled={isDisable}

@@ -18,6 +18,7 @@ import { AcceptableOperationUOM, STRINGMAXLENGTH, TEMPOBJECTOPERATION } from '..
 import { required, maxLength15 } from "../../../../../helper/validation";
 import { number, decimalNumberLimit6, checkWhiteSpaces, alphaNumericValidation, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 import { swappingLogicCommon } from '../../../CostingUtil';
+import Button from '../../../../layout/Button';
 
 let counter = 0;
 function OperationCost(props) {
@@ -348,11 +349,13 @@ function OperationCost(props) {
               </div>
             </Col>
             <Col md={'4'}>
-              {(!CostingViewMode && !IsLocked) && <button
-                type="button"
-                className={'user-btn'}
-                onClick={DrawerToggle}>
-                <div className={'plus'}></div>OPER</button>}
+              {(!CostingViewMode && !IsLocked) &&
+                <Button
+                  id="Costing_addOperation"
+                  onClick={DrawerToggle}
+                  icon={"plus"}
+                  buttonName={"OPER"}
+                />}
             </Col>
           </Row>
           <Row>

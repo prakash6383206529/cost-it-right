@@ -16,6 +16,7 @@ import TooltipCustom from '../../../../common/Tooltip';
 import { AcceptableOperationUOM, REMARKMAXLENGTH, STRINGMAXLENGTH, TEMPOBJECTOTHEROPERATION } from '../../../../../config/masterData';
 import { number, decimalNumberLimit6, checkWhiteSpaces, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 import { swappingLogicCommon } from '../../../CostingUtil';
+import Button from '../../../../layout/Button';
 
 let counter = 0;
 function OperationCostExcludedOverhead(props) {
@@ -327,11 +328,13 @@ function OperationCostExcludedOverhead(props) {
               </div>
             </Col>
             <Col md={'4'}>
-              {(!CostingViewMode && !IsLocked) && <button
-                type="button"
-                className={'user-btn'}
-                onClick={DrawerToggle}>
-                <div className={'plus'}></div>OTHER OPER</button>}
+              {(!CostingViewMode && !IsLocked) &&
+                <Button
+                  id="Costing_addOtherOperation"
+                  onClick={DrawerToggle}
+                  icon={"plus"}
+                  buttonName={"OTHER OPER"}
+                />}
             </Col>
           </Row>
           <Row>

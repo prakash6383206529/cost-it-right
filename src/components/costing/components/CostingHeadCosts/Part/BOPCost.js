@@ -15,6 +15,7 @@ import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, percentageLimitValidation, checkWhiteSpaces, numberLimit6, noDecimal, isNumber } from "../../../../../helper/validation";
+import Button from '../../../../layout/Button';
 
 let counter = 0;
 function BOPCost(props) {
@@ -484,11 +485,13 @@ function BOPCost(props) {
               </div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && !IsLocked && <button
-                type="button"
-                className={'user-btn'}
-                onClick={DrawerToggle}>
-                <div className={'plus'}></div>BOP</button>}
+              {!CostingViewMode && !IsLocked &&
+                <Button
+                  id="Costing_addBOP"
+                  onClick={DrawerToggle}
+                  icon={"plus"}
+                  buttonName={"BOP"}
+                />}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >

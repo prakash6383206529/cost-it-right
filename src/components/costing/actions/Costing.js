@@ -54,6 +54,7 @@ import {
   SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
   SET_COSTING_MODE,
   CORRUGATED_DATA,
+  COSTING_ACC_OPEN_CLOSE_STATUS,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2701,3 +2702,11 @@ export function corrugatedData(data) {
     });
   }
 }
+export function openCloseStatus(status) {
+  return (dispatch) => {
+    dispatch({
+      type: COSTING_ACC_OPEN_CLOSE_STATUS,
+      payload: status,
+    });
+  }
+};
