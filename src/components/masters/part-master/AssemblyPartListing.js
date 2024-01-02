@@ -49,7 +49,7 @@ const AssemblyPartListing = React.memo((props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    ID: "",
+    Id: "",
     isViewMode: false,
     isActivate: false,
     isDownload: false,
@@ -61,7 +61,6 @@ const AssemblyPartListing = React.memo((props) => {
 
 
   const permissions = useContext(ApplyPermission);
-  console.log('permissions: ', permissions);
 
 
   const getTableListData = () => {
@@ -95,13 +94,17 @@ const AssemblyPartListing = React.memo((props) => {
 
 
   const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
-    setState((prevState) => ({
-      ...prevState,
+    let requestData = {
       isOpen: true,
       isEditFlag: true,
-      ID: Id,
+      Id: Id,
       isViewMode: isViewMode,
+    }
+    setState((prevState) => ({
+      ...prevState,
+      ...requestData,
     }));
+    props?.getDetails(requestData)
   }, []);
 
   const deleteItem = useCallback((Id) => {
@@ -159,7 +162,6 @@ const AssemblyPartListing = React.memo((props) => {
   const buttonFormatter = useCallback((props) => {
     const cellValue = props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    console.log(permissions, "permissions");
     return (
       <>
         {permissions.View && (
@@ -307,7 +309,6 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const resetState = () => {
-    console.log("COMING IN RESET FUNCTION", state);
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);

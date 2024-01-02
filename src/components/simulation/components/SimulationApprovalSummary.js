@@ -129,6 +129,7 @@ function SimulationApprovalSummary(props) {
     const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
+    const [accDisable, setAccDisable] = useState(false)
     const headers = {
         NetCost: `Net Cost ${initialConfiguration?.BaseCurrency}`,
     }
@@ -748,6 +749,12 @@ function SimulationApprovalSummary(props) {
         // setAssemblyWiseAcc(true)
         // }, 350);
     }
+
+    // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
+    const fgWiseAccDisable = (data) => {
+        setAccDisable(data)
+    }
+
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (costingList?.length !== 0) {
@@ -1181,6 +1188,8 @@ function SimulationApprovalSummary(props) {
                                     headerName={headerName}
                                     impactType={'FgWise'}
                                     tooltipEffectiveDate={DayTime(simulationDetail.AmendmentDetails?.EffectiveDate).format('DD/MM/YYYY')}
+                                    fgWiseAccDisable={fgWiseAccDisable}
+                                    isSimulation={true}
                                 />
                             }
                         </>}
