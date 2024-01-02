@@ -55,6 +55,7 @@ import {
   SET_COSTING_MODE,
   CORRUGATED_DATA,
   COSTING_ACC_OPEN_CLOSE_STATUS,
+  GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
 import { MESSAGES } from '../../../config/message'
@@ -2710,3 +2711,25 @@ export function openCloseStatus(status) {
     });
   }
 };
+
+/**
+ * @method getExternalIntegrationFgWiseImpactData
+ * @description getExternalIntegrationFgWiseImpactData
+ */
+export function getExternalIntegrationFgWiseImpactData(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.getExternalIntegrationFgWiseImpactData, data, config())
+    request.then((response) => {
+      if (response.data.Result || response?.status === 204) {
+        dispatch({
+          type: GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
+          payload: response?.status === 200 ? response?.data?.DataList : [],
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}

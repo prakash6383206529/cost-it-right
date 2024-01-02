@@ -77,6 +77,7 @@ const SendForApproval = (props) => {
   const [approvalType, setApprovalType] = useState({});
   const [technologyLevelsList, setTechnologyLevelsList] = useState({});
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
+  const [costingIdArray, setCostingIdArray] = useState([])
 
   const apicall = (technologyId, depart, ApprovalTypeId, isdisable, levelsList) => {
 
@@ -197,6 +198,16 @@ const SendForApproval = (props) => {
         setApprovalType(viewApprovalData[0]?.costingTypeId)
       }
     }))
+
+    let requestArray = []
+    let requestObject = {}
+    viewApprovalData && viewApprovalData.map((item) => {
+      requestArray.push(item.costingId)
+      return null
+    })
+    requestObject.IsCreate = true
+    requestObject.CostingId = requestArray
+    setCostingIdArray(requestObject)
   }, [])
 
   /**
@@ -1281,6 +1292,8 @@ const SendForApproval = (props) => {
                 vendorIdState={viewApprovalData[0].vendorId}
                 EffectiveDate={DayTime(viewApprovalData[0].effectiveDate).format('YYYY-MM-DD HH:mm:ss')}
                 CostingTypeId={viewApprovalData[0]?.costingTypeId}
+                approvalSummaryTrue={true}
+                costingIdArray={costingIdArray}
               />}
           </div>
         </div>

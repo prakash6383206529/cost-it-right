@@ -221,7 +221,6 @@ const BOPDomesticListing = (props) => {
 
             if (res) {
               if (res && res.data && res.data.DataList.length > 0) {
-                console.log("total1", res.data.DataList[0].TotalRecordCount);
                 setState((prevState) => ({
                   ...prevState,
                   totalRecordCount: res.data.DataList[0].TotalRecordCount,
@@ -412,7 +411,6 @@ const BOPDomesticListing = (props) => {
     }
 
     totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-    console.log("totalRecordCount", totalRecordCount)
     getDataList("", 0, "", "", state.currentRowIndex, pageSize, true, state.floatingFilterData);
 
     setState((prevState) => ({
