@@ -1392,7 +1392,7 @@ function RawMaterialCost(props) {
                                       handleGrossWeightChange(e?.target?.value, index)
                                     }}
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                    disabled={(CostingViewMode || IsLocked || isMultiCalculatorData) ? true : false}
+                                    disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || item?.dataFromNFRAPI) ? true : false}
                                   />
                                 </div> : '-'}
                               </td>
@@ -1421,7 +1421,7 @@ function RawMaterialCost(props) {
                                         handleFinishWeightChange(e?.target?.value, index)
                                       }}
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied)) ? true : false}
+                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || item?.dataFromNFRAPI) ? true : false}
                                     />
                                   </div> : '-'}
                                 </td></>}

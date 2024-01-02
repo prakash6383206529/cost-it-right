@@ -63,6 +63,7 @@ function AddNfr(props) {
     const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState([]);
     const [selectedCheckBox, setSelectedCheckbox] = useState(false);
     const [isCostingViewMode, setIsCostingViewMode] = useState(false);
+    const [isCostingEditMode, setIsCostingEditMode] = useState(false);
     const [isOEQAAdded, setIsOEQAAdded] = useState(false);
     const [callAPI, setCallAPI] = useState(false);
     const [latestRow, setlatestRow] = useState('');
@@ -589,6 +590,7 @@ function AddNfr(props) {
         tempData = costingOptionsSelectedObject[index]
         dispatch(getBriefCostingById(tempData?.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(true)
             if (res?.data?.Result) {
                 setpartInfoStepTwo(partInfoStepTwo)
                 setcostingData({ costingId: tempData?.CostingId, NFRTypeId })
@@ -712,6 +714,7 @@ function AddNfr(props) {
                 state: {
                     isAddMode: !isCostingViewMode,
                     isViewMode: isCostingViewMode,
+                    isEditMode: isCostingEditMode,
                     costingData: costingData,
                     partInfoStepTwo: partInfoStepTwo,
                     isNFR: true
@@ -1109,6 +1112,7 @@ function AddNfr(props) {
                     technologyId={nfrPartDetail?.TechnologyId}
                     partData={{ PartId: nfrData?.PartId, PartName: nfrData?.PartName, PartNumber: nfrData?.PartNumber }}
                     levelDetails={levelDetails}
+                    nfrPartDetail={nfrPartDetail}
                 />
             }
             {

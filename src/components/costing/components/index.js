@@ -139,6 +139,7 @@ function Costing(props) {
                 nfrData={props?.location?.state}
                 isNFR={props?.location?.state?.isNFR}
                 isViewModeCosting={props?.location?.state?.isViewMode}
+                isEditModeCosting={props?.location?.state?.isEditMode}
                 isRFQViewMode={props?.location?.state?.isViewMode}
               />
             </TabPane>
