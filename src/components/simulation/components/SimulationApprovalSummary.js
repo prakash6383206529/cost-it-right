@@ -130,7 +130,7 @@ function SimulationApprovalSummary(props) {
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
     const headers = {
-        NetCost: `Net Cost ${initialConfiguration?.BaseCurrency}`,
+        NetCost: `Net Cost (${initialConfiguration?.BaseCurrency})`,
     }
 
     useEffect(() => {
