@@ -113,7 +113,7 @@ function CostingDetails(props) {
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
   // FOR EDIT MODE COSTING
-  const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
+  const [IsCostingEditMode, setIsCostingEditMode] = useState(props?.isNFR ? props?.isEditModeCosting : false)
   // FOR COPY COSTING MODE
   const [IsCopyCostingMode, setIsCopyCostingMode] = useState(false)
 
