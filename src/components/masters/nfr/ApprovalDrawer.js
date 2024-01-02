@@ -20,7 +20,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 
 
 const ApprovalDrawer = (props) => {
-    const { rowData, technologyId, partData, nfrData, type, levelDetails, isFinalLevelUser } = props
+    const { rowData, technologyId, partData, nfrData, type, levelDetails, isFinalLevelUser, nfrPartDetail } = props
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -262,7 +262,7 @@ const ApprovalDrawer = (props) => {
                     let obj = {}
                     obj = {
                         "ApprovalProcessId": "00000000-0000-0000-0000-000000000000",
-                        "PlantId": initialConfiguration?.DefaultPlantId,
+                        "PlantId": nfrPartDetail?.PlantId,
                         "PartId": partData?.PartId,
                         "VendorId": item?.value,
                         "CostingId": item?.SelectedCostingVersion?.CostingId,
@@ -386,8 +386,8 @@ const ApprovalDrawer = (props) => {
                                 <Table className='table cr-brdr-main'>
                                     <thead>
                                         <tr>
-                                            <th>{"Vendor"}</th>
-                                            <th>{"Plant"}</th>
+                                            <th>{"Vendor (Code)"}</th>
+                                            <th>{"Plant (Code)"}</th>
                                             <th>{"Costing"}</th>
                                             <th>{"Net PO"}</th>
                                         </tr>
@@ -398,7 +398,7 @@ const ApprovalDrawer = (props) => {
                                             return (
                                                 <tr key={index}>
                                                     <td>{data.vendor}</td>
-                                                    <td>{data.PlantName}</td>
+                                                    <td>{`${nfrPartDetail.PlantName} (${nfrPartDetail.PlantCode})`}</td>
                                                     <td>{data.CostingNumber}</td>
                                                     <td>{data.Price}</td>
                                                 </tr>
