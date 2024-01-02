@@ -1431,6 +1431,9 @@ function CostingSimulation(props) {
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
+
+    const headers = { netCostHeadder: `Net Cost (${getConfigurationKey()?.BaseCurrency})` }
+
     return (
         <>
             {
@@ -1596,7 +1599,7 @@ function CostingSimulation(props) {
 
 
                                                         {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={130} field="Currency" tooltipField='Currency' headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>}
-                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" tooltipField='OldPOPrice' headerName='Net Cost' cellRenderer='oldPOFormatter'></AgGridColumn>}
+                                                        {(isExchangeRate || showExchangeRateColumn) && <AgGridColumn width={140} field="OldPOPrice" tooltipField='OldPOPrice' headerName={headers?.netCostHeadder} cellRenderer='oldPOFormatter'></AgGridColumn>}
 
 
                                                         {/* <AgGridColumn width={140} field="NewPOPrice" headerName='Net Cost New' cellRenderer='newPOFormatter'></AgGridColumn> */}
