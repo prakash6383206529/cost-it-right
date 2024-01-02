@@ -115,6 +115,13 @@ function AddConditionCosting(props) {
             } else {
                 cssClass = 'mt-4 pt-1';
             }
+            if (props.isFromMaster) {
+                if (type === "Percentage") {
+                    cssClass = 'mb-3';
+                } else {
+                    cssClass = 'mt-4 pt-1';
+                }
+            }
         }
         return cssClass
     }
