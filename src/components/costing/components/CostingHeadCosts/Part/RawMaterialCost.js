@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, } from 'react'
+import React, { useState, useContext, useEffect, useCallback, } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { Col, Row, Table } from 'reactstrap'
 import AddRM from '../../Drawers/AddRM'
@@ -1232,7 +1232,9 @@ function RawMaterialCost(props) {
     }
     return value
   }
-
+  const pinHandler = useCallback(() => {
+    setHeaderPinned(!headerPinned)
+  }, [headerPinned])
   /**
    * @method render
    * @description Renders the component
@@ -1326,7 +1328,7 @@ function RawMaterialCost(props) {
                       {/* //Add i here for MB+ */}
                       <th className='net-rm-cost' >{`Net RM Cost ${isRMDivisorApplicable(costData.TechnologyName) ? '/(' + RMDivisor + ')' : ''}`}  </th>
                       {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
-                      <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
+                      <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={pinHandler} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
 
                     </tr>
                   </thead>
@@ -1431,7 +1433,7 @@ function RawMaterialCost(props) {
                                         message: 'Percentage should be less than 100'
                                       },
                                     }}
-                                    defaultValue={item.ScrapRecoveryPercentage}
+                                    defaultValue={checkForDecimalAndNull(item.ScrapRecoveryPercentage, getConfigurationKey().NoOfDecimalForInputOutput)}
                                     className=""
                                     customClassName={'withBorder scrap-recovery'}
                                     handleChange={(e) => {
