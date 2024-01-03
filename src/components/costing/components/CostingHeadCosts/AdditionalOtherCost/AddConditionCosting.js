@@ -82,6 +82,7 @@ function AddConditionCosting(props) {
                 if (res?.data?.DataList) {
                     const temp = res.data.DataList.map(item => ({
                         label: `${item.Description} (${item.CostingConditionNumber})`,
+                        value: item.CostingConditionMasterId,
                         CostingConditionMasterId: item.CostingConditionMasterId,
                         ConditionType: item.ConditionType
                     }));
