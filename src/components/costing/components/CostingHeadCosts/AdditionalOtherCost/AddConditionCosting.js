@@ -14,6 +14,7 @@ import { trim } from 'lodash'
 
 function AddConditionCosting(props) {
     const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType } = props
+    console.log('EntryType: ', EntryType);
     const [tableData, setTableData] = useState(props?.tableData)
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -70,7 +71,7 @@ function AddConditionCosting(props) {
             }
         }
 
-        if (isFromMaster || hasCostingConditionEntryTypeId || props?.costingConditionEntryType) {
+        if (isFromMaster || hasCostingConditionEntryTypeId || props?.costingConditionEntryType !== undefined) {
             const entryTypeId =
                 EntryType !== undefined
                     ? EntryType
@@ -83,6 +84,7 @@ function AddConditionCosting(props) {
                     const temp = res.data.DataList.map(item => ({
                         label: `${item.Description} (${item.CostingConditionNumber})`,
                         value: item.CostingConditionMasterId,
+                        CostingConditionMasterId: item.CostingConditionMasterId,
                         ConditionType: item.ConditionType
                     }));
 
