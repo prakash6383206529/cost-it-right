@@ -15,6 +15,10 @@ import WarningMessage from '../../../../common/WarningMessage';
 import { MESSAGES } from '../../../../../config/message';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, decimalNumberLimit6, percentageLimitValidation, checkWhiteSpaces, numberLimit6, noDecimal, isNumber } from "../../../../../helper/validation";
+import Button from '../../../../layout/Button';
+import TourWrapper from '../../../../common/Tour/TourWrapper';
+import { Steps } from '../../TourMessages';
+import { useTranslation } from 'react-i18next';
 
 let counter = 0;
 function BOPCost(props) {
@@ -44,11 +48,15 @@ function BOPCost(props) {
   const [fixedLimit, setFixedLimit] = useState(false)
   const [headerPinned, setHeaderPinned] = useState(true)
   const [errorMessage, setErrorMessage] = useState('')
-
+  const [tourState, setTourState] = useState(
+    {
+      steps: []
+    }
+  )
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
   const { CostingEffectiveDate, ErrorObjRMCC } = useSelector(state => state.costing)
   const CostingViewMode = useContext(ViewCostingContext);
-
+  const { t } = useTranslation("Costing")
   // useEffect(() => {
   //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
   // }, [])
@@ -469,6 +477,10 @@ function BOPCost(props) {
     counter = 0
   }
 
+  const tourStart = () => {
+
+  }
+
   /**
   * @method render
   * @description Renders the component
@@ -480,15 +492,22 @@ function BOPCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'BOP Cost:'}
+                {'BOP Cost:'}{gridData && gridData.length !== 0 &&
+                  <TourWrapper
+                    buttonSpecificProp={{ id: "Costing_RM_Cost", onClick: tourStart }}
+                    stepsSpecificProp={{
+                      steps: Steps(t).BOP_COST
+                    }} />}
               </div>
             </Col>
             <Col md={'2'}>
-              {!CostingViewMode && !IsLocked && <button
-                type="button"
-                className={'user-btn'}
-                onClick={DrawerToggle}>
-                <div className={'plus'}></div>BOP</button>}
+              {!CostingViewMode && !IsLocked &&
+                <Button
+                  id="Costing_addBOP"
+                  onClick={DrawerToggle}
+                  icon={"plus"}
+                  buttonName={"BOP"}
+                />}
             </Col>
           </Row>
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)} >
@@ -630,8 +649,8 @@ function BOPCost(props) {
                               </td>}
                               <td>
                                 <div className='action-btn-wrapper'>
-                                  {!CostingViewMode && !IsLocked && <button title='Edit' className="Edit" type={'button'} onClick={() => editItem(index)} />}
-                                  {!CostingViewMode && !IsLocked && <button title='Delete' className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Edit' id={`bopCost_edit${index}`} className="Edit" type={'button'} onClick={() => editItem(index)} />}
+                                  {!CostingViewMode && !IsLocked && <button title='Delete' id={`bopCost_delete${index}`} className="Delete " type={'button'} onClick={() => deleteItem(index)} />}
                                 </div>
                               </td>
                             </tr>
@@ -652,7 +671,7 @@ function BOPCost(props) {
             </Row>
             <Row className='handling-charge'>
               <div className="pl-3">
-                <span className="d-inline-block">
+                <span className="d-inline-block" id="bop_handling_charge">
                   <label
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyBOPCharges}

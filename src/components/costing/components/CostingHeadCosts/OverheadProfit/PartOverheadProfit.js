@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../../helper';
 import {
   getOverheadProfitTabData, saveComponentOverheadProfitTab, setComponentOverheadItemData,
-  saveDiscountOtherCostTab, isOverheadProfitDataChange
+  saveDiscountOtherCostTab, isOverheadProfitDataChange, openCloseStatus
 } from '../../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../../CostingDetailStepTwo';
 import OverheadProfit from '.';
@@ -34,9 +34,9 @@ function PartOverheadProfit(props) {
       BOMLevel: BOMLevel,
       PartNumber: PartNumber,
     }
-
     setIsOpen(!IsOpen)
     setCount(Count + 1)
+    dispatch(openCloseStatus({ overheadProfit: !item.IsOpen }))
     setTimeout(() => {
       if (Object.keys(costData).length > 0) {
         const data = {
@@ -131,7 +131,7 @@ function PartOverheadProfit(props) {
   return (
     <>
       <tr className="accordian-row">
-        <td className='part-overflow' onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
+        <td className='part-overflow' id="overhead_profit_arrow" onClick={() => toggle(item.BOMLevel, item.PartNumber)}>
           <span className={`part-name ${item && item.BOMLevel}`} title={`${item && item.PartNumber}-${item && item.BOMLevel}`}>
             {item && item.PartNumber}-{item && item.BOMLevel}<div className={`${item.IsOpen ? 'Open' : 'Close'}`}></div>
           </span>

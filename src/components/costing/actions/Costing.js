@@ -54,6 +54,7 @@ import {
   SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API,
   SET_COSTING_MODE,
   CORRUGATED_DATA,
+  COSTING_ACC_OPEN_CLOSE_STATUS,
   GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA,
 } from '../../../config/constants'
 import { apiErrors } from '../../../helper/util'
@@ -2702,6 +2703,14 @@ export function corrugatedData(data) {
     });
   }
 }
+export function openCloseStatus(status) {
+  return (dispatch) => {
+    dispatch({
+      type: COSTING_ACC_OPEN_CLOSE_STATUS,
+      payload: status,
+    });
+  }
+};
 
 /**
  * @method getExternalIntegrationFgWiseImpactData

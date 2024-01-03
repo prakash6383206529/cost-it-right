@@ -14,6 +14,7 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import TooltipCustom from '../../../../common/Tooltip';
 import { number, checkWhiteSpaces, decimalNumberLimit6, noDecimal, numberLimit6 } from "../../../../../helper/validation";
 import { swappingLogicCommon } from '../../../CostingUtil';
+import Button from '../../../../layout/Button';
 
 function SurfaceTreatmentCost(props) {
   const { item } = props
@@ -259,12 +260,13 @@ function SurfaceTreatmentCost(props) {
               </div>
             </Col>
             <Col md="4">
-              <button
-                type="button"
-                className={'user-btn'}
+              <Button
+                id="Costing_addST"
                 disabled={(CostingViewMode || IsLocked) ? true : false}
-                onClick={DrawerToggle}>
-                <div className={'plus'}></div>SURFACE T.</button>
+                onClick={DrawerToggle}
+                icon={"plus"}
+                buttonName={"SURFACE T."}
+              />
             </Col>
           </Row>
           <Row>

@@ -15,6 +15,7 @@ import {
   saveBOMLevel,
   saveAssemblyNumber,
   setIsBreakupBoughtOutPartCostingFromAPI,
+  openCloseStatus,
 
 } from '../../../actions/Costing';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, CheckIsCostingDateSelected } from '../../../../../helper';
@@ -70,6 +71,7 @@ function PartCompoment(props) {
         }
         return null
       })
+      dispatch(openCloseStatus({ RMC: !IsOpen }))
       if (Object.keys(costData).length > 0 && apiCall && !isOpen) {
         const data = {
           CostingId: item.CostingId !== null ? item.CostingId : "00000000-0000-0000-0000-000000000000",

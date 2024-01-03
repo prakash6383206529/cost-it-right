@@ -442,7 +442,7 @@ function TabToolCost(props) {
                     <label className="switch-level d-inline-flex w-auto">
                       <div className={"left-title ml-2 mr-1"}>{"Overall"}</div>
                       <span className="cr-sw-level h-auto">
-                        <span className="d-inline-block">
+                        <span className="d-inline-block" id="tooltab-switch">
                           <Switch
                             onChange={onPressApplicability}
                             checked={IsApplicableProcessWise}
