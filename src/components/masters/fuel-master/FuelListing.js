@@ -423,7 +423,7 @@ class FuelListing extends Component {
                                     <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="PlantWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)"></AgGridColumn>
-                                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
+                                    {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                     <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'}></AgGridColumn>
                                     <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                                     <AgGridColumn field="FuelDetailId" width={300} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>

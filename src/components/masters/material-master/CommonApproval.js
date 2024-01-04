@@ -150,7 +150,10 @@ function CommonApproval(props) {
         if (props.isDashboard) {
             dataObj.DisplayStatus = props.status
         }
-        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+        const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
+        dataObj.IsCustomerDataShow = cbc
+        dataObj.IsVendorDataShow = vbc
+        dataObj.IsZeroDataShow = zbc
 
         setLoader(true)
         props?.isDashboard && dispatch(dashboardTabLock(true))
@@ -920,7 +923,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="Category" headerName='Category'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="MaterialType"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="DestinationPlantName" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="BasicRatePerUOM" headerName='Basic Rate'></AgGridColumn>}
@@ -947,7 +950,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Specification" cellRenderer={"hyphenFormatter"} headerName='Specification'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn field="Vendor" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="IncoTermDescriptionAndInfoTerm" headerName='Inco Terms'></AgGridColumn>}
                                     {/* {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>} */}
@@ -974,7 +977,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Technology" headerName='Technology'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === MACHINE_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === MACHINE_MASTER_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="150" field="MachineNumber" headerName='Machine Number'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="MachineTypeName" headerName='Machine Type'></AgGridColumn>}
@@ -991,7 +994,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="180" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === OPERATIONS_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="150" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="140" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}

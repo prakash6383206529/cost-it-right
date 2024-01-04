@@ -1372,7 +1372,7 @@ const CostingSummaryTable = (props) => {
     if (props?.isRfqCosting) {
       templateObj.costingHeadCheck = 'VBC'
     }
-    if (!(reactLocalStorage.getObject('cbcCostingPermission'))) {
+    if (!(reactLocalStorage.getObject('CostingTypePermission').cbc)) {
       templateObj.costingHeadCheck = 'VBC/ZBC/NCC'
       delete templateObj.customer
     }
@@ -1909,7 +1909,7 @@ const CostingSummaryTable = (props) => {
                     </thead>}
                     <thead>
                       <tr className="main-row">
-                        {isApproval ? <th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('cbcCostingPermission')) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>}
+                        {isApproval ? <th style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} scope="col" className='approval-summary-headers'>{props.id}</th> : <th scope="col" style={{ width: cssObj.particularWidth - (cssObj.particularWidth / 4) + "%" }} className={`header-name-left ${isLockedState && !drawerDetailPDF && !pdfHead && costingSummaryMainPage ? 'pt-30' : ''}`}>{props?.isRfqCosting ? 'VBC' : (reactLocalStorage.getObject('CostingTypePermission').cbc) ? 'VBC/ZBC/NCC/CBC' : 'VBC/ZBC/NCC'}</th>}
                         { }
                         {viewCostingData &&
                           viewCostingData?.map((data, index) => {
@@ -1992,7 +1992,7 @@ const CostingSummaryTable = (props) => {
                               <span className="d-block">Costing Version</span>
                               <span className={`d-block mt-${props.isFromViewRFQ ? 4 : 2}`}>Net Cost (Effective from)</span>
                               <span className="d-block">Vendor (Code)</span>
-                              {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">Customer (Code)</span>}
+                              {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">Customer (Code)</span>}
                               <span className="d-block">Part Number</span>
                               <span className="d-block">Part Name</span>
                               <span className="d-block">Revision Number</span>
@@ -2050,7 +2050,7 @@ const CostingSummaryTable = (props) => {
                                     )}
                                     {/* USE PART NUMBER KEY HERE */}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : (data?.costingTypeId !== ZBCTypeId || data?.costingTypeId !== CBCTypeId || data?.costingTypeId !== WACTypeId) ? data?.vendor : ''}</span>
-                                    {(reactLocalStorage.getObject('cbcCostingPermission')) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
+                                    {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.costingTypeId === CBCTypeId ? data?.customer : '-'}</span>}
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partNumber}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.partName}</span>
                                     <span className="d-block">{(data?.bestCost === true) ? ' ' : data?.RevisionNumber}</span>

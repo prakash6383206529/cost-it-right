@@ -546,7 +546,7 @@ class LabourListing extends Component {
               >
                 <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                {reactLocalStorage.getObject('cbcCostingPermission') && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
+                {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
                 <AgGridColumn field="State" headerName="State"></AgGridColumn>
                 <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>

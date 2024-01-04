@@ -869,7 +869,7 @@ class AddLabour extends Component {
                         />{" "}
                         <span>Vendor Based</span>
                       </Label>
-                      {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                      {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                         <input
                           type="radio"
                           name="costingHead"

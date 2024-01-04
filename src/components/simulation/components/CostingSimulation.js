@@ -1124,7 +1124,7 @@ function CostingSimulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let tempData = [...data]
-        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
         } else {
             if (amendmentDetails.SimulationHeadId === CBCTypeId) {

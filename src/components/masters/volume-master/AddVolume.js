@@ -22,7 +22,7 @@ import AsyncSelect from 'react-select/async';
 import { onFocus } from '../../../helper'
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage'
-import { autoCompleteDropdown, autoCompleteDropdownPart } from '../../common/CommonFunctions'
+import { autoCompleteDropdown, autoCompleteDropdownPart, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import { getSelectListPartType } from '../actions/Part'
 const gridOptions = {};
@@ -145,6 +145,7 @@ class AddVolume extends Component {
     setTimeout(() => {
       this.setState({
         duplicateTableData: this.props.initialTableData,
+        costingTypeId: getCostingTypeIdByCostingPermission()
       })
     }, 100)
     setTimeout(() => {
@@ -862,7 +863,7 @@ class AddVolume extends Component {
                         <div className="add-min-height">
                           <Row>
                             <Col md="12">
-                              <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                                 <input
                                   type="radio"
                                   name="costingHead"
@@ -875,8 +876,8 @@ class AddVolume extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />{" "}
                                 <span>Zero Based</span>
-                              </Label>
-                              <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                              </Label>}
+                              {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                                 <input
                                   type="radio"
                                   name="costingHead"
@@ -889,8 +890,8 @@ class AddVolume extends Component {
                                   disabled={isEditFlag ? true : false}
                                 />{" "}
                                 <span>Vendor Based</span>
-                              </Label>
-                              {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                              </Label>}
+                              {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                                 <input
                                   type="radio"
                                   name="costingHead"
