@@ -26,6 +26,7 @@ import Attachament from '../../costing/components/Drawers/Attachament'
 import Toaster from '../../common/Toaster'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import Button from '../../layout/Button';
+import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -135,7 +136,10 @@ function BudgetListing(props) {
     const getTableListData = (skip = 0, take = 10, isPagination = true) => {
         if (isPagination === true || isPagination === null) setIsLoader(true)
         let dataObj = { ...floatingFilterData }
-        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+        const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
+        dataObj.IsCustomerDataShow = cbc
+        dataObj.IsVendorDataShow = vbc
+        dataObj.IsZeroDataShow = zbc
         dispatch(getBudgetDataList(skip, take, isPagination, dataObj, (res) => {
             if (isPagination === true || isPagination === null) setIsLoader(false)
 
@@ -295,7 +299,9 @@ function BudgetListing(props) {
     }
 
     const formToggle = () => {
-        setShowBudgetForm(true)
+        if (checkMasterCreateByCostingPermission()) {
+            setShowBudgetForm(true)
+        }
     }
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -689,7 +695,7 @@ function BudgetListing(props) {
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={checkBoxRenderer}></AgGridColumn>
                                     <AgGridColumn field="vendorNameWithCode" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                    {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerNameWithCode" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="plantNameWithCode" headerName="Plant (Code)"></AgGridColumn>
                                     <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                     <AgGridColumn field="partNoWithRevNo" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>

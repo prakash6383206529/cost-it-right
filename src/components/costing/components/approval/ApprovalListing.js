@@ -1081,7 +1081,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
+                          {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" cellRenderer='basicRateFormatter' headerName="Basic Price"></AgGridColumn>}
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing Net Cost"></AgGridColumn>

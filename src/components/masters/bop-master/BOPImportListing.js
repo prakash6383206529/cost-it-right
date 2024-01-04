@@ -26,7 +26,7 @@ import { disabledClass } from '../../../actions/Common';
 import _ from 'lodash';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel } from '../../common/CommonFunctions';
+import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel, checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import BDSimulation from '../../simulation/components/SimulationPages/BDSimulation';
@@ -469,7 +469,10 @@ class BOPImportListing extends Component {
 
     }
     formToggle = () => {
-        this.props.displayForm()
+        if (checkMasterCreateByCostingPermission()) {
+            this.props.displayForm()
+        }
+
     }
 
     /**
@@ -535,7 +538,7 @@ class BOPImportListing extends Component {
             tempData = hideMultipleColumnFromExcel(tempData, ["IsBreakupBoughtOutPart", "TechnologyName"])
         } else if (!getConfigurationKey().IsBasicRateAndCostingConditionVisible) {
             tempData = hideMultipleColumnFromExcel(tempData, ["NetCostWithoutConditionCost", "NetCostWithoutConditionCostConversion", "NetConditionCost", "NetConditionCostConversion"])
-        } else if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        } else if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
         } else {
             tempData = data
@@ -838,7 +841,7 @@ class BOPImportListing extends Component {
                                                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
                                                 <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                                {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                                 <AgGridColumn field="IncoTermDescriptionAndInfoTerm" headerName="Inco Terms" ></AgGridColumn>
                                                 {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
                                                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}

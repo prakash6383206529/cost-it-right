@@ -14,6 +14,7 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from '../../../helper';
 import _ from 'lodash';
 import DayTime from '../../common/DayTimeWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 // const config() = config;
 
@@ -46,7 +47,7 @@ export function getExchangeRateDataList(isAPICall, data, callback) {
     return (dispatch) => {
         if (isAPICall) {
             dispatch({ type: API_REQUEST });
-            axios.get(`${API.getExchangeRateDataList}?currencyId=${data?.currencyId}&costingHeadId=${data?.costingHeadId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&isBudgeting=${data?.isBudgeting}&currency=${data?.currency}&isRequestForSimulation=${data?.isRequestForSimulation ? true : false}`, config())
+            axios.get(`${API.getExchangeRateDataList}?currencyId=${data?.currencyId}&costingHeadId=${data?.costingHeadId}&vendorId=${data?.vendorId}&customerId=${data?.customerId}&isBudgeting=${data?.isBudgeting}&currency=${data?.currency}&isRequestForSimulation=${data?.isRequestForSimulation ? true : false}&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}`, config())
                 .then((response) => {
                     if (response.data.Result === true || response.status === 204) {
                         dispatch({

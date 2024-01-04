@@ -363,7 +363,7 @@ function Simulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let templateArray
-        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
             templateArray = hideColumnFromExcel(data, 'CustomerName')
         } else if (isMasterAssociatedWithCosting) {
             templateArray = hideColumnFromExcel(data, 'Percentage')
