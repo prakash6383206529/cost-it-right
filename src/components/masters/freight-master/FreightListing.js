@@ -20,6 +20,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 
 const gridOptions = {};
 class FreightListing extends Component {
@@ -64,12 +65,15 @@ class FreightListing extends Component {
   * @description GET DETAILS OF BOP DOMESTIC
   */
   getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
+    const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     const filterData = {
       freight_for: freight_for,
       vendor_id: vendor_id,
       source_city_id: source_city_id,
       destination_city_id: destination_city_id,
-      IsCustomerDataShow: reactLocalStorage.getObject('cbcCostingPermission')
+      IsCustomerDataShow: cbc,
+      IsVendorDataShow: vbc,
+      IsZeroDataShow: zbc
     }
     this.props.getFreightDataList(filterData, (res) => {
       this.setState({ isLoader: false })
@@ -198,7 +202,9 @@ class FreightListing extends Component {
 
 
   formToggle = () => {
-    this.props.displayForm()
+    if (checkMasterCreateByCostingPermission()) {
+      this.props.displayForm()
+    }
   }
 
   /**
@@ -374,7 +380,7 @@ class FreightListing extends Component {
                   <AgGridColumn width='240px' field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadRenderer'}></AgGridColumn>
                   <AgGridColumn field="Mode" headerName="Mode"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'} ></AgGridColumn>
-                  {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                  {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="SourceCity" headerName="Source City"></AgGridColumn>
                   <AgGridColumn field="DestinationCity" headerName="Destination City"></AgGridColumn>
                   <AgGridColumn width='200px' field="FreightId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'} ></AgGridColumn>

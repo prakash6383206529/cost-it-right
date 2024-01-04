@@ -25,7 +25,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import { getListingForSimulationCombined } from '../../simulation/actions/Simulation';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { loggedInUserId } from '../../../helper';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -252,7 +252,9 @@ class ExchangeRateListing extends Component {
 
 
     formToggle = () => {
-        this.setState({ toggleForm: true })
+        if (checkMasterCreateByCostingPermission()) {
+            this.setState({ toggleForm: true })
+        }
     }
 
     hideForm = (type) => {
@@ -467,7 +469,7 @@ class ExchangeRateListing extends Component {
                                 >
                                     <AgGridColumn field="CostingHead" headerName="Costing Head" ></AgGridColumn>
                                     <AgGridColumn field="vendorWithCode" headerName="Vendor (Code)" ></AgGridColumn>
-                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
+                                    {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="customerWithCode" headerName="Customer (Code)" ></AgGridColumn>}
                                     <AgGridColumn field="Currency" headerName="Currency" minWidth={135}></AgGridColumn>
                                     <AgGridColumn suppressSizeToFit="true" field="CurrencyExchangeRate" headerName="Exchange Rate (INR)" minWidth={160} cellRenderer={'commonCostFormatter'}></AgGridColumn>
                                     <AgGridColumn field="BankRate" headerName="Bank Rate (INR)" minWidth={150} cellRenderer={'commonCostFormatter'}></AgGridColumn>

@@ -37,7 +37,7 @@ import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -252,6 +252,7 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     this.props.getUOMSelectList(() => { })
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.getDetails(data)
@@ -1598,7 +1599,7 @@ class AddRMDomestic extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1613,8 +1614,8 @@ class AddRMDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Zero Based</span>
-                            </Label>
-                            <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            </Label>}
+                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1629,8 +1630,8 @@ class AddRMDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Vendor Based</span>
-                            </Label>
-                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            </Label>}
+                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"

@@ -30,7 +30,7 @@ import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import RMSimulation from '../../simulation/components/SimulationPages/RMSimulation';
@@ -590,7 +590,9 @@ function RMImportListing(props) {
 
 
   const formToggle = () => {
-    props?.formToggle()
+    if (checkMasterCreateByCostingPermission()) {
+      props?.formToggle()
+    }
   }
 
   const bulkToggle = () => {
@@ -1013,7 +1015,7 @@ function RMImportListing(props) {
                       <AgGridColumn field="MaterialType"></AgGridColumn>
                       <AgGridColumn field="DestinationPlantName" headerName="Plant (Code)"></AgGridColumn>
                       <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>
-                      {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                      {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                       {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                       <AgGridColumn field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>
                       <AgGridColumn field="Currency" cellRenderer={"currencyFormatter"}></AgGridColumn>
