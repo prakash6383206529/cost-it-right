@@ -43,7 +43,7 @@ function ViewRM(props) {
     setIndex(index)
 
     const tempData = viewCostingData[props.index]
-    if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID))) {
+    if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID)) && viewRM[index]?.RawMaterialCalculatorId === null && viewRM[index]?.IsCalculatorAvailable === true) {
       switch ((Number(tempData.technologyId))) {
         case Ferrous_Casting:
           dispatch(getSimulationRmFerrousCastingCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
@@ -89,8 +89,6 @@ function ViewRM(props) {
         default:
           return "none";
       }
-
-
     }
     else {
       if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
@@ -174,6 +172,7 @@ function ViewRM(props) {
           {(viewCostingData[props.index].technologyId === Ferrous_Casting || viewCostingData[props.index].technologyId === RUBBER) && <button
             className="secondary-btn"
             type={'button'}
+            disabled={viewCostingData[props?.index]?.CostingPartDetails?.CostingRawMaterialsCost?.length === 0 ? true : false}
             onClick={() => { getWeightData(0) }}
           >
             <div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
