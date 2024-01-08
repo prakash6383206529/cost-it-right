@@ -13,6 +13,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import DayTime from '../../common/DayTimeWrapper';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 // const config() = config
 
@@ -40,11 +41,11 @@ export function createLabour(data, callback) {
  * @description get labour list
  */
 export function getLabourDataList(isAPICall, data, callback) {
-
+    const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
         if (isAPICall) {
 
-            const queryParams = `employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}`;
+            const queryParams = `employment_terms=${data.employment_terms}&state_id=${data.state}&plant_id=${data.plant}&labour_type_id=${data.labour_type}&machine_type_id=${data.machine_type}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`;
             const request = axios.get(`${API.getLabourDataList}?${queryParams}`, config());
             request.then((response) => {
                 if (response.data.Result || response.status === 204) {
