@@ -383,7 +383,8 @@ class BulkUpload extends Component {
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
-                        if (index > 0 && val?.length > 0) {
+                        console.log('val: ', val);
+                        if (index > 0 && val?.length > 0 && val[0] !== '') {
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
                             const i = val.findIndex(e => e === undefined);
                             if (i !== -1) {
