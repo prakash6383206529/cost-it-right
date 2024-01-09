@@ -33,7 +33,7 @@ import { checkRFQBulkUpload } from '../rfq/actions/rfq';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
-import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
+import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../common/CommonFunctions';
 import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 
 class BulkUpload extends Component {
@@ -62,6 +62,7 @@ class BulkUpload extends Component {
      * @description called after render the component
     */
     componentDidMount() {
+        this.setState({ costingTypeId: this.props?.fileName === "Interest Rate" ? VBCTypeId : getCostingTypeIdByCostingPermission() })
         if (this.props?.masterId === RM_MASTER_ID && this.props.initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
             this.props.getUsersMasterLevelAPI(loggedInUserId(), this.props?.masterId, (res) => {
                 setTimeout(() => {
@@ -713,7 +714,7 @@ class BulkUpload extends Component {
                                 <Row className="pl-3">
                                     {isZBCVBCTemplate &&
                                         <Col md="12">
-                                            {(fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
                                                 <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -726,7 +727,7 @@ class BulkUpload extends Component {
                                                     <span>Zero Based</span>
                                                 </Label>
                                             }
-                                            {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate || (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -744,7 +745,7 @@ class BulkUpload extends Component {
                                                 />{' '}
                                                 <span>Customer Based</span>
                                             </Label>}
-                                            {(this.props?.masterId === BOP_MASTER_ID) && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (this.props?.masterId === BOP_MASTER_ID) && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                 <input
                                                     type="radio"
                                                     name="costingHead"
@@ -753,7 +754,7 @@ class BulkUpload extends Component {
                                                 />{' '}
                                                 <span>VBC Detailed BOP</span>
                                             </Label>}
-                                            {isMachineMoreTemplate &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && isMachineMoreTemplate &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -763,7 +764,7 @@ class BulkUpload extends Component {
                                                     />{' '}
                                                     <span>ZBC More Details</span>
                                                 </Label>}
-                                            {isMachineMoreTemplate &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && isMachineMoreTemplate &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -783,7 +784,7 @@ class BulkUpload extends Component {
                                                     />{' '}
                                                     <span>CBC More Details</span>
                                                 </Label>}
-                                            {(fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -793,7 +794,7 @@ class BulkUpload extends Component {
                                                     />{' '}
                                                     <span>ZBC More Details</span>
                                                 </Label>}
-                                            {(fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) &&
+                                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName === 'Operation' && getConfigurationKey().IsShowDetailedBreakup) &&
                                                 <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                                     <input
                                                         type="radio"
@@ -874,7 +875,7 @@ class BulkUpload extends Component {
                     <Row className="pl-3">
                         {isZBCVBCTemplate &&
                             <Col md="12">
-                                {(fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
+                                {(reactLocalStorage.getObject('CostingTypePermission').zbc) && (fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
                                     <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -887,7 +888,7 @@ class BulkUpload extends Component {
                                         <span>Zero Based</span>
                                     </Label>
                                 }
-                                {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                {(reactLocalStorage.getObject('CostingTypePermission').vbc) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                     <input
                                         type="radio"
                                         name="costingHead"
@@ -905,7 +906,7 @@ class BulkUpload extends Component {
                                     />{' '}
                                     <span>Customer Based</span>
                                 </Label>}
-                                {isMachineMoreTemplate &&
+                                {(reactLocalStorage.getObject('CostingTypePermission').zbc) && isMachineMoreTemplate &&
                                     <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -915,7 +916,7 @@ class BulkUpload extends Component {
                                         />{' '}
                                         <span>ZBC More Details</span>
                                     </Label>}
-                                {isMachineMoreTemplate &&
+                                {(reactLocalStorage.getObject('CostingTypePermission').vbc) && isMachineMoreTemplate &&
                                     <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"

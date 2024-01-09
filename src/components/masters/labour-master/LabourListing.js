@@ -28,6 +28,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -291,7 +292,9 @@ class LabourListing extends Component {
    * @description OPEN ADD FORM
    */
   formToggle = () => {
-    this.setState({ toggleForm: true })
+    if (checkMasterCreateByCostingPermission()) {
+      this.setState({ toggleForm: true })
+    }
   }
 
   /**
