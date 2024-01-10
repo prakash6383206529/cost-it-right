@@ -25,6 +25,7 @@ import { filterParams } from '../../common/DateFilter'
 import { PaginationWrapper } from '../../common/commonPagination';
 import Toaster from '../../common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -207,7 +208,9 @@ class FuelListing extends Component {
 
 
     formToggle = () => {
-        this.props.formToggle()
+        if (checkMasterCreateByCostingPermission()) {
+            this.props.formToggle()
+        }
     }
 
     bulkToggle = () => {

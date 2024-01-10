@@ -26,6 +26,7 @@ import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -275,7 +276,9 @@ class PowerListing extends Component {
 
 
   formToggle = () => {
-    this.props.formToggle()
+    if (checkMasterCreateByCostingPermission()) {
+      this.props.formToggle()
+    }
   }
 
   /**
