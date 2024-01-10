@@ -39,19 +39,16 @@ function VerifySimulation(props) {
     const [noData, setNoData] = useState(false);
     // const [showAssemblyPage, setShowAssemblyPage] = useState(false);   // REJECTED ASSEMBLY
     const { filteredRMData } = useSelector(state => state.material)
-    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const simulationApplicability = useSelector(state => state.simulation.simulationApplicability)
+    const { selectedMasterForSimulation } = useSelector(state => state.simulation)
     const isSurfaceTreatmentOrOperation = ((Number(selectedMasterForSimulation.value) === Number(SURFACETREATMENT)) || (Number(selectedMasterForSimulation.value) === Number(OPERATIONS)));
-    const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(RMIMPORT)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION));
-    const isExchangeRate = (Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE)) || (simulationApplicability?.value === APPLICABILITY_RM_SIMULATION));
-    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)) || (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION))
+    const isRMDomesticOrRMImport = ((Number(selectedMasterForSimulation.value) === Number(RMDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(RMIMPORT)));
+    const isExchangeRate = Number(selectedMasterForSimulation.value) === (Number(EXCHNAGERATE));
+    const isBOPDomesticOrImport = ((Number(selectedMasterForSimulation.value) === Number(BOPDOMESTIC)) || (Number(selectedMasterForSimulation.value) === Number(BOPIMPORT)))
     const isMachineRate = Number(selectedMasterForSimulation.value) === (Number(MACHINERATE));
     const isOverHeadProfit = Number(selectedMasterForSimulation.value) === (Number(OVERHEAD));
     const isMultiTechnology = (checkForNull(selectedMasterForSimulation.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false;
     const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
-    const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
-    const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
-    const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
 
     const gridRef = useRef();
 

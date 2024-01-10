@@ -73,7 +73,7 @@ class AddVendorDrawer extends Component {
                     let list = res?.data?.SelectList?.filter(element => element?.Value !== '0')
                     this.setState({ technologyList: list })
                 })
-                this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+                this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
             }
         }
         if (!(this.props.isEditFlag || this.props.isViewMode)) {

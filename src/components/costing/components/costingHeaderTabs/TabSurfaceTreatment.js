@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 import { useForm, } from "react-hook-form";
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table, } from 'reactstrap';
@@ -7,12 +7,14 @@ import { NetPOPriceContext, costingInfoContext } from '../CostingDetailStepTwo';
 import { checkForNull } from '../../../../helper';
 import PartSurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/PartSurfaceTreatment';
 import AssemblySurfaceTreatment from '../CostingHeadCosts/SurfaceTreatMent/AssemblySurfaceTreatment';
-import { LEVEL0, WACTypeId } from '../../../../config/constants';
+import { ViewCostingContext, SelectedCostingDetail } from '../CostingDetails';
 import { IdForMultiTechnology } from '../../../../config/masterData';
 import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
-import { SelectedCostingDetail, ViewCostingContext } from '../CostingDetails';
 import _ from 'lodash'
 import { reactLocalStorage } from 'reactjs-localstorage';
+import { ASSEMBLYNAME, LEVEL0, WACTypeId } from '../../../../config/constants';
+import { ASSEMBLY } from '../../../../config/masterData';
+import { netHeadCostContext, SurfaceCostContext } from '../CostingDetailStepTwo';
 import { findrmCctData } from '../../CostingUtil';
 
 function TabSurfaceTreatment(props) {
@@ -22,9 +24,10 @@ function TabSurfaceTreatment(props) {
   let SurfaceTabData = useSelector(state => state.costing.SurfaceTabData)
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
-  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
   const vbcExistingCosting = useContext(SelectedCostingDetail);
+  const headerCosts = useContext(netHeadCostContext);
+  const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))   // ASSEMBLY TECHNOLOGY
   const { ComponentItemData, CostingDataList, isBreakupBoughtOutPartCostingFromAPI } = useSelector(state => state.costing)
   const netPOPrice = useContext(NetPOPriceContext);
 
@@ -319,6 +322,8 @@ function TabSurfaceTreatment(props) {
 
   //         if (i.PartType === 'Assembly') {
   //           let tempArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
+  //         if (i.PartType === ASSEMBLY) {
+  //           let tempArrForCosting = JSON.parse(localStorage.getItem('surfaceCostingArray'))
   //           let subAssemblyArray = i.CostingChildPartDetails
 
   //           let assemblyObj = tempArrForCosting[0]

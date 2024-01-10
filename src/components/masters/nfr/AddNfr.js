@@ -8,17 +8,16 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import { Col, Row, Table } from 'reactstrap';
 import { getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { EMPTY_DATA, NFRTypeId, searchCount, DRAFT, DRAFTID, REJECTEDID, VBC_VENDOR_TYPE } from '../../../config/constants';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import HeaderTitle from '../../common/HeaderTitle';
 import NoContentFound from '../../common/NoContentFound';
 import Toaster from '../../common/Toaster';
-import { AsyncSearchableSelectHookForm, NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
-import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails } from './actions/nfr';
-import { checkForNull, checkVendorPlantConfigurable, getCodeBySplitting, getNameBySplitting, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../helper';
-import { createCosting, deleteDraftCosting, getBriefCostingById, storePartNumber } from '../../costing/actions/Costing';
+import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, TextFieldHookForm } from '../../layout/HookFormInputs';
+import { getNFRPartWiseGroupDetail, saveNFRCostingInfo, saveNFRGroupDetails, setOpenAllTabs } from './actions/nfr';
+import { checkForNull, checkVendorPlantConfigurable, loggedInUserId, userDetails, userTechnologyLevelDetails, getCodeBySplitting, getNameBySplitting, checkForDecimalAndNull, } from '../../../helper';
+import { checkFinalUser, createCosting, deleteDraftCosting, emptyCostingData, getBriefCostingById, gridDataAdded, isDataChange, isDiscountDataChange, saveAssemblyBOPHandlingCharge, saveAssemblyNumber, saveBOMLevel, savePartNumber, setComponentDiscountOtherItemData, setComponentItemData, setComponentOverheadItemData, setComponentPackageFreightItemData, setComponentToolItemData, setCostingDataList, setCostingEffectiveDate, setDiscountErrors, setIncludeOverheadProfitIcc, setIsBreakupBoughtOutPartCostingFromAPI, setOtherCostData, setOverheadProfitData, setOverheadProfitErrors, setPackageAndFreightData, setPartNumberArrayAPICALL, setProcessGroupGrid, setRMCCBOPCostData, setRMCCData, setRMCCErrors, setSurfaceCostData, setToolTabData, setToolsErrors } from '../../costing/actions/Costing';
 import ApprovalDrawer from './ApprovalDrawer';
 import TooltipCustom from '../../common/Tooltip'
-import { dataLiist } from '../../../config/masterData';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { MESSAGES } from '../../../config/message';
 import { getUsersTechnologyLevelAPI } from '../../../actions/auth/AuthActions';
@@ -64,6 +63,7 @@ function AddNfr(props) {
     const [costingOptionsSelectedObject, setCostingOptionsSelectedObject] = useState([]);
     const [selectedCheckBox, setSelectedCheckbox] = useState(false);
     const [isCostingViewMode, setIsCostingViewMode] = useState(false);
+    const [isCostingEditMode, setIsCostingEditMode] = useState(false);
     const [isOEQAAdded, setIsOEQAAdded] = useState(false);
     const [callAPI, setCallAPI] = useState(false);
     const [latestRow, setlatestRow] = useState('');
@@ -71,6 +71,8 @@ function AddNfr(props) {
     const [OutsourcingCostingData, setOutsourcingCostingData] = useState({});
     const [indexOuter, setIndexOuter] = useState('');
     const [indexInside, setIndexInside] = useState('');
+    const [count, setCount] = useState(0);
+    const [showCreateButton, setShowCreateButton] = useState(true);
 
 
     const [costingObj, setCostingObj] = useState({
@@ -94,6 +96,7 @@ function AddNfr(props) {
     const [NFRNumber, setNFRNumber] = useState('')
     const [nfrPartNumber, setNfrPartNumber] = useState('')
     const [partName, setPartName] = useState('')
+    const [isFinalLevelApprover, setIsFinalLevelApprover] = useState('')
 
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -110,8 +113,58 @@ function AddNfr(props) {
     }
 
     useEffect(() => {
+        dispatch(isDataChange(false))
+        dispatch(setRMCCData([], () => { }))
+        dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))
+        dispatch(emptyCostingData())
+        dispatch(setRMCCBOPCostData([], () => { }))
+        dispatch(setOpenAllTabs(false))
+
+        dispatch(getBriefCostingById('', (res) => { }))
+        dispatch(isDiscountDataChange(false))
+        dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
+
+        reactLocalStorage.setObject('costingArray', [])
+        reactLocalStorage.setObject('surfaceCostingArray', [])
+        dispatch(setRMCCData([], () => { }))
+        dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
+        dispatch(setComponentItemData({}, () => { }))
+
+        dispatch(setOverheadProfitData([], () => { }))
+        dispatch(setComponentOverheadItemData({}, () => { }))
+
+        dispatch(setPackageAndFreightData([], () => { }))
+        dispatch(setComponentPackageFreightItemData({}, () => { }))
+
+        dispatch(setToolTabData([], () => { }))
+        dispatch(setComponentToolItemData({}, () => { }))
+
+        dispatch(setComponentDiscountOtherItemData({}, () => { }))
+
+        dispatch(saveAssemblyBOPHandlingCharge({}, () => { }))
+
+        dispatch(gridDataAdded(false))
+        dispatch(setSurfaceCostData({}, () => { }))
+
+        dispatch(setProcessGroupGrid([]))
+        dispatch(savePartNumber(''))
+        dispatch(saveBOMLevel(''))
+        dispatch(setPartNumberArrayAPICALL([]))
+        dispatch(saveAssemblyNumber([]))
+        dispatch(setRMCCErrors({}))
+        dispatch(setOverheadProfitErrors({}))
+        dispatch(setToolsErrors({}))
+        dispatch(setDiscountErrors({}))
+        dispatch(setIncludeOverheadProfitIcc(false, () => { }))
+        dispatch(setCostingEffectiveDate(null))
+    }, [])
+
+    useEffect(() => {
         let rowtemp = rowData.filter(element => element?.groupName === existingGroupNameVersion)
         let dataList = _.map(rowtemp[0]?.data, 'SelectedCostingVersion')
+        if (existingGroupNameVersion === 'PFS2' || existingGroupNameVersion === 'PFS3') {
+            setShowCreateButton(false)
+        }
         if (dataList?.length === 0 || dataList.includes(undefined)) {
             // if (dataList.every(value => value === undefined)) {
             setAllCostingNotSelected(true)
@@ -126,6 +179,35 @@ function AddNfr(props) {
             setDisableSaveButton(true)
         }
     }, [rowData])
+
+    useEffect(() => {
+        if (count === 0 && isFinalLevelApprover !== '') {
+            setCount(count + 1)
+            getDetails(false)
+        }
+    }, [isFinalLevelApprover])
+
+    const checkFinalUserAPI = () => {
+        let obj = {}
+        obj.DepartmentId = userDetails().DepartmentId
+        obj.UserId = loggedInUserId()
+        obj.TechnologyId = nfrData?.TechnologyId
+        obj.Mode = 'costing'
+        obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
+        dispatch(checkFinalUser(obj, (res) => {
+            if (res?.data?.Result) {
+                if (res?.data?.Data?.IsFinalApprover) {
+                    setIsFinalLevelApprover(res?.data?.Data?.IsFinalApprover)
+                    setEditWarning(true)
+                    setFilterStatus('This user is final level user cannot send NFR for approval')
+                } else {
+                    setIsFinalLevelApprover(false)
+                    setEditWarning(false)
+                    setFilterStatus('')
+                }
+            }
+        }))
+    }
 
     const getDetails = (isFromOutsourcing) => {
         setLoader(true)
@@ -186,7 +268,7 @@ function AddNfr(props) {
                             setDisableSaveButton(false)
                         }
                     }
-                    if (newArray[0]?.statusId === DRAFTID || newArray[0]?.statusId === REJECTEDID) {
+                    if ((newArray[0]?.statusId === DRAFTID || newArray[0]?.statusId === REJECTEDID) && !isFinalLevelApprover) {
                         setEditWarning(true)
                         setFilterStatus('Select all costings to send for approval')
                         setSendForApprovalButtonDisable(false)
@@ -217,6 +299,9 @@ function AddNfr(props) {
                 setLoader(false)
             }, 200);
         }))
+    }
+
+    useEffect(() => {
         reactLocalStorage.setObject('isFromDiscountObj', false)
         let levelDetailsTemp = ''
         dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), nfrData?.TechnologyId, (res) => {
@@ -225,30 +310,13 @@ function AddNfr(props) {
                 setFilterStatus("You don't have permission to send NFR for approval.")
                 setEditWarning(true)
                 setSendForApprovalButtonDisable(true)
+                getDetails(false)
+                setDisableSaveButton(false)
             } else {
-                // let obj = {}
-                // obj.DepartmentId = userDetails().DepartmentId
-                // obj.UserId = loggedInUserId()
-                // obj.TechnologyId = nfrData?.TechnologyId
-                // obj.Mode = 'costing'
-                // obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
-                // dispatch(checkFinalUser(obj, (res) => {
-                //     if (res?.data?.Result) {
-                //         if (res?.data?.Data?.IsFinalApprover) {
-                //             setIsFinalApproverShowButton(false)
-                //             setEditWarning(true)
-                //             setFilterStatus("You are a final level user and cannot send NFR for approval.")
-                //         }
-                //     }
-                // }))
+                checkFinalUserAPI()
             }
             setLevelDetails(levelDetailsTemp)
-
         }))
-    }
-
-    useEffect(() => {
-        getDetails(false)
     }, [])
 
     // Sets the initial values of the form fields based on the nfrData prop.
@@ -522,6 +590,7 @@ function AddNfr(props) {
         tempData = costingOptionsSelectedObject[index]
         dispatch(getBriefCostingById(tempData?.CostingId, (res) => {
             setIsCostingViewMode(false)
+            setIsCostingEditMode(true)
             if (res?.data?.Result) {
                 setpartInfoStepTwo(partInfoStepTwo)
                 setcostingData({ costingId: tempData?.CostingId, NFRTypeId })
@@ -645,6 +714,7 @@ function AddNfr(props) {
                 state: {
                     isAddMode: !isCostingViewMode,
                     isViewMode: isCostingViewMode,
+                    isEditMode: isCostingEditMode,
                     costingData: costingData,
                     partInfoStepTwo: partInfoStepTwo,
                     isNFR: true
@@ -698,19 +768,20 @@ function AddNfr(props) {
         temprowDataInside = Object.assign([...temprowDataInside], { [indexInside]: tempData })
         let tempSelectedCostingList = _.map(temprowDataInside, 'SelectedCostingVersion')
         const allStatusDraft = _.map(tempSelectedCostingList, 'StatusId').every(item => item === DRAFTID);
-
-        if (tempSelectedCostingList?.includes(undefined)) {
-            setEditWarning(true)
-            setFilterStatus('Select all costings to send for approval')
-            setSendForApprovalButtonDisable(true)
-        } else if (allStatusDraft) {
-            setEditWarning(false)
-            setFilterStatus('')
-            setSendForApprovalButtonDisable(false)
-        } else {
-            setEditWarning(true)
-            setFilterStatus('Please select draft costing to send for approval')
-            setSendForApprovalButtonDisable(true)
+        if (!isFinalLevelApprover) {
+            if (tempSelectedCostingList?.includes(undefined)) {
+                setEditWarning(true)
+                setFilterStatus('Select all costings to send for approval')
+                setSendForApprovalButtonDisable(true)
+            } else if (allStatusDraft) {
+                setEditWarning(false)
+                setFilterStatus('')
+                setSendForApprovalButtonDisable(false)
+            } else {
+                setEditWarning(true)
+                setFilterStatus('Please select draft costing to send for approval')
+                setSendForApprovalButtonDisable(true)
+            }
         }
 
         let newObj = {
@@ -789,7 +860,7 @@ function AddNfr(props) {
                         <Table className='border cr-brdr-main sub-table' responsive>
                             <thead>
                                 <tr>
-                                    <th>NFR Number</th>
+                                    <th>NFR Ref. Number</th>
                                     <th>Part Number</th>
                                     <th>Part Name</th>
                                     <th>Plant (Code)</th>
@@ -945,9 +1016,9 @@ function AddNfr(props) {
                                                     {dataItem?.SelectedCostingVersion?.Status ? dataItem?.SelectedCostingVersion?.DisplayStatus : ''}
                                                 </div>
                                             </td>
-                                            <td>{dataItem?.SelectedCostingVersion?.Price}</td>
+                                            <td>{checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.Price, initialConfiguration.NoOfDecimalForPrice)}</td>
                                             <td><div className='out-sourcing-wrapper'>
-                                                {checkForNull(dataItem?.SelectedCostingVersion?.OutsourcingCost)}
+                                                {checkForDecimalAndNull(dataItem?.SelectedCostingVersion?.OutsourcingCost, initialConfiguration.NoOfDecimalForPrice)}
                                                 {dataItem?.SelectedCostingVersion && <button
                                                     type="button"
                                                     className={"add-out-sourcing"}
@@ -961,7 +1032,7 @@ function AddNfr(props) {
                                             <td> <div className='action-btn-wrapper pr-2'>
                                                 {(item?.isRejectedBySAP === false) &&
                                                     <>
-                                                        {!isViewEstimation && item?.IsShowEditButtonForPFS && item?.isShowCreateCostingButton && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
+                                                        {!isViewEstimation && item?.IsShowEditButtonForPFS && item?.isShowCreateCostingButton && showCreateButton && <button className="Add-file" type={"button"} title={`${item?.groupName === 'PFS2' ? 'Create PFS2 Costing' : 'Add Costing'}`} onClick={() => addDetails(dataItem, indexOuter, indexInside, item?.groupName === 'PFS2')} />}
                                                     </>}
 
                                                 {item?.Status !== '' && dataItem?.SelectedCostingVersion && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(indexInside)} />)}
@@ -1002,7 +1073,7 @@ function AddNfr(props) {
                                 type="button"
                                 className="user-btn mr5 save-btn"
                                 onClick={() => saveEstimation()}
-                                disabled={isViewEstimation || disableSaveButton}
+                                disabled={isViewEstimation || disableSaveButton || sendForApprovalButtonDisable}
                             >
                                 <div className={"save-icon"}></div>
                                 Save
@@ -1012,7 +1083,7 @@ function AddNfr(props) {
                                     className='user-btn'
                                     type='button'
                                     onClick={sendForApproval}
-                                    disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded}
+                                    disabled={isViewEstimation || sendForApprovalButtonDisable || allCostingNotSelected || topGroupNotAdded || isFinalLevelApprover}
                                 >
                                     <div className="send-for-approval"></div>
                                     Send for Approval
@@ -1041,6 +1112,7 @@ function AddNfr(props) {
                     technologyId={nfrPartDetail?.TechnologyId}
                     partData={{ PartId: nfrData?.PartId, PartName: nfrData?.PartName, PartNumber: nfrData?.PartNumber }}
                     levelDetails={levelDetails}
+                    nfrPartDetail={nfrPartDetail}
                 />
             }
             {

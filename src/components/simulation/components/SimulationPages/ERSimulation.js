@@ -178,6 +178,8 @@ function ERSimulation(props) {
         resizable: true,
         filter: true,
         sortable: false,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {
@@ -255,7 +257,6 @@ function ERSimulation(props) {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
-
     const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         if (!isEffectiveDateSelected) {

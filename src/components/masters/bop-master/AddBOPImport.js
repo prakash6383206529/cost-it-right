@@ -109,6 +109,7 @@ class AddBOPImport extends Component {
       levelDetails: {},
       vendorFilterList: [],
       isCallCalculation: false,
+      uomIsNo: false,
       isClientVendorBOP: false,
       CostingTypePermission: false,
       isTechnologyVisible: false,
@@ -146,7 +147,7 @@ class AddBOPImport extends Component {
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
       this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
-      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     }
   }
 
@@ -201,7 +202,7 @@ class AddBOPImport extends Component {
       })
     }
     this.props.getIncoTermSelectList(() => { })
-    // this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
+    this.props.getPaymentTermSelectList(() => { })    // FOR MINDA ONLY
     this.getDetails()
     this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
     if (!(this.props.data.isEditFlag || this.props.data.isViewMode)) {
@@ -660,10 +661,14 @@ class AddBOPImport extends Component {
  * @description called
  */
   handleUOM = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, })
-    } else {
-      this.setState({ UOM: {} })
+    if (newValue && newValue !== '' && newValue.label === "No") {
+      this.setState({ UOM: newValue, uomIsNo: true })
+    }
+    else if (newValue.label !== "No") {
+      this.setState({ UOM: newValue, uomIsNo: false })
+    }
+    else {
+      this.setState({ UOM: [] })
     }
   };
 
@@ -1359,7 +1364,7 @@ class AddBOPImport extends Component {
 
                         <Row>
                           <Col md="12">
-                            <div className="left-border">{"BOP:"}</div>
+                            <div className="left-border">{"Insert:"}</div>
                           </Col>
                           <Col md="3">
                             <Field
@@ -1382,7 +1387,7 @@ class AddBOPImport extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="BOP Category"
+                                  label="Insert Category"
                                   component={searchableSelect}
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("BOPCategory")}
@@ -1634,7 +1639,7 @@ class AddBOPImport extends Component {
                             />
                           </Col>
                           {/* FOR MINDA ONLY*/}
-                          {/* <Col md="3">
+                          <Col md="3">
                             <Field
                               name="paymentTerms"
                               type="text"
@@ -1648,7 +1653,7 @@ class AddBOPImport extends Component {
                               valueDescription={this.state.paymentTerm}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
-                          </Col> */}
+                          </Col>
                           <Col md="3">
                             <Field
                               name="Currency"
@@ -2060,6 +2065,7 @@ class AddBOPImport extends Component {
               basicRateCurrency={FinalBasicPriceSelectedCurrency}
               basicRateBase={FinalBasicPriceBaseCurrency}
               isFromImport={true}
+              EntryType={checkForNull(ENTRY_TYPE_IMPORT)}
             />
           }
           {

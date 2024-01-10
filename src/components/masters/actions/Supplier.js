@@ -60,7 +60,7 @@ export function createSupplierAPI(data, callback) {
  * @description get Supplier's DataList 
  */
 export function getSupplierDataList(skip, obj, take, isPagination, callback) {
-   
+
     return (dispatch) => {
 
         var queryParams = `isApplyPagination=${isPagination}`;

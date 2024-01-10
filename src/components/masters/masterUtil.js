@@ -250,7 +250,7 @@ export const ProcessGroup = (props) => {
                             rules={{ required: false }}
                             register={register}
                             options={renderListing("process")}
-                            customClassName ={'process-group-container'}
+                            customClassName={'process-group-container'}
                             mandatory={true}
                             handleChange={(value) => { setProcessDropdown(value) }}
                             disabled={props.isViewFlag}

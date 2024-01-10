@@ -3,11 +3,11 @@ import { Container, Row, Col } from 'reactstrap'
 import { useForm, Controller } from 'react-hook-form'
 import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
-import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, } from '../../../costing/actions/Approval'
+import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, SimulationAPICall, userDetails, userTechnologyLevelDetails } from '../../../../helper'
+import { formatRMSimulationObject, getCodeBySplitting, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { EMPTY_GUID, FILE_URL } from '../../../../config/constants'
+import { EMPTY_GUID, INR, FILE_URL, REASON_ID } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import { debounce } from 'lodash'
@@ -20,15 +20,20 @@ import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/acti
 import { PROVISIONAL } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
+import PushSection from '../../../common/PushSection'
+import { Redirect } from 'react-router';
 import { getUsersSimulationTechnologyLevelAPI, getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import WarningMessage from '../../../common/WarningMessage'
-
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
+import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
+import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
+import { MESSAGES } from '../../../../config/message'
 function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails } = props
+  const { type, approvalData, IsFinalLevel, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, costingList, showFinalLevelButtons, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails, IsPushDrawer } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -48,14 +53,17 @@ function ApproveRejectDrawer(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
+  const [showListingPage, setShowListingPage] = useState(false)
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [levelDetails, setLevelDetails] = useState({})
   const [showWarningMessage, setShowWarningMessage] = useState(false)
   const [disableSR, setDisableSR] = useState(false)
-
+  const [showPopup, setShowPopup] = useState(false)
+  const nfr = 101
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
+  const SAPData = useSelector(state => state.approval.SAPObj)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
   const approverAPICall = (departmentId, technology, approverTypeId) => {
@@ -91,6 +99,9 @@ function ApproveRejectDrawer(props) {
     }))
   }
 
+  const toFindDuplicates = arry => {
+    return arry.filter((item, index) => arry.indexOf(item) !== index)
+  }
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
     let levelDetailsTemp = ''
@@ -170,6 +181,10 @@ function ApproveRejectDrawer(props) {
         if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing) {
           dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
         }
+      }
+
+      if (vendorId !== null && SimulationTechnologyId !== null && type === 'Sender' && !isSimulationApprovalListing && getConfigurationKey().IsProvisionalSimulation) {
+        dispatch(getSelectListOfSimulationLinkingTokens(vendorId, SimulationTechnologyId, () => { }))
       }
     }, 300);
 
@@ -362,8 +377,59 @@ function ApproveRejectDrawer(props) {
 
   const closePushButton = () => {
     setOpenPushButton(false)
+    setShowListingPage(true)
     props.closeDrawer('', 'Cancel')
   }
+  //MINDA
+  // const onSubmit = debounce(handleSubmit(() => {
+  //   const remark = getValues('remark')
+  //   const reason = getValues('reason')
+  //   const dept = getValues('dept')
+  //   const approver = getValues('approver')
+  //   if (type === 'Reject') {
+  //     if (remark) {
+  //       setShowError(false)
+  //     } else {
+  //       setShowError(true)
+  //       return false
+  //     }
+  //   }
+
+  //   if (type === 'Sender') {
+  //     if (remark) {
+  //       setShowError(false)
+  //     } else {
+  //       setShowError(true)
+  //       return false
+  //     }
+  //     if (!reason) return false
+  //   }
+  //   setIsDisable(true)
+  //   if (!isSimulation) {
+  //     /*****************************THIS CONDITION IS FOR COSTING APPROVE OR REJECT CONDITION***********************************/
+  //     let Data = []
+
+  //     const pushTonfr = () => {
+  //       let nfrobj = {
+  //         "CostingId": approvalData[0]?.CostingId,
+  //         "NfrId": approvalData[0]?.NfrId,
+  //         "LoggedInUserId": loggedInUserId(),
+  //         "IsRegularized": props?.IsRegularized
+  //       }
+
+  //       dispatch(updateCostingIdFromRfqToNfrPfs(nfrobj, res => {
+  //         let pushRequest = {
+  //           nfrGroupId: res.data.Data.NfrGroupIdForPFS3,
+  //           costingId: approvalData[0].CostingId
+  //         }
+  //         dispatch(pushNfrOnSap(pushRequest, res => {
+  //           if (res?.data?.Result) {
+  //             Toaster.success(MESSAGES.NFR_PUSHED)
+  //             onSubmit()
+  //           }
+  //         }))
+  //       }))
+  //     }
   const onSubmit = debounce(handleSubmit(() => {
     const remark = getValues('remark')
     const reason = getValues('reason')
@@ -420,10 +486,64 @@ function ApproveRejectDrawer(props) {
             if (IsPushDrawer) {
               Toaster.success('The costing approved successfully')
               setOpenPushButton(true)
+              //MINDA
+              // if (res?.data?.Result) {
+              //   setIsDisable(false)
+              //   if (showFinalLevelButtons) {
+              //     Toaster.success('The costing approved successfully')
+              //     let pushdata = {
+              //       effectiveDate: dataSend[0].EffectiveDate ? DayTime(dataSend[0].EffectiveDate).format('YYYY-MM-DD') : '',
+              //       vendorCode: props?.vendorCodeForSAP ? props?.vendorCodeForSAP : '',
+              //       materialNumber: dataSend[1].PartNumber,
+              //       netPrice: dataSend[0].NewPOPrice,
+              //       plant: dataSend[0].PlantCode ? dataSend[0].PlantCode : dataSend[0].DestinationPlantId ? dataSend[0].DestinationPlantCode : '',
+              //       currencyKey: dataSend[0].Currency ? dataSend[0].Currency : INR,
+              //       materialGroup: approvalData[0]?.MaterialGroup?.label ? approvalData[0]?.MaterialGroup.label.split('(')[0] : '',
+              //       taxCode: 'YW',
+              //       basicUOM: "NO",
+              //       purchasingGroup: approvalData[0]?.PurchasingGroup?.label ? approvalData[0]?.PurchasingGroup.label.split('(')[0] : '',
+              //       purchasingOrg: dataSend[0].CompanyCode ? dataSend[0].CompanyCode : '',
+              //       CostingId: approvalData[0].CostingId,
+              //       DecimalOption: approvalData[0].DecimalOption,
+              //       InfoToConditions: props.conditionInfo,
+              //       TokenNumber: approvalData[0]?.ApprovalNumber,
+              //       IsRequestForCosting: true,
+              //       IsRequestForBoughtOutPartMaster: false,
+              //       // Quantity: quantity
+              //       // effectiveDate: '11/30/2021',
+              //       // vendorCode: '203670',
+              //       // materialNumber: 'S07004-003A0Y',
+              //       // materialGroup: 'M089',
+              //       // taxCode: 'YW',
+              //       // plant: '1401',
+              //       // netPrice: '30.00',
+              //       // currencyKey: 'INR',
+              //       // basicUOM: 'NO',
+              //       // purchasingOrg: 'MRPL',
+              //       // purchasingGroup: 'O02'
 
-            } else {
-              Toaster.success(!IsFinalLevel ? 'The costing approved successfully' : 'The costing has been sent to next level for approval')
-              props.closeDrawer('', 'submit')
+              //     }
+              //     let obj = {
+              //       LoggedInUserId: loggedInUserId(),
+              //       Request: [pushdata]
+              //     }
+              //     dispatch(approvalPushedOnSap(obj, res => {
+              //       if (res && res.status && (res.status === 200 || res.status === 204)) {
+              //         Toaster.success('Approval pushed successfully.')
+              //       }
+              //     }))
+              //     if (approvalData[0].IsNFRPFS3PushedButtonShow && approvalData[0].NfrGroupIdForPFS3 === null && props.IsRegularized) {
+              //       pushTonfr()
+
+              //     }
+              //     props.closeDrawer('', 'submit')
+              //     // setOpenPushButton(true)
+
+              //   } else {
+              //     Toaster.success(!IsFinalLevel ? 'The costing approved successfully' : 'The costing has been sent to next level for approval')
+              //     props.closeDrawer('', 'submit')
+              //   }
+              // }
             }
           }
         }))
@@ -532,6 +652,9 @@ function ApproveRejectDrawer(props) {
         }
         senderObj.Attachements = updatedFiles
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
+        senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
+        senderObj.MaterialGroup = SAPData.MaterialGroup?.label
+        senderObj.DecimalOption = SAPData.DecimalOption?.value
         senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false      // IF WE SEND MULTIPLE TOKENS FOR SIMULATION THEN THIS WILL BE TRUE (requirement)
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
@@ -551,8 +674,43 @@ function ApproveRejectDrawer(props) {
             if (IsPushDrawer) {
               Toaster.success('The simulation token approved successfully')
               setOpenPushButton(true)
+              //MINDA
+              // if (showFinalLevelButtons) {
+              //   Toaster.success('The simulation token approved successfully.')
+              //   let temp = []
+              //   costingList && costingList.map(item => {
+              //     temp.push({
+              //       CostingId: item.CostingId,
+              //       effectiveDate: DayTime(simulationDetail.EffectiveDate).format('MM/DD/YYYY'),
+              //       vendorCode: getCodeBySplitting(item.VendorName),
+              //       materialNumber: item.PartNo,
+              //       netPrice: item.NewPOPrice,
+              //       plant: item.PlantCode ? item.PlantCode : '1511',
+              //       currencyKey: INR,
+              //       basicUOM: 'NO',
+              //       purchasingOrg: item.DepartmentCode,
+              //       purchasingGroup: '',
+              //       materialGroup: '',
+              //       taxCode: 'YW', TokenNumber: simulationDetail.Token,
+              //       DecimalOption: simulationDetail.DecimalOption,
+              //       IsRequestForCosting: false
+              //       // Quantity: quantity
+              //     })
+              //   })
+              //   // let simObj = {
+              //   //   LoggedInUserId: loggedInUserId(),
+              //   //   Request: temp
+              //   // }
+              //   // dispatch(approvalPushedOnSap(simObj, res => {
+              //   //   if (res && res.status && (res.status === 200 || res.status === 204)) {
+              //   //     Toaster.success('Approval pushed successfully.')
+              //   //   }
+              //   // }))
 
-            } else {
+              //   props.closeDrawer('', 'submit')
+              // }
+            }
+            else {
               Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
               props.closeDrawer('', 'submit')
             }
@@ -569,6 +727,7 @@ function ApproveRejectDrawer(props) {
         }))
       }
     }
+
   }), 600)
 
   const renderDropdownListing = (label) => {
@@ -758,6 +917,39 @@ function ApproveRejectDrawer(props) {
       dropzone.current.files.pop()
     }
   }
+  useEffect(() => {
+    if (showListingPage === true) {
+      return <Redirect to="/simulation-history" />
+    }
+  }, [showListingPage])
+  const showPopupWrapper = () => {
+    setShowPopup(true)
+  }
+  const onPopupConfirm = () => {
+    let obj = {
+      "CostingId": approvalData[0]?.CostingId,
+      "NfrId": approvalData[0]?.NfrId,
+      "LoggedInUserId": loggedInUserId(),
+      "IsRegularized": props?.IsRegularized
+    }
+    dispatch(updateCostingIdFromRfqToNfrPfs(obj, res => {
+      let pushRequest = {
+        nfrGroupId: res.data.Data.NfrGroupIdForPFS2,
+        costingId: approvalData[0].CostingId
+      }
+      dispatch(pushNfrOnSap(pushRequest, res => {
+        if (res?.data?.Result) {
+          Toaster.success(MESSAGES.NFR_PUSHED)
+          onSubmit()
+        }
+      }))
+    }))
+    setShowPopup(false)
+  }
+  const closePopUp = () => {
+    onSubmit()
+    setShowPopup(false)
+  }
   return (
     <>
       <Drawer
@@ -803,6 +995,8 @@ function ApproveRejectDrawer(props) {
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
                         disabled={disableSR}
+                      //MINDA
+                      // disabled={!(userData.Department.length > 1 && reasonId !== REASON_ID) || disableSR ? true : false}
                       />
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
@@ -820,6 +1014,8 @@ function ApproveRejectDrawer(props) {
                         mandatory={true}
                         handleChange={() => { }}
                         disabled={disableSR}
+                        //MINDA
+                        // disabled={!(userData.Department.length > 1 && reasonId !== REASON_ID) || disableSR ? true : false}
                         errors={errors.approver}
                       />
                     </div>
@@ -844,6 +1040,8 @@ function ApproveRejectDrawer(props) {
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
                         disabled={disableSR}
+                      //MINDA
+                      // disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                       />
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={`There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
@@ -862,6 +1060,8 @@ function ApproveRejectDrawer(props) {
                         handleChange={() => { }}
                         errors={errors.approver}
                         disabled={disableSR}
+                      //MINDA
+                      // disabled={(userData.Department.length > 1 && reasonId !== REASON_ID) ? false : true}
                       />
                     </div>
                     {
@@ -938,7 +1138,24 @@ function ApproveRejectDrawer(props) {
                         }
                       </>
                     }
+                    {/* MINDA */}
+                    {/* {
+                      type === 'Sender' &&
+                      <Row className="px-3">
+                        <Col md="12">
+                          <div className="left-border">{"SAP-Push Details"}</div>
+                        </Col>
+                        <div className="w-100">
+                          <PushSection
+                            errors={errors}
+                            register={register}
+                            control={control}
+                            Controller={Controller}
+                          />
+                        </div>
 
+                      </Row>
+                    } */}
 
                   </>
                 }
@@ -963,14 +1180,8 @@ function ApproveRejectDrawer(props) {
                       errors={errors.Masters}
                       customClassName="mb-0"
                     />
-
-
-
                   </div>
                 }
-
-
-
                 <div className="input-group form-group col-md-12">
                   <TextAreaHookForm
                     label="Remark"
@@ -1092,7 +1303,7 @@ function ApproveRejectDrawer(props) {
                   <button
                     type="button"
                     className="submit-button  save-btn"
-                    onClick={onSubmit}
+                    onClick={props.isShowNFRPopUp ? showPopupWrapper : onSubmit}
                     disabled={isDisable}
                   >
                     <div className={'save-icon'}></div>
@@ -1103,18 +1314,22 @@ function ApproveRejectDrawer(props) {
             </form>
           </div>
         </Container>
+        {
+          (showPopup && props.isShowNFRPopUp) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Do you want to push this vendor's costing to SAP for PFS2`} nfrPopup={true} />
+        }
       </Drawer>
-      {
-        openPushButton && (
-          <PushButtonDrawer
-            isOpen={openPushButton}
-            closeDrawer={closePushButton}
-            approvalData={[approvalData]}
-            dataSend={dataSend}
-            anchor={'right'}
-          />
-        )
-      }
+      {(openPushButton || showFinalLevelButtons) && (
+        <PushButtonDrawer
+          isOpen={openPushButton}
+          closeDrawer={closePushButton}
+          approvalData={approvalData ? approvalData : []}
+          isSimulation={isSimulation}
+          simulationDetail={simulationDetail}
+          dataSend={dataSend ? dataSend : []}
+          costingList={costingList}
+          anchor={'right'}
+        />
+      )}
     </>
   )
 }

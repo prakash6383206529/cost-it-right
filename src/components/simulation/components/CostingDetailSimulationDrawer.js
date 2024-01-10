@@ -10,6 +10,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 import { useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION } from '../../../config/masterData';
+import RejectedCostingSummaryTable from '../../costing/components/RejectedCostingSummaryTable';
 
 
 

@@ -1328,11 +1328,11 @@ export function getRawMaterialCategory(callback) {
 * @method getPlantSelectListByType
 * @description GET PLANT LIST BY ZBC, VBC
 */
-export function getPlantSelectListByType(TYPE, MODULE, callback) {
+export function getPlantSelectListByType(TYPE, MODULE, nfrId, callback) {
 
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getPlantSelectListByType}?type=${TYPE}&departmentFilterAppliedForModule=${MODULE}`, config());
+    const request = axios.get(`${API.getPlantSelectListByType}?type=${TYPE}&departmentFilterAppliedForModule=${MODULE}&nfrId=${nfrId ? nfrId : ''}`, config());
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
@@ -1678,10 +1678,10 @@ export function getConditionDetails(costingId, callback) {
   };
 }
 
-export function getCostingCondition(callback) {
+export function getCostingCondition(CostingConditionEntryTypeId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingCondition}`, config());
+    const request = axios.get(`${API.getCostingCondition}?CostingConditionEntryTypeId=${CostingConditionEntryTypeId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

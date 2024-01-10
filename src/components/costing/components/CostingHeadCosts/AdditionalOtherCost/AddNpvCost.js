@@ -270,7 +270,6 @@ function AddNpvCost(props) {
     return (
 
         <div>
-
             {!props.isPDFShow ? <Drawer anchor={props.anchor} open={props.isOpen}
             // onClose={(e) => toggleDrawer(e)}
             >
@@ -421,7 +420,6 @@ function AddNpvCost(props) {
                                         </Col>
                                         <ConditionCosting hideAction={true} tableData={conditionTableData} />
                                     </div>}
-
                                 {costingSummary && props?.isRfqCosting &&
                                     <div className={'mt25 pb-15'}>
                                         <Col md="12" className={'mt25 pb-15'}>

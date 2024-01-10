@@ -445,6 +445,9 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
+
+
+
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
@@ -2506,22 +2509,6 @@ export function setOtherCostData(data) {
 };
 
 
-
-
-export function saveCostingLabourDetails(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.saveCostingLabourDetails, data, config())
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
-
 export function getCostingLabourDetails(data, callback) {
   return (dispatch) => {
     const queryParams = `costingId=${data}`
@@ -2573,6 +2560,36 @@ export function getYOYCostList(data, callback) {
         callback(response)
       }
     }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function saveCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingLabourDetails, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+
+export function createPFS2Costing(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.createPFS2Costing, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
       dispatch({ type: API_FAILURE })
       apiErrors(error)
     })
@@ -2640,9 +2657,11 @@ export function setCallSTAPI(TabData) {
   }
 };
 
-/* @method setBreakupBOP
-* @description setBreakupBOP
-*/
+
+/**
+ * @method setBreakupBOP
+ * @description setBreakupBOP
+ */
 export function setBreakupBOP(grid) {
   return (dispatch) => {
     dispatch({
@@ -2692,6 +2711,23 @@ export function getReleaseStrategyApprovalDetails(data, callback) {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
     })
+  }
+}
+//MINDA
+/**
+ * @method updateZBCSOBDetail
+ * @description UPDATE ZBC SOB DETAILS
+ */
+export function updateCostingIdFromRfqToNfrPfs(requestData, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    axios.post(`${API.updateCostingIdFromRfqToNfrPfs}`, requestData, config())
+      .then((response) => {
+        callback(response)
+      }).catch((error) => {
+        apiErrors(error)
+        dispatch({ type: API_FAILURE })
+      })
   }
 }
 

@@ -24,13 +24,17 @@ import activeSimulation from '../../assests/images/simulation-active.svg'
 import activeUser from '../../assests/images/user-active.svg'
 import activeAudit from '../../assests/images/audit-active.svg'
 import Logo from '../../assests/images/logo/company-logo.svg'
+//MINDA
+// import Logo from '../../assests/images/logo/company-logo.png'
 import cirLogo from '../../assests/images/logo/CIRlogo.svg'
 import logoutImg from '../../assests/images/logout.svg'
 import activeReport from '../../assests/images/report-active.svg'
 import activeRFQ from '../../assests/images/rfqActive.svg'
 import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { CBC_COSTING, COSTING, GUIDE_BUTTON_SHOW, SIMULATION, VERSION } from '../../config/constants';
+import Calculator from "../common/Calculator/component/Calculator";
+import Draggable from 'react-draggable';
+import { CBC_COSTING, COSTING, SIMULATION, VERSION, GUIDE_BUTTON_SHOW } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
@@ -229,6 +233,8 @@ class SideBar extends Component {
         } else {
           break;
         }
+      case "NFR":
+        return this.renderNFR(module, LandingPageURL);
       default:
         return null
     }
@@ -559,7 +565,7 @@ class SideBar extends Component {
    * @description Render Costing menu.
    */
   renderCosting = (module) => {
-    const { topAndLeftMenuData } = this.props
+    const { menusData, location, menuData, topAndLeftMenuData } = this.props
     return (
       topAndLeftMenuData && topAndLeftMenuData.map((el, i) => {
         if (el.ModuleName === module) {
@@ -770,7 +776,7 @@ class SideBar extends Component {
    * @description Render User menu.
    */
   renderAudit = (module) => {
-    const { topAndLeftMenuData } = this.props
+    const { menusData, topAndLeftMenuData } = this.props
     return (
       topAndLeftMenuData &&
       topAndLeftMenuData.map((el, i) => {
@@ -797,8 +803,8 @@ class SideBar extends Component {
                   alt={module + " icon"}
                 />
                 <span className="audit">{el.ModuleName}</span>
-              </Link>
-            </li>
+              </Link >
+            </li >
           );
         }
         return null
@@ -894,8 +900,8 @@ class SideBar extends Component {
   }
 
   render() {
-    const { userData, topAndLeftMenuData } = this.props;
-    const { isLoader, showTour } = this.state;
+    const { userData, moduleSelectList, leftMenuData, topAndLeftMenuData } = this.props;
+    const { isLoader, isLeftMenuRendered, showTour } = this.state;
     const isLoggedIn = isUserLoggedIn();
     return (
       <nav className={`${this.props.sidebarAndNavbarHide ? 'hide-navbar' : ''}`}>
@@ -914,6 +920,8 @@ class SideBar extends Component {
                   <img
                     src={Logo}
                     alt="Softude"
+                    // MINDA
+                    // alt="Minda"
                     height="40"
                   />
                 </div>
@@ -927,7 +935,7 @@ class SideBar extends Component {
                   <li className="nav-item d-xl-inline-block">
                     <div className="d-flex align-items-center">
                       <LanguageDropdown />
-                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
+                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" : "d-none"}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
                     </div>
                   </li>
                   <li className="nav-item d-xl-inline-block version">
@@ -967,8 +975,8 @@ class SideBar extends Component {
                     ""
                   )}
                 </ul>
-              </div>
-            </nav>
+              </div >
+            </nav >
           </div >
 
           {isLoggedIn && (
@@ -986,7 +994,7 @@ class SideBar extends Component {
             </div>
           )
           }
-        </div>
+        </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to log out?`} />
         }

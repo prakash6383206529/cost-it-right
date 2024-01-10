@@ -13,7 +13,7 @@ import {
   SET_SAP_DATA
 } from '../../../config/constants'
 import { tokenStatus, tokenStatusName } from '../../../config/masterData'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
+import { userDetails, checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
 
 const initialState = {
   SAPObj: { PurchasingGroup: '', MaterialGroup: '' }
@@ -40,11 +40,14 @@ export default function ApprovalReducer(state = initialState, action) {
         approvalData: action.payload,
       }
     case GET_ALL_APPROVAL_DEPARTMENT:
+      const list = action.payload
+      const Departments = userDetails().Department && userDetails().Department.map(item => item.DepartmentName)
+      const updateList = list && list.filter(item => Departments.includes(item.Text))
       return {
         ...state,
         loading: false,
         error: true,
-        approvalDepartmentList: action.payload,
+        approvalDepartmentList: updateList,
       }
     case GET_ALL_APPROVAL_USERS_BY_DEPARTMENT:
       return {

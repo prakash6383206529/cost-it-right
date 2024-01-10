@@ -5,13 +5,14 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
+import { DatePickerHookForm } from '../../layout/HookFormInputs';
 import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import DayTime from '../../common/DayTimeWrapper'
 import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT, SIMULATION } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
-import { checkForNull, getConfigurationKey } from '../../../helper';
+import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../helper/validation";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
@@ -154,7 +155,6 @@ function RunSimulationDrawer(props) {
         if (temp && temp.findIndex(el => el.SimulationApplicabilityId === elementObj.Value) !== -1) {
             const ind = multipleHeads.findIndex((el) => el.SimulationApplicabilityId === elementObj.Value)
             const indexForCheck = selectedData.findIndex((el) => el === elementObj.label)
-
             if (ind !== -1) {
                 temp.splice(ind, 1)
                 temp1.splice(indexForCheck, 1)
@@ -495,9 +495,7 @@ function RunSimulationDrawer(props) {
                     >
                         <Container>
                             <div className={"drawer-wrapper"}>
-                                <form noValidate className="form"
-                                // onSubmit={handleSubmit(SimulationRun)}
-                                >
+                                <form noValidate className="form" >
                                     <Row className="drawer-heading">
                                         <Col>
                                             <div className={"header-wrapper left"}>
@@ -1160,27 +1158,28 @@ function RunSimulationDrawer(props) {
                                             )
                                             }
 
-                                            {initialConfiguration?.IsShowNpvCost && (
-                                                <Row>
-                                                    <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_20`}>
-                                                        <label
-                                                            className="custom-checkbox mb-0"
-                                                            onChange={() => applyNPV(`NPV`)}
-                                                        >
-                                                            Apply NPV
-                                                            <input
-                                                                type="checkbox"
-                                                            // disabled={true}
-                                                            />
-                                                            <span
-                                                                className=" before-box"
-                                                                // checked={IsAvailable(el.Value)}
+                                            {
+                                                initialConfiguration?.IsShowNpvCost && (
+                                                    <Row>
+                                                        <div className="input-group col-md-12 mb-3 px-0 m-height-auto" id={`applicability-checkbox_20`}>
+                                                            <label
+                                                                className="custom-checkbox mb-0"
                                                                 onChange={() => applyNPV(`NPV`)}
-                                                            />
-                                                        </label>
-                                                    </div>
-                                                </Row>
-                                            )
+                                                            >
+                                                                Apply NPV
+                                                                <input
+                                                                    type="checkbox"
+                                                                // disabled={true}
+                                                                />
+                                                                <span
+                                                                    className=" before-box"
+                                                                    // checked={IsAvailable(el.Value)}
+                                                                    onChange={() => applyNPV(`NPV`)}
+                                                                />
+                                                            </label>
+                                                        </div>
+                                                    </Row>
+                                                )
                                             }
 
                                             <Row>
@@ -1204,8 +1203,8 @@ function RunSimulationDrawer(props) {
                                                     </div>
                                                 </Col>
                                             </Row>
-                                        </Col>
-                                    </Row>
+                                        </Col >
+                                    </Row >
 
                                     <Row className="sf-btn-footer no-gutters justify-content-between mt-4 mr-0">
                                         <div className="col-md-12 ">
@@ -1222,17 +1221,17 @@ function RunSimulationDrawer(props) {
                                                     {"Cancel"}
                                                 </button>
                                             </div>
-                                        </div>
-                                    </Row>
-                                </form>
-                            </div>
-                        </Container>
-                    </Drawer>
+                                        </div >
+                                    </Row >
+                                </form >
+                            </div >
+                        </Container >
+                    </Drawer >
                 </>
                 {
                     showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={MESSAGES.SIMULATION_TOOLCOST_POPUP_MESSAGE} />
                 }
-            </div>
+            </div >
         </>
     );
 

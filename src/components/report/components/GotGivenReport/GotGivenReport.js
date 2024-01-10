@@ -45,7 +45,7 @@ const GotGivenReport = (props) => {
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getClientSelectList((res) => {
         }))
-        dispatch(getPlantSelectListByType(ZBC, "REPORT", () => { }))
+        dispatch(getPlantSelectListByType(ZBC, '', "REPORT", () => { }))
     }, [])
     /**
     * @Method runReport

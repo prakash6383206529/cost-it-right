@@ -91,6 +91,43 @@ function ProcessCost(props) {
   /**
    *
    * @param {*} arr
+
+  useEffect(() => {
+    setTimeout(() => {
+      data?.CostingProcessCostResponse && data?.CostingProcessCostResponse.map((item, index) => {
+        setValue(`${ProcessGridFields}.${index}.Quantity`, item.Quantity)
+        setValue(`${ProcessGridFields}.${index}.ProcessCost`, item.ProcessCost)
+      })
+
+    }, 500);
+
+  }, [])
+  let dragEnd;
+
+  const formatMainArr = (arr) => {
+    let apiArr = []
+    arr && arr.map((item) => {
+      if (item.GroupName === '' || item.GroupName === null) {
+        apiArr.push(item)
+      } else if (item?.IsChild) {                 //  THIS CONDITION STOP MULTIPLE TIMES ADDING SAME CHILD AS PARENT AT TIME OF OPENING-CLOSING ACCORDION
+        return false
+      } else {
+        apiArr.push(item)
+        item.ProcessList && item.ProcessList.map(processItem => {
+          processItem.GroupName = item.GroupName
+          processItem.IsChild = true              // IsChild KEY ADDED TO IDENTIFY CHILD-PARENT OBJECT
+          apiArr.push(processItem)
+          return null
+        })
+      }
+      return null
+    })
+    return apiArr
+  }
+
+  /**
+   * 
+   * @param {*} arr 
    * @returns ARRAY HAVING ONLY PARENT OBJECT | USED TO SET REDUCER EVERY TIME
    */
   const formatReducerArray = (arr) => {
@@ -189,6 +226,7 @@ function ProcessCost(props) {
     }
     // const calciData = list[id]
     /****************************FOR GETING CALCULATED VALUE IN CALCULATOR**************************/
+    //WAS COMMENTED ON MINDA
     if (tempData.ProcessTechnologyId === MACHINING && tempData.UOMType === TIME) {
       //getProcessDefaultCalculation
       dispatch(getProcessMachiningCalculation(tempData.ProcessCalculatorId, res => {
@@ -208,6 +246,13 @@ function ProcessCost(props) {
         }
       }))
     }
+
+    dispatch(getProcessDefaultCalculation(tempData.ProcessCalculatorId, res => {
+      if ((res && res.data && res.data.Data) || (res && res.status === 204)) {
+        const data = res.status === 204 ? {} : res.data.Data
+        setCalculatorData(data, list, id, parentIndex)
+      }
+    }))
     // setCalculatorData(calciData)
   }, 500);
 
@@ -569,7 +614,7 @@ function ProcessCost(props) {
         rowArr = rowData && rowData.map((el) => {
           let processQuantityMain = 1
           let productionPerHourMain = ''
-          if (item.UOMType === MASS) {
+          if (item?.UOMType === MASS) {
             processQuantityMain = rmFinishWeight ? rmFinishWeight : 1
           }
           productionPerHourMain = el.UOMType !== TIME ? '-' : findProductionPerHour(processQuantityMain)
@@ -658,7 +703,6 @@ function ProcessCost(props) {
       ProcessCostTotal = tempArrAfterDelete && tempArrAfterDelete.reduce((accummlator, el) => {
         return accummlator + checkForNull(el.ProcessCost)
       }, 0)
-
       let apiArr = formatMainArr(tempArrAfterDelete)
       tempArr2 = {
         ...tabData,
@@ -812,6 +856,9 @@ function ProcessCost(props) {
       }
       setIsFromApi(false)
       setTabData(tempArr)
+      if (isAssemblyTechnology) {
+        // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+      }
       setGridData(gridTempArr)
       dispatch(setProcessGroupGrid(formatReducerArray(gridTempArr)))
       setValue(`${ProcessGridFields}.${index}.ProcessCost`, checkForDecimalAndNull(processCost, initialConfiguration.NoOfDecimalForPrice))
@@ -1004,6 +1051,9 @@ function ProcessCost(props) {
     }
     setIsFromApi(false)
     setTabData(tempArr)
+    if (isAssemblyTechnology) {
+      // props.setProcessCostFunction(tempArr?.ProcessCostTotal)
+    }
   }
 
   /**

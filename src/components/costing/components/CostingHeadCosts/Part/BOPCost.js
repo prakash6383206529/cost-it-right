@@ -61,6 +61,10 @@ function BOPCost(props) {
   //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
   // }, [])
 
+  // useEffect(() => {
+  //   setValue('BOPHandlingCharges', item?.CostingPartDetails?.BOPHandlingCharges)
+  // }, [])
+
   useEffect(() => {
     setTimeout(() => {
       const Params = {
@@ -676,7 +680,7 @@ function BOPCost(props) {
                     className={`custom-checkbox mb-0`}
                     onChange={onPressApplyBOPCharges}
                   >
-                    Apply BOP Handling Charges
+                    Apply Insert Handling Charges
                     <input
                       type="checkbox"
                       checked={IsApplyBOPHandlingCharges}

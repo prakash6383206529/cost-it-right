@@ -37,6 +37,8 @@ class SimulationTab extends Component {
             actionData && actionData.map((ele, index) => {
                 if (ele.ModuleName === 'Simulation') {
                     this.setState({ checkBox: ele.SelectAll })
+                    //MINDA
+                    // this.setState({ checkBox: ele.IsChecked })
                 }
                 return null
             })

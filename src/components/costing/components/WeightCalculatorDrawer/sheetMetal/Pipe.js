@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
   checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation
@@ -157,16 +157,17 @@ function Pipe(props) {
       }
     }
   }, [isOneSide])
-
-  useEffect(() => {
-    if (Number(getValues('FinishWeightOfSheet')) < Number(getValues('GrossWeight'))) {
-      delete errors.FinishWeightOfSheet
-    }
-  }, [getValues('GrossWeight'), fieldValues])
-
   const setFinishWeight = (e) => {
     const FinishWeightOfSheet = e.target.value
+    const grossWeight = checkForNull(getValues('GrossWeight'))
+    if (e.target.value > grossWeight) {
+      setTimeout(() => {
+        setValue('FinishWeightOfSheet', 0)
+      }, 200);
 
+      Toaster.warning('Finish Weight should not be greater than gross weight')
+      return false
+    }
     switch (UOMDimension.label) {
       case G:
         setTimeout(() => {
@@ -187,6 +188,12 @@ function Pipe(props) {
         break;
     }
   }
+
+  useEffect(() => {
+    if (Number(getValues('FinishWeightOfSheet')) < Number(getValues('GrossWeight'))) {
+      delete errors.FinishWeightOfSheet
+    }
+  }, [getValues('GrossWeight'), fieldValues])
 
   /**
    * @method calculateInnerDiameter
@@ -519,7 +526,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Thickness(mm)`}
                     name={'Thickness'}
                     Controller={Controller}
@@ -788,7 +795,7 @@ function Pipe(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeightOfSheet'}
                     Controller={Controller}

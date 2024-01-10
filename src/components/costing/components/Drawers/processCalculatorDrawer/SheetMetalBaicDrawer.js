@@ -430,7 +430,6 @@ function SheetMetalBaicDrawer(props) {
                     />
                   </Col>
 
-
                   <Col md="4">
                     <NumberFieldHookForm
                       label={props.calculatorData.UOMType === MASS ? `Weight` : props.calculatorData.UOMType === TIME ? `Parts/Hour` : `Quantity`}

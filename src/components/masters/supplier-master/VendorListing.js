@@ -881,8 +881,8 @@ const VendorListing = () => {
       tempArr && tempArr.length > 0
         ? tempArr
         : allSupplierDataList
-        ? allSupplierDataList
-        : [];
+          ? allSupplierDataList
+          : [];
     return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -961,9 +961,8 @@ const VendorListing = () => {
 
   return (
     <div
-      className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${
-        DownloadAccessibility ? "show-table-btn no-tab-page" : ""
-      }`}
+      className={`ag-grid-react container-fluid blue-before-inside report-grid custom-pagination ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""
+        }`}
       id="go-to-top"
     >
       <ScrollToTop pointProp="go-to-top" />
@@ -1033,21 +1032,19 @@ const VendorListing = () => {
               {DownloadAccessibility && (
                 <>
                   <button
-                    title={`Download ${
-                      state.dataCount === 0
+                    title={`Download ${state.dataCount === 0
                         ? "All"
                         : "(" + state.dataCount + ")"
-                    }`}
+                      }`}
                     type="button"
                     onClick={onExcelDownload}
                     className={"user-btn mr5"}
                   >
                     <div className="download mr-1"></div>
-                    {`${
-                      state.dataCount === 0
+                    {`${state.dataCount === 0
                         ? "All"
                         : "(" + state.dataCount + ")"
-                    }`}
+                      }`}
                   </button>
 
                   <ExcelFile
@@ -1080,17 +1077,15 @@ const VendorListing = () => {
       </Row>
       {!state.isLoader && (
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${
-            (supplierDataList && supplierDataList?.length <= 0) || state.noData
+          className={`ag-grid-wrapper height-width-wrapper ${(supplierDataList && supplierDataList?.length <= 0) || state.noData
               ? "overlay-contain"
               : ""
-          }`}
+            }`}
         >
           <div className="ag-grid-header col-md-4 pl-0"></div>
           <div
-            className={`ag-theme-material ${
-              state.isLoader && "max-loader-height"
-            }`}
+            className={`ag-theme-material ${state.isLoader && "max-loader-height"
+              }`}
           >
             {state.noData && (
               <NoContentFound
@@ -1264,11 +1259,10 @@ const VendorListing = () => {
           isOpen={state.showPopupToggle}
           closePopUp={closePopUp}
           confirmPopup={onPopupConfirmToggle}
-          message={`${
-            state.cellValue
+          message={`${state.cellValue
               ? MESSAGES.VENDOR_DEACTIVE_ALERT
               : MESSAGES.VENDOR_ACTIVE_ALERT
-          }`}
+            }`}
         />
       )}
     </div>

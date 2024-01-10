@@ -40,6 +40,7 @@ import { useTranslation } from 'react-i18next';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
 import Button from '../../layout/Button';
+import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
 
 export const ViewCostingContext = React.createContext()
 export const EditCostingContext = React.createContext()
@@ -119,7 +120,7 @@ function CostingDetails(props) {
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
   // FOR EDIT MODE COSTING
-  const [IsCostingEditMode, setIsCostingEditMode] = useState(false)
+  const [IsCostingEditMode, setIsCostingEditMode] = useState(props?.isNFR ? props?.isEditModeCosting : false)
   // FOR COPY COSTING MODE
   const [IsCopyCostingMode, setIsCopyCostingMode] = useState(false)
 
@@ -175,7 +176,6 @@ function CostingDetails(props) {
       reactLocalStorage.setObject('PartData', [])
     }
   }, [])
-
 
   useEffect(() => {
     if (costingMode?.editMode === true && costingMode?.viewMode === false) {
@@ -349,6 +349,10 @@ function CostingDetails(props) {
     return temp
   }
 
+  // useEffect(() => {
+  //   promiseOptions()
+  // }, [partSelectListByTechnology])
+
   /**
    * @method handleTechnologyChange
    * @description  USED TO HANDLE TECHNOLOGY CHANGE
@@ -378,6 +382,7 @@ function CostingDetails(props) {
         EffectiveDate: '',
         PartType: '',
       })
+
     } else {
       setTechnology([])
       setIsTechnologySelected(false)
@@ -998,6 +1003,9 @@ function CostingDetails(props) {
    * @description ADD DETAILS IN COSTING
    */
   const addDetails = debounce((index, type) => {
+    const userDetail = userDetails()
+    setCostingOptionsSelectedObject({})
+    setCostingType(type)
 
     let tempData;
     if (type === VBCTypeId) {
@@ -1012,6 +1020,8 @@ function CostingDetails(props) {
       tempData = wacPlantGrid[index]
     }
 
+    dispatch(getBriefCostingById('', (res) => { }))
+
     let obj = {}
     obj.partNumber = partInfo.PartNumber ? partInfo.PartNumber : ''
     obj.plantId = (type === ZBCTypeId || type === WACTypeId) ? tempData.PlantId : EMPTY_GUID
@@ -1019,7 +1029,6 @@ function CostingDetails(props) {
     obj.customerId = type === CBCTypeId ? tempData.CustomerId : EMPTY_GUID
 
     dispatch(checkPartNoExistInBop(obj, (res) => {
-
       if (res && res?.data?.Result) {
         const userDetail = userDetails()
         setCostingOptionsSelectedObject({})
@@ -1122,7 +1131,6 @@ function CostingDetails(props) {
         }
       }
     }))
-
   }, 500)
 
   /**
@@ -2291,76 +2299,322 @@ function CostingDetails(props) {
                       </Col>
 
                     </Row>
-                    {isLoader ? <div className='costing-table'><LoaderCustom /></div> :
-                      <div className='costing-main-container'>
-                        {IsOpenVendorSOBDetails && (
-                          <Row>
-                            <Col md="12">
-                              <div className="left-border mt-15 mb-0">
-                                {"SOB Details:"}
-                              </div>
-                            </Col>
-                          </Row>
-                        )}
-                        {IsOpenVendorSOBDetails && showCostingSection.ZBC && !breakupBOP && (
-                          <>
-                            <Row className="align-items-center">
-                              <Col md="6" className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">ZBC:{zbcPlantGrid && zbcPlantGrid.length !== 0 && <TourWrapper
-                                  buttonSpecificProp={{ id: "zbc_Costing", onClick: () => tourStart("zbc", zbcPlantGrid) }}
-                                  stepsSpecificProp={{
-                                    steps: createCostingTourSteps
-                                  }} />}</h6>
-                              </Col>
-                              <Col md="6" className={"mb-2 mt-3"}>
-                                <button
-                                  type="button"
-                                  className={"user-btn"}
-                                  onClick={plantDrawerToggle}
-                                  id="ZBC_Costing_Add_Plant"
-                                >
-                                  <div className={"plus"}></div>PLANT
-                                </button>
+                    {
+                      isLoader ? <div className='costing-table'><LoaderCustom /></div> :
+                        <div className='costing-main-container'>
+                          {IsOpenVendorSOBDetails && (
+                            <Row>
+                              <Col md="12">
+                                <div className="left-border mt-15 mb-0">
+                                  {"SOB Details:"}
+                                </div>
                               </Col>
                             </Row>
+                          )}
+                          {IsOpenVendorSOBDetails && showCostingSection.ZBC && !breakupBOP && (
+                            <>
+                              <Row className="align-items-center">
+                                <Col md="6" className={"mb-2 mt-3"}>
+                                  <h6 className="dark-blue-text sec-heading">ZBC:{zbcPlantGrid && zbcPlantGrid.length !== 0 && <TourWrapper
+                                    buttonSpecificProp={{ id: "zbc_Costing", onClick: () => tourStart("zbc", zbcPlantGrid) }}
+                                    stepsSpecificProp={{
+                                      steps: createCostingTourSteps
+                                    }} />}</h6>
+                                </Col>
+                                <Col md="6" className={"mb-2 mt-3"}>
+                                  <button
+                                    type="button"
+                                    className={"user-btn"}
+                                    onClick={plantDrawerToggle}
+                                    id="ZBC_Costing_Add_Plant"
+                                  >
+                                    <div className={"plus"}></div>PLANT
+                                  </button>
+                                </Col>
+                              </Row>
 
-                            {/* ZBC PLANT GRID FOR COSTING */}
-                            <Row>
-                              <Col md="12" className={"costing-table-container"}>
-                                <Table
-                                  className="table cr-brdr-main costing-table-next costing-table-zbc"
-                                  size="sm"
-                                >
-                                  <thead>
-                                    <tr>
-                                      <th className='vendor'>{`Plant (Code)`}</th>
-                                      <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
-                                      <th className="costing-version" >{`Costing Version`}</th>
-                                      <th className="text-center costing-status" >{`Status`}</th>
-                                      <th className="costing-price">{`Net Cost`}</th>
-                                      <th className="costing-action text-right pr-2">{`Actions`}</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {zbcPlantGrid &&
-                                      zbcPlantGrid.map((item, index) => {
+                              {/* ZBC PLANT GRID FOR COSTING */}
+                              <Row>
+                                <Col md="12" className={"costing-table-container"}>
+                                  <Table
+                                    className="table cr-brdr-main costing-table-next costing-table-zbc"
+                                    size="sm"
+                                  >
+                                    <thead>
+                                      <tr>
+                                        <th className='vendor'>{`Plant (Code)`}</th>
+                                        <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && zbcPlantGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateZBCState} />}</th>
+                                        <th className="costing-version" >{`Costing Version`}</th>
+                                        <th className="text-center costing-status" >{`Status`}</th>
+                                        <th className="costing-price">{`Net Cost`}</th>
+                                        <th className="costing-action text-right pr-2">{`Actions`}</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {zbcPlantGrid &&
+                                        zbcPlantGrid.map((item, index) => {
 
-                                        let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '-') ? true : false;
+                                          let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '-') ? true : false;
 
-                                        let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
+                                          let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
 
+                                          let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
+
+                                          //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
+                                          //AS OF NOW 25-03-2021
+
+                                          return (
+                                            <tr key={index}>
+                                              <td>{`${item.PlantName}`}</td>
+                                              <td className="cr-select-height w-100px costing-error-container">
+                                                <TextFieldHookForm
+                                                  label={""}
+                                                  name={`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`}
+                                                  Controller={Controller}
+                                                  control={control}
+                                                  register={register}
+                                                  mandatory={false}
+                                                  rules={{
+                                                    required: true,
+                                                    validate: { number, percentageLimitValidation, decimalNumberLimit6 },
+                                                    max: {
+                                                      value: 100,
+                                                      message: "Percentage should not be greater then 100"
+                                                    }
+                                                  }}
+                                                  defaultValue={item.ShareOfBusinessPercent}
+                                                  className=""
+                                                  customClassName={"withBorder"}
+                                                  handleChange={(e) => {
+                                                    e.preventDefault();
+                                                    handleZBCSOBChange(e, index);
+                                                  }}
+                                                  errors={errors && errors.zbcPlantGridFields && errors.zbcPlantGridFields[index] !== undefined ? errors.zbcPlantGridFields[index].ShareOfBusinessPercent : ""}
+                                                  disabled={isZBCSOBEnabled ? true : false}
+                                                />
+                                              </td>
+                                              <td className="cr-select-height w-100px">
+                                                <SearchableSelectHookForm
+                                                  label={""}
+                                                  name={`${zbcPlantGridFields}.${index}.CostingVersion`}
+                                                  placeholder={"Select"}
+                                                  Controller={Controller}
+                                                  control={control}
+                                                  rules={{ required: false }}
+                                                  register={register}
+                                                  defaultValue={item.SelectedCostingVersion}
+                                                  customClassName={`Costing-version-${index}`}
+                                                  options={renderCostingOption(item.CostingOptions)}
+                                                  mandatory={false}
+                                                  handleChange={(newValue) =>
+                                                    handleCostingChange(newValue, ZBCTypeId, index)
+                                                  }
+                                                  errors={`${zbcPlantGridFields}[${index}]CostingVersion`}
+                                                />
+                                              </td>
+                                              <td className="text-center">
+                                                <div className={item.CostingId !== EMPTY_GUID ? item.Status : ''}>
+                                                  {item.DisplayStatus}
+                                                </div>
+                                              </td>
+                                              <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
+                                              <td style={{ width: "250px" }}>
+                                                <div className='action-btn-wrapper pr-2'>
+                                                  {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBCTypeId)} />}
+                                                  {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBCTypeId)} />)}
+                                                  {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBCTypeId)} />)}
+                                                  {CopyAccessibility && actionPermission.copyZBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBCTypeId)} />)}
+                                                  {DeleteAccessibility && actionPermission.deleteZBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBCTypeId)} />)}
+                                                  {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, ZBCTypeId)} />}
+                                                </div>
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      {zbcPlantGrid && zbcPlantGrid.length === 0 && (
+                                        <tr>
+                                          <td colSpan={7}>
+                                            <NoContentFound
+                                              title={EMPTY_DATA}
+                                            />
+                                          </td>
+                                        </tr>
+                                      )}
+                                    </tbody>
+                                  </Table>
+                                </Col>
+                              </Row>
+                            </>
+                          )}
+
+                          {/* ****************************************NCC UI HERE************************************************************* */}
+                          {IsOpenVendorSOBDetails && showCostingSection.NCC && !breakupBOP && (
+                            <>
+                              <Row className="align-items-center">
+                                <Col md={'6'} className={"mb-2 mt-3"}>
+                                  <h6 className="dark-blue-text sec-heading">NCC:{nccGrid && nccGrid.length !== 0 && <TourWrapper
+                                    buttonSpecificProp={{ id: "ncc_Costing", onClick: () => tourStart("ncc", nccGrid) }}
+                                    stepsSpecificProp={{
+                                      steps: createCostingTourSteps
+                                    }} />}</h6>
+                                </Col>
+                                <Col md="6" className={"mb-2 mt-3"}>
+                                  {nccGrid && nccGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
+                                    <button
+                                      type="button"
+                                      className={"user-btn"}
+                                      onClick={nccDrawerToggle}
+                                      id="NCC_Costing_Add_Vendor"
+                                    >
+                                      <div className={"plus"}></div>Vendor
+                                    </button>
+                                  ) : (
+                                    ""
+                                  )}
+                                </Col>
+                              </Row>
+
+                              {/* NCC PLANT GRID FOR COSTING */}
+                              <Row>
+                                <Col md="12" className={"costing-table-container"}>
+                                  <Table
+                                    className="table cr-brdr-main costing-table-next costing-table-ncc"
+                                    size="sm"
+                                  >
+                                    <thead>
+                                      <tr>
+                                        <th className="destination-plant">{`Destination Plant (Code)`}</th>
+                                        <th className='vendor'>{`Vendor (Code)`}</th>
+                                        <th className="costing-version">{`Costing Version`}</th>
+                                        <th className="text-center costing-status">{`Status`}</th>
+                                        <th className="costing-price">{`Net Cost`}</th>
+                                        <th className="costing-action text-right">{`Actions`}</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {nccGrid && nccGrid.map((item, index) => {
+                                        let displayEditBtn = (item.Status === DRAFT) ? true : false;
+                                        let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                         let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
-
-                                        //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
-                                        //AS OF NOW 25-03-2021
 
                                         return (
                                           <tr key={index}>
-                                            <td>{`${item.PlantName}`}</td>
-                                            <td className="cr-select-height w-100px costing-error-container">
-                                              <TextFieldHookForm
+                                            <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>
+                                            <td>{item.VendorName ? `${item.VendorName}` : '-'}</td>
+
+                                            <td className="cr-select-height w-100px">
+                                              <SearchableSelectHookForm
                                                 label={""}
-                                                name={`${zbcPlantGridFields}.${index}.ShareOfBusinessPercent`}
+                                                name={`${nccGridFields}.${index}.CostingVersion`}
+                                                placeholder={"Select"}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={item.SelectedCostingVersion}
+                                                options={renderCostingOption(item.CostingOptions)}
+                                                customClassName={`Costing-version-${index}`}
+                                                mandatory={false}
+                                                handleChange={(newValue) => handleCostingChange(newValue, NCCTypeId, index)}
+                                                errors={`${nccGridFields}[${index}]CostingVersion`}
+                                              />
+                                            </td>
+                                            <td className="text-center">
+                                              <div className={item.CostingId !== EMPTY_GUID ? item.Status : ''}>
+                                                {item.DisplayStatus}
+                                              </div>
+                                            </td>
+                                            <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
+                                            <td>
+                                              <div className='action-btn-wrapper pr-2'>
+                                                {AddAccessibility && actionPermission.addNCC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCCTypeId)} />}
+                                                {ViewAccessibility && actionPermission.viewNCC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCCTypeId)} />)}
+                                                {EditAccessibility && actionPermission.editNCC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCCTypeId)} />)}
+                                                {CopyAccessibility && actionPermission.copyNCC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCCTypeId)} />)}
+                                                {DeleteAccessibility && actionPermission.deleteNCC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, NCCTypeId)} />)}
+                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, NCCTypeId)} />}
+                                              </div>
+                                            </td>
+                                          </tr>
+                                        );
+                                      })}
+                                      {nccGrid.length === 0 && (
+                                        <tr>
+                                          <td colSpan={7}>
+                                            <NoContentFound
+                                              title={EMPTY_DATA}
+                                            />
+                                          </td>
+                                        </tr>
+                                      )}
+                                    </tbody>
+                                  </Table>
+                                </Col>
+                              </Row>
+                            </>
+                          )}
+
+
+                          {IsOpenVendorSOBDetails && showCostingSection.VBC && (
+                            <>
+                              <Row className="align-items-center">
+                                <Col md={'6'} className={"mb-2 mt-3"}>
+                                  <h6 className="dark-blue-text sec-heading">VBC: {vbcVendorGrid && vbcVendorGrid.length !== 0 && <TourWrapper
+                                    buttonSpecificProp={{ id: "Vendor_Costing", onClick: () => tourStart("vbc", vbcVendorGrid) }}
+                                    stepsSpecificProp={{
+                                      steps: createCostingTourSteps
+                                    }} />}</h6>
+                                </Col>
+                                <Col md="6" className={"mb-2 mt-3"}>
+                                  {!breakupBOP && vbcVendorGrid && vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
+                                    <button
+                                      type="button"
+                                      className={"user-btn"}
+                                      onClick={vendorDrawerToggle}
+                                      id='VBC_Costing_Add_Vendor'
+                                    >
+                                      <div className={"plus"}></div>VENDOR
+                                    </button>
+                                  ) : (
+                                    ""
+                                  )}
+                                </Col>
+                              </Row>
+
+                              {/* VBC PLANT GRID FOR COSTING */}
+                              <Row>
+                                <Col md="12" className={"costing-table-container"}>
+                                  <Table
+                                    className="table cr-brdr-main costing-table-next costing-table-vbc"
+                                    size="sm"
+                                  >
+                                    <thead>
+                                      <tr>
+                                        <th className='vendor'>{`Vendor (Code)`}</th>
+                                        {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
+                                        <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
+                                        <th className="costing-version">{`Costing Version`}</th>
+                                        <th className="text-center costing-status">{`Status`}</th>
+                                        <th className="costing-price">{`Net Cost`}</th>
+                                        <th className="costing-action text-right">{`Actions`}</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
+                                        let displayEditBtn = (item.Status === DRAFT) ? true : false;
+                                        let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
+                                        let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
+                                        let list = item?.CostingOptions?.filter(element => element.Status !== DRAFT && element.Status !== REJECTED && element.Status !== REJECTED_BY_SYSTEM)
+                                        let showAddButtonInBOPBreakup = breakupBOP && list?.length > 0 ? false : true
+
+                                        return (
+                                          <tr key={index}>
+                                            <td className='break-word'>{item.VendorName}</td>
+                                            {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
+                                            <td className="w-100px cr-select-height costing-error-container">
+                                              <TextFieldHookForm
+                                                label=""
+                                                name={`${vbcGridFields}.${index}.ShareOfBusinessPercent`}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
@@ -2373,34 +2627,32 @@ function CostingDetails(props) {
                                                     message: "Percentage should not be greater then 100"
                                                   }
                                                 }}
-                                                defaultValue={item.ShareOfBusinessPercent}
+                                                defaultValue={item.ShareOfBusinessPercent ?? 0}
                                                 className=""
                                                 customClassName={"withBorder"}
                                                 handleChange={(e) => {
                                                   e.preventDefault();
-                                                  handleZBCSOBChange(e, index);
+                                                  handleVBCSOBChange(e, index);
                                                 }}
-                                                errors={errors && errors.zbcPlantGridFields && errors.zbcPlantGridFields[index] !== undefined ? errors.zbcPlantGridFields[index].ShareOfBusinessPercent : ""}
-                                                disabled={isZBCSOBEnabled ? true : false}
+                                                errors={errors && errors.vbcGridFields && errors.vbcGridFields[index] !== undefined ? errors.vbcGridFields[index].ShareOfBusinessPercent : ""}
+                                                disabled={isVBCSOBEnabled ? true : false}
                                               />
                                             </td>
                                             <td className="cr-select-height w-100px">
                                               <SearchableSelectHookForm
                                                 label={""}
-                                                name={`${zbcPlantGridFields}.${index}.CostingVersion`}
+                                                name={`${vbcGridFields}.${index}.CostingVersion`}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={item.SelectedCostingVersion}
-                                                customClassName={`Costing-version-${index}`}
                                                 options={renderCostingOption(item.CostingOptions)}
                                                 mandatory={false}
-                                                handleChange={(newValue) =>
-                                                  handleCostingChange(newValue, ZBCTypeId, index)
-                                                }
-                                                errors={`${zbcPlantGridFields}[${index}]CostingVersion`}
+                                                customClassName={`Costing-version-${index}`}
+                                                handleChange={(newValue) => handleCostingChange(newValue, VBCTypeId, index)}
+                                                errors={`${vbcGridFields}[${index}]CostingVersion`}
                                               />
                                             </td>
                                             <td className="text-center">
@@ -2409,456 +2661,103 @@ function CostingDetails(props) {
                                               </div>
                                             </td>
                                             <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
-                                            <td style={{ width: "250px" }}>
+                                            <td>
                                               <div className='action-btn-wrapper pr-2'>
-                                                {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, ZBCTypeId)} />}
-                                                {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, ZBCTypeId)} />)}
-                                                {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, ZBCTypeId)} />)}
-                                                {CopyAccessibility && actionPermission.copyZBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, ZBCTypeId)} />)}
-                                                {DeleteAccessibility && actionPermission.deleteZBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, ZBCTypeId)} />)}
-                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, ZBCTypeId)} />}
+                                                {AddAccessibility && actionPermission.addVBC && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} />}
+                                                {ViewAccessibility && actionPermission.viewVBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBCTypeId)} />)}
+                                                {EditAccessibility && actionPermission.editVBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBCTypeId)} />)}
+                                                {String(partType.label) !== BOUGHTOUTPARTSPACING && CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} />)}
+                                                {DeleteAccessibility && actionPermission.deleteVBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBCTypeId)} />)}
+                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBCTypeId)} />}
                                               </div>
                                             </td>
                                           </tr>
                                         );
                                       })}
-                                    {zbcPlantGrid && zbcPlantGrid.length === 0 && (
-                                      <tr>
-                                        <td colSpan={7}>
-                                          <NoContentFound
-                                            title={EMPTY_DATA}
-                                          />
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </tbody>
-                                </Table>
-                              </Col>
-                            </Row>
-                          </>
-                        )}
-
-                        {/* ****************************************NCC UI HERE************************************************************* */}
-                        {IsOpenVendorSOBDetails && showCostingSection.NCC && !breakupBOP && (
-                          <>
-                            <Row className="align-items-center">
-                              <Col md={'6'} className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">NCC:{nccGrid && nccGrid.length !== 0 && <TourWrapper
-                                  buttonSpecificProp={{ id: "ncc_Costing", onClick: () => tourStart("ncc", nccGrid) }}
-                                  stepsSpecificProp={{
-                                    steps: createCostingTourSteps
-                                  }} />}</h6>
-                              </Col>
-                              <Col md="6" className={"mb-2 mt-3"}>
-                                {nccGrid && nccGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
-                                  <button
-                                    type="button"
-                                    className={"user-btn"}
-                                    onClick={nccDrawerToggle}
-                                    id="NCC_Costing_Add_Vendor"
-                                  >
-                                    <div className={"plus"}></div>Vendor
-                                  </button>
-                                ) : (
-                                  ""
-                                )}
-                              </Col>
-                            </Row>
-
-                            {/* NCC PLANT GRID FOR COSTING */}
-                            <Row>
-                              <Col md="12" className={"costing-table-container"}>
-                                <Table
-                                  className="table cr-brdr-main costing-table-next costing-table-ncc"
-                                  size="sm"
-                                >
-                                  <thead>
-                                    <tr>
-                                      <th className="destination-plant">{`Destination Plant (Code)`}</th>
-                                      <th className='vendor'>{`Vendor (Code)`}</th>
-                                      <th className="costing-version">{`Costing Version`}</th>
-                                      <th className="text-center costing-status">{`Status`}</th>
-                                      <th className="costing-price">{`Net Cost`}</th>
-                                      <th className="costing-action text-right">{`Actions`}</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {nccGrid && nccGrid.map((item, index) => {
-                                      let displayEditBtn = (item.Status === DRAFT) ? true : false;
-                                      let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
-                                      let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
-
-                                      return (
-                                        <tr key={index}>
-                                          <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>
-                                          <td>{item.VendorName ? `${item.VendorName}` : '-'}</td>
-
-                                          <td className="cr-select-height w-100px">
-                                            <SearchableSelectHookForm
-                                              label={""}
-                                              name={`${nccGridFields}.${index}.CostingVersion`}
-                                              placeholder={"Select"}
-                                              Controller={Controller}
-                                              control={control}
-                                              rules={{ required: false }}
-                                              register={register}
-                                              defaultValue={item.SelectedCostingVersion}
-                                              options={renderCostingOption(item.CostingOptions)}
-                                              customClassName={`Costing-version-${index}`}
-                                              mandatory={false}
-                                              handleChange={(newValue) => handleCostingChange(newValue, NCCTypeId, index)}
-                                              errors={`${nccGridFields}[${index}]CostingVersion`}
+                                      {vbcVendorGrid.length === 0 && (
+                                        <tr>
+                                          <td colSpan={7}>
+                                            <NoContentFound
+                                              title={EMPTY_DATA}
                                             />
-                                          </td>
-                                          <td className="text-center">
-                                            <div className={item.CostingId !== EMPTY_GUID ? item.Status : ''}>
-                                              {item.DisplayStatus}
-                                            </div>
-                                          </td>
-                                          <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
-                                          <td>
-                                            <div className='action-btn-wrapper pr-2'>
-                                              {AddAccessibility && actionPermission.addNCC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, NCCTypeId)} />}
-                                              {ViewAccessibility && actionPermission.viewNCC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, NCCTypeId)} />)}
-                                              {EditAccessibility && actionPermission.editNCC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, NCCTypeId)} />)}
-                                              {CopyAccessibility && actionPermission.copyNCC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, NCCTypeId)} />)}
-                                              {DeleteAccessibility && actionPermission.deleteNCC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, NCCTypeId)} />)}
-                                              {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, NCCTypeId)} />}
-                                            </div>
                                           </td>
                                         </tr>
-                                      );
-                                    })}
-                                    {nccGrid.length === 0 && (
-                                      <tr>
-                                        <td colSpan={7}>
-                                          <NoContentFound
-                                            title={EMPTY_DATA}
-                                          />
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </tbody>
-                                </Table>
-                              </Col>
-                            </Row>
-                          </>
-                        )}
+                                      )}
+                                    </tbody>
+                                  </Table>
+                                </Col>
+                              </Row>
+                            </>
+                          )}
 
+                          {IsOpenVendorSOBDetails && showCostingSection.CBC && !breakupBOP && (
+                            <>
+                              <Row className="align-items-center">
+                                <Col md={'6'} className={"mb-2 mt-3"}>
+                                  <h6 className="dark-blue-text sec-heading">CBC: {cbcGrid && cbcGrid.length !== 0 && <TourWrapper
+                                    buttonSpecificProp={{ id: "cbc_Costing", onClick: () => tourStart("cbc", cbcGrid) }}
+                                    stepsSpecificProp={{
+                                      steps: createCostingTourSteps
+                                    }} />}</h6>
+                                </Col>
+                                <Col md="6" className={"mb-2 mt-3"}>
+                                  {cbcGrid && cbcGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
+                                    <button
+                                      type="button"
+                                      className={"user-btn"}
+                                      onClick={clientDrawerToggle}
+                                      id='CBC_Costing_Add_Customer'
+                                    >
+                                      <div className={"plus"}></div>Customer
+                                    </button>
+                                  ) : (
+                                    ""
+                                  )}
+                                </Col>
+                              </Row>
 
-                        {IsOpenVendorSOBDetails && showCostingSection.VBC && (
-                          <>
-                            <Row className="align-items-center">
-                              <Col md={'6'} className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">VBC: {vbcVendorGrid && vbcVendorGrid.length !== 0 && <TourWrapper
-                                  buttonSpecificProp={{ id: "Vendor_Costing", onClick: () => tourStart("vbc", vbcVendorGrid) }}
-                                  stepsSpecificProp={{
-                                    steps: createCostingTourSteps
-                                  }} />}</h6>
-                              </Col>
-                              <Col md="6" className={"mb-2 mt-3"}>
-                                {!breakupBOP && vbcVendorGrid && vbcVendorGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
-                                  <button
-                                    type="button"
-                                    className={"user-btn"}
-                                    onClick={vendorDrawerToggle}
-                                    id='VBC_Costing_Add_Vendor'
+                              {/* VBC PLANT GRID FOR COSTING */}
+                              <Row>
+                                <Col md="12" className={"costing-table-container"}>
+                                  <Table
+                                    className="table cr-brdr-main costing-table-next costing-table-cbc"
+                                    size="sm"
                                   >
-                                    <div className={"plus"}></div>VENDOR
-                                  </button>
-                                ) : (
-                                  ""
-                                )}
-                              </Col>
-                            </Row>
-
-                            {/* VBC PLANT GRID FOR COSTING */}
-                            <Row>
-                              <Col md="12" className={"costing-table-container"}>
-                                <Table
-                                  className="table cr-brdr-main costing-table-next costing-table-vbc"
-                                  size="sm"
-                                >
-                                  <thead>
-                                    <tr>
-                                      <th className='vendor'>{`Vendor (Code)`}</th>
-                                      {initialConfiguration?.IsDestinationPlantConfigure && <th className="destination-plant">{`Destination Plant (Code)`}</th>}
-                                      <th className="share-of-business">{`SOB (%)`}{SOBAccessibility && vbcVendorGrid.length > 0 && <button className="edit-details-btn ml5" type={"button"} onClick={updateVBCState} />}</th>
-                                      <th className="costing-version">{`Costing Version`}</th>
-                                      <th className="text-center costing-status">{`Status`}</th>
-                                      <th className="costing-price">{`Net Cost`}</th>
-                                      <th className="costing-action text-right">{`Actions`}</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {vbcVendorGrid && vbcVendorGrid.map((item, index) => {
-                                      let displayEditBtn = (item.Status === DRAFT) ? true : false;
-                                      let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
-                                      let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
-                                      let list = item?.CostingOptions?.filter(element => element.Status !== DRAFT && element.Status !== REJECTED && element.Status !== REJECTED_BY_SYSTEM)
-                                      let showAddButtonInBOPBreakup = breakupBOP && list?.length > 0 ? false : true
-
-                                      return (
-                                        <tr key={index}>
-                                          <td className='break-word'>{item.VendorName}</td>
-                                          {initialConfiguration?.IsDestinationPlantConfigure && <td className='break-word'>{item?.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
-                                          <td className="w-100px cr-select-height costing-error-container">
-                                            <TextFieldHookForm
-                                              label=""
-                                              name={`${vbcGridFields}.${index}.ShareOfBusinessPercent`}
-                                              Controller={Controller}
-                                              control={control}
-                                              register={register}
-                                              mandatory={false}
-                                              rules={{
-                                                required: true,
-                                                validate: { number, percentageLimitValidation, decimalNumberLimit6 },
-                                                max: {
-                                                  value: 100,
-                                                  message: "Percentage should not be greater then 100"
-                                                }
-                                              }}
-                                              defaultValue={item.ShareOfBusinessPercent ?? 0}
-                                              className=""
-                                              customClassName={"withBorder"}
-                                              handleChange={(e) => {
-                                                e.preventDefault();
-                                                handleVBCSOBChange(e, index);
-                                              }}
-                                              errors={errors && errors.vbcGridFields && errors.vbcGridFields[index] !== undefined ? errors.vbcGridFields[index].ShareOfBusinessPercent : ""}
-                                              disabled={isVBCSOBEnabled ? true : false}
-                                            />
-                                          </td>
-                                          <td className="cr-select-height w-100px">
-                                            <SearchableSelectHookForm
-                                              label={""}
-                                              name={`${vbcGridFields}.${index}.CostingVersion`}
-                                              placeholder={"Select"}
-                                              Controller={Controller}
-                                              control={control}
-                                              rules={{ required: false }}
-                                              register={register}
-                                              defaultValue={item.SelectedCostingVersion}
-                                              options={renderCostingOption(item.CostingOptions)}
-                                              mandatory={false}
-                                              customClassName={`Costing-version-${index}`}
-                                              handleChange={(newValue) => handleCostingChange(newValue, VBCTypeId, index)}
-                                              errors={`${vbcGridFields}[${index}]CostingVersion`}
-                                            />
-                                          </td>
-                                          <td className="text-center">
-                                            <div className={item.CostingId !== EMPTY_GUID ? item.Status : ''}>
-                                              {item.DisplayStatus}
-                                            </div>
-                                          </td>
-                                          <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
-                                          <td>
-                                            <div className='action-btn-wrapper pr-2'>
-                                              {AddAccessibility && actionPermission.addVBC && showAddButtonInBOPBreakup && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, VBCTypeId)} />}
-                                              {ViewAccessibility && actionPermission.viewVBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, VBCTypeId)} />)}
-                                              {EditAccessibility && actionPermission.editVBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, VBCTypeId)} />)}
-                                              {String(partType.label) !== BOUGHTOUTPARTSPACING && CopyAccessibility && actionPermission.copyVBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, VBCTypeId)} />)}
-                                              {DeleteAccessibility && actionPermission.deleteVBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, VBCTypeId)} />)}
-                                              {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, VBCTypeId)} />}
-                                            </div>
-                                          </td>
-                                        </tr>
-                                      );
-                                    })}
-                                    {vbcVendorGrid.length === 0 && (
+                                    <thead>
                                       <tr>
-                                        <td colSpan={7}>
-                                          <NoContentFound
-                                            title={EMPTY_DATA}
-                                          />
-                                        </td>
+                                        <th className='vendor'>{`Customer (Code)`}</th>
+                                        {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Plant (Code)`}</th>}
+                                        <th className="costing-version">{`Costing Version`}</th>
+                                        <th className="text-center costing-status">{`Status`}</th>
+                                        <th className="costing-price">{`Net Cost`}</th>
+                                        <th className="costing-action text-right">{`Actions`}</th>
                                       </tr>
-                                    )}
-                                  </tbody>
-                                </Table>
-                              </Col>
-                            </Row>
-                          </>
-                        )}
-
-                        {IsOpenVendorSOBDetails && showCostingSection.CBC && !breakupBOP && (
-                          <>
-                            <Row className="align-items-center">
-                              <Col md={'6'} className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">CBC: {cbcGrid && cbcGrid.length !== 0 && <TourWrapper
-                                  buttonSpecificProp={{ id: "cbc_Costing", onClick: () => tourStart("cbc", cbcGrid) }}
-                                  stepsSpecificProp={{
-                                    steps: createCostingTourSteps
-                                  }} />}</h6>
-                              </Col>
-                              <Col md="6" className={"mb-2 mt-3"}>
-                                {cbcGrid && cbcGrid.length < initialConfiguration.NumberOfVendorsForCostDetails ? (
-                                  <button
-                                    type="button"
-                                    className={"user-btn"}
-                                    onClick={clientDrawerToggle}
-                                    id='CBC_Costing_Add_Customer'
-                                  >
-                                    <div className={"plus"}></div>Customer
-                                  </button>
-                                ) : (
-                                  ""
-                                )}
-                              </Col>
-                            </Row>
-
-                            {/* VBC PLANT GRID FOR COSTING */}
-                            <Row>
-                              <Col md="12" className={"costing-table-container"}>
-                                <Table
-                                  className="table cr-brdr-main costing-table-next costing-table-cbc"
-                                  size="sm"
-                                >
-                                  <thead>
-                                    <tr>
-                                      <th className='vendor'>{`Customer (Code)`}</th>
-                                      {getConfigurationKey().IsCBCApplicableOnPlant && <th className="destination-plant">{`Plant (Code)`}</th>}
-                                      <th className="costing-version">{`Costing Version`}</th>
-                                      <th className="text-center costing-status">{`Status`}</th>
-                                      <th className="costing-price">{`Net Cost`}</th>
-                                      <th className="costing-action text-right">{`Actions`}</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    {cbcGrid && cbcGrid?.map((item, index) => {
-                                      let displayEditBtn = (item.Status === DRAFT) ? true : false;
-                                      let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
-                                      let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
-
-                                      return (
-                                        <tr key={index}>
-                                          <td>{item.Customer ? `${item.Customer}` : `${item.CustomerName}`}</td>
-                                          {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
-                                          <td className="cr-select-height w-100px">
-                                            <SearchableSelectHookForm
-                                              label={""}
-                                              name={`${cbcGridFields}.${index}.CostingVersion`}
-                                              placeholder={"Select"}
-                                              Controller={Controller}
-                                              control={control}
-                                              rules={{ required: false }}
-                                              register={register}
-                                              defaultValue={item.SelectedCostingVersion}
-                                              options={renderCostingOption(item.CostingOptions)}
-                                              customClassName={`Costing-version-${index}`}
-                                              mandatory={false}
-                                              handleChange={(newValue) => handleCostingChange(newValue, CBCTypeId, index)}
-                                              errors={`${cbcGridFields}[${index}]CostingVersion`}
-                                            />
-                                          </td>
-                                          <td className="text-center">
-                                            <div className={item.CostingId !== EMPTY_GUID ? item.Status : ''}>
-                                              {item.DisplayStatus}
-                                            </div>
-                                          </td>
-                                          <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
-                                          <td>
-                                            <div className='action-btn-wrapper pr-2'>
-                                              {AddAccessibility && actionPermission.addCBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, CBCTypeId)} />}
-                                              {ViewAccessibility && actionPermission.viewCBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, CBCTypeId)} />)}
-                                              {EditAccessibility && actionPermission.editCBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, CBCTypeId)} />)}
-                                              {CopyAccessibility && actionPermission.copyCBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, CBCTypeId)} />)}
-                                              {DeleteAccessibility && actionPermission.deleteCBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, CBCTypeId)} />)}
-                                              {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, CBCTypeId)} />}
-                                            </div>
-                                          </td>
-                                        </tr>
-                                      );
-                                    })}
-                                    {cbcGrid.length === 0 && (
-                                      <tr>
-                                        <td colSpan={7}>
-                                          <NoContentFound
-                                            title={EMPTY_DATA}
-                                          />
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </tbody>
-                                </Table>
-                              </Col>
-                            </Row>
-                          </>
-                        )}
-
-
-                        {IsOpenVendorSOBDetails && showCostingSection.WAC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && (
-                          <>
-                            <Row className="align-items-center">
-                              <Col md="6" className={"mb-2 mt-3"}>
-                                <h6 className="dark-blue-text sec-heading">WAC:{wacPlantGrid && wacPlantGrid.length !== 0 && <TourWrapper
-                                  buttonSpecificProp={{ id: "wac_Costing", onClick: () => tourStart("wac", wacPlantGrid) }}
-                                  stepsSpecificProp={{
-                                    steps: createCostingTourSteps
-                                  }} />}</h6>
-                              </Col>
-                              <Col md="6" className={"mb-2 mt-3"}>
-                                <button
-                                  type="button"
-                                  className={"user-btn"}
-                                  onClick={plantDrawerToggleWac}
-                                  id='WAC_Costing_Add_Plant'
-                                >
-                                  <div className={"plus"}></div>PLANT
-                                </button>
-                              </Col>
-                            </Row>
-
-                            {/* ZBC PLANT GRID FOR COSTING */}
-                            <Row>
-                              <Col md="12" className={"costing-table-container"}>
-                                <Table
-                                  className="table cr-brdr-main costing-table-next costing-table-wac"
-                                  size="sm"
-                                >
-                                  <thead>
-                                    <tr>
-                                      <th className='vendor'>{`Plant (Code)`}</th>
-                                      <th className="costing-version" >{`Costing Version`}</th>
-                                      <th className="text-center costing-status" >{`Status`}</th>
-                                      <th className="costing-price">{`Net Cost`}</th>
-                                      <th className="costing-action text-right pr-2">{`Actions`}</th>
-                                    </tr>
-                                  </thead>
-                                  <tbody>
-                                    { }
-                                    {wacPlantGrid &&
-                                      wacPlantGrid.map((item, index) => {
-
-                                        let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '-') ? true : false;
-
-                                        let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
-
+                                    </thead>
+                                    <tbody>
+                                      {cbcGrid && cbcGrid?.map((item, index) => {
+                                        let displayEditBtn = (item.Status === DRAFT) ? true : false;
+                                        let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '') ? true : false;
                                         let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
-
-                                        //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
-                                        //AS OF NOW 25-03-2021
 
                                         return (
                                           <tr key={index}>
-                                            <td>{`${item.PlantName}`}</td>
+                                            <td>{item.Customer ? `${item.Customer}` : `${item.CustomerName}`}</td>
+                                            {getConfigurationKey().IsCBCApplicableOnPlant && <td>{item.DestinationPlantName ? `${item.DestinationPlantName}` : ''}</td>}
                                             <td className="cr-select-height w-100px">
                                               <SearchableSelectHookForm
                                                 label={""}
-                                                name={`${wacPlantGridFields}.${index}.CostingVersion`}
+                                                name={`${cbcGridFields}.${index}.CostingVersion`}
                                                 placeholder={"Select"}
                                                 Controller={Controller}
                                                 control={control}
                                                 rules={{ required: false }}
                                                 register={register}
                                                 defaultValue={item.SelectedCostingVersion}
-                                                customClassName={`Costing-version-${index}`}
                                                 options={renderCostingOption(item.CostingOptions)}
+                                                customClassName={`Costing-version-${index}`}
                                                 mandatory={false}
-                                                handleChange={(newValue) =>
-                                                  handleCostingChange(newValue, WACTypeId, index)
-                                                }
-                                                errors={`${wacPlantGridFields}[${index}]CostingVersion`}
+                                                handleChange={(newValue) => handleCostingChange(newValue, CBCTypeId, index)}
+                                                errors={`${cbcGridFields}[${index}]CostingVersion`}
                                               />
                                             </td>
                                             <td className="text-center">
@@ -2867,37 +2766,149 @@ function CostingDetails(props) {
                                               </div>
                                             </td>
                                             <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
-                                            <td style={{ width: "250px" }}>
+                                            <td>
                                               <div className='action-btn-wrapper pr-2'>
-                                                {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, WACTypeId)} />}
-                                                {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, WACTypeId)} />)}
-                                                {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, WACTypeId)} />)}
-                                                {/* {CopyAccessibility && actionPermission.copyZBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, WACTypeId)} />)} */}
-                                                {DeleteAccessibility && actionPermission.deleteZBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, WACTypeId)} />)}
-                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, WACTypeId)} />}
+                                                {AddAccessibility && actionPermission.addCBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, CBCTypeId)} />}
+                                                {ViewAccessibility && actionPermission.viewCBC && !item.IsNewCosting && item.Status !== '' && (<button className="View" type={"button"} title={"View Costing"} onClick={() => viewDetails(index, CBCTypeId)} />)}
+                                                {EditAccessibility && actionPermission.editCBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit" type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, CBCTypeId)} />)}
+                                                {CopyAccessibility && actionPermission.copyCBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All" title={"Copy Costing"} type={"button"} onClick={() => copyCosting(index, CBCTypeId)} />)}
+                                                {DeleteAccessibility && actionPermission.deleteCBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" title={"Delete Costing"} type={"button"} onClick={() => deleteItem(item, index, CBCTypeId)} />)}
+                                                {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, CBCTypeId)} />}
                                               </div>
                                             </td>
                                           </tr>
                                         );
                                       })}
-                                    {wacPlantGrid && wacPlantGrid.length === 0 && (
-                                      <tr>
-                                        <td colSpan={7}>
-                                          <NoContentFound
-                                            title={EMPTY_DATA}
-                                          />
-                                        </td>
-                                      </tr>
-                                    )}
-                                  </tbody>
-                                </Table>
-                              </Col>
-                            </Row>
-                          </>
-                        )}
+                                      {cbcGrid.length === 0 && (
+                                        <tr>
+                                          <td colSpan={7}>
+                                            <NoContentFound
+                                              title={EMPTY_DATA}
+                                            />
+                                          </td>
+                                        </tr>
+                                      )}
+                                    </tbody>
+                                  </Table>
+                                </Col>
+                              </Row>
+                            </>
+                          )}
 
-                      </div>}
-                    {!IsOpenVendorSOBDetails &&
+
+                          {IsOpenVendorSOBDetails && showCostingSection.WAC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && (
+                            <>
+                              <Row className="align-items-center">
+                                <Col md="6" className={"mb-2 mt-3"}>
+                                  <h6 className="dark-blue-text sec-heading">WAC:{wacPlantGrid && wacPlantGrid.length !== 0 && <TourWrapper
+                                    buttonSpecificProp={{ id: "wac_Costing", onClick: () => tourStart("wac", wacPlantGrid) }}
+                                    stepsSpecificProp={{
+                                      steps: createCostingTourSteps
+                                    }} />}</h6>
+                                </Col>
+                                <Col md="6" className={"mb-2 mt-3"}>
+                                  <button
+                                    type="button"
+                                    className={"user-btn"}
+                                    onClick={plantDrawerToggleWac}
+                                    id='WAC_Costing_Add_Plant'
+                                  >
+                                    <div className={"plus"}></div>PLANT
+                                  </button>
+                                </Col>
+                              </Row>
+
+                              {/* ZBC PLANT GRID FOR COSTING */}
+                              <Row>
+                                <Col md="12" className={"costing-table-container"}>
+                                  <Table
+                                    className="table cr-brdr-main costing-table-next costing-table-wac"
+                                    size="sm"
+                                  >
+                                    <thead>
+                                      <tr>
+                                        <th className='vendor'>{`Plant (Code)`}</th>
+                                        <th className="costing-version" >{`Costing Version`}</th>
+                                        <th className="text-center costing-status" >{`Status`}</th>
+                                        <th className="costing-price">{`Net Cost`}</th>
+                                        <th className="costing-action text-right pr-2">{`Actions`}</th>
+                                      </tr>
+                                    </thead>
+                                    <tbody>
+                                      { }
+                                      {wacPlantGrid &&
+                                        wacPlantGrid.map((item, index) => {
+
+                                          let displayCopyBtn = (item.Status !== REJECTED_BY_SYSTEM && item.Status !== '-') ? true : false;
+
+                                          let displayEditBtn = (item.Status === DRAFT || item.Status === REJECTED) ? true : false;
+
+                                          let displayDeleteBtn = (item.Status === DRAFT) ? true : false;
+
+                                          //FOR VIEW AND CREATE CONDITION NOT CREATED YET BECAUSE BOTH BUTTON WILL DISPLAY IN EVERY CONDITION 
+                                          //AS OF NOW 25-03-2021
+
+                                          return (
+                                            <tr key={index}>
+                                              <td>{`${item.PlantName}`}</td>
+                                              <td className="cr-select-height w-100px">
+                                                <SearchableSelectHookForm
+                                                  label={""}
+                                                  name={`${wacPlantGridFields}.${index}.CostingVersion`}
+                                                  placeholder={"Select"}
+                                                  Controller={Controller}
+                                                  control={control}
+                                                  rules={{ required: false }}
+                                                  register={register}
+                                                  defaultValue={item.SelectedCostingVersion}
+                                                  customClassName={`Costing-version-${index}`}
+                                                  options={renderCostingOption(item.CostingOptions)}
+                                                  mandatory={false}
+                                                  handleChange={(newValue) =>
+                                                    handleCostingChange(newValue, WACTypeId, index)
+                                                  }
+                                                  errors={`${wacPlantGridFields}[${index}]CostingVersion`}
+                                                />
+                                              </td>
+                                              <td className="text-center">
+                                                <div className={item.CostingId !== EMPTY_GUID ? item.Status : ''}>
+                                                  {item.DisplayStatus}
+                                                </div>
+                                              </td>
+                                              <td>{item.Price ? checkForDecimalAndNull(item.Price, getConfigurationKey().NoOfDecimalForPrice) : 0}</td>
+                                              <td style={{ width: "250px" }}>
+                                                <div className='action-btn-wrapper pr-2'>
+                                                  {AddAccessibility && actionPermission.addZBC && <button className="Add-file" type={"button"} title={"Add Costing"} onClick={() => addDetails(index, WACTypeId)} />}
+                                                  {ViewAccessibility && actionPermission.viewZBC && !item.IsNewCosting && item.Status !== '-' && (<button className="View " type={"button"} title={"View Costing"} onClick={() => viewDetails(index, WACTypeId)} />)}
+                                                  {EditAccessibility && actionPermission.editZBC && !item.IsNewCosting && displayEditBtn && (<button className="Edit " type={"button"} title={"Edit Costing"} onClick={() => editCosting(index, WACTypeId)} />)}
+                                                  {/* {CopyAccessibility && actionPermission.copyZBC && !item.IsNewCosting && displayCopyBtn && (<button className="Copy All " type={"button"} title={"Copy Costing"} onClick={() => copyCosting(index, WACTypeId)} />)} */}
+                                                  {DeleteAccessibility && actionPermission.deleteZBC && !item.IsNewCosting && displayDeleteBtn && (<button className="Delete All" type={"button"} title={"Delete Costing"} onClick={() => deleteItem(item, index, WACTypeId)} />)}
+                                                  {item?.CostingOptions?.length === 0 && <button title='Discard' className="CancelIcon" type={'button'} onClick={() => deleteRowItem(index, WACTypeId)} />}
+                                                </div>
+                                              </td>
+                                            </tr>
+                                          );
+                                        })}
+                                      {wacPlantGrid && wacPlantGrid.length === 0 && (
+                                        <tr>
+                                          <td colSpan={7}>
+                                            <NoContentFound
+                                              title={EMPTY_DATA}
+                                            />
+                                          </td>
+                                        </tr>
+                                      )}
+                                    </tbody>
+                                  </Table>
+                                </Col>
+                              </Row>
+                            </>
+                          )}
+
+                        </div>
+                    }
+                    {
+                      !IsOpenVendorSOBDetails &&
                       <Row className="justify-content-between btn-row">
                         <div className="col-sm-12 text-right">
                           <button type={"button"} id="costing-cancel" className="reset-btn" onClick={cancel} >
@@ -2910,7 +2921,8 @@ function CostingDetails(props) {
                               <div className={"next-icon"}></div>
                             </button>}
                         </div>
-                      </Row>}
+                      </Row>
+                    }
 
 
                   </>
@@ -2944,9 +2956,9 @@ function CostingDetails(props) {
             {
               showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_DELETE_ALERT}`} />
             }
-          </Col>
-        </Row>
-      </div>
+          </Col >
+        </Row >
+      </div >
 
       {IsPlantDrawerOpen && (
         <AddPlantDrawer
@@ -2957,74 +2969,87 @@ function CostingDetails(props) {
           ID={""}
           anchor={"right"}
         />
-      )}
+      )
+      }
 
-      {IsVendorDrawerOpen && (
-        <AddVendorDrawer
-          isOpen={IsVendorDrawerOpen}
-          closeDrawer={closeVendorDrawer}
-          isEditFlag={false}
-          vbcVendorGrid={vbcVendorGrid}
-          ID={""}
-          anchor={"right"}
-        />
-      )}
-      {IsClientDrawerOpen && (
-        <AddClientDrawer
-          isOpen={IsClientDrawerOpen}
-          closeDrawer={closeClientDrawer}
-          isEditFlag={false}
-          cbcGrid={[]}
-          ID={""}
-          anchor={"right"}
-        />
-      )}
-      {isNCCDrawerOpen && (
-        <AddNCCDrawer
-          isOpen={isNCCDrawerOpen}
-          closeDrawer={closeNCCDrawer}
-          isEditFlag={false}
-          nccGrid={nccGrid}
-          ID={""}
-          anchor={"right"}
-        />
-      )}
+      {
+        IsVendorDrawerOpen && (
+          <AddVendorDrawer
+            isOpen={IsVendorDrawerOpen}
+            closeDrawer={closeVendorDrawer}
+            isEditFlag={false}
+            vbcVendorGrid={vbcVendorGrid}
+            ID={""}
+            anchor={"right"}
+          />
+        )
+      }
+      {
+        IsClientDrawerOpen && (
+          <AddClientDrawer
+            isOpen={IsClientDrawerOpen}
+            closeDrawer={closeClientDrawer}
+            isEditFlag={false}
+            cbcGrid={[]}
+            ID={""}
+            anchor={"right"}
+          />
+        )
+      }
+      {
+        isNCCDrawerOpen && (
+          <AddNCCDrawer
+            isOpen={isNCCDrawerOpen}
+            closeDrawer={closeNCCDrawer}
+            isEditFlag={false}
+            nccGrid={nccGrid}
+            ID={""}
+            anchor={"right"}
+          />
+        )
+      }
 
-      {isCopyCostingDrawer && (
-        <CopyCosting
-          isOpen={isCopyCostingDrawer}
-          closeDrawer={closeCopyCostingDrawer}
-          copyCostingData={copyCostingData}
-          zbcPlantGrid={zbcPlantGrid}
-          vbcVendorGrid={vbcVendorGrid}
-          nccGrid={nccGrid}
-          partNo={getValues("Part")}
-          type={costingType}
-          selectedCostingId={costingIdForCopy}
-          //isEditFlag={false}
-          anchor={"right"}
-          setCostingOptionSelect={setCostingOptionSelect}
-          cbcGrid={cbcGrid}
-        />
-      )}
+      {
+        isCopyCostingDrawer && (
+          <CopyCosting
+            isOpen={isCopyCostingDrawer}
+            closeDrawer={closeCopyCostingDrawer}
+            copyCostingData={copyCostingData}
+            zbcPlantGrid={zbcPlantGrid}
+            vbcVendorGrid={vbcVendorGrid}
+            nccGrid={nccGrid}
+            partNo={getValues("Part")}
+            type={costingType}
+            selectedCostingId={costingIdForCopy}
+            //isEditFlag={false}
+            anchor={"right"}
+            setCostingOptionSelect={setCostingOptionSelect}
+            cbcGrid={cbcGrid}
+          />
+        )
+      }
 
-      {IsBulkOpen && <BOMUploadDrawer
-        isOpen={IsBulkOpen}
-        closeDrawer={closeBulkUploadDrawer}
-        isEditFlag={false}
-        fileName={'BOM'}
-        messageLabel={'BOM'}
-        anchor={'right'}
-      />}
-
-      {clientDrawer && (
-        <Clientbasedcostingdrawer
-          isOpen={clientDrawer}
-          closeDrawer={closeCLientCostingDrawer}
+      {
+        IsBulkOpen && <BOMUploadDrawer
+          isOpen={IsBulkOpen}
+          closeDrawer={closeBulkUploadDrawer}
           isEditFlag={false}
+          fileName={'BOM'}
+          messageLabel={'BOM'}
           anchor={'right'}
         />
-      )}
+      }
+
+      {
+        clientDrawer && (
+          <Clientbasedcostingdrawer
+            isOpen={clientDrawer}
+            closeDrawer={closeCLientCostingDrawer}
+            isEditFlag={false}
+            anchor={'right'}
+          />
+        )
+      }
     </>
   );
 }

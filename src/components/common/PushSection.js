@@ -9,16 +9,90 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../layout/HookFormI
 // import { materialGroup, purchasingGroup } from '../../../../config/masterData';
 import { useState } from 'react'
 // import { INR } from '../../../../config/constants'
-
+//MINDA
+import { decimalOption, materialGroup, purchasingGroup } from '../../config/masterData';
+import { setSAPData } from '../costing/actions/Approval';
+import { userDetails } from '../../helper';
 
 
 function PushSection(props) {
     const { register, handleSubmit, formState: { errors }, control } = useForm();
 
+    const [MaterialGroup, setMaterialGroup] = useState([]);
+    const [PurchasingGroup, setPurchasingGroup] = useState([]);
+    const [DecimalOption, setDecimalOption] = useState([]);
+    const dispatch = useDispatch()
+
+    /**
+  * @method renderListing
+  * @description RENDER LISTING IN DROPDOWN
+  */
+    const renderListing = (label) => {
+        let tempArr = []
+        if (label === 'MaterialGroup') {
+            const material = materialGroup;
+            material && material.map(item => {
+                tempArr.push({ label: `${item.label}(${item.value})`, value: item.value })
+                return null
+            })
+        }
+        if (label === 'PurchasingGroup') {
+            const purchase = purchasingGroup;
+            purchase && purchase.map(item => {
+                tempArr.push({ label: `${item.label}(${item.value})`, value: item.value })
+                return null
+            })
+        }
+        if (label === 'DecimalOption') {
+            const decOption = decimalOption;
+            decimalOption && decimalOption.map(item => {
+                tempArr.push({ label: item.label, value: item.value })
+                return null
+            })
+        }
+        return tempArr
+    }
+
+    /**
+   * @const handleMaterialChange
+   */
+    const handleMaterialChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setMaterialGroup(newValue)
+            dispatch(setSAPData({ PurchasingGroup: PurchasingGroup, MaterialGroup: newValue, DecimalOption: DecimalOption }))
+        } else {
+            setMaterialGroup([])
+        }
+    }
+
+    /**
+  * @const handlePurchasingChange
+  */
+    const handlePurchasingChange = (newValue) => {
+        if (newValue && newValue !== '') {
+            setPurchasingGroup(newValue)
+            dispatch(setSAPData({ PurchasingGroup: newValue, MaterialGroup: MaterialGroup, DecimalOption: DecimalOption }))
+        } else {
+            setPurchasingGroup([])
+        }
+    }
+
+    /**
+  * @const handlePurchasingChange
+  */
+    const handleDecimalOption = (newValue) => {
+        if (newValue && newValue !== '') {
+            setDecimalOption(newValue)
+            dispatch(setSAPData({ PurchasingGroup: PurchasingGroup, MaterialGroup: MaterialGroup, DecimalOption: newValue }))
+        } else {
+            setDecimalOption([])
+        }
+    }
+
     return (
         <>
             <Row className="pl-3">
-                <Col md="6">
+                {/* <Col md="6">
                     <TextFieldHookForm
                         label="Company Code"
                         name={"CompanyCode"}
@@ -27,29 +101,62 @@ function PushSection(props) {
                         register={register}
                         mandatory={false}
                         handleChange={() => { }}
-                        defaultValue={() => { }}
+                        defaultValue={userDetails().DepartmentCode}
                         className=""
                         customClassName={"withBorder"}
                         errors={errors.CompanyCode}
                         disabled={true}
                     />
-                </Col>
+                </Col> */}
                 {/* </Row> */}
                 {/* <Row className="pl-3"> */}
+                {/* <Col md="6">
+                    <SearchableSelectHookForm
+                        label={"Material Group"}
+                        name={"MaterialGroup"}
+                        placeholder={"-Select-"}
+                        Controller={props.Controller}
+                        control={props.control}
+                        rules={{ required: true }}
+                        register={props.register}
+                        defaultValue={MaterialGroup.length !== 0 ? MaterialGroup : ""}
+                        options={renderListing("MaterialGroup")}
+                        mandatory={true}
+                        handleChange={handleMaterialChange}
+                        errors={props.errors.MaterialGroup}
+                    />
+
+                </Col> */}
+                {/* <Col md="6">
+                    <SearchableSelectHookForm
+                        label={"Purchasing Group"}
+                        name={"PurchasingGroup"}
+                        placeholder={"-Select-"}
+                        Controller={props.Controller}
+                        control={props.control}
+                        rules={{ required: true }}
+                        register={props.register}
+                        defaultValue={PurchasingGroup.length !== 0 ? PurchasingGroup : ""}
+                        options={renderListing("PurchasingGroup")}
+                        mandatory={true}
+                        handleChange={handlePurchasingChange}
+                        errors={props.errors.PurchasingGroup}
+                    />
+                </Col> */}
                 <Col md="6">
-                    <TextFieldHookForm
-                        label="Company Name"
-                        name={"CompanyName"}
-                        Controller={Controller}
-                        control={control}
-                        register={register}
-                        mandatory={false}
-                        handleChange={() => { }}
-                        defaultValue={() => { }}
-                        className=""
-                        customClassName={"withBorder"}
-                        errors={errors.CompanyName}
-                        disabled={true}
+                    <SearchableSelectHookForm
+                        label={"Decimal Option"}
+                        name={"DecimalOption"}
+                        placeholder={"-Select-"}
+                        Controller={props.Controller}
+                        control={props.control}
+                        rules={{ required: true }}
+                        register={props.register}
+                        defaultValue={DecimalOption.length !== 0 ? DecimalOption : ""}
+                        options={renderListing("DecimalOption")}
+                        mandatory={true}
+                        handleChange={handleDecimalOption}
+                        errors={props.errors.DecimalOption}
                     />
                 </Col>
             </Row>

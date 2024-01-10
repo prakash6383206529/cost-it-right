@@ -44,7 +44,6 @@
     @include icons("../../images/WhitePencil-Icon.svg", 12px, 12px);
 }
 
-
 .Delete {
     @include icons("../../images/Group-8857.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
     @include extra-icon-styles;
@@ -67,6 +66,12 @@
 
 .Comment-box {
     @include icons("../../images/Comment-box.svg", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
+}
+
+.pushed-action-btn {
+    @include icons("../../images/pushed-sap.png", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
+    @include extra-icon-styles;
+    border-radius: 3px
 }
 
 .pie-chart {

@@ -27,6 +27,9 @@ function VerifyImpactDrawer(props) {
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
   const [accDisable, setAccDisable] = useState(false)
+  const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
+  const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
+  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
 
   const dispatch = useDispatch()
 

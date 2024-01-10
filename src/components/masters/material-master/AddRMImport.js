@@ -11,7 +11,7 @@ import {
 } from '../../../actions/Common';
 import {
   createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild,
-  getRMGradeSelectListByRawMaterial, fileUploadRMDomestic, checkAndGetRawMaterialCode,
+  getRMGradeSelectListByRawMaterial, fileUploadRMDomestic, checkAndGetRawMaterialCode, getRMSpecificationDataAPI, getRMSpecificationDataList
 } from '../actions/Material';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
@@ -111,6 +111,7 @@ class AddRMImport extends Component {
       isSourceChange: false,
       source: '',
       showWarning: false,
+      showExtraCost: false,
       approveDrawer: false,
       uploadAttachements: true,
       isFinalApprovar: false,
@@ -165,6 +166,9 @@ class AddRMImport extends Component {
       UOMToScrapUOMRatio: '',
       ScrapRatePerScrapUOMConversion: '',
       ConversionRatio: '',
+      isDisabled: false, // THIS STATE IS USED TO DISABLE NAME, GRADE, SPEC
+      isCodeDisabled: false, // THIS STATE IS USED TO DISABLE CODE
+      rmCode: []
     }
   }
 
@@ -179,6 +183,7 @@ class AddRMImport extends Component {
   UNSAFE_componentWillMount() {
     if (!(this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.props.getCurrencySelectList(() => { })
+      this.props.getUOMSelectList(() => { })
     }
   }
 
@@ -279,6 +284,7 @@ class AddRMImport extends Component {
     if (!this.state.isViewFlag) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
+        this.props.getRMSpecificationDataList({ GradeId: null }, () => { });
       })
     }
 
@@ -287,7 +293,7 @@ class AddRMImport extends Component {
       this.props.getRawMaterialNameChild(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { this.setState({ inputLoader: false }) })
       this.props.fetchSpecificationDataAPI(0, () => { })
-      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewFlag && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(RM_MASTER_ID) === true) {
@@ -380,12 +386,12 @@ class AddRMImport extends Component {
   */
   handleRMChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [], isDropDownChanged: true }, () => {
+      this.setState({ RawMaterial: newValue, RMGrade: [], rmCode: [], isDropDownChanged: true, isCodeDisabled: true }, () => {
         const { RawMaterial } = this.state;
         this.props.getRMGradeSelectListByRawMaterial(RawMaterial.value, false, res => { })
       });
     } else {
-      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [], });
+      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [], rmCode: [], isCodeDisabled: false });
       this.props.getRMGradeSelectListByRawMaterial(0, res => { });
     }
   }
@@ -396,7 +402,7 @@ class AddRMImport extends Component {
       */
   handleGradeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RMGrade: newValue, RMSpec: [], }, () => {
+      this.setState({ RMGrade: newValue, RMSpec: [], rmCode: [], isCodeDisabled: true }, () => {
         const { RMGrade } = this.state;
         this.props.fetchSpecificationDataAPI(RMGrade.value, res => { });
       })
@@ -404,6 +410,7 @@ class AddRMImport extends Component {
       this.setState({
         RMGrade: [],
         RMSpec: [],
+        isCodeDisabled: false
       })
       this.props.fetchSpecificationDataAPI(0, res => { });
     }
@@ -415,10 +422,29 @@ class AddRMImport extends Component {
   */
   handleSpecChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RMSpec: newValue })
-      this.props.change('Code', newValue.RawMaterialCode ? newValue.RawMaterialCode : '')
+      this.setState({ RMSpec: newValue, isCodeDisabled: true, rmCode: { label: newValue.RawMaterialCode, value: newValue.value } })
     } else {
-      this.setState({ RMSpec: [] })
+      this.setState({ RMSpec: [], isCodeDisabled: false, rmCode: [] })
+    }
+  }
+
+  /**
+ * @method handleCodeChange
+ * @description  used to handle code change
+ */
+  handleCodeChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ rmCode: newValue, isDisabled: true })
+      this.props.getRMSpecificationDataAPI(newValue.value, (res) => {
+        let Data = res.data.Data
+        this.setState({
+          RawMaterial: { label: Data.RawMaterialName, value: Data.RawMaterialId, },
+          RMGrade: { label: Data.GradeName, value: Data.GradeId },
+          RMSpec: { label: Data.Specification, value: Data.SpecificationId }
+        })
+      })
+    } else {
+      this.setState({ rmCode: [], RawMaterial: [], RMGrade: [], RMSpec: [], isDisabled: false })
     }
   }
 
@@ -441,7 +467,7 @@ class AddRMImport extends Component {
  */
   handleTechnologyChange = (newValue) => {
     this.checkTechnology(newValue)
-    this.setState({ RawMaterial: [], isDropDownChanged: true, Technology: newValue })
+    this.setState({ isDropDownChanged: true, Technology: newValue })
     setTimeout(() => {
       this.allFieldsInfoIcon(true)
     }, 300);
@@ -922,7 +948,6 @@ class AddRMImport extends Component {
             })
             this.checkTechnology({ label: Data.TechnologyName, value: Data.TechnologyId })
 
-            this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
             this.setState({
               IsFinancialDataChanged: false,
               isEditFlag: true,
@@ -951,6 +976,7 @@ class AddRMImport extends Component {
               showExtraCost: showScrapKeys?.showCircleJali,
               showCurrency: true,
               currencyValue: Data.CurrencyExchangeRate,
+              rmCode: { label: Data.RawMaterialCode, value: Data.RMSpec },
             }, () => {
               this.setInStateToolTip()
               setTimeout(() => {
@@ -1054,8 +1080,8 @@ class AddRMImport extends Component {
                 RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                 RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
                 RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value, RawMaterialCode: specObj.RawMaterialCode } : [],
+                rmCode: specObj !== undefined ? { label: specObj.RawMaterialCode, value: specObj.Value } : [],
               })
-              this.props.change('Code', specObj.RawMaterialCode ? specObj.RawMaterialCode : '')
             })
           })
         }
@@ -1153,7 +1179,7 @@ class AddRMImport extends Component {
   renderListing = (label, isScrapRateUOM) => {
     const { gradeSelectList, rmSpecification,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
-      UOMSelectList, currencySelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props;
+      UOMSelectList, currencySelectList, plantSelectList, costingSpecifiTechnology, clientSelectList, rmSpecificationList } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -1260,6 +1286,14 @@ class AddRMImport extends Component {
       clientSelectList && clientSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'code') {
+      rmSpecificationList && rmSpecificationList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.RawMaterialCode, value: item.SpecificationId })
         return null;
       });
       return temp;
@@ -1706,7 +1740,7 @@ class AddRMImport extends Component {
   render() {
     const { handleSubmit, initialConfiguration, isRMAssociated, t } = this.props;
     const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval,
-      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, showScrapKeys, toolTipTextObject } = this.state;
+      isOpenConditionDrawer, conditionTableData, BasicPriceINR, FinalBasicPriceSelectedCurrency, FinalBasicPriceBaseCurrency, showScrapKeys, isDisabled, isCodeDisabled, toolTipTextObject } = this.state;
 
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
@@ -1878,7 +1912,8 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
+                                  isClearable={true}
                                 />
                               </div>
                               {(!isEditFlag) && (
@@ -1906,7 +1941,7 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
                                 />
                               </div>
 
@@ -1926,7 +1961,7 @@ class AddRMImport extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleSpecChange}
                                   valueDescription={this.state.RMSpec}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
                                 />
                               </div>
 
@@ -1957,13 +1992,15 @@ class AddRMImport extends Component {
                               label={`Code`}
                               name={'Code'}
                               type="text"
-                              placeholder={'-'}
-                              validate={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? [] : [required]}
-                              component={renderText}
+                              component={searchableSelect}
+                              placeholder={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? 'Select' : "Enter"}
+                              options={this.renderListing("code")}
+                              validate={initialConfiguration?.IsAutoGeneratedRawMaterialCode || this.state.rmCode == null || this.state.rmCode.length === 0 ? [] : [required]}
                               required={!initialConfiguration?.IsAutoGeneratedRawMaterialCode}
-                              className=" "
-                              customClassName=" withBorder"
-                              disabled={true}
+                              handleChangeDescription={this.handleCodeChange}
+                              disabled={isEditFlag || isViewFlag || isCodeDisabled}
+                              isClearable={true}
+                              valueDescription={this.state.rmCode}
                             />
 
                           </Col>
@@ -2223,12 +2260,13 @@ class AddRMImport extends Component {
                                 validate={[positiveAndDecimalNumber, maxLength15, number]}
                                 component={renderTextInputField}
                                 required={false}
-                                disabled={true}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
                                 className=" "
                                 customClassName=" withBorder"
                                 onChange={this.handleCutOfChange}
                               />
                             </Col>
+
                             <Col md="3">
                               <Field
                                 label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
@@ -2379,7 +2417,7 @@ class AddRMImport extends Component {
                                     // onChange={this.handleScrapRate}
                                     disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
                                   />
-                                </Col>
+                                </Col >
                                 <Col md="3">
                                   <TooltipCustom id="rm-scrap-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrency} />
                                   <Field
@@ -2398,11 +2436,13 @@ class AddRMImport extends Component {
                                   />
                                 </Col>
                               </>}
-                            {showScrapKeys?.showForging &&
+                            {
+                              showScrapKeys?.showForging &&
                               <>
                                 <Col md="3">
-                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="rm-forging-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostSelectedCurrency} />}
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="rm-forging-selected-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostSelectedCurrency} />}
                                   <Field
+                                    id="rm-forging-selected-currency"
                                     label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                     name={"ForgingScrapSelectedCurrency"}
                                     type="text"
@@ -2416,6 +2456,7 @@ class AddRMImport extends Component {
                                     disabled={isViewFlag || this.state.IsApplyHasDifferentUOM}
                                   />
                                 </Col>
+
                                 <Col md="3">
                                   <TooltipCustom id="rm-forging-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrency} />
                                   <Field
@@ -2468,7 +2509,8 @@ class AddRMImport extends Component {
                                 </Col>
                               </>
                             }
-                            {showScrapKeys?.showCircleJali &&
+                            {
+                              showScrapKeys?.showCircleJali &&
                               <>
                                 <Col md="3">
                                   <Field
@@ -2516,7 +2558,7 @@ class AddRMImport extends Component {
                                     className=" "
                                     customClassName=" withBorder"
                                   />
-                                </Col>
+                                </Col >
                                 <Col md="3">
                                   <TooltipCustom id="rm-jali-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrency} />
                                   <Field
@@ -2606,120 +2648,124 @@ class AddRMImport extends Component {
 
 
 
-                            {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
-                              <Col md="3">
-                                <TooltipCustom id="rm-basic-price-currency" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency} />
-                                <Field
-                                  label={`Basic Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={"BasicPriceSelectedCurrency"}
-                                  type="text"
-                                  placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                  validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                  component={renderTextInputField}
-                                  required={false}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <TooltipCustom id="rm-basic-price-base" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
-                                <Field
-                                  label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
-                                  name={"BasicPriceBaseCurrency"}
-                                  type="text"
-                                  placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                  validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                  component={renderTextInputField}
-                                  required={false}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
+                            {
+                              initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
+                                <Col md="3">
+                                  <TooltipCustom id="rm-basic-price-currency" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceSelectedCurrency} />
+                                  <Field
+                                    label={`Basic Price (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                    name={"BasicPriceSelectedCurrency"}
+                                    type="text"
+                                    placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                    component={renderTextInputField}
+                                    required={false}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </Col>
+                                <Col md="3">
+                                  <TooltipCustom id="rm-basic-price-base" width={'350px'} tooltipText={this.basicPriceTitle()?.toolTipTextBasicPriceBaseCurrency} />
+                                  <Field
+                                    label={`Basic Price (${initialConfiguration?.BaseCurrency})`}
+                                    name={"BasicPriceBaseCurrency"}
+                                    type="text"
+                                    placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                    validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                    component={renderTextInputField}
+                                    required={false}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </Col>
 
 
-                              <Col md="3">
-                                <Field
-                                  label={`Condition Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={"FinalConditionCostSelectedCurrency"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderText}
-                                  required={false}
-                                  disabled={true}
-                                  isViewFlag={true}
-                                  className=" "
-                                  customClassName=" withBorder"
-                                />
-                              </Col>
+                                <Col md="3">
+                                  <Field
+                                    label={`Condition Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                    name={"FinalConditionCostSelectedCurrency"}
+                                    type="text"
+                                    placeholder={"-"}
+                                    validate={[]}
+                                    component={renderText}
+                                    required={false}
+                                    disabled={true}
+                                    isViewFlag={true}
+                                    className=" "
+                                    customClassName=" withBorder"
+                                  />
+                                </Col>
 
-                              <Col md="3">
-                                <div className='d-flex align-items-center'>
-                                  <div className='w-100'>
-                                    <TooltipCustom id="rm-condition-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextConditionCostBaseCurrency} />
-                                    <Field
-                                      label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
-                                      name={"FinalConditionCostBaseCurrency"}
-                                      type="text"
-                                      placeholder={"-"}
-                                      validate={[]}
-                                      component={renderText}
-                                      required={false}
-                                      disabled={true}
-                                      isViewFlag={true}
-                                      className=" "
-                                      customClassName=" withBorder"
+                                <Col md="3">
+                                  <div className='d-flex align-items-center'>
+                                    <div className='w-100'>
+                                      <TooltipCustom id="rm-condition-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextConditionCostBaseCurrency} />
+                                      <Field
+                                        label={`Condition Cost (${initialConfiguration?.BaseCurrency})`}
+                                        name={"FinalConditionCostBaseCurrency"}
+                                        type="text"
+                                        placeholder={"-"}
+                                        validate={[]}
+                                        component={renderText}
+                                        required={false}
+                                        disabled={true}
+                                        isViewFlag={true}
+                                        className=" "
+                                        customClassName=" withBorder"
+                                      />
+                                    </div>
+                                    <Button
+                                      id="addRMImport_condition"
+                                      onClick={this.conditionToggle}
+                                      className={"right mt-0 mb-2"}
+                                      variant={(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency) ? `plus-icon-square` : `blurPlus-icon-square`}
+                                      disabled={!(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency)}
                                     />
                                   </div>
-                                  <Button
-                                    id="addRMImport_condition"
-                                    onClick={this.conditionToggle}
-                                    className={"right mt-0 mb-2"}
-                                    variant={(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency) ? `plus-icon-square` : `blurPlus-icon-square`}
-                                    disabled={!(this.state.currency.label && this.state.FinalBasicRateSelectedCurrency && this.state.FinalBasicRateBaseCurrency)}
+                                </Col>
+
+
+
+                              </>
+                            }
+                            {
+                              this.state.showCurrency && <>
+                                <Col md="3">
+                                  <TooltipCustom id="rm-net-cost-currency" tooltipText={this.netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
+                                  <Field
+                                    label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                    name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostSelectedCurrency"}
+                                    type="text"
+                                    placeholder={"-"}
+                                    validate={[]}
+                                    component={renderTextInputField}
+                                    required={false}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName=" withBorder mb-0"
                                   />
-                                </div>
-                              </Col>
-
-
-
-                            </>}
-                            {this.state.showCurrency && <>
-                              <Col md="3">
-                                <TooltipCustom id="rm-net-cost-currency" tooltipText={this.netCostTitle()?.toolTipTextNetCostSelectedCurrency} />
-                                <Field
-                                  label={`Net Cost (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostSelectedCurrency"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderTextInputField}
-                                  required={false}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder mb-0"
-                                />
-                              </Col>
-                              <Col md="3">
-                                <TooltipCustom id="rm-net-cost-base" tooltipText={this.netCostTitle()?.toolTipTextNetCostBaseCurrency} />
-                                <Field
-                                  label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
-                                  name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
-                                  type="text"
-                                  placeholder={"-"}
-                                  validate={[]}
-                                  component={renderTextInputField}
-                                  required={false}
-                                  disabled={true}
-                                  className=" "
-                                  customClassName=" withBorder mb-0"
-                                />
-                              </Col>
-                            </>}
+                                </Col>
+                                <Col md="3">
+                                  <TooltipCustom id="rm-net-cost-base" tooltipText={this.netCostTitle()?.toolTipTextNetCostBaseCurrency} />
+                                  <Field
+                                    label={`Net Cost (${initialConfiguration?.BaseCurrency})`}
+                                    name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
+                                    type="text"
+                                    placeholder={"-"}
+                                    validate={[]}
+                                    component={renderTextInputField}
+                                    required={false}
+                                    disabled={true}
+                                    className=" "
+                                    customClassName=" withBorder mb-0"
+                                  />
+                                </Col>
+                              </>
+                            }
                           </>
-                        </Row>
+                        </Row >
 
                         <Row>
                           <Col md="12" className="filter-block">
@@ -2746,8 +2792,8 @@ class AddRMImport extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (Upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
-                            </label>
+                              Upload Files(Upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
+                            </label >
                             <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
@@ -2789,7 +2835,7 @@ class AddRMImport extends Component {
                                 disabled={isViewFlag}
                               />
                             </div>
-                          </Col>
+                          </Col >
                           <Col md="3">
                             <div className={"attachment-wrapper"}>
                               {this.state.attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
@@ -2823,8 +2869,8 @@ class AddRMImport extends Component {
 
                             </div>
                           </Col>
-                        </Row>
-                      </div>
+                        </Row >
+                      </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
@@ -2862,84 +2908,96 @@ class AddRMImport extends Component {
                           </>}
                         </div>
                       </Row>
-                    </form>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+                    </form >
+                  </div >
+                </div >
+              </div >
+            </div >
+          </div >
           {
             this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
           }
-          {isRMDrawerOpen && (
-            <AddSpecification
-              isOpen={isRMDrawerOpen}
-              closeDrawer={this.closeRMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-              AddAccessibilityRMANDGRADE={
-                this.props.AddAccessibilityRMANDGRADE
-              }
-              EditAccessibilityRMANDGRADE={
-                this.props.EditAccessibilityRMANDGRADE
-              }
-            />
-          )}
-          {isOpenGrade && (
-            <AddGrade
-              isOpen={isOpenGrade}
-              closeDrawer={this.closeGradeDrawer}
-              isEditFlag={false}
-              RawMaterial={this.state.RawMaterial}
-              anchor={"right"}
-            />
-          )}
-          {isOpenSpecification && (
-            <AddSpecification
-              isOpen={isOpenSpecification}
-              closeDrawer={this.closeSpecDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-              AddAccessibilityRMANDGRADE={
-                this.props.AddAccessibilityRMANDGRADE
-              }
-              EditAccessibilityRMANDGRADE={
-                this.props.EditAccessibilityRMANDGRADE
-              }
-              Technology={this.state.Technology.value}
-            />
-          )}
-          {isOpenCategory && (
-            <AddCategory
-              isOpen={isOpenCategory}
-              closeDrawer={this.closeCategoryDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenVendor && (
-            <AddVendorDrawer
-              isOpen={isOpenVendor}
-              closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
-              isEditFlag={false}
-              isRM={true}
-              IsVendor={this.state.IsVendor}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
-          {isOpenUOM && (
-            <AddUOM
-              isOpen={isOpenUOM}
-              closeDrawer={this.closeUOMDrawer}
-              isEditFlag={false}
-              ID={""}
-              anchor={"right"}
-            />
-          )}
+          {
+            isRMDrawerOpen && (
+              <AddSpecification
+                isOpen={isRMDrawerOpen}
+                closeDrawer={this.closeRMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+                AddAccessibilityRMANDGRADE={
+                  this.props.AddAccessibilityRMANDGRADE
+                }
+                EditAccessibilityRMANDGRADE={
+                  this.props.EditAccessibilityRMANDGRADE
+                }
+              />
+            )
+          }
+          {
+            isOpenGrade && (
+              <AddGrade
+                isOpen={isOpenGrade}
+                closeDrawer={this.closeGradeDrawer}
+                isEditFlag={false}
+                RawMaterial={this.state.RawMaterial}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenSpecification && (
+              <AddSpecification
+                isOpen={isOpenSpecification}
+                closeDrawer={this.closeSpecDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+                AddAccessibilityRMANDGRADE={
+                  this.props.AddAccessibilityRMANDGRADE
+                }
+                EditAccessibilityRMANDGRADE={
+                  this.props.EditAccessibilityRMANDGRADE
+                }
+                Technology={this.state.Technology.value}
+              />
+            )
+          }
+          {
+            isOpenCategory && (
+              <AddCategory
+                isOpen={isOpenCategory}
+                closeDrawer={this.closeCategoryDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenVendor && (
+              <AddVendorDrawer
+                isOpen={isOpenVendor}
+                closeDrawer={this.closeVendorDrawer = this.closeVendorDrawer.bind(this)}
+                isEditFlag={false}
+                isRM={true}
+                IsVendor={this.state.IsVendor}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
+          {
+            isOpenUOM && (
+              <AddUOM
+                isOpen={isOpenUOM}
+                closeDrawer={this.closeUOMDrawer}
+                isEditFlag={false}
+                ID={""}
+                anchor={"right"}
+              />
+            )
+          }
           {
             initialConfiguration?.IsBasicRateAndCostingConditionVisible && isOpenConditionDrawer &&
             <AddConditionCosting
@@ -2955,6 +3013,7 @@ class AddRMImport extends Component {
               currency={this.state.currency}
               currencyValue={this.state.currencyValue}
               isFromImport={true}
+              EntryType={checkForNull(ENTRY_TYPE_IMPORT)}
             />
           }
           {
@@ -2981,7 +3040,7 @@ class AddRMImport extends Component {
               />
             )
           }
-        </div>
+        </div >
       </>
     );
   }
@@ -3005,7 +3064,7 @@ function mapStateToProps(state) {
   const { costingSpecifiTechnology } = costing
   const { clientSelectList } = client;
   const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList,
-    gradeSelectList, vendorListByVendorType } = material;
+    gradeSelectList, vendorListByVendorType, rmSpecificationList } = material;
 
   let initialValues = {};
   if (rawMaterialDetails && rawMaterialDetails !== undefined) {
@@ -3026,7 +3085,7 @@ function mapStateToProps(state) {
     filterPlantListByCity, filterCityListBySupplier, rawMaterialDetailsData, initialValues,
     fieldsObj, filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
     filterPlantList, UOMSelectList, vendorListByVendorType, currencySelectList, plantSelectList,
-    initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI
+    initialConfiguration, costingSpecifiTechnology, clientSelectList, userMasterLevelAPI, rmSpecificationList
   }
 
 }
@@ -3064,7 +3123,9 @@ export default connect(mapStateToProps, {
   getCostingSpecificTechnology,
   getClientSelectList,
   getUsersMasterLevelAPI,
-  getVendorNameByVendorSelectList
+  getVendorNameByVendorSelectList,
+  getRMSpecificationDataAPI,
+  getRMSpecificationDataList
 })(reduxForm({
   form: 'AddRMImport',
   enableReinitialize: true,

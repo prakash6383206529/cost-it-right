@@ -159,7 +159,6 @@ class ExchangeRateListing extends Component {
             toggleForm: true,
         })
     }
-
     /**
     * @method deleteItem
     * @description confirm delete Item.
@@ -426,7 +425,6 @@ class ExchangeRateListing extends Component {
                                                         {this.onBtExport()}
                                                     </ExcelFile>
                                                 </>
-
                                             }
 
                                             <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>

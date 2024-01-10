@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
+import { Field, reduxForm, clearFields } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3, hashValidation } from "../../../helper/validation";
+import { required, checkWhiteSpaces, alphaNumeric, acceptAllExceptSingleSpecialCharacter, maxLength20, maxLength80, maxLength85, maxLength512, checkSpacesInString, minLength3 } from "../../../helper/validation";
 import { getConfigurationKey, loggedInUserId } from "../../../helper/auth";
 import { focusOnError, renderDatePicker, renderMultiSelectField, renderText, renderTextAreaField, searchableSelect } from "../../layout/FormInputs";
 import { createPart, updatePart, getPartData, fileUploadPart, getProductGroupSelectList, getPartDescription } from '../actions/Part';
@@ -20,10 +20,6 @@ import { showDataOnHover } from '../../../helper';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { ASSEMBLY } from '../../../config/masterData';
-import TourWrapper from '../../common/Tour/TourWrapper';
-import { Steps } from './TourMessages';
-import { withTranslation } from 'react-i18next';
-import Button from '../../layout/Button';
 
 class AddIndivisualPart extends Component {
   constructor(props) {
@@ -52,7 +48,7 @@ class AddIndivisualPart extends Component {
       minEffectiveDate: '',
       disablePartName: false,
       attachmentLoader: false,
-      showPopup: false,
+      showPopup: false
     }
   }
 
@@ -84,9 +80,8 @@ class AddIndivisualPart extends Component {
         if (res && res?.data && res?.data?.Result) {
           const Data = res.data.Data;
           let productArray = []
-
           Data && Data.GroupCodeList.map((item) => {
-            productArray.push({ Text: item.GroupCode, Value: item.GroupCode, })
+            productArray.push({ Text: item.GroupCode, Value: "", })
             return productArray
           })
           this.setState({ DataToCheck: Data })
@@ -126,31 +121,24 @@ class AddIndivisualPart extends Component {
     }
   }
 
+
   onPartNoChange = debounce((e) => {
-    const assemblyPartNumber = e?.target?.value;
-    const hasSpecialCharacter = /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]/.test(assemblyPartNumber);
 
-    if (!hasSpecialCharacter) {
-      if (!this.state.isEditFlag) {
-        this.props.getPartDescription(assemblyPartNumber, 1, (res) => {
-          if (res?.data?.Data) {
-            let finalData = res.data.Data;
-            this.props.change("Description", finalData.Description);
-            this.props.change("AssemblyPartName", finalData.PartName);
-            this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate });
-          } else {
-            this.props.change("Description", "");
-            this.props.change("AssemblyPartName", "");
-            this.setState({ disablePartName: false, minEffectiveDate: "" });
-          }
-        });
-      }
+    if (!this.state.isEditFlag) {
+      this.props.getPartDescription(e?.target?.value, 2, (res) => {
+        if (res?.data?.Data) {
+          let finalData = res.data.Data
+          this.props.change("Description", finalData.Description)
+          this.props.change("PartName", finalData.PartName)
+          this.setState({ disablePartName: true, minEffectiveDate: finalData.EffectiveDate, TechnologySelected: { label: finalData.Technology, value: finalData.TechnologyId } })
+        } else {
+          this.props.change("Description", "")
+          this.props.dispatch(clearFields('AddIndivisualPart', false, false, 'PartName'));
+          this.setState({ disablePartName: false, minEffectiveDate: "", TechnologySelected: [] })
+        }
+      })
     }
-  }, 600);
-
-  resetDebounceTimer = () => {
-    this.onPartNoChange.cancel();
-  };
+  }, 600)
 
   /**
   * @method handlePlant
@@ -311,7 +299,6 @@ class AddIndivisualPart extends Component {
  * @description used to Reset form
  */
   cancel = (type) => {
-
     const { reset } = this.props;
     reset();
     this.setState({
@@ -440,7 +427,7 @@ class AddIndivisualPart extends Component {
         SAPCode: values.SAPCode,
         Description: values.Description,
         ECNNumber: values.ECNNumber,
-        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
+        EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD'),
         RevisionNumber: values.RevisionNumber,
         DrawingNumber: values.DrawingNumber,
         GroupCode: values.GroupCode,
@@ -471,7 +458,7 @@ class AddIndivisualPart extends Component {
   * @description Renders the component
   */
   render() {
-    const { handleSubmit, initialConfiguration, t } = this.props;
+    const { handleSubmit, initialConfiguration } = this.props;
     const { isEditFlag, isViewMode, setDisable } = this.state;
 
     return (
@@ -489,11 +476,6 @@ class AddIndivisualPart extends Component {
                         <div className="form-heading mb-0">
                           <h1>
                             {this.state.isViewMode ? "View" : this.state.isEditFlag ? "Update" : "Add"} Component/ Part
-                            <TourWrapper
-                              buttonSpecificProp={{ id: "Part_form" }}
-                              stepsSpecificProp={{
-                                steps: Steps(t).ADD_COMPONENT_PART
-                              }} />
                           </h1>
                         </div>
                       </Col>
@@ -512,15 +494,10 @@ class AddIndivisualPart extends Component {
                               name={"PartNumber"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3, hashValidation]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, minLength3]}
                               component={renderText}
                               required={true}
                               onChange={this.onPartNoChange}
-                              onKeyUp={(e) => {
-                                if (e.keyCode === 8 && e.target.value === "") {
-                                  this.resetDebounceTimer();
-                                }
-                              }}
                               className=""
                               customClassName={"withBorder"}
                               disabled={isEditFlag ? true : false}
@@ -532,7 +509,7 @@ class AddIndivisualPart extends Component {
                               name={"PartName"}
                               type="text"
                               placeholder={isViewMode || (!isEditFlag && this.state.disablePartName) || isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85, hashValidation]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength85]}
                               component={renderText}
                               required={true}
                               className=""
@@ -585,7 +562,7 @@ class AddIndivisualPart extends Component {
                                 name={"GroupCode"}
                                 type="text"
                                 placeholder={isViewMode ? '-' : "Enter"}
-                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20, hashValidation]}
+                                validate={[checkWhiteSpaces, alphaNumeric, maxLength20]}
                                 component={renderText}
                                 required={false}
                                 className=""
@@ -603,7 +580,7 @@ class AddIndivisualPart extends Component {
                               name={"ECNNumber"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
@@ -616,7 +593,7 @@ class AddIndivisualPart extends Component {
                               name={"RevisionNumber"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
@@ -629,7 +606,7 @@ class AddIndivisualPart extends Component {
                               name={"DrawingNumber"}
                               type="text"
                               placeholder={isViewMode ? '-' : "Enter"}
-                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString, hashValidation]}
+                              validate={[acceptAllExceptSingleSpecialCharacter, maxLength20, checkWhiteSpaces, checkSpacesInString]}
                               component={renderText}
                               className=""
                               customClassName={"withBorder"}
@@ -661,7 +638,7 @@ class AddIndivisualPart extends Component {
                               name={"SAPCode"}
                               type="text"
                               placeholder={isEditFlag ? '-' : "Enter"}
-                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString, hashValidation]}
+                              validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength20, checkSpacesInString]}
                               component={renderText}
                               required={true}
                               onChange={() => { }}
@@ -717,19 +694,19 @@ class AddIndivisualPart extends Component {
                           </Col>
                           <Col md="3">
                             <label>
-                              Upload Files (upload up to {getConfigurationKey().MaxMasterFilesToUpload} files)
+                              Upload Files (upload up to 3 files)
                             </label>
-                            <div className={`alert alert-danger mt-2 ${this.state.files.length === getConfigurationKey().MaxMasterFilesToUpload ? '' : 'd-none'}`} role="alert">
+                            <div className={`alert alert-danger mt-2 ${this.state.files.length === 3 ? '' : 'd-none'}`} role="alert">
                               Maximum file upload limit reached.
                             </div>
-                            <div id="AddIndivisualPart_UploadFiles" className={`${this.state.files.length >= getConfigurationKey().MaxMasterFilesToUpload ? 'd-none' : ''}`}>
+                            <div className={`${this.state.files.length >= 3 ? 'd-none' : ''}`}>
                               <Dropzone
                                 ref={this.dropzone}
                                 onChangeStatus={this.handleChangeStatus}
                                 PreviewComponent={this.Preview}
                                 accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
                                 initialFiles={this.state.initialFiles}
-                                maxFiles={getConfigurationKey().MaxMasterFilesToUpload}
+                                maxFiles={3}
                                 disabled={isViewMode}
                                 maxSizeBytes={2000000}
                                 inputContent={(files, extra) =>
@@ -808,16 +785,14 @@ class AddIndivisualPart extends Component {
                             <div className={"cancel-icon"}></div>
                             {"Cancel"}
                           </button>
-                          {!isViewMode &&
-                            <button id="AddIndivisualPart_Save"
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={isViewMode || setDisable}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
-                          }
+                          <button
+                            type="submit"
+                            className="user-btn mr5 save-btn"
+                            disabled={isViewMode || setDisable}
+                          >
+                            <div className={"save-icon"}></div>
+                            {isEditFlag ? "Update" : "Save"}
+                          </button>
                         </div>
                       </Row>
                     </form>
@@ -885,5 +860,4 @@ export default connect(mapStateToProps, {
   onSubmitFail: (errors) => {
     focusOnError(errors)
   },
-})(withTranslation(['PartMaster'])(AddIndivisualPart)),
-)
+})(AddIndivisualPart));

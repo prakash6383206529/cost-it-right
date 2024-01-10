@@ -9,7 +9,7 @@ import { saveRawMaterialCalculationForFerrous } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
 import TooltipCustom from '../../../common/Tooltip'
-import { number, percentageLimitValidation, checkWhiteSpaces, decimalAndNumberValidation } from "../../../../helper/validation";
+import { number, percentageLimitValidation, checkWhiteSpaces, positiveAndDecimalNumber, decimalAndNumberValidation } from "../../../../helper/validation";
 
 function Ferrous(props) {
     const WeightCalculatorRequest = props.rmRowData.WeightCalculatorRequest
@@ -30,8 +30,9 @@ function Ferrous(props) {
     const [tableVal, setTableVal] = useState(WeightCalculatorRequest && WeightCalculatorRequest.LossOfTypeDetails !== null ? WeightCalculatorRequest.LossOfTypeDetails : [])
     const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)
     const [dataToSend, setDataToSend] = useState(WeightCalculatorRequest)
-    const [inputFinishWeight, setInputFinishWeight] = useState(0)
     const [reRender, setRerender] = useState(false)
+    const [percentage, setPercentage] = useState(0)
+    const [inputFinishWeight, setInputFinishWeight] = useState(0)
     const { rmRowData, rmData, CostingViewMode, item } = props
 
     const rmGridFields = 'rmGridFields';
@@ -41,7 +42,13 @@ function Ferrous(props) {
         reValidateMode: 'onChange',
         defaultValues: defaultValues,
     })
-
+    useEffect(() => {
+        const castingWeight = checkForNull(getValues("castingWeight"))
+        if (inputFinishWeight > castingWeight) {
+            Toaster.warning('Finish Weight should not be greater than casting weight')
+            setValue('finishedWeight', '')
+        }
+    }, [inputFinishWeight])
     useEffect(() => {
         if (ferrousCalculatorReset === true) {
             reset({
@@ -106,25 +113,25 @@ function Ferrous(props) {
         }
     }, [fieldValues])
 
-    useEffect(() => {
-        if (Number(getValues('finishedWeight')) < Number(getValues("castingWeight"))) {
-            delete errors.finishedWeight
-            setRerender(!reRender)
-        }
-    }, [getValues('castingWeight')])
-
     const totalPercentageValue = () => {
         let sum = 0
         rmData && rmData.map((item, index) => {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
+        setPercentage(sum)
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 
     const percentageChange = (e) => {
-        calculateNetSCrapRate()
-        calculateNetRmRate()
+        setTimeout(() => {
+            if (totalPercentageValue() > 100) {
+                Toaster.warning(`Total percentage is ${percentage}%, must be 100% to save the values`)
+                return false
+            }
+            calculateNetSCrapRate()
+            calculateNetRmRate()
+        }, 300);
     }
     const calculateNetRmRate = () => {
 
@@ -304,14 +311,14 @@ function Ferrous(props) {
                                                             errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].Percentage : ''}
                                                             disabled={props.isEditFlag ? false : true}
                                                         />
-                                                    </td>
-                                                </tr>
+                                                    </td >
+                                                </tr >
                                             )
                                         })
                                     }
 
-                                </tbody>
-                            </Table>
+                                </tbody >
+                            </Table >
                             <Row className={"mx-0"}>
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'rm-rate-ferrous'} tooltipText={'Net RM Rate = (RM1 Rate * Percentage / 100) + (RM2 Rate * Percentage / 100) + ....'} />
@@ -330,7 +337,7 @@ function Ferrous(props) {
                                         errors={errors.NetRMRate}
                                         disabled={true}
                                     />
-                                </Col>
+                                </Col >
                                 <Col md="3">
                                     <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'srape-rate-ferrous'} tooltipText={'Net Scrap Rate = (RM1 Scrap Rate * Percentage / 100) + (RM2 Scrap Rate * Percentage / 100) + ....'} />
                                     <TextFieldHookForm
@@ -348,7 +355,7 @@ function Ferrous(props) {
                                         errors={errors.NetScrapRate}
                                         disabled={true}
                                     />
-                                </Col>
+                                </Col >
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Casting Weight(kg)`}
@@ -369,8 +376,8 @@ function Ferrous(props) {
                                         errors={errors.castingWeight}
                                         disabled={props.isEditFlag ? false : true}
                                     />
-                                </Col>
-                            </Row>
+                                </Col >
+                            </Row >
 
                             <LossStandardTable
                                 dropDownMenu={dropDown}
@@ -404,7 +411,7 @@ function Ferrous(props) {
                                         errors={errors.grossWeight}
                                         disabled={true}
                                     />
-                                </Col>
+                                </Col >
                                 <Col md="3" >
                                     <TextFieldHookForm
                                         label={`Finished Weight(Kg)`}
@@ -428,7 +435,7 @@ function Ferrous(props) {
                                         errors={errors.finishedWeight}
                                         disabled={props.isEditFlag ? false : true}
                                     />
-                                </Col>
+                                </Col >
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'scrap-weight-ferrous'} tooltipText={'Scrap Weight = (Casting Weight - Finished Weight)'} />
@@ -450,7 +457,7 @@ function Ferrous(props) {
                                         errors={errors.scrapWeight}
                                         disabled={true}
                                     />
-                                </Col>
+                                </Col >
                                 <Col md="3">
                                     <TextFieldHookForm
                                         label={`Recovery (%)`}
@@ -495,7 +502,7 @@ function Ferrous(props) {
                                         errors={errors.scrapCost}
                                         disabled={true}
                                     />
-                                </Col>
+                                </Col >
 
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'net-rm-ferrous'} tooltipText={'Net RM Cost = (Gross Weight * RM Rate - Scrap Cost)'} />
@@ -516,11 +523,11 @@ function Ferrous(props) {
                                         errors={errors.NetRMCost}
                                         disabled={true}
                                     />
-                                </Col>
-                            </Row>
+                                </Col >
+                            </Row >
 
-                        </div>
-                    </Col>
+                        </div >
+                    </Col >
                     <div className=" col-md-12 text-right">
                         <button
                             onClick={onCancel} // Need to change this cancel functionality
@@ -542,10 +549,10 @@ function Ferrous(props) {
                             {'SAVE'}
                         </button>
                     </div>
-                </form>
+                </form >
 
-            </Row>
-        </Fragment>
+            </Row >
+        </Fragment >
     );
 }
 

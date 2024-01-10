@@ -630,7 +630,6 @@ function TabRMCC(props) {
    * @description SET BOP COST WITH BOP HANDLING CHARGE 
    */
   const setBOPCost = (bopGrid, params, item, BOPHandlingFields = {}) => {
-
     setBOPCostInDataList(bopGrid, params, RMCCTabData, item, BOPHandlingFields)
   }
 
@@ -1548,7 +1547,6 @@ function TabRMCC(props) {
             let subAssemblyIndex = tempArrForCosting && tempArrForCosting.findIndex((x) => x.PartNumber === item.PartNumber && x.AssemblyPartNumber === item.AssemblyPartNumber)
             let subAssembObj = tempArrForCosting[subAssemblyIndex]
             let tempArr = tempArrForCosting && tempArrForCosting.filter((x) => x.AssemblyPartNumber === subAssembObj.PartNumber)
-
             subAssembObj.CostingPartDetails.IsApplyBOPHandlingCharges = obj.IsApplyBOPHandlingCharges;
             subAssembObj.CostingPartDetails.BOPHandlingChargeApplicability = obj.BOPHandlingChargeApplicability;
             subAssembObj.CostingPartDetails.BOPHandlingPercentage = obj.BOPHandlingPercentage;
@@ -1652,8 +1650,8 @@ function TabRMCC(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RMC + CC/Pc`}</th>
                           {costData.IsAssemblyPart && <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`RMC + CC/Assembly`}</th>}
-                        </tr>
-                      </thead>
+                        </tr >
+                      </thead >
                       <tbody>
                         {
                           RMCCTabData && RMCCTabData.map((item, index) => {
@@ -1700,9 +1698,9 @@ function TabRMCC(props) {
                           })
                         }
                       </tbody>
-                    </Table>
-                  </Col>
-                </Row>
+                    </Table >
+                  </Col >
+                </Row >
 
                 {!CostingViewMode &&
                   <div className="col-sm-12 text-right d-flex align-items-center justify-content-end bluefooter-butn btn-sticky-container">
@@ -1720,12 +1718,13 @@ function TabRMCC(props) {
                       <div className={'save-icon'}></div>
                       {'Save'}
                     </button>
-                  </div>}
-              </form>
-            </div>
-          </Col>
-        </Row>
-      </div>
+                  </div>
+                }
+              </form >
+            </div >
+          </Col >
+        </Row >
+      </div >
 
     </>
   );

@@ -83,7 +83,6 @@ class FreightListing extends Component {
       }
     })
   }
-
   /**
   * @method viewOrEditItemDetails
   * @description edit or view material type
@@ -331,7 +330,6 @@ class FreightListing extends Component {
                         {this.onBtExport()}
                       </ExcelFile>
                     </>
-
                   }
 
                   <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>

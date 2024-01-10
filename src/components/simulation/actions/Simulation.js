@@ -143,6 +143,38 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
         })
     }
 }
+/**
+ * @method setIsMasterAssociatedWithCosting
+ * @description Is Master Associated With Costing
+ */
+export function setIsMasterAssociatedWithCosting(value) {
+    return (dispatch) => {
+        dispatch({
+            type: SET_BOP_ASSOCIATION,
+            payload: value,
+        });
+    }
+}
+
+
+/**
+ * @method runSimulationOnSelectedBoughtOutPart
+ * @description run Simulation On Selected Bought Out Part
+ */
+export function runSimulationOnSelectedBoughtOutPart(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedBoughtOutPart, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            callback(error);
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    };
+}
 
 export function runSimulationOnSelectedCosting(data, callback) {
     return (dispatch) => {
@@ -1402,37 +1434,6 @@ export function getAllSimulationBoughtOutPart(simulationId, callback) {
     }
 }
 
-/**
- * @method setIsMasterAssociatedWithCosting
- * @description Is Master Associated With Costing
- */
-export function setIsMasterAssociatedWithCosting(value) {
-    return (dispatch) => {
-        dispatch({
-            type: SET_BOP_ASSOCIATION,
-            payload: value,
-        });
-    }
-}
-
-/**
- * @method runSimulationOnSelectedBoughtOutPart
- * @description run Simulation On Selected Bought Out Part
- */
-export function runSimulationOnSelectedBoughtOutPart(data, callback) {
-    return (dispatch) => {
-        const request = axios.post(API.runSimulationOnSelectedBoughtOutPart, data, config());
-        request.then((response) => {
-            if (response.data.Result) {
-                callback(response);
-            }
-        }).catch((error) => {
-            callback(error);
-            dispatch({ type: API_FAILURE });
-            apiErrors(error);
-        });
-    };
-}
 
 /**
  * @method getAllSimulatedBoughtOutPart
@@ -1500,5 +1501,15 @@ export function setCustomerForSimulation(value) {
             type: SET_SELECTED_CUSTOMER_SIMULATION,
             payload: value,
         });
+    }
+}
+export function emptyCostingSimulationList(callback) {
+    return (dispatch) => {
+
+        dispatch({
+            type: GET_COSTING_SIMULATION_LIST,
+            payload: []
+        })
+        callback([])
     }
 }

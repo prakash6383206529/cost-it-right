@@ -389,6 +389,7 @@ class AddLabour extends Component {
     }, 400);
   }
 
+
   /**
    * @method labourHandler
    * @description called
@@ -600,6 +601,7 @@ class AddLabour extends Component {
     )
   }
 
+
   /**
    * @method editGridItemDetails
    * @description used to Edit grid data
@@ -613,6 +615,7 @@ class AddLabour extends Component {
       (res) => {
         this.setState({ labourData: res?.data?.SelectList })
         this.setState({
+          labourData: res?.data?.SelectList,
           labourType: {
             label: tempData.LabourType,
             value: tempData.LabourTypeId,

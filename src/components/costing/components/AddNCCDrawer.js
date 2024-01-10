@@ -29,7 +29,7 @@ function AddNCCDrawer(props) {
 
   useEffect(() => {
     const { nccGrid } = props;
-    dispatch(getPlantSelectListByType(ZBC, "COSTING", () => { }))
+    dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
 
     let tempArr = [];
     nccGrid && nccGrid.map(el => {

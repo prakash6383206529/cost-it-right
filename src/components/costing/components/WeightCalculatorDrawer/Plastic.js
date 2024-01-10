@@ -3,7 +3,7 @@ import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
-import { TextFieldHookForm } from '../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
@@ -36,7 +36,6 @@ function Plastic(props) {
   const costData = useContext(costingInfoContext)
   const dispatch = useDispatch()
   const { getPlasticData } = useSelector(state => state.costing)
-
   const defaultValues = {
     netWeight: WeightCalculatorRequest && WeightCalculatorRequest.NetWeight !== undefined ? WeightCalculatorRequest.NetWeight : '',
     runnerWeight: WeightCalculatorRequest && WeightCalculatorRequest.RunnerWeight !== undefined ? WeightCalculatorRequest.RunnerWeight : '',
@@ -244,7 +243,7 @@ function Plastic(props) {
 
               <Row className={''}>
                 <Col md="3" >
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Gross Weight(Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
@@ -262,9 +261,10 @@ function Plastic(props) {
                     errors={errors.netWeight}
                     disabled={props.CostingViewMode ? props.CostingViewMode : (tableVal?.length > 0 ? true : false)}
                   />
+
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Runner Weight`}
                     name={'runnerWeight'}
                     Controller={Controller}
@@ -321,7 +321,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3" >
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Finished Weight(Kg)`}
                     name={'finishedWeight'}
                     Controller={Controller}

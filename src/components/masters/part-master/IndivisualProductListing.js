@@ -391,7 +391,6 @@ class IndivisualProductListing extends Component {
 
 
                                 {
-
                                     <>
                                         <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
                                             <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>

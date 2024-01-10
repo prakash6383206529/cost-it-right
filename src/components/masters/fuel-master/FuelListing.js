@@ -87,19 +87,6 @@ class FuelListing extends Component {
     }
 
     /**
-    * @method viewOrEditItemDetails
-    * @description Edit or view Fuel
-    */
-    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
-        let data = {
-            isEditFlag: true,
-            Id: rowData?.FuelGroupEntryId,
-            isViewMode: isViewMode
-        }
-        this.props.getDetails(data);
-    }
-
-    /**
     * @method deleteItem
     * @description confirm delete Raw Material details
     */
@@ -113,6 +100,19 @@ class FuelListing extends Component {
     */
     renderPaginationShowsTotal(start, to, total) {
         return <GridTotalFormate start={start} to={to} total={total} />
+    }
+
+    /**
+    * @method viewOrEditItemDetails
+    * @description Edit or view Fuel
+    */
+    viewOrEditItemDetails = (Id, rowData, isViewMode) => {
+        let data = {
+            isEditFlag: true,
+            Id: rowData?.FuelGroupEntryId,
+            isViewMode: isViewMode
+        }
+        this.props.getDetails(data);
     }
 
     /**
@@ -324,6 +324,7 @@ class FuelListing extends Component {
             commonCostFormatter: this.commonCostFormatter,
         };
 
+
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.state.isLoader && <LoaderCustom />}
@@ -375,7 +376,6 @@ class FuelListing extends Component {
                                             </ExcelFile>
 
                                         </>
-
 
 
                                     }

@@ -116,7 +116,6 @@ function Coil(props) {
 
     const setFinishWeight = (e) => {
         const FinishWeight = e.target.value
-
         switch (UOMDimension.label) {
             case G:
                 setTimeout(() => {
@@ -204,7 +203,6 @@ function Coil(props) {
      */
     const onSubmit = debounce(handleSubmit((values) => {
         setIsDisable(true)
-
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)

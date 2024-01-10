@@ -3,6 +3,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Col, Row, } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, decimalAndNumberValidationBoolean, removeBOPfromApplicability } from '../../../../../helper';
+//MINDA
+// import { removeBOPFromList } from '../../../../../helper';
 import { fetchCostingHeadsAPI } from '../../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, } from '../../CostingDetailStepTwo';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -107,6 +109,8 @@ function Rejection(props) {
             });
             if (isBreakupBoughtOutPartCostingFromAPI) {
                 tempList = removeBOPfromApplicability([...temp])
+                //MINDA
+                // tempList = removeBOPFromList([...temp])
             } else {
                 tempList = [...temp]
             }
@@ -551,7 +555,6 @@ function Rejection(props) {
                     </div>
                 </Col>
             </Row>
-
 
 
         </>

@@ -16,9 +16,9 @@ import { getApprovalSimulatedCostingSummary, getComparisionSimulationData, getIm
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
-import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, CBCTypeId, } from '../../../config/constants';
+import { EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBCTypeId, INR, CBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting } from '../../../helper';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { checkFinalUser, setCostingViewData } from '../../costing/actions/Costing';
@@ -30,16 +30,18 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { Impactedmasterdata } from './ImpactedMasterData';
 import { Fgwiseimactdata } from './FgWiseImactData'
+// import PushButtonDrawer from '../../costing/components/approval/PushButtonDrawer';
 import ReactExport from 'react-export-excel';
 import redcrossImg from '../../../assests/images/red-cross.png'
 import { Link } from 'react-scroll';
 import ScrollToTop from '../../common/ScrollToTop';
-import { impactmasterDownload, SimulationUtils } from '../SimulationUtils'              //ERROR MESSAGE WILL USE IN FUTURE
+import { ErrorMessage, impactmasterDownload, SimulationUtils } from '../SimulationUtils'              //ERROR MESSAGE WILL USE IN FUTURE
 import { SIMULATIONAPPROVALSUMMARYDOWNLOADRM } from '../../../config/masterData'
 import ViewAssembly from './ViewAssembly';
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
-import _ from 'lodash'
+import _, { debounce } from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
+import { approvalPushedOnSap } from '../../costing/actions/Approval'; //MINDA
 import { PaginationWrapper } from '../../common/commonPagination';
 import { hideColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -53,7 +55,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 function SimulationApprovalSummary(props) {
     // const { isDomestic, list, isbulkUpload, rowCount, technology, master } = props
-    const { isbulkUpload } = props;
+    const { isbulkUpload, approvalData } = props;
     const { approvalNumber, approvalId, SimulationTechnologyId } = props?.location?.state
     const [showImpactedData, setshowImpactedData] = useState(false)
     const [fgWiseDataAcc, setFgWiseDataAcc] = useState(true)
@@ -77,6 +79,12 @@ function SimulationApprovalSummary(props) {
     const [effectiveDate, setEffectiveDate] = useState('')
     const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
     const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
+    const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when costing is approved and need to push it for scheduling
+    // const [hidePushButton, setHideButton] = useState(false) // This is for hiding push button ,when it is send for push for scheduling.
+    const [pushButton, setPushButton] = useState(false)
+    const [oldCostingList, setOldCostingList] = useState([])
+    const [showPushDrawer, setShowPushDrawer] = useState(false)
+
 
     const [compareCosting, setCompareCosting] = useState(false)
     const [showLastRevisionData, setShowLastRevisionData] = useState(false)
@@ -84,6 +92,9 @@ function SimulationApprovalSummary(props) {
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [id, setId] = useState('')
+    const [isSuccessfullyUpdated, setIsSuccessfullyUpdated] = useState(false) //MINDA
+    const [noContent, setNoContent] = useState(false) //MINDA
+
     const [files, setFiles] = useState([]);
     const [IsOpen, setIsOpen] = useState(false);
     const [DataForAssemblyImpactForFg, setdataForAssemblyImpactForFg] = useState([]);
@@ -133,11 +144,17 @@ function SimulationApprovalSummary(props) {
     const headers = {
         NetCost: `Net Cost ${initialConfiguration?.BaseCurrency}`,
     }
+    //MINDA
+    const [toggleSeeData1, setToggleSeeData1] = useState(true)
+    const [toggleSeeData2, setToggleSeeData2] = useState(true)
+    const [showSuccessMessage, setShowSuccessMessage] = useState(false)
+    const [showErrorMessage, setShowErrorMessage] = useState(false)
+    //MINDA
 
     useEffect(() => {
         dispatch(getTechnologySelectList(() => {
         }))
-        dispatch(getPlantSelectListByType(ZBC, "SIMULATION", () => {
+        dispatch(getPlantSelectListByType(ZBC, "SIMULATION", '', () => {
         }))
 
         const reqParams = {
@@ -148,8 +165,8 @@ function SimulationApprovalSummary(props) {
         setLoader(false)
         dispatch(getApprovalSimulatedCostingSummary(reqParams, res => {
             const { SimulationSteps, SimulatedCostingList, SimulationApprovalProcessId, Token, NumberOfCostings, IsSent, IsFinalLevelButtonShow,
-                SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId,
-                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
+                IsPushedButtonShow, SimulationTechnologyId, SimulationApprovalProcessSummaryId, DepartmentCode, EffectiveDate, SimulationId, MaterialGroup, PurchasingGroup, DecimalOption,
+                SenderReason, ImpactedMasterDataList, AmendmentDetails, Attachements, SenderReasonId, DepartmentId, TotalImpactPerQuarter, SimulationHeadId, TotalBudgetedPriceImpactPerQuarter, PartType, IsSimulationWithOutCosting, ApprovalTypeId } = res.data.Data
             let uniqueArr
             if (IsSimulationWithOutCosting) {
                 uniqueArr = SimulatedCostingList
@@ -172,7 +189,8 @@ function SimulationApprovalSummary(props) {
                 SimulationApprovalProcessId: SimulationApprovalProcessId, Token: Token, NumberOfCostings: NumberOfCostings,
                 SimulationTechnologyId: SimulationTechnologyId, SimulationApprovalProcessSummaryId: SimulationApprovalProcessSummaryId,
                 DepartmentCode: DepartmentCode, EffectiveDate: EffectiveDate, SimulationId: SimulationId, SenderReason: SenderReason,
-                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, Attachements: Attachements, DepartmentId: DepartmentId
+                ImpactedMasterDataList: ImpactedMasterDataList, AmendmentDetails: AmendmentDetails, MaterialGroup: MaterialGroup,
+                PurchasingGroup: PurchasingGroup, DecimalOption: DecimalOption, Attachements: Attachements, SenderReasonId: SenderReasonId, DepartmentId: DepartmentId
                 , TotalImpactPerQuarter: TotalImpactPerQuarter, SimulationHeadId: SimulationHeadId, TotalBudgetedPriceImpactPerQuarter: TotalBudgetedPriceImpactPerQuarter
                 , PartType: PartType, ApprovalTypeId: ApprovalTypeId
             })
@@ -181,10 +199,10 @@ function SimulationApprovalSummary(props) {
             // setIsApprovalDone(false)
             setShowFinalLevelButton(IsFinalLevelButtonShow)
             /****************************************WHENEVER WE ENABLE PUSH BUTTON UNCOMMENT THIS********************************************/
-            // setShowPushButton(IsPushedButtonShow)
+            setShowPushButton(IsPushedButtonShow)
 
             // SimulatedCostingList CONTAINS LIST TO SHOW ON UI | SUMMARY BLOCK
-            if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList)?.length !== 0 || SimulatedCostingList?.length > 0)) {
+            if (SimulatedCostingList !== undefined && (Object.keys(SimulatedCostingList).length !== 0 || SimulatedCostingList.length > 0)) {
                 let requestData = []
                 let isAssemblyInDraft = false
 
@@ -230,7 +248,7 @@ function SimulationApprovalSummary(props) {
             //                 UserId: loggedInUserId(),
             //                 TechnologyId: SimulationTechnologyId,
             //                 Mode: 'simulation',
-            //                 approvalTypeId: costingTypeIdToApprovalTypeIdFunction(SimulationHeadId),
+            //                 approvalTypeId: ApprovalTypeId,
             //             }
             //             dispatch(checkFinalUser(obj, res => {
             //                 if (res && res.data && res.data.Result) {
@@ -824,6 +842,12 @@ function SimulationApprovalSummary(props) {
         return cell != null ? DayTime(cell).format('DD/MM/YYYY') : '-';
     }
 
+    //MINDA
+    const handleApproveAndPushButton = () => {
+        setShowPushDrawer(true)
+        setApproveDrawer(true)
+    }
+    //MINDA
     const rawMaterailFormat = (props) => {
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -843,7 +867,6 @@ function SimulationApprovalSummary(props) {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let temp = ''
         temp = (row.IsMultipleBOP === true) ? 'Multiple BOP' : row.BoughtOutPartName
-
         return cell != null ? temp : '-';
     }
 
@@ -1043,6 +1066,55 @@ function SimulationApprovalSummary(props) {
             setIsOpen(!IsOpen)
         }
     }
+    //MINDA
+    // const callPushAPI = debounce(() => {
+    //     // setIsDisabled(true)
+    //     let temp = []
+    //     let uniqueArr = _.uniqBy(costingList, function (o) {
+    //         return o.CostingId;
+    //     });
+
+    //     uniqueArr && uniqueArr.map(item => {
+
+    //         temp.push({
+    //             CostingId: item?.CostingId,
+    //             BoughtOutPartId: item?.BoughtOutPartId,
+    //             effectiveDate: DayTime(simulationDetail?.EffectiveDate).format('YYYY-MM-DD'),
+    //             vendorCode: getCodeBySplitting(item.VendorName),
+    //             materialNumber: item?.PartNo,
+    //             netPrice: item?.NewBasicRate,
+    //             plant: item?.PlantCode ? item?.PlantCode : null,
+    //             currencyKey: INR,
+    //             basicUOM: 'NO',
+    //             purchasingOrg: item?.DepartmentCode,
+    //             purchasingGroup: '',
+    //             materialGroup: '',
+    //             taxCode: 'YW',
+    //             TokenNumber: simulationDetail?.Token,
+    //             DecimalOption: simulationDetail?.DecimalOption,
+    //             IsRequestForCosting: false,
+    //             InfoToConditions: [],
+    //             IsRequestForBoughtOutPartMaster: false
+    //         })
+    //     })
+
+
+
+    //     let simObj = {
+    //         LoggedInUserId: loggedInUserId(),
+    //         Request: temp
+    //     }
+    //     dispatch(approvalPushedOnSap(simObj, res => {
+    //         // setIsDisabled(false)
+    //         if (res && res.status && (res.status === 200 || res.status === 204)) {
+    //             Toaster.success('Approval pushed successfully.')
+    //         }
+    //     }))
+    //     setShowListing(true)
+    // }, 500)
+
+    //MINDA
+
     return (
         <>
             {showListing === false &&
@@ -1050,7 +1122,8 @@ function SimulationApprovalSummary(props) {
                     <CalculatorWrapper />
                     {!loader && <LoaderCustom />}
                     <div className={`container-fluid  smh-approval-summary-page ${!loader === true ? 'loader-wrapper' : ''}`} id="go-to-top">
-                        {/* <ErrorMessage approvalNumber={approvalNumber} /> */}
+                        {/* //MINDA */}
+                        {/* <ErrorMessage approvalNumber={approvalNumber} isCosting={false} /> */}
                         <h2 className="heading-main">Approval Summary</h2>
                         <ScrollToTop pointProp={"go-to-top"} />
                         <Row>
@@ -1294,6 +1367,9 @@ function SimulationApprovalSummary(props) {
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName="Vendor (Code)"></AgGridColumn>}
+                                                                {/* //MINDA */}
+                                                                {/* {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>} */}
                                                                 {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName="Customer (Code)"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}
@@ -1495,7 +1571,7 @@ function SimulationApprovalSummary(props) {
                                 </div>
                             </div>
                         </Row>
-
+                        {/* // MINDA HIDE LAST REVISION DATA */}
                         {simulationDetail?.SimulationHeadId === VBCTypeId && <>
                             <Row className="mb-4 reset-btn-container">
                                 <Col md="6"><div className="left-border">{'Last Revision Data:'}</div></Col>
@@ -1549,7 +1625,6 @@ function SimulationApprovalSummary(props) {
                                                 </div>
                                                 <div
                                                     className="ag-theme-material"
-
                                                 >
                                                     <AgGridReact
                                                         style={{ height: '100%', width: '100%' }}
@@ -1645,6 +1720,9 @@ function SimulationApprovalSummary(props) {
                                     <button type="submit" className="submit-button mr5 save-btn" onClick={() => setPushButton(true)}>
                                         <div className={"save-icon"}></div>{" "}
                                         {"Push"}
+                                    <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
+                                        <div className={"save-icon"}></div>{" "}
+                                        {"RePush"}
                                     </button>
                                 </Fragment>
                             </div>
@@ -1665,9 +1743,14 @@ function SimulationApprovalSummary(props) {
                     anchor={'right'}
                     isSimulation={true}
                     simulationDetail={simulationDetail}
+                    costingList={costingList}
                     // reasonId={approvalDetails.ReasonId}
-                    IsFinalLevel={finalLeveluser}
+                    IsPushDrawer={showPushDrawer}
+                    showFinalLevelButtons={showFinalLevelButtons}
                     Attachements={simulationDetail.Attachements}
+                    reasonId={simulationDetail.SenderReasonId}
+                    IsFinalLevel={finalLeveluser}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     releaseStrategyDetails={releaseStrategyDetails}
                     technologyId={SimulationTechnologyId}
@@ -1692,6 +1775,8 @@ function SimulationApprovalSummary(props) {
                     // IsPushDrawer={showPushDrawer}
                     // dataSend={[approvalDetails, partDetail]}
                     Attachements={simulationDetail.Attachements}
+                    reasonId={simulationDetail.SenderReasonId}
+                    SimulationHeadId={simulationDetail?.SimulationHeadId}
                     costingTypeId={simulationDetail?.SimulationHeadId}
                     technologyId={SimulationTechnologyId}
                 />
@@ -1704,6 +1789,21 @@ function SimulationApprovalSummary(props) {
                 anchor={'right'}
                 approvalData={[approvalData]}
             />} */}
+            {/* //MINDA */}
+            {/* {
+                pushButton && <PushButtonDrawer
+                    isOpen={pushButton}
+                    closeDrawer={closePushButton}
+                    approvalData={[approvalData ? approvalData : []]}
+                    isSimulation={true}
+                    simulationDetail={simulationDetail}
+                    // dataSend={dataSend ? dataSend : []}
+                    costingList={costingList}
+                    anchor={'right'}
+                // approvalData={[approvalData]}
+                />
+            } */}
+            {/* //MINDA */}
 
             {
                 viewButton && <ViewDrawer

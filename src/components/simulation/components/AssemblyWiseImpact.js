@@ -96,7 +96,6 @@ function AssemblyWiseImpact(props) {
     const hyphenFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
-
     }
 
     const viewCosting = (id, data, rowIndex) => {

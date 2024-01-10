@@ -231,7 +231,6 @@ const VBCPlantListing = ({ ...props }) => {
   };
 
 
-
   /**
   * @method filterList
   * @description Filter user listing on the basis of role and department

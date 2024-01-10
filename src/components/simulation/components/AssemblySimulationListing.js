@@ -38,6 +38,7 @@ function AssemblySimulationListing(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [maxDate, setMaxDate] = useState(false)
+    const [popupMessage, setPopupMessage] = useState('There is no changes in scrap rate Do you want to continue')
 
     const { register, control, formState: { errors }, } = useForm({
         mode: 'onChange',

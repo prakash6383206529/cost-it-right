@@ -1,3 +1,4 @@
+
 import React, { Component } from "react";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import {
@@ -13,6 +14,8 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import logo from '../../assests/images/logo/company-logo.svg'
+//MINDA
+// import logo from '../../assests/images/logo/company-logo.png'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import CheckIcon from '../../assests/images/mail-sent.png'
 import errorImg from '../../assests/images/box.png'
@@ -107,6 +110,8 @@ class Login extends Component {
         let departmentList = ''
         const dept = userDetail && userDetail.Department.map((item) => {
           if (item.Role === 'SuperAdmin') {
+            //MINDA
+            // if (userDetail.Role === 'Group Category Head' || userDetail.Role === 'SuperAdmin') {
             return ''
           } else {
             return item.DepartmentCode
@@ -155,7 +160,9 @@ class Login extends Component {
               <div className="col-md-5 form-section">
                 <div className="text-center">
                   <img className="logo-first" src={logo} alt="Softude" />
-                </div>
+                  {/* MINDA */}
+                  {/* <img className="logo-first" src={logo} alt="Minda" /> */}
+                </div >
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
                 <form
@@ -214,9 +221,11 @@ class Login extends Component {
                     />
                   </div>
                 </form>
-                {buttonFlag && <div className="forgot-link  d-flex pt-2 justify-content-center">
-                  <span id="userNotFound" className="btn btn-link" onClick={this.forgotConfirm}>{'Forgot Password ?'}</span>
-                </div>}
+                {
+                  buttonFlag && <div className="forgot-link  d-flex pt-2 justify-content-center">
+                    <span id="userNotFound" className="btn btn-link" onClick={this.forgotConfirm}>{'Forgot Password ?'}</span>
+                  </div>
+                }
                 <div className="forget-wrapper">
                   {userNotFound && (
                     <div className="text-help userNotFound text-center">The provided user does not exist.</div>
@@ -232,15 +241,15 @@ class Login extends Component {
                   <img className="logo-second" src={secondLogo} alt="Cost It Right" />
 
                 </div>
-              </div>
+              </div >
               <div className="col-md-7 p-0 right-sideimg">
                 <img src={errorImg} alt='error-icon' />
               </div>
-            </div>
-          </div>
+            </div >
+          </div >
         </div >
         <p className="login-version">{VERSION}</p>
-      </div>
+      </div >
     );
   }
 }

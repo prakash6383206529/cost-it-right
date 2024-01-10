@@ -69,12 +69,10 @@ function NfrListing(props) {
         maxValue: 12,
         suppressFilterButton: true,
         component: "NFR",
-        onFilterChange: handleFilterChange,
-
     }
     useEffect(() => {
         setloader(true)
-        getDataList()
+        // getDataList()
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
 
@@ -118,7 +116,7 @@ function NfrListing(props) {
             }
             setloader(false)
         }))
-        setloader(false)
+        // setloader(false)
     }
 
     const resetState = () => {
@@ -233,6 +231,8 @@ function NfrListing(props) {
     }
     const statusFormatter = (props) => {
         dispatch(getGridHeight({ value: agGridRef.current.rowRenderer.allRowCons.length, component: 'NFR' }))
+        //MINDA
+        // dispatch(getGridHeight({ value: props.rowIndex, component: 'NFR' }))
         const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         let tempStatus = '-'
@@ -394,17 +394,17 @@ function NfrListing(props) {
                                                 <AgGridColumn field="ProductCode" headerName='Product Code' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NfrRefNumber" headerName='Nfr Ref. Number' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NfrVersion" headerName='Version/Revision' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="NumberOfParts" headerName='No. of Parts' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="SimulatedOn" headerName='Simulated On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="ApprovedOn" headerName='Approved On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" cellClass="text-center" headerName="Status" headerClass="justify-content-center" minWidth={170} cellRenderer="statusFormatter" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterNfr}></AgGridColumn>
                                                 {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
-                                            </AgGridReact>
+                                            </AgGridReact >
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={10} />
-                                        </div>
-                                    </div>
-                                </Col>
-                            </Row>
+                                        </div >
+                                    </div >
+                                </Col >
+                            </Row >
 
                         </>))
                     }

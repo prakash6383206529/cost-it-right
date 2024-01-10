@@ -49,15 +49,28 @@ function RfqListing(props) {
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const handleFilterChange = () => {
         if (agGridRef.current) {
-            setTimeout(() => {
-                if (!agGridRef.current.rowRenderer.allRowCons.length) {
-                    setNoData(true)
-                    dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
-                } else {
-                    setNoData(false)
-                }
-            }, 100);
+            //MINDA
+            // setTimeout(() => {
+            //     if (!agGridRef.current.rowRenderer.allRowCons.length) {
+            //         setNoData(true)
+            //         dispatch(getGridHeight({ value: 3, component: 'RFQ' }))
+            //     } else {
+            //         setNoData(false)
+            //     }
+            // }, 100);
 
+            const gridApi = agGridRef.current.api;
+            if (gridApi) {
+                const displayedRowCount = gridApi.getDisplayedRowCount();
+                const allRowData = [];
+                for (let i = 0; i < displayedRowCount; i++) {
+                    const rowNode = gridApi.getDisplayedRowAtIndex(i);
+                    if (rowNode) {
+                        allRowData.push(rowNode.data);
+                    }
+                }
+                setNoData(!allRowData.length)
+            }
         }
     };
     const floatingFilterRFQ = {

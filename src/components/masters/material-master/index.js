@@ -199,145 +199,150 @@ function RowMaterialMaster(props) {
 
 
     return (
-      
+
         <Container fluid>
             <Row id="go-top-top">
                 <ScrollToTop pointProp={"go-top-top"} />
             </Row>
             <Row>
                 <Col>
-                {Object.keys(permissionData).length > 0 && (
-                    <div>
-                        <Nav tabs className="subtabs mt-0 p-relative">
-                            {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
+                    {Object.keys(permissionData).length > 0 && (
+                        <div>
+                            <Nav tabs className="subtabs mt-0 p-relative">
+                                {disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
 
-                            {<NavItem>
-                                <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                                    Manage Raw Material (Domestic)
-                                </NavLink>
-                            </NavItem>}
-                            {<NavItem>
-                                <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                                    Manage Raw Material (Import)
-                                </NavLink>
-                            </NavItem>}
-                            {<NavItem>
-                                <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
-                                    Manage Specification
-                                </NavLink>
-                            </NavItem>}
-                            {<NavItem>
-                                <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
-                                    Manage Material
-                                </NavLink>
-                            </NavItem>}
-                            {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
-                            {/* uncomment below line after cherry-pick to Minda  TODO */}
-                            {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
-                                {/* {ViewRMAccessibility && <NavItem> */}
-                                <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
-                                    toggle('5');
-                                    // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
-                                }}>
-                                    Approval Status
-                                </NavLink>
-                            </NavItem>}
-                        </Nav>
-                        <ApplyPermission.Provider value={permissionData}>
-                        <TabContent activeTab={activeTab}>
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
+                                        Manage Raw Material (Domestic)
+                                    </NavLink>
+                                </NavItem>}
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+                                        Manage Raw Material (Import)
+                                    </NavLink>
+                                </NavItem>}
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                                        Manage Specification
+                                    </NavLink>
+                                </NavItem>}
+                                {<NavItem>
+                                    <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
+                                        Manage Material
+                                    </NavLink>
+                                </NavItem>}
+                                {/* SHOW THIS TAB IF KEY IS COMING TRUE FROM CONFIGURATION (CONNDITIONAL TAB) */}
+                                {/* uncomment below line after cherry-pick to Minda  TODO */}
+                                {(CheckApprovalApplicableMaster(RM_MASTER_ID)) && <NavItem>
+                                    {/* {ViewRMAccessibility && <NavItem> */}
+                                    <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => {
+                                        toggle('5');
+                                        // this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
+                                    }}>
+                                        Approval Status
+                                    </NavLink>
+                                </NavItem>}
+                            </Nav>
+                            <ApplyPermission.Provider value={permissionData}>
+                                <TabContent activeTab={activeTab}>
 
 
 
-                            {Number(activeTab) === 1 &&
-                                <TabPane tabId="1">
-                                    <RMDomesticListing
-                                        formToggle={displayDomesticForm}
-                                        getDetails={getDetails}
-                                        toggle={toggle}
-                                        ViewRMAccessibility={ViewRMAccessibility}
-                                        AddAccessibility={AddAccessibility}
-                                        EditAccessibility={EditAccessibility}
-                                        DeleteAccessibility={DeleteAccessibility}
-                                        BulkUploadAccessibility={BulkUploadAccessibility}
-                                        DownloadAccessibility={DownloadAccessibility}
-                                        stopApiCallOnCancel={stopApiCallOnCancel}
-                                        selectionForListingMasterAPI='Master'
-                                        approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
-                                    />
-                                </TabPane>}
+                                    {Number(activeTab) === 1 &&
+                                        <TabPane tabId="1">
+                                            <RMDomesticListing
+                                                formToggle={displayDomesticForm}
+                                                getDetails={getDetails}
+                                                toggle={toggle}
+                                                ViewRMAccessibility={ViewRMAccessibility}
+                                                AddAccessibility={AddAccessibility}
+                                                EditAccessibility={EditAccessibility}
+                                                DeleteAccessibility={DeleteAccessibility}
+                                                BulkUploadAccessibility={BulkUploadAccessibility}
+                                                DownloadAccessibility={DownloadAccessibility}
+                                                stopApiCallOnCancel={stopApiCallOnCancel}
+                                                selectionForListingMasterAPI='Master'
+                                                approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                            //MINDA
+                                            // approvalStatus={APPROVED_STATUS_MASTER}
+                                            />
+                                        </TabPane>}
 
-                            {Number(activeTab) === 2 &&
-                                <TabPane tabId="2">
-                                    <RMImportListing
-                                        formToggle={displayImportForm}
-                                        getDetails={getDetailsImport}
-                                        toggle={toggle}
-                                        ViewRMAccessibility={ViewRMAccessibility}
-                                        AddAccessibility={AddAccessibility}
-                                        EditAccessibility={EditAccessibility}
-                                        DeleteAccessibility={DeleteAccessibility}
-                                        BulkUploadAccessibility={BulkUploadAccessibility}
-                                        DownloadAccessibility={DownloadAccessibility}
-                                        stopApiCallOnCancel={stopApiCallOnCancel}
-                                        selectionForListingMasterAPI='Master'
-                                        approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
-                                    />
-                                </TabPane>}
+                                    {Number(activeTab) === 2 &&
+                                        <TabPane tabId="2">
+                                            <RMImportListing
+                                                formToggle={displayImportForm}
+                                                getDetails={getDetailsImport}
+                                                toggle={toggle}
+                                                ViewRMAccessibility={ViewRMAccessibility}
+                                                AddAccessibility={AddAccessibility}
+                                                EditAccessibility={EditAccessibility}
+                                                DeleteAccessibility={DeleteAccessibility}
+                                                BulkUploadAccessibility={BulkUploadAccessibility}
+                                                DownloadAccessibility={DownloadAccessibility}
+                                                stopApiCallOnCancel={stopApiCallOnCancel}
+                                                selectionForListingMasterAPI='Master'
+                                                approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                            //MINDA
+                                            // approvalStatus={APPROVED_STATUS_MASTER}
+                                            />
+                                        </TabPane>}
 
-                            {Number(activeTab) === 3 &&
-                                <TabPane tabId="3">
-                                    <SpecificationListing
-                                        toggle={toggle}
-                                        AddAccessibility={AddAccessibility}
-                                        EditAccessibility={EditAccessibility}
-                                        DeleteAccessibility={DeleteAccessibility}
-                                        BulkUploadAccessibility={BulkUploadAccessibility}
-                                        AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
-                                        EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
-                                        DownloadAccessibility={DownloadAccessibility}
-                                        stopApiCallOnCancel={stopApiCallOnCancel}
+                                    {Number(activeTab) === 3 &&
+                                        <TabPane tabId="3">
+                                            <SpecificationListing
+                                                toggle={toggle}
+                                                AddAccessibility={AddAccessibility}
+                                                EditAccessibility={EditAccessibility}
+                                                DeleteAccessibility={DeleteAccessibility}
+                                                BulkUploadAccessibility={BulkUploadAccessibility}
+                                                AddAccessibilityRMANDGRADE={AddAccessibilityRMANDGRADE}
+                                                EditAccessibilityRMANDGRADE={EditAccessibilityRMANDGRADE}
+                                                DownloadAccessibility={DownloadAccessibility}
+                                                stopApiCallOnCancel={stopApiCallOnCancel}
 
-                                    />
-                                </TabPane>}
+                                            />
+                                        </TabPane>}
 
-                            {Number(activeTab) === 4 &&
-                                <TabPane tabId="4">
-                                    <RMListing
-                                        AddAccessibility={AddAccessibility}
-                                        EditAccessibility={EditAccessibility}
-                                        DeleteAccessibility={DeleteAccessibility}
-                                        DownloadAccessibility={DownloadAccessibility}
-                                        stopApiCallOnCancel={stopApiCallOnCancel}
+                                    {Number(activeTab) === 4 &&
+                                        <TabPane tabId="4">
+                                            <RMListing
+                                                AddAccessibility={AddAccessibility}
+                                                EditAccessibility={EditAccessibility}
+                                                DeleteAccessibility={DeleteAccessibility}
+                                                DownloadAccessibility={DownloadAccessibility}
+                                                stopApiCallOnCancel={stopApiCallOnCancel}
 
-                                    />
-                                </TabPane>}
-                            {Number(activeTab) === 5 &&
-                                <TabPane tabId="5">
-                                    {/* {
+                                            />
+                                        </TabPane>}
+                                    {Number(activeTab) === 5 &&
+                                        <TabPane tabId="5">
+                                            {/* {
                                             this.props.history.push({ pathname: '/raw-material-master/raw-material-approval' })
                                         } */}
 
-                                    {/* <Link to="/raw-material-approval"></Link> */}
-                                    {/* <Route path="/raw-material-approval">
+                                            {/* <Link to="/raw-material-approval"></Link> */}
+                                            {/* <Route path="/raw-material-approval">
                                         </Route> */}
-                                    <CommonApproval
-                                        AddAccessibility={AddAccessibility}
-                                        EditAccessibility={EditAccessibility}
-                                        DeleteAccessibility={DeleteAccessibility}
-                                        DownloadAccessibility={DownloadAccessibility}
-                                        MasterId={RM_MASTER_ID}
-                                    />
-                                </TabPane>}
+                                            <CommonApproval
+                                                AddAccessibility={AddAccessibility}
+                                                EditAccessibility={EditAccessibility}
+                                                DeleteAccessibility={DeleteAccessibility}
+                                                DownloadAccessibility={DownloadAccessibility}
+                                                MasterId={RM_MASTER_ID}
+                                            />
+                                        </TabPane>}
 
-                        </TabContent>
-                        </ApplyPermission.Provider>
-                    </div>
-                )}
-                </Col>
-            </Row>
+                                </TabContent>
+                            </ApplyPermission.Provider >
+                        </div >
+                    )
+                    }
+                </Col >
+            </Row >
 
         </Container >
-                                    
+
     );
 
 }

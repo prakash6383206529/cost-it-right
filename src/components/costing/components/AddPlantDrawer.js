@@ -10,18 +10,19 @@ import { EMPTY_GUID, ZBC } from '../../../config/constants';
 
 function AddPlantDrawer(props) {
 
-  const { register, handleSubmit, formState: { errors }, control } = useForm();
+  const { register, handleSubmit, formState: { errors }, control, reset } = useForm();
 
   const [plant, setPlant] = useState([]);
   const [data, setPlantData] = useState({});
   const [selectedPlants, setSelectedPlants] = useState([]);
+  const [vendor, setVendor] = useState([]);
 
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
 
   useEffect(() => {
     const { zbcPlantGrid } = props;
-    dispatch(getPlantSelectListByType(ZBC, "COSTING", () => { }))
+    dispatch(getPlantSelectListByType(ZBC, "COSTING", '', () => { }))
 
     let tempArr = [];
     zbcPlantGrid && zbcPlantGrid.map(el => {
@@ -44,6 +45,9 @@ function AddPlantDrawer(props) {
       IsNewCosting: true,
       CostingId: EMPTY_GUID,
       CostingOptions: []
+      //MINDA
+      // ...data,
+      // PlantName: `${data.PlantName} (${data.PlantCode})`
     })
   };
 
@@ -62,7 +66,6 @@ function AddPlantDrawer(props) {
       });
       return temp;
     }
-
   }
 
   /**
@@ -74,6 +77,23 @@ function AddPlantDrawer(props) {
       setPlant(newValue)
     } else {
       setPlant([])
+    }
+  }
+
+  /**
+ * @method handleVendorChange
+ * @description  USED TO HANDLE VENDOR CHANGE
+ */
+  const handleVendorChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      setVendor(newValue)
+      reset({ VendorPlant: '' })
+
+
+
+
+    } else {
+      setVendor([])
     }
   }
 

@@ -8,6 +8,7 @@ import Toaster from '../../../common/Toaster';
 import Drawer from '@material-ui/core/Drawer';
 import { TextFieldHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, removeBOPfromApplicability } from '../../../../helper';
+import { removeBOPFromList } from '../../../../helper';
 import { CRMHeads, Fixed, FullTruckLoad, PartTruckLoad, Percentage } from '../../../../config/constants';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../../helper/validation";
 
@@ -132,6 +133,8 @@ function AddFreight(props) {
       });
       if (isBreakupBoughtOutPartCostingFromAPI) {
         tempList = removeBOPfromApplicability([...temp])
+        //MINDA
+        // tempList = removeBOPFromList([...temp])
       } else {
         tempList = [...temp]
       }

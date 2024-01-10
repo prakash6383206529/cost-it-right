@@ -39,7 +39,7 @@ function OtherVerifySimulation(props) {
 
     useEffect(() => {
         verifyCostingList()
-        dispatch(getPlantSelectListByType(ZBC, "SIMULATION", () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "SIMULATION", '', () => { }))
     }, [])
 
     const verifyCostingList = () => {

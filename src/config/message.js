@@ -371,4 +371,28 @@ export const MESSAGES = {
   // NFR
   NFR_APPROVED: 'NFR is approved successfully',
   NFR_REJECTED: 'NFR is rejected successfully',
+  NFR_PUSHED: 'NFR is pushed successfully',
+  BOP_RM_PUSHED: 'Pushed successfully to SAP',
+
+  //RFQ
+  RFQ_ADD_SUCCESS: 'RFQ details added successfully',
+  RFQ_SENT_SUCCESS: 'RFQ raised successfully',
+  RFQ_DETAIL_CANCEL_ALERT: 'Are you sure you want to cancel this RFQ?',
+
+  //SIMULATION
+  DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
+
+  // COMMON MESSAGES 
+  DOWNLOADING_MESSAGE: 'Please wait while data is downloading',
+  LOADING_MESSAGE: 'Please wait while loading',
+  CANCEL_MASTER_ALERT: 'Are you sure, you want to cancel?',
+  ASYNC_MESSAGE_FOR_DROPDOWN: 'Enter first 3 characters to search data',
+
+  //ERROR MESSAGES
+  PRICE_VALIDATION_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForPrice)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForPrice)}.`,
+  OTHER_VALIDATION_ERROR_MESSAGE: `Maximum length for integer is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)} and for decimal is ${Number(getConfigurationKey().NoOfDecimalForInputOutput)}.`,
+
+  // NFR
+  NFR_APPROVED: 'NFR is approved successfully',
+  NFR_REJECTED: 'NFR is rejected successfully',
 }

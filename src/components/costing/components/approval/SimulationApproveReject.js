@@ -57,6 +57,7 @@ function SimulationApproveReject(props) {
   const { selectedMasterForSimulation } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
+  const SAPData = useSelector(state => state.approval.SAPObj)
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
@@ -123,8 +124,8 @@ function SimulationApproveReject(props) {
   const checkPermission = (costingTypeId) => {
     let levelDetailsTemp = ''
     levelDetailsTemp = userTechnologyLevelDetails(costingTypeId, technologyLevelsList?.TechnologyLevels ? technologyLevelsList?.TechnologyLevels : [])
-    setLevelDetails(levelDetailsTemp)
     if (levelDetailsTemp?.length !== 0) {
+      setLevelDetails(levelDetailsTemp)
       getApproversList(dataInFields?.Department?.value, dataInFields?.Department?.label, levelDetailsTemp, dataInFields)
     } else {
       Toaster.warning("You don't have permission to send simulation for approval.")
@@ -457,6 +458,9 @@ function SimulationApproveReject(props) {
       } else {
         senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
       }
+      senderObj.PurchasingGroup = SAPData.PurchasingGroup?.label
+      senderObj.MaterialGroup = SAPData.MaterialGroup?.label
+      senderObj.DecimalOption = SAPData.DecimalOption?.value
       senderObj.Attachements = updatedFiles
       senderObj.LinkedTokenNumber = linkingTokenDropDown.value
       senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false      // IF WE SEND MULTIPLE TOKENS FOR SIMULATION THEN THIS WILL BE TRUE (requirement)

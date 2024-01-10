@@ -13,7 +13,8 @@ import TooltipCustom from '../../../../common/Tooltip'
 import { trim } from 'lodash'
 
 function AddConditionCosting(props) {
-    const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, } = props
+    const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType } = props
+    console.log('EntryType: ', EntryType);
     const [tableData, setTableData] = useState(props?.tableData)
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -26,8 +27,18 @@ function AddConditionCosting(props) {
     const [totalCostBase, setTotalCostBase] = useState('')
     const [disableBase, setDisableBase] = useState(false)
     const [disableCurrency, setDisableCurrency] = useState(false)
-
-
+    const [disableEntryType, setDisableEntryType] = useState(false)
+    const [costingConditionEntryType, setCostingConditionEntryType] = useState(props?.costingConditionEntryType)
+    const conditionEntryTypeDropdown = [
+        {
+            label: 'Domestic',
+            value: 0,
+        },
+        {
+            label: 'Import',
+            value: 1,
+        },
+    ]
     const { register, control, setValue, getValues, reset, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -41,24 +52,47 @@ function AddConditionCosting(props) {
     })
 
     useEffect(() => {
-        if (true) {
-            if (true) {
-                dispatch(getCostingCondition((res) => {
-                    if (res?.data?.DataList) {
-                        let Data = res?.data?.DataList
-                        let temp = []
-                        Data && Data.map((item) => {
-                            item.label = ` ${item.Description} (${item.CostingConditionNumber})`
-                            item.value = item.CostingConditionMasterId
-                            temp.push(item)
-                        })
-                        setConditionDropdown(temp)
-                    }
-                }))
+        if (tableData.length === 0) {
+            setDisableEntryType(false)
+            setValue('ConditionEntryType', '')
+        }
+    }, [tableData]);
+
+    useEffect(() => {
+        const hasCostingConditionEntryTypeId = tableData.some(item => item.CostingConditionEntryTypeId !== undefined);
+
+        if (hasCostingConditionEntryTypeId || props.costingConditionEntryType !== undefined) {
+            const conditionEntryTypeId = hasCostingConditionEntryTypeId ? tableData[0]?.CostingConditionEntryTypeId : props.costingConditionEntryType;
+            const obj = conditionEntryTypeDropdown.find(item => item.value === conditionEntryTypeId);
+
+            if (obj) {
+                setValue('ConditionEntryType', obj);
+                setDisableEntryType(true);
             }
         }
 
-    }, [])
+        if (isFromMaster || hasCostingConditionEntryTypeId || props?.costingConditionEntryType !== undefined) {
+            const entryTypeId =
+                EntryType !== undefined
+                    ? EntryType
+                    : tableData[0]?.CostingConditionEntryTypeId !== undefined
+                        ? tableData[0].CostingConditionEntryTypeId
+                        : props?.costingConditionEntryType;
+
+            dispatch(getCostingCondition(entryTypeId, (res) => {
+                if (res?.data?.DataList) {
+                    const temp = res.data.DataList.map(item => ({
+                        label: `${item.Description} (${item.CostingConditionNumber})`,
+                        value: item.CostingConditionMasterId,
+                        CostingConditionMasterId: item.CostingConditionMasterId,
+                        ConditionType: item.ConditionType
+                    }));
+
+                    setConditionDropdown(temp);
+                }
+            }));
+        }
+    }, []);
 
     useEffect(() => {
         calculateCostPerQuantity()
@@ -76,10 +110,19 @@ function AddConditionCosting(props) {
                 cssClass = 'mt-4 pt-1';
             }
         } else {
-            if (type === "Percentage") {
+            if (type === "") {
+                cssClass = 'mb-3';
+            } else if (type === "Fixed") {
                 cssClass = 'mb-3';
             } else {
                 cssClass = 'mt-4 pt-1';
+            }
+            if (props.isFromMaster) {
+                if (type === "Percentage") {
+                    cssClass = 'mb-3';
+                } else {
+                    cssClass = 'mt-4 pt-1';
+                }
             }
         }
         return cssClass
@@ -91,6 +134,7 @@ function AddConditionCosting(props) {
         setValue('Quantity', '')
         setValue('CostCurrency', '')
         setValue('CostBase', '')
+        setDisableEntryType(true)
         if (e?.ConditionType === 'Fixed' || e?.ConditionType === 'Quantity') {
             setDisableTotalCost(false)
             setDisableCurrency(false)
@@ -109,6 +153,23 @@ function AddConditionCosting(props) {
             setTotalCostBase('')
         }
     }
+
+    const onConditionEntryTypeChange = (e) => {
+        setCostingConditionEntryType(e.value)
+        dispatch(getCostingCondition(e.value, (res) => {
+            if (res?.data?.DataList) {
+                let Data = res?.data?.DataList
+                let temp = []
+                Data && Data.map((item) => {
+                    item.label = ` ${item.Description} (${item.CostingConditionNumber})`
+                    item.value = item.CostingConditionMasterId
+                    temp.push(item)
+                })
+                setConditionDropdown(temp)
+            }
+        }))
+    }
+
     const handleCostChangeCurrency = (e) => {
         errors.CostBase = {}
         if (e?.target?.value) {
@@ -170,7 +231,7 @@ function AddConditionCosting(props) {
 
 
     const addData = () => {
-        if (((getValues('Type') === 'Fixed' || getValues('Type') === 'Quantity') && !getValues('CostCurrency')) || (getValues('Type') === 'Percentage' && !getValues('Percentage'))) {
+        if (!getValues('Type') || !getValues('Condition') || ((getValues('Type') === 'Fixed' || getValues('Type') === 'Quantity') && !getValues('CostCurrency')) || (getValues('Type') === 'Percentage' && !getValues('Percentage'))) {
             Toaster.warning("Please enter all details to add a row.");
             return false;
         }
@@ -189,6 +250,7 @@ function AddConditionCosting(props) {
             ConditionCostPerQuantity: getValues('ConditionCostPerQuantity') ? getValues('ConditionCostPerQuantity') : '',
             ConditionQuantity: getValues('Quantity') ? getValues('Quantity') : '',
             ConditionCostPerQuantityConversion: getValues('CostPerQuantityConversion') ? getValues('CostPerQuantityConversion') : '',
+            CostingConditionEntryTypeId: costingConditionEntryType
         };
         let isDuplicate = false
         tableData.map((item, index) => {
@@ -271,6 +333,7 @@ function AddConditionCosting(props) {
             setValue('Quantity', Data.ConditionQuantity)
             setTotalCostCurrency(Data?.ConditionCost)
             setTotalCostBase(Data?.ConditionCostConversion)
+            setCostingConditionEntryType(Data.CostingConditionEntryTypeId)
             setType(Data.ConditionType)
             if (Data.ConditionType === 'Fixed' || Data.ConditionType === 'Quantity') {
                 setDisableTotalCost(false)
@@ -294,6 +357,7 @@ function AddConditionCosting(props) {
         setValue('ConditionCostPerQuantity', checkForDecimalAndNull(ConditionCostPerQuantity, initialConfiguration.NoOfDecimalForPrice))
         setValue('CostPerQuantityConversion', checkForDecimalAndNull(ConditionCostPerQuantityConversion, initialConfiguration.NoOfDecimalForPrice))
     }
+
     return (
 
         <div>
@@ -317,7 +381,24 @@ function AddConditionCosting(props) {
                             </Row>
                             <div className='hidepage-size'>
                                 <Row>
-
+                                    {!isFromMaster && <Col md="3" className='px-2'>
+                                        <SearchableSelectHookForm
+                                            label={`Entry Type`}
+                                            name={'ConditionEntryType'}
+                                            placeholder={'Select'}
+                                            Controller={Controller}
+                                            control={control}
+                                            register={register}
+                                            mandatory={true}
+                                            options={conditionEntryTypeDropdown}
+                                            handleChange={onConditionEntryTypeChange}
+                                            defaultValue={tableData.CostingConditionEntryTypeId ?? ''}
+                                            className=""
+                                            customClassName={'withBorder'}
+                                            errors={errors.ConditionEntryType}
+                                            disabled={disableEntryType}
+                                        />
+                                    </Col>}
                                     <Col md="3" className='px-2'>
                                         <SearchableSelectHookForm
                                             label={`Condition`}
@@ -508,7 +589,7 @@ function AddConditionCosting(props) {
                                     <button
                                         type={'button'}
                                         className="submit-button save-btn"
-                                        onClick={() => { props.closeDrawer('save', tableData) }}
+                                        onClick={() => { props.closeDrawer('save', tableData, costingConditionEntryType) }}
                                         disabled={props.ViewMode}
                                     >
                                         <div className={"save-icon"}></div>

@@ -20,7 +20,7 @@ import BOPImportListing from '../../masters/bop-master/BOPImportListing';
 import ExchangeRateListing from '../../masters/exchange-rate-master/ExchangeRateListing';
 import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
-import { allEqual, applyEditCondSimulation, checkForNull, getFilteredData, isUploadSimulation, loggedInUserId } from '../../../helper';
+import { allEqual, applyEditCondSimulation, checkForNull, getFilteredData, isUploadSimulation, loggedInUserId, userDetails } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
@@ -49,7 +49,7 @@ function Simulation(props) {
         reValidateMode: 'onChange',
     })
 
-    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation } = useSelector(state => state.simulation)
+    const { selectedMasterForSimulation, selectedTechnologyForSimulation, getTokenSelectList, tokenCheckBoxValue, tokenForSimulation, selectedCustomerSimulation, selectedVendorForSimulation, isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
 
     const [master, setMaster] = useState([])
     const [technology, setTechnology] = useState({})
@@ -75,7 +75,6 @@ function Simulation(props) {
     const [vendorName, setVendorName] = useState({})
     const [association, setAssociation] = useState('')
     const partType = (checkForNull(selectedMasterForSimulation?.value) === ASSEMBLY_TECHNOLOGY_MASTER) ? true : false
-    const { isMasterAssociatedWithCosting } = useSelector(state => state.simulation)
     const [bopLoader, setBopLoader] = useState(false)
     const [isCustomer, setIsCustomer] = useState(false)
     const [showApplicabilityDropdown, setShowApplicabilityDropdown] = useState(false)
@@ -91,6 +90,7 @@ function Simulation(props) {
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getClientSelectList(() => { }))
+        dispatch(setTokenForSimulation([]))
 
         // ASSEMBLY TECHNOLOGY
         dispatch(getSelectListOfMasters(() => { }))
@@ -195,7 +195,6 @@ function Simulation(props) {
             }
             dispatch(getTokenSelectListAPI(obj, () => { }))
         }
-
         if (checkForNull(value.value) === ASSEMBLY_TECHNOLOGY_MASTER) {
             // SINCE WE ARE IN MASTER HANDLE CHANGE, TO SET VALUE OF ASSEMBLY TECHNOLOGY IN DROPDOWN WE NEED TO GET DYNAMIC VALUE FROM DROPDOWN API'S REDUCER
             setShowTokenDropdown(false)
@@ -742,6 +741,7 @@ function Simulation(props) {
                             setEditWarning(true);
                             flag = false
                         }
+                        // if (userDetails().Role !== 'Group Category Head') { //MINDA
                         if (element.VendorName !== Data[index - 1].VendorName) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
                             setEditWarning(true);
@@ -752,6 +752,9 @@ function Simulation(props) {
                             setEditWarning(true);
                             plantFlag = false
                         }
+
+
+
                     }
                 });
                 if (flag === true && vendorFlag === true && plantFlag === true) {
@@ -765,6 +768,22 @@ function Simulation(props) {
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
+                // if (userDetails().Role !== 'Group Category Head') { //MINDA
+                if (flag === true && vendorFlag === true && plantFlag === true) {
+                    setEditWarning(false)
+                } if (flag === false && vendorFlag === false) {
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+                } if (vendorFlag === false && plantFlag === false) {
+                    (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+                } if (flag === false && plantFlag === false) {
+                    (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+                } if (flag === false && vendorFlag === false && plantFlag === false) {
+                    (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+                }
+                // }
+                //  else {
+                //     setEditWarning(true)
+                // }
                 break;
             case RMIMPORT:
                 if (Data.length === 0) {
@@ -774,23 +793,26 @@ function Simulation(props) {
                 Data && Data.forEach((element, index) => {
 
                     if (index !== 0) {
-                        if (element.CostingHead !== Data[index - 1].CostingHead) {
+                        if (element?.CostingHead !== Data[index - 1]?.CostingHead) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
                             setEditWarning(true);
                             flag = false
                         }
-                        if (element.VendorName !== Data[index - 1].VendorName) {
-                            (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
-                            setEditWarning(true);
-                            vendorFlag = false
-                        }
-                        if (element.PlantId !== Data[index - 1].PlantId) {
-                            (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
-                            setEditWarning(true);
-                            plantFlag = false
-                        }
                     }
-                })
+                    // if (userDetails().Role !== 'Group Category Head') { //MINDA
+                    if (element?.VendorName !== Data[index - 1]?.VendorName) {
+                        (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+                        setEditWarning(true);
+                        vendorFlag = false
+                    }
+
+                    if (element?.PlantId !== Data[index - 1]?.PlantId) {
+                        (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+                        setEditWarning(true);
+                        plantFlag = false
+                    }
+                }
+                )
                 if (flag === true && vendorFlag === true && plantFlag === true) {
                     setEditWarning(false)
                 } if (flag === false && vendorFlag === false) {
@@ -803,6 +825,79 @@ function Simulation(props) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
                 break;
+            // case BOPIMPORT:
+            //     if (Data.length === 0) {
+            //         setEditWarning(true)
+            //         return false
+            //     }
+            //     Data && Data.forEach((element, index) => {
+            //         if (index !== 0) {
+            //             if (element.VendorName !== Data[index - 1].VendorName) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+            //                 setEditWarning(true);
+            //                 vendorFlag = false
+            //             }
+            //             // UNCOMMENT THIS IN MINDA ONLY
+            //             // if (element.Plant !== Data[index - 1].Plant) {
+            //             //     (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+            //             //     setEditWarning(true);
+            //             //     vendorFlag = false
+            //             // }
+            //             if (element.OverheadApplicabilityType !== Data[index - 1].OverheadApplicabilityType) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
+            //                 setEditWarning(true);
+            //                 plantFlag = false
+            //             }
+            //         }
+            //     });
+            //     if (flag === true && vendorFlag === true && plantFlag === true) {
+            //         setEditWarning(false)
+            //     } if (flag === false && vendorFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+            //     } if (vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one  Vendor, Plant at a time.`)
+            //     } if (flag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Plant at a time.`)
+            //     } if (flag === false && vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
+            //     }
+            //     break;
+            // case BOPIMPORT:
+            //     if (Data.length === 0) {
+            //         setEditWarning(true)
+            //         return false
+            //     }
+            //     Data && Data.forEach((element, index) => {
+            //         if (index !== 0) {
+            //             if (element.CostingHead !== Data[index - 1].CostingHead) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Costing Head')
+            //                 setEditWarning(true);
+            //                 flag = false
+            //             }
+            //             if (element.VendorName !== Data[index - 1].VendorName) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Vendor')
+            //                 setEditWarning(true);
+            //                 vendorFlag = false
+            //             }
+            //             if (element.ProfitApplicabilityType !== Data[index - 1].ProfitApplicabilityType) {
+            //                 (Data.length !== 0) && setFilterStatus('Please filter out the Applicability Type')
+            //                 setEditWarning(true);
+            //                 plantFlag = false
+            //             }
+            //         }
+            //     });
+            //     if (flag === true && vendorFlag === true && plantFlag === true) {
+            //         setEditWarning(false)
+            //     } if (flag === false && vendorFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Vendor at a time.`)
+            //     } if (vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one  Vendor, Overhead Applicability at a time.`)
+            //     } if (flag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus(`Please select one Costing Head, Overhead Applicability at a time.`)
+            //     } if (flag === false && vendorFlag === false && plantFlag === false) {
+            //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Overhead Applicability')
+            //     }
+            //     break;
 
             case SURFACETREATMENT:
                 if (Data.length === 0) {
@@ -1118,7 +1213,6 @@ function Simulation(props) {
 
         // })
         let tempObject = tokenForSimulation?.length !== 0 ? [{ SimulationId: tokenForSimulation?.value }] : []
-
         switch (page) {
             case RMDOMESTIC:
                 return <RMSimulation isDomestic={true} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmDomesticListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />  //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING

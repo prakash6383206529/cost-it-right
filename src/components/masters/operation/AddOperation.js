@@ -51,6 +51,7 @@ class AddOperation extends Component {
       vendorName: [],
       oldDate: '',
       UOM: [],
+      isViewMode: this.props?.data?.isViewMode ? true : false,
       oldUOM: [],
       isDateChange: false,
       IsSendForApproval: false,
@@ -66,7 +67,6 @@ class AddOperation extends Component {
       isFinalApprovar: false,
       approveDrawer: false,
       approvalObj: {},
-      isViewMode: this.props?.data?.isViewMode ? true : false,
       client: [],
       isEditFlag: false,
       isShowForm: false,
@@ -120,7 +120,7 @@ class AddOperation extends Component {
     const { initialConfiguration } = this.props
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
-      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
     }
     if (!this.state.isViewMode && initialConfiguration.IsMasterApprovalAppliedConfigure && CheckApprovalApplicableMaster(OPERATIONS_ID) === true) {
@@ -180,6 +180,7 @@ class AddOperation extends Component {
   renderListing = (label) => {
     const { costingSpecifiTechnology, plantSelectList, UOMSelectList, clientSelectList } = this.props;
     const temp = [];
+
     if (label === 'technology') {
       costingSpecifiTechnology && costingSpecifiTechnology.map(item => {
         if (item.Value === '0') return false;
@@ -255,9 +256,6 @@ class AddOperation extends Component {
     });
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
-    }
-    else {
-
     }
   }
 
@@ -629,7 +627,9 @@ class AddOperation extends Component {
       isShowForm: false,
       isEditFlag: false,
     })
-    this.props.getOperationDataAPI('', () => { })
+    if (type === 'submit') {
+      this.props.getOperationDataAPI('', () => { })
+    }
     this.props.hideForm(type)
   }
   cancelHandler = () => {
@@ -1223,9 +1223,7 @@ class AddOperation extends Component {
                           />
                         </div>
                       </Col>
-
                     </Row>
-
                     <Row>
                       <Col md="8" className="mb-5 pb-1 st-operation">
                         <label id="AddOperation_SurfaceTreatmentCheckbox"
