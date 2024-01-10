@@ -767,7 +767,7 @@ function ColdForging(props) {
                   errors={errors.machiningScrapCost}
                   disabled={true}
                 />
-              </Col>
+              </Col >
 
               <Col md="3">
                 <TooltipCustom disabledIcon={true} id={'scrap-weight'} tooltipText={'Scrap Weight = (Forging Scrap Weight + Machining Scrap Weight)'} />
@@ -825,7 +825,7 @@ function ColdForging(props) {
                   disabled={true}
                 />
               </Col>
-            </Row>
+            </Row >
 
             <div className="mt25 col-md-12 text-right">
               <button
@@ -847,10 +847,10 @@ function ColdForging(props) {
                 {'SAVE'}
               </button>
             </div>
-          </form>
-        </Col>
-      </Row>
-    </Fragment>
+          </form >
+        </Col >
+      </Row >
+    </Fragment >
   )
 }
 

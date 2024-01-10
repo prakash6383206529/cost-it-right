@@ -38,6 +38,7 @@ function AssemblySimulationListing(props) {
     const [isEffectiveDateSelected, setIsEffectiveDateSelected] = useState(false);
     const [isWarningMessageShow, setIsWarningMessageShow] = useState(false)
     const [maxDate, setMaxDate] = useState(false)
+    const [popupMessage, setPopupMessage] = useState('There is no changes in scrap rate Do you want to continue')            //RE
 
     const { register, control, formState: { errors }, } = useForm({
         mode: 'onChange',
@@ -76,6 +77,7 @@ function AssemblySimulationListing(props) {
             window.screen.width >= 1921 && gridRef.current.api.sizeColumnsToFit();
             let maxDate = getMaxDate(multiTechnologyCostinig)
             setMaxDate(maxDate?.EffectiveDate)
+            // setMaxDate(maxDate)            //RE
         }
     }, [multiTechnologyCostinig])
 
@@ -286,14 +288,13 @@ function AssemblySimulationListing(props) {
                                             rowSelection={'multiple'}
                                             onSelectionChanged={onRowSelect}
                                         >
-
                                             <AgGridColumn field="CostingNumber" editable='false' headerName="Costing Number" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PlantName" editable='false' headerName="Plant Name" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PlantCode" editable='false' headerName="Plant Code" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PartName" editable='false' headerName="Part Name" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="PartNumber" editable='false' headerName="Part Number" minWidth={140}></AgGridColumn>
                                             <AgGridColumn field="POPrice" editable='false' headerName="Current PO" minWidth={140}></AgGridColumn>
-                                        </AgGridReact>
+                                        </AgGridReact >
 
                                         <div className="paging-container d-inline-block float-right">
                                             <select className="form-control paging-dropdown" onChange={(e) => onPageSizeChanged(e.target.value)} id="page-size">
@@ -302,11 +303,11 @@ function AssemblySimulationListing(props) {
                                                 <option value="100">100</option>
                                             </select>
                                         </div>
-                                    </div>
-                                </div>
+                                    </div >
+                                </div >
 
-                            </Col>
-                        </Row>
+                            </Col >
+                        </Row >
 
                         {!isImpactedMaster &&
                             <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
@@ -340,9 +341,9 @@ function AssemblySimulationListing(props) {
                                         {"Verify"}
                                     </button>
                                 </div>
-                            </Row>
+                            </Row >
                         }
-                    </Fragment>
+                    </Fragment >
                 }
                 {
                     showverifyPage &&
@@ -357,8 +358,8 @@ function AssemblySimulationListing(props) {
                         technology={technology}
                     />
                 }
-            </div>
-        </div>
+            </div >
+        </div >
     );
 }
 

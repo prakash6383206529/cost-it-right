@@ -443,7 +443,7 @@ class CostingBulkUploadDrawer extends Component {
                             </form>
                         </div>
                     </Container>
-                </Drawer>
+                </Drawer >
             </>
         );
     }

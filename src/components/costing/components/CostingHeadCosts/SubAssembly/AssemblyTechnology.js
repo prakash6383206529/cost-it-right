@@ -426,11 +426,11 @@ function AssemblyTechnology(props) {
                                     {(initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <br></br>}
                                     {`Total Child's Part Cost:  ${checkForDecimalAndNull(subAssemblyTechnologyArray[0]?.CostingPartDetails?.NetChildPartsCost, initialConfiguration.NoOfDecimalForPrice)}`}
 
-                                </span>
-                            </div> : ''
+                                </span >
+                            </div > : ''
                         }
-                    </td>
-                </div>
+                    </td >
+                </div >
                 {item?.PartType !== 'Assembly' && item?.PartType !== 'BOP' && <td className='text-right'>
                     <button
                         type="button"
@@ -439,44 +439,47 @@ function AssemblyTechnology(props) {
                     </button>
                 </td>}
 
-                {item?.CostingPartDetails?.PartType === 'Assembly' ? <td>
-                    <div className='assembly-button-container'>
-                        {(initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <><button
-                            type="button"
-                            className={'user-btn add-oprn-btn mr-1'}
-                            onClick={labourHandlingDrawer}>
-                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button>
-                        </>}
+                {
+                    item?.CostingPartDetails?.PartType === 'Assembly' ? <td>
+                        <div className='assembly-button-container'>
+                            {(initialConfiguration.IsShowCostingLabour) && (costData.CostingTypeId === WACTypeId) && <><button
+                                type="button"
+                                className={'user-btn add-oprn-btn mr-1'}
+                                onClick={labourHandlingDrawer}>
+                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button >
+                            </>}
 
-                        {isBOPExists && IsOpen && <>
+                            {
+                                isBOPExists && IsOpen && <>
+                                    <button
+                                        type="button"
+                                        className={'user-btn add-oprn-btn'}
+                                        title={"Add BOP Handling"}
+                                        onClick={() => { setIsOpenBOPDrawer(true) }}
+                                    >
+                                        <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                                </>
+                            }
                             <button
                                 type="button"
-                                className={'user-btn add-oprn-btn'}
-                                title={"Add BOP Handling"}
-                                onClick={() => { setIsOpenBOPDrawer(true) }}
+                                className={'user-btn '}
+                                onClick={ProcessDrawerToggle}
+                                title={'Add Process'}
                             >
-                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
-                        </>}
-                        <button
-                            type="button"
-                            className={'user-btn '}
-                            onClick={ProcessDrawerToggle}
-                            title={'Add Process'}
-                        >
-                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
-                        </button>
+                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`PROC`}
+                            </button>
 
-                        <button
-                            type="button"
-                            className={'user-btn'}
-                            onClick={OperationDrawerToggle}
-                            title={"Add Operation"}
-                        >
-                            <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`OPER`}
-                        </button>
-                    </div>
-                </td> :
-                    ''
+                            <button
+                                type="button"
+                                className={'user-btn'}
+                                onClick={OperationDrawerToggle}
+                                title={"Add Operation"}
+                            >
+                                <div className={`${CostingViewMode ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`OPER`}
+                            </button>
+                        </div >
+                    </td > :
+                        ''
                 }
 
             </tr >

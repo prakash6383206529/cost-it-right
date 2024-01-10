@@ -1414,12 +1414,12 @@ function AddRfq(props) {
                                                         </div>
                                                     </div>
                                                 </Col>
-                                            </Row>
-                                        </div> : <div>
+                                            </Row >
+                                        </div > : <div>
                                             <LoaderCustom />
                                         </div>
                                         }
-                                    </div>
+                                    </div >
 
                                     <HeaderTitle title={'Vendor:'} customClass="mt-4" />
                                     <Row className="mt-1 part-detail-wrapper">
@@ -1761,12 +1761,15 @@ function AddRfq(props) {
                                                 {"Cancel"}
                                             </button>
 
-                                            {<button type="button" className="submit-button save-btn mr-2" value="save"
-                                                onClick={(data, e) => handleSubmitClick(data, e, false)}
-                                                disabled={isViewFlag}>
-                                                <div className={"save-icon"}></div>
-                                                {"Save"}
-                                            </button>}
+                                            {
+                                                <button type="button" className="submit-button save-btn mr-2" value="save"
+                                                    // {!dataProps?.rowData?.IsSent && <button type="button" className="submit-button save-btn mr-2" value="save"     //RE
+                                                    onClick={(data, e) => handleSubmitClick(data, e, false)}
+                                                    disabled={isViewFlag}>
+                                                    <div className={"save-icon"}></div>
+                                                    {"Save"}
+                                                </button>
+                                            }
 
                                             <button type="button" className="submit-button save-btn" value="send"
                                                 onClick={(data, e) => handleSubmitClick(data, e, true)}
@@ -1774,8 +1777,8 @@ function AddRfq(props) {
                                                 <div className="send-for-approval mr-1"></div>
                                                 {"Send"}
                                             </button>
-                                        </div>
-                                    </Row>
+                                        </div >
+                                    </Row >
                                 </form >
 
                                 {

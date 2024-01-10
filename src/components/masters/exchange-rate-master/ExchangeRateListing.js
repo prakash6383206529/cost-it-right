@@ -448,7 +448,6 @@ class ExchangeRateListing extends Component {
                                     floatingFilter={true}
                                     ref={this.myRef}
                                     domLayout='autoHeight'
-                                    // columnDefs={c}
                                     rowData={this.props.exchangeRateDataList}
                                     pagination={true}
                                     paginationPageSize={defaultPageSize}

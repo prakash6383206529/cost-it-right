@@ -28,19 +28,22 @@ import {
   SELECTED_IDS_OF_OPERATION,
   SELECTED_PROCESS_AND_GROUPCODE,
   SET_PROCESS_ID,
-  SET_PROCESSGROUP_ID, GET_FG_WISE_IMPACT_DATA_FOR_COSTING,
+  SET_PROCESSGROUP_ID,
+  CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE,
+  GET_FG_WISE_IMPACT_DATA_FOR_COSTING,
+  GET_FG_WISE_IMPACT_DATA,
   SAVE_PART_NUMBER_STOP_API_CALL,
   SET_PART_NUMBER_ARRAY_API_CALL,
   SET_MESSAGE_FOR_ASSEMBLY,
   SET_PROCESS_GROUP_GRID,
   SAVE_BOM_LEVEL_STOP_API_CALL,
   SAVE_ASSEMBLY_NUMBER_STOP_API_CALL,
+  SET_SURFACE_COST_FOR_REJECTION_DATA,
   ZBCTypeId,
   SUB_ASSEMBLY_TECHNOLOGY_ARRAY,
   SET_OVERHEAD_PROFIT_ERRORS,
   SET_TOOLS_ERRORS,
   SET_DISCOUNT_ERRORS,
-  SET_SURFACE_COST_FOR_REJECTION_DATA,
   SET_TOOL_COST_FOR_OVERHEAD_PROFIT,
   SET_NPV_DATA,
   SET_OVERHEAD_PROFIT_ICC,
@@ -2264,21 +2267,47 @@ export function getMachineProcessGroupDetail(data, callback) {
     })
   }
 }
+
+export function checkHistoryCostingAndSAPPoPrice(params, callback) {
+  return (dispatch) => {
+    const queryParameter = `${params.costingId}`;
+    const request = axios.get(`${API.checkHistoryCostingAndSAPPoPrice}?costingId=${queryParameter}`, config())
+    request.then((response) => {
+      if (response.data.Result || response.status === 204) {
+        dispatch({
+          type: CHECK_HISTORY_COSTING_AND_SAP_PO_PRICE,
+          payload: response.status === 204 ? [] : response.data.DataList,
+        })
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      // apiErrors(error)
+      callback(error)
+    })
+  }
+}
+
 //FG WISE IMPACT DATA SHOW IN COSTING SUMMARY
-export function getFgWiseImpactDataForCosting(data, callback) {
+export function getFgWiseImpactDataForCosting(costingId, callback) {
   return (dispatch) => {
 
-    const request = axios.get(`${API.getFgWiseImpactDataForCosting}${data}`, config());
+    dispatch({
+      type: GET_FG_WISE_IMPACT_DATA,
+      payload: [],
+    })
+    const request = axios.post(`${API.getFgWiseImpactDataForCosting}`, costingId, config());
+    // const request = axios.post(API.getFgWiseImpactDataForCosting, costingId, config())
     request.then((response) => {
       if (response.data.Result) {
         dispatch({
-          type: GET_FG_WISE_IMPACT_DATA_FOR_COSTING,
+          type: GET_FG_WISE_IMPACT_DATA,
           payload: response.data.DataList,
         })
         callback(response)
       } else if (response.status === 204) {
         dispatch({
-          type: GET_FG_WISE_IMPACT_DATA_FOR_COSTING,
+          type: GET_FG_WISE_IMPACT_DATA,
           payload: [],
         })
         callback(response)
@@ -2292,6 +2321,18 @@ export function getFgWiseImpactDataForCosting(data, callback) {
   }
 }
 
+export function sapPushedCostingInitialMoment(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.sapPushedCostingInitialMoment, data, config());
+    request.then((response) => {
+      callback(response)
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      callback(error)
+      apiErrors(error);
+    })
+  }
+}
 /**
  * @method savePartNumberAndBOMLevel
  * @description THIS METHOD IS FOR CALLING SAVE API IF CHNAGES HAVE BEEN MADE 
@@ -2504,39 +2545,6 @@ export function setOtherCostData(data) {
   }
 };
 
-
-
-
-export function saveCostingLabourDetails(data, callback) {
-  return (dispatch) => {
-    const request = axios.post(API.saveCostingLabourDetails, data, config())
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
-
-export function getCostingLabourDetails(data, callback) {
-  return (dispatch) => {
-    const queryParams = `costingId=${data}`
-    const request = axios.get(`${API.getCostingLabourDetails}?${queryParams}`, config())
-    request.then((response) => {
-      if (response.data.Result) {
-        callback(response)
-      }
-    }).catch((error) => {
-      callback(error)
-      dispatch({ type: API_FAILURE })
-      apiErrors(error)
-    })
-  }
-}
-
 /**
  * @method setYOYCostGrid
  * @description setYOYCostGrid
@@ -2572,6 +2580,37 @@ export function getYOYCostList(data, callback) {
         callback(response)
       }
     }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+
+export function saveCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const request = axios.post(API.saveCostingLabourDetails, data, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
+export function getCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${data}`
+    const request = axios.get(`${API.getCostingLabourDetails}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
       dispatch({ type: API_FAILURE })
       apiErrors(error)
     })
@@ -2639,9 +2678,10 @@ export function setCallSTAPI(TabData) {
   }
 };
 
-/* @method setBreakupBOP
-* @description setBreakupBOP
-*/
+/**
+ * @method setBreakupBOP
+ * @description setBreakupBOP
+ */
 export function setBreakupBOP(grid) {
   return (dispatch) => {
     dispatch({

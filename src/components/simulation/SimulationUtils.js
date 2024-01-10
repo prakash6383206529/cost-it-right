@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { BOPImpactDownloadArray, ERImpactDownloadArray, MachineImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray, STOperationImpactDownloadArray } from "../../config/masterData";
+import { BOPImpactDownloadArray, ERImpactDownloadArray, MachineImpactDownloadArray, OperationImpactDownloadArray, RMImpactedDownloadArray, STOperationImpactDownloadArray, CPImpactDownloadArray } from "../../config/masterData";
 import { Errorbox } from "../common/ErrorBox";
-import { useDispatch } from 'react-redux';
 import { getAmmendentStatus } from './actions/Simulation'
 import imgRedcross from '../../assests/images/red-cross.png';
 import imgGreencross from '../../assests/images/greenCross.png';
 import DayTime from "../common/DayTimeWrapper";
 import _ from "lodash";
-
+import { useDispatch, useSelector } from 'react-redux';
 export const SimulationUtils = (TempData) => {
 
     TempData && TempData.map(item => {
@@ -120,7 +119,7 @@ export const checkForChangeInOverheadProfit3Values = (item) => {
 
 export const impactmasterDownload = (impactedMasterData) => {
     let rmArraySet = [], bopArraySet = []
-    let operationArraySet = [], erArraySet = [], surfaceTreatmentArraySet = [], machineArraySet = []
+    let operationArraySet = [], erArraySet = [], combinedProcessArraySet = [], surfaceTreatmentArraySet = [], machineArraySet = []                  //RE
 
     impactedMasterData?.OperationImpactedMasterDataList && impactedMasterData?.OperationImpactedMasterDataList.map((item) => {
         let tempObj = []
@@ -192,6 +191,18 @@ export const impactmasterDownload = (impactedMasterData) => {
         erArraySet.push(tempObj)
         return null
     })
+    // impactedMasterData?.CombinedProcessImpactedMasterDataList && impactedMasterData?.CombinedProcessImpactedMasterDataList.map((item) => {                  //RE
+    //     let tempObj = []
+
+    //     tempObj.push(item.PartNumber)
+    //     tempObj.push(item.OldPOPrice)
+    //     tempObj.push(item.NewPOPrice)
+    //     tempObj.push(item.OldNetCC)
+    //     tempObj.push(item.NewPOPrice)
+    //     tempObj.push(DayTime(item.EffectiveDate).format('DD/MM/YYYY'))
+    //     combinedProcessArraySet.push(tempObj)
+    // })
+
     impactedMasterData?.MachineProcessImpactedMasterDataList && impactedMasterData?.MachineProcessImpactedMasterDataList.map((item) => {
         let tempObj = []
         tempObj.push(item.MachineName)
@@ -228,6 +239,10 @@ export const impactmasterDownload = (impactedMasterData) => {
             columns: ERImpactDownloadArray,
             data: erArraySet
         }, {
+            //     ySteps: 5,                  //RE
+            //     columns: CPImpactDownloadArray,
+            //     data: combinedProcessArraySet
+            // }, {
             ySteps: 5,
             columns: MachineImpactDownloadArray,
             data: machineArraySet
@@ -252,6 +267,10 @@ export const ErrorMessage = (props) => {
     const [toggleAmmendmentData, setToggleAmmendmentStatus] = useState(true)
     const { approvalNumber } = props
     const dispatch = useDispatch()
+    const [sobButton, setSobButton] = useState(false)            //RE
+    const [showSobMessageList, setShowSobMessageList] = useState(false)            //RE
+    const [sobMessage, setSobMessage] = useState([])            //RE
+    const impactData = useSelector((state) => state.simulation.impactData)            //RE
 
     const funcForErrorBoxButton = () => {
 
@@ -263,6 +282,13 @@ export const ErrorMessage = (props) => {
         const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{amendentStatus}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
         return statusWithButton
     }
+
+    const funcForSobMessage = () => {
+
+        const statusWithButton = <><p className={`${toggleAmmendmentData ? 'status-overflow' : ''} `}><span>{sobMessage}</span></p>{<button className='see-data-btn' onClick={() => { setToggleAmmendmentStatus(!toggleAmmendmentData) }}>Show {toggleAmmendmentData ? 'all' : 'less'} data</button>}</>
+        return statusWithButton
+    }
+
     useEffect(() => {
         const obj = {
             approvalTokenNumber: approvalNumber
@@ -286,11 +312,85 @@ export const ErrorMessage = (props) => {
             }
         }))
     }, [])
+
+
+    useEffect(() => {
+
+        setShowSobMessageList(false)
+
+        if (impactData && impactData.length > 0) {
+
+            let Data = impactData
+            let listOfSobMessages = []
+            let partNumberObjectArray = []
+
+            Data.map((item) =>
+
+                item.childPartsList.map((ele) => {
+                    listOfSobMessages.push(ele.SOBMessage)
+                    partNumberObjectArray.push({ [ele.SOBMessage]: ele.PartNumber })
+                    return null
+                })
+            )
+
+            listOfSobMessages = listOfSobMessages.filter((x, i, a) => a.indexOf(x) === i) // TO FIND UNIQUE ELEMENTS
+            let newArr = []
+
+            listOfSobMessages.map((item, index) => {
+                let arr = []
+                if (item === "" || item === null) {
+                    setShowSobMessageList(false)
+                    return false
+                }
+                setShowSobMessageList(true)
+
+                partNumberObjectArray.map((ele, i) => {
+                    //HERE ITEM = SOB MESSAGE AND ELE = OBJECT OF ARRAY
+                    if (ele[item] !== undefined) {
+                        //THIS IF IS FOR HANDLING LAST INDEX CONDITION
+                        if (partNumberObjectArray.length - 1 === i) {
+                            arr.push(ele[item])
+                        } else {
+                            arr.push(ele[item])
+                            // FETCHING PART NUMBER HERE
+                        }
+                    }
+                })
+
+                arr = arr.filter((x, i, a) => a.indexOf(x) === i) // TO FIND UNIQUE PART NUMBER FOR PARTICULAR MESSAGE
+
+                let arrWithComma = []
+                arr.map((item, index) => {
+                    arrWithComma.push(item)
+                    if (index !== arr.length - 1) {
+                        arrWithComma.push(",")
+                    }
+                })
+                arr = arrWithComma
+
+                if (newArr.length === 0) {
+                    //THIS IF IS FOR INSERTING ON FIRST INDEX(AS  COMMA(,) SHOULD NOT COME AT START POSITION)
+                    newArr = [...newArr, " ", " ", item, " (", ...arr, ")", " "]
+
+                } else {
+                    newArr = [...newArr, ", ", " ", item, " (", ...arr, ")", " "]
+                }
+                return null
+            })
+            setSobMessage(newArr);
+            setSobButton(newArr.length > 22 ? true : false)
+        }
+
+    }, [impactData])
+
     const deleteInsertStatusBox = () => {
         setRecordInsertStatusBox(false)
     }
     const deleteAmendmentStatusBox = () => {
         setAmendmentStatusBox(false)
+    }
+    const deleteSobMessageList = () => {            //RE
+        setShowSobMessageList(false)
     }
 
     const errorBoxClassForAmmendent = () => {
@@ -310,7 +410,6 @@ export const ErrorMessage = (props) => {
         let temp;
 
         temp = (noContent || status === null || status === '' || status === undefined) ? 'd-none' : isSuccessfullyInsert ? 'success' : 'error';
-
         return temp
     }
     return (<>
@@ -336,8 +435,20 @@ export const ErrorMessage = (props) => {
                     src={errorBoxClassForAmmendent() === 'd-none' ? '' : errorBoxClassForAmmendent() === "success" ? imgGreencross : imgRedcross}
                 ></img>
             </div>
-
         }
+
+        {/* {showSobMessageList &&             //RE
+            <div className="error-box-container">
+                <Errorbox customClass={"error"} errorText={sobButton ? funcForSobMessage() : sobMessage} />
+                <img
+                    className="float-right"
+                    alt={""}
+                    onClick={deleteSobMessageList}
+                    src={imgRedcross}
+                ></img>
+            </div>
+        } */}
+
     </>)
 }
 // **END** SHOWING STATUS BOX ON THE TOP FOR ERROR AND SUCCESS RESPONSE

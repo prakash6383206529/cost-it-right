@@ -7,6 +7,7 @@ import { AsyncSearchableSelectHookForm, SearchableSelectHookForm, } from '../../
 import { getPlantBySupplier, getPlantSelectListByType, getVendorNameByVendorSelectList } from '../../../actions/Common';
 import { getVBCDetailByVendorId, } from '../actions/Costing';
 import { getConfigurationKey } from '../../../helper';
+import WarningMessage from '../../common/WarningMessage';
 import { EMPTY_GUID_0, searchCount, VBC_VENDOR_TYPE, ZBC } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
@@ -44,7 +45,6 @@ function AddVendorDrawer(props) {
       reactLocalStorage?.setObject('vendorData', [])
     }
   }, []);
-
   /**
   * @method toggleDrawer
   * @description TOGGLE DRAWER
@@ -238,6 +238,12 @@ function AddVendorDrawer(props) {
                     />
                   </Col>}
               </Row>
+              {/* //RE */}
+              {/* <Row>    
+                <Col md="12" className="mt-n2 re-warning">
+                  <WarningMessage message={`If you have same price settled at different plants, please use Destination Plant Code as 2000`} />
+                </Col>
+              </Row > */}
 
               <Row className="justify-content-between">
                 <div className="col-sm-12 text-right">
@@ -256,11 +262,11 @@ function AddVendorDrawer(props) {
                   </button>
                 </div>
               </Row>
-            </form>
-          </div>
-        </Container>
-      </Drawer>
-    </div>
+            </form >
+          </div >
+        </Container >
+      </Drawer >
+    </div >
   );
 }
 

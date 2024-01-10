@@ -69,8 +69,8 @@ class App extends Component {
         reactLocalStorage.setObject('masterType', masterType)
 
         const vendorTypeList = Data?.VendorTypeList?.split(",")
-        const vendortype = Object.fromEntries(vendorTypeList.map(item => {
-          const vendortypeobj = item.split("=");
+        const vendortype = Object.fromEntries(vendorTypeList?.map(item => {
+          const vendortypeobj = item?.split("=");
           return vendortypeobj;
         }));
         reactLocalStorage.setObject('vendortype', vendortype)

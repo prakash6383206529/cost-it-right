@@ -1014,6 +1014,7 @@ function RfqListing(props) {
                 }
                 {rejectDrawer && (
                     <CostingApproveReject
+                        // <ApproveRejectDrawer    //RE
                         type={'Reject'}
                         isOpen={rejectDrawer}
                         approvalData={rejectedList}
@@ -1072,7 +1073,6 @@ function RfqListing(props) {
 
 
                 {remarkHistoryDrawer &&
-
                     <RemarkHistoryDrawer
                         data={remarkRowData}
                         //hideForm={hideForm}
@@ -1107,7 +1107,6 @@ function RfqListing(props) {
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT}`} />
             }
-
         </>
     );
 }

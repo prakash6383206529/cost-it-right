@@ -452,7 +452,7 @@ function GotGivenListing(props) {
                 {returnExcelColumn()}
             </ExcelFile>
             <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-        </div>
+        </div >
         <div>
             <Table className='mt-2 table-bordered'>
                 <thead>
@@ -463,9 +463,9 @@ function GotGivenListing(props) {
                 <thead>
                     <tr>
                         {renderTableCells([topHeaderData[0]?.Month, topHeaderData[0]?.PartNumber, topHeaderData[0]?.PartName, topHeaderData[0]?.RevisionNumber, topHeaderData[0]?.PlantName, topHeaderData[0]?.PlantAddress, topHeaderData[0]?.VendorName, topHeaderData[0]?.CustomerName, topHeaderData[0]?.BudgetedQuantity, topHeaderData[0]?.ApprovedQuantity, topHeaderData[0]?.EffectiveDate])}
-                    </tr>
-                </thead>
-            </Table>
+                    </tr >
+                </thead >
+            </Table >
             <Table responsive className='table-bordered mb-0 got-given-listing'>
                 <tbody>
                     <tr className='sub-headers'>

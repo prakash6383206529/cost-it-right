@@ -7,6 +7,7 @@ import { gridDataAdded, saveAssemblyCostingRMCCTab, saveAssemblyPartRowCostingCa
 import OperationCost from '../CostingHeadCosts/Part/OperationCost';
 import ToolCost from '../CostingHeadCosts/Part/ToolCost';
 import { checkForDecimalAndNull, checkForNull, loggedInUserId } from '../../../../helper';
+import { ASSEMBLY } from '../../../../config/masterData';
 import { IdForMultiTechnology, PART_TYPE_ASSEMBLY } from '../../../../config/masterData';
 import { createToprowObjAndSave, findSurfaceTreatmentData, formatMultiTechnologyUpdate } from '../../CostingUtil';
 import { setSubAssemblyTechnologyArray, updateMultiTechnologyTopAndWorkingRowCalculation } from '../../actions/SubAssembly';
@@ -18,7 +19,7 @@ import { IsPartType } from '../CostingDetails';
 function AddAssemblyOperation(props) {
   const { item, CostingViewMode, isAssemblyTechnology } = props;
   const [IsOpenTool, setIsOpenTool] = useState(false);
-  const IsLocked = (item.IsLocked ? item.IsLocked : false) || (item.IsPartLocked ? item.IsPartLocked : false)
+  const IsLocked = (item?.IsLocked ? item?.IsLocked : false) || (item?.IsPartLocked ? item?.IsPartLocked : false)
   const drawerRef = useRef();
 
   const dispatch = useDispatch()
@@ -281,10 +282,10 @@ function AddAssemblyOperation(props) {
                       IsAssemblyCalculation={true}
                       getOperationGrid={getOperationGrid}
                     />
-                  </div>
-                </div>
-              </Col>
-            </Row>
+                  </div >
+                </div >
+              </Col >
+            </Row >
 
             <Row className="sf-btn-footer no-gutters justify-content-between">
               <div className="col-sm-12 text-right">
@@ -304,10 +305,10 @@ function AddAssemblyOperation(props) {
                 </button>
               </div>
             </Row>
-          </div>
-        </div>
-      </Drawer>
-    </div>
+          </div >
+        </div >
+      </Drawer >
+    </div >
   );
 }
 

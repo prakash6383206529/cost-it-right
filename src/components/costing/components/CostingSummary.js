@@ -10,11 +10,13 @@ import {
 } from '../actions/Costing'
 import { TextFieldHookForm, SearchableSelectHookForm, AsyncSearchableSelectHookForm, } from '../../layout/HookFormInputs'
 import 'react-datepicker/dist/react-datepicker.css'
-import { checkForDecimalAndNull, formViewData, getConfigurationKey, loggedInUserId } from '../../../helper'
+import { checkForDecimalAndNull, formViewData, getConfigurationKey, loggedInUserId, checkForNull, } from '../../../helper'
 import CostingSummaryTable from './CostingSummaryTable'
 import BOMUpload from '../../massUpload/BOMUpload'
-import LoaderCustom from '../../common/LoaderCustom';
+import { useHistory } from "react-router-dom";
 import { reactLocalStorage } from 'reactjs-localstorage';
+import LoaderCustom from '../../common/LoaderCustom';
+import { MACHINING } from '../../../config/masterData'
 import { BOUGHTOUTPARTSPACING, COMPONENT_PART, PRODUCT_ID, searchCount } from '../../../config/constants'
 import { autoCompleteDropdown } from '../../common/CommonFunctions'
 import { MESSAGES } from '../../../config/message'
@@ -152,7 +154,7 @@ function CostingSummary(props) {
     if (label === 'Technology') {
       technologySelectList &&
         technologySelectList.map((item) => {
-          if (item.Value === '0') return false
+          if (item.Value === '0' || checkForNull(item.Value) === MACHINING) return false        // SPECIFIC FOR RE, HIDE Machining TECHNOLOGY IN COSTING DROPDOWN
           tempDropdownList.push({ label: item.Text, value: item.Value })
           return null
         })

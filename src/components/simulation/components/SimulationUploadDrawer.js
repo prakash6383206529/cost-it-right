@@ -10,8 +10,9 @@ import { ExcelRenderer } from 'react-excel-renderer';
 import { getJsDateFromExcel } from "../../../helper/validation";
 import imgCloud from '../../../assests/images/uploadcloud.png';
 import _ from 'lodash'
-import { BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
-import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
+
+import { COMBINED_PROCESS, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT } from '../../../config/constants';
+import { BoughtOutPartDomesticFileHeads, BoughtOutPartImportFileHeads, CombinedProcessFileHeads, MachineRateFileHeads, OperationFileHeads, RawMaterialDomesticFileHeads, RawMaterialImportFileHeads } from '../../../config/masterData';
 import TooltipCustom from '../../common/Tooltip';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -124,8 +125,9 @@ class SimulationUploadDrawer extends Component {
 
                 } else {
                     fileHeads = resp.rows[0];
-                    checkForRM = fileHeads.slice(0, 7)
-                    checkForBopOperMachine = fileHeads.slice(0, 4)
+                    let checkForRM = fileHeads.slice(0, 7)
+                    let checkForBopOperMachine = fileHeads.slice(0, 4)
+                    let checkForCc = fileHeads.slice(0, 5)
                     let checkForFileHead
                     switch (String(this.props.master.value)) {
 
@@ -154,7 +156,9 @@ class SimulationUploadDrawer extends Component {
                             checkForFileHead = _.isEqual(checkForBopOperMachine, MachineRateFileHeads) ? true : false
                             break;
 
-                        // CONDITION FOR COMBINED PROCESS;
+                        // case String(COMBINED_PROCESS):                 //RE
+                        //     checkForFileHead = _.isEqual(checkForCc, CombinedProcessFileHeads) ? true : false
+                        //     break;
 
                         default:
                             break;
@@ -325,6 +329,38 @@ class SimulationUploadDrawer extends Component {
                                 return null;
                             })
                             break;
+                        case (Number(COMBINED_PROCESS)):                 //RE
+                            resp.rows.map((val, index) => {
+                                if (val.length !== 0) {
+                                    if (index > 0) {
+                                        if (val[5] !== '' && val[5] !== undefined && val[4] !== val[5]) {
+                                            basicRateCount = 1
+                                        }
+                                        if (val[5] === '' || val[5] === undefined || val[4] === val[5]) {
+                                            NoOfRowsWithoutChange = NoOfRowsWithoutChange + 1
+                                            return false
+                                        }
+                                        correctRowCount = correctRowCount + 1
+                                        let obj = {}
+                                        val.map((el, i) => {
+                                            if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
+                                                el = getJsDateFromExcel(el)
+                                            } if (fileHeads[i] === "RevisedCC") {
+                                                obj["NewCC"] = el;
+                                            } else {
+                                                obj[fileHeads[i]] = el;
+                                            }
+                                            obj[fileHeads[i]] = el;
+                                            return null;
+                                        })
+                                        fileData.push(obj)
+                                        obj = {}
+
+                                    }
+                                }
+                                return null;
+                            })
+                            break;
                         default:
                             break;
                     }
@@ -363,7 +399,12 @@ class SimulationUploadDrawer extends Component {
                                 return false
                             }
                             break;
-
+                        case Number(COMBINED_PROCESS):                 //RE
+                            if (basicRateCount === 0) {
+                                Toaster.warning('Please change at least one Conversion Cost.')
+                                return false
+                            }
+                            break;
                         default:
                             break;
                     }

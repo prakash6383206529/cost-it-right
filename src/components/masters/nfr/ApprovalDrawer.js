@@ -380,7 +380,8 @@ const ApprovalDrawer = (props) => {
 
                                 />
                             </Col>
-                        </Row></>}
+                        </Row></>
+                        }
                         <Row>
                             {!props.hideTable && <Col md="12">
                                 <Table className='table cr-brdr-main'>
@@ -456,9 +457,9 @@ const ApprovalDrawer = (props) => {
                         <div>
                             {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                         </div>
-                    </div>
-                </div>
-            </Drawer>
+                    </div >
+                </div >
+            </Drawer >
         </Fragment >
     );
 }

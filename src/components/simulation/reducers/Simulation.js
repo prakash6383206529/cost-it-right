@@ -8,7 +8,11 @@ import {
     GET_SELECTLIST_APPLICABILITY_HEAD,
     SET_SELECTED_TECHNOLOGY_SIMULATION,
     GET_APPROVAL_SIMULATION_COSTING_SUMMARY,
+    GET_AMMENDENT_STATUS_COSTING,
+    SET_ATTACHMENT_FILE_DATA,
+    GET_COMBINED_PROCESS_LIST,
     GET_SELECTLIST_SIMULATION_TOKENS,
+    GET_FG_WISE_IMPACT_DATA,
     GET_ASSEMBLY_SIMULATION_LIST,
     SET_DATA_TEMP,
     GET_ASSEMBLY_SIMULATION_LIST_SUMMARY,
@@ -18,17 +22,16 @@ import {
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
     SET_TOKEN_CHECK_BOX,
     SET_TOKEN_FOR_SIMULATION,
-    GET_AMMENDENT_STATUS_COSTING,
     GET_MASTER_SELECT_LIST_SIMUALTION,
     SET_SELECTED_ROW_FOR_PAGINATION,
     GET_SIMULATION_APPROVAL_LIST_DRAFT,
-
     SET_SELECTED_VENDOR_SIMULATION,
     GET_ALL_MULTI_TECHNOLOGY_COSTING,
     SET_BOP_ASSOCIATION,
     SET_SIMULATION_APPLICABILITY,
     SET_EXCHANGE_RATE_LIST_BEFORE_DRAFT,
     SET_SELECTED_CUSTOMER_SIMULATION
+
 } from '../../../config/constants';
 import { tokenStatus, tokenStatusName } from '../../../config/masterData';
 
@@ -165,13 +168,39 @@ export default function SimulationReducer(state = initialState, action) {
                 loading: false,
                 approvalSimulatedCostingSummary: action.payload
             }
-
+        case SET_ATTACHMENT_FILE_DATA:
+            const data = action.payload
+            return {
+                ...state,
+                loading: false,
+                attachmentsData: [...data]
+            }
+        case GET_COMBINED_PROCESS_LIST:
+            return {
+                ...state,
+                loading: false,
+                combinedProcessList: action.payload
+            }
         case GET_SELECTLIST_SIMULATION_TOKENS:
             return {
                 ...state,
                 loading: false,
                 TokensList: action.payload
             }
+        case GET_FG_WISE_IMPACT_DATA:
+            return {
+                ...state,
+                loading: false,
+                impactData: action.payload
+            }
+        case SET_SELECTED_VENDOR_SIMULATION:
+            return {
+                ...state,
+                loading: false,
+                selectedVendorForSimulation: action.payload
+            }
+
+
         case GET_ASSEMBLY_SIMULATION_LIST:
             return {
                 ...state,
@@ -245,13 +274,6 @@ export default function SimulationReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 selectedRowForPagination: action.payload
-            }
-
-        case SET_SELECTED_VENDOR_SIMULATION:
-            return {
-                ...state,
-                loading: false,
-                selectedVendorForSimulation: action.payload
             }
         case GET_ALL_MULTI_TECHNOLOGY_COSTING:
             return {

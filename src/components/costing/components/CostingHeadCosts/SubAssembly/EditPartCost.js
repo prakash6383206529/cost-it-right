@@ -35,8 +35,7 @@ function EditPartCost(props) {
     const { subAssemblyTechnologyArray } = useSelector(state => state.subAssembly)
     const { costingForMultiTechnology } = useSelector(state => state.subAssembly)
     const costData = useContext(costingInfoContext);
-    const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate } = useSelector(state => state.costing)
-
+    const { ToolTabData, OverheadProfitTabData, SurfaceTabData, DiscountCostData, PackageAndFreightTabData, CostingEffectiveDate, ToolsDataList, ComponentItemDiscountData, OverHeadAndProfitTabData, RMCCTabData, checkIsToolTabChange, getAssemBOPCharge } = useSelector(state => state.costing)
 
     const { register, handleSubmit, control, setValue, getValues, formState: { errors } } = useForm({
         mode: 'onChange',
@@ -496,11 +495,9 @@ function EditPartCost(props) {
                                     <thead>
                                         <tr >
                                             {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
-
                                                 <th>Vendor (Code)</th>
                                             }
                                             {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
-
                                                 <th>Customer (Code)</th>
                                             }
                                             <th>Costing Number</th>
@@ -509,8 +506,8 @@ function EditPartCost(props) {
                                             {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <th>Delta</th>}
                                             <th>Net Cost</th>
                                             <th>Action</th>
-                                        </tr>
-                                    </thead>
+                                        </tr >
+                                    </thead >
                                     <tbody className="part-cost-table">
                                         {gridData && gridData.map((item, index) => {
                                             return (
@@ -518,11 +515,9 @@ function EditPartCost(props) {
                                                     <tr key={index} >
                                                         {(costData?.CostingTypeId === VBCTypeId || props?.costingTypeId === VBCTypeId) &&
                                                             <td>{`${item?.VendorName} (${item?.VendorCode})`}</td>
-
                                                         }
                                                         {(costData?.CostingTypeId === CBCTypeId || props?.costingTypeId === CBCTypeId) &&
                                                             <td>{`${item.CustomerName} (${item.CustomerCode})`}</td>
-
                                                         }
                                                         <td>{item?.label}</td>
                                                         <td>{checkForDecimalAndNull(item?.SettledPrice, initialConfiguration.NoOfDecimalForPrice)}</td>
@@ -552,45 +547,47 @@ function EditPartCost(props) {
                                                             />
                                                         </td>
 
-                                                        {(costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <td >
-                                                            <div className='delta-warpper'>
-                                                                <SearchableSelectHookForm
-                                                                    name={`${PartCostFields}.${index}.DeltaSign`}
-                                                                    placeholder={"Select"}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    // rules={{ required: true }}
-                                                                    register={register}
-                                                                    customClassName="w-auto"
-                                                                    options={optionsForDelta}
-                                                                    mandatory={true}
-                                                                    handleChange={(e) => handleDeltaSignChange(e, index)}
-                                                                    disabled={CostingViewMode || props.costingSummary ? true : false}
-                                                                />
+                                                        {
+                                                            (costData?.CostingTypeId !== WACTypeId && props?.costingTypeId !== WACTypeId) && <td >
+                                                                <div className='delta-warpper'>
+                                                                    <SearchableSelectHookForm
+                                                                        name={`${PartCostFields}.${index}.DeltaSign`}
+                                                                        placeholder={"Select"}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        // rules={{ required: true }}
+                                                                        register={register}
+                                                                        customClassName="w-auto"
+                                                                        options={optionsForDelta}
+                                                                        mandatory={true}
+                                                                        handleChange={(e) => handleDeltaSignChange(e, index)}
+                                                                        disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                    />
 
-                                                                <NumberFieldHookForm
-                                                                    name={`${PartCostFields}.${index}.DeltaValue`}
-                                                                    Controller={Controller}
-                                                                    control={control}
-                                                                    register={register}
-                                                                    mandatory={false}
-                                                                    rules={{
-                                                                        required: false,
-                                                                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                                                        pattern: {
-                                                                            value: /^\d*\.?\d*$/,
-                                                                            message: 'Invalid Number.'
-                                                                        },
-                                                                    }}
-                                                                    handleChange={(e) => handleDeltaValue(e.target.value, index)}
-                                                                    defaultValue={''}
-                                                                    className=""
-                                                                    customClassName={'withBorder'}
-                                                                    disabled={CostingViewMode || props.costingSummary ? true : false}
-                                                                    errors={errors?.PartCostFields && errors?.PartCostFields[index]?.DeltaValue}
-                                                                />
-                                                            </div>
-                                                        </td>}
+                                                                    <NumberFieldHookForm
+                                                                        name={`${PartCostFields}.${index}.DeltaValue`}
+                                                                        Controller={Controller}
+                                                                        control={control}
+                                                                        register={register}
+                                                                        mandatory={false}
+                                                                        rules={{
+                                                                            required: false,
+                                                                            validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                                            pattern: {
+                                                                                value: /^\d*\.?\d*$/,
+                                                                                message: 'Invalid Number.'
+                                                                            },
+                                                                        }}
+                                                                        handleChange={(e) => handleDeltaValue(e.target.value, index)}
+                                                                        defaultValue={''}
+                                                                        className=""
+                                                                        customClassName={'withBorder'}
+                                                                        disabled={CostingViewMode || props.costingSummary ? true : false}
+                                                                        errors={errors?.PartCostFields && errors?.PartCostFields[index]?.DeltaValue}
+                                                                    />
+                                                                </div>
+                                                            </td>
+                                                        }
                                                         <td >
                                                             <NumberFieldHookForm
                                                                 name={`${PartCostFields}.${index}.NetCost`}
@@ -626,20 +623,22 @@ function EditPartCost(props) {
                                                             >
                                                             </button>
                                                         </td>
-                                                    </tr>
+                                                    </tr >
                                                 </>
                                             )
                                         })
                                         }
-                                        {gridData && gridData.length === 0 && <tr>
-                                            <td colSpan={8}>
-                                                <NoContentFound title={EMPTY_DATA} />
-                                            </td>
-                                        </tr>}
-                                    </tbody>
-                                </Table>
-                            </Col>
-                        </form>
+                                        {
+                                            gridData && gridData.length === 0 && <tr>
+                                                <td colSpan={8}>
+                                                    <NoContentFound title={EMPTY_DATA} />
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody >
+                                </Table >
+                            </Col >
+                        </form >
                         {!props.costingSummary && <Row className="mx-0 mb-3" >
                             <Col align="right">
                                 <button

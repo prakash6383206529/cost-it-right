@@ -1244,15 +1244,13 @@ class AddLabour extends Component {
                               })}
 
                           </tbody>
-                          {
-                            this.state.gridTable.length === 0 && (<tbody className='border'>
-                              <tr>
-                                <td colSpan={"7"}>
-                                  <NoContentFound title={EMPTY_DATA} />
-                                </td>
-                              </tr>
-                            </tbody>)
-                          }
+                          {this.state.gridTable.length === 0 && (<tbody className='border'>
+                            <tr>
+                              <td colSpan={"7"}>
+                                <NoContentFound title={EMPTY_DATA} />
+                              </td>
+                            </tr>
+                          </tbody>)}
                         </Table >
                       </Col >
                     </Row >

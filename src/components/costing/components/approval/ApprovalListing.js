@@ -8,6 +8,7 @@ import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import CostingApproveReject from './CostingApproveReject'
+import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
@@ -443,7 +444,7 @@ function ApprovalListing(props) {
     return (
       <Fragment>
         {(cell === '' || cell === null) ? <div className='ml-4'>-</div> : <div id={`Costing_Approval_No_${props?.rowIndex}`} onClick={() => viewDetails(row.ApprovalNumber, row.ApprovalProcessId)} className={'link'}>{cell}</div>}
-      </Fragment>
+      </Fragment >
     )
   }
 
@@ -640,6 +641,7 @@ function ApprovalListing(props) {
     if (!allEqual(departmentArray)) {
       gridApi.deselectAll()
       Toaster.warning("Department should be same for sending costings for approval")
+      // return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")   //RE
     } else if (!allEqual(technologyArray)) {
       gridApi.deselectAll()
       Toaster.warning("Technology should be same for sending costings for approval")
@@ -649,6 +651,11 @@ function ApprovalListing(props) {
     } else if (!allEqual(reasonArray)) {
       gridApi.deselectAll()
       Toaster.warning("Reason should be same for sending costings for approval")
+      //REASON CHECK IS NOT APPLICABLE IN RE   //RE
+      // else if (!allEqual(reasonArray)) {
+      //   gridApi.deselectAll()
+      //   Toaster.warning("Reason should be same for sending multiple costing for approval")
+      // }
     } else if (!allEqual(statusArray)) {
       gridApi.deselectAll()
       Toaster.warning('Status should be same for sending costings for approval')
@@ -876,14 +883,14 @@ function ApprovalListing(props) {
   }
 
   const defaultColDef = {
-
     resizable: true,
     filter: true,
     sortable: false,
     headerCheckboxSelectionFilteredOnly: true,
     headerCheckboxSelection: isFirstColumn,
     checkboxSelection: isFirstColumn
-  }; setTimeout(() => {
+  };
+  setTimeout(() => {
     const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
 
     checkBoxInstance.forEach((checkBox, index) => {
@@ -1015,7 +1022,7 @@ function ApprovalListing(props) {
                       <div className="warning-message d-flex align-items-center">
                         {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                         <button id='Costing_Approval_Filter' disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                      </div>
+                      </div >
                       <div>
                         <button type="button" id="Costing_Approval_Reset" className="user-btn mr-2" title="Reset Grid" onClick={() => resetState()}>
                           <div className="refresh mr-0"></div>
@@ -1031,10 +1038,10 @@ function ApprovalListing(props) {
                           <div className="send-for-approval mr-0" ></div>
                         </button>}
                       </div>
-                    </div>
-                  </Col>
-                </Row>
-              </form>
+                    </div >
+                  </Col >
+                </Row >
+              </form >
               <Row>
                 <Col>
                   <div className={`ag-grid-react custom-pagination`}>
@@ -1118,8 +1125,8 @@ function ApprovalListing(props) {
                   </div>
                 </Col>
               </Row>
-            </div>}
-          </div>
+            </div >}
+          </div >
         }</>
 
         // :
@@ -1132,21 +1139,23 @@ function ApprovalListing(props) {
         //   approvalProcessId={approvalData.approvalProcessId}
         // /> //TODO list
       }
-      {approveDrawer && (
-        <CostingApproveReject
-          type={'Approve'}
-          isOpen={approveDrawer}
-          reasonId={reasonId}
-          closeDrawer={closeDrawer}
-          //tokenNo={approvalNumber}
-          approvalData={selectedRowData}
-          anchor={'right'}
-          IsNotFinalLevel={showFinalLevelButtons}
-          costingTypeId={selectedRowData[0]?.CostingTypeId}
-          TechnologyId={selectedRowData[0]?.TechnologyId}
-          releaseStrategyDetails={releaseStrategyDetails}
-        />
-      )}
+      {
+        approveDrawer && (
+          <CostingApproveReject
+            type={'Approve'}
+            isOpen={approveDrawer}
+            reasonId={reasonId}
+            closeDrawer={closeDrawer}
+            //tokenNo={approvalNumber}
+            approvalData={selectedRowData}
+            anchor={'right'}
+            IsNotFinalLevel={showFinalLevelButtons}
+            costingTypeId={selectedRowData[0]?.CostingTypeId}
+            TechnologyId={selectedRowData[0]?.TechnologyId}
+            releaseStrategyDetails={releaseStrategyDetails}
+          />
+        )
+      }
       {
         openDraftDrawer &&
         <SendForApproval
@@ -1161,15 +1170,16 @@ function ApprovalListing(props) {
         isOpen &&
         <CostingDetailSimulationDrawer
           isOpen={isOpen}
+          isReport={isOpen}
           closeDrawer={closeUserDetails}
           anchor={"right"}
-          isReport={isOpen}
+          isSummaryDrawer={isOpen}
           selectedRowData={selectedRowData}
           isSimulation={false}
           simulationDrawer={false}
         />
       }
-    </Fragment>
+    </Fragment >
   )
 }
 

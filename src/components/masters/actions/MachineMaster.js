@@ -213,7 +213,6 @@ export function getMachineDataList(data, skip, take, isPagination, obj, callback
             });
     };
 }
-
 /**
  * @method getMachineData
  * @description Get Machine data

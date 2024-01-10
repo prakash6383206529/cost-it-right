@@ -3,8 +3,8 @@ import { Row, Col, } from 'reactstrap';
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../../common/NoContentFound';
-import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, CBCTypeId } from '../../../config/constants';
-import { getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
+import { EMPTY_DATA, EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, BOPDOMESTIC, BOPIMPORT, MACHINERATE, OVERHEAD, defaultPageSize, COMBINED_PROCESS, CBCTypeId } from '../../../config/constants';
+import { getAllMultiTechnologyCostings, getAllMultiTechnologyImpactedSimulationCostings, getAllSimulationBoughtOutPart, getVerifyBoughtOutPartSimulationList, getverifyCombinedProcessSimulationList, getVerifyExchangeSimulationList, getVerifyMachineRateSimulationList, getVerifySimulationList, getVerifySurfaceTreatmentSimulationList, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
 import RunSimulationDrawer from './RunSimulationDrawer';
 import CostingSimulation from './CostingSimulation';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../helper';
@@ -23,9 +23,10 @@ import DatePicker from "react-datepicker";
 const gridOptions = {};
 
 function VerifySimulation(props) {
-    const { cancelVerifyPage, token, assemblyTechnology } = props
+    const { cancelVerifyPage, token, assemblyTechnology, isCombinedProcess } = props
     const [selectedRowData, setSelectedRowData] = useState([]);
     const [effectiveDate, setEffectiveDate] = useState('')
+    const [selectedIds, setSelectedIds] = useState('')
     const [tokenNo, setTokenNo] = useState('')
     const [simulationId, setSimualtionId] = useState('')
     const [simulationTechnologyId, setSimulationTechnologyId] = useState('')
@@ -52,6 +53,9 @@ function VerifySimulation(props) {
     const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
+    const runSimulationPermission = !((JSON.parse(localStorage.getItem('simulationRunPermission'))).includes(selectedMasterForSimulation?.label))
+    const { selectedTechnologyForSimulation } = useSelector(state => state.simulation)
+    const { selectedVendorForSimulation } = useSelector(state => state.simulation)
 
     const gridRef = useRef();
 
@@ -74,7 +78,7 @@ function VerifySimulation(props) {
                 if (res?.data?.Result) {
                     const data = res?.data?.Data
                     if ((Object.keys(data).length === 0) || (data?.SimulationImpactedCostings?.length === 0)) {
-                        Toaster.warning('No approved costing exist for this  technology.')
+                        Toaster.warning('No approved costing exist for this technology.')
                         setHideRunButton(true)
                         return false
                     }
@@ -330,6 +334,24 @@ function VerifySimulation(props) {
                         }
                     }))
                     break;
+                case Number(COMBINED_PROCESS):          						//RE
+
+                    dispatch(getverifyCombinedProcessSimulationList(props.token, (res) => {
+                        if (res.data.Result) {
+                            const data = res.data.Data
+                            if (data.SimulationCombinedProcessImpactedCostings.length === 0) {           //   for condition
+                                Toaster.warning('No approved costing exist for this combined process.')
+                                setHideRunButton(true)
+                                return false
+                            }
+                            setTokenNo(data.TokenNumber)
+                            setSimualtionId(data.SimulationId)
+                            setSimulationTechnologyId(data.SimulationtechnologyId)
+                            setHideRunButton(false)
+                            setEffectiveDate(data.EffectiveDate)
+                        }
+                    }))
+                    break;
                 default:
                     break;
             }
@@ -426,6 +448,18 @@ function VerifySimulation(props) {
     const bopNumberFormatter = (props) => {
         const row = props?.valueFormatted ? props.valueFormatted : props?.data;
         return <span title={isMasterAssociatedWithCosting ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')}>{isMasterAssociatedWithCosting ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')}</span>
+    }
+
+    const newCCFormatter = (props) => {
+        const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const classGreen = (row.NewNetCC > row.OldNetCC) ? 'red-value form-control' : (row.NewNetCC < row.OldNetCC) ? 'green-value form-control' : 'form-class'
+        return cell != null ? <span className={classGreen}>{checkForDecimalAndNull(cell, getConfigurationKey().NoOfDecimalForPrice)}</span> : '-'
+    }
+
+    const decimalFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        return isMasterAssociatedWithCosting ? (row?.BoughtOutPartCode ? row?.BoughtOutPartCode : '-') : (row?.BoughtOutPartNumber ? row?.BoughtOutPartNumber : '-')
     }
 
     const existingBasicFormatter = (props) => {
@@ -567,6 +601,17 @@ function VerifySimulation(props) {
                             tempObj.CostingId = item.CostingId
                             tempObj.MachineId = item.MachineId
                             tempObj.ProcessId = item.ProcessId
+                            tempArr.push(tempObj)
+                            return null;
+                        })
+                        obj.RunSimualtionCostingInfo = tempArr
+                        setObj(obj)
+                        setSimulationDrawer(true)
+                        break;
+                    case Number(COMBINED_PROCESS):          						//RE
+                        selectedRowData && selectedRowData.map(item => {
+                            let tempObj = {}
+                            tempObj.CostingId = item.CostingId
                             tempArr.push(tempObj)
                             return null;
                         })
@@ -728,6 +773,8 @@ function VerifySimulation(props) {
         customNoRowsOverlay: NoContentFound,
         priceFormatter: priceFormatter,
         newExchangeRateFormatter: newExchangeRateFormatter,
+        decimalFormatter: decimalFormatter,
+        newCCFormatter: newCCFormatter,
         renderPart: renderPart,
         renderCustomer: renderCustomer,
         bopNumberFormatter: bopNumberFormatter,
@@ -770,7 +817,7 @@ function VerifySimulation(props) {
                                             </button>
                                         </div>
                                         <button type="button" className={"apply"} id="verfiy-simulation-back" onClick={cancelVerifyPage}> <div className={'back-icon'}></div>Back</button>
-                                    </div>
+                                    </div >
                                     <div className="ag-theme-material p-relative">
                                         {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found simulation-lisitng" />}
                                         {verifyList && <AgGridReact
@@ -812,8 +859,8 @@ function VerifySimulation(props) {
                                             {isBOPDomesticOrImport === true && <AgGridColumn width={130} field="BoughtOutPartName" tooltipField="BoughtOutPartName" cellRenderer='BoughtOutPartName' headerName="BOP Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationName" tooltipField="OperationName" headerName="Operation Name"></AgGridColumn>}
                                             {isSurfaceTreatmentOrOperation === true && <AgGridColumn width={185} field="OperationCode" tooltipField="OperationCode" headerName="Operation Code"></AgGridColumn>}
-                                            {verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
-                                            {verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={140} field="VendorName" tooltipField="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>}
+                                            {!isMultiTechnology && verifyList && verifyList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={140} field="CustomerName" tooltipField="CustomerName" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                                             <AgGridColumn width={120} field="PlantName" tooltipField="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
                                             {isMasterAssociatedWithCosting && !isMultiTechnology && <AgGridColumn width={130} field="POPrice" tooltipField="POPrice" headerName="Existing Net Cost (INR)" cellRenderer='priceFormatter'></AgGridColumn>}
 
@@ -841,6 +888,11 @@ function VerifySimulation(props) {
                                             {isExchangeRate && <AgGridColumn width={145} field="OldExchangeRate" tooltipField="OldExchangeRate" headerName="Existing Exchange Rate"></AgGridColumn>}
                                             {isExchangeRate && <AgGridColumn width={150} field="NewExchangeRate" tooltipField="NewExchangeRate" cellRenderer='newExchangeRateFormatter' headerName="Revised Exchange Rate"></AgGridColumn>}
 
+                                            {/* {isCombinedProcess && <AgGridColumn width={130} field="OldPOPrice" headerName="PO Price Old" cellRenderer='decimalFormatter'></AgGridColumn>} */}
+                                            {/* {isCombinedProcess && <AgGridColumn width={130} field="NewPOPrice" headerName="Revised PO Price" cellRenderer='decimalFormatter'></AgGridColumn>}          						//RE
+                                            {isCombinedProcess && <AgGridColumn width={145} field="OldNetCC" headerName="Existing CC" cellRenderer='decimalFormatter'></AgGridColumn>}          						//RE
+                                            {isCombinedProcess && <AgGridColumn width={150} field="NewNetCC" cellRenderer='newCCFormatter' headerName="Revised CC"></AgGridColumn>}          						//RE */}
+
                                             {isMultiTechnology && <AgGridColumn width={150} field="Delta" tooltipField="Delta" headerName="Delta"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="DeltaSign" tooltipField="DeltaSign" headerName="DeltaSign"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="NetCost" tooltipField="NetCost" headerName="Net Cost"></AgGridColumn>}
@@ -848,24 +900,12 @@ function VerifySimulation(props) {
                                             {isMultiTechnology && <AgGridColumn width={150} field="OldPOPrice" tooltipField="OldPOPrice" headerName="Existing Net Cost"></AgGridColumn>}
                                             {isMultiTechnology && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
 
-                                            {/* {showRM && <AgGridColumn width={150} field="RMName" tooltipField="RMName" headerName="RM Name"></AgGridColumn>}
-                                            {showRM && <AgGridColumn width={150} field="RMGrade" tooltipField="RMGrade" headerName="RM Grade"></AgGridColumn>}
-                                            {showRM && <AgGridColumn width={150} field="RMSpecification" tooltipField="RMSpecification" headerName="RM Specification"></AgGridColumn>}
-
-                                            {showBOP && <AgGridColumn width={150} field="BOPName" tooltipField="BOPName" headerName="BOP Name"></AgGridColumn>}
-                                            {showBOP && <AgGridColumn width={150} field="BOPNumber" tooltipField="BOPNumber" headerName="BOP Number"></AgGridColumn>}
-                                            {showBOP && <AgGridColumn width={150} field="Category" tooltipField="Category" headerName="Category"></AgGridColumn>} */}
-
-                                            {/* {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
-                                            {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
-                                            {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>} */}
-
                                             {isOverHeadProfit === true && <AgGridColumn width={120} field="OverheadName" cellRenderer='overHeadFormatter' tooltipField="OverheadName" headerName="Overhead Name" ></AgGridColumn>}
-                                        </AgGridReact>}
+                                        </AgGridReact >}
                                         {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                                    </div>
-                                </div>
-                            </div>
+                                    </div >
+                                </div >
+                            </div >
                         </Col >
                     </Row >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
@@ -884,13 +924,13 @@ function VerifySimulation(props) {
                                 disabled={true}
                                 className='form-control bottom-disabled-date'
                             />}
-                            <button onClick={runSimulation} id="run-simulation-btn" type="submit" className="user-btn mr5 save-btn"                    >
+                            <button onClick={runSimulation} id="run-simulation-btn" type="submit" className="user-btn mr5 save-btn">
                                 <div className={"Run-icon"}>
                                 </div>{" "}
                                 {"RUN SIMULATION"}
                             </button>
                         </div>
-                    </Row>
+                    </Row >
                 </>
             }
             {

@@ -56,6 +56,12 @@ function SheetMetalBaicDrawer(props) {
     control,
     name: ['Efficiency', 'Cavity', 'CycleTime', 'PartLength', 'ExtrusionSpeed'],
   })
+
+  useEffect(() => {
+    handleProductionPerHour()
+    calculateProcessCost()
+  }, [fieldValues, quantityState])
+
   const quantFieldValue = useWatch({
     control,
     name: ['Quantity']
@@ -286,7 +292,8 @@ function SheetMetalBaicDrawer(props) {
               <div className="border pl-3 pr-3 pt-3">
 
                 <Row className={'mt15'}>
-                  {!(ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME) &&
+                  {
+                    !(ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME) &&
                     <Col md="4">
                       <NumberFieldHookForm
                         label={`Tonnage(T)`}
@@ -302,8 +309,10 @@ function SheetMetalBaicDrawer(props) {
                         errors={errors.MachineTonnage}
                         disabled={true}
                       />
-                    </Col>}
-                  {((ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME)) &&
+                    </Col>
+                  }
+                  {
+                    ((ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME)) &&
                     <>
                       <Col md="4">
                         <TextFieldHookForm
@@ -351,7 +360,8 @@ function SheetMetalBaicDrawer(props) {
                           disabled={(props.CostingViewMode) ? true : false}
                         />
                       </Col>
-                    </>}
+                    </>
+                  }
                   <Col md="4">
                     <TextFieldHookForm
                       label={`Efficiency (%)`}
@@ -402,7 +412,7 @@ function SheetMetalBaicDrawer(props) {
                         errors={errors.CycleTime}
                         disabled={props.CostingViewMode || (ProcessName.toLowerCase().includes('extrusion') && props.calculatorData.UOMType === TIME) ? true : false}
                       />
-                    </Col>
+                    </Col >
                   }
 
                   <Col md="4">
@@ -429,7 +439,6 @@ function SheetMetalBaicDrawer(props) {
                       disabled={props.CostingViewMode ? true : false}
                     />
                   </Col>
-
 
                   <Col md="4">
                     <NumberFieldHookForm
@@ -476,11 +485,11 @@ function SheetMetalBaicDrawer(props) {
                       disabled={true}
                     />
                   </Col>
-                </Row>
+                </Row >
 
 
-              </div>
-            </Col>
+              </div >
+            </Col >
             <div className="mt25 col-md-12 text-right">
               <button
                 onClick={onCancel} // Need to change this cancel functionality
@@ -501,10 +510,10 @@ function SheetMetalBaicDrawer(props) {
                 {'SAVE'}
               </button>
             </div>
-          </form>
-        </Col>
-      </Row>
-    </Fragment>
+          </form >
+        </Col >
+      </Row >
+    </Fragment >
   )
 }
 

@@ -65,7 +65,6 @@ class UsersListing extends Component {
 		}
 	}
 
-
 	componentDidMount() {
 		this.getUsersListData(null, null);
 		const { topAndLeftMenuData } = this.props;
@@ -501,7 +500,6 @@ class UsersListing extends Component {
 
 	onFilterTextBoxChanged = (e) => {
 		this.state.gridApi.setQuickFilter(e.target.value);
-
 	}
 
 	resetState = () => {
@@ -577,6 +575,7 @@ class UsersListing extends Component {
 												type="text"
 												component={searchableSelect}
 												placeholder={"Department"}
+												// placeholder={"Purchase Group"}						//RE
 												options={this.searchableSelectType("department")}
 												//onKeyUp={(e) => this.changeItemDesc(e)}
 												//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
@@ -690,6 +689,7 @@ class UsersListing extends Component {
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Department"></AgGridColumn>
+								{/* <AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Purchase Group"></AgGridColumn>						//RE */}
 								{this.props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>

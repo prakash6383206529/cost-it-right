@@ -793,7 +793,6 @@ function ReportListing(props) {
         <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
 
             <form onSubmit={handleSubmit(onSubmit)} noValidate>
-
                 {disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="loader-center mt-n2" />}
                 <Row className="pt-4 mt-1 blue-before">
                     {/* <Col md="3">
@@ -942,9 +941,11 @@ function ReportListing(props) {
                     isOpen={isOpen}
                     closeDrawer={closeUserDetails}
                     anchor={"right"}
+                    // isSummaryDrawer={isOpen}  //RE
                     isReport={isOpen}
                     selectedRowData={selectedRowData}
                     isSimulation={false}
+                    // simulationMode={false}    //RE
                     simulationDrawer={false}
                     isReportLoader={isReportLoader}
                 />

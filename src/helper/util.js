@@ -6,13 +6,15 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
+import { useDispatch, useSelector } from 'react-redux';
+import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
 import TooltipCustom from '../components/common/Tooltip';
-import { FORGING, SHEETMETAL } from '../config/masterData';
+import { SHEETMETAL } from '../config/masterData';
 
 /**
  * @method  apiErrors
@@ -42,6 +44,10 @@ export const apiErrors = (res) => {
  * @param response
  */
 const handleHTTPStatus = (response) => {
+  const toastrOptions = {
+    // draggable: true,
+    autoClose: false
+  }
   switch (response.status) {
     case 202:
       const errMsg202 = response?.data?.Message ? response.data.Message : 'No Data Available.'

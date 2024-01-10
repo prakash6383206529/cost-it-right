@@ -628,6 +628,8 @@ class AddOverhead extends Component {
 
     this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
 
+    this.setState({ uploadAttachements: false, setDisable: true, attachmentLoader: true })
+
     if (status === 'removed') {
       this.deleteFile(
         file.id,
@@ -1406,7 +1408,7 @@ class AddOverhead extends Component {
                           </div>
                         </Col>
                       </Row>
-                    </div>
+                    </div >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         <button id="AddOverhead_Cancel"

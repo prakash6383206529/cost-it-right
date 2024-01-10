@@ -2,12 +2,12 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch } from 'react-redux'
-import { TextFieldHookForm } from '../../../layout/HookFormInputs'
+import { TextFieldHookForm, NumberFieldHookForm } from '../../../layout/HookFormInputs'
 import { checkForNull, getConfigurationKey, getWeightFromDensity, loggedInUserId } from '../../../../helper'
 import { saveRawMaterialCalculationForMachining } from '../../actions/CostWorking'
 import Toaster from '../../../common/Toaster'
 import { debounce } from 'lodash'
-import { checkForDecimalAndNull, decimalNumberLimit, positiveAndDecimalNumber, number } from '../../../../helper/validation'
+import { checkForDecimalAndNull, decimalNumberLimit, positiveAndDecimalNumber, number, nonZero } from '../../../../helper/validation'
 import TooltipCustom from '../../../common/Tooltip'
 
 function Machining(props) {
@@ -45,7 +45,7 @@ function Machining(props) {
 
     const fieldValues = useWatch({
         control,
-        name: ['partingMargin', 'netLength', 'outerDiameter', 'thickness'],
+        name: ['partingMargin', 'netLength', 'outerDiameter', 'thickness', 'finishedWeight'],
     })
 
 
@@ -437,7 +437,7 @@ function Machining(props) {
                                         errors={errors.GrossWeight}
                                         disabled={true}
                                     />
-                                </Col>
+                                </Col >
                                 <Col md="3">
                                     <TooltipCustom disabledIcon={true} id={'finish-weight'} tooltipText={tooltipMessageForSheetWeight('Finish', 'Net')} />
                                     <TextFieldHookForm
@@ -538,10 +538,10 @@ function Machining(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                            </Row>
+                            </Row >
 
-                        </div>
-                    </Col>
+                        </div >
+                    </Col >
 
                     {!CostingViewMode && <div className="col-sm-12 text-right mt-4">
                         <button
@@ -558,11 +558,12 @@ function Machining(props) {
                             <div className={'save-icon'}></div>
                             {'Save'}
                         </button>
-                    </div>}
-                </form>
+                    </div>
+                    }
+                </form >
 
-            </Row>
-        </Fragment>
+            </Row >
+        </Fragment >
     )
 }
 

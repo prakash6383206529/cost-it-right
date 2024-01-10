@@ -451,6 +451,7 @@ function SimulationApprovalListing(props) {
         dispatch(setIsMasterAssociatedWithCosting(!rowObj?.IsSimulationWithOutCosting))
         setApprovalData({ approvalProcessId: rowObj?.ApprovalProcessId, approvalNumber: rowObj?.ApprovalNumber, SimulationTechnologyHead: rowObj?.SimulationTechnologyHead, SimulationTechnologyId: rowObj?.SimulationTechnologyId, SimulationHeadId: rowObj?.SimulationHeadId, DepartmentId: rowObj?.DepartmentId })
         dispatch(setMasterForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))
+        // dispatch(setTechnologyForSimulation({ label: rowObj.SimulationTechnologyHead, value: rowObj.SimulationTechnologyId }))                //RE
         if (rowObj?.Status === 'Draft' || rowObj.SimulationType === 'Provisional' || rowObj?.Status === 'Linked') {
             setStatusForLinkedToken(rowObj?.Status === 'Linked')
             setRedirectCostingSimulation(true)
@@ -772,24 +773,26 @@ function SimulationApprovalListing(props) {
                                         <div className="warning-message d-flex align-items-center">
                                             {warningMessage && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={disableFilter} id="Simulation_Approval_Filter" title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                        </div>
+                                        </div >
                                         <button type="button" id="Simulation_Approval_Reset" className="user-btn  mr5" title="Reset Grid" onClick={() => resetState()}>
                                             <div className="refresh mr-0"></div>
                                         </button>
-                                        {!props.hidesendBtn && <button
-                                            class="user-btn approval-btn"
-                                            id="Simulation_Approval_Send"
-                                            onClick={sendForApproval}
-                                            title="Send For Approval"
-                                            disabled={((isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) || isSuperAdmin) ? true : false}
-                                        >
-                                            <div className="send-for-approval"></div>
-                                        </button>}
-                                    </div>
-                                </Col>
+                                        {
+                                            !props.hidesendBtn && <button
+                                                class="user-btn approval-btn"
+                                                id="Simulation_Approval_Send"
+                                                onClick={sendForApproval}
+                                                title="Send For Approval"
+                                                disabled={((isDashboard ? (simualtionApprovalList && simualtionApprovalList.length === 0) : (simualtionApprovalListDraft && simualtionApprovalListDraft.length === 0)) || isSuperAdmin) ? true : false}
+                                            >
+                                                <div className="send-for-approval"></div>
+                                            </button>
+                                        }
+                                    </div >
+                                </Col >
 
-                            </Row>
-                        </form>
+                            </Row >
+                        </form >
 
                         <div className={`ag-grid-wrapper p-relative ${isDashboard ? (simualtionApprovalList && simualtionApprovalList?.length <= 0) || noData ? "overlay-contain" : "" : (simualtionApprovalListDraft && simualtionApprovalListDraft?.length <= 0) || noData ? "overlay-contain" : ""} ${isDashboard ? "report-grid" : ""}`}>
                             <div className="ag-grid-header">
@@ -825,6 +828,7 @@ function SimulationApprovalListing(props) {
 
                                     <AgGridColumn width={120} field="ApprovalNumber" cellRenderer='linkableFormatter' headerName="Token No." cellClass="token-no-grid"></AgGridColumn>
                                     <AgGridColumn width={141} field="CostingHead" headerName="Costing Head" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                    {/* // <AgGridColumn width={141} field="SimulationTechnologyHead" headerName="Simulation Head"></AgGridColumn>                //RE */}
                                     {/* THIS FEILD WILL ALWAYS COME BEFORE */}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="SimulationType" headerName='Simulation Type' ></AgGridColumn>}
                                     {getConfigurationKey().IsProvisionalSimulation && <AgGridColumn width={145} field="ProvisionalStatus" headerName='Amendment Status' ></AgGridColumn>}
@@ -839,13 +843,14 @@ function SimulationApprovalListing(props) {
                                     <AgGridColumn width={170} field="Reason" headerName="Reason" cellRenderer='reasonFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedByName" headerName='Initiated By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={140} field="SimulatedOn" headerName='Simulated On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                                    {/* <AgGridColumn width={140} field="SimulatedOn" headerName='Last Approved On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>                //RE */}
                                     <AgGridColumn width={142} field="LastApprovedBy" headerName='Last Approved/Rejected By' cellRenderer='requestedByFormatter'></AgGridColumn>
                                     <AgGridColumn width={145} field="RequestedOn" headerName='Requested On' cellRenderer='requestedOnFormatter' filter="agDateColumnFilter" filterParams={filterParamsSecond}></AgGridColumn>
 
                                     {!isSmApprovalListing && <AgGridColumn pinned="right" field="DisplayStatus" headerClass="justify-content-center" cellClass="text-center" headerName='Status' tooltipField="TooltipText" cellRenderer='statusFormatter' floatingFilterComponent="statusFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>}
                                     <AgGridColumn width={115} field="SimulationId" headerName='Actions' type="rightAligned" floatingFilter={false} cellRenderer='buttonFormatter'></AgGridColumn>
 
-                                </AgGridReact>
+                                </AgGridReact >
 
                                 <div className='button-wrapper'>
                                     {!isLoader && <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
@@ -857,9 +862,12 @@ function SimulationApprovalListing(props) {
                                         <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
                                     </div>
                                 </div>
-                                {approveDrawer &&
+                                {
+                                    approveDrawer &&
                                     <SimulationApproveReject
                                         isOpen={approveDrawer}
+                                        // <ApproveRejectDrawer                //RE
+                                        //     isOpen={isApprovalDrawer}                //RE
                                         anchor={'right'}
                                         approvalData={[]}
                                         type={isPendingForApproval ? 'Approve' : 'Sender'}
@@ -877,19 +885,19 @@ function SimulationApprovalListing(props) {
                                         IsExchangeRateSimulation={selectedRowData[0]?.IsExchangeRateSimulation}
                                     />
                                 }
-                            </div>
-                        </div>
-                    </div>
+                            </div >
+                        </div >
+                    </div >
                     <div className="text-right pb-3">
                         <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                     </div>
-                </div>
+                </div >
 
             }
             {
                 showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DELETE_SIMULATION_DRAFT_TOKEN}`} />
             }
-        </Fragment>
+        </Fragment >
     )
 }
 

@@ -35,7 +35,7 @@ function CostingHeaderTabs(props) {
 
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, IsIncludedSurfaceInRejection, IsIncludedToolCost } = useSelector(state => state.costing)
+    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, ActualCostingDataList, IsIncludedSurfaceInRejection, checkIsDiscountChange, IsIncludedToolCost } = useSelector(state => state.costing)
   const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
@@ -56,6 +56,7 @@ function CostingHeaderTabs(props) {
 
   const costingApprovalStatus = useContext(CostingStatusContext);
 
+  const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   useEffect(() => {
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
   }, [costingData])
@@ -424,34 +425,42 @@ function CostingHeaderTabs(props) {
             {costingData.TechnologyId !== LOGISTICS && <NavItem>
               <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                 {(IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId) ? 'Part Cost' : 'RM + CC'}
-              </NavLink>
-            </NavItem>}
-            {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
-                Surface Treatment
-              </NavLink>
-            </NavItem>}
-            {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
-                Overheads & Profits
-              </NavLink>
-            </NavItem>}
+              </NavLink >
+            </NavItem >}
+            {
+              costingData.TechnologyId !== LOGISTICS && <NavItem>
+                <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+                  Surface Treatment
+                </NavLink>
+              </NavItem>
+            }
+            {
+              costingData.TechnologyId !== LOGISTICS && <NavItem>
+                <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+                  Overheads & Profits
+                </NavLink>
+              </NavItem>
+            }
             <NavItem>
               <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                 {costingData?.TechnologyId !== LOGISTICS && 'Packaging &'} Freight
               </NavLink>
             </NavItem>
-            {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
-                Tool Cost
-              </NavLink>
-            </NavItem>}
-            {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
-                Discount & Other Cost
-              </NavLink>
-            </NavItem>}
-          </Nav>
+            {
+              costingData.TechnologyId !== LOGISTICS && <NavItem>
+                <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
+                  Tool Cost
+                </NavLink>
+              </NavItem>
+            }
+            {
+              costingData.TechnologyId !== LOGISTICS && <NavItem>
+                <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
+                  Discount & Other Cost
+                </NavLink>
+              </NavItem>
+            }
+          </Nav >
           <TabContent activeTab={activeTab}>
             <TabPane tabId="1">
               {IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId) ? <TabAssemblyTechnology
@@ -500,7 +509,7 @@ function CostingHeaderTabs(props) {
               />
             </TabPane>
           </TabContent>
-        </div>
+        </div >
       </div >
 
       {IsOpenViewHirarchy && <BOMViewer

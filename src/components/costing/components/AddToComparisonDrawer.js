@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react'
 import { useForm, Controller } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
@@ -9,11 +10,12 @@ import { getCostingByVendorAndVendorPlant, getPartCostingPlantSelectList, getPar
 import { SearchableSelectHookForm, RadioHookForm, } from '../../layout/HookFormInputs'
 import { APPROVED, REJECTED, HISTORY, ZBC, APPROVED_BY_SIMULATION, VARIANCE, ZBCTypeId, VBCTypeId, CBCTypeId, EMPTY_GUID, NCCTypeId, ZBC_COSTING, VBC_COSTING, NCC_COSTING, CBC_COSTING, COSTING } from '../../../config/constants'
 import Toaster from '../../common/Toaster'
-import { getConfigurationKey } from '../../../helper/auth'
+import { getConfigurationKey, isUserLoggedIn } from '../../../helper/auth'
 import { checkForDecimalAndNull, checkForNull } from '../../../helper'
 import DayTime from '../../common/DayTimeWrapper'
 
 function AddToComparisonDrawer(props) {
+  const loggedIn = isUserLoggedIn()
   const { editObject, isEditFlag, viewMode } = props
 
   const { plantId, plantName, costingId, CostingNumber, index, VendorId, vendorName,
@@ -34,7 +36,6 @@ function AddToComparisonDrawer(props) {
     reValidateMode: 'onChange',
     defaultValues: defaultValue
   })
-
 
   const dispatch = useDispatch()
 
@@ -79,7 +80,7 @@ function AddToComparisonDrawer(props) {
       setisNccSelected(false)
       dispatch(getPartCostingPlantSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, (res) => {
         // dispatch(getCostingSummaryByplantIdPartNo('', '', () => { }))
-
+        dispatch(getPartCostingVendorSelectList(partNo.value !== undefined ? partNo.value : partNo.partId, () => { }))
         dispatch(getCostingByVendorAndVendorPlant('', '', '', '', '', '', () => { }))
       }),
       )

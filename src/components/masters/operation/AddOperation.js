@@ -256,9 +256,6 @@ class AddOperation extends Component {
     if (costingHeadFlag === CBCTypeId) {
       this.props.getClientSelectList(() => { })
     }
-    else {
-
-    }
   }
 
   /**
@@ -630,6 +627,9 @@ class AddOperation extends Component {
       isEditFlag: false,
     })
     this.props.getOperationDataAPI('', () => { })
+    // if (type === 'submit') {  //RE
+    //   this.props.getOperationDataAPI('', () => { })
+    // }
     this.props.hideForm(type)
   }
   cancelHandler = () => {
@@ -873,7 +873,7 @@ class AddOperation extends Component {
   */
   render() {
     const { handleSubmit, initialConfiguration, isOperationAssociated, t } = this.props;
-    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, CostingTypePermission, disableSendForApproval } = this.state;
+    const { isEditFlag, isOpenVendor, isOpenUOM, isDisableCode, isViewMode, setDisable, costingTypeId, noApprovalCycle, CostingTypePermission, disableSendForApproval } = this.state;
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -905,7 +905,6 @@ class AddOperation extends Component {
         }
       }
     };
-
     return (
       <div className="container-fluid">
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}

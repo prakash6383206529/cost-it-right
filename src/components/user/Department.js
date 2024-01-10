@@ -150,6 +150,7 @@ class Department extends Component {
 									<Col>
 										<div className={'header-wrapper left'}>
 											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}`}</h3>
+											{/* <h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}` : `Add ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}`}</h3>   //RE  */}
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e, 'cancel')}
@@ -173,21 +174,19 @@ class Department extends Component {
 												customClassName={'withBorder'}
 											/>
 										</div>
-										{
+										{<div className="input-group col-md-12 input-withouticon">
+											<Field
+												label="Code"
+												name={"DepartmentCode"}
+												type="text"
+												placeholder={''}
+												validate={[required, excludeOnlySpecialCharacter, checkWhiteSpaces, maxLength50, checkSpacesInString]}
+												component={renderText}
+												required={true}
+												customClassName={'withBorder'}
+											/>
+										</div>}
 
-											<div className="input-group col-md-12 input-withouticon" >
-												<Field
-													label="Code"
-													name={"DepartmentCode"}
-													type="text"
-													placeholder={''}
-													validate={[required, excludeOnlySpecialCharacter, checkWhiteSpaces, maxLength50, checkSpacesInString]}
-													component={renderText}
-													required={true}
-													customClassName={'withBorder'}
-												/>
-											</div>
-										}
 
 										<div className="col-md-12">
 											<div className="text-right mt-0">
@@ -221,14 +220,14 @@ class Department extends Component {
 												</button>
 											</div>
 										</div>
-									</Row>
+									</Row >
 
-								</div>
-							</form>
-						</div>
-					</Container>
-				</Drawer>
-			</div>
+								</div >
+							</form >
+						</div >
+					</Container >
+				</Drawer >
+			</div >
 		);
 	}
 }

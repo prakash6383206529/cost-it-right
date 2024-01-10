@@ -741,7 +741,7 @@ export function fetchSupplierCityDataAPI(callback) {
  * @description Used to fetch costing heads
  */
 export function fetchCostingHeadsAPI(costingHeads, callback) {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getCostingHeads}?applicabilityFor=${costingHeads}`, config());
     request.then((response) => {
@@ -1333,6 +1333,7 @@ export function getPlantSelectListByType(TYPE, MODULE, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
     const request = axios.get(`${API.getPlantSelectListByType}?type=${TYPE}&departmentFilterAppliedForModule=${MODULE}`, config());
+    // const request = axios.get(`${API.getPlantSelectListByType}?type=${TYPE}`, config());          						//RE
     request.then((response) => {
       if (response.data.Result) {
         dispatch({

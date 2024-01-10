@@ -236,6 +236,16 @@ class IndivisualProductListing extends Component {
         }
     }
 
+    /**
+    * @method impactCalculationFormatter
+    * @description Renders buttons
+    */
+    impactCalculationFormatter = (props) => {           //RE
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        let val = ''
+        val = (cellValue === false || cellValue === null) ? 'No' : 'Yes'
+        return val
+    }
 
     renderEffectiveDate = () => {
         return <> Effective <br /> Date </>
@@ -314,6 +324,7 @@ class IndivisualProductListing extends Component {
         return (
 
             <ExcelSheet data={temp} name={ComponentPart}>
+                {/* <ExcelSheet data={temp} name={PRODUCT}> //RE */}
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
@@ -355,6 +366,7 @@ class IndivisualProductListing extends Component {
             totalValueRenderer: this.buttonFormatter,
             customNoRowsOverlay: NoContentFound,
             effectiveDateFormatter: this.effectiveDateFormatter,
+            impactCalculationFormatter: this.impactCalculationFormatter,            //RE
             hyphenFormatter: hyphenFormatter
         };
 
@@ -377,38 +389,33 @@ class IndivisualProductListing extends Component {
                                         <div className={'plus mr-0'}></div></button>
                                 )}
 
-                                {(
-                                    <button
-                                        type="button"
-                                        className={"user-btn mr5"}
-                                        onClick={this.bulkToggle}
-                                        title="Bulk Upload"
-                                    >
-                                        <div className={"upload mr-0"}></div>
-                                        {/* Bulk Upload */}
-                                    </button>
-                                )}
+                                {(<button
+                                    type="button"
+                                    className={"user-btn mr5"}
+                                    onClick={this.bulkToggle}
+                                    title="Bulk Upload"
+                                >
+                                    <div className={"upload mr-0"}></div>
+                                    {/* Bulk Upload */}
+                                </button>)}
 
 
-                                {
-
-                                    <>
-                                        <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
-                                            <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
-                                            </button>}>
-                                            {this.onBtExport()}
-                                        </ExcelFile>
-                                    </>
-                                }
+                                {<>
+                                    <ExcelFile filename={'Product'} fileExtension={'.xls'} element={
+                                        <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
+                                        </button>}>
+                                        {this.onBtExport()}
+                                    </ExcelFile>
+                                </>}
                                 <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
                                     <div className="refresh mr-0"></div>
                                 </button>
 
-                            </div>
-                        </div>
-                    </Col>
-                </Row>
+                            </div >
+                        </div >
+                    </Col >
+                </Row >
 
                 <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.productDataList && this.props.productDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
@@ -439,18 +446,19 @@ class IndivisualProductListing extends Component {
 
                             <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
                             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
+                            {/* <AgGridColumn field="Description" headerName="Description" ></AgGridColumn>         //RE */}
                             <AgGridColumn field="ProductGroupCode" headerName="Group Code" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                             <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" ></AgGridColumn>
+                            {/* <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation" cellRenderer={'impactCalculationFormatter'}></AgGridColumn>      //RE */}
                             <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field="ProductId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                        </AgGridReact>
-                        {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                        </AgGridReact >
+                        {< PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
                     </div>
-                </div>
-
+                </div >
 
                 {isBulkUpload && <BulkUpload
                     isOpen={isBulkUpload}
@@ -460,7 +468,8 @@ class IndivisualProductListing extends Component {
                     isZBCVBCTemplate={false}
                     messageLabel={'Product'}
                     anchor={'right'}
-                />}
+                />
+                }
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
                 }

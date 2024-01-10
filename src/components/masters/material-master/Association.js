@@ -316,5 +316,4 @@ export default connect(mapStateToProps, {
     form: 'Association',
     enableReinitialize: true,
     touchOnChange: true
-})(withTranslation(['RawMaterialMaster'])(Association)),
-)
+})(withTranslation(['RawMaterialMaster'])(Association)),)

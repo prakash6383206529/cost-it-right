@@ -335,12 +335,12 @@ function AddRM(props) {
                         <AgGridColumn field="NetLandedCostCombine" headerName={'Net Cost INR/UOM'} cellRenderer={'netLandedFormat'}></AgGridColumn>
                         <AgGridColumn field="NetLandedCostCurrency" headerName={'Net Cost Currency/UOM'} cellRenderer={'netLandedConversionFormat'}></AgGridColumn>
 
-                      </AgGridReact>
-                      {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
-                    </div>
-                  </div>
-                </Col>
-              </Row>
+                      </AgGridReact >
+                      {< PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
+                    </div >
+                  </div >
+                </Col >
+              </Row >
 
               <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
@@ -360,11 +360,11 @@ function AddRM(props) {
                 </div>
               </Row>
 
-            </div>
-          </Container>
-        </div>
-      </Drawer>
-    </div>
+            </div >
+          </Container >
+        </div >
+      </Drawer >
+    </div >
   );
 }
 

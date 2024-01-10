@@ -70,8 +70,8 @@ const RMListing = (props) => {
    */
   const closeDrawer = (e = "", formData, type) => {
     setState((prevState) => ({
-      ...prevState,isOpen: false,isLoader: type === "submit" ? true : prevState.isLoader, dataCount: type === "submit" ? 0 : prevState.dataCount,
-   }));
+      ...prevState, isOpen: false, isLoader: type === "submit" ? true : prevState.isLoader, dataCount: type === "submit" ? 0 : prevState.dataCount,
+    }));
     if (type === "submit") {
       getListData();
     }
@@ -84,7 +84,8 @@ const RMListing = (props) => {
     setTimeout(() => {
       rawMaterialTypeDataList.length !== 0 &&
         setState((prevState) => ({
-          ...prevState,  noData: searchNocontentFilter(value, prevState.noData),}));
+          ...prevState, noData: searchNocontentFilter(value, prevState.noData),
+        }));
     }, 500);
   };
   /**
@@ -101,7 +102,8 @@ const RMListing = (props) => {
    */
   const editItemDetails = (Id) => {
     setState((prevState) => ({
-      ...prevState,isEditFlag: true, isOpen: true, ID: Id, }));
+      ...prevState, isEditFlag: true, isOpen: true, ID: Id,
+    }));
   };
   /**
    * @method deleteItem
@@ -140,7 +142,8 @@ const RMListing = (props) => {
 
   const openModel = () => {
     setState((prevState) => ({
-      ...prevState, isOpen: true,isEditFlag: false,}));
+      ...prevState, isOpen: true, isEditFlag: false,
+    }));
   };
 
   const openAssociationModel = () => {
@@ -221,8 +224,8 @@ const RMListing = (props) => {
       tempArr && tempArr.length > 0
         ? tempArr
         : rawMaterialTypeDataList
-        ? rawMaterialTypeDataList
-        : [];
+          ? rawMaterialTypeDataList
+          : [];
     return returnExcelColumn(RMLISTING_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -266,8 +269,8 @@ const RMListing = (props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-    
-   
+
+
   };
   const { isOpen, isEditFlag, ID, noData } = state;
   // const { AddAccessibility, DownloadAccessibility } = props;
@@ -291,9 +294,8 @@ const RMListing = (props) => {
 
   return (
     <div
-      className={`ag-grid-react min-height100vh ${
-        permissions.Download ? "show-table-btn" : ""
-      }`}
+      className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
+        }`}
     >
       {state.isLoader && <LoaderCustom />}
       <Row className="pt-4 no-filter-row">
@@ -326,20 +328,18 @@ const RMListing = (props) => {
                   fileExtension={".xls"}
                   element={
                     <button
-                      title={`Download ${
-                        state.dataCount === 0
+                      title={`Download ${state.dataCount === 0
                           ? "All"
                           : "(" + state.dataCount + ")"
-                      }`}
+                        }`}
                       type="button"
                       className={"user-btn mr5"}
                     >
                       <div className="download mr-1"></div>
-                      {`${
-                        state.dataCount === 0
+                      {`${state.dataCount === 0
                           ? "All"
                           : "(" + state.dataCount + ")"
-                      }`}
+                        }`}
                     </button>
                   }
                 >
@@ -360,13 +360,12 @@ const RMListing = (props) => {
       <Row>
         <Col>
           <div
-            className={`ag-grid-wrapper height-width-wrapper ${
-              (rawMaterialTypeDataList &&
+            className={`ag-grid-wrapper height-width-wrapper ${(rawMaterialTypeDataList &&
                 props.rawMaterialTypeDataList?.length <= 0) ||
-              noData
+                noData
                 ? "overlay-contain"
                 : ""
-            }`}
+              }`}
           >
             <div className="ag-grid-header">
               <input
@@ -379,9 +378,8 @@ const RMListing = (props) => {
               />
             </div>
             <div
-              className={`ag-theme-material ${
-                state.isLoader && "max-loader-height"
-              }`}
+              className={`ag-theme-material ${state.isLoader && "max-loader-height"
+                }`}
             >
               {noData && (
                 <NoContentFound

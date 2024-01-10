@@ -878,32 +878,34 @@ function Tool(props) {
                       disabled={true}
                     />
                   </Col>
-
-                  {initialConfiguration.IsShowCRMHead && <Col md="3">
-                    <SearchableSelectHookForm
-                      name={`crmHeadTool`}
-                      type="text"
-                      label="CRM Head"
-                      errors={`${errors.crmHeadTool}`}
-                      Controller={Controller}
-                      control={control}
-                      register={register}
-                      mandatory={false}
-                      rules={{
-                        required: false,
-                      }}
-                      //defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
-                      placeholder={'Select'}
-                      options={CRMHeads}
-                      required={false}
-                      handleChange={onCRMHeadChange}
-                      disabled={CostingViewMode}
-                    />
-                  </Col>}
+                  {/* // check here @ashok */}
+                  {
+                    initialConfiguration.IsShowCRMHead && <Col md="3">
+                      <SearchableSelectHookForm
+                        name={`crmHeadTool`}
+                        type="text"
+                        label="CRM Head"
+                        errors={`${errors.crmHeadTool}`}
+                        Controller={Controller}
+                        control={control}
+                        register={register}
+                        mandatory={false}
+                        rules={{
+                          required: false,
+                        }}
+                        //defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                        placeholder={'Select'}
+                        options={CRMHeads}
+                        required={false}
+                        handleChange={onCRMHeadChange}
+                        disabled={CostingViewMode}
+                      />
+                    </Col>
+                  }
                 </>
               }
 
-            </Row>
+            </Row >
 
             <Row className="sf-btn-footer no-gutters justify-content-between mt25 sticky-btn-footer tab-tool-cost-footer">
               <div className="col-sm-12 text-right bluefooter-butn">
@@ -917,8 +919,8 @@ function Tool(props) {
                 </button>}
               </div>
             </Row>
-          </form>
-        </div>
+          </form >
+        </div >
       </div >
 
       {isDrawerOpen && <AddTool

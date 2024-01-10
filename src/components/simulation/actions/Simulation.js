@@ -14,6 +14,9 @@ import {
     config,
     GET_ALL_APPROVAL_DEPARTMENT,
     GET_SELECTED_COSTING_STATUS,
+    GET_AMMENDENT_STATUS_COSTING,            //RE
+    GET_FG_WISE_IMPACT_DATA,            //RE
+    GET_COMBINED_PROCESS_LIST,            //RE
     GET_SELECTLIST_SIMULATION_TOKENS,
     GET_IMPACTED_MASTER_DATA,
     GET_LAST_SIMULATION_DATA,
@@ -43,7 +46,8 @@ import {
     GET_KEYS_FOR_DOWNLOAD_SUMMARY,
     SET_TOKEN_CHECK_BOX,
     SET_TOKEN_FOR_SIMULATION,
-    GET_AMMENDENT_STATUS_COSTING,
+    COMBINED_PROCESS,            //RE
+    SET_ATTACHMENT_FILE_DATA,            //RE
     GET_MASTER_SELECT_LIST_SIMUALTION,
     SET_SELECTED_ROW_FOR_PAGINATION,
     GET_SIMULATION_APPROVAL_LIST_DRAFT,
@@ -56,6 +60,7 @@ import {
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
+import { MESSAGES } from '../../../config/message';
 
 // const config() = config
 
@@ -125,7 +130,8 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
-                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    // IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation            //RE
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -135,6 +141,7 @@ export function getCostingSimulationList(token, plantId, rawMatrialId, callback)
                     type: GET_COSTING_SIMULATION_LIST,
                     payload: response.status === 204 ? [] : response.data.Data.SimulatedCostingList
                 })
+
                 callback(response)
             }
         }).catch((error) => {
@@ -297,6 +304,7 @@ export function getApprovalSimulatedCostingSummary(params, callback) {
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
                     IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    // IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation            //RE
                 }
                 dispatch({
                     type: GET_KEYS_FOR_DOWNLOAD_SUMMARY,
@@ -446,6 +454,26 @@ export function getComparisionSimulationData(data, callback) {
     }
 }
 
+export function pushAPI(data, callback) {            //RE
+    return (dispatch) => {
+        const request = axios.post(API.simualtionPush, data, config())
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    Toaster.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
 export function getSimulationStatus(callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -479,6 +507,32 @@ export function deleteDraftSimulation(data, callback) {
                 dispatch({ type: API_FAILURE });
             });
     };
+}
+
+export function uploadSimulationAttachmentByCategory(data, callback) {            //RE
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.simulationUploadFileByCategory}`, data, config())
+            .then((response) => {
+                callback(response)
+            }).catch(error => {
+                callback(error.response)
+                dispatch({ type: API_FAILURE })
+                callback(error)
+            })
+    }
+}
+export function uploadSimulationAttachmentonFTP(data, callback) {            //RE
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST });
+        axios.post(`${API.simulationUploadFtp}`, data, config())
+            .then((response) => {
+                callback(response)
+            }).catch(error => {
+                callback(error.response)
+                dispatch({ type: API_FAILURE })
+            })
+    }
 }
 
 export function runVerifyExchangeRateSimulation(data, callback) {
@@ -541,7 +595,8 @@ export function getExchangeCostingSimulationList(token, callback) {
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
-                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    // IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation            //RE
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -560,7 +615,6 @@ export function getExchangeCostingSimulationList(token, callback) {
     }
 }
 
-
 export function uploadSimulationAttachment(data, callback) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
@@ -575,6 +629,128 @@ export function uploadSimulationAttachment(data, callback) {
     }
 }
 
+export function setAttachmentFileData(attachmentsData, callback) {            //RE
+    return (dispatch) => {
+        dispatch({
+            type: SET_ATTACHMENT_FILE_DATA,
+            payload: attachmentsData,
+        })
+        callback();
+    }
+};
+
+/**
+ * @method getCombinedProcessList
+ * @description GET PROCESS DATALIST
+ */
+export function getCombinedProcessList(data, callback) {            //RE
+    return (dispatch) => {
+
+        dispatch({ type: API_REQUEST });
+        axios.get(`${API.getCombinedProcessList}?technologyId=${data.technologyId}&vendorId=${data.vendorId}`, config())
+            .then((response) => {
+
+                if (response.data.Result === true || response.status === 204) {
+                    dispatch({
+                        type: GET_COMBINED_PROCESS_LIST,
+                        payload: response.status === 204 ? [] : response.data.DataList
+                    });
+                    callback(response);
+                }
+                //  if (response.data.Result === true) {
+                //     dispatch({
+                //         type: GET_COMBINED_PROCESS_LIST,
+                //         payload: response.data.DataList,
+                //     });
+                //     callback(response);
+                // }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE });
+                callback(error);
+                apiErrors(error);
+            });
+    };
+}
+
+export function runVerifyCombinedProcessSimulation(data, callback) {            //RE
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        const request = axios.post(API.draftCombinedProcessSimulation, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        });
+    }
+}
+
+export function getverifyCombinedProcessSimulationList(token, callback) {            //RE
+    return (dispatch) => {
+        const request = axios.get(`${API.getverifyCombinedProcessSimulationList}?simulationId=${token}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_VERIFY_SIMULATION_LIST,
+                    payload: response.data.Data.SimulationCombinedProcessImpactedCostings
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+export function getFgWiseImpactData(data, callback) {            //RE
+    return (dispatch) => {
+
+        dispatch({
+            type: GET_FG_WISE_IMPACT_DATA,
+            payload: [],
+        })
+
+        const request = axios.get(`${API.getFgWiseImpactData}?simulationId=${data}`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_FG_WISE_IMPACT_DATA,
+                    payload: response.data.DataList,
+                })
+                callback(response)
+            } else if (response.status === 204) {
+                dispatch({
+                    type: GET_FG_WISE_IMPACT_DATA,
+                    payload: [],
+                })
+                callback(response)
+            }
+
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        })
+    }
+}
+
+export function runSimulationOnSelectedCombinedProcessCosting(data, callback) {            //RE
+    return (dispatch) => {
+        const request = axios.post(API.runSimulationOnSelectedCombinedProcessCosting, data, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error);
+            apiErrors(error)
+        })
+    }
+}
 
 
 export function getLastSimulationData(vendorId, effectiveDate, callback) {
@@ -586,7 +762,8 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
             RawMaterialImpactedMasterDataList: [],
             BoughtOutPartImpactedMasterDataList: [],
             SurfaceTreatmentImpactedMasterDataList: [],
-            MachineProcessImpactedMasterDataList: []
+            MachineProcessImpactedMasterDataList: [],
+            // CombinedProcessImpactedMasterDataList: []            //RE
         }
         const queryParams = `vendorId=${vendorId}&effectiveDate=${effectiveDate}`
 
@@ -607,6 +784,44 @@ export function getLastSimulationData(vendorId, effectiveDate, callback) {
     };
 }
 
+export function getCombinedProcessCostingSimulationList(token, callback) {            //RE
+    return (dispatch) => {
+        const request = axios.get(`${API.getCombinedProcessCostingSimulationList}?simulationId=${token}&plantId=''`, config());
+        request.then((response) => {
+            if (response.data.Result) {
+                dispatch({
+                    type: GET_COSTING_SIMULATION_LIST,
+                    payload: response.data.Data.SimulatedCostingList
+                })
+                callback(response)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+        })
+    }
+}
+
+
+export function sapPushedInitialMoment(simulationId, callback) {            //RE
+    return (dispatch) => {
+        const request = axios.get(`${API.sapPushedInitialMoment}?simulationId=${simulationId}`, config());
+        request.then((response) => {
+            // if (response.data.Result) {
+            //     dispatch({
+            //         type: GET_COSTING_SIMULATION_LIST,
+            //         payload: response.data.Data.SimulatedCostingList
+            //     })
+            // }
+            callback(response)
+            // apiErrors(response)
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            callback(error)
+            apiErrors(error);
+        })
+    }
+}
 export function getImpactedMasterData(simulationId, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });
@@ -616,7 +831,8 @@ export function getImpactedMasterData(simulationId, callback) {
             RawMaterialImpactedMasterDataList: [],
             BoughtOutPartImpactedMasterDataList: [],
             SurfaceTreatmentImpactedMasterDataList: [],
-            MachineProcessImpactedMasterDataList: []
+            MachineProcessImpactedMasterDataList: [],
+            // CombinedProcessImpactedMasterDataList: []            //RE
         }
         const queryParams = `simulationId=${simulationId}`
         const request = axios.get(`${API.getImpactedMasterData}?${queryParams}`, config());
@@ -667,6 +883,7 @@ export function getVerifySurfaceTreatmentSimulationList(token, callback) {
         }).catch((error) => {
             dispatch({ type: API_FAILURE });
             apiErrors(error);
+            // callback(error);            //RE
         })
     }
 }
@@ -697,7 +914,8 @@ export function getCostingSurfaceTreatmentSimulationList(token, plantId, rawMatr
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
-                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    // IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation            //RE
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -827,7 +1045,8 @@ export function getCostingBoughtOutPartSimulationList(token, callback) {
                     IsOperationSimulation: response.status === 204 ? false : response?.data?.Data?.IsOperationSimulation,
                     IsRawMaterialSimulation: response.status === 204 ? false : response?.data?.Data?.IsRawMaterialSimulation,
                     IsSurfaceTreatmentSimulation: response.status === 204 ? false : response?.data?.Data?.IsSurfaceTreatmentSimulation,
-                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation
+                    IsMachineProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsMachineProcessSimulation,
+                    // IsCombinedProcessSimulation: response.status === 204 ? false : response?.data?.Data?.IsCombinedProcessSimulation            //RE
                 }
                 dispatch({
                     type: GET_VALUE_TO_SHOW_COSTING_SIMULATION,
@@ -1100,6 +1319,12 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                     payload: []
                 })
                 break;
+            case COMBINED_PROCESS:            //RE
+                dispatch({
+                    type: GET_COMBINED_PROCESS_LIST,
+                    payload: []
+                })
+                break;
 
             //ADD CASE FOR COMBINED PROCESS IN RE (REMINDER)
 
@@ -1156,6 +1381,12 @@ export function getListingForSimulationCombined(requestData, master, callback) {
                     case EXCHNAGERATE:
                         dispatch({
                             type: EXCHANGE_RATE_DATALIST,
+                            payload: response.data.Data
+                        })
+                        break;
+                    case COMBINED_PROCESS:            //RE
+                        dispatch({
+                            type: GET_COMBINED_PROCESS_LIST,
                             payload: response.data.DataList
                         })
                         break;
@@ -1214,7 +1445,6 @@ export function getAmmendentStatus(params, callback) {
     }
 }
 //<----END
-
 
 //FOR SELECTING MASTER LIST IN SIMULATION
 export function getMasterSelectListSimulation(loggedInUserId, callback) {
@@ -1377,6 +1607,31 @@ export function getAllSimulatedMultiTechnologyCosting(simulationId, callback) {
             apiErrors(error);
         });
     };
+}
+
+/**
+ * @method uploadSimulationAttachmentByCategoryAll
+ * @description uploadSimulationAttachmentByCategoryAll
+ */
+export function uploadSimulationAttachmentByCategoryAll(selectedFiles, callback) {            //RE
+    return (dispatch) => {
+        dispatch({ type: API_REQUEST })
+        let temp = []
+        selectedFiles && selectedFiles.map((item) => {
+            let request = axios.post(`${API.simulationUploadFileByCategory}`, item, config())
+            temp.push(request)
+        })
+        axios.all(temp).then((response) => {
+            if (response) {
+                callback(response)
+            } else {
+                Toaster.error(MESSAGES.SOME_ERROR)
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
 }
 
 /**

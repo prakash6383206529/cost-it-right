@@ -168,6 +168,10 @@
       }
     }
   }
+
+  .text-help {
+    position: absolute
+  }
 }
 
 .costing-bop-cost-section {
@@ -221,7 +225,6 @@
   .text-help {
     position: absolute;
   }
-
 }
 
 @media screen and (min-width: $middleDesktop) {

@@ -129,6 +129,8 @@ class AddMachineRate extends Component {
    */
   componentDidMount() {
     const { data, editDetails, initialConfiguration } = this.props;
+    console.log('data: ', data);
+    console.log('editDetails: ', editDetails);
 
 
     // For Showing form in view mode if data is added in add more detail form
@@ -282,7 +284,6 @@ class AddMachineRate extends Component {
   * @description USED TO SET OLD VALUES
   */
   setOldValue = (data) => {
-
     this.setState({
       selectedTechnology: data.selectedTechnology,
       machineType: data.machineType,
@@ -301,12 +302,12 @@ class AddMachineRate extends Component {
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
     this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
     this.props.change('vendorName', data && data.selectedVedor)
+    this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
     setTimeout(() => {
       this.setState({ selectedPlants: data.selectedPlants })
       this.props.change('EffectiveDate', DayTime(data.EffectiveDate).isValid() ? DayTime(data.EffectiveDate) : '')
       this.props.change('Remark', data.Remark ? data.Remark : "")
     }, 200);
-
   }
 
 
@@ -404,7 +405,6 @@ class AddMachineRate extends Component {
             } else {
               plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
             }
-
             this.setState({
               isEditFlag: true,
               IsFinancialDataChanged: false,
@@ -1433,9 +1433,9 @@ class AddMachineRate extends Component {
                               steps: Steps(t).ADD_MACHINE_RATE
                             }} />
                         </h2>
-                      </div>
-                    </div>
-                  </div>
+                      </div >
+                    </div >
+                  </div >
                   <form
                     noValidate
                     className="form"
@@ -1488,7 +1488,7 @@ class AddMachineRate extends Component {
                             <span>Customer Based</span>
                           </Label>}
                         </Col>
-                      </Row>
+                      </Row >
 
                       <Row>
                         <Col md="12">
@@ -1746,8 +1746,8 @@ class AddMachineRate extends Component {
                               onClick={this.processToggler}
                               className={`${isViewMode ? 'disabled' : ''} plus-icon-square mr5 right`}>
                             </div>
-                          </div>
-                        </Col>
+                          </div >
+                        </Col >
                         <Col md="3" className='p-relative'>
                           <Field
                             name="UOM"
@@ -1857,7 +1857,7 @@ class AddMachineRate extends Component {
                           </Table>
 
                         </Col>
-                      </Row>
+                      </Row >
                       {
                         this.state.isProcessGroup &&
                         <Row>
@@ -1871,7 +1871,7 @@ class AddMachineRate extends Component {
                         </Row>
                       }
 
-                      <Row>
+                      < Row >
                         <Col md="12" >
                           <div className="header-title">
                             <h5>{'Remarks & Attachments:'}</h5>
@@ -1952,8 +1952,8 @@ class AddMachineRate extends Component {
                             }
                           </div>
                         </Col>
-                      </Row>
-                    </div>
+                      </Row >
+                    </div >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                         {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
@@ -2008,22 +2008,23 @@ class AddMachineRate extends Component {
                       </div>
 
                     </Row>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </form >
+                </div >
+              </div >
+            </div >
+          </div >
         </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
-        {isOpenMachineType && <AddMachineTypeDrawer
-          isOpen={isOpenMachineType}
-          closeDrawer={this.closeMachineTypeDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-        />
+        {
+          isOpenMachineType && <AddMachineTypeDrawer
+            isOpen={isOpenMachineType}
+            closeDrawer={this.closeMachineTypeDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+          />
         }
         {
           isOpenProcessDrawer && <AddProcessDrawer

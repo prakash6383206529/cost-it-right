@@ -18,7 +18,6 @@ import { debounce } from 'lodash';
 import { ZBCTypeId } from '../../../config/constants';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
-
 class AddZBCPlant extends Component {
   constructor(props) {
     super(props);
@@ -401,6 +400,7 @@ class AddZBCPlant extends Component {
                         name="CompanyName"
                         type="text"
                         label="Company (Code)"
+                        // label="Purchase Group"     //RE
                         component={searchableSelect}
                         placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("Company")}
@@ -450,8 +450,7 @@ class AddZBCPlant extends Component {
                       </Col>
                     </Row>
                   </Col>
-                </Row>
-                <Row className="pl-3">
+
                   <Col md="6">
                     <Field
                       label="Address 1"
@@ -481,8 +480,7 @@ class AddZBCPlant extends Component {
                       disabled={isViewMode}
                     />
                   </Col>
-                </Row>
-                <Row className="pl-3">
+
                   <Col md="6">
                     <Field
                       name="CountryId"
@@ -525,9 +523,7 @@ class AddZBCPlant extends Component {
                       />
                     </Col>
                   )}
-                </Row>
 
-                <Row className="pl-3">
                   <Col md="6">
                     <Field
                       name="CityId"

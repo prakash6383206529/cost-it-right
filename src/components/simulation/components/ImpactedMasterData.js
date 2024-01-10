@@ -5,6 +5,7 @@ import ERSimulation from './SimulationPages/ERSimulation';
 import RMSimulation from './SimulationPages/RMSimulation';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
+import { ProcessListingSimulation } from './ProcessListingSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
 import { AgGridColumn } from 'ag-grid-react';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
@@ -18,7 +19,9 @@ export function Impactedmasterdata(props) {
         let exchangeRateListing = false
         let bopListing = false
         let machineListing = false
+        let combinedProcessListing = false
         let surfaceTreatmentListing = false
+
 
         if (data?.length !== 0) {
             rmListing = data?.RawMaterialImpactedMasterDataList?.length === 0 ? false : true
@@ -27,6 +30,7 @@ export function Impactedmasterdata(props) {
             exchangeRateListing = data?.ExchangeRateImpactedMasterDataList?.length === 0 ? false : true
             bopListing = data?.BoughtOutPartImpactedMasterDataList?.length === 0 || data?.BoughtOutPartImpactedMasterDataList === null ? false : true
             machineListing = data?.MachineProcessImpactedMasterDataList?.length === 0 || data?.MachineProcessImpactedMasterDataList === null ? false : true
+            // combinedProcessListing = (data?.CombinedProcessImpactedMasterDataList?.length > 0) ? true : false                  //RE
         }
         const commonGridColumns = <>
             <AgGridColumn width={140} field="PreviousMinimum" cellRenderer={'nullHandler'} headerName={"Previous Min."} suppressSizeToFit={true}></AgGridColumn>
@@ -52,6 +56,7 @@ export function Impactedmasterdata(props) {
                 {commonGridColumns}
             </BDSimulation>}
             {machineListing && <MRSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.MachineProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} nullHandler={nullHandler}>{commonGridColumns}</MRSimulation>}
+            {/* {combinedProcessListing && <ProcessListingSimulation costingAndPartNo={viewCostingAndPartNo} list={data?.CombinedProcessImpactedMasterDataList} isImpactedMaster={true} isbulkUpload={false} lastRevision={lastRevision} />}                  //RE */}
         </>
         )
 

@@ -172,6 +172,7 @@ class BOMViewer extends Component {
       this.props.getBOMViewerTreeDataByPartIdAndLevel(childData.PartId, 1, res => {
         let Data = res.data.Data.FlowPoints;
 
+
         const DeleteNodeL1 = getRandomSixDigit();
         Data && Data.map((el, index) => {
           tempArray.push({
@@ -191,7 +192,6 @@ class BOMViewer extends Component {
           })
           return null;
         })
-
 
         setTimeout(() => {
 

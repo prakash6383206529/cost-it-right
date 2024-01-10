@@ -12,7 +12,6 @@ import { setCostingViewData } from '../../actions/Costing'
 function ViewMultipleTechnology(props) {
     const { multipleTechnologyData, isPDFShow } = props
     const [viewMultiCost, setViewMultiCost] = useState([])
-
     const [costingDetailId, setCostingDetailId] = useState('')
     const [openDrawer, setOpemDrawer] = useState(false)
     const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -60,11 +59,9 @@ function ViewMultipleTechnology(props) {
                         <thead>
                             <tr>
                                 {props?.costingTypeId === VBCTypeId &&
-                                    <th>{`Vendor (Code)`}</th>
-                                }
+                                    <th>{`Vendor (Code)`}</th>}
                                 {props?.costingTypeId === CBCTypeId &&
-                                    <th>{`Customer (Code)`}</th>
-                                }
+                                    <th>{`Customer (Code)`}</th>}
                                 <th>{`Costing Number`}</th>
                                 <th>{`Part Number`}</th>
                                 <th>{`Name`}</th>
@@ -75,19 +72,17 @@ function ViewMultipleTechnology(props) {
                                 <th>{`BOP Cost`}</th>
                                 <th>{`Part Cost/Assembly`}</th>
                                 <th className="costing-border-right">{`Action`}</th>
-                            </tr>
-                        </thead>
+                            </tr >
+                        </thead >
                         <tbody>
                             {viewMultiCost &&
                                 viewMultiCost.map((item, index) => {
                                     return (
                                         <tr key={index}>
                                             {props?.costingTypeId === VBCTypeId &&
-                                                <th>{`${item?.VendorName} (${item?.VendorCode})`}</th>
-                                            }
+                                                <th>{`${item?.VendorName} (${item?.VendorCode})`}</th>}
                                             {props?.costingTypeId === CBCTypeId &&
-                                                <td>{`${item?.CustomerName} (${item?.CustomerCode})`}</td>
-                                            }
+                                                <td>{`${item?.CustomerName} (${item?.CustomerCode})`}</td>}
                                             <td className={`${isPDFShow ? '' : ''}`}><span title={item?.CostingNumber}>{item?.CostingNumber}</span></td>
                                             <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartNumber}>{item?.PartNumber}</span></td>
                                             <td className={`${isPDFShow ? '' : ''}`}><span title={item?.PartName}>{item?.PartName}</span></td>
@@ -113,20 +108,22 @@ function ViewMultipleTechnology(props) {
                                                 className="float-right mb-0 View "
                                                 onClick={() => viewCosting(item)}
                                             > </button>}</td>
-                                        </tr>
+                                        </tr >
                                     )
                                 })}
-                            {viewMultiCost?.length === 0 && (
-                                <tr>
-                                    <td colSpan={9}>
-                                        <NoContentFound title={EMPTY_DATA} />
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </Table>
-                </Col>
-            </Row>
+                            {
+                                viewMultiCost?.length === 0 && (
+                                    <tr>
+                                        <td colSpan={9}>
+                                            <NoContentFound title={EMPTY_DATA} />
+                                        </td>
+                                    </tr>
+                                )
+                            }
+                        </tbody >
+                    </Table >
+                </Col >
+            </Row >
         </>
     }
     return (

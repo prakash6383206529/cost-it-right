@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Row, Col, Container } from 'reactstrap'
 import { Drawer } from '@material-ui/core'
-import { TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, TextFieldHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useDispatch, useSelector, } from 'react-redux'
+import { typePercentageAndFixed } from '../../../../../config/masterData'
 import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit6, checkForNull, checkForDecimalAndNull } from "../../../../../helper/validation";
 import ConditionCosting from './ConditionCosting'
 import { getCostingCondition } from '../../../../../actions/Common'
@@ -350,50 +351,53 @@ function AddConditionCosting(props) {
                                             disabled={true}
                                         />
                                     </Col>
-                                    {type === 'Quantity' && <Col md="3" className='px-2'>
-                                        <TextFieldHookForm
-                                            label={`Quantity`}
-                                            name={'Quantity'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={true}
-                                            rules={{
-                                                required: true,
-                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                            }}
-                                            handleChange={() => { }}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.Quantity}
-                                            disabled={props.ViewMode}
-                                        />
-                                    </Col>}
-                                    {type === 'Percentage' && <Col md={3} className='px-2'>
-                                        <TextFieldHookForm
-                                            label={`Percentage (%)`}
-                                            name={'Percentage'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={true}
-                                            rules={{
-                                                required: true,
-                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                                max: {
-                                                    value: 100,
-                                                    message: 'Percentage should be less than 100'
-                                                },
-                                            }}
-                                            handleChange={onPercentChange}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.Percentage}
-                                            disabled={props.ViewMode || disableAllFields}
-                                        />
-                                    </Col>}
+                                    {
+                                        type === 'Quantity' && <Col md="3" className='px-2'>
+                                            <TextFieldHookForm
+                                                label={`Quantity`}
+                                                name={'Quantity'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: true,
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                }}
+                                                handleChange={() => { }}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.Quantity}
+                                                disabled={props.ViewMode}
+                                            />
+                                        </Col>
+                                    }
+                                    {
+                                        type === 'Percentage' && <Col md={3} className='px-2'>
+                                            <TextFieldHookForm
+                                                label={`Percentage (%)`}
+                                                name={'Percentage'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: true,
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                    max: {
+                                                        value: 100,
+                                                        message: 'Percentage should be less than 100'
+                                                    },
+                                                }}
+                                                handleChange={onPercentChange}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.Percentage}
+                                                disabled={props.ViewMode || disableAllFields}
+                                            />
+                                        </Col >}
                                     <Col md={3} className={'px-2'}>
                                         {type === 'Percentage' && <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-percent'} tooltipText={'Cost = (Percentage / 100) * Basic Price'} />}
                                         <TextFieldHookForm
@@ -416,64 +420,67 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode || disableTotalCost || disableCurrency}
                                         />
                                     </Col>
-                                    {isFromImport && <Col md={3} className='px-2'>
-                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-currency'} tooltipText={`Cost = Cost (${currency?.label}) * Currency (${currencyValue})`} />
-                                        <TextFieldHookForm
-                                            label={`Cost (${initialConfiguration?.BaseCurrency})`}
-                                            name={'CostBase'}
-                                            id={'cost-by-currency'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={true}
-                                            rules={{
-                                                required: true,
-                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                            }}
-                                            handleChange={handleCostChangeBase}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.CostBase}
-                                            disabled={props.ViewMode || disableTotalCost || disableBase}
-                                        />
-                                    </Col>}
-                                    {type === 'Quantity' && <>
-                                        <Col md={3} className='px-2'>
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost Per Quantity = Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) / Quantity`} />
+                                    {
+                                        isFromImport && <Col md={3} className='px-2'>
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-by-currency'} tooltipText={`Cost = Cost (${currency?.label}) * Currency (${currencyValue})`} />
                                             <TextFieldHookForm
-                                                label={`Cost Per Quantity (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
-                                                name={'ConditionCostPerQuantity'}
-                                                id={'cost-per-quantity'}
+                                                label={`Cost (${initialConfiguration?.BaseCurrency})`}
+                                                name={'CostBase'}
+                                                id={'cost-by-currency'}
                                                 Controller={Controller}
                                                 control={control}
                                                 register={register}
-                                                handleChange={() => { }}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: true,
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                }}
+                                                handleChange={handleCostChangeBase}
                                                 defaultValue={''}
                                                 className=""
                                                 customClassName={'withBorder'}
-                                                errors={errors.ConditionCostPerQuantity}
-                                                disabled={true}
+                                                errors={errors.CostBase}
+                                                disabled={props.ViewMode || disableTotalCost || disableBase}
                                             />
                                         </Col>
-                                        {isFromImport && <Col md={3} className='px-2'>
-                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost Per Quantity = Cost (${initialConfiguration?.BaseCurrency})  / Quantity`} />
-                                            <TextFieldHookForm
-                                                label={`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}
-                                                name={'CostPerQuantityConversion'}
-                                                id={'cost-per-quantity-coversion'}
-                                                Controller={Controller}
-                                                control={control}
-                                                register={register}
-                                                handleChange={() => { }}
-                                                defaultValue={''}
-                                                className=""
-                                                customClassName={'withBorder'}
-                                                errors={errors.CostPerQuantityConversion}
-                                                disabled={true}
-                                            />
-                                        </Col>}
-                                    </>
+                                    }
+                                    {
+                                        type === 'Quantity' && <>
+                                            <Col md={3} className='px-2'>
+                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity'} tooltipText={`Cost Per Quantity = Cost (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency}) / Quantity`} />
+                                                <TextFieldHookForm
+                                                    label={`Cost Per Quantity (${isFromImport ? currency?.label : initialConfiguration?.BaseCurrency})`}
+                                                    name={'ConditionCostPerQuantity'}
+                                                    id={'cost-per-quantity'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.ConditionCostPerQuantity}
+                                                    disabled={true}
+                                                />
+                                            </Col>
+                                            {isFromImport && <Col md={3} className='px-2'>
+                                                <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'cost-per-quantity-coversion'} tooltipText={`Cost Per Quantity = Cost (${initialConfiguration?.BaseCurrency})  / Quantity`} />
+                                                <TextFieldHookForm
+                                                    label={`Cost Per Quantity (${initialConfiguration?.BaseCurrency})`}
+                                                    name={'CostPerQuantityConversion'}
+                                                    id={'cost-per-quantity-coversion'}
+                                                    Controller={Controller}
+                                                    control={control}
+                                                    register={register}
+                                                    handleChange={() => { }}
+                                                    defaultValue={''}
+                                                    className=""
+                                                    customClassName={'withBorder'}
+                                                    errors={errors.CostPerQuantityConversion}
+                                                    disabled={true}
+                                                />
+                                            </Col>}
+                                        </>
                                     }
                                     <Col md="3" className={toggleCondition()}>
                                         <button
@@ -483,7 +490,7 @@ function AddConditionCosting(props) {
                                             disabled={props.ViewMode}
                                         >
                                             {isEditMode ? "" : <div className={"plus"}></div>} {isEditMode ? "UPDATE" : 'ADD'}
-                                        </button>
+                                        </button >
                                         <button
                                             type="button"
                                             className={"reset-btn pull-left mt-1 ml5"}
@@ -492,11 +499,11 @@ function AddConditionCosting(props) {
                                         >
                                             Reset
                                         </button>
-                                    </Col>
-                                </Row>
+                                    </Col >
+                                </Row >
                                 {/* <NpvCost showAddButton={false} tableData={tableData} hideAction={false} editData={editData} /> */}
                                 {<ConditionCosting tableData={tableData} hideAction={false} editData={editData} ViewMode={props.ViewMode} isFromImport={isFromImport} currency={currency} />}
-                            </div>
+                            </div >
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                                 <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
                                     <button
@@ -516,10 +523,10 @@ function AddConditionCosting(props) {
                                     </button>
                                 </div>
                             </Row>
-                        </div>
-                    </Container>
-                </div>
-            </Drawer>
+                        </div >
+                    </Container >
+                </div >
+            </Drawer >
         </div >
 
     )

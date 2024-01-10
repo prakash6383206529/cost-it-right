@@ -278,10 +278,10 @@ function AssemblyPart(props) {
                     <br></br>
                     {/* {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalConversionCost - item?.CostingPartDetails?.TotalOperationCostPerAssembly, initialConfiguration.NoOfDecimalForPrice)}`} */}
                     {`Child Parts Conversion Cost:- ${checkForDecimalAndNull(item?.CostingPartDetails?.TotalOperationCostComponent, initialConfiguration.NoOfDecimalForPrice)}`}
-                  </span>
-                </div> : ''
+                  </span >
+                </div > : ''
             }
-          </td>
+          </td >
           <td>{(item?.PartType === 'Assembly') ? 1 : (item?.CostingPartDetails?.Quantity ? checkForNull(item?.CostingPartDetails?.Quantity) : 1)}</td>
           {/* <td>{item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost ? checkForDecimalAndNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost, initialConfiguration.NoOfDecimalForPrice) : 0}</td> */}
           <td>{'-'}</td>
@@ -291,7 +291,7 @@ function AssemblyPart(props) {
             ? checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCost), initialConfiguration.NoOfDecimalForPrice) :
             checkForDecimalAndNull(checkForNull(item?.CostingPartDetails?.TotalCalculatedRMBOPCCCostWithQuantity), initialConfiguration.NoOfDecimalForPrice)}</td>
 
-        </div>
+        </div >
         {/* 
         {
           costData.IsAssemblyPart && <td>
@@ -299,56 +299,63 @@ function AssemblyPart(props) {
             }
           </td>
         } */}
-        <td width={"0"}>
+        < td width={"0"} >
           <div className='d-flex justify-content-end align-items-center'>
             <div className='d-flex'>
               {(initialConfiguration.IsShowCostingLabour) && ((item.PartType === ASSEMBLYNAME) || (costData.CostingTypeId === WACTypeId)) && <><button
                 type="button"
                 className={'user-btn add-oprn-btn mr-1'}
                 onClick={labourHandlingDrawer}>
-                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button>
+                <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`LABOUR`}</button >
               </>}
-              {isBOPExists && item?.CostingPartDetails?.IsOpen && <><button
-                type="button"
-                className={'user-btn add-oprn-btn mr-1'}
-                onClick={bopHandlingDrawer}>
-                <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
-              </>}
-              {checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
-                <button
+              {
+                isBOPExists && item?.CostingPartDetails?.IsOpen && <><button
                   type="button"
-                  className={'user-btn add-oprn-btn'}
-                  onClick={DrawerToggle}>
-                  <div className={'fa fa-eye pr-1'}></div>OPER</button>
-                :
-                <button
-                  type="button"
-                  className={'user-btn add-oprn-btn'}
-                  onClick={DrawerToggle}>
-                  <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>}
-            </div>
+                  className={'user-btn add-oprn-btn mr-1'}
+                  onClick={bopHandlingDrawer}>
+                  <div className={`${(item?.CostingPartDetails?.IsApplyBOPHandlingCharges || CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{`BOP H`}</button>
+                </>
+              }
+              {
+                checkForNull(item?.CostingPartDetails?.TotalOperationCostPerAssembly) !== 0 ?
+                  <button
+                    type="button"
+                    className={'user-btn add-oprn-btn'}
+                    onClick={DrawerToggle}>
+                    <div className={'fa fa-eye pr-1'}></div>OPER</button>
+                  :
+                  <button
+                    type="button"
+                    className={'user-btn add-oprn-btn'}
+                    onClick={DrawerToggle}>
+                    <div className={`${(CostingViewMode || IsLocked) ? 'fa fa-eye pr-1' : 'plus'}`}></div>{'OPER'}</button>
+              }
+            </div >
             {/*WHEN COSTING OF THAT PART IS  APPROVED SO COSTING COMES AUTOMATICALLY FROM BACKEND AND THIS KEY WILL COME TRUE (WORK LIKE VIEW MODE)*/}
-            <div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}>{(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div>
-          </div>
-        </td>
+            < div className={`${(item.IsLocked || item.IsPartLocked) ? 'lock_icon ml-3 tooltip-n' : ''}`}> {(item.IsLocked || item.IsPartLocked) && <span class="tooltiptext">{`${item.IsLocked ? "Child assemblies costing are coming from individual costing, please edit there if want to change costing" : "This sub-assembly is already present at multiple level in this BOM. Please go to the lowest level to enter the data."}`}</span>}</div >
+          </div >
+        </td >
 
         {/* <td className="text-right"></td> */}
-      </tr>
-      {item?.CostingPartDetails?.IsOpen && nestedPartComponent}
+      </tr >
+      {item?.CostingPartDetails?.IsOpen && nestedPartComponent
+      }
       {item?.CostingPartDetails?.IsOpen && nestedBOP}
       {item?.CostingPartDetails?.IsOpen && nestedAssembly}
 
-      {IsDrawerOpen && <AddAssemblyOperation
-        isOpen={IsDrawerOpen}
-        closeDrawer={closeDrawer}
-        isEditFlag={false}
-        ID={''}
-        anchor={'right'}
-        item={item}
-        CostingViewMode={CostingViewMode}
-        setAssemblyOperationCost={props.setAssemblyOperationCost}
-        setAssemblyToolCost={props.setAssemblyToolCost}
-      />}
+      {
+        IsDrawerOpen && <AddAssemblyOperation
+          isOpen={IsDrawerOpen}
+          closeDrawer={closeDrawer}
+          isEditFlag={false}
+          ID={''}
+          anchor={'right'}
+          item={item}
+          CostingViewMode={CostingViewMode}
+          setAssemblyOperationCost={props.setAssemblyOperationCost}
+          setAssemblyToolCost={props.setAssemblyToolCost}
+        />
+      }
       {
         isOpenBOPDrawer &&
         <AddBOPHandling

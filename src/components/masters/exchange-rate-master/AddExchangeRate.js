@@ -291,9 +291,6 @@ class AddExchangeRate extends Component {
         IsBudgeting: budgeting
       }
       if (isEditFlag) {
-        // if(){
-
-        // }
         this.props.updateExchangeRate(updateData, (res) => {
           this.setState({ setDisable: false })
           if (res?.data?.Result) {

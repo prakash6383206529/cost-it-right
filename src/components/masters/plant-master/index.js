@@ -144,4 +144,3 @@ export default connect(mapStateToProps,
     {
     }
 )(PlantMaster);
-

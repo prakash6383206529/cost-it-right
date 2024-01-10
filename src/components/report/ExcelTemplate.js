@@ -20,6 +20,7 @@ export const CUSTOMER_POAM_EXCEL_TEMPLATE = [
     { label: 'Plant (Code)', value: 'PlantName', },
     { label: 'Customer (Code)', value: 'CustomerName', },
     { label: 'Product Category', value: 'GroupCode', },
+    { label: 'Part Description', value: 'PartDescription', },                   //RE
     { label: 'Status of last Quarter II', value: 'LastQuarterQuantity', },
     { label: 'Sale Parts Quantity (No.)', value: 'TotalDispatchQuantity', },
     { label: 'Poam Received Quantity (No.)', value: 'TotalPOAMReceivedQuantity', },
@@ -115,6 +116,7 @@ export const GOT_GIVEN_EXCEL_TEMPLATE = [
     { label: 'Vendor Name', value: 'givenVendorName' },
     { label: 'SAP Code', value: 'givenSAPCode' },
     { label: 'Material Description', value: 'givenPartDescription' },
+    // { label: 'Part Description', value: 'givenPartDescription' },    //RE
     { label: 'Type', value: 'givenPartType' },
     { label: 'GW', value: 'givenRawMaterialGrossWeight' },
     { label: 'RM Rate', value: 'givenRawMaterialRate' },

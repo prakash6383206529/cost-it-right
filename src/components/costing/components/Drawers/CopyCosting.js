@@ -13,10 +13,7 @@ import PopupMsgWrapper from '../../../common/PopupMsgWrapper';
 import _, { debounce } from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import LoaderCustom from '../../../common/LoaderCustom';
-
 function CopyCosting(props) {
-  const loggedUserId = loggedInUserId()
-
   const { copyCostingData, partNo, type, zbcPlantGrid, vbcVendorGrid, nccGrid, cbcGrid } = props
 
   const { register, control, formState: { errors }, handleSubmit, setValue } = useForm({
@@ -169,7 +166,7 @@ function CopyCosting(props) {
     copyCostingObj.ToVendorId = toVendor?.value
     copyCostingObj.ToCustomerId = toCustomer?.value
     copyCostingObj.EffectiveDate = DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss')
-    copyCostingObj.LoggedInUserId = loggedUserId
+    copyCostingObj.LoggedInUserId = loggedInUserId()
     copyCostingObj.IsDuplicate = getConfigurationKey().IsExactCopyCosting
     setIsLoader(true)
     dispatch(checkDataForCopyCosting(checkCostingObj, (res) => {
@@ -275,36 +272,40 @@ function CopyCosting(props) {
                 </Col>
               </Row>
               <Row className="pl-3">
-                {(type === VBCTypeId || type === NCCTypeId) && <Col md="12"> <TextFieldHookForm
-                  label={"Vendor (Code)"}
-                  name={"Vendor"}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={copyCostingData.VendorName}
-                  className=""
-                  customClassName={"withBorder mb-0"}
-                  errors={errors.Vendor}
-                  disabled={true}
-                />
-                </Col>}
-                {(type === CBCTypeId) && <Col md="12"> <TextFieldHookForm
-                  label={"Customer (Code)"}
-                  name={"customer"}
-                  Controller={Controller}
-                  control={control}
-                  register={register}
-                  mandatory={false}
-                  handleChange={() => { }}
-                  defaultValue={copyCostingData.Customer}
-                  className=""
-                  customClassName={"withBorder mb-0"}
-                  errors={errors.customer}
-                  disabled={true}
-                />
-                </Col>}
+                {
+                  (type === VBCTypeId || type === NCCTypeId) && <Col md="12"> <TextFieldHookForm
+                    label={"Vendor (Code)"}
+                    name={"Vendor"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={copyCostingData.VendorName}
+                    className=""
+                    customClassName={"withBorder mb-0"}
+                    errors={errors.Vendor}
+                    disabled={true}
+                  />
+                  </Col>
+                }
+                {
+                  (type === CBCTypeId) && <Col md="12"> <TextFieldHookForm
+                    label={"Customer (Code)"}
+                    name={"customer"}
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    mandatory={false}
+                    handleChange={() => { }}
+                    defaultValue={copyCostingData.Customer}
+                    className=""
+                    customClassName={"withBorder mb-0"}
+                    errors={errors.customer}
+                    disabled={true}
+                  />
+                  </Col>
+                }
 
                 <Col md="12">
                   <TextFieldHookForm
@@ -338,7 +339,7 @@ function CopyCosting(props) {
                     disabled={true}
                   />
                 </Col>
-              </Row>
+              </Row >
               <hr />
               <Row className="pl-3 align-items-center">
                 <Col md="6">
@@ -408,67 +409,73 @@ function CopyCosting(props) {
                 </Col>
               </Row>
 
-              {(costingTypeId === VBCTypeId || costingTypeId === NCCTypeId) && (
-                <Row className="pl-3">
-                  <div className="form-group mb-1 col-md-12">
-                    <SearchableSelectHookForm
-                      label={"Vendor (Code)"}
-                      name={"toVendor"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      defaultValue={""}
-                      options={costingTypeId === VBCTypeId ? vendorName : nccVendor}
-                      mandatory={true}
-                      handleChange={handleToVendorName}
-                      errors={errors.toVendor}
-                      disabled={false}
-                    />
-                  </div>
-                </Row>
-              )}
-              {costingTypeId === CBCTypeId && (
-                <Row className="pl-3">
-                  <div className="form-group mb-1 col-md-12">
-                    <SearchableSelectHookForm
-                      label={"Customer (Code)"}
-                      name={"toCustomer"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: false }}
-                      register={register}
-                      // defaultValue={customer.length !== 0 ? customer : ""}
-                      options={customer}
-                      mandatory={false}
-                      handleChange={handleCustomerChange}
-                      errors={errors.toCustomer}
-                    />
-                  </div>
-                </Row>
-              )}
-              {((costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === VBCTypeId || costingTypeId === NCCTypeId || costingTypeId === ZBCTypeId)) && (
-                <Row className="pl-3">
-                  <div className="form-group mb-1 col-md-12">
-                    <SearchableSelectHookForm
-                      label={`${costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}`}
-                      name={"toPlant"}
-                      placeholder={"Select"}
-                      Controller={Controller}
-                      control={control}
-                      rules={{ required: true }}
-                      register={register}
-                      //defaultValue={plant.length !== 0 ? plant : ''}
-                      options={costingTypeId === ZBCTypeId ? plantDropDownList : costingTypeId === CBCTypeId ? customerPlant : costingTypeId === VBCTypeId ? destinationPlant : nccPlant}
-                      mandatory={true}
-                      handleChange={handlePlantChange}
-                      errors={errors.toPlant}
-                    />
-                  </div>
-                </Row>
-              )}
+              {
+                (costingTypeId === VBCTypeId || costingTypeId === NCCTypeId) && (
+                  <Row className="pl-3">
+                    <div className="form-group mb-1 col-md-12">
+                      <SearchableSelectHookForm
+                        label={"Vendor (Code)"}
+                        name={"toVendor"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        defaultValue={""}
+                        options={costingTypeId === VBCTypeId ? vendorName : nccVendor}
+                        mandatory={true}
+                        handleChange={handleToVendorName}
+                        errors={errors.toVendor}
+                        disabled={false}
+                      />
+                    </div>
+                  </Row>
+                )
+              }
+              {
+                costingTypeId === CBCTypeId && (
+                  <Row className="pl-3">
+                    <div className="form-group mb-1 col-md-12">
+                      <SearchableSelectHookForm
+                        label={"Customer (Code)"}
+                        name={"toCustomer"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: false }}
+                        register={register}
+                        // defaultValue={customer.length !== 0 ? customer : ""}
+                        options={customer}
+                        mandatory={false}
+                        handleChange={handleCustomerChange}
+                        errors={errors.toCustomer}
+                      />
+                    </div>
+                  </Row >
+                )
+              }
+              {
+                ((costingTypeId === CBCTypeId && getConfigurationKey().IsCBCApplicableOnPlant) || (costingTypeId === VBCTypeId || costingTypeId === NCCTypeId || costingTypeId === ZBCTypeId)) && (
+                  <Row className="pl-3">
+                    <div className="form-group mb-1 col-md-12">
+                      <SearchableSelectHookForm
+                        label={`${costingTypeId === VBCTypeId || costingTypeId === NCCTypeId ? 'Destination Plant (Code)' : 'Plant (Code)'}`}
+                        name={"toPlant"}
+                        placeholder={"Select"}
+                        Controller={Controller}
+                        control={control}
+                        rules={{ required: true }}
+                        register={register}
+                        //defaultValue={plant.length !== 0 ? plant : ''}
+                        options={costingTypeId === ZBCTypeId ? plantDropDownList : costingTypeId === CBCTypeId ? customerPlant : costingTypeId === VBCTypeId ? destinationPlant : nccPlant}
+                        mandatory={true}
+                        handleChange={handlePlantChange}
+                        errors={errors.toPlant}
+                      />
+                    </div>
+                  </Row>
+                )
+              }
               <div className="form-group mb-0 col-md-12 pl-2 pr-4 ml-1 mr-2">
                 <div className="inputbox date-section">
                   <DatePickerHookForm
@@ -525,11 +532,11 @@ function CopyCosting(props) {
 
                 </div>
               </Row>
-            </form>
-          </div>
+            </form >
+          </div >
 
-        </Container>
-      </Drawer>
+        </Container >
+      </Drawer >
       {
         showPopup && <PopupMsgWrapper className={'main-modal-container'} isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} disablePopup={disablePopup} message={`${!msgObj.IsRMExist ? 'Raw Material,' : ''}${!msgObj.IsOperationExist ? 'Operation,' : ''}${!msgObj.IsBOPExist ? 'BOP,' : ''}${!msgObj.IsProcessExist ? 'Process,' : ''}${!msgObj.IsOtherOperationExist ? `Other Operation is not available for the selected vendor. Do you still wish to continue ?` : ` is not available for the selected vendor. Do you still wish to continue ?`}`} />
       }

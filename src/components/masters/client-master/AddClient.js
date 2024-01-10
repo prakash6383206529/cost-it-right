@@ -14,7 +14,6 @@ import { MESSAGES } from '../../../config/message';
 import { loggedInUserId } from "../../../helper/auth";
 import ClientListing from './ClientListing';
 
-
 class AddClient extends Component {
     constructor(props) {
         super(props);
