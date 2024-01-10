@@ -659,6 +659,9 @@ export const API = {
   getUserSimulationTechnologyLevel: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
   getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
 
+  //AUDIT API
+
+  getAuditList: `${BASE_URL}/auditlogs/get-user-audit-log`,
 
   //ROLES API
   addRoleAPI: `${BASE_URL}/user-role/create-new`,
@@ -1385,6 +1388,10 @@ export const GET_INTEREST_RATE_DATA_SUCCESS = 'GET_INTEREST_RATE_DATA_SUCCESS'
 export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST'
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST'
 export const GET_LAST_SIMULATION_DATA = 'GET_LAST_SIMULATION_DATA'
+
+//AUDIT
+
+export const GET_LOGIN_AUDIT_SUCCESS = 'GET_LOGIN_AUDIT_SUCCESS'
 
 //COSTING
 export const GET_COSTING_TECHNOLOGY_SELECTLIST = 'GET_COSTING_TECHNOLOGY_SELECTLIST';
@@ -2447,6 +2454,7 @@ export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 export const ReportMaster = "Report-rate"
 export const UserListing = "User-Listing"
+export const AuditLisitng = "Audit-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"

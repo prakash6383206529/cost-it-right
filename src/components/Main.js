@@ -74,6 +74,8 @@ import OutsourcingListing from './masters/outsourcing-master/OutsourcingListing'
 import CostingForm from './costing/components'
 import SimulationForm from './simulation/components'
 import ResetPassword from './login/ResetPassword'
+import { AUDIT } from '../config/constants'
+import LoginAudit from './audit/LoginAudit'
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -384,6 +386,10 @@ class Main extends Component {
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
                     <Route path="/got-given-summary-details-report" component={GotGivenReport} />
                     <Route path="/out-sourcing-master" component={AuthMiddleware(OutsourcingListing, OUTSOURCING)} />
+                    <Route path="/login-audit" component={LoginAudit} />
+
+
+
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}

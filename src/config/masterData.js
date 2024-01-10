@@ -5759,6 +5759,16 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
 
 ]
 
+export const AUDIT_LISTING_DOWNLOAD_EXCEl = [
+    { label: "UserName", value: "UserName", },
+    { label: "IPAddress", value: "IPAddress", },
+    { label: "macAddress", value: "MacAddress", },
+    { label: "LoginTime", value: "LoginTime", },
+    { label: "UserAgent", value: "UserAgent", },
+    { label: "UserAuditLogId", value: "UserAuditLogId", }
+
+]
+
 export const RM_IMPACT_DOWNLOAD_EXCEl = [
     { label: "Raw Material", value: "RawMaterialName", },
     { label: "Grade", value: "RawMaterialGradeName", },
