@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react'
 import { Row, Col, Table } from 'reactstrap'
 import { useForm, Controller, useWatch } from 'react-hook-form'
 import { useSelector } from 'react-redux'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../layout/HookFormInputs'
 import NoContentFound from '../../../common/NoContentFound'
 import { EMPTY_DATA } from '../../../../config/constants'
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, number, checkWhiteSpaces, decimalAndNumberValidation, decimalNumberLimit3, maxLength200 } from '../../../../helper'
@@ -155,6 +155,7 @@ function MachiningStockTable(props) {
   }
 
   const calculateforgingVolumeAndWeight = (value) => {
+    const description = getValues('description')
     const majorDiameter = checkForNull(getValues('majorDiameter'))
     const minorDiameter = checkForNull(getValues('minorDiameter'))
     const Length = checkForNull(getValues('Length'))
@@ -490,11 +491,12 @@ function MachiningStockTable(props) {
                 errors={errors.Length}
                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
-            </Col>
+            </Col >
           </>}
 
 
-        {circularMachiningStock &&
+        {
+          circularMachiningStock &&
           <>
             <Col md="3">
               <TextFieldHookForm
@@ -519,7 +521,7 @@ function MachiningStockTable(props) {
                 errors={errors.majorDiameter}
                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
-            </Col>
+            </Col >
 
             <Col md="3">
               <TextFieldHookForm
@@ -544,9 +546,10 @@ function MachiningStockTable(props) {
                 errors={errors.minorDiameter}
                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
-            </Col>
+            </Col >
           </>}
-        {squareMachiningStock &&
+        {
+          squareMachiningStock &&
           <>
             <Col md="2">
               <TextFieldHookForm
@@ -590,9 +593,10 @@ function MachiningStockTable(props) {
                 errors={errors.Height}
                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
-            </Col>
+            </Col >
           </>}
-        {rectangularMachiningStock &&
+        {
+          rectangularMachiningStock &&
           <>
 
             <Col md="2">
@@ -614,7 +618,7 @@ function MachiningStockTable(props) {
                 errors={errors.No}
                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
-            </Col>
+            </Col >
 
             <Col md="2">
               <TextFieldHookForm
@@ -655,10 +659,11 @@ function MachiningStockTable(props) {
                 errors={errors.Height}
                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
-            </Col>
+            </Col >
 
           </>}
-        {irregularMachiningStock &&
+        {
+          irregularMachiningStock &&
           <>
             <Col md="3">
               <TextFieldHookForm
@@ -680,7 +685,7 @@ function MachiningStockTable(props) {
                 errors={errors.No}
                 disabled={props.CostingViewMode || forgingCalculatorMachiningStockSectionValue || disableAll ? true : false}
               />
-            </Col>
+            </Col >
           </>}
         <Col md="3">
           {disable && tooltipMessageForVolume && <TooltipCustom disabledIcon={true} tooltipClass={`${tooltipClassShow ? 'weight-of-sheet' : ''}`} id={'forging-volume'} tooltipText={tooltipMessageForVolume} />}
@@ -699,7 +704,7 @@ function MachiningStockTable(props) {
             errors={errors.forgingVolume}
             disabled={disable}
           />
-        </Col>
+        </Col >
         <Col md="3">
           {tooltipMessageForGross && <TooltipCustom disabledIcon={true} id={'forging-gross-weight'} tooltipText={tooltipMessageForGross} />}
           <TextFieldHookForm
@@ -717,7 +722,7 @@ function MachiningStockTable(props) {
             errors={errors.grossWeight}
             disabled={true}
           />
-        </Col>
+        </Col >
 
         <Col md="3" className="pr-0">
           <div>
@@ -836,9 +841,9 @@ function MachiningStockTable(props) {
           </div>
         </Col>
 
-      </Row>
+      </Row >
 
-    </Fragment>
+    </Fragment >
   )
 }
 

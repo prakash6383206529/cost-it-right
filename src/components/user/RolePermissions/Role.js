@@ -119,7 +119,7 @@ const Role = (props) => {
 
   const cancel = () => {
     reset();
-    dispatch(setEmptyRoleDataAPI("", () => {}));
+    dispatch(setEmptyRoleDataAPI("", () => { }));
     setIsEditFlag(false);
     setModules([]);
     setRoleId("");
@@ -131,8 +131,8 @@ const Role = (props) => {
     setIsLoader(false);
     setIsEditFlag(false);
     setModules([]);
-    dispatch(getAllRoleAPI((res) => {}));
-    dispatch(setEmptyRoleDataAPI("", () => {}));
+    dispatch(getAllRoleAPI((res) => { }));
+    dispatch(setEmptyRoleDataAPI("", () => { }));
     props.hideForm();
   };
 
@@ -244,7 +244,7 @@ const Role = (props) => {
                           mandatory
                           errors={errors.RoleName}
                           rules={{}}
-                          handleChange={(e) => {}}
+                          handleChange={(e) => { }}
                         />
                         <label
                           className={`custom-checkbox ml-2 mt-1`}

@@ -455,6 +455,7 @@ class AddMoreDetails extends Component {
               isLoader: false,
               IsPurchased: Data.OwnershipIsPurchased,
               selectedTechnology: [{ label: Data.Technology && Data.Technology[0].Technology, value: Data.Technology && Data.Technology[0].TechnologyId }],
+              // selectedPlants: { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId },  //RE
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
@@ -911,7 +912,6 @@ class AddMoreDetails extends Component {
     this.setState({
       DateOfPurchase: date,
     });
-
     setTimeout(() => {
       this.calculateDepreciation(date)
     }, 300);
@@ -2091,6 +2091,7 @@ class AddMoreDetails extends Component {
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
+      selectedPlants: selectedPlants, //RE
       CustomerId: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.value : null,
       CustomerName: this.state.CostingTypeId === CBCTypeId ? this.state.selectedCustomer.label : "",
       selectedCustomer: this.state.selectedCustomer,
@@ -2113,7 +2114,6 @@ class AddMoreDetails extends Component {
     if (isEditFlag && this.state.isFinalApprovar) {               //editDetails.isIncompleteMachine &&
 
       // EXECUTED WHEN:- ADD MACHINE DONE AND ADD MORE DETAIL CALLED FROM ADDMACHINERATE.JS FILE
-
 
       if (IsFinancialDataChanged && isEditFlag) {
 
@@ -2584,9 +2584,9 @@ class AddMoreDetails extends Component {
                           />
                           }
                         </h2>
-                      </div>
-                    </div>
-                  </div>
+                      </div >
+                    </div >
+                  </div >
                   <form
                     noValidate
                     className="form"
@@ -2664,9 +2664,12 @@ class AddMoreDetails extends Component {
                             type="text"
                             placeholder={this.state.isViewFlag ? '-' : 'Enter'}
                             validate={[acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
+                            //RE SPECIFIC MACHINE NAME REQUIRED
+                            //  validate={[required, acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, maxLength80, checkSpacesInString, hashValidation]}
                             component={renderText}
                             required={false}
                             disabled={this.state.isViewFlag ? true : false}
+                            // disabled={(this.state.isViewFlag || this.state.isEditFlag) ? true : false}  //RE 
                             className=" "
                             customClassName="withBorder"
                           />
@@ -4316,7 +4319,7 @@ class AddMoreDetails extends Component {
                                       onClick={this.resetProcessGridData}
                                     >Reset</button> </>}
                               </div>
-                            </Col>
+                            </Col >
                             <Col md="12">
                               <Table className="table border" size="sm" >
                                 <thead>
@@ -4357,42 +4360,46 @@ class AddMoreDetails extends Component {
                               </Table>
 
                             </Col>
-                          </div>
+                          </div >
                         }
-                      </Row>
+                      </Row >
 
                       {
                         this.state.isProcessGroup &&
                         <Row className='mb-3 accordian-container'>
-                          <Col md="6" className='d-flex align-items-center'>
+                          < Col md="6" className='d-flex align-items-center' >
                             <HeaderTitle
                               title={'Process Group:'} />
-                            {isProcessGroupOpen && (
-                              <div>
-                                <Button
-                                  id="addPower_guide"
-                                  variant={"ml-2"}
-                                  className={`guide-bulb${tourContainer.processGroupTour ? "-on" : ""} ${false ? "" : "d-none"}`}
-                                  onClick={() => this.updateTourContainer('processGroupTour', 'start')}
-                                  title='Guide'
-                                />
-                                {tourContainer.processGroupTour && <TourWrapper steps={Steps(t).ADD_MACHINE_PROCESS_GROUP} stepsEnable={true} start={tourContainer.processGroupTour}
-                                  onExit={() => this.updateTourContainer('processGroupTour', 'exit')}
-                                />
-                                }
-                              </div>)}
-                          </Col>
+                            {
+                              isProcessGroupOpen && (
+                                <div>
+                                  <Button
+                                    id="addPower_guide"
+                                    variant={"ml-2"}
+                                    className={`guide-bulb${tourContainer.processGroupTour ? "-on" : ""} ${false ? "" : "d-none"}`}
+                                    onClick={() => this.updateTourContainer('processGroupTour', 'start')}
+                                    title='Guide'
+                                  />
+                                  {tourContainer.processGroupTour && <TourWrapper steps={Steps(t).ADD_MACHINE_PROCESS_GROUP} stepsEnable={true} start={tourContainer.processGroupTour}
+                                    onExit={() => this.updateTourContainer('processGroupTour', 'exit')}
+                                  />
+                                  }
+                                </div>)
+                            }
+                          </Col >
                           <Col md="6">
                             <div className={'right-details text-right'}>
                               <button className="btn btn-small-primary-circle ml-1" onClick={this.processGroupToggle} type="button">{isProcessGroupOpen ? <i className="fa fa-minus"></i> : <i className="fa fa-plus"></i>}</button>
                             </div>
                           </Col>
-                          {isProcessGroupOpen && <div className="accordian-content row mx-0 w-100">
-                            <Col md="12">
-                              <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} setRowData={this.setRowdata} checksFinancialDataChanged={this.checksFinancialDataChanged} />
-                            </Col>
-                          </div>}
-                        </Row>
+                          {
+                            isProcessGroupOpen && <div className="accordian-content row mx-0 w-100">
+                              <Col md="12">
+                                <ProcessGroup isViewFlag={this.state.isViewFlag} isEditFlag={isEditFlag} processListing={this.state.processGrid} isListing={false} isViewMode={this.state.isViewMode} changeDropdownValue={this.changeDropdownValue} showDelete={this.showDelete} setRowData={this.setRowdata} checksFinancialDataChanged={this.checksFinancialDataChanged} />
+                              </Col>
+                            </div>
+                          }
+                        </Row >
                       }
                       <Row>
                         <Col md="12" className="filter-block">
@@ -4476,8 +4483,8 @@ class AddMoreDetails extends Component {
                             }
                           </div>
                         </Col>
-                      </Row>
-                    </div>
+                      </Row >
+                    </div >
                     <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                       <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                         {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}
@@ -4489,48 +4496,51 @@ class AddMoreDetails extends Component {
                         </button>
 
 
-                        {!isViewMode && <>
-                          {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
-                            <button id="AddMoreDetails_SendForApproval" type="submit"
-                              class="user-btn approval-btn save-btn mr5"
+                        {
+                          !isViewMode && <>
+                            {(!isViewMode && (CheckApprovalApplicableMaster(MACHINE_MASTER_ID) === true && !this.state.isFinalApprovar) && initialConfiguration.IsMasterApprovalAppliedConfigure) || !CostingTypePermission ?
+                              <button id="AddMoreDetails_SendForApproval" type="submit"
+                                class="user-btn approval-btn save-btn mr5"
 
-                              disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
-                            >
-                              <div className="send-for-approval"></div>
-                              {'Send For Approval'}
-                            </button>
-                            :
+                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
+                              >
+                                <div className="send-for-approval"></div>
+                                {'Send For Approval'}
+                              </button>
+                              :
 
-                            <button
-                              type="submit"
-                              className="user-btn mr5 save-btn"
-                              disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
-                            >
-                              <div className={"save-icon"}></div>
-                              {isEditFlag ? "Update" : "Save"}
-                            </button>
-                          }
-                        </>}
+                              <button
+                                type="submit"
+                                className="user-btn mr5 save-btn"
+                                disabled={this.state.isViewMode || this.state.setDisable || disableSendForApproval}
+                              >
+                                <div className={"save-icon"}></div>
+                                {isEditFlag ? "Update" : "Save"}
+                              </button>
+                            }
+                          </>
+                        }
 
-                      </div>
-                    </Row>
+                      </div >
+                    </Row >
 
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </form >
+                </div >
+              </div >
+            </div >
+          </div >
         </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
-        {isOpenMachineType && <AddMachineTypeDrawer
-          isOpen={isOpenMachineType}
-          closeDrawer={this.closeMachineTypeDrawer}
-          isEditFlag={false}
-          ID={''}
-          anchor={'right'}
-        />
+        {
+          isOpenMachineType && <AddMachineTypeDrawer
+            isOpen={isOpenMachineType}
+            closeDrawer={this.closeMachineTypeDrawer}
+            isEditFlag={false}
+            ID={''}
+            anchor={'right'}
+          />
         }
         {
           isOpenAvailability && <EfficiencyDrawer

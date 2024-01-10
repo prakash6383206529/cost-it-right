@@ -35,9 +35,10 @@ export function loginUserAPI(requestData, callback) {
     return (dispatch) => {
         dispatch({ type: AUTH_API_REQUEST });
         axios.post(API.login, requestData, config())
+            // axios.post(API.login, requestData, CustomHeader)          						//RE
             .then((response) => {
                 if (response && response.data && response.data.Result) {
-                    dispatch(getLoginSuccess(response));
+                    // dispatch(getLoginSuccess(response));
                     callback(response);
                 }
             })
@@ -1602,6 +1603,7 @@ export function getUsersSimulationTechnologyLevelAPI(UserId, technologyId, callb
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
         const request = axios.get(`${API.getUserSimulationTechnologyLevel}/${UserId}/${technologyId}`, config());
+        // const request = axios.get(`${API.getUserSimulationTechnologyLevelForCosting}/${UserId}/${technologyId}`, config());          						//RE
         request.then((response) => {
             dispatch({ type: API_SUCCESS });
             if (response && response.data && response.data.Result) {

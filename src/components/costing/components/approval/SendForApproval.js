@@ -7,7 +7,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { SearchableSelectHookForm, TextAreaHookForm, DatePickerHookForm, NumberFieldHookForm, } from '../../../layout/HookFormInputs'
 import { getReasonSelectList, getAllApprovalDepartment, getAllApprovalUserFilterByDepartment, sendForApprovalBySender, approvalRequestByApprove } from '../../actions/Approval'
 import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper/auth'
-import { setCostingApprovalData, setCostingViewData, fileUploadCosting, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
+import { setCostingApprovalData, setCostingViewData, fileUploadCosting, checkHistoryCostingAndSAPPoPrice, checkFinalUser, getReleaseStrategyApprovalDetails } from '../../actions/Costing'
 import { getVolumeDataByPartAndYear, checkRegularizationLimit } from '../../../masters/actions/Volume'
 
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, userTechnologyLevelDetails } from '../../../../helper'
@@ -21,12 +21,14 @@ import Dropzone from 'react-dropzone-uploader'
 import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
+import PushSection from '../../../common/PushSection'
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
 import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
+import { reactLocalStorage } from 'reactjs-localstorage'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -900,9 +902,9 @@ const SendForApproval = (props) => {
                             <label>Basic Price</label>
                             <label className="form-control bg-grey input-form-control">
                               {data.BasicRate && data.BasicRate !== '-' ? checkForDecimalAndNull(data.BasicRate, initialConfiguration.NoOfDecimalForPrice) : 0}
-                            </label>
-                          </div>
-                        </Col>}
+                            </label >
+                          </div >
+                        </Col >}
                         <Col md="4">
                           <div className="form-group">
                             <label>Existing Price</label>
@@ -929,70 +931,72 @@ const SendForApproval = (props) => {
                           </div>
                         </Col>
 
-                        {viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
-                          <Col md="4">
-                            <div className="form-group">
-                              <TooltipCustom disabledIcon={true} id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
-                              <label>Consumed Quantity</label>
-                              <div className="d-flex align-items-center">
-                                <label id={"consumed-quantity"} className="form-control bg-grey input-form-control">
-                                  {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
-                                </label>
-                                {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
+                        {
+                          viewApprovalData && viewApprovalData[0]?.CostingHead !== NCC && <>
+                            <Col md="4">
+                              <div className="form-group">
+                                <TooltipCustom disabledIcon={true} id={"consumed-quantity"} tooltipText={`Consumed Quantity is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                                <label>Consumed Quantity</label>
+                                <div className="d-flex align-items-center">
+                                  <label id={"consumed-quantity"} className="form-control bg-grey input-form-control">
+                                    {checkForDecimalAndNull(data.consumptionQty, initialConfiguration.NoOfDecimalForPrice)}
+                                  </label>
+                                  {/* <div class="plus-icon-square  right m-0 mb-1"></div> */}
+                                </div>
                               </div>
-                            </div>
-                          </Col>
-                          <Col md="4">
-                            <div className="form-group">
-                              <TooltipCustom id={"remaining-budgeted-quantity-formula"} disabledIcon={true} tooltipText={`Budgeted Quantity (Refer From Volume Master) - Consumed Quantity`} />
-                              <label>Remaining Budgeted Quantity</label>
-                              <label id={"remaining-budgeted-quantity-formula"} className="form-control bg-grey input-form-control">
-                                {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
-                          <Col md="4">
-                            <div className="form-group">
-                              <TooltipCustom id={"costing-approval"} tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
-                              <TooltipCustom id={"annual-formula"} disabledIcon={true} tooltipText={`Total Budget Quantity (Refer From Volume Master) * Variance`} />
-                              <label>Annual Impact</label>
-                              <label id={"annual-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
+                            </Col>
+                            <Col md="4">
+                              <div className="form-group">
+                                <TooltipCustom id={"remaining-budgeted-quantity-formula"} disabledIcon={true} tooltipText={`Budgeted Quantity (Refer From Volume Master) - Consumed Quantity`} />
+                                <label>Remaining Budgeted Quantity</label>
+                                <label id={"remaining-budgeted-quantity-formula"} className="form-control bg-grey input-form-control">
+                                  {data.remainingQty && data.remainingQty !== "" ? checkForDecimalAndNull(data.remainingQty, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
+                            <Col md="4">
+                              <div className="form-group">
+                                <TooltipCustom id={"costing-approval"} tooltipText={`The current impact is calculated based on the data present in the volume master (${data.effectiveDate !== "" ? DayTime(data.effectiveDate).format('DD/MM/YYYY') : ""}).`} />
+                                <TooltipCustom id={"annual-formula"} disabledIcon={true} tooltipText={`Total Budget Quantity (Refer From Volume Master) * Variance`} />
+                                <label>Annual Impact</label>
+                                <label id={"annual-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.annualImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                  {data.annualImpact && data.annualImpact ? checkForDecimalAndNull(data.annualImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
 
-                          <Col md="4">
-                            <div className="form-group">
-                              <TooltipCustom id={"impact-for-year-formula"} disabledIcon={true} tooltipText={`(Total Budget Quantity (Refer From Volume Master) * Consumed Quantity) - Variance`} />
-                              <label>Impact for the Year</label>
-                              <label id={"impact-for-year-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>
+                            <Col md="4">
+                              <div className="form-group">
+                                <TooltipCustom id={"impact-for-year-formula"} disabledIcon={true} tooltipText={`(Total Budget Quantity (Refer From Volume Master) * Consumed Quantity) - Variance`} />
+                                <label>Impact for the Year</label>
+                                <label id={"impact-for-year-formula"} className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                  {data.yearImpact && data.yearImpact ? checkForDecimalAndNull(data.yearImpact, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>
 
-                          {data.oldPrice > 0 && <Col md="4">
-                            <div className="form-group">
-                              <label>Budgeted Price</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.BudgetedPrice && data.BudgetedPrice ? checkForDecimalAndNull(data.BudgetedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>}
-                          {data.oldPrice > 0 && <Col md="4">
-                            <div className="form-group">
-                              <label>Impact/Quarter (w.r.t. Budgeted Price)</label>
-                              <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
-                                {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration.NoOfDecimalForPrice) : 0}
-                              </label>
-                            </div>
-                          </Col>}
-                        </>}
-                      </Row>
-                    </div>
-                  </div>
-                </div>
+                            {data.oldPrice > 0 && <Col md="4">
+                              <div className="form-group">
+                                <label>Budgeted Price</label>
+                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                  {data.BudgetedPrice && data.BudgetedPrice ? checkForDecimalAndNull(data.BudgetedPrice, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>}
+                            {data.oldPrice > 0 && <Col md="4">
+                              <div className="form-group">
+                                <label>Impact/Quarter (w.r.t. Budgeted Price)</label>
+                                <label className={data.oldPrice === 0 ? `form-control bg-grey input-form-control` : `form-control bg-grey input-form-control ${data.yearImpact < 0 ? 'green-value' : 'red-value'}`}>
+                                  {data.BudgetedPriceVariance && data.BudgetedPriceVariance ? checkForDecimalAndNull(data.BudgetedPriceVariance, initialConfiguration.NoOfDecimalForPrice) : 0}
+                                </label>
+                              </div>
+                            </Col>}
+                          </>
+                        }
+                      </Row >
+                    </div >
+                  </div >
+                </div >
                 );
               })}
             <div className="">
@@ -1073,7 +1077,7 @@ const SendForApproval = (props) => {
                         {
                           showValidation && <span className="warning-top"><WarningMessage title={approverMessage} dClass={`${errors.approver ? "mt-2" : ''} approver-warning`} message={approverMessage} /></span>
                         }
-                      </Col>
+                      </Col >
 
                       {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
                         <NumberFieldHookForm
@@ -1111,22 +1115,24 @@ const SendForApproval = (props) => {
                       </>
                       }
 
-                      {initialConfiguration.IsShowTentativeSaleRate && <Col md="6" className="d-flex align-items-center mb-3 ml-1 ">
-                        <span className="d-inline-block">
-                          <label
-                            className={`custom-checkbox mb-0`}
-                            onChange={tentativeCheckboxHandler}>
-                            Tentative Cost
-                            <input
-                              type="checkbox"
-                            />
-                            <span
-                              className=" before-box"
-                              onChange={tentativeCheckboxHandler}
-                            />
-                          </label>
-                        </span>
-                      </Col>}
+                      {
+                        initialConfiguration.IsShowTentativeSaleRate && <Col md="6" className="d-flex align-items-center mb-3 ml-1 ">
+                          <span className="d-inline-block">
+                            <label
+                              className={`custom-checkbox mb-0`}
+                              onChange={tentativeCheckboxHandler}>
+                              Tentative Cost
+                              <input
+                                type="checkbox"
+                              />
+                              <span
+                                className=" before-box"
+                                onChange={tentativeCheckboxHandler}
+                              />
+                            </label>
+                          </span>
+                        </Col>
+                      }
 
                       <Col md="12">
                         <TextAreaHookForm
@@ -1145,7 +1151,7 @@ const SendForApproval = (props) => {
                           disabled={false}
                         />
                       </Col>
-                    </Row>
+                    </Row >
                   </>
                   // :
                   // <Row className="px-3">
@@ -1168,79 +1174,81 @@ const SendForApproval = (props) => {
                   // </Row>
 
                 }
-                {isRegularize ? (
-                  <Row className="mb-4 mx-0">
-                    <Col md="6" className="height152-label">
-                      <label>Upload Attachment (upload up to 4 files)</label>
-                      {files && files.length >= 4 ? (
-                        <div class="alert alert-danger" role="alert">
-                          Maximum file upload limit reached.
+                {
+                  isRegularize ? (
+                    <Row className="mb-4 mx-0">
+                      <Col md="6" className="height152-label">
+                        <label>Upload Attachment (upload up to 4 files)</label>
+                        {files && files.length >= 4 ? (
+                          <div class="alert alert-danger" role="alert">
+                            Maximum file upload limit reached.
+                          </div>
+                        ) : (
+                          <Dropzone
+                            onChangeStatus={handleChangeStatus}
+                            PreviewComponent={Preview}
+                            mandatory={true}
+                            //onSubmit={this.handleSubmit}
+                            accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                            initialFiles={[]}
+                            maxFiles={4}
+                            maxSizeBytes={2000000000}
+                            inputContent={(files, extra) =>
+                              extra.reject ? (
+                                "Image, audio and video files only"
+                              ) : (
+                                <div className="text-center">
+                                  <i className="text-primary fa fa-cloud-upload"></i>
+                                  <span className="d-block">
+                                    Drag and Drop or{" "}
+                                    <span className="text-primary">Browse</span>
+                                    <br />
+                                    file to upload
+                                  </span>
+                                </div>
+                              )
+                            }
+                            styles={{
+                              dropzoneReject: {
+                                borderColor: "red",
+                                backgroundColor: "#DAA",
+                              },
+                              inputLabel: (files, extra) =>
+                                extra.reject ? { color: "red" } : {},
+                            }}
+                            classNames="draper-drop"
+                          // disabled={CostingViewMode ? true : false}
+                          />
+                        )}
+                      </Col>
+                      <Col md="6" className='pr-0'>
+                        <div className={"attachment-wrapper"}>
+                          {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
+                          {files &&
+                            files.map((f) => {
+                              const withOutTild = f.FileURL.replace("~", "");
+                              const fileURL = `${FILE_URL}${withOutTild}`;
+                              return (
+                                <div className={"attachment images"}>
+                                  <a href={fileURL} target="_blank" rel="noreferrer">
+                                    {f.OriginalFileName}
+                                  </a>
+                                  <img
+                                    alt={""}
+                                    className="float-right"
+                                    onClick={() =>
+                                      deleteFile(f.FileId, f.FileName)
+                                    }
+                                    src={redcrossImg}
+                                  ></img>
+                                </div>
+                              );
+                            })}
                         </div>
-                      ) : (
-                        <Dropzone
-                          onChangeStatus={handleChangeStatus}
-                          PreviewComponent={Preview}
-                          mandatory={true}
-                          //onSubmit={this.handleSubmit}
-                          accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
-                          initialFiles={[]}
-                          maxFiles={4}
-                          maxSizeBytes={2000000000}
-                          inputContent={(files, extra) =>
-                            extra.reject ? (
-                              "Image, audio and video files only"
-                            ) : (
-                              <div className="text-center">
-                                <i className="text-primary fa fa-cloud-upload"></i>
-                                <span className="d-block">
-                                  Drag and Drop or{" "}
-                                  <span className="text-primary">Browse</span>
-                                  <br />
-                                  file to upload
-                                </span>
-                              </div>
-                            )
-                          }
-                          styles={{
-                            dropzoneReject: {
-                              borderColor: "red",
-                              backgroundColor: "#DAA",
-                            },
-                            inputLabel: (files, extra) =>
-                              extra.reject ? { color: "red" } : {},
-                          }}
-                          classNames="draper-drop"
-                        // disabled={CostingViewMode ? true : false}
-                        />
-                      )}
-                    </Col>
-                    <Col md="6" className='pr-0'>
-                      <div className={"attachment-wrapper"}>
-                        {attachmentLoader && <LoaderCustom customClass="attachment-loader" />}
-                        {files &&
-                          files.map((f) => {
-                            const withOutTild = f.FileURL.replace("~", "");
-                            const fileURL = `${FILE_URL}${withOutTild}`;
-                            return (
-                              <div className={"attachment images"}>
-                                <a href={fileURL} target="_blank" rel="noreferrer">
-                                  {f.OriginalFileName}
-                                </a>
-                                <img
-                                  alt={""}
-                                  className="float-right"
-                                  onClick={() =>
-                                    deleteFile(f.FileId, f.FileName)
-                                  }
-                                  src={redcrossImg}
-                                ></img>
-                              </div>
-                            );
-                          })}
-                      </div>
-                    </Col>
-                  </Row>
-                ) : null}
+                      </Col>
+                    </Row>
+                  ) : null
+                }
                 <Row>
 
                   <WarningMessage dClass={'justify-content-end'} message={"All impacted assemblies will be changed and new versions will be formed"} />
@@ -1263,8 +1271,7 @@ const SendForApproval = (props) => {
                     {initialConfiguration.IsLastRevisionDataVisible && viewApprovalData && viewApprovalData[0]?.costingTypeId === VBCTypeId && <button type="button" className="user-btn mr5 save-btn" onClick={viewImpactDrawer}>
                       <div className={"save-icon"}></div>
                       {"Verify Impact"}
-                    </button>
-                    }
+                    </button>}
                     <button
                       className="btn btn-primary save-btn"
                       type="button"
@@ -1277,9 +1284,9 @@ const SendForApproval = (props) => {
                       {"Submit"}
                     </button>
                   </Col>
-                </Row>
-              </form>
-            </div>
+                </Row >
+              </form >
+            </div >
             {isVerifyImpactDrawer &&
               <VerifyImpactDrawer
                 isOpen={isVerifyImpactDrawer}
@@ -1294,11 +1301,12 @@ const SendForApproval = (props) => {
                 CostingTypeId={viewApprovalData[0]?.costingTypeId}
                 approvalSummaryTrue={true}
                 costingIdArray={costingIdArray}
-              />}
-          </div>
-        </div>
+              />
+            }
+          </div >
+        </div >
 
-      </Drawer>
+      </Drawer >
 
     </Fragment >
   );

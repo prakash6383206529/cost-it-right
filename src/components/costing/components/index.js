@@ -137,6 +137,7 @@ function Costing(props) {
                 toggle={toggle}
                 costingOptionsSelect={costingOptionsSelect}
                 nfrData={props?.location?.state}
+                isRFQViewMode={props?.location?.state?.isViewMode}
                 isNFR={props?.location?.state?.isNFR}
                 isViewModeCosting={props?.location?.state?.isViewMode}
               />

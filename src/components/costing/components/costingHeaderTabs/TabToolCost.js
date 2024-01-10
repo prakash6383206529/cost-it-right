@@ -15,7 +15,8 @@ import { MESSAGES } from '../../../../config/message';
 import { IsPartType, ViewCostingContext } from '../CostingDetails';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
-import { defaultPageSize, EMPTY_DATA, WACTypeId } from '../../../../config/constants';
+import { defaultPageSize, EMPTY_DATA, WACTypeId, ASSEMBLYNAME } from '../../../../config/constants';
+import { GridTotalFormate } from '../../../common/TableGridFunctions';
 import { AgGridReact } from 'ag-grid-react/lib/agGridReact';
 import { AgGridColumn } from 'ag-grid-react/lib/agGridColumn';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -514,12 +515,13 @@ function TabToolCost(props) {
                               </>
                             );
                           })}
-                        </tbody>
-                      </Table>
-                    </Col>
-                  </Row>}
+                        </tbody >
+                      </Table >
+                    </Col >
+                  </Row >}
 
-                {IsApplicableProcessWise &&
+                {
+                  IsApplicableProcessWise &&
                   <Row>
                     <Col>
                       {/* <----------------------START AG Grid convert on 21-10-2021---------------------------------------------> */}

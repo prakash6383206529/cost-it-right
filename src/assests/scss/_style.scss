@@ -7851,6 +7851,10 @@ body {
   }
 }
 
+.cp-simulation-height {
+  min-height: calc(100vh - 328px) !important;
+}
+
 
 // <-------------START Hover text overflow and show on hover css----------->
 @mixin overflow($maxWidth: 140px, $minWidth: 75px, $ResponsiveWith: $maxWidth, $lineClamp: 1, $whiteSpace: nowrap) {

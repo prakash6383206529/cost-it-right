@@ -146,7 +146,6 @@ function OtherCostingSimulation(props) {
         setVendorIdState(vendorId)
         setSimulationTechnologyIdState(SimulationTechnologyId)
         setSimulationTypeState(SimulationType)
-
         Data.SimulatedCostingList && Data.SimulatedCostingList.map(item => {
             if (item.IsLockedBySimulation) {
                 setSelectedCostingIds(item.CostingId)
@@ -282,7 +281,6 @@ function OtherCostingSimulation(props) {
     const sendForApproval = () => {
         setIsApprovalDrawer(true)
         if (!isFromApprovalListing) {
-
             const isChanged = JSON.stringify(oldArr) === JSON.stringify(selectedRowData)
             if (isChanged) {
                 setSaveDone(true)
@@ -442,7 +440,6 @@ function OtherCostingSimulation(props) {
             hideDiscount: costingList && costingList.length > 0 && (costingList[0].NewDiscountCost === 0 || costingList[0].OldDiscountCost === costingList[0].NewDiscountCost) ? true : false,
             hideOveheadAndProfit: costingList && costingList.length > 0 && (costingList[0].NewNetOverheadAndProfitCost === 0 || costingList[0].OldNetOverheadAndProfitCost === costingList[0].NewNetOverheadAndProfitCost) ? true : false
         })
-
         setShowBOPColumn(costingSimulationListAllKeys?.IsBoughtOutPartSimulation === true ? true : false)
         setShowSurfaceTreatmentColumn(costingSimulationListAllKeys?.IsSurfaceTreatmentSimulation === true ? true : false)
         setShowOperationColumn(costingSimulationListAllKeys?.IsOperationSimulation === true ? true : false)
@@ -558,7 +555,6 @@ function OtherCostingSimulation(props) {
 
         return thisIsFirstColumn;
     }
-
 
     const defaultColDef = {
         resizable: true,

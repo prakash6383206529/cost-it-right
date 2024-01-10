@@ -84,9 +84,6 @@ class AddMaterialType extends Component {
     const { reset, ID, isEditFlag, initialValues } = this.props;
 
     if (isEditFlag) {
-
-
-
       if (initialValues.CalculatedDensityValue === values.CalculatedDensityValue && initialValues.MaterialType === values.MaterialType) {
         this.cancel('cancel')
         return false
@@ -245,18 +242,18 @@ class AddMaterialType extends Component {
                         {" "}
                         <div className={"save-icon"}></div>
                         {this.props.isEditFlag ? "UPDATE" : "SAVE"}
-                      </button>
-                    </div>
-                  </div>
-                </Row>
-              </form>
-            </div>
-          </Container>
-        </Drawer>
+                      </button >
+                    </div >
+                  </div >
+                </Row >
+              </form >
+            </div >
+          </Container >
+        </Drawer >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
-      </div>
+      </div >
     );
   }
 }

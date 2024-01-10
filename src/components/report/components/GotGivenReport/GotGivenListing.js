@@ -211,6 +211,7 @@ function GotGivenListing(props) {
                                 <AgGridColumn field="NetRawMaterialsCost" width={130} headerName="Net RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="ProfitRMTotalCost" width={130} headerName="Profit of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NetProcessOperationAndSTCost" headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                {/* <AgGridColumn field="NetProcessCost" headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>            //RE */}
                                 <AgGridColumn field="ProfitCCPercentage" headerName="Profit of Component on CC (%)" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="SubTotal" width={130} headerName="Sub Total" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NewRawMaterialRate" width={130} headerName="Revised RM Rate" cellRenderer={hyphenFormatter}></AgGridColumn>
@@ -267,6 +268,7 @@ function GotGivenListing(props) {
                                 <AgGridColumn field="NetRawMaterialsCost" width={130} headerName="Net RM Cost" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="ProfitRMTotalCost" width={130} headerName="Profit of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NetProcessOperationAndSTCost" width={170} headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>
+                                {/* <AgGridColumn field="NetProcessCost" width={170} headerName="Process Cost of Component" cellRenderer={hyphenFormatter}></AgGridColumn>     //RE */}
                                 <AgGridColumn field="ProfitCCPercentage" width={170} headerName="Profit of Component on CC (%)" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="SubTotal" width={130} headerName="Sub Total" cellRenderer={hyphenFormatter}></AgGridColumn>
                                 <AgGridColumn field="NewRawMaterialRate" headerName="Revised RM Rate" cellRenderer={hyphenFormatter}></AgGridColumn>

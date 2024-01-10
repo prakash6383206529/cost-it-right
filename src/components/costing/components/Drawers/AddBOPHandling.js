@@ -14,6 +14,7 @@ import { IdForMultiTechnology } from '../../../../config/masterData';
 import { number, percentageLimitValidation, checkWhiteSpaces } from "../../../../helper/validation";
 import Toaster from '../../../common/Toaster';
 import { WACTypeId } from '../../../../config/constants';
+import { setSubAssemblyTechnologyArray } from '../../actions/SubAssembly';
 
 function AddBOPHandling(props) {
   const { item, isAssemblyTechnology } = props

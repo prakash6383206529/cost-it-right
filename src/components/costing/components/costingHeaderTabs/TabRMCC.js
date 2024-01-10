@@ -258,14 +258,10 @@ function TabRMCC(props) {
 
   const setOperationCostForAssembly = (tempArr) => {
     const total = tempArr && tempArr.reduce((accummlator, item) => {
-
-
       if (item.PartType === 'Sub Assembly') {
-
         return checkForNull(accummlator) + (checkForNull(item?.CostingPartDetails?.TotalConversionCostWithQuantity) * checkForNull(item.Quantity))
       }
     }, 0)
-
     return total
   }
 
@@ -395,7 +391,6 @@ function TabRMCC(props) {
    * @description SUBASSEMBLY CALCULATION WITH THE HELP OF ALL PART/SUBASSEMBLIES RECEIVED IN TEMPARR PARAMETER (CHILDS TO UPDATE PARENT CALCULATION)
   */
   const calculationForSubAssembly = (obj = {}, quantity, type = '', tempArr = []) => {
-
     let subAssemObj = { ...obj }
     switch (type) {
       case 'RM':

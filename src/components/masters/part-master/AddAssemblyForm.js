@@ -113,6 +113,8 @@ class AddAssemblyForm extends Component {
     renderListing = (label) => {
         const { BOMViewerData } = this.props;
 
+        const { assemblyPartSelectList } = this.props;
+        const { selectedParts } = this.state;
         let tempArr = [];
         BOMViewerData && BOMViewerData.map(el => {
             if (el.PartType === ASSEMBLYNAME) {
@@ -120,7 +122,16 @@ class AddAssemblyForm extends Component {
             }
             return null;
         })
-
+        //RE
+        // const temp = [];
+        // if (label === 'assemblyPart') {
+        //     assemblyPartSelectList && assemblyPartSelectList.map(item => {
+        //         if (item.Value === '0' || selectedParts.includes(item.Value)) return false;
+        //         temp.push({ label: item.Text, value: item.Value })
+        //         return null;
+        //     });
+        //     return temp;
+        // }
     }
 
     /**

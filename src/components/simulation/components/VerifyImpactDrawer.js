@@ -10,12 +10,14 @@ import { getImpactedMasterData, getLastSimulationData } from '../actions/Simulat
 import AssemblyWiseImpactSummary from './AssemblyWiseImpactSummary';
 import Toaster from '../../common/Toaster';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, VBCTypeId } from '../../../config/constants';
+import { ErrorMessage } from '../SimulationUtils';
+import { VBC, VBCTypeId, CBCTypeId } from '../../../config/constants';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, costingIdArray, approvalSummaryTrue, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, isSimulationWithCosting } = props
+  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, costingIdArray, approvalSummaryTrue, isSimulationWithCosting } = props
+
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
@@ -46,7 +48,8 @@ function VerifyImpactDrawer(props) {
       impactedMasterDataListForLastRevisionData?.ExchangeRateImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
       impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
-      impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
+      impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList?.length <= 0
+    // && impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0                 //RE
     if (lastRevisionDataAcc && check) {
       Toaster.warning('There is no data for the Last Revision.')
       setEditWarning(true)
@@ -81,7 +84,6 @@ function VerifyImpactDrawer(props) {
   const fgWiseAccDisable = (data) => {
     setAccDisable(data)
   }
-
   return (
     <>
       <Drawer
@@ -103,58 +105,64 @@ function VerifyImpactDrawer(props) {
                   ></div>
                 </Col>
               </Row>
+              {
+                !costingDrawer && <Row >
+                  <Col md="12">
+                    <Table responsive className="border impact-drawer-table sub-table">
+                      <tbody>
+                        <tr>
+                          {CostingTypeId !== CBCTypeId && <th>Vendor (Code):</th>}
+                          {isSimulationWithCosting ? <th>Technology:</th> : <th>Association:</th>}
+                          <th>Master:</th>
+                          <th>Costing Head:</th>
+                          {CostingTypeId === CBCTypeId && <th>CUSTOMER:</th>}
+                          <th>Effective Date:</th>
+                          <th>Impact/Quarter (w.r.t. Existing):</th>
+                          <th>Impact/Quarter (w.r.t. Budgeted Price):</th>
+                        </tr>
+                      </tbody>
+                      <tbody>
+                        <tr>
+                          {CostingTypeId !== CBCTypeId && <td>{amendmentDetails.Vendor}</td>}
+                          {isSimulationWithCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
+                          <td>{amendmentDetails.SimulationAppliedOn}</td>
+                          <td>{amendmentDetails.CostingHead}</td>
+                          {CostingTypeId === CBCTypeId && <td>{amendmentDetails.CustomerName}</td>}
+                          <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
+                          <td>{impactedMasterData.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                          <td>{impactedMasterData.TotalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
+                        </tr>
+                      </tbody>
+                    </Table>
+                  </Col>
+                </Row>
+              }
 
-              {!costingDrawer && <Row >
-                <Col md="12">
-                  <Table responsive className="border impact-drawer-table sub-table">
-                    <tbody>
-                      <tr>
-                        {CostingTypeId !== CBCTypeId && <th>Vendor (Code):</th>}
-                        {isSimulationWithCosting ? <th>Technology:</th> : <th>Association:</th>}
-                        <th>Master:</th>
-                        <th>Costing Head:</th>
-                        {CostingTypeId === CBCTypeId && <th>CUSTOMER:</th>}
-                        <th>Effective Date:</th>
-                        <th>Impact/Quarter (w.r.t. Existing):</th>
-                        <th>Impact/Quarter (w.r.t. Budgeted Price):</th>
-                      </tr>
-                    </tbody>
-                    <tbody>
-                      <tr>
-                        {CostingTypeId !== CBCTypeId && <td>{amendmentDetails.Vendor}</td>}
-                        {isSimulationWithCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
-                        <td>{amendmentDetails.SimulationAppliedOn}</td>
-                        <td>{amendmentDetails.CostingHead}</td>
-                        {CostingTypeId === CBCTypeId && <td>{amendmentDetails.CustomerName}</td>}
-                        <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
-                        <td>{impactedMasterData.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                        <td>{impactedMasterData.TotalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
-                      </tr>
-                    </tbody>
-                  </Table>
-                </Col>
-              </Row>}
-
-              {!costingDrawer && <Row className="mb-3 pr-0 mx-0">
-                <Col md="6"> <HeaderTitle title={'Impacted Master Data:'} /></Col>
-                <Col md="6">
-                  <div className={'right-details'}>
-                    <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setshown(!shown) }}>
-                      {shown ? (
-                        <i className="fa fa-minus"></i>
-                      ) : (
-                        <i className="fa fa-plus"></i>
-                      )}
-                    </button>
+              {
+                !costingDrawer && <Row className="mb-3 pr-0 mx-0">
+                  <Col md="6"> <HeaderTitle title={'Impacted Master Data:'} /></Col>
+                  <Col md="6">
+                    <div className={'right-details'}>
+                      <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setshown(!shown) }}>
+                        {shown ? (
+                          <i className="fa fa-minus"></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
+                    </div>
+                  </Col>
+                  {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
+                    <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} lastRevision={false} />
                   </div>
-                </Col>
-                {shown && <div className="accordian-content w-100 px-3 impacted-min-height">
-                  <Impactedmasterdata data={impactedMasterDataListForImpactedMaster} masterId={SimulationTechnologyIdState} viewCostingAndPartNo={false} lastRevision={false} />
-                </div>
-                }
-              </Row>}
-
+                  }
+                </Row>
+              }
               <Row className="mb-3 pr-0 mx-0">
+                {/* <Col md="12">                 //RE
+          {fgWiseAcc && <ErrorMessage />}
+        </Col> */}
+
                 <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
@@ -169,20 +177,23 @@ function VerifyImpactDrawer(props) {
                 </Col>
               </Row>
 
-              {fgWiseAcc && <Row className="mb-3 pr-0 mx-0">
-                <Col md="12">
-                  <Fgwiseimactdata
-                    SimulationId={simulationId}
-                    costingIdArray={costingIdArray}
-                    approvalSummaryTrue={approvalSummaryTrue}
-                    isVerifyImpactDrawer={true}
-                    fgWiseAccDisable={fgWiseAccDisable}
-                    tooltipEffectiveDate={DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}
-                  />
-                </Col>
-              </Row>}
+              {
+                fgWiseAcc && <Row className="mb-3 pr-0 mx-0">
+                  <Col md="12">
+                    <Fgwiseimactdata
+                      SimulationId={simulationId}
+                      costingIdArray={costingIdArray}
+                      approvalSummaryTrue={approvalSummaryTrue}
+                      isVerifyImpactDrawer={true}
+                      fgWiseAccDisable={fgWiseAccDisable}
+                      tooltipEffectiveDate={DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}
+                    />
+                  </Col>
+                </Row>
+              }
 
-              {assemblyImpactButtonTrue &&
+              {
+                assemblyImpactButtonTrue &&
                 <>
                   <Row className="mb-3 pr-0 mx-0">
                     <Col md="6"> <HeaderTitle title={'Assembly Wise Impact:'} /></Col>
@@ -210,35 +221,37 @@ function VerifyImpactDrawer(props) {
                   </Row>
                 </>
               }
-              {(CostingTypeId === VBCTypeId) && <>
-                <Row className="mb-3 pr-0 mx-0">
-                  <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
-                  <Col md="6">
-                    <div className={'right-details'}>
-                      <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
-                        {lastRevisionDataAcc ? (
-                          <i className="fa fa-minus"></i>
-                        ) : (
-                          <i className="fa fa-plus"></i>
-                        )}
-                      </button>
-                    </div>
-                  </Col>
-                  <div className="accordian-content w-100 px-3 impacted-min-height">
-                    {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
-                    <div align="center">
-                      {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
-                    </div>
-                    {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
+              {
+                (CostingTypeId === VBCTypeId) && <>
+                  <Row className="mb-3 pr-0 mx-0">
+                    <Col md="6"> <HeaderTitle title={'Last Revision Data:'} /></Col>
+                    <Col md="6">
+                      <div className={'right-details'}>
+                        <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setLastRevisionDataAcc(!lastRevisionDataAcc) }}>
+                          {lastRevisionDataAcc ? (
+                            <i className="fa fa-minus"></i>
+                          ) : (
+                            <i className="fa fa-plus"></i>
+                          )}
+                        </button>
+                      </div>
+                    </Col>
+                    <div className="accordian-content w-100 px-3 impacted-min-height">
+                      {lastRevisionDataAcc && <Impactedmasterdata data={impactedMasterDataListForLastRevisionData} masterId={masterIdForLastRevision} viewCostingAndPartNo={false} lastRevision={true} />}
+                      <div align="center">
+                        {editWarning && <NoContentFound title={"There is no data for the Last Revision."} />}
+                      </div>
+                      {/* {costingDrawer && lastRevisionDataAcc && <div align="center">
                     <NoContentFound title={"There is no data for the Last Revision."} />
                   </div>} */}
-                  </div>
-                </Row>
-              </>}
-            </form>
-          </div>
-        </Container>
-      </Drawer>
+                    </div>
+                  </Row>
+                </>
+              }
+            </form >
+          </div >
+        </Container >
+      </Drawer >
     </>
   )
 }

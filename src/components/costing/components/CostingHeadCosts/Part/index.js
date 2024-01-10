@@ -26,7 +26,6 @@ import { IsPartType, ViewCostingContext } from '../../CostingDetails';
 import { createToprowObjAndSave, errorCheck, errorCheckObject, findSurfaceTreatmentData } from '../../../CostingUtil';
 import _ from 'lodash';
 
-
 function PartCompoment(props) {
 
   const { rmData, bopData, ccData, item } = props;

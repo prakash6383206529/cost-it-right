@@ -2281,6 +2281,7 @@ export default connect(mapStateToProps, {
 })(reduxForm({
   form: 'AddPower',
   enableReinitialize: true,
+  touchOnChange: true,
   onSubmitFail: errors => {
     focusOnError(errors);
   },

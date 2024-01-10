@@ -797,8 +797,8 @@ class SideBar extends Component {
                   alt={module + " icon"}
                 />
                 <span className="audit">{el.ModuleName}</span>
-              </Link>
-            </li>
+              </Link >
+            </li >
           );
         }
         return null
@@ -914,6 +914,7 @@ class SideBar extends Component {
                   <img
                     src={Logo}
                     alt="Softude"
+                    // alt="Royal Enfield"     //RE
                     height="40"
                   />
                 </div>
@@ -927,7 +928,7 @@ class SideBar extends Component {
                   <li className="nav-item d-xl-inline-block">
                     <div className="d-flex align-items-center">
                       <LanguageDropdown />
-                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
+                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" : "d-none"}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
                     </div>
                   </li>
                   <li className="nav-item d-xl-inline-block version">
@@ -967,8 +968,8 @@ class SideBar extends Component {
                     ""
                   )}
                 </ul>
-              </div>
-            </nav>
+              </div >
+            </nav >
           </div >
 
           {isLoggedIn && (
@@ -981,12 +982,13 @@ class SideBar extends Component {
 
                       return this.renderMenus(item.ModuleName, item.LandingPageURL);
                     })}
+                  {/* {this.renderNFR('RFQ')} */}
                 </ul>
               </nav>
             </div>
           )
           }
-        </div>
+        </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`Are you sure you want to log out?`} />
         }

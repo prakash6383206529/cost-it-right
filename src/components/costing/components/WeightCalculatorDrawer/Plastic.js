@@ -4,6 +4,7 @@ import { useForm, Controller, useWatch } from 'react-hook-form'
 import { costingInfoContext } from '../CostingDetailStepTwo'
 import { useDispatch, useSelector } from 'react-redux'
 import { TextFieldHookForm } from '../../../layout/HookFormInputs'
+import { NumberFieldHookForm } from '../../../layout/HookFormInputs'
 import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, findLostWeight, getConfigurationKey, loggedInUserId } from '../../../../helper'
 import LossStandardTable from './LossStandardTable'
 import { saveRawMaterialCalculationForPlastic } from '../../actions/CostWorking'
@@ -244,7 +245,7 @@ function Plastic(props) {
 
               <Row className={''}>
                 <Col md="3" >
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Gross Weight(Kg)`}
                     name={'netWeight'}
                     Controller={Controller}
@@ -264,7 +265,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Runner Weight`}
                     name={'runnerWeight'}
                     Controller={Controller}
@@ -321,7 +322,7 @@ function Plastic(props) {
                   />
                 </Col>
                 <Col md="3" >
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Finished Weight(Kg)`}
                     name={'finishedWeight'}
                     Controller={Controller}

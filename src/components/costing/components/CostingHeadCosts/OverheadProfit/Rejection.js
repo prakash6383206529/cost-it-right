@@ -63,8 +63,6 @@ function Rejection(props) {
 
     useEffect(() => {
         checkRejectionApplicability(applicability.label)
-
-
     }, [rejectionFieldValues]);
 
     useEffect(() => {

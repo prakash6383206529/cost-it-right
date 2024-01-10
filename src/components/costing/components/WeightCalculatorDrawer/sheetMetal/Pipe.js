@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, NumberFieldHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import Switch from 'react-switch'
 import {
   checkForDecimalAndNull, checkForNull, getNetSurfaceArea, getNetSurfaceAreaBothSide, loggedInUserId, getWeightFromDensity, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation
@@ -158,12 +158,6 @@ function Pipe(props) {
     }
   }, [isOneSide])
 
-  useEffect(() => {
-    if (Number(getValues('FinishWeightOfSheet')) < Number(getValues('GrossWeight'))) {
-      delete errors.FinishWeightOfSheet
-    }
-  }, [getValues('GrossWeight'), fieldValues])
-
   const setFinishWeight = (e) => {
     const FinishWeightOfSheet = e.target.value
 
@@ -187,6 +181,12 @@ function Pipe(props) {
         break;
     }
   }
+
+  useEffect(() => {
+    if (Number(getValues('FinishWeightOfSheet')) < Number(getValues('GrossWeight'))) {
+      delete errors.FinishWeightOfSheet
+    }
+  }, [getValues('GrossWeight'), fieldValues])
 
   /**
    * @method calculateInnerDiameter
@@ -517,9 +517,9 @@ function Pipe(props) {
                     errors={errors.OuterDiameter}
                     disabled={CostingViewMode ? true : false}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Thickness(mm)`}
                     name={'Thickness'}
                     Controller={Controller}
@@ -558,7 +558,7 @@ function Pipe(props) {
                     errors={errors.InnerDiameter}
                     disabled={true}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
                   <TextFieldHookForm
                     label={`Length of Sheet(mm)`}
@@ -578,7 +578,7 @@ function Pipe(props) {
                     errors={errors.SheetLength}
                     disabled={CostingViewMode ? true : false}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
                   <TextFieldHookForm
                     label={`Length of Part(mm)`}
@@ -598,7 +598,7 @@ function Pipe(props) {
                     errors={errors.PartLength}
                     disabled={CostingViewMode ? true : false}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-part' id={'length-of-part'} tooltipText="No. of Part/Sheet = (Length(Sheet) / Length(Part))" />
                   <TextFieldHookForm
@@ -616,7 +616,7 @@ function Pipe(props) {
                     errors={errors.NumberOfPartsPerSheet}
                     disabled={true}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='length-of-scrap' id={'length-of-scrap'} tooltipText="Length of Scrap = Remainder of no. of parts/Sheet" />
 
@@ -635,7 +635,7 @@ function Pipe(props) {
                     errors={errors.ScrapLength}
                     disabled={true}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-sheet'} tooltipText={tooltipMessageForSheetWeight('Sheet')} />
                   <TextFieldHookForm
@@ -653,7 +653,7 @@ function Pipe(props) {
                     errors={errors.WeightofSheet}
                     disabled={true}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-part'} tooltipText={tooltipMessageForSheetWeight('Part')} />
                   <TextFieldHookForm
@@ -671,7 +671,7 @@ function Pipe(props) {
                     errors={errors.WeightofPart}
                     disabled={true}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
                   <TooltipCustom disabledIcon={true} tooltipClass='weight-of-sheet' id={'weight-of-scrap'} tooltipText={tooltipMessageForSheetWeight('Scrap')} />
                   <TextFieldHookForm
@@ -689,8 +689,8 @@ function Pipe(props) {
                     errors={errors.WeightofScrap}
                     disabled={true}
                   />
-                </Col>
-              </Row>
+                </Col >
+              </Row >
 
               <Row className={'mt-15'}>
                 <Col md="12">
@@ -747,7 +747,7 @@ function Pipe(props) {
                     errors={errors.NetSurfaceArea}
                     disabled={true}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
                   <SearchableSelectHookForm
                     label={'Weight Unit'}
@@ -786,9 +786,9 @@ function Pipe(props) {
                     errors={errors.GrossWeight}
                     disabled={true}
                   />
-                </Col>
+                </Col >
                 <Col md="3">
-                  <TextFieldHookForm
+                  <NumberFieldHookForm
                     label={`Finish Weight(${UOMDimension.label})`}
                     name={'FinishWeightOfSheet'}
                     Controller={Controller}
@@ -811,8 +811,8 @@ function Pipe(props) {
                     disabled={CostingViewMode ? true : false}
                   />
                 </Col>
-              </Row>
-            </div>
+              </Row >
+            </div >
 
             {!CostingViewMode &&
               <div className="col-sm-12 text-right px-0 mt-4">
@@ -830,11 +830,12 @@ function Pipe(props) {
                   <div className={'save-icon'}></div>
                   {'Save'}
                 </button>
-              </div>}
+              </div>
+            }
 
-          </form>
-        </div>
-      </div>
+          </form >
+        </div >
+      </div >
     </>
   )
 }

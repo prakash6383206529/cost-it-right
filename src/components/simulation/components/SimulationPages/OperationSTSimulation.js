@@ -5,7 +5,6 @@ import { CBCTypeId, defaultPageSize, EMPTY_DATA, OPERATIONS, SURFACETREATMENT } 
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
-// import { runVerifyCombinedProcessSimulation } from '../../actions/Simulation';
 import { Fragment } from 'react';
 import { Controller, useForm } from 'react-hook-form'
 import RunSimulationDrawer from '../RunSimulationDrawer';

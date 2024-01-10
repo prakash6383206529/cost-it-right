@@ -383,6 +383,8 @@ class MachineRateListing extends Component {
                 {ViewAccessibility && <button title="View" className="View" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, true)} />}
                 {isEditable && <button title="Edit" className="Edit" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, rowData, false)} />}
                 <button className="Copy All Costing" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} />
+                {/* COMMENT COPY MACHINE ON RE AS PER TR //RE */}
+                {/* <button className="Copy All Costing" title="Copy Machine" type={'button'} onClick={() => this.copyItem(cellValue)} /> */}
                 {isDeleteButton && <button title="Delete" className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
             </>
         )
@@ -855,7 +857,7 @@ class MachineRateListing extends Component {
                                     {!isSimulation && !this.props?.isMasterSummaryDrawer && <AgGridColumn field="MachineId" width={230} cellClass={"actions-wrapper ag-grid-action-container"} headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
                                     {this.props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                                     {this.props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
-                                </AgGridReact>
+                                </AgGridReact >
                                 <div className='button-wrapper'>
                                     {!this.state.isLoader && <PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} globalTake={this.state.globalTake} />}
                                     {(this.props?.isMasterSummaryDrawer === undefined || this.props?.isMasterSummaryDrawer === false) &&
@@ -868,11 +870,11 @@ class MachineRateListing extends Component {
                                         </div>
                                     }
                                 </div>
-                            </div>
-                        </div>
+                            </div >
+                        </div >
 
-                    </Col>
-                </Row>
+                    </Col >
+                </Row >
                 {
                     isBulkUpload && <BulkUpload
                         isOpen={isBulkUpload}

@@ -46,6 +46,7 @@ class CostingTab extends Component {
       actionData && actionData.map((ele, index) => {
         if (ele.ModuleName === 'Costing') {
           this.setState({ checkBox: ele.SelectAll })
+          // this.setState({ checkBox: ele.IsChecked })          						//RE
         }
         return null
       })
@@ -421,11 +422,11 @@ class CostingTab extends Component {
                     </tr>
                   )}
                 </tbody>
-              </Table>
-            </div>
-          </div>
-        </div>
-      </div>
+              </Table >
+            </div >
+          </div >
+        </div >
+      </div >
     );
   }
 }

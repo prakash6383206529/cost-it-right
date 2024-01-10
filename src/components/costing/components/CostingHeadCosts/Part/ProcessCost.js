@@ -1455,9 +1455,9 @@ function ProcessCost(props) {
                                       />
                                     }
                                   </div>
-                                </div>
+                                </div >
                               }
-                            </td>
+                            </td >
                             <td>
                               {
                                 <>
@@ -1482,28 +1482,30 @@ function ProcessCost(props) {
                                 </>
                               }
                             </td>
-                            {initialConfiguration.IsShowCRMHead && <td>
-                              <SearchableSelectHookForm
-                                name={`crmHeadProcess${index}`}
-                                type="text"
-                                label="CRM Head"
-                                errors={`${errors.crmHeadProcess}${index}`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: false,
-                                }}
-                                placeholder={'Select'}
-                                customClassName="costing-selectable-dropdown"
-                                defaultValue={item.ProcessCRMHead ? { label: item.ProcessCRMHead, value: index } : ''}
-                                options={CRMHeads}
-                                required={false}
-                                handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                disabled={CostingViewMode}
-                              />
-                            </td>}
+                            {
+                              initialConfiguration.IsShowCRMHead && <td>
+                                <SearchableSelectHookForm
+                                  name={`crmHeadProcess${index}`}
+                                  type="text"
+                                  label="CRM Head"
+                                  errors={`${errors.crmHeadProcess}${index}`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: false,
+                                  }}
+                                  placeholder={'Select'}
+                                  customClassName="costing-selectable-dropdown"
+                                  defaultValue={item.ProcessCRMHead ? { label: item.ProcessCRMHead, value: index } : ''}
+                                  options={CRMHeads}
+                                  required={false}
+                                  handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                  disabled={CostingViewMode}
+                                />
+                              </td>
+                            }
                             <td>
                               <div className='action-btn-wrapper'>
                                 {(!CostingViewMode && !IsLocked) && <button title='Delete' id={`process_delete${0}`} className="Delete" type={'button'} onClick={() => deleteItem(index)} />}
@@ -1541,7 +1543,7 @@ function ProcessCost(props) {
                                 }
                               </div>
                             </td>
-                          </tr>
+                          </tr >
                           {
                             processAccObj[index] && <>
                               {
@@ -1553,17 +1555,19 @@ function ProcessCost(props) {
                       )
                       // }
                     })}
-                  {processGroupGrid && processGroupGrid.length === 0 && (
-                    <tr>
-                      <td colSpan={12}>
-                        <NoContentFound title={EMPTY_DATA} />
-                      </td>
-                    </tr>
-                  )}
-                </tbody>
-              </Table>}
-            </Col>
-          </Row>
+                  {
+                    processGroupGrid && processGroupGrid.length === 0 && (
+                      <tr>
+                        <td colSpan={12}>
+                          <NoContentFound title={EMPTY_DATA} />
+                        </td>
+                      </tr>
+                    )
+                  }
+                </tbody >
+              </Table >}
+            </Col >
+          </Row >
 
           {
             !isAssemblyTechnology &&

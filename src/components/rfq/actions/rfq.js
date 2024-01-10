@@ -228,8 +228,10 @@ export function getMultipleCostingDetails(selectedRows, callback) {
 
 
 export function getCommunicationHistory(data, callback) {
+    // export function getCommunicationHistory(id, callback) {      //RE
     return (dispatch) => {
         axios.get(`${API.getCommunicationHistory}?quotationId=${data.quotationId}&partId=${data.partId}&vendorId=${data.vendorId}`, config())
+            // axios.get(`${API.getCommunicationHistory}?costingId=${id}`, config())      //RE
             .then((response) => {
                 callback(response)
             }).catch((error) => {

@@ -21,7 +21,7 @@ import { Redirect, useHistory } from "react-router-dom";
 import redcrossImg from '../../../../assests/images/red-cross.png'
 import { debounce } from 'lodash'
 import { createToprowObjAndSave, errorCheckObject, formatMultiTechnologyUpdate } from '../../CostingUtil';
-import { IdForMultiTechnology } from '../../../../config/masterData';
+import { IdForMultiTechnology, STRINGMAXLENGTH } from '../../../../config/masterData';
 
 import LoaderCustom from '../../../common/LoaderCustom';
 import WarningMessage from '../../../common/WarningMessage';
@@ -55,8 +55,12 @@ function TabDiscountOther(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [effectiveDate, setEffectiveDate] = useState('');
   const [CurrencyExchangeRate, setCurrencyExchangeRate] = useState('');
+  const [otherCostType, setOtherCostType] = useState([]);
   const [hundiscountType, setHundiDiscountType] = useState([])
   const [isDisable, setIsDisable] = useState(false)
+  const [npvAcc, setNpvAcc] = useState(false)
+  const [conditionAcc, setConditionAcc] = useState(false)
+  const [otherCostAcc, setOtherCotAcc] = useState(false)
   const dispatch = useDispatch()
   let history = useHistory();
   const costData = useContext(costingInfoContext);
@@ -70,6 +74,7 @@ function TabDiscountOther(props) {
   const [totalCost, setTotalCost] = useState(0)
   const [discountObj, setDiscountObj] = useState({})
   const [reRender, setRerender] = useState([])
+  const [otherCostApplicability, setOtherCostApplicability] = useState([])
   const [discountCostApplicability, setDiscountCostApplicability] = useState([])
   const [netPoPriceCurrencyState, setNetPoPriceCurrencyState] = useState('')
   const [attachmentLoader, setAttachmentLoader] = useState(false)
@@ -118,7 +123,6 @@ function TabDiscountOther(props) {
     control,
     name: ['Remarks', 'Currency'],
   });
-
 
   useEffect(() => {
     // CostingViewMode CONDITION IS USED TO AVOID CALCULATION IN VIEWMODE
@@ -236,7 +240,7 @@ function TabDiscountOther(props) {
 
 
   useEffect(() => {
-    if (RMCCTabData && RMCCTabData[0]?.CostingId && props.activeTab === '6') {
+    if (RMCCTabData && RMCCTabData[0]?.CostingId && props?.activeTab === '6') {
       let npvSum = 0
       if (initialConfiguration?.IsShowNpvCost) {
         dispatch(getNpvDetails(RMCCTabData && RMCCTabData[0]?.CostingId, (res) => {
@@ -1649,7 +1653,7 @@ function TabDiscountOther(props) {
                     <Col md="3">
                       <TooltipCustom disabledIcon={true} width="280px" id="otherCost" tooltipText={"Other Cost = Sum of other cost added in other cost drawer"} />
                       {otherCostUI}
-                    </Col>
+                    </Col >
                     <Col md="3">
                       <TooltipCustom disabledIcon={true} width="280px" id="basic-rate" tooltipText={"Basic Rate = (Total Cost - Hundi/Discount Value) + Total Other Cost"} />
                       <TextFieldHookForm
@@ -1669,6 +1673,29 @@ function TabDiscountOther(props) {
                         disabled={true}
                         hidden={initialConfiguration?.IsBasicRateAndCostingConditionVisible ? false : true}
                       />
+                    </Col >
+                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
+                    {
+                      isConditionCostingOpen && <AddConditionCosting
+                        isOpen={isConditionCostingOpen}
+                        tableData={conditionTableData}
+                        closeDrawer={openAndCloseAddConditionCosting}
+                        anchor={'right'}
+                        netPOPrice={netPOPrice}
+                        basicRateCurrency={getValues('BasicRateINR')}
+                        ViewMode={CostingViewMode}
+                      />
+                    }
+                    {/* {initialConfiguration?.IsShowNpvCost && <Row>
+                    <Col md="8"><div className="left-border mt-1">NPV Cost:</div></Col>
+                    <Col md="4" className="text-right">
+                      <button className="btn btn-small-primary-circle ml-1" type="button" onClick={() => { setNpvAcc(!npvAcc) }}>
+                        {npvAcc ? (
+                          <i className="fa fa-minus" ></i>
+                        ) : (
+                          <i className="fa fa-plus"></i>
+                        )}
+                      </button>
                     </Col>
                     <Col md="3">
                       {initialConfiguration?.IsBasicRateAndCostingConditionVisible ? costingConditionUI : ''}
@@ -1739,7 +1766,7 @@ function TabDiscountOther(props) {
                         disabled={true}
                       />
                     </Col>
-                  </Row>
+                  </Row >
                   <Row className="mt-2">
                     <Col md="3" className={`mt20 pt-3`}>
                       <label
@@ -2269,4 +2296,4 @@ function TabDiscountOther(props) {
 };
 
 export default React.memo(TabDiscountOther);
-// CIR-I6272
+

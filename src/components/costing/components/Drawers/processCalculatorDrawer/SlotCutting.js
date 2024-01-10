@@ -437,13 +437,22 @@ function SlotCutting(props) {
                         Controller={Controller}
                         control={control}
                         register={register}
-                        mandatory={false}
+                        mandatory={true}
+                        rules={{
+                          required: true,
+                          pattern: {
+                            //value: /^[0-9]*$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
+                            message: 'Invalid Number.',
+                          },
+                          // maxLength: 4,
+                        }}
                         handleChange={() => { }}
                         defaultValue={''}
                         className=""
                         customClassName={'withBorder'}
                         errors={errors.toothNo}
-                        disabled={true}
+                        disabled={false}
                       />
                     </Col>
                     <Col md="4">
@@ -457,7 +466,8 @@ function SlotCutting(props) {
                         rules={{
                           required: false,
                           pattern: {
-                            value: /^[0-9\b]+$/i,
+                            // value: /^[0-9\b]+$/i,
+                            value: /^[0-9]\d*(\.\d+)?$/i,
                             message: 'Invalid Number.',
                           },
                           // maxLength: 4,

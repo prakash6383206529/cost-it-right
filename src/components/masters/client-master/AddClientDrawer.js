@@ -367,61 +367,60 @@ class AddClientDrawer extends Component {
   
      * @description ADDIN PROCESS ROW IN TABLE GRID
     */
-    statusTableHandler
-        = () => {
-            const { status, statusGrid } = this.state;
-            const { fieldsObj } = this.props;
-            const tempArray = [];
-            let count = 0;
-            setTimeout(() => {
+    statusTableHandler = () => {
+        const { status, statusGrid } = this.state;
+        const { fieldsObj } = this.props;
+        const tempArray = [];
+        let count = 0;
+        setTimeout(() => {
 
-                if (status.length === 0) {
-                    this.setState({ errorObj: { ...this.state.errorObj, status: true } })
-                    count++;
-                }
-                if (fieldsObj.FromPOSeries === undefined || Number(fieldsObj.FromPOSeries) === 0) {
-                    this.setState({ errorObj: { ...this.state.errorObj, fromPOSeries: true } })
-                    count++;
-                }
-                if (fieldsObj.ToPOSeries === undefined || Number(fieldsObj.ToPOSeries) === 0) {
-                    this.setState({ errorObj: { ...this.state.errorObj, toPOSeries: true } })
-                    count++;
-                }
-                if (count > 0) {
-                    return false;
-                }
-                if (maxLength10(fieldsObj.ToPOSeries) || maxLength10(fieldsObj.FromPOSeries)) {
-                    return false
-                }
+            if (status.length === 0) {
+                this.setState({ errorObj: { ...this.state.errorObj, status: true } })
+                count++;
+            }
+            if (fieldsObj.FromPOSeries === undefined || Number(fieldsObj.FromPOSeries) === 0) {
+                this.setState({ errorObj: { ...this.state.errorObj, fromPOSeries: true } })
+                count++;
+            }
+            if (fieldsObj.ToPOSeries === undefined || Number(fieldsObj.ToPOSeries) === 0) {
+                this.setState({ errorObj: { ...this.state.errorObj, toPOSeries: true } })
+                count++;
+            }
+            if (count > 0) {
+                return false;
+            }
+            if (maxLength10(fieldsObj.ToPOSeries) || maxLength10(fieldsObj.FromPOSeries)) {
+                return false
+            }
 
-                const FromPOSeries = checkForNull(fieldsObj?.FromPOSeries);
-                const ToPOSeries = checkForNull(fieldsObj.ToPOSeries);
+            const FromPOSeries = checkForNull(fieldsObj?.FromPOSeries);
+            const ToPOSeries = checkForNull(fieldsObj.ToPOSeries);
 
-                // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
-                const isExist = statusGrid.findIndex(el => ((el.statusId === status.value) && (el.FromPOSeries === FromPOSeries) && (el.ToPOSeries === ToPOSeries)))
-                if (isExist !== -1) {
-                    Toaster.warning('Already added, Please check the values.')
-                    return false;
-                }
-                if (FromPOSeries >= ToPOSeries) {
-                    Toaster.warning('From PO Series should be less than To PO Series ')
-                    return false;
-                }
-                tempArray.push(...statusGrid, {
-                    Status: status.label,
-                    StatusId: status.value,
-                    POSeriesFrom: FromPOSeries,
-                    POSeriesTo: ToPOSeries
-                })
+            // CONDITION TO CHECK DUPLICATE ENTRY IN GRID
+            const isExist = statusGrid.findIndex(el => ((el.statusId === status.value) && (el.FromPOSeries === FromPOSeries) && (el.ToPOSeries === ToPOSeries)))
+            if (isExist !== -1) {
+                Toaster.warning('Already added, Please check the values.')
+                return false;
+            }
+            if (FromPOSeries >= ToPOSeries) {
+                Toaster.warning('From PO Series should be less than To PO Series ')
+                return false;
+            }
+            tempArray.push(...statusGrid, {
+                Status: status.label,
+                StatusId: status.value,
+                POSeriesFrom: FromPOSeries,
+                POSeriesTo: ToPOSeries
+            })
 
-                this.setState({
-                    statusGrid: tempArray,
-                    status: [],
-                    errorObj: []
-                }, () => this.props.change('ToPOSeries', ''));
-                this.props.change('FromPOSeries', '')
-            }, 200);
-        }
+            this.setState({
+                statusGrid: tempArray,
+                status: [],
+                errorObj: []
+            }, () => this.props.change('ToPOSeries', ''));
+            this.props.change('FromPOSeries', '')
+        }, 200);
+    }
     /**     
      * @method statusTableReset
      * @description RESET VALUES 
@@ -791,6 +790,116 @@ class AddClientDrawer extends Component {
                                                     </tbody>
 
                                                 </Table>
+                                                {/* //RE */}
+                                                {/* <Row className='pl-3'>
+                                    {getConfigurationKey().IsShowPOSeriesInCustomerMaster && (
+                                        <>
+                                            <Col md="12">
+                                                <HeaderTitle title={'PO Series Table:'} />
+                                            </Col>
+                                            <Col md="3">
+                                                <div className="d-flex justify-space-between align-items-center inputwith-icon">
+                                                    <div className="fullinput-icon">
+                                                        <Field
+                                                            name="Status"
+                                                            type="text"
+                                                            label="Status"
+                                                            component={searchableSelect}
+                                                            placeholder={isViewMode ? '-' : 'Select'}
+                                                            options={this.renderListing('status')}
+                                                            required={true}
+                                                            handleChangeDescription={this.handleStatus}
+                                                            valueDescription={this.state.status}
+                                                            disabled={isViewMode}
+                                                        />
+                                                        {this.state.errorObj?.status && (this.state.status && this.state.status?.length === 0) && <div className='text-help p-absolute bottom-7'>This field is required.</div>}
+                                                    </div>
+                                                </div>
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={'From PO Series'}
+                                                    name={"FromPOSeries"}
+                                                    type="number"
+                                                    placeholder={isViewMode ? '-' : "Enter"}
+                                                    validate={[positiveAndDecimalNumber, maxLength10]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={isViewMode}
+                                                    className=" "
+                                                    customClassName="po-series withBorder"
+                                                />
+                                                {this.state.errorObj.fromPOSeries && (this.props.fieldsObj.FromPOSeries === undefined || Number(this.props.fieldsObj.FromPOSeries) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                                            </Col>
+                                            <Col md="3">
+                                                <Field
+                                                    label={'To PO Series'}
+                                                    name={"ToPOSeries"}
+                                                    type="number"
+                                                    placeholder={isViewMode ? '-' : "Enter"}
+                                                    validate={[positiveAndDecimalNumber, maxLength10]}
+                                                    component={renderText}
+                                                    required={true}
+                                                    disabled={isViewMode}
+                                                    className=" "
+                                                    customClassName="po-series withBorder"
+                                                />
+                                                {this.state.errorObj.toPOSeries && (this.props.fieldsObj.ToPOSeries === undefined || Number(this.props.fieldsObj.ToPOSeries) === 0) && <div className='text-help p-absolute'>This field is required.</div>}
+                                            </Col>
+                                            <Col md="3" className='pl-0 mb-2 d-flex align-items-center'>
+                                                <div className='d-flex mb-1'>
+                                                    <button
+                                                        type="button"
+                                                        className={`${isViewMode ? 'disabled-button user-btn' : 'user-btn'} pull-left mr5`}
+                                                        disabled={isViewMode ? true : false}
+                                                        onClick={this.statusTableHandler}>
+                                                        <div className={'plus'}></div>ADD</button>
+                                                    <button
+                                                        type="button"
+                                                        disabled={isViewMode ? true : false}
+                                                        className={`${isViewMode ? 'disabled-button reset-btn' : 'reset-btn'} pull-left`}
+                                                        onClick={this.statusTableReset}
+                                                    >Reset</button>
+                                                </div>
+                                            </Col>
+                                            <Col md="12">
+                                                <Table className="table border" size="sm" >
+                                                    <thead>
+                                                        <tr>
+                                                            <th>{`Status`}</th>
+                                                            <th>{`From PO Series`}</th>
+                                                            <th>{`To PO Series`}</th>
+                                                            <th>{`Action`}</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody >
+                                                        {
+                                                            this.state.statusGrid &&
+                                                            this.state.statusGrid.map((item, index) => {
+                                                                return (
+                                                                    <tr key={index}>
+                                                                        <td>{item.Status}</td>
+                                                                        <td>{item.POSeriesFrom}</td>
+                                                                        <td>{item.POSeriesTo}</td>
+                                                                        <td>
+                                                                            <button title='Delete' className="Delete" type={'button'} disabled={isViewMode ? true : false} onClick={() => this.deleteItem(index)} />
+                                                                        </td>
+                                                                    </tr>
+                                                                )
+                                                            })
+                                                        }
+                                                        <tr>
+                                                            {this.state.statusGrid?.length === 0 && <td colSpan={"6"}>
+                                                                <NoContentFound title={EMPTY_DATA} />
+                                                            </td>}
+                                                        </tr>
+                                                    </tbody>
+
+                                                </Table>
+                                                </Col>
+                                        </>
+                                    )}
+                                </Row> */}
 
                                             </Col>
                                         </>

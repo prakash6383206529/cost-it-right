@@ -2,9 +2,9 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getCodeBySplitting, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation, maxLength10, getVendorName } from "../../../helper/validation";
+import { required, getCodeBySplitting, getVendorCode, positiveAndDecimalNumber, maxLength15, acceptAllExceptSingleSpecialCharacter, maxLength70, maxLength512, checkForDecimalAndNull, checkForNull, decimalLengthsix, number, hashValidation, maxLength10, getVendorName } from "../../../helper/validation";
 import { renderText, renderTextInputField, searchableSelect, renderMultiSelectField, renderTextAreaField, focusOnError, renderDatePicker, } from '../../layout/FormInputs'
-import { ASSEMBLY, AcceptableRMUOM } from '../../../config/masterData'
+import { ASSEMBLY, AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
   getPlantByCityAndSupplier, fetchRMGradeAPI, getSupplierList, getUOMSelectList, fetchSupplierCityDataAPI,
@@ -25,7 +25,7 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer'
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
 import 'react-datepicker/dist/react-datepicker.css'
-import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, GUIDE_BUTTON_SHOW } from '../../../config/constants'
+import { FILE_URL, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_DOMESTIC, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, GUIDE_BUTTON_SHOW, SHEET_METAL } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -255,6 +255,7 @@ class AddRMDomestic extends Component {
   componentDidMount() {
     const { data, initialConfiguration } = this.props
     this.props.getUOMSelectList(() => { })
+    const { costingTypeId } = this.state
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.getDetails(data)
     }
@@ -725,7 +726,6 @@ class AddRMDomestic extends Component {
             this.props.change('ShearingCost', checkForDecimalAndNull(Data?.RMShearingCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('BasicPriceCurrency', checkForDecimalAndNull(Data?.NetCostWithoutConditionCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('FinalConditionCostBaseCurrency', checkForDecimalAndNull(Data?.NetConditionCost, initialConfiguration.NoOfDecimalForPrice));
-            this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('NetLandedCostBaseCurrency', checkForDecimalAndNull(Data?.NetLandedCost, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('ConversionRatio', checkForDecimalAndNull(Data?.UOMToScrapUOMRatio, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('ScrapRatePerScrapUOM', checkForDecimalAndNull(Data?.ScrapRatePerScrapUOM, initialConfiguration.NoOfDecimalForPrice));
@@ -2146,6 +2146,7 @@ class AddRMDomestic extends Component {
                             }
 
 
+                            {/* //RE */}
                             <Col md="3">
                               <Field
                                 label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
@@ -2161,6 +2162,7 @@ class AddRMDomestic extends Component {
                                 disabled={isViewFlag}
                               />
                             </Col>
+                            {/* //RE */}
                             <Col md="3">
                               <Field
                                 label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
@@ -2262,7 +2264,7 @@ class AddRMDomestic extends Component {
                               />
                             </div>
                           </Col>
-                        </Row>
+                        </Row >
 
                         <Row>
                           <Col md="12" className="filter-block">
@@ -2361,7 +2363,7 @@ class AddRMDomestic extends Component {
                             </div>
                           </Col>
                         </Row>
-                      </div>
+                      </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}

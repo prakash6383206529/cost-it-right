@@ -8,7 +8,6 @@ import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/Hook
 import { getConfigurationKey } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { FILE_URL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4 } from '../../../../config/constants'
-import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -20,6 +19,7 @@ import Toaster from '../../../common/Toaster'
 import WarningMessage from '../../../common/WarningMessage'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
 import Button from '../../../layout/Button'
+import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********

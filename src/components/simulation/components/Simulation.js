@@ -10,6 +10,8 @@ import SimulationUploadDrawer from './SimulationUploadDrawer';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, RM_MASTER_ID, searchCount, VBC_VENDOR_TYPE, APPROVED_STATUS, EMPTY_GUID } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { getTechnologyForSimulation, OperationSimulation, RMDomesticSimulation, RMImportSimulation, SurfaceTreatmentSimulation, MachineRateSimulation, BOPDomesticSimulation, BOPImportSimulation, IdForMultiTechnology, ASSEMBLY_TECHNOLOGY_MASTER, ASSEMBLY, associationDropdownList, NON_ASSOCIATED, ASSOCIATED, applicabilityList, APPLICABILITY_RM_SIMULATION, APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION } from '../../../config/masterData';
+import { COMBINED_PROCESS } from '../../../config/constants';
+import { CombinedProcessSimulation } from '../../../config/masterData';
 import RMSimulation from './SimulationPages/RMSimulation';
 import { getCostingSpecificTechnology, getCostingTechnologySelectList } from '../../costing/actions/Costing';
 import CostingSimulation from './CostingSimulation';
@@ -22,6 +24,9 @@ import OperationListing from '../../masters/operation/OperationListing';
 import { setFilterForRM } from '../../masters/actions/Material';
 import { allEqual, applyEditCondSimulation, checkForNull, getFilteredData, isUploadSimulation, loggedInUserId } from '../../../helper';
 import ERSimulation from './SimulationPages/ERSimulation';
+import CPSimulation from './SimulationPages/CPSimulation';
+import { ProcessListingSimulation } from './ProcessListingSimulation';
+import { getVendorWithVendorCodeSelectList } from '../../../actions/Common';
 import OperationSTSimulation from './SimulationPages/OperationSTSimulation';
 import MRSimulation from './SimulationPages/MRSimulation';
 import BDSimulation from './SimulationPages/BDSimulation';
@@ -63,6 +68,8 @@ function Simulation(props) {
     const [editWarning, setEditWarning] = useState(true)
     /**************************************** UNCOMMENT THIS WHENEVER WE WILL APPLY VENDOR CHECK ********************************************/
     // const [vendor, setVendor] = useState({})
+
+    // const [vendorDropdown, setVendorDropdown] = useState([])                //RE
     const [filterStatus, setFilterStatus] = useState(`Please check the ${(selectedMasterForSimulation?.label)} that you want to edit.`)
     const [token, setToken] = useState([])
     const [showTokenDropdown, setShowTokenDropdown] = useState(false)
@@ -91,6 +98,7 @@ function Simulation(props) {
         dispatch(getMasterSelectListSimulation(loggedInUserId(), () => { }))
         dispatch(getCostingSpecificTechnology(loggedInUserId(), () => { }))
         dispatch(getClientSelectList(() => { }))
+        dispatch(setTokenForSimulation([]))
 
         // ASSEMBLY TECHNOLOGY
         dispatch(getSelectListOfMasters(() => { }))
@@ -102,6 +110,7 @@ function Simulation(props) {
             setValue('Masters', { label: selectedMasterForSimulation?.label, value: selectedMasterForSimulation?.value })
             setValue('token', { label: tokenForSimulation?.label, value: tokenForSimulation?.value })
             setValue('Applicability', { label: simulationApplicability?.label, value: simulationApplicability?.value })
+            setValue('Vendor', { label: selectedVendorForSimulation?.label, value: selectedVendorForSimulation?.value })
             let value = isMasterAssociatedWithCosting ? ASSOCIATED : NON_ASSOCIATED
             setValue('Association', { label: value, value: value })
             setAssociation({ label: value, value: value })
@@ -114,6 +123,7 @@ function Simulation(props) {
             setValue('Vendor', { label: selectedVendorForSimulation?.label, value: selectedVendorForSimulation?.label })
             setValue('Customer', { label: selectedCustomerSimulation?.label, value: selectedCustomerSimulation?.label })
             setShowTokenDropdown(true)
+            // setEditWarning(applyEditCondSimulation(getValues('Masters').value))                //RE
             if (simulationApplicability?.value) {
                 setShowCustomer(true)
                 setShowVendor(true)
@@ -195,7 +205,6 @@ function Simulation(props) {
             }
             dispatch(getTokenSelectListAPI(obj, () => { }))
         }
-
         if (checkForNull(value.value) === ASSEMBLY_TECHNOLOGY_MASTER) {
             // SINCE WE ARE IN MASTER HANDLE CHANGE, TO SET VALUE OF ASSEMBLY TECHNOLOGY IN DROPDOWN WE NEED TO GET DYNAMIC VALUE FROM DROPDOWN API'S REDUCER
             setShowTokenDropdown(false)
@@ -254,6 +263,7 @@ function Simulation(props) {
         if (checkForNull(value?.value) === ASSEMBLY && Number(master) === Number(ASSEMBLY_TECHNOLOGY_MASTER)) {
             setTechnology(value)
             setShowMasterList(false)
+            // dispatch(setTechnologyForSimulation(value))                //RE
             setShowTokenDropdown(false)
             setVendor('')
             setValue('Vendor', '')
@@ -272,9 +282,11 @@ function Simulation(props) {
                 let obj = {
                     technologyId: value.value,
                     loggedInUserId: loggedInUserId(),
-                    simulationTechnologyId: master.value
+                    simulationTechnologyId: master.value,
+                    // vendorId: Object.keys(vendor).length === 0 ? EMPTY_GUID : vendor.value                //RE
                 }
                 dispatch(getTokenSelectListAPI(obj, () => { }))
+                // if (value !== '' && Object.keys(master).length > 0 && !(master.value === COMBINED_PROCESS)) {                //RE
                 if (value !== '' && Object.keys(master).length > 0) {
                     setShowMasterList(true)
                     setShowTokenDropdown(true)
@@ -379,6 +391,52 @@ function Simulation(props) {
             }
             return item
         })
+        if (Number(master.value) === Number(COMBINED_PROCESS)) {
+            temp = TempData
+        }
+        // if (rmDomesticListing && rmDomesticListing.length > 0 || rmImportListing && rmImportListing.length > 0) {
+        //     const edit = editTable()
+
+        // }
+
+        switch (Number(master.value)) {
+            case Number(SURFACETREATMENT):
+                temp = TempData && TempData.map((item) => {
+                    if (item.CostingHead === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.CostingHead === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
+                break;
+            case Number(OPERATIONS):
+                temp = TempData && TempData.map((item) => {
+                    if (item.CostingHead === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.CostingHead === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
+                break;
+            case Number(MACHINERATE):
+                temp = TempData
+                break;
+            case Number(BOPDOMESTIC):
+            case Number(BOPIMPORT):
+                temp = TempData && TempData.map((item) => {
+                    if (item.IsVendor === true) {
+                        item.IsVendor = 'Vendor Based'
+                    } else if (item.IsVendor === false) {
+                        item.IsVendor = 'Zero Based'
+                    }
+                    return item
+                })
+                break;
+            default:
+                break;
+        }
 
         // if (rmDomesticListing && rmDomesticListing.length > 0 || rmImportListing && rmImportListing.length > 0) {
         //     const edit = editTable()
@@ -522,6 +580,9 @@ function Simulation(props) {
                     return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={OPERATIONS} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' stopAPICall={false} approvalStatus={APPROVED_STATUS} />)
                 case SURFACETREATMENT:
                     return (<OperationListing isSimulation={true} isMasterSummaryDrawer={false} technology={technology.value} objectForMultipleSimulation={obj} apply={editTable} isOperationST={SURFACETREATMENT} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} isReset={isReset} ListFor='simulation' stopAPICall={false} approvalStatus={APPROVED_STATUS} />)
+                case COMBINED_PROCESS:
+                    return (<ProcessListingSimulation isSimulation={true} technology={technology.value} vendorId={vendor.value} objectForMultipleSimulation={obj} apply={editTable} tokenArray={token} selectionForListingMasterAPI={selectionForListingMasterAPI} changeSetLoader={changeSetLoader} changeTokenCheckBox={changeTokenCheckBox} />)
+
                 // case BOPIMPORT:
                 //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
                 // case BOPIMPORT:
@@ -574,6 +635,8 @@ function Simulation(props) {
                 return returnExcelColumn(RMDomesticSimulation, tableData ? tableData : [])
             case RMIMPORT:
                 return returnExcelColumn(RMImportSimulation, tableData ? tableData : [])
+            case COMBINED_PROCESS:                //RE
+                return returnExcelColumn(CombinedProcessSimulation, tableData && tableData.length > 0 ? tableData : [])
             case SURFACETREATMENT:
                 return returnExcelColumn(SurfaceTreatmentSimulation, tableData && tableData.length > 0 ? tableData : [])
             case OPERATIONS:
@@ -651,6 +714,7 @@ function Simulation(props) {
                 temp.push({ label: item.Text, value: item.Value })
                 return null
             })
+
             return temp
         }
         if (label === 'applicability') {
@@ -660,6 +724,15 @@ function Simulation(props) {
                 temp.push({ label: item.label, value: item.value })
                 return null
             })
+            return temp
+        }
+        if (label === 'vendor') {
+            vendorSelectList && vendorSelectList.map((item) => {
+                if (item.Value === '0') return false
+                temp.push({ label: item.Text, value: item.Value })
+                return null
+            })
+
             return temp
         }
     }
@@ -686,6 +759,7 @@ function Simulation(props) {
                 return (operationList && operationList.length === 0) ? true : false
             case SURFACETREATMENT:
                 return (operationList && operationList.length === 0) ? true : false
+            //RE
             // case BOPIMPORT:
             //     return (<OverheadListing isSimulation={true} technology={technology.value} apply={editTable} />)
             // case BOPIMPORT:
@@ -765,6 +839,7 @@ function Simulation(props) {
                 } if (flag === false && vendorFlag === false && plantFlag === false) {
                     (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Plant')
                 }
+
                 break;
             case RMIMPORT:
                 if (Data.length === 0) {
@@ -1094,6 +1169,13 @@ function Simulation(props) {
             //         (length !== 0) && setFilterStatus('Please filter out the Costing Head, Vendor and Overhead Applicability')
             //     }
             //     break;
+            case COMBINED_PROCESS:                //RE
+                if (Data && Data.length === 0) {
+                    setEditWarning(true)
+                } else {
+                    setEditWarning(false)
+                }
+                break;
 
 
             default:
@@ -1108,6 +1190,22 @@ function Simulation(props) {
         }
         setShowEditTable(true)
         setShowMasterList(false)
+    }
+
+    const cancelEditPage = () => {
+        setShowEditTable(false)
+        setIsBulkUpload(false)
+        // setTableData([])
+        setMaster({ label: master.label, value: master.value })
+        setTechnology({ label: technology.label, value: technology.value })
+        // setTimeout(() => {
+        //     setShowEditTable(true)
+        // }, 200);
+
+        setSelectionForListingMasterAPI('Master')
+        setTimeout(() => {
+            dispatch(setTechnologyForSimulation(technology))
+        }, 200);
     }
 
     const editMasterPage = (page) => {
@@ -1126,6 +1224,8 @@ function Simulation(props) {
                 return <RMSimulation isDomestic={false} backToSimulation={backToSimulation} isbulkUpload={isbulkUpload} rowCount={rowCount} list={tableData.length > 0 ? tableData : getFilteredData(rmImportListing, RM_MASTER_ID)} technology={technology.label} technologyId={technology.value} master={master.label} tokenForMultiSimulation={tempObject} />   //IF WE ARE USING BULK UPLOAD THEN ONLY TABLE DATA WILL BE USED OTHERWISE DIRECT LISTING
             case EXCHNAGERATE:
                 return <ERSimulation backToSimulation={backToSimulation} list={tableData.length > 0 ? tableData : getFilteredData(exchangeRateDataList, RM_MASTER_ID)} technology={technology.label} master={master.label} tokenForMultiSimulation={tempObject} technologyId={technology.value} />
+            case COMBINED_PROCESS:
+                return <CPSimulation cancelEditPage={cancelEditPage} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case SURFACETREATMENT:
                 return <OperationSTSimulation backToSimulation={backToSimulation} list={tableData} isbulkUpload={isbulkUpload} technology={technology.label} master={master.value} rowCount={rowCount} tokenForMultiSimulation={tempObject} />
             case OPERATIONS:
@@ -1249,26 +1349,29 @@ function Simulation(props) {
                                         />
                                     </div>
                                 </div>
-                                {showApplicabilityDropdown && <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset ">
-                                    <div className="flex-fills label">Applied On:</div>
-                                    <div className="hide-label flex-fills pl-0">
-                                        <SearchableSelectHookForm
-                                            label={''}
-                                            name={'Applicability'}
-                                            placeholder={'Select'}
-                                            Controller={Controller}
-                                            control={control}
-                                            rules={{ required: false }}
-                                            register={register}
-                                            defaultValue={applicability.length !== 0 ? applicability : ''}
-                                            options={renderListing('applicability')}
-                                            mandatory={false}
-                                            handleChange={handleApplicabilityChange}
-                                            errors={errors.Applicability}
-                                        />
+                                {
+                                    showApplicabilityDropdown && <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset ">
+                                        <div className="flex-fills label">Applied On:</div>
+                                        <div className="hide-label flex-fills pl-0">
+                                            <SearchableSelectHookForm
+                                                label={''}
+                                                name={'Applicability'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={control}
+                                                rules={{ required: false }}
+                                                register={register}
+                                                defaultValue={applicability.length !== 0 ? applicability : ''}
+                                                options={renderListing('applicability')}
+                                                mandatory={false}
+                                                handleChange={handleApplicabilityChange}
+                                                errors={errors.Applicability}
+                                            />
+                                        </div>
                                     </div>
-                                </div>}
-                                {(String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
+                                }
+                                {
+                                    (String(master?.value) === BOPDOMESTIC || String(master?.value) === BOPIMPORT) &&
                                     <div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
                                         <div className="flex-fills label">Association:</div>
                                         <div className="flex-fills hide-label pl-0 d-flex mr-3">
@@ -1315,6 +1418,7 @@ function Simulation(props) {
                                     </div>
                                 }
                                 {(partType || showVendor) &&
+                                    // {(partType || master.value === COMBINED_PROCESS) &&                //RE
                                     < div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
                                         <div className="flex-fills label">Vendor:</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
@@ -1339,7 +1443,8 @@ function Simulation(props) {
                                         </div>
                                     </div>
                                 }
-                                {(partType || showCustomer) &&
+                                {
+                                    (partType || showCustomer) &&
                                     < div className="d-inline-flex justify-content-start align-items-center mr-2 mb-3 zindex-unset">
                                         <div className="flex-fills label">Customer:</div>
                                         <div className="flex-fills hide-label pl-0 p-relative">
@@ -1363,7 +1468,8 @@ function Simulation(props) {
                                         </div>
                                     </div>
                                 }
-                                {showTokenDropdown &&
+                                {
+                                    showTokenDropdown &&
                                     <div className="d-inline-flex justify-content-start align-items-center zindex-unset">
                                         <div className="flex-fills label">Token:</div>
                                         <div className="flex-fills hide-label pl-0">
@@ -1390,14 +1496,16 @@ function Simulation(props) {
                                     <div className='save-icon'></div>
                                 </button>}
                             </Col>
-                        </Row>
+                        </Row >
                     }
                     {/* <RMDomesticListing isSimulation={true} /> */}
-                    {showMasterList &&
+                    {
+                        showMasterList &&
                         <div className={`${partType ? 'simulation-edit' : ''} ${loader ? 'min-height-simulation' : ''}`}>{renderModule(master)}</div>
                     }
 
-                    {showMasterList && !partType &&
+                    {
+                        showMasterList && !partType &&
                         <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer sticky-btn-footer">
                             <div className="col-sm-12 text-right bluefooter-butn mt-3">
                                 <div className="d-flex justify-content-end bd-highlight w100 my-2 align-items-center ">
@@ -1416,20 +1524,21 @@ function Simulation(props) {
                                     }
                                     {/* <button type="button" onClick={handleExcel} className={'btn btn-primary pull-right'}><img className="pr-2" alt={''} src={require('../../../assests/images/download.png')}></img> Download File</button> */}
 
-                                </div>
-                            </div>
-                        </Row>
+                                </div >
+                            </div >
+                        </Row >
                     }
-                </div>
+                </div >
             }
             {
                 showverifyPage &&
                 <VerifySimulation token={token} cancelVerifyPage={cancelVerifyPage} technology={technology} closeSimulation={closeSimulation} />
             }
-            {loader ? <LoaderCustom customClass="simulation-loader" /> :
-                <div className="simulation-edit">
-                    {showEditTable && editMasterPage(master.value)}
-                </div>
+            {
+                loader ? <LoaderCustom customClass="simulation-loader" /> :
+                    <div className="simulation-edit">
+                        {showEditTable && editMasterPage(master.value)}
+                    </div>
             }
             {
                 showUploadDrawer &&

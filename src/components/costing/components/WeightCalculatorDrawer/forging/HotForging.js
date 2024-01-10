@@ -56,7 +56,6 @@ function HotForging(props) {
 
   })
 
-
   const dispatch = useDispatch()
   const [forgeWeightValue, setForgeWeightValue] = useState(WeightCalculatorRequest && WeightCalculatorRequest.ForgedWeight ? WeightCalculatorRequest.ForgedWeight : 0)
   const [lostWeight, setLostWeight] = useState(WeightCalculatorRequest && WeightCalculatorRequest.NetLossWeight ? WeightCalculatorRequest.NetLossWeight : 0)

@@ -9,7 +9,8 @@ import {
     GET_PLANT_UNIT_SUCCESS,
     config,
     GET_PLANT_FILTER_LIST,
-    GET_COMPANY_SELECTLIST
+    GET_COMPANY_SELECTLIST,
+    GET_PLANT_CODE_SELECT_LIST
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
 import Toaster from '../../common/Toaster';
@@ -183,6 +184,23 @@ export function getComapanySelectList(callback) {
         request.then((response) => {
             dispatch({
                 type: GET_COMPANY_SELECTLIST,
+                payload: response.data.SelectList
+            })
+            callback(response)
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
+
+
+export function getPlantCodeSelectList(callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getPlantCodeSelectList}`, config());
+        request.then((response) => {
+            dispatch({
+                type: GET_PLANT_CODE_SELECT_LIST,
                 payload: response.data.SelectList
             })
             callback(response)

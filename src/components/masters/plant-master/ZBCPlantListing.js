@@ -395,6 +395,8 @@ const ZBCPlantListing = (props) => {
                     >
                         <AgGridColumn field="PlantName" headerName="Plant Name"></AgGridColumn>
                         <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
+                        {/* THIS IS COMMENTED IN //RE  */}
+                        {/* <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn> */}
                         <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
                         <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                         <AgGridColumn field="StateName" headerName="State"></AgGridColumn>

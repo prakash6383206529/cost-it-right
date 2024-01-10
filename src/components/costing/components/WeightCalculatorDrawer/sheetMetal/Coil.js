@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -116,7 +116,6 @@ function Coil(props) {
 
     const setFinishWeight = (e) => {
         const FinishWeight = e.target.value
-
         switch (UOMDimension.label) {
             case G:
                 setTimeout(() => {
@@ -204,7 +203,6 @@ function Coil(props) {
      */
     const onSubmit = debounce(handleSubmit((values) => {
         setIsDisable(true)
-
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== dataToSend.FinishWeight || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
@@ -313,7 +311,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Thickness(mm)`}
                                         name={'Thickness'}
                                         Controller={Controller}
@@ -353,7 +351,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Cavity`}
                                         name={'Cavity'}
                                         Controller={Controller}
@@ -377,7 +375,7 @@ function Coil(props) {
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={UnitFormat()}
                                         name={'NetSurfaceArea'}
                                         Controller={Controller}
@@ -433,7 +431,7 @@ function Coil(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
                                         name={'FinishWeight'}
                                         Controller={Controller}

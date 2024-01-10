@@ -11,6 +11,7 @@ import { number, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit
 import NpvCost from './NpvCost'
 import { setNPVData } from '../../../actions/Costing'
 import Toaster from '../../../../common/Toaster'
+import { getConditionDetails, getNpvDetails } from '../../../../../actions/Common'
 import ConditionCosting from './ConditionCosting'
 import HeaderTitle from '../../../../common/HeaderTitle'
 import LoaderCustom from '../../../../common/LoaderCustom'
@@ -270,220 +271,221 @@ function AddNpvCost(props) {
     return (
 
         <div>
+            {
+                !props.isPDFShow ? <Drawer anchor={props.anchor} open={props.isOpen}
+                // onClose={(e) => toggleDrawer(e)}
+                >
+                    {isLoader && <LoaderCustom />}
+                    <div className={`ag-grid-react hidepage-size`}>
+                        <Container className="add-bop-drawer">
+                            <div className={'drawer-wrapper layout-min-width-820px'}>
 
-            {!props.isPDFShow ? <Drawer anchor={props.anchor} open={props.isOpen}
-            // onClose={(e) => toggleDrawer(e)}
-            >
-                {isLoader && <LoaderCustom />}
-                <div className={`ag-grid-react hidepage-size`}>
-                    <Container className="add-bop-drawer">
-                        <div className={'drawer-wrapper layout-min-width-820px'}>
+                                <Row className="drawer-heading">
+                                    <Col className='pl-0'>
+                                        {!costingSummary && <div className={'header-wrapper left'}>
+                                            <h3>{'Add NPV:'}</h3>
+                                        </div>}
+                                        <div
+                                            onClick={cancel}
+                                            className={'close-button right'}>
+                                        </div>
+                                    </Col>
+                                </Row>
+                                <div className='hidepage-size'>
+                                    {!costingSummary && <Row>
 
-                            <Row className="drawer-heading">
-                                <Col className='pl-0'>
-                                    {!costingSummary && <div className={'header-wrapper left'}>
-                                        <h3>{'Add NPV:'}</h3>
-                                    </div>}
-                                    <div
-                                        onClick={cancel}
-                                        className={'close-button right'}>
+                                        <Col md="3" className='pr-1'>
+                                            <SearchableSelectHookForm
+                                                label={`Type of Investment`}
+                                                name={'TypeOfNpv'}
+                                                placeholder={'Select'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                options={typeofNpvDropdown}
+                                                handleChange={handleNpvChange}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.LossOfType}
+                                                disabled={props.CostingViewMode}
+                                            />
+                                        </Col>
+                                        <Col md="2" className='px-1'>
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'percentage'} tooltipText={'Percentage = (Total * 100) / Quantity * Net Cost'} />
+                                            <NumberFieldHookForm
+                                                label={`Percenatge (%)`}
+                                                name={'NpvPercentage'}
+                                                id={'percentage'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: false,
+                                                    validate: { number, checkWhiteSpaces, percentageLimitValidation },
+                                                    max: {
+                                                        value: 100,
+                                                        message: 'Percentage should be less than 100'
+                                                    },
+
+                                                }}
+
+                                                handleChange={handleNpvPercentageChange}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.NpvPercentage}
+                                                disabled={props.CostingViewMode || disableNpvPercentage || disableAllFields}
+                                            />
+                                        </Col>
+                                        <Col md="2" className='px-1'>
+                                            <NumberFieldHookForm
+                                                label={`Quantity`}
+                                                name={'Quantity'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: true,
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                }}
+                                                handleChange={handleQuantityChange}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.Quantity}
+                                                disabled={props.CostingViewMode || disableAllFields || disableQuantity}
+                                            />
+                                        </Col>
+                                        <Col md="2" className='px-1'>
+                                            <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost'} tooltipText={'Total = (Percentage / 100) * Quantity * Net Cost'} />
+                                            <NumberFieldHookForm
+                                                label={`Total`}
+                                                name={'Total'}
+                                                id={'total-cost'}
+                                                Controller={Controller}
+                                                control={control}
+                                                register={register}
+                                                mandatory={true}
+                                                rules={{
+                                                    required: true,
+                                                    validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
+                                                }}
+                                                handleChange={handleTotalCostChange}
+                                                defaultValue={''}
+                                                className=""
+                                                customClassName={'withBorder'}
+                                                errors={errors.Total}
+                                                disabled={props.CostingViewMode || disableTotalCost || disableAllFields}
+                                            />
+                                        </Col>
+                                        <Col md="3" className="mt-4 pt-1">
+
+                                            <button
+                                                type="button"
+                                                className={"user-btn  pull-left mt-1"}
+                                                onClick={addData}
+                                            >
+                                                <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={"reset-btn pull-left mt-1 ml5"}
+                                                onClick={resetData}
+                                            >
+                                                Reset
+                                            </button>
+                                        </Col>
+                                    </Row>}
+
+                                    {initialConfiguration?.IsShowNpvCost && costingSummary &&
+                                        <>
+                                            <Col md="12">
+                                                <HeaderTitle className="border-bottom"
+                                                    title={'NPV Cost'}
+                                                    customClass={'underLine-title'}
+                                                />
+                                            </Col>
+                                        </>
+                                    }
+                                    {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
+                                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
+                                        <div className='firefox-spaces'>
+                                            <Col md="12" className={'mt25 firefox-spaces'}>
+                                                <HeaderTitle className="border-bottom firefox-spaces"
+                                                    title={'Costing Condition'}
+                                                    customClass={'underLine-title'}
+                                                />
+                                            </Col>
+                                            <ConditionCosting hideAction={true} tableData={conditionTableData} />
+                                        </div>}
+
+                                    {costingSummary && props?.isRfqCosting &&
+                                        <div className={'mt25 pb-15'}>
+                                            <Col md="12" className={'mt25 pb-15'}>
+                                                <HeaderTitle className="border-bottom"
+                                                    title={'YOY'}
+                                                    customClass={'underLine-title'}
+                                                />
+                                            </Col>
+                                            <YOYCost
+                                                outside={true}
+                                                NetPOPrice={props.netPOPrice}
+                                                setValue={setValue}
+                                                getValues={getValues}
+                                                control={control}
+                                                register={register}
+                                                errors={errors}
+                                                activeTab={'6'}
+                                                patId={partId}
+                                                vendorId={vendorId}
+                                                hideAddButton={true}
+                                            />
+                                        </div >}
+                                </div >
+                                {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                                    <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
+                                        <button
+                                            type={'button'}
+                                            className="reset cancel-btn mr5"
+                                            onClick={cancel} >
+                                            <div className={'cancel-icon'}></div> {'Cancel'}
+                                        </button>
+                                        <button
+                                            type={'button'}
+                                            className="submit-button save-btn"
+                                            onClick={() => { props.closeDrawer('save', tableData) }} >
+                                            <div className={"save-icon"}></div>
+                                            {'Save'}
+                                        </button>
                                     </div>
-                                </Col>
-                            </Row>
-                            <div className='hidepage-size'>
-                                {!costingSummary && <Row>
-
-                                    <Col md="3" className='pr-1'>
-                                        <SearchableSelectHookForm
-                                            label={`Type of Investment`}
-                                            name={'TypeOfNpv'}
-                                            placeholder={'Select'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={true}
-                                            options={typeofNpvDropdown}
-                                            handleChange={handleNpvChange}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.LossOfType}
-                                            disabled={props.CostingViewMode}
-                                        />
-                                    </Col>
-                                    <Col md="2" className='px-1'>
-                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'percentage'} tooltipText={'Percentage = (Total * 100) / Quantity * Net Cost'} />
-                                        <NumberFieldHookForm
-                                            label={`Percenatge (%)`}
-                                            name={'NpvPercentage'}
-                                            id={'percentage'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={true}
-                                            rules={{
-                                                required: false,
-                                                validate: { number, checkWhiteSpaces, percentageLimitValidation },
-                                                max: {
-                                                    value: 100,
-                                                    message: 'Percentage should be less than 100'
-                                                },
-
-                                            }}
-
-                                            handleChange={handleNpvPercentageChange}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.NpvPercentage}
-                                            disabled={props.CostingViewMode || disableNpvPercentage || disableAllFields}
-                                        />
-                                    </Col>
-                                    <Col md="2" className='px-1'>
-                                        <NumberFieldHookForm
-                                            label={`Quantity`}
-                                            name={'Quantity'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={true}
-                                            rules={{
-                                                required: true,
-                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                            }}
-                                            handleChange={handleQuantityChange}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.Quantity}
-                                            disabled={props.CostingViewMode || disableAllFields || disableQuantity}
-                                        />
-                                    </Col>
-                                    <Col md="2" className='px-1'>
-                                        <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-cost'} tooltipText={'Total = (Percentage / 100) * Quantity * Net Cost'} />
-                                        <NumberFieldHookForm
-                                            label={`Total`}
-                                            name={'Total'}
-                                            id={'total-cost'}
-                                            Controller={Controller}
-                                            control={control}
-                                            register={register}
-                                            mandatory={true}
-                                            rules={{
-                                                required: true,
-                                                validate: { number, checkWhiteSpaces, decimalNumberLimit6 },
-                                            }}
-                                            handleChange={handleTotalCostChange}
-                                            defaultValue={''}
-                                            className=""
-                                            customClassName={'withBorder'}
-                                            errors={errors.Total}
-                                            disabled={props.CostingViewMode || disableTotalCost || disableAllFields}
-                                        />
-                                    </Col>
-                                    <Col md="3" className="mt-4 pt-1">
-
-                                        <button
-                                            type="button"
-                                            className={"user-btn  pull-left mt-1"}
-                                            onClick={addData}
-                                        >
-                                            <div className={"plus"}></div>{isEditMode ? "UPDATE" : 'ADD'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className={"reset-btn pull-left mt-1 ml5"}
-                                            onClick={resetData}
-                                        >
-                                            Reset
-                                        </button>
-                                    </Col>
-                                </Row>}
-
-                                {initialConfiguration?.IsShowNpvCost && costingSummary &&
-                                    <>
-                                        <Col md="12">
-                                            <HeaderTitle className="border-bottom"
-                                                title={'NPV Cost'}
-                                                customClass={'underLine-title'}
-                                            />
-                                        </Col>
-                                    </>
+                                </Row>
                                 }
-                                {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
-                                {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
-                                    <div className='firefox-spaces'>
-                                        <Col md="12" className={'mt25 firefox-spaces'}>
-                                            <HeaderTitle className="border-bottom firefox-spaces"
-                                                title={'Costing Condition'}
-                                                customClass={'underLine-title'}
-                                            />
-                                        </Col>
-                                        <ConditionCosting hideAction={true} tableData={conditionTableData} />
-                                    </div>}
-
-                                {costingSummary && props?.isRfqCosting &&
-                                    <div className={'mt25 pb-15'}>
-                                        <Col md="12" className={'mt25 pb-15'}>
-                                            <HeaderTitle className="border-bottom"
-                                                title={'YOY'}
-                                                customClass={'underLine-title'}
-                                            />
-                                        </Col>
-                                        <YOYCost
-                                            outside={true}
-                                            NetPOPrice={props.netPOPrice}
-                                            setValue={setValue}
-                                            getValues={getValues}
-                                            control={control}
-                                            register={register}
-                                            errors={errors}
-                                            activeTab={'6'}
-                                            patId={partId}
-                                            vendorId={vendorId}
-                                            hideAddButton={true}
-                                        />
-                                    </div>}
-                            </div>
-                            {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
-                                <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
-                                    <button
-                                        type={'button'}
-                                        className="reset cancel-btn mr5"
-                                        onClick={cancel} >
-                                        <div className={'cancel-icon'}></div> {'Cancel'}
-                                    </button>
-                                    <button
-                                        type={'button'}
-                                        className="submit-button save-btn"
-                                        onClick={() => { props.closeDrawer('save', tableData) }} >
-                                        <div className={"save-icon"}></div>
-                                        {'Save'}
-                                    </button>
-                                </div>
-                            </Row>}
-                        </div>
-                    </Container>
-                </div>
-            </Drawer> : <>
-                {tableData && tableData.length !== 0 && <>
-                    <Col md="12">
+                            </div >
+                        </Container >
+                    </div >
+                </Drawer > : <>
+                    {tableData && tableData.length !== 0 && <>
+                        <Col md="12">
+                            <HeaderTitle className="border-bottom"
+                                title={'NPV Cost'}
+                                customClass={'underLine-title'}
+                            />
+                        </Col>
+                        <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
+                    </>}
+                    {conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25 firefox-10'}>
                         <HeaderTitle className="border-bottom"
-                            title={'NPV Cost'}
+                            title={'Costing Condition'}
                             customClass={'underLine-title'}
                         />
                     </Col>
-                    <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
+                        <ConditionCosting hideAction={true} tableData={conditionTableData} />
+                    </>}
                 </>}
-                {conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25 firefox-10'}>
-                    <HeaderTitle className="border-bottom"
-                        title={'Costing Condition'}
-                        customClass={'underLine-title'}
-                    />
-                </Col>
-                    <ConditionCosting hideAction={true} tableData={conditionTableData} />
-                </>}
-            </>}
         </div >
 
     )

@@ -5,9 +5,9 @@ import Drawer from '@material-ui/core/Drawer';
 import { Controller, useForm } from 'react-hook-form';
 import { useDispatch, useSelector } from 'react-redux';
 //import CostingSimulation from './CostingSimulation';
-import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting, runSimulationOnSelectedBoughtOutPart } from '../actions/Simulation';
+import { runSimulationOnSelectedCosting, getSelectListOfSimulationApplicability, runSimulationOnSelectedExchangeCosting, runSimulationOnSelectedSurfaceTreatmentCosting, runSimulationOnSelectedMachineRateCosting, runSimulationOnSelectedBoughtOutPartCosting, runSimulationOnSelectedAssemblyTechnologyCosting, runSimulationOnSelectedBoughtOutPart, runSimulationOnSelectedCombinedProcessCosting } from '../actions/Simulation';
 import DayTime from '../../common/DayTimeWrapper'
-import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT, SIMULATION } from '../../../config/constants';
+import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHINERATE, BOPDOMESTIC, BOPIMPORT, SIMULATION, COMBINED_PROCESS } from '../../../config/constants';
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
@@ -154,7 +154,6 @@ function RunSimulationDrawer(props) {
         if (temp && temp.findIndex(el => el.SimulationApplicabilityId === elementObj.Value) !== -1) {
             const ind = multipleHeads.findIndex((el) => el.SimulationApplicabilityId === elementObj.Value)
             const indexForCheck = selectedData.findIndex((el) => el === elementObj.label)
-
             if (ind !== -1) {
                 temp.splice(ind, 1)
                 temp1.splice(indexForCheck, 1)
@@ -372,6 +371,11 @@ function RunSimulationDrawer(props) {
                     break;
                 case Number(BOPIMPORT):
                     dispatch(runSimulationOnSelectedBoughtOutPartCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
+                        checkForResponse(res)
+                    }))
+                    break;
+                case Number(COMBINED_PROCESS):
+                    dispatch(runSimulationOnSelectedCombinedProcessCosting({ ...objs, EffectiveDate: DayTime(date !== null ? date : "").format('YYYY/MM/DD HH:mm'), IsProvisional: provisionalCheck, SimulationApplicability: temp }, (res) => {
                         checkForResponse(res)
                     }))
                     break;

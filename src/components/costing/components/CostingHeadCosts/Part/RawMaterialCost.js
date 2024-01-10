@@ -537,7 +537,6 @@ function RawMaterialCost(props) {
             return false
           }
           const NetLandedCost = (GrossWeight * tempData?.RMRate) - ScrapCost;
-
           tempData = {
             ...tempData,
             FinishWeight: FinishWeight ? FinishWeight : 0,
@@ -571,7 +570,6 @@ function RawMaterialCost(props) {
           }
           dispatch(setRMCutOff({ IsCutOffApplicable: tempData?.IsCutOffApplicable, CutOffRMC: CutOffRMC }))
           setGridData(tempArr)
-
         }
         for (let i = 0; i < gridData.length; i++) {
           if (forgingInfoIcon[i] === undefined) {
@@ -1348,8 +1346,8 @@ function RawMaterialCost(props) {
                       {initialConfiguration.IsShowCRMHead && <th>{'CRM Head'}</th>}
                       <th><div className='pin-btn-container'><span>Action</span><button title={headerPinned ? 'pin' : 'unpin'} onClick={() => setHeaderPinned(!headerPinned)} className='pinned'><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
 
-                    </tr>
-                  </thead>
+                    </tr >
+                  </thead >
                   <tbody className='rm-table-body'>
                     {gridData &&
                       gridData.map((item, index) => {
@@ -1359,7 +1357,8 @@ function RawMaterialCost(props) {
                             <td>{checkForDecimalAndNull(item.RMRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{checkForDecimalAndNull(item.ScrapRate, getConfigurationKey().NoOfDecimalForPrice)}</td>
                             <td>{item.UOM}</td>
-                            {showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
+                            {
+                              showCalculatorFunctionHeader() && getTechnology.includes(costData?.TechnologyId) && (costData?.TechnologyId === MACHINING ? isScrapRateUOMApplied : true) &&
                               <td className="text-center">
                                 {showCalculatorFunction(item) ? <button
                                   id={`RM_calculator${index}`}
@@ -1428,7 +1427,8 @@ function RawMaterialCost(props) {
                                       disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter")) ? true : false}
                                     />
                                   </div>
-                                </td></>}
+                                </td></>
+                            }
                             {costData?.TechnologyId === Ferrous_Casting && <td>{checkForDecimalAndNull(item.Percentage, initialConfiguration.NoOfDecimalForPrice)}</td>}
                             {
                               costData?.TechnologyId === PLASTIC && <td>{checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput)}</td>
@@ -1548,8 +1548,8 @@ function RawMaterialCost(props) {
                     }
                   </tbody>
                 </Table>
-              </Col>
-            </Row>
+              </Col >
+            </Row >
 
             <Row>
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
@@ -1572,11 +1572,12 @@ function RawMaterialCost(props) {
                     />
                   </label>
                   <TooltipCustom id={"added-rm-indicate"} customClass="float-none ml-n2 mt-3 " tooltipText="Can only be added with 1 RM" />
-                </Col>
+                </Col >
               }
 
               {/* IF THERE IS NEED TO APPLY FOR MULTIPLE TECHNOLOGY, CAN MODIFIED BELOW CONDITION */}
-              {IsApplyMasterBatch && costData?.TechnologyId === PLASTIC &&
+              {
+                IsApplyMasterBatch && costData?.TechnologyId === PLASTIC &&
                 <>
                   <Col md="2">
                     <button onClick={MasterBatchToggle} title={'Add Master Batch'} disabled={(CostingViewMode || IsLocked || masterBatch)} type="button" class="user-btn mt30"><div class="plus"></div>Add Master Batch</button>
@@ -1684,8 +1685,9 @@ function RawMaterialCost(props) {
                       disabled={true}
                     />
                   </Col>
-                </>}
-            </Row>
+                </>
+              }
+            </Row >
 
             {
               showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`If you add New RM all the calculations will be reset`} />
@@ -1693,9 +1695,9 @@ function RawMaterialCost(props) {
             {
               showPopupDelete && <PopupMsgWrapper isOpen={showPopupDelete} closePopUp={closePopUp} confirmPopup={onPopupConfirmDelete} message={`If you delete RM all the calculations will be reset`} />
             }
-          </form>
-        </div>
-      </div>
+          </form >
+        </div >
+      </div >
       {
         isDrawerOpen && (
           <AddRM

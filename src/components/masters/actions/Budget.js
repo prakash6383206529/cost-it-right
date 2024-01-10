@@ -20,6 +20,7 @@ export function getBudgetDataList(skip, take, isPagination, obj, callback) {
     return (dispatch) => {
         //dispatch({ type: API_REQUEST });    
         const QueryParams = `costingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&financialYear=${obj.FinancialYear !== undefined ? obj.FinancialYear : ""}&netPoPrice=${obj.NetPoPrice !== undefined ? obj.NetPoPrice : ""}&budgetedPoPrice	=${obj.BudgetedPoPrice !== undefined ? obj.BudgetedPoPrice : ""}&partName=${obj.PartName !== undefined ? obj.PartName : ""}&partNumber=${obj.partNoWithRevNo !== undefined ? obj.partNoWithRevNo : ""}&plantName=${obj.plantNameWithCode !== undefined ? obj.plantNameWithCode : ""}&plantCode=${obj.PlantCode !== undefined ? obj.PlantCode : ""}&vendorName=${obj.vendorNameWithCode !== undefined ? obj.vendorNameWithCode : ""}&vendorCode=${obj.VendorCode !== undefined ? obj.VendorCode : ""}&applyPagination=${isPagination !== undefined ? isPagination : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&customerName=${obj.customerNameWithCode !== undefined ? obj.customerNameWithCode : ''}&PartId=${obj.PartId !== undefined ? obj.PartId : ""}&partType=${obj?.PartType !== undefined ? obj?.PartType : ""}`
+        // const QueryParams = `costingHead=${obj.CostingHead !== undefined ? obj.CostingHead : ""}&financialYear=${obj.FinancialYear !== undefined ? obj.FinancialYear : ""}&netPoPrice=${obj.NetPoPrice !== undefined ? obj.NetPoPrice : ""}&budgetedPoPrice	=${obj.BudgetedPoPrice !== undefined ? obj.BudgetedPoPrice : ""}&partName=${obj.PartName !== undefined ? obj.PartName : ""}&partNumber=${obj.PartNumber !== undefined ? obj.PartNumber : ""}&plantName=${obj.PlantName !== undefined ? obj.PlantName : ""}&plantCode=${obj.PlantCode !== undefined ? obj.PlantCode : ""}&vendorName=${obj.VendorName !== undefined ? obj.VendorName : ""}&vendorCode=${obj.VendorCode !== undefined ? obj.VendorCode : ""}&skip=${skip !== undefined ? skip : ""}&take=${take !== undefined ? take : ""}&customerName=${obj.CustomerName !== undefined ? obj.CustomerName : ''}&customerCodee=${obj?.CustomerCode !== undefined ? obj?.CustomerCode : false}&PartId=${obj.PartId !== undefined ? obj.PartId : ""}&partType=${obj?.PartType !== undefined ? obj?.PartType : ""}`    //RE
         axios.get(`${API.getBudgetDataList}?${QueryParams}`, config())
             .then((response) => {
                 if (response.data.Result || response.status === 204) {
@@ -155,6 +156,25 @@ export function bulkUploadBudgetMaster(data, callback) {
     };
 }
 
+export function masterApprovalRequestBySenderBudget(data, callback) {
+    return (dispatch) => {
+        const request = axios.post(API.masterApprovalRequestBySenderBudget, data, config())
+        request.then((response) => {
+            if (response.data.Result) {
+                callback(response)
+            } else {
+                dispatch({ type: API_FAILURE })
+                if (response.data.Message) {
+                    Toaster.error(response.data.Message)
+                }
+            }
+        }).catch((error) => {
+            callback(error)
+            dispatch({ type: API_FAILURE })
+            apiErrors(error)
+        })
+    }
+}
 
 export function masterApprovalAPI(data, callback) {
     return (dispatch) => {

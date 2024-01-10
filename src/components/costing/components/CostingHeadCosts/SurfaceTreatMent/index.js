@@ -369,10 +369,10 @@ function SurfaceTreatment(props) {
                                 checkForDecimalAndNull(checkForNull(surfaceCost(surfaceTreatmentData?.gridData)) + checkForNull(transportObj?.TransportationCost), initialConfiguration.NoOfDecimalForPrice)}`}</Col>
                             </>
                         }
-                      </Row>
+                      </Row >
 
                       {/* <hr /> */}
-                      <div className="user-page px-3 pb-3">
+                      < div className="user-page px-3 pb-3" >
                         <div>
                           <SurfaceTreatmentCost
                             index={props.index}
@@ -399,10 +399,10 @@ function SurfaceTreatment(props) {
                         </div>
                       </div >
 
-                    </div>
-                  </div>
-                </Col>
-              </Row>
+                    </div >
+                  </div >
+                </Col >
+              </Row >
 
               <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
                 <div className="col-sm-12 text-right bluefooter-butn">
@@ -422,10 +422,10 @@ function SurfaceTreatment(props) {
                   </button>
                 </div>
               </Row>
-            </form>
-          </div>
-        </div>
-      </Drawer>
+            </form >
+          </div >
+        </div >
+      </Drawer >
 
     </ >
   );

@@ -66,7 +66,6 @@ function SingleDropdownFloationFilter(props) {
     const valueChanged = (event) => {
 
         let arr = [event]
-
         setShowInputData(arr)
         setSelectedPlants(arr)
         let plants = ""

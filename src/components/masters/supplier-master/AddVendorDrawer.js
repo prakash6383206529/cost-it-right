@@ -36,6 +36,7 @@ class AddVendorDrawer extends Component {
             country: [],
             state: [],
             city: [],
+            isLoader: false,
             isOpenFuel: false,
             isOpenPlant: false,
             isOpenVendorPlant: false,

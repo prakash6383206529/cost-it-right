@@ -681,8 +681,8 @@ function ApprovalSummary(props) {
                     )}
                   </button>
                 </div>
-              </Col>
-            </Row>
+              </Col >
+            </Row >
 
             {fgWiseAcc && <Row className="mb-3">
               <Col md="12">
@@ -747,10 +747,10 @@ function ApprovalSummary(props) {
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
                 {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} />}
-              </Col>
-            </Row>
+              </Col >
+            </Row >
             {/* Costing Summary page here */}
-          </div>
+          </div >
 
           {
             !isApprovalDone &&
@@ -797,67 +797,74 @@ function ApprovalSummary(props) {
 
         </>
       }
-      {approveDrawer && (
-        <CostingApproveReject
-          type={'Approve'}
-          isOpen={approveDrawer}
-          closeDrawer={closeDrawer}
-          // tokenNo={approvalNumber}
-          approvalData={[approvalData]}
-          anchor={'right'}
-          reasonId={approvalDetails.ReasonId}
-          // IsFinalLevel={!finalLevelUser}
-          IsNotFinalLevel={!showFinalLevelButtons}
-          IsPushDrawer={showPushDrawer}
-          dataSend={[approvalDetails, partDetail]}
-          // showFinalLevelButtons={showFinalLevelButtons}
-          costingTypeId={costingTypeId}
-          approvalTypeId={approvalTypeId}
-          TechnologyId={approvalData?.TechnologyId}
-          conditionInfo={conditionInfo}
-          vendorCodeForSAP={vendorCodeForSap}
-          releaseStrategyDetails={releaseStrategyDetails}
-          showApprovalTypeDropdown={false}
-        />
-      )}
-      {rejectDrawer && (
-        <CostingApproveReject
-          type={'Reject'}
-          isOpen={rejectDrawer}
-          approvalData={[approvalData]}
-          closeDrawer={closeDrawer}
-          //  tokenNo={approvalNumber}
-          anchor={'right'}
-          IsNotFinalLevel={!showFinalLevelButtons}
-          reasonId={approvalDetails.ReasonId}
-          IsPushDrawer={showPushDrawer}
-          dataSend={[approvalDetails, partDetail]}
-          costingTypeId={costingTypeId}
-          conditionInfo={conditionInfo}
-          vendorCodeForSAP={vendorCodeForSap}
-        />
-      )}
-      {pushButton && (
-        <PushButtonDrawer
-          isOpen={pushButton}
-          closeDrawer={closePushButton}
-          dataSend={[approvalDetails, partDetail]}
-          anchor={'right'}
-          approvalData={[approvalData]}
-          conditionInfo={conditionInfo}
-          vendorCodeForSAP={vendorCodeForSap}
-        />
-      )}
+      {
+        approveDrawer && (
+          <CostingApproveReject
+            type={'Approve'}
+            isOpen={approveDrawer}
+            closeDrawer={closeDrawer}
+            // tokenNo={approvalNumber}
+            approvalData={[approvalData]}
+            anchor={'right'}
+            reasonId={approvalDetails.ReasonId}
+            IsNotFinalLevel={!showFinalLevelButtons}
+            IsPushDrawer={showPushDrawer}
+            dataSend={[approvalDetails, partDetail]}
+            showFinalLevelButtons={showFinalLevelButtons}
+            costingTypeId={costingTypeId}
+            approvalTypeId={approvalTypeId}
+            TechnologyId={approvalData?.TechnologyId}
+            conditionInfo={conditionInfo}
+            vendorCodeForSAP={vendorCodeForSap}
+            releaseStrategyDetails={releaseStrategyDetails}
+            showApprovalTypeDropdown={false}
+          />
+        )
+      }
+      {
+        rejectDrawer && (
+          <CostingApproveReject
+            type={'Reject'}
+            isOpen={rejectDrawer}
+            approvalData={[approvalData]}
+            closeDrawer={closeDrawer}
+            //  tokenNo={approvalNumber}
+            anchor={'right'}
+            IsNotFinalLevel={!showFinalLevelButtons}
+            reasonId={approvalDetails.ReasonId}
+            IsPushDrawer={showPushDrawer}
+            dataSend={[approvalDetails, partDetail]}
+            costingTypeId={costingTypeId}
+            conditionInfo={conditionInfo}
+            vendorCodeForSAP={vendorCodeForSap}
+          />
+        )
+      }
+      {
+        pushButton && (
+          <PushButtonDrawer
+            isOpen={pushButton}
+            closeDrawer={closePushButton}
+            dataSend={[approvalDetails, partDetail]}
+            anchor={'right'}
+            approvalData={[approvalData]}
+            conditionInfo={conditionInfo}
+            vendorCodeForSAP={vendorCodeForSap}
+          />
+        )
+      }
 
-      {viewButton && (
-        <ViewDrawer
-          approvalLevelStep={approvalLevelStep}
-          isOpen={viewButton}
-          closeDrawer={closeViewDrawer}
-          anchor={'top'}
-          approvalNo={approvalData.ApprovalNumber}
-        />
-      )}
+      {
+        viewButton && (
+          <ViewDrawer
+            approvalLevelStep={approvalLevelStep}
+            isOpen={viewButton}
+            closeDrawer={closeViewDrawer}
+            anchor={'top'}
+            approvalNo={approvalData.ApprovalNumber}
+          />
+        )
+      }
     </>
   )
 }

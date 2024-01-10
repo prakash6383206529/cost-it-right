@@ -4,12 +4,13 @@ import { useForm, Controller } from "react-hook-form";
 import Toaster from "../common/Toaster";
 import { Loader } from "../common/Loader";
 import {
-  minLength3, minLength6, minLength10, maxLength12, required, email, minLength7, maxLength18,
+  minLength3, minLength10, maxLength12, required, email, minLength6, minLength7, maxLength18, maxLength11,
   maxLength6, checkWhiteSpaces, postiveNumber, maxLength80, maxLength5, acceptAllExceptSingleSpecialCharacter, strongPassword, maxLength25, hashValidation, number, maxLength50
 } from "../../helper/validation";
+import { langs } from "../../config/localization";
 import {
   registerUserAPI, getAllRoleAPI, getAllDepartmentAPI, getUserDataAPI, updateUserAPI, setEmptyUserDataAPI, getRoleDataAPI, getAllTechnologyAPI,
-  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
+  getPermissionByUser, getUsersTechnologyLevelAPI, getLevelByTechnology, getSimulationTechnologySelectList, getSimualationLevelByTechnology, getUsersSimulationTechnologyLevelAPI, getMastersSelectList, getUsersMasterLevelAPI, getMasterLevelDataList, getMasterLevelByMasterId, registerRfqUser, updateRfqUser
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
@@ -23,7 +24,7 @@ import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown } from "../common/CommonFunctions";
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
 import _ from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
@@ -114,6 +115,12 @@ function UserRegistration(props) {
   const registerUserData = useSelector(state => state.auth.registerUserData)
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
+
+  let child = React.createRef();
+
+  const [token, setToken] = useState("");
+  const [maxLength, setMaxLength] = useState(maxLength11);
+  const [countryCode, setCountryCode] = useState(false);
 
   const defaultValues = {
     FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
@@ -386,6 +393,7 @@ function UserRegistration(props) {
       return temp;
     }
     if (label === 'approvalTypeCosting' || label === 'approvalTypeSimulation' || label === 'approvalTypeMaster') {
+      // if (label === 'approvalType') {                 //RE
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
         if (item.Value === '0') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && label === 'approvalTypeSimulation') return false
@@ -1387,6 +1395,7 @@ function UserRegistration(props) {
         LevelName: registerUserData?.LevelName,
         // DepartmentName: department.label,
         DepartmentName: '',
+        // DepartmentName: getConfigurationKey().IsMultipleDepartmentAllowed ? '' : department.label,                 //RE
         TechnologyId: '',
         TechnologyName: '',
         PlantName: '',
@@ -1400,6 +1409,7 @@ function UserRegistration(props) {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         // DepartmentId: department.value,
         DepartmentId: '',
+        // DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,                 //RE
         loggedInUserId: loggedInUserId(),
         CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
@@ -1432,6 +1442,7 @@ function UserRegistration(props) {
         updatedData.SimulationTechnologyLevels = tempHeadLevelArray
         updatedData.MasterLevels = tempMasterLevelArray
         updatedData.Departments = multiDeptArr
+        // updatedData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []                 //RE
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
       let isDepartmentUpdate = registerUserData?.Departments?.every(
@@ -1527,6 +1538,7 @@ function UserRegistration(props) {
         userData.SimulationTechnologyLevels = tempHeadLevelArray
         userData.MasterLevels = tempMasterLevelArray
         userData.Departments = multiDeptArr
+        // userData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []                 //RE
         userData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
 
@@ -2265,6 +2277,7 @@ function UserRegistration(props) {
                                 register={register}
                                 mandatory={true}
                                 options={searchableSelectType('approvalTypeCosting')}
+                                // options={searchableSelectType('approvalType')}                 //RE
                                 handleChange={costingApprovalTypeHandler}
                                 defaultValue={costingApprovalType}
                                 errors={errors.ApprovalType}
@@ -2410,6 +2423,7 @@ function UserRegistration(props) {
                                 register={register}
                                 mandatory={true}
                                 options={searchableSelectType('approvalTypeSimulation')}
+                                // options={searchableSelectType('approvalType')}                 //RE
                                 handleChange={simulationApprovalTypeHandler}
                                 defaultValue={simulationApprovalType}
                                 errors={errors.ApprovalType}
@@ -2550,6 +2564,7 @@ function UserRegistration(props) {
                                     register={register}
                                     mandatory={true}
                                     options={searchableSelectType('approvalTypeMaster')}
+                                    // options={searchableSelectType('approvalType')}                 //RE
                                     handleChange={masterApprovalTypeHandler}
                                     defaultValue={masterApprovalType}
                                     errors={errors.ApprovalType}

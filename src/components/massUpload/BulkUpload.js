@@ -446,6 +446,38 @@ class BulkUpload extends Component {
                                 if (fileName === 'Product Component' && fileHeads[i] === 'PreferredForImpactCalculation') {
                                     fileHeads[i] = 'IsConsideredForMBOM'
                                 }
+                                else if (fileHeads[i] === 'Spec') {
+                                    fileHeads[i] = 'RMSpec'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'CircleScrapCost') {
+                                    fileHeads[i] = 'JaliScrapCost'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'ScrapRate/JaliScrapCost') {
+                                    fileHeads[i] = 'ScrapRate'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import' || fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'PlantCode') {
+                                    fileHeads[i] = 'DestinationPlantCode'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'PlantName') {
+                                    fileHeads[i] = 'DestinationPlantName'
+                                } else if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'MinimumOrderQuantity') {
+                                    fileHeads[i] = 'NumberOfPieces'
+                                }
+                                if (fileHeads[i] === 'InsertPartNumber') {
+                                    fileHeads[i] = 'BoughtOutPartNumber'
+                                }
+                                if (fileHeads[i] === 'InsertPartName') {
+                                    fileHeads[i] = 'BoughtOutPartName'
+                                }
+                                if (fileHeads[i] === 'InsertCategory') {
+                                    fileHeads[i] = 'CategoryName'
+                                }
+                                if (fileHeads[i] === 'MinimumOrderQuantity') {
+                                    fileHeads[i] = 'NumberOfPieces'
+                                }
+                                if (fileHeads[i] === 'PlantCode') {
+                                    fileHeads[i] = 'Plants'
+                                }
+                                if (fileHeads[i] === 'InsertVendor') {
+                                    fileHeads[i] = 'BOPVendor'
+                                }
+
                                 obj[fileHeads[i]] = el;
                                 return null;
                             })
@@ -839,7 +871,7 @@ class BulkUpload extends Component {
                                         </div>
                                     </div>
 
-                                </Row>
+                                </Row >
                                 <Row className=" justify-content-between">
                                     <div className="col-sm-12  text-right">
                                         <button
@@ -860,17 +892,18 @@ class BulkUpload extends Component {
                                         </button>
                                     </div>
                                 </Row>
-                            </form>
-                        </div>
-                    </Container>
-                </Drawer> : <form
+                            </form >
+                        </div >
+                    </Container >
+                </Drawer > : <form
                     noValidate
                     className="form"
                     onSubmit={handleSubmit(this.onSubmit.bind(this))}>
                     <Row className="pl-3">
                         {isZBCVBCTemplate &&
                             <Col md="12">
-                                {(fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
+                                {
+                                    (fileName !== 'Interest Rate') && (fileName !== 'ADD RFQ') &&
                                     <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -883,25 +916,30 @@ class BulkUpload extends Component {
                                         <span>Zero Based</span>
                                     </Label>
                                 }
-                                {(fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                                    <input
-                                        type="radio"
-                                        name="costingHead"
-                                        checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
-                                        onClick={() => this.onPressHeads(VBCTypeId)}
-                                    />{' '}
-                                    <span>Vendor Based</span>
-                                </Label>}
-                                {(reactLocalStorage.getObject('cbcCostingPermission')) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
-                                    <input
-                                        type="radio"
-                                        name="costingHead"
-                                        checked={costingTypeId === CBCTypeId ? true : false}
-                                        onClick={() => this.onPressHeads(CBCTypeId)}
-                                    />{' '}
-                                    <span>Customer Based</span>
-                                </Label>}
-                                {isMachineMoreTemplate &&
+                                {
+                                    (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === VBCTypeId ? true : fileName === 'Interest Rate' ? true : false}
+                                            onClick={() => this.onPressHeads(VBCTypeId)}
+                                        />{' '}
+                                        <span>Vendor Based</span>
+                                    </Label>
+                                }
+                                {
+                                    (reactLocalStorage.getObject('cbcCostingPermission')) && (fileName !== 'ADD RFQ') && <Label sm={isMachineMoreTemplate ? 6 : 4} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
+                                        <input
+                                            type="radio"
+                                            name="costingHead"
+                                            checked={costingTypeId === CBCTypeId ? true : false}
+                                            onClick={() => this.onPressHeads(CBCTypeId)}
+                                        />{' '}
+                                        <span>Customer Based</span>
+                                    </Label>
+                                }
+                                {
+                                    isMachineMoreTemplate &&
                                     <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -910,8 +948,10 @@ class BulkUpload extends Component {
                                             onClick={() => this.onPressHeads(ZBCADDMORE)}
                                         />{' '}
                                         <span>ZBC More Details</span>
-                                    </Label>}
-                                {isMachineMoreTemplate &&
+                                    </Label>
+                                }
+                                {
+                                    isMachineMoreTemplate &&
                                     <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -920,8 +960,10 @@ class BulkUpload extends Component {
                                             onClick={() => this.onPressHeads(VBCADDMORE)}
                                         />{' '}
                                         <span>VBC More Details</span>
-                                    </Label>}
-                                {isMachineMoreTemplate &&
+                                    </Label>
+                                }
+                                {
+                                    isMachineMoreTemplate &&
                                     <Label sm={6} className={'pl0 pr0 radio-box mb-0 pb-0'} check>
                                         <input
                                             type="radio"
@@ -930,8 +972,9 @@ class BulkUpload extends Component {
                                             onClick={() => this.onPressHeads(CBCADDMORE)}
                                         />{' '}
                                         <span>CBC More Details</span>
-                                    </Label>}
-                            </Col>}
+                                    </Label>
+                                }
+                            </Col >}
 
                         <div className="input-group mt25 col-md-12 input-withouticon download-btn" >
                             <Downloadxls
@@ -959,7 +1002,7 @@ class BulkUpload extends Component {
                             </div>
                         </div>
 
-                    </Row>
+                    </Row >
                     <Row className=" justify-content-between">
                         <div className="col-sm-12  text-right">
                             <button
@@ -980,7 +1023,7 @@ class BulkUpload extends Component {
                             </button>
                         </div>
                     </Row>
-                </form>}
+                </form >}
                 {
                     this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
                 }

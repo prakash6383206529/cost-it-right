@@ -44,7 +44,6 @@
     @include icons("../../images/WhitePencil-Icon.svg", 12px, 12px);
 }
 
-
 .Delete {
     @include icons("../../images/Group-8857.svg", $shadowColor: #fc5774, $borderColor: #fedde3);
     @include extra-icon-styles;

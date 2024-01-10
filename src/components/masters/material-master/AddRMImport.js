@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getCodeBySplitting, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number, hashValidation, maxLength10 } from "../../../helper/validation";
+import { required, getVendorCode, getCodeBySplitting, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number, hashValidation, maxLength10 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -24,8 +24,8 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, GUIDE_BUTTON_SHOW } from '../../../config/constants';
-import { ASSEMBLY, AcceptableRMUOM } from '../../../config/masterData'
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMIMPORT, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, SHEET_METAL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
+import { ASSEMBLY, AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -265,6 +265,42 @@ class AddRMImport extends Component {
     }
     return obj
   }
+
+
+
+  netCostTitle() {
+    const { currency, costingTypeId, currencyValue } = this.state
+    const { initialConfiguration } = this.props
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      let obj = {
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Price (${currency.label === undefined ? 'Currency' : currency?.label})  + Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
+      }
+      return obj
+
+    } else {
+
+      let obj = {
+        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})) * Currency Rate (${currency.label === undefined ? '-' : currencyValue}) `,
+        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+      }
+      return obj
+    }
+  }
+
+  basicPriceTitle() {
+    const { initialConfiguration } = this.props
+    const { costingTypeId, currency, currencyValue } = this.state
+    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
+      let obj = {
+        toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})  `,
+        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
+      }
+      return obj
+
+    }
+  }
+
 
   /**
    * @method componentDidMount
@@ -1153,7 +1189,7 @@ class AddRMImport extends Component {
   renderListing = (label, isScrapRateUOM) => {
     const { gradeSelectList, rmSpecification,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
-      UOMSelectList, currencySelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props;
+      UOMSelectList, currencySelectList, vendorListByVendorType, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -1764,6 +1800,7 @@ class AddRMImport extends Component {
       }
       return { labelSelectedCurrency: labelSelectedCurrency, labelBaseCurrency: labelBaseCurrency }
     }
+
     return (
       <>
         <div className="container-fluid">
@@ -2034,7 +2071,6 @@ class AddRMImport extends Component {
                             </Col>
                           )}
                         </Row>
-
                         <Row>
                           {costingTypeId !== CBCTypeId && (
                             <>
@@ -2129,10 +2165,6 @@ class AddRMImport extends Component {
                               </>
                             )}
                         </Row>
-
-
-
-
                         <Row className='UOM-label-container'>
                           <Col md="12" className="filter-block">
                             <div className=" flex-fills mb-2 pl-0">
@@ -2223,7 +2255,53 @@ class AddRMImport extends Component {
                                 validate={[positiveAndDecimalNumber, maxLength15, number]}
                                 component={renderTextInputField}
                                 required={false}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                className=" "
+                                customClassName=" withBorder"
+                                onChange={this.handleCutOfChange}
+                              />
+                            </Col>
+
+                            <Col md="3">
+                              <Field
+                                label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                name={"cutOffPriceBase"}
+                                type="text"
+                                placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
+                                validate={[positiveAndDecimalNumber, maxLength15, number]}
+                                component={renderTextInputField}
+                                required={false}
                                 disabled={true}
+                                className=" "
+                                customClassName=" withBorder"
+                                onChange={this.handleCutOfChange}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                name={"BasicRateCurrency"}
+                                type="text"
+                                placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                name={"BasicRateBase"}
+                                type="text"
+                                placeholder={isViewFlag ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                disabled={true}
+                                maxLength="15"
                                 className=" "
                                 customClassName=" withBorder"
                                 onChange={this.handleCutOfChange}
@@ -2536,7 +2614,8 @@ class AddRMImport extends Component {
                             }
 
 
-                            <Col md="3">
+
+                            <Col md="3">{/* //RE */}
                               <Field
                                 label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                 name={"FreightChargeSelectedCurrency"}
@@ -2551,7 +2630,7 @@ class AddRMImport extends Component {
                                 disabled={isViewFlag}
                               />
                             </Col>
-                            <Col md="3">
+                            <Col md="3">{/* //RE */}
                               <TooltipCustom id="rm-freight-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
@@ -2570,7 +2649,7 @@ class AddRMImport extends Component {
 
 
 
-                            <Col md="3">
+                            <Col md="3">{/* //RE */}
                               <Field
                                 label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
                                 name={"ShearingCostSelectedCurrency"}
@@ -2585,7 +2664,7 @@ class AddRMImport extends Component {
                                 disabled={isViewFlag}
                               />
                             </Col>
-                            <Col md="3">
+                            <Col md="3">{/* //RE */}
                               <TooltipCustom id="rm-shearing-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />
                               <Field
                                 label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
@@ -2824,7 +2903,7 @@ class AddRMImport extends Component {
                             </div>
                           </Col>
                         </Row>
-                      </div>
+                      </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex align-items-center justify-content-end">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}

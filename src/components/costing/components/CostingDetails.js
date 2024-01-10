@@ -30,6 +30,7 @@ import AddNCCDrawer from './AddNCCDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { debounce } from 'lodash';
+import { MACHINING } from '../../../config/masterData';
 import AddClientDrawer from './AddClientDrawer';
 import { ASSEMBLY, DETAILED_BOP_ID, IdForMultiTechnology, partTypeDropdownList } from '../../../config/masterData';
 import { autoCompleteDropdown } from '../../common/CommonFunctions';
@@ -176,7 +177,6 @@ function CostingDetails(props) {
     }
   }, [])
 
-
   useEffect(() => {
     if (costingMode?.editMode === true && costingMode?.viewMode === false) {
       setIsCostingEditMode(true)
@@ -302,7 +302,18 @@ function CostingDetails(props) {
 
     if (label === 'Technology') {
       technologySelectList && technologySelectList.map((item) => {
+        if (item.Value === '0' || checkForNull(item.Value) === MACHINING) return false        // SPECIFIC FOR RE, HIDE Machining TECHNOLOGY IN COSTING DROPDOWN
+        temp.push({ label: item.Text, value: item.Value })
+        return null
+      })
+      return temp
+    }
+    if (label === 'PartType') {
+      partTypeList && partTypeList.map((item) => {
         if (item.Value === '0') return false
+        if (item.Value === PRODUCT_ID) return false
+        if (!getConfigurationKey()?.IsBoughtOutPartCostingConfigured && item.Text === BOUGHTOUTPARTSPACING) return false
+        if (String(technology?.value) === String(ASSEMBLY) && ((item.Text === COMPONENT_PART) || (item.Text === BOUGHTOUTPARTSPACING))) return false
         temp.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -1564,6 +1575,7 @@ function CostingDetails(props) {
   const backToFirstStep = () => {
     if (props?.nfrData?.isNFR) {
       // CODE FIR BACK BUTTON
+      setNFRListing(true)
       dispatch(isDataChange(false))
       dispatch(setRMCCData([], () => { }))                            //THIS WILL CLEAR RM CC REDUCER
       dispatch(setCostingDataList('setHeaderCostRMCCTab', [], () => { }))
@@ -1571,6 +1583,10 @@ function CostingDetails(props) {
       dispatch(setRMCCBOPCostData([], () => { }))
       reactLocalStorage.setObject('isFromDiscountObj', true)
       setNFRListing(true)
+      //RE
+      setIsLoader(true)
+      dispatch(getBriefCostingById('', (res) => { }))
+      dispatch(isDiscountDataChange(false))
     } else {
       setIsLoader(true)
       dispatch(getBriefCostingById('', (res) => { }))
@@ -1585,7 +1601,6 @@ function CostingDetails(props) {
 
       dispatch(setOverheadProfitData([], () => { }))              //THIS WILL CLEAR OVERHEAD PROFIT REDUCER
       dispatch(setComponentOverheadItemData({}, () => { }))       //THIS WILL CLEAR OVERHEAD PROFIT ITEM REDUCER
-
 
       dispatch(setPackageAndFreightData([], () => { }))           //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
       dispatch(setComponentPackageFreightItemData({}, () => { })) //THIS WILL CLEAR PACKAGE FREIGHT ITEM DATA
@@ -2910,7 +2925,8 @@ function CostingDetails(props) {
                               <div className={"next-icon"}></div>
                             </button>}
                         </div>
-                      </Row>}
+                      </Row>
+                    }
 
 
                   </>

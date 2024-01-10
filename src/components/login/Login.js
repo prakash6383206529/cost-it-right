@@ -32,7 +32,8 @@ class Login extends Component {
       mailSent: false,
       userNotFound: false,
       buttonFlag: true,
-      forgetIsCalled: false
+      forgetIsCalled: false,
+      flag: false,
     };
   }
 
@@ -99,6 +100,7 @@ class Login extends Component {
     this.setState({ inputLoader: true })
     // this.props.loginUserAPI(values, (res) => {
     this.props.TokenAPI(reqParams, (res) => {
+      console.log('sssssssssssssss');
       if (res && res.status === 200) {
         reactLocalStorage.setObject("loginTime", new Date());
         this.setState({ isLoader: false, isSubmitted: false });
@@ -155,7 +157,9 @@ class Login extends Component {
               <div className="col-md-5 form-section">
                 <div className="text-center">
                   <img className="logo-first" src={logo} alt="Softude" />
-                </div>
+                  {/* //RE */}
+                  {/* <img className="logo-first" src={logo} alt="Royal Enfield" /> */}
+                </div >
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
                 <form
@@ -213,10 +217,11 @@ class Login extends Component {
                       className="btn login-btn w-100 dark-pinkbtn"
                     />
                   </div>
-                </form>
+                </form >
                 {buttonFlag && <div className="forgot-link  d-flex pt-2 justify-content-center">
                   <span id="userNotFound" className="btn btn-link" onClick={this.forgotConfirm}>{'Forgot Password ?'}</span>
-                </div>}
+                </div>
+                }
                 <div className="forget-wrapper">
                   {userNotFound && (
                     <div className="text-help userNotFound text-center">The provided user does not exist.</div>
@@ -232,15 +237,15 @@ class Login extends Component {
                   <img className="logo-second" src={secondLogo} alt="Cost It Right" />
 
                 </div>
-              </div>
+              </div >
               <div className="col-md-7 p-0 right-sideimg">
                 <img src={errorImg} alt='error-icon' />
               </div>
-            </div>
-          </div>
+            </div >
+          </div >
         </div >
         <p className="login-version">{VERSION}</p>
-      </div>
+      </div >
     );
   }
 }

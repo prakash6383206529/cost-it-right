@@ -255,7 +255,6 @@ function ERSimulation(props) {
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
     }
-
     const verifySimulation = debounce(() => {
         /**********POST METHOD TO CALL HERE AND AND SEND TOKEN TO VERIFY PAGE ****************/
         if (!isEffectiveDateSelected) {

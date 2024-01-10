@@ -9,10 +9,12 @@ import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
 import { getPlantListByState, } from '../actions/Fuel';
+import Switch from "react-switch";
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
+import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import DayTime from '../../common/DayTimeWrapper'
 import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
@@ -29,6 +31,7 @@ import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 
+const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -184,7 +187,6 @@ class LabourListing extends Component {
   * @description Renders buttons
   */
   buttonFormatter = (props) => {
-
     const cellValue = props?.value;
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
     return (

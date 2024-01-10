@@ -680,7 +680,6 @@ class OperationListing extends Component {
 
                 this.props.apply(uniqueArray, length)
             }
-
             this.setState({ selectedRowData: selectedRows })
 
         }
@@ -815,6 +814,7 @@ class OperationListing extends Component {
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 noRowsOverlayComponentParams={{
+                                    // customClassName: "operation-nodata",    //RE
                                     title: EMPTY_DATA,
                                     imagClass: 'imagClass'
                                 }}

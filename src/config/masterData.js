@@ -82,10 +82,9 @@ export const RMDomesticZBC = [
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
     { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
-    { label: "FreightCost", value: "FreightCost" }, //*
-    { label: "ShearingCost", value: "ShearingCost" }, //*
-    { label: "CircleScrapCost", value: "CircleScrapCost" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*    // KEEP COMMENTED ON RE						//RE
+    { label: "FreightCost", value: "FreightCost" }, //*    // KEEP COMMENTED ON RE						//RE
+    { label: "ShearingCost", value: "ShearingCost" }, //*    // KEEP COMMENTED ON RE						//RE
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
@@ -111,9 +110,9 @@ export const RMDomesticZBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",    // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",    // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",    // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -139,8 +138,8 @@ export const RMDomesticZBCTempData = [
         "ScrapRatePerScrapUOM": "-",
         "ScrapRate": "50",
         "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "FreightCost": "10",    // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",    // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -166,8 +165,8 @@ export const RMDomesticZBCTempData = [
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "FreightCost": "10",    // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",    // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -192,16 +191,16 @@ export const RMDomesticZBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",    // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",    // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",    // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const RMDomesticVBC = [
@@ -223,9 +222,9 @@ export const RMDomesticVBC = [
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
     { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
-    { label: "FreightCost", value: "FreightCost" }, //*
-    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*// KEEP COMMENTED ON RE						//RE
+    { label: "FreightCost", value: "FreightCost" }, //*// KEEP COMMENTED ON RE						//RE
+    { label: "ShearingCost", value: "ShearingCost" }, //*// KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapCost", value: "CircleScrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -251,9 +250,9 @@ export const RMDomesticVBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",// KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",// KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",// KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -278,8 +277,8 @@ export const RMDomesticVBCTempData = [
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
         "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "FreightCost": "10",// KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",// KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -304,8 +303,8 @@ export const RMDomesticVBCTempData = [
         "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
         "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "FreightCost": "10",// KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",// KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
@@ -329,16 +328,16 @@ export const RMDomesticVBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",// KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",// KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",// KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Content",
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const RMImportZBC = [
@@ -362,9 +361,9 @@ export const RMImportZBC = [
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
     { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
-    { label: "FreightCost", value: "FreightCost" }, //*
-    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*         // KEEP COMMENTED ON RE						//RE
+    { label: "FreightCost", value: "FreightCost" }, //*         // KEEP COMMENTED ON RE						//RE
+    { label: "ShearingCost", value: "ShearingCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapCost", value: "CircleScrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -386,9 +385,9 @@ export const RMDomesticCBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "DestinationPlantCode": "1032",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -409,9 +408,9 @@ export const RMDomesticCBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -432,9 +431,9 @@ export const RMDomesticCBCTempData = [
         "UOMToScrapUOMRatio": "0",
         "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -455,9 +454,9 @@ export const RMDomesticCBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -487,9 +486,9 @@ export const RMImportZBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -515,9 +514,9 @@ export const RMImportZBCTempData = [
         "UOMToScrapUOMRatio": "0",
         "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -543,9 +542,9 @@ export const RMImportZBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -571,9 +570,9 @@ export const RMImportZBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -594,16 +593,16 @@ export const RMDomesticCBC = [
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
     { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
-    { label: "FreightCost", value: "FreightCost" }, //*
-    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*         // KEEP COMMENTED ON RE						//RE
+    { label: "FreightCost", value: "FreightCost" }, //*         // KEEP COMMENTED ON RE						//RE
+    { label: "ShearingCost", value: "ShearingCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapCost", value: "CircleScrapCost" }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const RMImportVBC = [
@@ -626,9 +625,9 @@ export const RMImportVBC = [
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
     { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
-    { label: "FreightCost", value: "FreightCost" }, //*
-    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*         // KEEP COMMENTED ON RE						//RE
+    { label: "FreightCost", value: "FreightCost" }, //*         // KEEP COMMENTED ON RE						//RE
+    { label: "ShearingCost", value: "ShearingCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapCost", value: "CircleScrapCost" }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
@@ -655,9 +654,9 @@ export const RMImportVBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -682,9 +681,9 @@ export const RMImportVBCTempData = [
         "UOMToScrapUOMRatio": "0",
         "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -709,9 +708,9 @@ export const RMImportVBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -736,9 +735,9 @@ export const RMImportVBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
@@ -761,9 +760,9 @@ export const RMImportCBC = [
     { label: "UOMToScrapUOMRatio", value: "UOMToScrapUOMRatio", },
     { label: "ScrapRatePerScrapUOM", value: "ScrapRatePerScrapUOM", },
     { label: "ScrapRate/JaliScrapCost", value: "ScrapRate" }, //*
-    { label: "CutOffPrice", value: "CutOffPrice" }, //*
-    { label: "FreightCost", value: "FreightCost" }, //*
-    { label: "ShearingCost", value: "ShearingCost" }, //*
+    { label: "CutOffPrice", value: "CutOffPrice" }, //*         // KEEP COMMENTED ON RE						//RE
+    { label: "FreightCost", value: "FreightCost" }, //*         // KEEP COMMENTED ON RE						//RE
+    { label: "ShearingCost", value: "ShearingCost" }, //*         // KEEP COMMENTED ON RE						//RE
     { label: "CircleScrapCost", value: "CircleScrapCost" }, //*
     { label: 'PlantCode', value: 'DestinationPlantCode', }, //*
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
@@ -787,9 +786,9 @@ export const RMImportCBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -811,9 +810,9 @@ export const RMImportCBCTempData = [
         "UOMToScrapUOMRatio": "0",
         "ScrapRatePerScrapUOM": "0",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -835,9 +834,9 @@ export const RMImportCBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
@@ -859,16 +858,16 @@ export const RMImportCBCTempData = [
         "UOMToScrapUOMRatio": "10",
         "ScrapRatePerScrapUOM": "5",
         "ScrapRate": "50",
-        "CutOffPrice": "10",
-        "FreightCost": "10",
-        "ShearingCost": "10",
+        "CutOffPrice": "10",         // KEEP COMMENTED ON RE						//RE
+        "FreightCost": "10",         // KEEP COMMENTED ON RE						//RE
+        "ShearingCost": "10",         // KEEP COMMENTED ON RE						//RE
         "CircleScrapCost": "20",
         "DestinationPlantCode": "EC1",
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": "Remark Text",
     }
 ]
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const RMSpecification = [
@@ -889,7 +888,7 @@ export const RMSpecificationXLTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Vendor = [
@@ -938,7 +937,7 @@ export const VendorTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Overhead = [
@@ -969,7 +968,7 @@ export const OverheadTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const ZBCOperation = [
@@ -1254,7 +1253,7 @@ export const ZBCOperationTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VBCOperation = [
@@ -1554,7 +1553,7 @@ export const VBCOperationTempData = [
         "ForType": 'Welding'
     }
 ]
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const CBCOperation = [
@@ -1847,7 +1846,7 @@ export const CBCOperationTempData = [
         "ForType": 'Welding'
     }
 ]
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Profit = [
@@ -1878,7 +1877,7 @@ export const ProfitTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Labour = [
@@ -1955,7 +1954,7 @@ export const VolumeTempData = [
         'ActualQauntity': '100',
     }
 ]
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Fuel = [
@@ -1982,7 +1981,7 @@ export const FuelTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Plant = [
@@ -1998,7 +1997,7 @@ export const Plant = [
     { label: 'IsPlantForZBC', value: 'IsPlantForZBC', },
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_DOMESTIC = [
@@ -2055,7 +2054,7 @@ export const BOP_ZBC_DOMESTIC_TempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_DOMESTIC = [
@@ -2199,7 +2198,7 @@ export const BOP_DETAILED_DOMESTIC_TempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_ZBC_IMPORT = [
@@ -2328,7 +2327,7 @@ export const BOP_CBC_DOMESTIC_TempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_DETAILED_IMPORT = [
@@ -2347,7 +2346,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
+    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2414,7 +2413,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOP_VBC_IMPORT = [
@@ -2433,7 +2432,7 @@ export const BOP_VBC_IMPORT = [
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY 
+    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2507,7 +2506,7 @@ export const BOP_CBC_IMPORT = [
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'MinimumOrderQuantity', value: 'NumberOfPieces', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    // { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY 
+    // { label: 'PaymentTerm', value: 'PaymentTerm', },  // FOR MINDA ONLY
     { label: 'IsClientVendorBOP', value: 'IsClientVendorBOP', },
     { label: 'BasicRate', value: 'BasicRate', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
@@ -2566,7 +2565,7 @@ export const BOP_CBC_IMPORT_TempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_ACTUAL_ZBC = [
@@ -2591,7 +2590,7 @@ export const VOLUME_ACTUAL_ZBC_TEMPDATA = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_ACTUAL_VBC = [
@@ -2617,7 +2616,7 @@ export const VOLUME_ACTUAL_VBC_TEMPDATA = [
         'ActualQuantity': 50,
     }
 ]
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_ACTUAL_CBC = [
@@ -2643,7 +2642,7 @@ export const VOLUME_ACTUAL_CBC_TEMPDATA = [
         'ActualQuantity': 50,
     }
 ]
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_BUDGETED_ZBC = [
@@ -2670,7 +2669,7 @@ export const VOLUME_BUDGETED_ZBC_TEMPDATA = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VOLUME_BUDGETED_VBC = [
@@ -2828,7 +2827,7 @@ Array.isArray(budgetCostingHeads) && budgetCostingHeads.map((item, index) => {
 
 export const BUDGET_CBC_TEMPDATA = BUDGET_CBC_DATA
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Bought_Out_Parts = [
@@ -2849,7 +2848,7 @@ export const Bought_Out_Parts = [
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', },
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Processes = [
@@ -2859,7 +2858,7 @@ export const Processes = [
     { label: 'BasicProcessRate', value: 'BasicProcessRate', },
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineClass = [
@@ -2868,7 +2867,7 @@ export const MachineClass = [
     { label: 'MachineCapacity', value: 'MachineCapacity', },
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const OtherOperation = [
@@ -2883,7 +2882,7 @@ export const OtherOperation = [
     { label: 'PlantName', value: 'PlantName', },
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const Power = [
@@ -2913,7 +2912,7 @@ export const Power = [
     { label: 'PowerRateing', value: 'PowerRateing', },
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineZBC = [
@@ -2927,8 +2926,8 @@ export const MachineZBC = [
     { label: 'ProcessName', value: 'ProcessName', }, //*
     { label: 'ProcessCode', value: 'ProcessCode', }, //*
     { label: 'UOM', value: 'UOM', }, //*
-    { label: 'MachineRate', value: 'MachineRate', }, //* 
-    { label: 'EffectiveDate', value: 'EffectiveDate', }, //* 
+    { label: 'MachineRate', value: 'MachineRate', }, //*
+    { label: 'EffectiveDate', value: 'EffectiveDate', }, //*
     { label: 'Remark', value: 'Remark', },
 ]
 
@@ -3006,7 +3005,7 @@ export const MachineZBCTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MHRMoreZBC = [
@@ -3029,12 +3028,14 @@ export const MHRMoreZBC = [
     { label: "InstallationCost", value: "InstallationCost", },
     { label: "LoanCRMHead", value: "LoanCRMHead", },
     { label: "LoanPercentage", value: "LoanPercentage", },
+    // { label: "EquityPercentage", value: "EquityPercentage", },         // KEEP COMMENTED ON RE						//RE
     { label: "InterestCRMHead", value: "InterestCRMHead", },
     { label: "RateOfInterest", value: "RateOfInterest", },
     { label: "WorkingShiftCRMHead", value: "WorkingShiftCRMHead", },
     { label: "NoOfShifts", value: "NoOfShifts", },
     { label: "WorkingHoursPerShift", value: "WorkingHoursPerShift", },
     { label: "NoOfWorkingDaysPerAnnum", value: "NoOfWorkingDaysPerAnnum", },
+    // { label: "Availability", value: "Availability", },         // KEEP COMMENTED ON RE						//RE
     { label: "ActualWorkingHours", value: "ActualWorkingHours", },
     { label: "DepreciationCRMHead", value: "DepreciationCRMHead", },
     { label: "DepreciationType", value: "DepreciationType", },
@@ -3086,6 +3087,8 @@ export const MHRMoreZBC = [
 export const CLIENT_DOWNLOAD_EXCEl = [
     { label: "Customer Name", value: "CompanyName", },
     { label: "Customer Code", value: "CompanyCode", },
+    // { label: "Company Name", value: "CompanyName", },         // KEEP COMMENTED ON RE						//RE
+    // { label: "Company Code", value: "CompanyCode", },         // KEEP COMMENTED ON RE						//RE
     { label: "Contact Name", value: "ClientName", },
     { label: "Email Id", value: "ClientEmailId", },
     { label: "Phone No.", value: "PhoneNumber", },
@@ -3100,7 +3103,7 @@ export const CLIENT_DOWNLOAD_EXCEl = [
 ]
 
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MHRMoreZBCTempData = [
@@ -3464,7 +3467,7 @@ export const MHRMoreZBCTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const MachineVBC = [
@@ -3657,7 +3660,7 @@ export const MachineCBCTempData = [
         'Remark': 'Remark Text',
     }
 ]
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const PartComponent = [
@@ -3704,6 +3707,7 @@ export const ProductComponent = [
     { label: 'EffectiveDate', value: 'EffectiveDate', }, //,* maybe only star
     { label: 'Remark', value: 'Remark', },
     { label: 'PreferredForImpactCalculation', value: "IsConsideredForMBOM" },
+    // { label: 'IsConsideredForMBOM', value: "IsConsideredForMBOM" },         // KEEP COMMENTED ON RE						//RE
 ]
 
 export const ProductComponentTempData = [
@@ -3724,7 +3728,7 @@ export const ProductComponentTempData = [
 
 
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const ZBCInterestRate = [
@@ -3751,7 +3755,7 @@ export const ZBCInterestRateTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const VBCInterestRate = [
@@ -3817,7 +3821,7 @@ export const CBCInterestRateTempData = [
     }
 ]
 
-/** 
+/**
 * @desc USED IN EXCEL HEADER FOR BULK UPLOAD
 */
 export const BOMUpload = [
@@ -4230,6 +4234,8 @@ export const REMARKMAXLENGTH = 512
 export const SIMULATION_LEFT_MENU_NOT_INCLUDED = ["Simulation Upload", "RM Import", "RM Domestic", "BOP Domestic", "BOP Import", "Process-Simulation", "Process", "Operation-Simulation", "Surface Treatment", "Overhead-Simulation", "Overhead", "Profits", "Profits-Simulation", "Freight-Simulation", "Combined Process", "Operations", "Exchange Rates", "Machine Rate"]
 
 export const RMDomesticSimulation = [
+    // ******* RMShearingCost AND RMFreightCost WILL NOT COME IN RE *****
+
     { label: "CostingHead", value: "CostingHead" },
     { label: "RawMaterial", value: "RawMaterialName" },
     { label: "Grade", value: "RawMaterialGradeName" },
@@ -4244,8 +4250,8 @@ export const RMDomesticSimulation = [
     { label: "UOM", value: "UnitOfMeasurementName" },
     { label: "BasicRate", value: "BasicRatePerUOM" },
     { label: 'RevisedBasicRate', value: 'NewBasicRate' },
-    { label: 'RMFreightCost', value: "RMFreightCost" },
-    { label: "RMShearingCost", value: "RMShearingCost" },
+    { label: 'RMFreightCost', value: "RMFreightCost" },         // KEEP COMMENTED ON RE						//RE
+    { label: "RMShearingCost", value: "RMShearingCost" },         // KEEP COMMENTED ON RE						//RE
     { label: "ScrapRate", value: "ScrapRate" },
     { label: 'RevisedScrapRate', value: 'NewScrapRate' },
     { label: "NetLandedCost", value: "NetLandedCost" },
@@ -4926,6 +4932,49 @@ export const CostingSimulationDownloadRM = [
     // { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
+export const COMBINEDPROCESSSIMULATION = [          			//RE
+    { label: "Costing Head", value: "CostingHead" },
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "PlantCode", value: "PlantCode" },
+    { label: "Technology", value: "Technology" },
+    //{ label: "Raw Material", value: "RMName" },
+    //{ label: "RawMaterial Grade", value: "RMGrade" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+
+    { label: "Existing PO Price", value: "OldPOPrice" },
+    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+    { label: 'Existing Net CC', value: 'OldNetCC' },
+    { label: "Revised Net CC", value: "NewNetCC" },
+    { label: "Variance", value: "CPVariance" },
+
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
+    { label: "ExistingOverheadCost", value: "OldOverheadCost" },
+    { label: "RevisedOverheadCost", value: "NewOverheadCost" },
+    { label: "ExistingProfitCost", value: "OldProfitCost" },
+    { label: "RevisedProfitCost", value: "NewProfitCost" },
+    { label: "ExistingRejectionCost", value: "OldRejectionCost" },
+    { label: "RevisedRejectionCost", value: "NewRejectionCost" },
+    { label: "ExistingICCCost", value: "OldICCCost" },
+    { label: "RevisedICCCost", value: "NewICCCost" },
+    { label: "ExistingPaymentTermsCost", value: "OldPaymentTermsCost" },
+    { label: "RevisedPaymentTermsCost", value: "NewPaymentTermsCost" },
+    { label: "ExistingOtherCost", value: "OldOtherCost" },
+    { label: "RevisedOtherCost", value: "NewOtherCost" },
+    { label: "ExistingDiscountCost", value: "OldDiscountCost" },
+    { label: "RevisedDiscountCost", value: "NewDiscountCost" },
+    { label: "ExistingNetOverheadAndProfitCost", value: "OldNetOverheadAndProfitCost" },
+    { label: "RevisedNetOverheadAndProfitCost", value: "NewNetOverheadAndProfitCost" },
+
+    // { label: "EffectiveDate", value: "EffectiveDate" },
+]
+
 export const CostingSimulationDownloadST = [
     { label: "Costing Head", value: "CostingHead" },
     { label: "CostingNumber", value: "CostingNumber" },
@@ -5173,6 +5222,24 @@ export const SIMULATIONAPPROVALSUMMARYDOWNLOADST = [
     { label: "Variance (ST Cost)", value: "NetSurfaceTreatmentCostVariance" },
     { label: "Impact/Quarter (w.r.t. Existing)", value: "ImpactPerQuarter" },
 ]
+export const SIMULATIONAPPROVALSUMMARYDOWNLOADCP = [         // KEEP COMMENTED ON RE						//RE
+
+    { label: "Costing Id", value: "CostingNumber" },
+    { label: "Part No", value: "PartNo" },
+    { label: "Part Name", value: "PartName" },
+    { label: "ECN Number", value: "ECNNumber" },
+    { label: "Revision Number", value: "RevisionNumber" },
+    { label: "Vendor Name", value: "VendorName" },
+    { label: "Plant", value: "PlantName" },
+    { label: "Existing PO Price", value: "OldPOPrice" },
+    { label: "Revised PO Price", value: "NewPOPrice" },
+    { label: "PO Variance", value: "POVariance" },
+    { label: "Existing CC", value: "OldNetCC" },
+    { label: "Revised CC", value: "NewNetCC" },
+    { label: "CC Variance", value: "Variance" },
+    { label: "Impact for Quarter(INR)", value: "ImpactPerQuarter" },
+
+]
 
 export const SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION = [
 
@@ -5412,8 +5479,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Basic Rate", value: "BasicRatePerUOM", },
     { label: "Basic Price", value: "NetCostWithoutConditionCost", },
     { label: "Net Condition Cost", value: "NetConditionCost", },
-    { label: "Freight Cost", value: "RMFreightCost", },
-    { label: "Shearing Cost", value: "RMShearingCost", },
+    { label: "Freight Cost", value: "RMFreightCost", },         // KEEP COMMENTED ON RE						//RE
+    { label: "Shearing Cost", value: "RMShearingCost", },         // KEEP COMMENTED ON RE						//RE
     { label: "Has different Scrap Rate UOM", value: "IsScrapUOMApply", },
     { label: "Scrap UOM", value: "ScrapUnitOfMeasurement", },
     { label: "UOM To Scrap UOM Ratio", value: "UOMToScrapUOMRatio", },
@@ -5422,7 +5489,8 @@ export const RMDOMESTIC_DOWNLOAD_EXCEl = [
     { label: "Circle Scrap Cost", value: "JaliScrapCost", },
     { label: "Scrap Rate", value: "ScrapRate", },
     { label: "Net Cost", value: "NetLandedCost", },
-
+    // KEEP COMMENTED ON RE
+    //  { label: "Cut Off Price", value: "CutOffPrice", },
     { label: "Effective Date", value: "EffectiveDate", },
 ]
 
@@ -5449,10 +5517,10 @@ export const RMIMPORT_DOWNLOAD_EXCEl = [
     { label: "Net Condition Cost Conversion", value: "NetConditionCostConversion", },
     { label: "Basic Price", value: "NetCostWithoutConditionCost", },
     { label: "Basic Price Conversion", value: "NetCostWithoutConditionCostConversion", },
-    { label: "Freight Cost", value: "RMFreightCost", },
-    { label: "Freight Cost Conversion", value: "RawMaterialFreightCostConversion", },
-    { label: "Shearing Cost", value: "RMShearingCost", },
-    { label: "Shearing Cost Conversion", value: "RawMaterialShearingCostConversion", },
+    { label: "Freight Cost", value: "RMFreightCost", },         // KEEP COMMENTED ON RE						//RE
+    { label: "Freight Cost Conversion", value: "RawMaterialFreightCostConversion", },         // KEEP COMMENTED ON RE						//RE
+    { label: "Shearing Cost", value: "RMShearingCost", },         // KEEP COMMENTED ON RE						//RE
+    { label: "Shearing Cost Conversion", value: "RawMaterialShearingCostConversion", },         // KEEP COMMENTED ON RE						//RE
     { label: "Has different Scrap Rate UOM", value: "IsScrapUOMApply", },
     { label: "Scrap UOM", value: "ScrapUnitOfMeasurement", },
     { label: "UOM To Scrap UOM Ratio", value: "UOMToScrapUOMRatio", },
@@ -5597,7 +5665,7 @@ export const VOLUME_DOWNLOAD_EXCEl = [
     { label: "Part No. (Revision No.)", value: "PartNumber", },
     { label: "Part Name", value: "PartName", },
     { label: "Budgeted Quantity", value: "BudgetedQuantity", },
-    //  { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE 
+    //  { label: 'BudgetedPrice', value: 'BudgetedPrice', }, //ONCE CODE DEPLOY FROM BACKEND THEN UNCOMENT THE LINE
     { label: "Actual Quantity", value: "ApprovedQuantity", },
 ]
 
@@ -5719,6 +5787,36 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Net Cost Other Currency", value: "NetPOPriceOtherCurrency", },
     { label: "Net Cost (INR)", value: "NetPOPriceINR", },
     { label: "Remark", value: "Remark", },
+    { label: "Status", value: "Status", }
+]
+
+export const CombinedProcessSimulation = [         //  						//RE
+    { label: "TechnologyName", value: "TechnologyName" },
+    { label: "PartName", value: "PartName" },
+    { label: "PartNumber", value: "PartNumber" },
+    { label: "PlantName", value: "PlantName" },
+    { label: "ConversionCost", value: "ConversionCost" },
+    { label: "RevisedCC", value: "NewCC" },
+    { label: "RemainingTotal", value: "RemainingTotal" },
+    { label: "TotalCost", value: "TotalCost" },
+    { label: "EffectiveDate", value: "EffectiveDate" },
+    { label: "CostingId", value: "CostingId" },
+    // { label: "DisplayStatus", value: "DisplayStatus" }
+    { label: "CostingTypeId", value: "CostingTypeId" }
+]
+
+export const CombinedProcessSimulationFinal = [         //  					//RE
+    { label: "CostingNumber", value: "CostingNumber" },
+    { label: "PartNo", value: "PartNo" },
+    { label: "PartName", value: "PartName" },
+    { label: "ECNNumber", value: "ECNNumber" },
+    { label: "RevisionNumber", value: "RevisionNumber" },
+    { label: "VendorName", value: "VendorName" },
+    { label: "ExistingCC", value: "OldCC" },
+    { label: "RevisedCC", value: "NewCC" },
+    { label: "Variance", value: "Variance" },
+    { label: "Actions", value: "Actions" },
+    { label: "CostingId", value: "CostingId" },
     { label: "Status", value: "Status", },
 
 ]
@@ -5742,6 +5840,7 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
+    // { label: "Purchase Group", value: "DepartmentName", },         // KEEP COMMENTED ON RE						//RE
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
 
@@ -5922,6 +6021,18 @@ export const ERGridForToken = [
     { label: "RevisedExchangeRate", value: "NewExchangeRate" },
 ]
 
+export const ExchangeRateGridForToken = [         // KEEP COMMENTED ON RE						//RE
+    { label: "OperationName", value: "OperationName" },
+    { label: "OperationCode", value: "OperationCode" },
+    { label: "OldOperationRate", value: "OldOperationRate" },
+    { label: "NewOperationRate", value: "NewOperationRate" },
+    { label: "OperationVariance", value: "OperationVariance" },
+    { label: "OldOperationCost", value: "OldOperationCost" },
+    { label: "NewOperationCost", value: "NewOperationCost" },
+    { label: "OperationCostVariance", value: "OperationCostVariance" },
+
+]
+
 export const InitialGridForToken = [
 
     { label: "Costing Head", value: "CostingHead" },
@@ -6025,6 +6136,18 @@ export const BOPGridForTokenSummary = [
     { label: "Variance (BOP Cost)", value: "NetBoughtOutPartCostVariance" },
 ]
 
+export const CPGridForToken = [         // KEEP COMMENTED ON RE						//RE
+    { label: 'Existing Net CC', value: 'OldNetCC' },
+    { label: "Revised Net CC", value: "NewNetCC" },
+    { label: "Variance", value: "CPVariance" },
+]
+
+export const CPGridForTokenSummary = [         // KEEP COMMENTED ON RE						//RE
+    { label: 'Existing Net CC', value: 'OldNetCC' },
+    { label: "Revised Net CC", value: "NewNetCC" },
+    { label: "Variance", value: "Variance" },
+]
+
 export const ImpactedRMDownload = [
     { label: "RawMaterial", value: "RawMaterial" },
     { label: "Grade", value: "RMGrade" },
@@ -6038,8 +6161,8 @@ export const ImpactedRMDownload = [
     { label: "RevisedBasicRate", value: "NewBasicRate" },
     { label: "ExistingScrapRate", value: "OldScrapRate" },
     { label: "RevisedScrapRate", value: "NewScrapRate" },
-    { label: "RMFreightCost", value: "RMFreightCost" },
-    { label: "RMShearingCost", value: "RMShearingCost" },
+    { label: "RMFreightCost", value: "RMFreightCost" },         // KEEP COMMENTED ON RE						//RE
+    { label: "RMShearingCost", value: "RMShearingCost" },         // KEEP COMMENTED ON RE						//RE
     { label: "EffectiveDate", value: "EffectiveDate" },
 ]
 
@@ -6203,7 +6326,7 @@ export const MRGridForTokenSummary = [
 ]
 
 export const RMImpactedDownloadArray = ["RawMaterial", "RMGrade", "RMSpec", "RawMaterialCode", "Category", "UOM", "TechnologyName", "Vendor", "ExistingBasicRate", "RevisedBasicRate", "ExistingScrapRate", "RevisedScrapRate", "RMFreightCost", "RMShearingCost", "CurrentEffectiveDate"]
-
+// KEEP COMMENTED ON RE   "RMFreightCost", "RMShearingCost",						//RE
 export const OperationImpactDownloadArray = ["OperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "CurrentEffectiveDate",]
 
 export const STOperationImpactDownloadArray = ["STOperationName", "OperationCode", "UOM", "ExistingOperationRate", "RevisedOperationRate", "CurrentEffectiveDate",]
@@ -6213,6 +6336,8 @@ export const BOPImpactDownloadArray = ["BoughtOutPartNumber", "BoughtOutPartName
 export const ERImpactDownloadArray = ["Currency", "BankRate", "BankCommissionPercentage", "CustomRate", "CurrencyExchangeRate", "ExistingExchangeRate", "RevisedExchangeRate", "CurrentEffectiveDate",]
 
 export const MachineImpactDownloadArray = ['MachineName', 'MachineNumber', 'MachineTypeName', 'ProcessName', 'ProcessCode', 'UOM', 'Vendor', 'ExistingMachineRate', 'RevisedMachineRate', 'CurrentEffectiveDate']
+
+export const CPImpactDownloadArray = ["CostingNumber", "PartNumber", "ExistingNetCC", "RevisedNetCC", "ExistingPOPrice", "RevisedPOPrice", "EffectiveDate"]         // KEEP COMMENTED ON RE						//RE
 
 export const RawMaterialDomesticFileHeads = ["CostingHead", "RawMaterial", "Grade", "Spec", "Code", "Category", "Technology"]
 
@@ -6225,6 +6350,8 @@ export const BoughtOutPartDomesticFileHeads = ['CostingHead', 'BoughtOutPartNumb
 export const BoughtOutPartImportFileHeads = ['CostingHead', 'BoughtOutPartNumber', 'BoughtOutPartName', 'BoughtOutPartCategory']
 
 export const MachineRateFileHeads = ['CostingHead', 'Technology', 'MachineName', 'MachineNumber']
+
+export const CombinedProcessFileHeads = ['TechnologyName', 'PartName', 'PartNumber', 'PlantName', 'ConversionCost']         // KEEP COMMENTED ON RE						//RE
 
 export const TechnologyDropdownBulkUpload = [
     { label: 'Mechanical Proprietary, Sheet Metal, Hardware, Spring, Rivet', value: '1' },
@@ -7439,7 +7566,6 @@ export const tokenStatus = {
     Provisional: 'The token is provisional, will not go for approval.',
     POUpdated: 'Net Cost updated successfully on SAP.'
 };
-
 export const tokenStatusName = {
     PENDING_FOR_APPROVAL: 'PendingForApproval',
     AWAITING_FOR_APPROVAL: 'AwaitingApproval',
@@ -7503,3 +7629,15 @@ export const applicabilityList = [
 export const APPLICABILITY_RM_SIMULATION = "RM"
 export const APPLICABILITY_BOP_SIMULATION = "BOP"
 export const APPLICABILITY_PART_SIMULATION = "Part"
+
+export const nfrDropdown = [
+    { label: "00000563", value: "160e1194-ae06-4ab8-a1ca-98acc064a017" },
+    { label: "00000570", value: "da6d8995-14a7-46d9-9383-9eace3e6df29" },
+    { label: "00000571", value: "4123a4d5-1226-486e-8973-8af4111b3b7f" },
+    { label: "00000572", value: "beac508c-27f3-4d99-8b76-88b53e449f24" },
+    { label: "00000574", value: "c393ead1-4698-402e-9b67-fc2e8964105a" },
+    { label: "00000575", value: "18ba3689-ee0e-4afe-907a-373df9a62446" },
+    { label: "00000578", value: "67c812bd-7045-440a-ba84-e9ce7131b82a" },
+    { label: "00000579", value: "5e8c78e6-ecc6-4034-b1fd-47c72d2efdc0" },
+]
+

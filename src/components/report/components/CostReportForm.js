@@ -134,6 +134,7 @@ function CostReportForm(props) {
     const handleFromDate = (value) => {
         setEffectiveDate(value)
         dispatch(getFormGridData({ ...costReportFormData, fromDate: value }))
+        // dispatch(getFormGridData({ ...costReportFormData, EffectiveDate: value }))      //RE
 
     }
 
@@ -440,6 +441,7 @@ function CostReportForm(props) {
             }
         })
         dispatch(getFormGridData({ ...costReportFormData, gridData: arr }))
+        // dispatch(getFormGridData({ toDate, fromDate, gridData: arr }))        //RE
     }
     const buttonFormatter = (props) => {
         return (
@@ -714,6 +716,7 @@ function CostReportForm(props) {
                                 options={renderListing("Company")}
                                 mandatory={false}
                                 handleChange={() => { dispatch(getFormGridData({ ...costReportFormData, isPlant: false, isCompany: true })) }}
+                                // handleChange={() => { }}         //RE
                                 errors={errors.Customer}
                                 disabled={false}
                             />

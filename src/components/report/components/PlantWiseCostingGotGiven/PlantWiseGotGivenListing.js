@@ -177,7 +177,7 @@ function PlantWiseGotGivenListing(props) {
                 {returnExcelColumn()}
             </ExcelFile>
             <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
-        </div>
+        </div >
         <div>
             <Table className='mt-2 table-bordered'>
                 <thead>
@@ -188,9 +188,9 @@ function PlantWiseGotGivenListing(props) {
                 <thead>
                     <tr>
                         {topHeaderData && renderTableCells([topHeaderData[0]?.Month, topHeaderData[0]?.PlantName, topHeaderData[0]?.PlantAddress, topHeaderData[0]?.NetSales, topHeaderData[0]?.EffectiveDate])}
-                    </tr>
-                </thead>
-            </Table>
+                    </tr >
+                </thead >
+            </Table >
             <Table responsive className='table-bordered mb-0'>
                 <tbody>
                     <tr>
@@ -203,10 +203,11 @@ function PlantWiseGotGivenListing(props) {
                             <td>{row.label}</td>
                             <td>{checkForDecimalAndNull(row.NetCost, 18)}</td>
                             <td>{checkForDecimalAndNull(row.Percentage, 2)}{row.Percentage > 0 ? '%' : ''}</td>
-                        </tr>
-                    ))}
-                </tbody>
-            </Table>
+                        </tr >
+                    ))
+                    }
+                </tbody >
+            </Table >
         </div >
     </>
 }

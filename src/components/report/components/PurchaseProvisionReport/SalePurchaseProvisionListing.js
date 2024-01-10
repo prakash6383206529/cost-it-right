@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Row, Col, } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import { EMPTY_DATA, SALES_PROVISION_FILE_NAME, PURCHASE_PROVISION_FILE_NAME } from '../../../../config/constants'
+import { EMPTY_DATA, SALES_PROVISION_FILE_NAME, PURCHASE_PROVISION_FILE_NAME, PURCHASE_PROVISION_REPORT, SALES_PROVISION_REPORT } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper';
 import { PaginationWrapper } from '../../../common/commonPagination';
 import { getSalePurchaseProvisionReport } from '../../actions/ReportListing';
@@ -197,6 +197,7 @@ function SalePurchaseProvisionListing(props) {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
         }
         return (<ExcelSheet data={TempData} name={SALES_PROVISION_FILE_NAME}>
+            {/* return (<ExcelSheet data={TempData} name={SALES_PROVISION_REPORT}>        //RE */}
             {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
@@ -220,6 +221,7 @@ function SalePurchaseProvisionListing(props) {
 
                         <div>
                             <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_FILE_NAME : PURCHASE_PROVISION_FILE_NAME} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>
+                                {/* <ExcelFile filename={props.isSaleProvision ? SALES_PROVISION_REPORT : PURCHASE_PROVISION_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>        //RE */}
                                 {renderColumn()}
                             </ExcelFile>
                             <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
@@ -227,7 +229,7 @@ function SalePurchaseProvisionListing(props) {
                             </button>
                             <button type="button" className={"apply"} onClick={cancelReport}> <div className={'back-icon'}></div>Back</button>
                         </div>
-                    </div>
+                    </div >
                     {showList &&
                         <Row>
                             <Col>
@@ -271,17 +273,18 @@ function SalePurchaseProvisionListing(props) {
                                                 {<AgGridColumn field="OldRate" width="120" headerName="Existing Net Cost (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="NewRate" width="120" headerName="Revised Net Cost (INR)" cellRenderer={POPriceCurrencyFormatter} floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="Variance" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}
+                                                {/* // {<AgGridColumn field="Difference" headerName="Variance (w.r.t. Existing)" cellRenderer={dashFormatter} floatingFilter={true}></AgGridColumn>}           //RE */}
                                                 {<AgGridColumn field="SupplyQuantity" headerName="Supply Quantity (No.)" floatingFilter={true}></AgGridColumn>}
                                                 {<AgGridColumn field="Impact" headerName="Impact" floatingFilter={true}></AgGridColumn>}
-                                            </AgGridReact>
+                                            </AgGridReact >
                                             <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />
-                                        </div>
-                                    </div>
-                                </div>
-                            </Col>
-                        </Row>
+                                        </div >
+                                    </div >
+                                </div >
+                            </Col >
+                        </Row >
                     }
-                </form>
+                </form >
                 {!noRecordFound && <div className='h-298 d-flex align-items-center mt-3'>
                     <NoContentFound title={'Cost card is not available for this date range'} />
                 </div>}

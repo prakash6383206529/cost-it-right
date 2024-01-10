@@ -394,6 +394,54 @@ class AddBOPImport extends Component {
       this.cancel('submit')
     }
   }
+  /**
+  * @method handleClient
+  * @description called
+  */
+  handleClient = (newValue, actionMeta) => {
+    if (newValue && newValue !== '') {
+      this.setState({ client: newValue });
+    } else {
+      this.setState({ client: [] })
+    }
+  };
+
+  handleIncoTerm = (newValue) => {
+    const { isEditFlag, DataToChange } = this.state
+    if (newValue && newValue !== '') {
+      this.setState({ incoTerm: newValue });
+    } else {
+      this.setState({ incoTerm: [] })
+    }
+    if (isEditFlag && (DataToChange.BoughtOutPartIncoTermId !== newValue.value)) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
+    else if (isEditFlag) {
+      this.setState({ IsFinancialDataChanged: false })
+    }
+  }
+  handlePaymentTerm = (newValue) => {
+    const { isEditFlag, DataToChange } = this.state
+    if (newValue && newValue !== '') {
+      this.setState({ paymentTerm: newValue });
+    } else {
+      this.setState({ paymentTerm: [] })
+    }
+    if (isEditFlag && (DataToChange.BoughtOutPartPaymentTermId !== newValue.value)) {
+      this.setState({ IsFinancialDataChanged: true })
+    }
+    else if (isEditFlag) {
+      this.setState({ IsFinancialDataChanged: false })
+    }
+  }
+
+  closeApprovalDrawer = (e = '', type) => {
+    this.setState({ approveDrawer: false, setDisable: false })
+    if (type === 'submit') {
+      //this.clearForm()
+      this.cancel('submit')
+    }
+  }
 
   /**
   * @method getDetails
@@ -1778,6 +1826,34 @@ class AddBOPImport extends Component {
                                 validate={[]}
                                 component={renderText}
                                 required={false}
+                                className=""
+                                customClassName=" withBorder"
+                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
+                                name={"BasicRateCurrency"}
+                                type="text"
+                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
+                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
+                                className=" "
+                                customClassName=" withBorder"
+                              />
+                            </Col>
+                            <Col md="3">
+                              <Field
+                                label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
+                                name={"BasicRateBase"}
+                                type="text"
+                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
+                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
+                                component={renderTextInputField}
+                                required={true}
                                 disabled={true}
                                 isViewFlag={true}
                                 className=" "
@@ -1841,7 +1917,7 @@ class AddBOPImport extends Component {
                                 required={false}
                                 disabled={true}
                                 className=" "
-                                customClassName=" withBorder mb-0"
+                                customClassName=" withBorder"
                               />
                             </Col>
                           </>}
@@ -1966,7 +2042,7 @@ class AddBOPImport extends Component {
                             </div>
                           </Col>
                         </Row>
-                      </div>
+                      </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn d-flex justify-content-end align-items-center">
                           {disableSendForApproval && <WarningMessage dClass={"mr-2"} message={'This user is not in the approval cycle'} />}

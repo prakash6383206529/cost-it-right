@@ -37,6 +37,7 @@ function RemarkHistoryDrawer(props) {
 
         }
         dispatch(getCommunicationHistory(reqData, (res) => {
+            // dispatch(getCommunicationHistory(props.data.CostingId, (res) => {         //RE
 
             if (res && res.data) {
                 let temp = []
@@ -45,6 +46,7 @@ function RemarkHistoryDrawer(props) {
                     const dateObject = new Date(item.SentDate);
                     let obj = new Message({
                         id: 1,
+                        // message: `(${item.SenderName}) : ${item.Message ? item.Message : '-'} `,     //RE
                         message: (
                             <div className='chat-container'>
                                 <div className='sender-name'> {item.SenderName}</div> {item.Message ? <div className='sender-message'>{item.Message}</div> : '-'}

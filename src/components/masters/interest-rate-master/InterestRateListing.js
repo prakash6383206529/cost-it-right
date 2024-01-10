@@ -31,6 +31,7 @@ import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloat
 import { hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { agGridStatus, isResetClick } from '../../../actions/Common';
 
+const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
@@ -255,6 +256,15 @@ class InterestRateListing extends Component {
     setTimeout(() => {
       this.props.interestRateDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
     }, 500);
+  }
+
+  //RE
+  jsFunction(filterVal) {
+    this.filterVal = filterVal;
+    gridOptions.api.onFilterChanged(); //this invokes your custom logic by forcing grid filtering
+  }
+  doesExternalFilterPass = (value) => {
+
   }
   /**
   * @method hyphenFormatter
@@ -528,10 +538,10 @@ class InterestRateListing extends Component {
                   <AgGridColumn width={245} field="PaymentTermPercent" headerName="Payment Term Interest Rate (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                   <AgGridColumn width={150} field="VendorInterestRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                </AgGridReact>
-                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+                </AgGridReact >
+                {< PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
               </div>
-            </div>
+            </div >
 
             {
               isBulkUpload && <BulkUpload
@@ -547,7 +557,7 @@ class InterestRateListing extends Component {
             {
               this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />
             }
-          </div>
+          </div >
         </div >
       </ >
     );

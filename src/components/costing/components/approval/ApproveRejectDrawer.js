@@ -7,8 +7,8 @@ import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFil
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
 import { formatRMSimulationObject, getConfigurationKey, loggedInUserId, SimulationAPICall, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { EMPTY_GUID, FILE_URL } from '../../../../config/constants'
-import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
+import { APPROVER, EMPTY_GUID, FILE_URL, RMDOMESTIC, RMIMPORT } from '../../../../config/constants'
+import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, sapPushedInitialMoment, setAttachmentFileData, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import { debounce } from 'lodash'
 import DatePicker from "react-datepicker";
@@ -16,6 +16,7 @@ import "react-datepicker/dist/react-datepicker.css";
 import Dropzone from 'react-dropzone-uploader';
 import 'react-dropzone-uploader/dist/styles.css';
 import redcrossImg from '../../../../assests/images/red-cross.png'
+import AttachmentSec from './AttachmentSec'
 import { getSelectListOfSimulationLinkingTokens } from '../../../simulation/actions/Simulation'
 import { PROVISIONAL } from '../../../../config/constants'
 import LoaderCustom from '../../../common/LoaderCustom';
@@ -28,7 +29,7 @@ function ApproveRejectDrawer(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
 
-  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, isSimulationApprovalListing, apiData, TechnologyId, releaseStrategyDetails } = props
+  const { type, approvalData, IsFinalLevel, IsPushDrawer, isSimulation, dataSend, reasonId, simulationDetail, selectedRowData, costingArr, isSaveDone, Attachements, vendorId, SimulationTechnologyId, SimulationType, costingList, isSimulationApprovalListing, attachments, apiData, SimulationHeadId, TechnologyId, releaseStrategyDetails } = props
 
   const userLoggedIn = loggedInUserId()
   const userData = userDetails()
@@ -48,13 +49,14 @@ function ApproveRejectDrawer(props) {
   const [IsOpen, setIsOpen] = useState(false);
   const [loader, setLoader] = useState(false)
   const [isDisable, setIsDisable] = useState(false)
+  const [isDisableSubmit, setIsDisableSubmit] = useState(false)                     //RE
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [levelDetails, setLevelDetails] = useState({})
   const [showWarningMessage, setShowWarningMessage] = useState(false)
   const [disableSR, setDisableSR] = useState(false)
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
-  const { selectedMasterForSimulation } = useSelector(state => state.simulation)
+  const { selectedMasterForSimulation, attachmentsData } = useSelector(state => state.simulation)
   const reasonsList = useSelector((state) => state.approval.reasonsList)
   const initialConfiguration = useSelector((state) => state.auth.initialConfiguration)
 
@@ -90,6 +92,10 @@ function ApproveRejectDrawer(props) {
       // setValue('approver', { label: Data.Text, value: Data.Value })
     }))
   }
+
+  useEffect(() => {
+    dispatch(setAttachmentFileData([], () => { }))
+  }, [])
 
   useEffect(() => {
     dispatch(getReasonSelectList((res) => { }))
@@ -180,7 +186,39 @@ function ApproveRejectDrawer(props) {
     // DO IT AFTER GETTING DATA
   }, [])
 
+  // useEffect(() => {                     //RE
+  //   //THIS OBJ IS FOR SAVE SIMULATION
+  //   if (type === 'Sender' && !isSaveDone && !isSimulationApprovalListing) {
+  //     let simObj = formatRMSimulationObject(simulationDetail, costingArr, apiData)
 
+  //     //THIS CONDITION IS FOR SAVE SIMULATION
+  //     dispatch(saveSimulationForRawMaterial(simObj, res => {
+  //       if (res?.data?.Result) {
+  //         Toaster.success('Simulation has been saved successfully')
+  //         setLoader(true)
+  //         dispatch(sapPushedInitialMoment(simulationDetail.SimulationId, res => {
+  //           let status = 200
+  //           if ('response' in res) {
+
+  //             status = res && res?.response?.status
+  //           }
+
+  //           if (status !== undefined && status === 200) {
+  //             setIsDisableSubmit(false)
+  //           } else {
+  //             setIsDisableSubmit(true)
+  //           }
+  //           // if (status !== undefined && (status === 400 || status === 412 || status === 500)) {
+  //           //   setIsDisable(true)
+  //           // } else {
+  //           //   setIsDisable(false)
+  //           // }
+  //           setLoader(false)
+  //         }))
+  //       }
+  //     }))
+  //   }
+  // }, [simulationDetail])
 
 
   const getApproversList = (departObj, departmentName, levelDetailsTemp) => {
@@ -531,12 +569,21 @@ function ApproveRejectDrawer(props) {
           senderObj.SimulationList = [{ SimulationId: simulationDetail.SimulationId, SimulationTokenNumber: simulationDetail.TokenNo, SimulationAppliedOn: simulationDetail.SimulationAppliedOn }]
         }
         senderObj.Attachements = updatedFiles
+        // senderObj.Attachements = attachmentsData                     //RE
         senderObj.LinkedTokenNumber = linkingTokenDropDown.value
         senderObj.IsMultiSimulation = isSimulationApprovalListing ? true : false      // IF WE SEND MULTIPLE TOKENS FOR SIMULATION THEN THIS WILL BE TRUE (requirement)
 
         //THIS CONDITION IS FOR SIMULATION SEND FOR APPROVAL
+        setIsDisableSubmit(true)
         dispatch(simulationApprovalRequestBySender(senderObj, res => {
           setIsDisable(false)
+          let status = 200
+          if ('response' in res) {
+            status = res && res?.response?.status
+          }
+          if (status === 200) {
+            setIsDisableSubmit(false)
+          }
           if (res?.data?.Result) {
             Toaster.success('Simulation token has been sent for approval.')
             props.closeDrawer('', 'submit')
@@ -546,6 +593,7 @@ function ApproveRejectDrawer(props) {
       else if (type === 'Approve') {
         //THIS CONDITION IS FOR APPROVE THE SIMULATION REQUEST 
         dispatch(simulationApprovalRequestByApprove(approverObject, res => {
+          let status = res && res?.status
           setIsDisable(false)
           if (res?.data?.Result) {
             if (IsPushDrawer) {
@@ -555,6 +603,27 @@ function ApproveRejectDrawer(props) {
             } else {
               Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
               props.closeDrawer('', 'submit')
+              // if (IsFinalLevel) {
+              //   // let pushObj = {}
+              //   // let temp = []
+              //   // let uniqueArr = _.uniqBy(costingList, function (o) {
+              //   //   return o.CostingId;
+              //   // });
+
+              //   // uniqueArr && uniqueArr.map(item => {
+              //   //   const vendor = item.VendorName.split('(')[1]
+              //   //   temp.push({ TokenNumber: simulationDetail.Token, Vendor: item?.VendorCode, PurchasingGroup: simulationDetail.DepartmentCode, Plant: item.PlantCode, MaterialCode: item.PartNo, NewPOPrice: item.NewPOPrice, EffectiveDate: simulationDetail.EffectiveDate, SimulationId: simulationDetail.SimulationId })
+              //   //   return null
+              //   // })
+              //   // pushObj.LoggedInUserId = userLoggedIn
+              //   // pushObj.AmmendentDataRequests = temp
+              //   // dispatch(pushAPI(pushObj, () => { }))
+              //   Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
+              //   props.closeDrawer('', 'submit', status)
+              // } else {
+              //   Toaster.success(IsFinalLevel ? 'The simulation token approved successfully' : 'The simulation token has been sent to next level for approval')
+              //   props.closeDrawer('', 'submit')
+              // }
             }
           }
         }))
@@ -616,12 +685,6 @@ function ApproveRejectDrawer(props) {
         ApprovalTypeId: costingTypeIdToApprovalTypeIdFunction(props?.costingTypeId),
       }
     } else {
-      // simObj = {
-      //   LoggedInUserId: loggedInUserId(), // user id
-      //   DepartmentId: value.value,
-      //   TechnologyId: simulationDetail.SimulationTechnologyId ? simulationDetail.SimulationTechnologyId : selectedMasterForSimulation.value,
-      //   ReasonId: 0
-      // }
     }
 
 
@@ -738,10 +801,11 @@ function ApproveRejectDrawer(props) {
     )
   }
 
+  const callbackFunctionForDisableSaveButton = (value) => {
+    setIsDisable(value)
+  }
+
   const deleteFile = (FileId, OriginalFileName) => {
-
-
-
     if (FileId != null) {
       let tempArr = files && files.filter(item => item.FileId !== FileId)
       setFiles(tempArr)
@@ -758,8 +822,10 @@ function ApproveRejectDrawer(props) {
       dropzone.current.files.pop()
     }
   }
+
   return (
     <>
+
       <Drawer
         anchor={props.anchor}
         open={props.isOpen}
@@ -791,6 +857,7 @@ function ApproveRejectDrawer(props) {
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                        // label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}                     //RE
                         name={"dept"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -832,6 +899,7 @@ function ApproveRejectDrawer(props) {
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
                         label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                        // label={"Purchase Group"}                     //RE
                         name={"dept"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -963,12 +1031,8 @@ function ApproveRejectDrawer(props) {
                       errors={errors.Masters}
                       customClassName="mb-0"
                     />
-
-
-
-                  </div>
+                  </div >
                 }
-
 
 
                 <div className="input-group form-group col-md-12">
@@ -995,8 +1059,7 @@ function ApproveRejectDrawer(props) {
                   />
                   {/* {showError && <span className="text-help">This is required field</span>} */}
                 </div>
-                {
-                  isSimulation && type === 'Sender' &&
+                {isSimulation && type === 'Sender' &&
                   <div className="col-md-12 drawer-attachment">
                     <div className="d-flex w-100 flex-wrap">
                       <Col md="8" className="p-0"><h6 className="mb-0">Attachments</h6></Col>
@@ -1076,7 +1139,20 @@ function ApproveRejectDrawer(props) {
                     </div>
                   </div>
                 }
-              </Row>
+
+                {/* // {                     //RE
+                //   isSimulation && type === 'Sender' &&
+                //   <AttachmentSec
+                //     token={simulationDetail?.TokenNo}
+                //     type={type}
+                //     Attachements={simulationDetail?.Attachements}
+                //     showAttachment={false}
+                //     callbackFunctionForDisableSaveButton={callbackFunctionForDisableSaveButton}
+                //     isSimulationSummary={false}
+                //   />
+                // } */}
+
+              </Row >
               <Row className="sf-btn-footer no-gutters justify-content-between">
                 <div className="col-sm-12 text-right bluefooter-butn">
                   <button
@@ -1094,27 +1170,26 @@ function ApproveRejectDrawer(props) {
                     className="submit-button  save-btn"
                     onClick={onSubmit}
                     disabled={isDisable}
+                  // disabled={isDisable || isDisableSubmit}                     //RE
                   >
                     <div className={'save-icon'}></div>
                     {'Submit'}
                   </button>
                 </div>
               </Row>
-            </form>
-          </div>
-        </Container>
-      </Drawer>
-      {
-        openPushButton && (
-          <PushButtonDrawer
-            isOpen={openPushButton}
-            closeDrawer={closePushButton}
-            approvalData={[approvalData]}
-            dataSend={dataSend}
-            anchor={'right'}
-          />
-        )
-      }
+            </form >
+          </div >
+        </Container >
+      </Drawer >
+      {openPushButton && (
+        <PushButtonDrawer
+          isOpen={openPushButton}
+          closeDrawer={closePushButton}
+          approvalData={[approvalData]}
+          dataSend={dataSend}
+          anchor={'right'}
+        />
+      )}
     </>
   )
 }

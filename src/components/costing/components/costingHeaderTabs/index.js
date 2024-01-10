@@ -38,7 +38,7 @@ function CostingHeaderTabs(props) {
   const { t } = useTranslation("Costing");
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
-    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, IsIncludedSurfaceInRejection, IsIncludedToolCost } = useSelector(state => state.costing)
+    IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, ActualCostingDataList, IsIncludedSurfaceInRejection, IsIncludedToolCost } = useSelector(state => state.costing)
   const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount, costingOpenCloseStatus } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
@@ -63,6 +63,7 @@ function CostingHeaderTabs(props) {
 
   const costingApprovalStatus = useContext(CostingStatusContext);
 
+  const ActualTotalCost = ActualCostingDataList && ActualCostingDataList.length > 0 && ActualCostingDataList[0].TotalCost !== undefined ? ActualCostingDataList[0].TotalCost : 0;
   useEffect(() => {
     setActiveTab(costingData?.TechnologyId !== LOGISTICS ? '1' : '4')
   }, [costingData])
@@ -610,7 +611,7 @@ function CostingHeaderTabs(props) {
               />
             </TabPane>
           </TabContent>
-        </div>
+        </div >
       </div >
 
       {IsOpenViewHirarchy && <BOMViewer

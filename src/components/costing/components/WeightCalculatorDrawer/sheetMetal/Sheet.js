@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { Col, Row } from 'reactstrap'
 import { saveRawMaterialCalculationForSheetMetal } from '../../../actions/CostWorking'
 import HeaderTitle from '../../../../common/HeaderTitle'
-import { SearchableSelectHookForm, TextFieldHookForm, } from '../../../../layout/HookFormInputs'
+import { SearchableSelectHookForm, TextFieldHookForm, NumberFieldHookForm } from '../../../../layout/HookFormInputs'
 import { checkForDecimalAndNull, checkForNull, loggedInUserId, calculateWeight, setValueAccToUOM, number, checkWhiteSpaces, decimalAndNumberValidation } from '../../../../../helper'
 import { getUOMSelectList } from '../../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
@@ -139,6 +139,15 @@ function Sheet(props) {
 
     const setFinishWeight = (e) => {
         const FinishWeightOfSheet = e.target.value
+        const grossWeight = checkForNull(getValues('GrossWeight'))
+        if (e.target.value > grossWeight) {
+            setTimeout(() => {
+                setValue('FinishWeightOfSheet', 0)
+            }, 200);
+
+            Toaster.warning('Finish Weight should not be greater than gross weight')
+            return false
+        }
         switch (UOMDimension.label) {
             case G:
                 setTimeout(() => {
@@ -259,7 +268,6 @@ function Sheet(props) {
      */
     const onSubmit = debounce(handleSubmit((values) => {
         setIsDisable(true)
-
         if (WeightCalculatorRequest && WeightCalculatorRequest.WeightCalculationId !== "00000000-0000-0000-0000-000000000000") {
             if (tempOldObj.GrossWeight !== dataToSend.GrossWeight || tempOldObj.FinishWeight !== getValues('FinishWeightOfSheet') || tempOldObj.NetSurfaceArea !== dataToSend.NetSurfaceArea || tempOldObj.UOMForDimensionId !== UOMDimension.value) {
                 setIsChangeApplied(true)
@@ -351,7 +359,7 @@ function Sheet(props) {
                             </Row>
                             <Row className={'mt15'}>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Thickness(mm)`}
                                         name={'SheetThickness'}
                                         Controller={Controller}
@@ -371,7 +379,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Width(mm)`}
                                         name={'SheetWidth'}
                                         Controller={Controller}
@@ -392,7 +400,7 @@ function Sheet(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Length(mm)`}
                                         name={'SheetLength'}
                                         Controller={Controller}
@@ -440,7 +448,7 @@ function Sheet(props) {
                             </Row>
                             <Row className={'mt15'}>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Strip Width(mm)`}
                                         name={'StripWidth'}
                                         Controller={Controller}
@@ -479,7 +487,7 @@ function Sheet(props) {
                                 </Col>
 
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Blank Size(mm)`}
                                         name={'BlankSize'}
                                         Controller={Controller}
@@ -554,12 +562,30 @@ function Sheet(props) {
                                         disabled={true}
                                     />
                                 </Col>
-                            </Row>
+                                <Col md="3">
+                                    <TooltipCustom tooltipClass='weight-of-sheet' disabledIcon={true} id={'total-component'} tooltipText={'Total Component/Sheet = (No. of Strips * Components per Strip * Cavity )'} />
+                                    <NumberFieldHookForm
+                                        label={`Total Components/Sheet`}
+                                        name={'NoOfComponent'}
+                                        id={'total-component'}
+                                        Controller={Controller}
+                                        control={control}
+                                        register={register}
+                                        mandatory={false}
+                                        handleChange={() => { }}
+                                        defaultValue={''}
+                                        className=""
+                                        customClassName={'withBorder'}
+                                        errors={errors.NoOfComponent}
+                                        disabled={true}
+                                    />
+                                </Col >
+                            </Row >
 
                             <hr className="mx-n4 w-auto" />
                             <Row>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={UnitFormat()}
                                         name={'NetSurfaceArea'}
                                         Controller={Controller}
@@ -615,7 +641,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                                 <Col md="3">
-                                    <TextFieldHookForm
+                                    <NumberFieldHookForm
                                         label={`Finish Weight(${UOMDimension.label})`}
                                         name={'FinishWeightOfSheet'}
                                         Controller={Controller}
@@ -639,7 +665,7 @@ function Sheet(props) {
                                     />
                                 </Col>
                             </Row>
-                        </div>
+                        </div >
 
                         {!CostingViewMode && <div className="col-sm-12 text-right px-0 mt-4">
                             <button
@@ -658,9 +684,9 @@ function Sheet(props) {
                             </button>
                         </div>}
 
-                    </form>
-                </div>
-            </div>
+                    </form >
+                </div >
+            </div >
         </>
     )
 }

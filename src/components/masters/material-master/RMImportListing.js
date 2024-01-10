@@ -43,7 +43,7 @@ const gridOptions = {};
 
 
 function RMImportListing(props) {
-   const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation, apply, ListFor, isFromVerifyPage } = props;
+  const { AddAccessibility, BulkUploadAccessibility, ViewRMAccessibility, EditAccessibility, DeleteAccessibility, DownloadAccessibility, isSimulation, selectionForListingMasterAPI, objectForMultipleSimulation, apply, ListFor, isFromVerifyPage } = props;
 
   const [value, setvalue] = useState({ min: 0, max: 0 });
   const [isBulkUpload, setisBulkUpload] = useState(false);
@@ -1028,6 +1028,7 @@ function RMImportListing(props) {
                       <AgGridColumn field="ScrapRateInINR" headerName={headerNames?.ScrapRate} cellRenderer='commonCostFormatter'></AgGridColumn>
                       {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
                       {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" headerName={headerNames?.MachiningScrapCost}></AgGridColumn>}
+                      {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
                       <AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
                       <AgGridColumn field="RawMaterialFreightCostConversion" headerName={headerNames?.FreightCost} cellRenderer='commonCostFormatter'></AgGridColumn>
                       <AgGridColumn field="RMShearingCost" headerName="Shearing Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>

@@ -324,6 +324,7 @@ class FuelListing extends Component {
             commonCostFormatter: this.commonCostFormatter,
         };
 
+
         return (
             <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
                 {this.state.isLoader && <LoaderCustom />}

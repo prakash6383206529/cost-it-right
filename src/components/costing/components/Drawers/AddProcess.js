@@ -4,7 +4,7 @@ import { Container, Row, Col, NavItem, TabContent, TabPane, Nav, NavLink } from 
 import { getProcessDrawerDataList, getProcessDrawerVBCDataList, setIdsOfProcess, setIdsOfProcessGroup, setSelectedDataOfCheckBox } from '../../actions/Costing';
 import { costingInfoContext } from '../CostingDetailStepTwo';
 import NoContentFound from '../../../common/NoContentFound';
-import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, NFRTypeId, VBC, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../../config/constants';
+import { CBCTypeId, defaultPageSize, EMPTY_DATA, NCC, NCCTypeId, VBC, VBCTypeId, COMBINED_PROCESS_NAME, ZBCTypeId, NFRTypeId, WACTypeId } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
 import classnames from 'classnames';
 import Drawer from '@material-ui/core/Drawer';
@@ -77,9 +77,10 @@ function AddProcess(props) {
 
   useEffect(() => {
     if (groupMachineId === '') {
-      setTableDataList(processDrawerList)
+      const filteredData = processDrawerList && processDrawerList.filter(item => item.ProcessName !== COMBINED_PROCESS_NAME);
+      setTableDataList(filteredData)
     } else {
-      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId)
+      let filteredData = processDrawerList && processDrawerList.filter(item => item.MachineId === groupMachineId && item.ProcessName !== COMBINED_PROCESS_NAME)
       setTableDataList(filteredData)
     }
   }, [processDrawerList])

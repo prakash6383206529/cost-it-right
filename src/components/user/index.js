@@ -190,6 +190,7 @@ class User extends Component {
             {ViewDepartmentAccessibility && <NavItem>
               <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
                 {`Manage ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                {/* {`Manage ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}                 //RE */}
               </NavLink>
             </NavItem>}
             {ViewLevelAccessibility && <NavItem>

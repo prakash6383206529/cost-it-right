@@ -18,6 +18,7 @@ export const MESSAGES = {
   UPDATE_PRODUCT_SUCESS: 'Product updated successfully',
   MESSAGE_SENT_EXCEPT_USER: 'Message sent except the user',
   CONFIRM_DELETE: 'Are you sure you want to delete this part?',
+  CONFIRM_PRODUCT_DELETE: 'Are you sure you want to delete this product?',
 
   PLANT_ADDED_SUCCESS: 'Plant created successfully',
   SUPPLIER_ADDED_SUCCESS: 'Vendor added successfully',
@@ -357,6 +358,7 @@ export const MESSAGES = {
 
   //SIMULATION
   DELETE_SIMULATION_DRAFT_TOKEN: 'Are you sure you want to delete simulation token ?',
+  REPUSH_DONE_SUCCESSFULLY: 'Repush has been done successfully',						//RE
 
   // COMMON MESSAGES 
   DOWNLOADING_MESSAGE: 'Please wait while data is downloading',

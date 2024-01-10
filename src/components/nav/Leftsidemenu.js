@@ -16,9 +16,9 @@ class Leftmenu extends Component {
 		};
 	}
 
+
 	UNSAFE_componentWillMount() {
 	}
-
 	setModuleId = (ModuleId) => {
 		reactLocalStorage.set('ModuleId', ModuleId)
 	}
