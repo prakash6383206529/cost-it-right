@@ -171,10 +171,10 @@ class AddMoreDetails extends Component {
   /**
    * @method componentDidMount
    * @description Called after rendering the component
-   */
+  */
   componentDidMount() {
     const { initialConfiguration } = this.props
-    this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+    this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     this.props.getMachineTypeSelectList(() => { })
     this.props.getUOMSelectList(() => { })
     this.props.getProcessesSelectList(() => { })
@@ -409,7 +409,12 @@ class AddMoreDetails extends Component {
             const shiftObj = ShiftTypeSelectList && ShiftTypeSelectList.find(item => Number(item.Value) === Number(Data.WorkingShift))
             const depreciationObj = DepreciationTypeSelectList && DepreciationTypeSelectList.find(item => item.Value === Data.DepreciationType)
             const fuelObj = fuelDataByPlant && fuelDataByPlant.find(item => String(item.Value) === String(Data.FuleId))
-
+            let plantObj;
+            if ((getConfigurationKey().IsDestinationPlantConfigure && (Data.CostingTypeId === VBCTypeId)) || Data.CostingTypeId === CBCTypeId) {
+              plantObj = Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : []
+            } else {
+              plantObj = Data && Data.Plant.length > 0 ? { label: Data.Plant[0].PlantName, value: Data.Plant[0].PlantId } : []
+            }
             let LabourArray = Data && Data.MachineLabourRates?.map(el => {
               return {
                 labourTypeName: el.LabourTypeName,
@@ -459,13 +464,14 @@ class AddMoreDetails extends Component {
               machineType: machineTypeObj && machineTypeObj !== undefined ? { label: machineTypeObj.Text, value: machineTypeObj.Value } : [],
               shiftType: shiftObj && shiftObj !== undefined ? { label: shiftObj.Text, value: shiftObj.Value } : [],
               depreciationType: depreciationObj && depreciationObj !== undefined ? { label: depreciationObj.Text, value: depreciationObj.Value } : [],
+              selectedPlants: plantObj,
               DateOfPurchase: DayTime(Data.DateOfPurchase).isValid() === true ? new Date(DayTime(Data.DateOfPurchase)) : '',
               IsAnnualMaintenanceFixed: Data.IsMaintanceFixed,
               IsAnnualConsumableFixed: Data.IsConsumableFixed,
               IsInsuranceFixed: Data.IsInsuranceFixed,
               IsUsesFuel: Data.IsUsesFuel,
               IsUsesSolarPower: Data.IsUsesSolarPower,
-              fuelType: fuelObj && fuelObj !== undefined ? { label: fuelObj.Text, value: fuelObj.Value } : [],
+              fuelType: fuelObj && fuelObj !== undefined ? { value: fuelObj.Value } : [],
               labourGrid: LabourArray,
               processGrid: MachineProcessArray,
               disableAllForm: (MachineProcessArray?.length > 0) ? true : false,
@@ -652,7 +658,7 @@ class AddMoreDetails extends Component {
   * @description called
   */
   handleMachineType = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
+    if (newValue.value !== null && newValue && newValue !== '') {
       this.setState({ machineType: newValue, labourGrid: [], }, () => {
         this.callLabourTypeApi()
       });
@@ -1348,7 +1354,6 @@ class AddMoreDetails extends Component {
     } else {
       TotalMachineCostPerAnnum = checkForNull(fieldsObj.RateOfInterestValue) + checkForNull(fieldsObj.DepreciationAmount) + checkForDecimalAndNull(fieldsObj.TotalMachineCostPerAnnum) + checkForNull(fieldsObj.TotalFuelCostPerYear) + checkForNull(fieldsObj.TotalPowerCostPerYear) + checkForNull(this.calculateTotalLabourCost())
     }
-    // 
     if (UOM.type === TIME) {
 
       if (UOM.uom === "Hours") {
@@ -1568,7 +1573,7 @@ class AddMoreDetails extends Component {
 
   /**
    * @method processTableHandler
-   * @description ADDING PROCESS IN PROCESS TABLE 
+   * @description ADDING PROCESS IN PROCESS TABLE
   */
   processTableHandler = () => {
     const { processName, UOM, processGrid, isProcessGroup, machineType, selectedPlants, effectiveDate } = this.state;
@@ -1656,7 +1661,7 @@ class AddMoreDetails extends Component {
       }, () => {
         this.props.change('OutputPerHours', isProcessGroup ? OutputPerHours : 0)
         this.props.change('OutputPerYear', isProcessGroup ? OutputPerYear : 0)
-        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+        this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
       });
       if (!getConfigurationKey().IsMachineProcessGroup) {
         this.setState({ machineRate: "" })
@@ -1755,7 +1760,7 @@ class AddMoreDetails extends Component {
       machineRate: ""
     }, () => {
 
-      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : 0)
+      this.props.change('MachineRate', isProcessGroup ? checkForDecimalAndNull(MachineRate, this.props.initialConfiguration.NoOfDecimalForPrice) : '')
     });
 
   };
@@ -1807,9 +1812,9 @@ class AddMoreDetails extends Component {
   }
 
   /**
-  * @method deleteItem
-  * @description used to Reset form
-  */
+   * @method deleteItem
+   * @description DELETE ROW ENTRY FROM TABLE 
+   */
   deleteItem = (index) => {
     const { processGrid, UOM, isProcessGroup } = this.state;
     const { fieldsObj } = this.props;
@@ -2087,7 +2092,7 @@ class AddMoreDetails extends Component {
       VendorPlant: [],
       IsForcefulUpdated: true,
       EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-      MachineProcessGroup: this.props.processGroupApiData,
+      MachineProcessGroup: this.props?.processGroupApiData,
       IsFinancialDataChanged: this.state.isDateChange ? true : false,
       IsIncludeMachineCost: IsIncludeMachineRateDepreciation,
       PowerEntryId: powerIdFromAPI,
@@ -2247,7 +2252,7 @@ class AddMoreDetails extends Component {
         Attachements: files,
         VendorPlant: [],
         EffectiveDate: DayTime(effectiveDate).format('YYYY-MM-DD HH:mm:ss'),
-        MachineProcessGroup: this.props.processGroupApiData,
+        MachineProcessGroup: this.props?.processGroupApiData,
         rowData: this.state.rowData,
         IsFinancialDataChanged: this.state.isDateChange ? true : false,
         FuelEntryId: this.state.FuelEntryId,
@@ -2798,7 +2803,6 @@ class AddMoreDetails extends Component {
                             required: false,
                           }}
                           //maxDate={new Date()}
-                          
                           placeholder={disableAllForm ? '-' :'Enter'}
                           className="withBorder"
                           autoComplete={'off'}

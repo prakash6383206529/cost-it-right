@@ -161,6 +161,7 @@ class InterestRateListing extends Component {
     })
   }
 
+
   /**
   * @method deleteItem
   * @description confirm delete Item.
@@ -198,6 +199,7 @@ class InterestRateListing extends Component {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
   }
+
 
   renderEffectiveDate = () => {
     return <> Effective Date </>

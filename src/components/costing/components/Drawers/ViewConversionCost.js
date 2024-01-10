@@ -184,6 +184,28 @@ function ViewConversionCost(props) {
       }
 
     }, 300);
+    //MINDA
+    // setTimeout(() => {
+    //   if (tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessTechnologyId === MACHINING && tempData.netConversionCostView.CostingProcessCostResponse[index].UOMType === TIME) {
+    //     dispatch(getProcessMachiningCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, res => {
+    //       if (res && res.data && res.data.Data) {
+    //         const data = res.data.Data
+    //         setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
+    //         setWeightCalculatorDrawer(true)
+    //       }
+    //     }))
+
+    //   } else {
+    //     dispatch(getProcessDefaultCalculation(tempData?.netConversionCostView?.CostingProcessCostResponse[index].CostingId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessId, tempData?.netConversionCostView?.CostingProcessCostResponse[index].ProcessCalculatorId, res => {
+    //       if (res && res.data && res.data.Data) {
+    //         const data = res.data.Data
+    //         setCalciData({ ...costingProcessCost[index], WeightCalculatorRequest: data })
+    //         setWeightCalculatorDrawer(true)
+    //       }
+    //     }))
+    //   }
+
+    // }, 300);
   }
 
   const closeWeightDrawer = (e = "") => {

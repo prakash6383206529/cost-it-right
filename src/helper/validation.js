@@ -69,6 +69,7 @@ export const maxLength512 = maxLength(512);
 export const maxLength80 = maxLength(80);
 
 
+
 //export const maxLengthN = maxLength(n)
 
 export const checkFacebooklink = value =>
@@ -371,7 +372,6 @@ export const CheckIsCostingDateSelected = (costingDate) => {
     const IsSelected = DayTime(costingDate).isValid() ? true : false;
     if (!IsSelected) {
         Toaster.warning('Please select Costing effective date.')
-
     }
     return !IsSelected;
 }
@@ -464,3 +464,9 @@ export const alphaneumericSpecialAccept = value => {
 export const decimalNumberLimit3 = value =>
     value && !/^\d{0,3}(\.\d{0,3})?$/.test(value)
         ? 'Maximum length for integer is 3 and for decimal is 3' : undefined;
+
+export const decimalNumberLimit13 = value => {
+    let tempValue = value && Number('0' + String(value)?.replace(/^0+/, ''))
+    return tempValue && !/^[0-9][0-9]{0,12}(\.\d{0,2})?$/.test(tempValue)
+        ? 'Maximum length for integer is 13 and for decimal is 2' : undefined;
+}

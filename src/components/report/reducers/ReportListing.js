@@ -1,6 +1,51 @@
+// import {
+//     API_REQUEST, CREATED_BY_ASSEMBLY, GET_REPORT_LIST,
+// } from '../../../config/constants';
+// import { userDetails } from '../../../helper';
+
+// const initialState = {
+//     reportListing: []
+// };
+
+// export default function ReportListingReducers(state = initialState, action) {
+//     switch (action.type) {
+//         case API_REQUEST:
+//             return {
+//                 ...state,
+//                 loading: true
+//             };
+//         case GET_REPORT_LIST:
+//             let temp = action.payload
+//             let Arr = []
+//             let sr = 0
+//             temp && temp.map(item => {
+//                 if (item.Status === CREATED_BY_ASSEMBLY) {
+//                     return false
+//                 } else {
+//                     item.PersonRequestingChange = userDetails().Name
+//                     sr = ''
+//                     item.SrNo = sr
+//                     Arr.push(item)
+//                     return Arr
+//                 }
+//             })
+//             return {
+//                 ...state,
+//                 loading: false,
+//                 reportListing: Arr
+//             }
+
+//         default:
+//             return state;
+//     }
+// }
+
+
+
 import {
-    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST, GET_BENCHMARK_MASTER_LIST, GET_COST_RATIO_REPORT, GET_REPORT_FORM_GRID_DATA, GET_PRODUCT_LIST, GET_PRODUCT_PART_DATA_LIST, GET_STAGE_OF_PART_DETAILS,
+    API_REQUEST, GET_REPORT_LIST, GET_ALL_REPORT_LIST, GET_BENCHMARK_MASTER_LIST, GET_COST_RATIO_REPORT, GET_REPORT_FORM_GRID_DATA, GET_PRODUCT_LIST, GET_PRODUCT_PART_DATA_LIST, GET_STAGE_OF_PART_DETAILS, GET_NFR_INSIGHT_DETAILS, GET_NFR_INSIGHT_STATUS_DETAILS,
 } from '../../../config/constants';
+import { userDetails } from '../../../helper';
 import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 const initialState = {
@@ -10,6 +55,8 @@ const initialState = {
     stageOfPartDetails: [],
     productList: [],
     productPartDataList: [],
+    nfrInsightDetails: [],
+    nfrInsightStatusDetails: []
 };
 
 export default function ReportListingReducers(state = initialState, action) {
@@ -20,8 +67,29 @@ export default function ReportListingReducers(state = initialState, action) {
                 loading: true
             };
         case GET_REPORT_LIST:
+            // WILL BE REMOVED AFTER TESTING
+            // let temp = action.payload
+            // let Arr = []
+            // let sr = 0
+            // let arr1 = []
+            // temp && temp.map(item => {
+            //     item.PersonRequestingChange = userDetails().Name
+            //     sr = ''
+            //     item.SrNo = sr
+            //     Arr.push(item)
+            //     return Arr
+
+            // })
+
+            // arr1 = Arr
+            // return {
+            //     ...state,
+            //     loading: false,
+            //     reportListing: arr1
             let arr = []
-            arr = action.payload && action.payload.filter((el) => {                 //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: '2021-03-01T00:00:00' BUT WE WERE RECEIVING DATE IN 01/03/2021
+            let sr = 0
+            arr = action.payload && action.payload.filter((el) => {
+                sr = ''             //CREATED NEW PARAMETER EFFECTIVEDATENEW IN SAME OBJECT AS WE WANTED DATE IN FORMAT: '2021-03-01T00:00:00' BUT WE WERE RECEIVING DATE IN 01/03/2021
                 el.EffectiveDateNew = el.EffectiveDate
                 el.RawMaterialScrapWeight = checkForDecimalAndNull(el.RawMaterialScrapWeight, getConfigurationKey()?.NoOfDecimalForInputOutput)
                 el.RawMaterialGrossWeight = checkForDecimalAndNull(el.RawMaterialGrossWeight, getConfigurationKey()?.NoOfDecimalForInputOutput)
@@ -49,6 +117,8 @@ export default function ReportListingReducers(state = initialState, action) {
                 el.AnyOtherCost = checkForDecimalAndNull(el.AnyOtherCost, getConfigurationKey()?.NoOfDecimalForPrice)
                 el.NetPOPriceOtherCurrency = checkForDecimalAndNull(el.NetPOPriceOtherCurrency, getConfigurationKey()?.NoOfDecimalForPrice)
                 el.NetPOPriceINR = checkForDecimalAndNull(el.NetPOPriceINR, getConfigurationKey()?.NoOfDecimalForPrice)
+                el.PersonRequestingChange = userDetails().Name
+                el.SrNo = sr
                 return el
             })
             return {
@@ -57,10 +127,25 @@ export default function ReportListingReducers(state = initialState, action) {
                 reportListing: arr
             }
         case GET_ALL_REPORT_LIST:
+
+            let tempAll = action.payload
+            let ArrNew = []
+            let srSecond = 0
+            let arrSecond = []
+            tempAll && tempAll.map(item => {
+                item.PersonRequestingChange = userDetails().Name
+                srSecond = ''
+                item.SrNo = srSecond
+                ArrNew.push(item)
+                return ArrNew
+
+            })
+
+            arrSecond = ArrNew
             return {
                 ...state,
                 loading: false,
-                allReportListing: action.payload
+                allReportListing: arrSecond
             }
 
         case GET_BENCHMARK_MASTER_LIST:
@@ -99,6 +184,18 @@ export default function ReportListingReducers(state = initialState, action) {
                 ...state,
                 loading: false,
                 stageOfPartDetails: action.payload
+            }
+        case GET_NFR_INSIGHT_DETAILS:
+            return {
+                ...state,
+                loading: false,
+                nfrInsightDetails: action.payload
+            }
+        case GET_NFR_INSIGHT_STATUS_DETAILS:
+            return {
+                ...state,
+                loading: false,
+                nfrInsightStatusDetails: action.payload
             }
 
         default:

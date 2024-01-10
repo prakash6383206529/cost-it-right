@@ -8,7 +8,7 @@ import { useDispatch, useSelector } from 'react-redux'
 import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants'
 import { TextFieldHookForm, TextAreaHookForm, SearchableSelectHookForm } from '../../../../layout/HookFormInputs'
 import Toaster from '../../../../common/Toaster'
-import { calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
+import { calculateNetLandedCost, calculatePercentage, calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, getConfigurationKey, isRMDivisorApplicable } from '../../../../../helper'
 import OpenWeightCalculator from '../../WeightCalculatorDrawer'
 import { getRawMaterialCalculationForCorrugatedBox, getRawMaterialCalculationForDieCasting, getRawMaterialCalculationForFerrous, getRawMaterialCalculationForForging, getRawMaterialCalculationForMachining, getRawMaterialCalculationForPlastic, getRawMaterialCalculationForRubber, getRawMaterialCalculationForSheetMetal, } from '../../../actions/CostWorking'
 import { IsNFR, ViewCostingContext } from '../../CostingDetails'
@@ -27,6 +27,7 @@ import Button from '../../../../layout/Button'
 import TourWrapper from '../../../../common/Tour/TourWrapper'
 import { Steps } from '../../TourMessages'
 import { useTranslation } from 'react-i18next'
+import { getRMFromNFR } from '../../../../masters/nfr/actions/nfr'
 
 let counter = 0;
 let timerId = 0
@@ -98,11 +99,13 @@ function RawMaterialCost(props) {
     },
   ])
   const [isScrapRateUOMApplied, setIsScrapRateUOMApplied] = useState(false)
+  const [dataInNFRAPI, setDataInNFRAPI] = useState(false)
 
   const { ferrousCalculatorReset } = useSelector(state => state.costWorking)
   const RMDivisor = (item?.CostingPartDetails?.RMDivisor !== null) ? item?.CostingPartDetails?.RMDivisor : 0;
   const isScrapRecoveryPercentageApplied = item?.IsScrapRecoveryPercentageApplied
   const isNFR = useContext(IsNFR);
+  const { nfrDetailsForDiscount } = useSelector(state => state.costing)
 
   const dispatch = useDispatch()
 
@@ -116,7 +119,37 @@ function RawMaterialCost(props) {
       return null
     })
     setForgingInfoIcon(temp)
-
+    let obj = {
+      nfrId: nfrDetailsForDiscount?.objectFordisc?.NfrMasterId,
+      partId: costData?.PartId,
+      vendorId: costData?.VendorId,
+      plantId: costData?.DestinationPlantId,
+      costingId: item.CostingId,
+      effectiveDate: CostingEffectiveDate,
+      technologyId: costData?.TechnologyId
+    }
+    dispatch(getRMFromNFR(obj, (res) => {
+      if (res?.data?.Result && res?.status === 200) {
+        let data = res?.data?.DataList
+        if (data?.length > 0) {
+          setDataInNFRAPI(true)
+          let tempList = data && data?.map(item => {
+            let obj = { ...item }
+            let scrapWeight = item.GrossWeight - item.FinishWeight
+            obj.RMRate = (obj.EntryType === 'Domestic') ? obj.NetLandedCost : obj.NetLandedCostConversion
+            obj.RMName = `${obj.RawMaterial} - ${obj.RMGrade}`
+            obj.NetLandedCost = calculateNetLandedCost(item.BasicRatePerUOM, item.GrossWeight, scrapWeight, item.ScrapRate)
+            // obj.FinishWeight = obj.FinishWeight
+            obj.ScrapWeight = scrapWeight
+            obj.dataFromNFRAPI = true
+            return obj
+          })
+          setGridData(tempList)
+        } else {
+          setDataInNFRAPI(false)
+        }
+      }
+    }))
     switch (costData.TechnologyName) {
       case 'Sheet Metal':
         return setGridLength(0)
@@ -294,7 +327,6 @@ function RawMaterialCost(props) {
     }
     setDrawerOpen(false)
   }
-
   const setCalculatorData = (res, index) => {
     let tempArr = []
     let tempData = gridData[index]
@@ -861,6 +893,8 @@ function RawMaterialCost(props) {
         tempData = {
           ...tempData,
           NetLandedCost: weightData.NetRM,
+          //MINDA
+          // NetLandedCost: weightData.RMPerPiece,
           WeightCalculatorRequest: weightData,
           WeightCalculationId: weightData.WeightCalculationId,
           RawMaterialCalculatorId: weightData.WeightCalculationId,
@@ -1264,7 +1298,7 @@ function RawMaterialCost(props) {
                       steps: Steps(t).RAW_MATERIAL_COST
                     }} />}
               </div>
-            </Col>
+            </Col >
             <Col md={'6'} className="btn-container">
               {!CostingViewMode && !IsLocked && gridData && isShowAddBtn() &&
 
@@ -1284,7 +1318,7 @@ function RawMaterialCost(props) {
 
 
             </Col>
-          </Row>
+          </Row >
           <form noValidate className="form" onSubmit={handleSubmit(onSubmit)}>
             {false && isNFR && <Row>
               {/*RAW MATERIAL COST GRID */}
@@ -1308,21 +1342,22 @@ function RawMaterialCost(props) {
                             <td>{item.RMCode}</td>
                             <td>{item.GrossWeight}</td>
                             <td>{item.NetWeight}</td>
-                          </tr>
+                          </tr >
                         )
                       })
                     }
-                    {dataFromAPI && dataFromAPI.length === 0 &&
+                    {
+                      dataFromAPI && dataFromAPI.length === 0 &&
                       <tr>
                         <td colSpan={11}>
                           <NoContentFound title={EMPTY_DATA} />
                         </td>
                       </tr>
                     }
-                  </tbody>
-                </Table>
-              </Col>
-            </Row>}
+                  </tbody >
+                </Table >
+              </Col >
+            </Row >}
             <Row>
               {/*RAW MATERIAL COST GRID */}
 
@@ -1395,7 +1430,7 @@ function RawMaterialCost(props) {
                                       handleGrossWeightChange(e?.target?.value, index)
                                     }}
                                     errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].GrossWeight : ''}
-                                    disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter")) ? true : false}
+                                    disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI) ? true : false}
                                   />
                                 </div>
                               </td>
@@ -1424,7 +1459,7 @@ function RawMaterialCost(props) {
                                         handleFinishWeightChange(e?.target?.value, index)
                                       }}
                                       errors={errors && errors.rmGridFields && errors.rmGridFields[index] !== undefined ? errors.rmGridFields[index].FinishWeight : ''}
-                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter")) ? true : false}
+                                      disabled={(CostingViewMode || IsLocked || isMultiCalculatorData || (!initialConfiguration?.IsCopyCostingFinishAndGrossWeightEditable && item.IsRMCopied) || (item?.RawMaterialCalculatorId && costData?.TechnologyId === MACHINING && item?.UOM === "Meter") || item?.dataFromNFRAPI) ? true : false}
                                     />
                                   </div>
                                 </td></>
@@ -1474,27 +1509,29 @@ function RawMaterialCost(props) {
                                 {index === 0 && (item.RawMaterialCalculatorId !== '' && item?.RawMaterialCalculatorId > 0) && costData?.TechnologyId === Ferrous_Casting && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`This is RMC of all RM present in alloy.`} />}
                               </div>
                             </td>
-                            {initialConfiguration.IsShowCRMHead && <td>
-                              <SearchableSelectHookForm
-                                name={`crmHeadRm${index}`}
-                                type="text"
-                                label="CRM Head"
-                                errors={`${errors.crmHeadRm}${index}`}
-                                Controller={Controller}
-                                control={control}
-                                register={register}
-                                mandatory={false}
-                                rules={{
-                                  required: false,
-                                }}
-                                defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
-                                placeholder={'Select'}
-                                options={CRMHeads}
-                                customClassName="costing-selectable-dropdown"
-                                required={false}
-                                handleChange={(e) => { onCRMHeadChange(e, index) }}
-                                disabled={CostingViewMode}
-                              /></td>}
+                            {
+                              initialConfiguration.IsShowCRMHead && <td>
+                                <SearchableSelectHookForm
+                                  name={`crmHeadRm${index}`}
+                                  type="text"
+                                  label="CRM Head"
+                                  errors={`${errors.crmHeadRm}${index}`}
+                                  Controller={Controller}
+                                  control={control}
+                                  register={register}
+                                  mandatory={false}
+                                  rules={{
+                                    required: false,
+                                  }}
+                                  defaultValue={item.RawMaterialCRMHead ? { label: item.RawMaterialCRMHead, value: index } : ''}
+                                  placeholder={'Select'}
+                                  options={CRMHeads}
+                                  customClassName="costing-selectable-dropdown"
+                                  required={false}
+                                  handleChange={(e) => { onCRMHeadChange(e, index) }}
+                                  disabled={CostingViewMode}
+                                /></td>
+                            }
                             <td>
                               <div className='action-btn-wrapper'>
                                 {!CostingViewMode && !IsLocked && (item.IsRMCopied ? (initialConfiguration.IsCopyCostingFinishAndGrossWeightEditable ? true : false) : true) && < button
@@ -1533,13 +1570,14 @@ function RawMaterialCost(props) {
                                   </Row>
 
                                 </Popup>
-                              </div>
-                            </td>
-                          </tr>
+                              </div >
+                            </td >
+                          </tr >
                         )
                       })
                     }
-                    {gridData && gridData.length === 0 &&
+                    {
+                      gridData && gridData.length === 0 &&
                       <tr>
                         <td colSpan={11}>
                           <NoContentFound title={EMPTY_DATA} />

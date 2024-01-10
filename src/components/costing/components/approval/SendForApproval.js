@@ -18,17 +18,18 @@ import "react-datepicker/dist/react-datepicker.css";
 // import PushSection from '../../../common/PushSection'
 import { debounce } from 'lodash'
 import Dropzone from 'react-dropzone-uploader'
-import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBC, VBCTypeId, ZBC, ZBCTypeId } from "../../../../config/constants";
+import { EMPTY_GUID, FILE_URL, NCC, NCCTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBC, VBCTypeId, ZBC, ZBCTypeId, RELEASESTRATEGYTYPEID6 } from "../../../../config/constants";
 import redcrossImg from "../../../../assests/images/red-cross.png";
 import VerifyImpactDrawer from '../../../simulation/components/VerifyImpactDrawer';
 import PushSection from '../../../common/PushSection'
 import LoaderCustom from '../../../common/LoaderCustom'
 import TooltipCustom from '../../../common/Tooltip'
 import { getUsersTechnologyLevelAPI } from '../../../../actions/auth/AuthActions'
-import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 import { rfqSaveBestCosting } from '../../../rfq/actions/rfq'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { transformApprovalItem } from '../../../common/CommonFunctions'
+import { costingTypeIdToApprovalTypeIdFunction } from '../../../common/CommonFunctions'
 
 
 const SEQUENCE_OF_MONTH = [9, 10, 11, 0, 1, 2, 3, 4, 5, 6, 7, 8]
@@ -44,7 +45,6 @@ const SendForApproval = (props) => {
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
   const viewApprovalData = useSelector((state) => state.costing.costingApprovalData)
   const SAPData = useSelector(state => state.approval.SAPObj)
-
 
   const partNo = useSelector((state) => state.costing.partNo)
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -70,8 +70,10 @@ const SendForApproval = (props) => {
   const [IsLimitCrossed, setIsLimitCrossed] = useState(false);
   const [tentativeCost, setTentativeCost] = useState(false);
   const [levelDetails, setLevelDetails] = useState('');
+
   const [disableRS, setDisableRS] = useState(false);
   const [isPFSOrBudgetingDetailsExistWarning, showIsPFSOrBudgetingDetailsExistWarning] = useState(false);
+  const [approvalTypeId, setApprovalTypeId] = useState('')
   // const [showDate,setDate] = useState(false)
   // const [showDate,setDate] = useState(false)
   const userData = userDetails()
@@ -165,6 +167,7 @@ const SendForApproval = (props) => {
 
 
   useEffect(() => {
+    dispatch(getReasonSelectList((res) => { }))
     dispatch(getUsersTechnologyLevelAPI(loggedInUserId(), props.technologyId, (res) => {
       setTechnologyLevelsList(res?.data?.Data)
       if (initialConfiguration.IsReleaseStrategyConfigured && !props.isRfq) {
@@ -239,6 +242,16 @@ const SendForApproval = (props) => {
 
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map((item) => {
+        const transformedText = transformApprovalItem(item);
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && !props?.isRfq) tempDropdownList.push({ label: transformedText, value: item.Value })
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && props?.isRfq) tempDropdownList.push({ label: transformedText, value: item.Value })
+        return null
+      })
+      return tempDropdownList
+    }
+
+    if (label === 'ApprovalType') {
+      approvalTypeSelectList && approvalTypeSelectList.map((item) => {
         if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
         return null
       })
@@ -253,14 +266,23 @@ const SendForApproval = (props) => {
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue.value)
     setValue('dept', '')
+    setValue('approver', '')
     userTechnology(newValue.value, technologyLevelsList)
   }
+
+
+  useEffect(() => {
+    if (approvalType.length > 0) {
+      handleDepartmentChange(getValues('dept'))
+    }
+  }, [approvalType])
 
   /**
    * @method handleDepartmentChange
    * @description  USED TO HANDLE DEPARTMENT CHANGE
    */
   const handleDepartmentChange = (newValue) => {
+
     const tempDropdownList = []
     if (newValue && newValue !== '') {
       setValue('approver', '')
@@ -452,8 +474,8 @@ const SendForApproval = (props) => {
 
         // ApproverLevelId: "4645EC79-B8C0-49E5-98D6-6779A8F69692", // approval dropdown data here
         // ApproverId: "566E7AB0-804F-403F-AE7F-E7B15A289362",// approval dropdown data here
-        tempObj.SenderLevelId = userData.LoggedInLevelId
-        tempObj.SenderLevel = userData.LoggedInLevel
+        tempObj.SenderLevelId = levelDetails.LevelId
+        tempObj.SenderLevel = levelDetails.Level
         tempObj.SenderId = userData.LoggedInUserId
         // tempObj.SenderRemark = data.remarks
         tempObj.LoggedInUserId = userData.LoggedInUserId
@@ -475,6 +497,7 @@ const SendForApproval = (props) => {
         tempObj.BudgetedPrice = data.BudgetedPrice
         tempObj.BudgetedPriceVariance = data.BudgetedPriceVariance
         tempObj.IsRFQCostingSendForApproval = props?.isRfq ? true : false
+        tempObj.ApprovalTypeId = approvalType
         temp.push(tempObj)
         return null
       })
@@ -1004,6 +1027,7 @@ const SendForApproval = (props) => {
                 {
                   // isFinalApproverShow === false ?
                   <>
+                    {/* MINDA */}
                     {/* <Row className="px-3">
                       <Col md="12">
                         <div className="left-border">{"SAP-Push Details"}</div>
@@ -1051,12 +1075,12 @@ const SendForApproval = (props) => {
                           register={register}
                           defaultValue={""}
                           options={renderDropdownListing("Dept")}
-                          disabled={disableRS || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0)}
+                          disabled={disableRS || (!(userData.Department.length > 1) || (initialConfiguration.IsReleaseStrategyConfigured && Object.keys(approvalType)?.length === 0))}
                           mandatory={true}
                           handleChange={handleDepartmentChange}
                           errors={errors.dept}
                         />
-                      </Col>
+                      </Col >
                       <Col md="6">
                         <SearchableSelectHookForm
                           label={"Approver"}
@@ -1069,8 +1093,8 @@ const SendForApproval = (props) => {
                           defaultValue={""}
                           options={approvalDropDown}
                           mandatory={true}
+                          disabled={disableRS || !(userData.Department.length > 1)}
                           customClassName={"mb-0 approver-wrapper"}
-                          disabled={disableRS}
                           handleChange={handleApproverChange}
                           errors={errors.approver}
                         />
@@ -1079,40 +1103,60 @@ const SendForApproval = (props) => {
                         }
                       </Col >
 
-                      {viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
-                        <NumberFieldHookForm
-                          label="Quantity"
-                          name={"Quantity"}
-                          Controller={Controller}
-                          control={control}
-                          register={register}
-                          mandatory={true}
-                          rules={{ required: true }}
-                          defaultValue={""}
-                          className=""
-                          customClassName={"withBorder"}
-                          handleChange={handleChangeQuantity}
-                          errors={errors.Quantity}
-                          disabled={false}
-                        />
-                      </Col>
-                        <Col md="6" className="d-flex align-items-center mb-2">
+                      {
+                        viewApprovalData && viewApprovalData[0]?.costingTypeId === NCCTypeId && <><Col md="6">
+                          <NumberFieldHookForm
+                            label="Quantity"
+                            name={"Quantity"}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={true}
+                            rules={{ required: true }}
+                            defaultValue={""}
+                            className=""
+                            customClassName={"withBorder"}
+                            handleChange={handleChangeQuantity}
+                            errors={errors.Quantity}
+                            disabled={false}
+                          />
+                        </Col>
+                          <Col md="6" className="d-flex align-items-center mb-2">
+                            <span className="d-inline-block">
+                              <label
+                                className={`custom-checkbox mb-0`}
+                                onChange={checkboxHandler}>
+                                Regularize
+                                <input
+                                  type="checkbox"
+                                />
+                                <span
+                                  className=" before-box"
+                                  onChange={checkboxHandler}
+                                />
+                              </label>
+                            </span>
+                          </Col>
+                        </>
+                      }
+
+                      {
+                        initialConfiguration.IsShowTentativeSaleRate && <Col md="6" className="d-flex align-items-center mb-3 ml-1 ">
                           <span className="d-inline-block">
                             <label
                               className={`custom-checkbox mb-0`}
-                              onChange={checkboxHandler}>
-                              Regularize
+                              onChange={tentativeCheckboxHandler}>
+                              Tentative Cost
                               <input
                                 type="checkbox"
                               />
                               <span
                                 className=" before-box"
-                                onChange={checkboxHandler}
+                                onChange={tentativeCheckboxHandler}
                               />
                             </label>
                           </span>
                         </Col>
-                      </>
                       }
 
                       {

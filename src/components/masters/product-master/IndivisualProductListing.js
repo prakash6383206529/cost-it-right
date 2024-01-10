@@ -45,7 +45,7 @@ class IndivisualProductListing extends Component {
             ActivateAccessibility: true,
             showPopup: false,
             deletedId: '',
-            
+
         }
     }
 
@@ -299,6 +299,8 @@ class IndivisualProductListing extends Component {
                 item.DrawingNumber = ' '
             } else if (item.Technology === '-') {
                 item.Technology = ' '
+            } else {
+                return false
             }
             return item
         })
@@ -373,14 +375,14 @@ class IndivisualProductListing extends Component {
                     <Col md="6" className="search-user-block pr-0">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             <div>
-
-                                <button
-                                    type="button"
-                                    className={'user-btn mr5'}
-                                    title="Add"
-                                    onClick={this.formToggle}>
-                                    <div className={'plus mr-0'}></div></button>
-
+                                {AddAccessibility && (
+                                    <button
+                                        type="button"
+                                        className={'user-btn mr5'}
+                                        title="Add"
+                                        onClick={this.formToggle}>
+                                        <div className={'plus mr-0'}></div></button>
+                                )}
                                 {BulkUploadAccessibility && (
                                     <button
                                         type="button"
@@ -418,7 +420,7 @@ class IndivisualProductListing extends Component {
                     </Col>
                 </Row>
 
-                <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.newPartsListing && this.props.newPartsListing?.length <=0 ?"overlay-contain": ""}`}>
+                <div className={`ag-grid-wrapper height-width-wrapper  ${this.props.newPartsListing && this.props.newPartsListing?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>

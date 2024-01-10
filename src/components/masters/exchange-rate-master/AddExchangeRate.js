@@ -202,7 +202,6 @@ class AddExchangeRate extends Component {
       isEditFlag: false,
     })
     this.props.hideForm(type)
-
   }
   cancelHandler = () => {
     if (this.state.isViewMode) {

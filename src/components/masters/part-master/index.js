@@ -150,6 +150,7 @@ const PartMaster = () => {
       ...prevState,
       openDrawer: true,
     }));
+    // dispatch(CreatComponentBySap(() => { }))  //MINDA
   };
 
   const handleMouse = () => {

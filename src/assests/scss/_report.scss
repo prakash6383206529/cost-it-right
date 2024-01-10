@@ -169,7 +169,7 @@
 
     // background-color: $primaryBackground;
     .seprate-box {
-        background-color: $white;
+        background-color: $primaryBackground;
         box-shadow: 0 3px 5px rgba(55, 0, 0, 0.15), 0 0px 0px rgba(0, 0, 0, 0.02);
         padding: 10px;
         margin-bottom: 20px;
@@ -218,6 +218,34 @@
                 margin-bottom: 0;
                 left: 0;
                 right: 0;
+            }
+        }
+    }
+
+    .got-report {
+        border-left: 1px solid $agGridBorder;
+    }
+
+    .got-given-header {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-weight: 500;
+        min-height: 45px;
+        font-size: 14px;
+        border: 1px solid $agGridBorder;
+        border-bottom: none;
+    }
+}
+
+.pipd-report-grid {
+    .ag-theme-material {
+        @for $i from 1 through 7 {
+
+            [row-id~="#{($i * 3) - 1}"] {
+                [col-id="Name"] {
+                    border-bottom: 1px solid $agGridBorder !important;
+                }
             }
         }
     }

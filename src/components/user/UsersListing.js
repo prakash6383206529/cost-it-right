@@ -11,7 +11,7 @@ import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
-import { loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../helper/util';
 import { GridTotalFormate } from '../common/TableGridFunctions';
@@ -334,6 +334,15 @@ class UsersListing extends Component {
 		return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
 	}
 
+	departmentFormatter = (props) => {
+		const cellValue = props?.data?.Departments
+		let temp = ''
+		cellValue && cellValue.map(dept => {
+			temp = temp + ',' + dept.DepartmentName
+		})
+		return temp.split(',')[1];
+	}
+
 	handleChange = (cell, row) => {
 
 		this.setState({ showPopup: true, row: row, cell: cell })
@@ -554,6 +563,7 @@ class UsersListing extends Component {
 			customNoRowsOverlay: NoContentFound,
 			statusButtonFormatter: this.statusButtonFormatter,
 			hyphenFormatter: this.hyphenFormatter,
+			departmentFormatter: this.departmentFormatter,
 			linkableFormatter: this.linkableFormatter
 		};
 		return (
@@ -576,6 +586,7 @@ class UsersListing extends Component {
 												component={searchableSelect}
 												placeholder={"Department"}
 												// placeholder={"Purchase Group"}						//RE
+												// placeholder={"Company"} //MINDA
 												options={this.searchableSelectType("department")}
 												//onKeyUp={(e) => this.changeItemDesc(e)}
 												//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
@@ -688,29 +699,34 @@ class UsersListing extends Component {
 								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
 								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Department"></AgGridColumn>
-								{/* <AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Purchase Group"></AgGridColumn>						//RE */}
+								{/* {getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
+								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
+								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Company"></AgGridColumn>
+								{/* //RE    */}
 								{this.props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
 								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+
 								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
 								<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-							</AgGridReact>
-							{<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+							</AgGridReact >
+							{< PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
 						</div>
-					</div>}
+					</div >}
 
-					{this.state.isOpen && (
-						<ViewUserDetails
-							UserId={this.state.UserId}
-							isOpen={this.state.isOpen}
-							editItemDetails={this.editItemDetails}
-							closeUserDetails={this.closeUserDetails}
-							EditAccessibility={EditAccessibility}
-							anchor={"right"}
-							IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
-							RFQUser={this.props.RFQUser}
-						/>
-					)}
+					{
+						this.state.isOpen && (
+							<ViewUserDetails
+								UserId={this.state.UserId}
+								isOpen={this.state.isOpen}
+								editItemDetails={this.editItemDetails}
+								closeUserDetails={this.closeUserDetails}
+								EditAccessibility={EditAccessibility}
+								anchor={"right"}
+								IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
+								RFQUser={this.props.RFQUser}
+							/>
+						)
+					}
 
 				</>
 				{

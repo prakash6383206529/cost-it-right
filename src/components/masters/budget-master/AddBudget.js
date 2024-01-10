@@ -49,6 +49,7 @@ function AddBudget(props) {
     const [tableData, setTableData] = useState([]);
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [BudgetId, setBudgetId] = useState('');
+    const [edit, setEdit] = useState(false);
     const [DataChanged, setDataChanged] = useState([]);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -96,7 +97,7 @@ function AddBudget(props) {
 
     useEffect(() => {
 
-        dispatch(getPlantSelectListByType(ZBC, "MASTER", () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
         dispatch(getCurrencySelectList(() => { }))
         dispatch(getFinancialYearSelectList(() => { }))
         dispatch(getClientSelectList((res) => { }))
@@ -669,7 +670,6 @@ function AddBudget(props) {
                 CurrencyId: currency.value,
                 Currency: currency.label,
                 ConditionsData: conditionTableData
-
             }
 
 

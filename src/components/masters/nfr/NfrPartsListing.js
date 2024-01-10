@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, FILE_URL, RFQ, } from '../../../config/constants'
+import { BOUGHTOUTPARTSPACING, COMPONENT_PART, EMPTY_DATA, FILE_URL, RAW_MATERIAL, RFQ, } from '../../../config/constants'
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import 'react-input-range/lib/css/index.css'
@@ -12,7 +12,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { checkPermission, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, checkPermission, getConfigurationKey, labelWithUOMAndCurrency, loggedInUserId, searchNocontentFilter } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import { getNfrPartDetails, nfrDetailsForDiscountAction, pushNfrRmBopOnSap } from './actions/nfr';
@@ -215,7 +215,7 @@ function NfrPartsListing(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
+        window.screen.width >= 1921 && params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
@@ -223,7 +223,7 @@ function NfrPartsListing(props) {
 
     const onPageSizeChanged = (newPageSize) => {
         gridApi.paginationSetPageSize(Number(newPageSize));
-        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        window.screen.width >= 1921 && gridApi.sizeColumnsToFit();
 
     };
 
@@ -265,6 +265,27 @@ function NfrPartsListing(props) {
     const dateFormater = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    }
+    const partTypeFormater = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null && cellValue === BOUGHTOUTPARTSPACING ? 'BOP (Standard)' : cellValue === COMPONENT_PART ? 'Component (Customized)' : cellValue === RAW_MATERIAL ? 'Raw Material' : ' -';
+    }
+
+    /**
+     * @method costFormatter
+     */
+    const costFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? checkForDecimalAndNull(cellValue, getConfigurationKey()?.NoOfDecimalForPrice) : '-';
+    }
+
+    /**
+     * @method netLandedFormatter
+     */
+    const netLandedFormatter = (props) => {
+        const row = props?.valueFormatted ? props.valueFormatted : props?.data;
+        const tempValue = `${checkForDecimalAndNull(row?.NetLandedCost, getConfigurationKey()?.NoOfDecimalForPrice)} (${row?.Currency ? row?.Currency : getConfigurationKey()?.BaseCurrency}/${row?.UOM ? row?.UOM : 'UOM'})`
+        return tempValue;
     }
 
     const viewAttachmentData = (index) => {
@@ -352,12 +373,15 @@ function NfrPartsListing(props) {
         linkableFormatter: linkableFormatter,
         attachmentFormatter: attachmentFormatter,
         statusFormatter: statusFormatter,
-        dateFormater: dateFormater
+        dateFormater: dateFormater,
+        partTypeFormater: partTypeFormater,
+        costFormatter: costFormatter,
+        netLandedFormatter: netLandedFormatter,
     }
 
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
-        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        window.screen.width >= 1921 && gridApi.sizeColumnsToFit();
         getDataList()
     }
     return (
@@ -379,8 +403,8 @@ function NfrPartsListing(props) {
 
                                             <div className={`d-flex align-items-center simulation-label-container mr-2`}>
                                                 <div className='d-flex pl-3'>
-                                                    <label>NFR Id: </label>
-                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrNumber ? rowData[0]?.NfrNumber : ''}</p>
+                                                    <label>NFR Ref. Number : </label>
+                                                    <p className='technology ml-1 nfr-id-wrapper' >{rowData && rowData[0]?.NfrRefNumber ? rowData[0]?.NfrRefNumber : ''}</p>
                                                 </div>
                                             </div>
                                             <button type="button" className={"apply ml-1"} onClick={props?.closeDrawer}> <div className={'back-icon'}></div>Back</button>
@@ -420,13 +444,14 @@ function NfrPartsListing(props) {
                                             >
                                                 {/* <AgGridColumn cellClass="has-checkbox" field="QuotationNumber" headerName='RFQ No.' cellRenderer={'linkableFormatter'} ></AgGridColumn> */}
                                                 <AgGridColumn field="Technology" headerName="Technology" width={150} cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="PartType" headerName='Part Type' maxWidth={150} cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="PartType" headerName='Part Type' width={150} cellRenderer={partTypeFormater}></AgGridColumn>
                                                 <AgGridColumn field="PartNumber" headerName='Part No.' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PartName" headerName='Part Name' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NumberOfSimulation" headerName='No. of Simulations' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="NetLandedCost" headerName='Cost/Rate' cellRenderer={hyphenFormatter}></AgGridColumn>
-                                                <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="ComponentQty" headerName='Component Quantity' cellRenderer={hyphenFormatter}></AgGridColumn>
+                                                <AgGridColumn field="NetLandedCost" headerName='Cost (Currency/UOM)' cellRenderer={netLandedFormatter}></AgGridColumn>
+                                                <AgGridColumn field="OutsourcingCost" headerName='Outsourcing Cost' cellRenderer={costFormatter}></AgGridColumn>
                                                 <AgGridColumn field="CreatedOn" headerName='Created On' cellRenderer={dateFormater}></AgGridColumn>
+                                                <AgGridColumn field="PlantName" headerName='Plant Name' cellRenderer={hyphenFormatter}></AgGridColumn>
                                                 <AgGridColumn field="PushedOn" headerName='Pushed On' cellRenderer={dateFormater}></AgGridColumn>
                                                 <AgGridColumn field="Status" tooltipField="tooltipText" headerName="Status" headerClass="justify-content-center" cellClass="text-center" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn>
                                                 {<AgGridColumn field="Status" width={180} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -469,7 +494,7 @@ function NfrPartsListing(props) {
                     />
                 )
             }
-            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrNumber} />}
+            {editPart && <AddNfr showAddNfr={editPart} nfrData={estimationData} close={close} nfrIdsList={nfrIdsList} isViewEstimation={isViewMode} changeIsFromDiscount={props?.changeIsFromDiscount} NfrNumber={rowData && rowData[0]?.NfrRefNumber} />}
             {showDrawer &&
                 <DrawerTechnologyUpdate
                     isOpen={showDrawer}

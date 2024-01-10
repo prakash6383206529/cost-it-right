@@ -831,6 +831,9 @@ function CommonApproval(props) {
                                     {/* {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>} */}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Currency" headerName="Currency"></AgGridColumn>}
 
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Currency" headerName="Currency"></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NumberOfPieces" headerName='Minimum Order Quantity'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate" cellRenderer='basicRateFormatter'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRateConversion" headerName="Basic Rate Conversion" cellRenderer='basicRateFormatter'></AgGridColumn>}
 
@@ -891,7 +894,7 @@ function CommonApproval(props) {
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
                                     {!props?.MasterId === BUDGET_ID && <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>}
-                                </AgGridReact>
+                                </AgGridReact >
                                 <div className='button-wrapper'>
                                     {!loader &&
 
@@ -910,14 +913,14 @@ function CommonApproval(props) {
                                     }
                                 </div>
 
-                            </div>
-                        </div>
+                            </div >
+                        </div >
                         <div className="text-right pb-3">
                             <WarningMessage message="It may take up to 5 minutes for the status to be updated." />
                         </div>
-                    </div>
-                </Col>
-            </Row>
+                    </div >
+                </Col >
+            </Row >
             {
                 showApprovalSumary &&
                 <SummaryDrawer
@@ -945,7 +948,7 @@ function CommonApproval(props) {
                     costingTypeId={selectedRowData[0]?.CostingTypeId}
                 />
             }
-        </div>
+        </div >
 
     );
 }

@@ -309,9 +309,10 @@ class AssemblyProductListing extends Component {
                 item.DrawingNumber = ' '
             } else if (item.Technology === '-') {
                 item.Technology = ' '
-            }
-            if (item.EffectiveDate.includes('T')) {
+            } else if (item.EffectiveDate.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
+            } else {
+                return false
             }
 
 
@@ -426,7 +427,7 @@ class AssemblyProductListing extends Component {
                         </div>
                     </Col>
                 </Row>
-                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.partsListing && this.props.partsListing?.length <=0 ?"overlay-contain": ""}`}> 
+                <div className={`ag-grid-wrapper height-width-wrapper ${this.props.partsListing && this.props.partsListing?.length <= 0 ? "overlay-contain" : ""}`}>
                     <div className="ag-grid-header">
                         <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" onChange={(e) => this.onFilterTextBoxChanged(e)} />
                     </div>

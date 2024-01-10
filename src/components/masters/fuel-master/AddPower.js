@@ -368,6 +368,7 @@ class AddPower extends Component {
             this.props.change('EffectiveDate', DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             let plantArray = Data && Data.Plants.map((item) => ({ Text: item.PlantName, Value: item.PlantId }))
 
+
             this.setState({
               isEditFlag: true,
               isLoader: false,
@@ -1974,7 +1975,7 @@ class AddPower extends Component {
                                         type="text"
                                         label="UOM"
                                         component={searchableSelect}
-                                        placeholder={'Select'}
+                                        placeholder={isViewMode ? '-' : 'Enter'}
                                         options={this.renderListing('UOM')}
                                         handleChangeDescription={this.handleUOM}
                                         valueDescription={this.state.UOM}

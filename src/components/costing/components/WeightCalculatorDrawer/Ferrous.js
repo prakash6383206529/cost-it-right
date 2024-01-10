@@ -113,19 +113,13 @@ function Ferrous(props) {
         }
     }, [fieldValues])
 
-    useEffect(() => {
-        if (Number(getValues('finishedWeight')) < Number(getValues("castingWeight"))) {
-            delete errors.finishedWeight
-            setRerender(!reRender)
-        }
-    }, [getValues('castingWeight')])
-
     const totalPercentageValue = () => {
         let sum = 0
         rmData && rmData.map((item, index) => {
             sum = sum + checkForNull(getValues(`rmGridFields.${index}.Percentage`))
             return null
         })
+        setPercentage(sum)
         return checkForDecimalAndNull(sum, getConfigurationKey().NoOfDecimalForInputOutput);
     }
 

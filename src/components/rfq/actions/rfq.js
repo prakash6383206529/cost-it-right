@@ -370,22 +370,47 @@ export function rfqGetBestCostingDetails(bestCostId, callback) {
         });
     };
 }
-export function getNfrAnnualForecastQuantity(nfrId, partId, sopDate, callback, mockResponse) {
+export function getNfrAnnualForecastQuantity(nfrId, partId, sopDate, callback) {
     return (dispatch) => {
-        if (mockResponse) {
-            // Use mocked response instead of making an API request
-            callback(mockResponse);
-        } else {
-            const request = axios.get(`${API.getNfrAnnualForecastQuantity}?nfrId=${nfrId}&partId=${partId}&sopDate=${sopDate}`, config());
-            request.then((response) => {
-                if (response?.data?.Result) {
-                    callback(response);
-                }
-            }).catch((error) => {
-                dispatch({ type: API_FAILURE });
-                apiErrors(error);
-                callback(error)
-            });
-        };
-    }
+        const request = axios.get(`${API.getNfrAnnualForecastQuantity}?nfrId=${nfrId}&partId=${partId}&sopDate=${sopDate}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+export function getNFRRMList(nfrId, partId, sopDate, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNFRRMList}?nfrId=${nfrId}&partId=${partId}&sopDate=${sopDate}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
+}
+
+export function getPartNFRRMList(nfrId, partId, callback) {
+    return (dispatch) => {
+        const request = axios.get(`${API.getNFRPartRMList}?nfrId=${nfrId}&partId=${partId}`, config());
+        request.then((response) => {
+            if (response?.data?.Result) {
+                callback(response);
+            }
+        }).catch((error) => {
+            dispatch({ type: API_FAILURE });
+            apiErrors(error);
+            callback(error)
+        });
+    };
 }

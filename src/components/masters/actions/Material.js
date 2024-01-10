@@ -993,6 +993,7 @@ export function getAllRMDataList(data, skip, take, isPagination, obj, isImport, 
                 }
                 callback(response);
             }
+            callback(response);
         }).catch((error) => {
             dispatch({ type: API_FAILURE, });
             callback(error);

@@ -4,7 +4,7 @@ import "./formInputs.scss";
 import AsyncSelect from 'react-select/async';
 import LoaderCustom from "../common/LoaderCustom";
 import { SPACEBAR } from "../../config/constants";
-import DatePicker from 'react-datepicker'
+import DatePicker, { ReactDatePicker } from 'react-datepicker'
 
 export const TextFieldHooks = (input) => {
 
@@ -710,10 +710,9 @@ export const AsyncSearchableSelectHookForm = (field) => {
 export const DateTimePickerHookForm = (field) => {
 
   const {
-    label, Controller, dateFormat, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, selected, onSelect } = field
+    label, Controller, dateFormat, control, register, name, defaultValue, mandatory, errors, rules, placeholder, handleChange, selected, onSelect, buttonCross } = field
   //const className = `form-group inputbox ${field.customClassName ? field.customClassName : ""} ${touched && error ? "has-danger" : ""}`;
-  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''}`
-  const InputClassName = `form-control ${field.className ? field.className : ''}`
+  const className = `form-group inputbox ${field.customClassName ? field.customClassName : ''} ${buttonCross ? 'cross-btn-container' : ''}`
   const isDisabled = field.disabled === true ? true : false
   let containerId = `${name}_container`;
   return (
@@ -722,49 +721,50 @@ export const DateTimePickerHookForm = (field) => {
         <label>
           {label} {mandatory && mandatory === true ? (<span className="asterisk-required">*</span>) : ("")}{" "}
         </label>
-        <Controller
-          name={name}
-          control={control}
-          rules={rules}
-          ref={register}
-          defaultValue={defaultValue}
-          render={({ onChange, onBlur, value, name }) => (
+        <div className="p-relative pr-0">
+          <Controller
+            name={name}
+            control={control}
+            rules={rules}
+            {...register}
+            defaultValue={defaultValue}
+            render={({ field: { onChange, onBlur, value, name } }) => (
 
-            // return (
-            <DatePicker
-              {...field}
-              id={name}
-              name={name}
-              value={value}
-              dateFormat={"dd/MM/yyyy HH:mm"}
-              timeFormat={'HH:mm'}
-              placeholderText={placeholder}
-              //maxDate={new Date()}
-              //minDate={new Date()}
-              showMonthDropdown
-              showYearDropdown
-              dropdownMode="select"
-              readonly="readonly"
-              onBlur={() => null}
-              selected={selected}
-              className={field.className}
-              onChange={(e) => {
-                onChange(e)
-                handleChange(e)
-                onSelect(e)
-              }}
-              autoComplete={field.autoComplete}
-              disabledKeyboardNavigation
-              disabled={isDisabled}
-            />
-            // )
-          )}
-        />
-        {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
-          : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+              // return (
+              <DatePicker
+                {...field}
+                id={name}
+                name={name}
+                value={value}
+                dateFormat={"dd/MM/yyyy HH:mm"}
+                timeFormat={'HH:mm'}
+                placeholderText={placeholder}
+                //maxDate={new Date()}
+                //minDate={new Date()}
+                showMonthDropdown
+                showYearDropdown
+                dropdownMode="select"
+                readonly="readonly"
+                onBlur={() => null}
+                selected={selected}
+                className={field.className}
+                onChange={(e) => {
+                  onChange(e)
+                  handleChange(e)
+                  onSelect(e)
+                }}
+                autoComplete={field.autoComplete}
+                disabledKeyboardNavigation
+                disabled={isDisabled}
+              />
+              // )
+            )}
+          />
+          {errors && errors.type === 'required' ? <div className="text-help">This field is required</div>
+            : errors && errors.type !== 'required' ? <div className="text-help">{(errors.message || errors.type)}</div> : ''}
+        </div>
       </div>
     </React.Fragment>
   )
 }
-
 

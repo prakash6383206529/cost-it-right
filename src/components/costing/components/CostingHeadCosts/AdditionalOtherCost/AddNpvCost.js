@@ -475,16 +475,57 @@ function AddNpvCost(props) {
                                 customClass={'underLine-title'}
                             />
                         </Col>
-                        <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />
+                        {initialConfiguration?.IsShowNpvCost && <NpvCost showAddButton={false} tableData={tableData} hideAction={costingSummary} editData={editData} />}
                     </>}
-                    {conditionTableData && conditionTableData.length !== 0 && <> <Col md="12" className={'mt25 firefox-10'}>
-                        <HeaderTitle className="border-bottom"
-                            title={'Costing Condition'}
-                            customClass={'underLine-title'}
-                        />
-                    </Col>
-                        <ConditionCosting hideAction={true} tableData={conditionTableData} />
-                    </>}
+                    {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingSummary &&
+                        <div className='firefox-spaces'>
+                            <Col md="12" className={'mt25 firefox-spaces'}>
+                                <HeaderTitle className="border-bottom firefox-spaces"
+                                    title={'Costing Condition'}
+                                    customClass={'underLine-title'}
+                                />
+                            </Col>
+                            <ConditionCosting hideAction={true} tableData={conditionTableData} />
+                        </div>}
+                    {/* {costingSummary && props?.isRfqCosting &&                       //MINDA
+                        <div className={'mt25 pb-15'}>
+                            <Col md="12" className={'mt25 pb-15'}>
+                                <HeaderTitle className="border-bottom"
+                                    title={'YOY'}
+                                    customClass={'underLine-title'}
+                                />
+                            </Col>
+                            <YOYCost
+                                outside={true}
+                                NetPOPrice={props.netPOPrice}
+                                setValue={setValue}
+                                getValues={getValues}
+                                control={control}
+                                register={register}
+                                errors={errors}
+                                activeTab={'6'}
+                                patId={partId}
+                                vendorId={vendorId}
+                                hideAddButton={true}
+                            />
+                        </div>} */}
+                    {!costingSummary && <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between mx-0">
+                        <div className="col-sm-12 text-left bluefooter-butn d-flex justify-content-end">
+                            <button
+                                type={'button'}
+                                className="reset cancel-btn mr5"
+                                onClick={cancel} >
+                                <div className={'cancel-icon'}></div> {'Cancel'}
+                            </button>
+                            <button
+                                type={'button'}
+                                className="submit-button save-btn"
+                                onClick={() => { props.closeDrawer('save', tableData) }} >
+                                <div className={"save-icon"}></div>
+                                {'Save'}
+                            </button>
+                        </div>
+                    </Row>}
                 </>}
         </div >
 

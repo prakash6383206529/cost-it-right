@@ -10,6 +10,7 @@ import { useEffect } from 'react';
 import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABILITY_RM_SIMULATION } from '../../../config/masterData';
 import { BOPDOMESTIC, BOPIMPORT, EXCHNAGERATE, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, COMBINED_PROCESS } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
+import RejectedCostingSummaryTable from '../../costing/components/RejectedCostingSummaryTable';
 
 
 

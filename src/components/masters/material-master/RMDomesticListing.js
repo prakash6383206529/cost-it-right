@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { deleteRawMaterialAPI, getAllRMDataList, } from '../actions/Material';
+import { deleteRawMaterialAPI, getAllRMDataList } from '../actions/Material';
 import { loggedInUserId, userDepartmetList } from "../../../helper/auth"
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
@@ -189,6 +189,7 @@ function RMDomesticListing(props) {
             technologyId: isSimulation ? props.technology : technologyId,
             net_landed_min_range: value.min,
             net_landed_max_range: value.max,
+            departmentCode: isSimulation ? userDepartmetList() : "",
             statusId: CheckApprovalApplicableMaster(RM_MASTER_ID) ? APPROVAL_ID : 0,
             ListFor: ListFor,
             StatusId: statusString
@@ -389,8 +390,8 @@ function RMDomesticListing(props) {
     };
 
     /**
-    * @method editItemDetails
-    * @description edit material type
+    * @method viewOrEditItemDetails
+    * @description edit or view material type
     */
     const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
 
@@ -457,7 +458,6 @@ function RMDomesticListing(props) {
         } else {
             isEditbale = false
         }
-
 
         if (DeleteAccessibility && !rowData.IsRMAssociated) {
             isDeleteButton = true
@@ -541,6 +541,8 @@ function RMDomesticListing(props) {
         // CHANGE IN STATUS IN AFTER KAMAL SIR API
         return <div className={row.Status}>{row.DisplayStatus}</div>
     }
+
+
 
     /**
     * @method commonCostFormatter

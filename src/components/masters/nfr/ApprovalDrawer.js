@@ -20,7 +20,7 @@ import LoaderCustom from '../../common/LoaderCustom';
 
 
 const ApprovalDrawer = (props) => {
-    const { rowData, technologyId, partData, nfrData, type, levelDetails, isFinalLevelUser } = props
+    const { rowData, technologyId, partData, nfrData, type, levelDetails, isFinalLevelUser, nfrPartDetail } = props
     const { register, setValue, getValues, control, formState: { errors }, } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -69,6 +69,8 @@ const ApprovalDrawer = (props) => {
         obj.DepartmentId = userDetails().DepartmentId
         obj.UserId = loggedInUserId()
         obj.TechnologyId = nfrData?.TechnologyId
+        //MINDA
+        // obj.TechnologyId = technologyId
         obj.Mode = 'costing'
         obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
         dispatch(checkFinalUser(obj, (res) => {
@@ -78,6 +80,11 @@ const ApprovalDrawer = (props) => {
                         setIsDisable(true)
                         setEditWarning(true)
                         setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                        //MINDA
+                        // if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                        //     setIsDisable(true)
+                        //     setEditWarning(true)
+                        //     setFilterStatus('This user is not in the approval cycle')
                     } else {
                         setIsDisable(false)
                         setEditWarning(false)
@@ -177,6 +184,8 @@ const ApprovalDrawer = (props) => {
                 obj.DepartmentId = userDetails().DepartmentId
                 obj.UserId = loggedInUserId()
                 obj.TechnologyId = nfrData?.TechnologyId
+                //MINDA
+                // obj.TechnologyId = technologyId
                 obj.Mode = 'costing'
                 obj.approvalTypeId = costingTypeIdToApprovalTypeIdFunction(NFRTypeId)
                 dispatch(checkFinalUser(obj, (res) => {
@@ -185,6 +194,11 @@ const ApprovalDrawer = (props) => {
                             setIsDisable(true)
                             setEditWarning(true)
                             setFilterStatus("You are a final level user and cannot send NFR for approval.")
+                            //MINDA
+                            // if (res?.data?.Data?.IsUserInApprovalFlow === false) {
+                            //     setIsDisable(true)
+                            //     setEditWarning(true)
+                            //     setFilterStatus('This user is not in the approval cycle')
                         } else {
                             setIsDisable(false)
                             setEditWarning(false)
@@ -263,6 +277,8 @@ const ApprovalDrawer = (props) => {
                     obj = {
                         "ApprovalProcessId": "00000000-0000-0000-0000-000000000000",
                         "PlantId": initialConfiguration?.DefaultPlantId,
+                        //MINDA
+                        // "PlantId": nfrPartDetail?.PlantId,
                         "PartId": partData?.PartId,
                         "VendorId": item?.value,
                         "CostingId": item?.SelectedCostingVersion?.CostingId,
@@ -387,12 +403,12 @@ const ApprovalDrawer = (props) => {
                                 <Table className='table cr-brdr-main'>
                                     <thead>
                                         <tr>
-                                            <th>{"Vendor"}</th>
-                                            <th>{"Plant"}</th>
+                                            <th>{"Vendor (Code)"}</th>
+                                            <th>{"Plant (Code)"}</th>
                                             <th>{"Costing"}</th>
                                             <th>{"Net PO"}</th>
-                                        </tr>
-                                    </thead>
+                                        </tr >
+                                    </thead >
                                     <tbody>
 
                                         {gridData && gridData?.map((data, index) => {
@@ -400,17 +416,21 @@ const ApprovalDrawer = (props) => {
                                                 <tr key={index}>
                                                     <td>{data.vendor}</td>
                                                     <td>{data.PlantName}</td>
+                                                    {/* MINDA */}
+                                                    {/* <td>{`${nfrPartDetail.PlantName} (${nfrPartDetail.PlantCode})`}</td> */}
                                                     <td>{data.CostingNumber}</td>
                                                     <td>{data.Price}</td>
-                                                </tr>
+                                                </tr >
                                             )
                                         })}
-                                        {props.data && props.data.length === 0 && <tr>
-                                            <td colSpan={4}><NoContentFound title={EMPTY_DATA} /></td>
-                                        </tr>}
-                                    </tbody>
-                                </Table>
-                            </Col>}
+                                        {
+                                            props.data && props.data.length === 0 && <tr>
+                                                <td colSpan={4}><NoContentFound title={EMPTY_DATA} /></td>
+                                            </tr>
+                                        }
+                                    </tbody >
+                                </Table >
+                            </Col >}
                             <Col md="12">
                                 <TextAreaHookForm
                                     label="Remarks"
@@ -453,7 +473,7 @@ const ApprovalDrawer = (props) => {
                                     {"Submit"}
                                 </button>
                             </Col>
-                        </Row>
+                        </Row >
                         <div>
                             {editWarning && <WarningMessage dClass="mr-3" message={filterStatus} />}
                         </div>

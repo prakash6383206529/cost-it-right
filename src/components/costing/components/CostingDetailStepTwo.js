@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, Table } from 'reactstrap';
 import {
@@ -10,13 +10,15 @@ import DayTime from '../../common/DayTimeWrapper'
 import CostingHeadTabs from './CostingHeaderTabs/index';
 import LoaderCustom from '../../common/LoaderCustom';
 import { useContext } from 'react';
-import { ViewCostingContext, CostingTypeContext, IsPartType } from './CostingDetails';
+import { ViewCostingContext, CostingTypeContext, IsPartType, IsNFR } from './CostingDetails';
 import { createToprowObjAndSave } from '../CostingUtil';
 import _ from 'lodash'
 import { IdForMultiTechnology } from '../../../config/masterData';
-import { CBCTypeId, NCCTypeId, NFRTypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../config/constants';
+import { CBCTypeId, NCC, NCCTypeId, NFRTypeId, PFS1TypeId, PFS2TypeId, PFS3TypeId, VBCTypeId, WACTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../config/masterData';
+import { Redirect } from 'react-router';
+import { setOpenAllTabs } from '../../masters/nfr/actions/nfr';
 
 export const costingInfoContext = React.createContext()
 export const netHeadCostContext = React.createContext()
@@ -40,6 +42,8 @@ function CostingDetailStepTwo(props) {
   }, []);
 
   const CostingViewMode = useContext(ViewCostingContext);
+  const costingType = useContext(CostingTypeContext);
+  const [nfrListing, setNfrListing] = useState(false)
   const isPartType = useContext(IsPartType);
 
 
@@ -48,6 +52,7 @@ function CostingDetailStepTwo(props) {
     DiscountCostData, partNo, IsToolCostApplicable, showLoading, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData,
     PackageAndFreightTabData, ToolTabData, CostingEffectiveDate, breakupBOP } = useSelector(state => state.costing)
   const partType = (IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || (costingData.CostingTypeId === WACTypeId))
+  const isNFR = useContext(IsNFR);
 
 
   useEffect(() => {
@@ -67,6 +72,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         //CONDITION FOR OVERALL & PROCESS WISE TOOL COST.
@@ -111,6 +117,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
@@ -184,6 +191,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         OverAllCost =
@@ -218,7 +226,7 @@ function CostingDetailStepTwo(props) {
       setTimeout(() => {
         let DataList = CostingDataList;
         let tempData = CostingDataList && CostingDataList[headerIndex];
-
+        if (tempData === undefined) return false
         let OverAllCost = 0;
         if (tempData && tempData !== undefined) {
           const ApplyCost = IsToolCostApplicable ? checkForNull(tempData?.ToolCost) : checkForNull(data?.ToolCost);
@@ -319,6 +327,7 @@ function CostingDetailStepTwo(props) {
 
       let DataList = CostingDataList;
       let tempData = CostingDataList && CostingDataList[headerIndex];
+      if (tempData === undefined) return false
       let OverAllCost = 0;
       if (tempData && tempData !== undefined) {
         //SUM OF ALL TAB EXCEPT DISCOUNT TAB
@@ -336,7 +345,7 @@ function CostingDetailStepTwo(props) {
         const discountedCost = data.DiscountCostType === 'Percentage' ? checkForNull(findApplicabilityCost(data, data?.DiscountApplicability, headerCostData, CostingData, data?.HundiOrDiscountPercentage)) : data.DiscountsAndOtherCost;
 
         const discountValues = {
-          BasicRateINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
+          BasicRateINR: checkForNull(SumOfTab) - checkForNull(discountedCost) + checkForNull(data?.AnyOtherCost),
           NetPOPriceINR: checkForNull(SumOfTab - discountedCost) + checkForNull(data?.AnyOtherCost),
           HundiOrDiscountValue: checkForNull(discountedCost),
           AnyOtherCost: checkForNull(data.AnyOtherCost),
@@ -385,45 +394,64 @@ function CostingDetailStepTwo(props) {
   }
 
   const handleBackButton = () => {
-    if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false && !partType) {
-      let tempArrForCosting = reactLocalStorage.getObject('costingArray')
-      const data = _.find(tempArrForCosting, ['IsPartLocked', true])
-      const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
-      const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
-      const tabData = RMCCTabData[0]
-      const surfaceTabData = SurfaceTabData[0]
-      const overHeadAndProfitTabData = OverheadProfitTabData[0]
-      const discountAndOtherTabData = DiscountCostData
-      if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate, '', '', isPartType)
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+    if (isNFR) {
+      reactLocalStorage.setObject('isFromDiscountObj', true)
+      setNfrListing(true)
+    } else {
+      if (RMCCTabData && RMCCTabData.length > 0 && CostingViewMode === false && !partType) {
+        let tempArrForCosting = reactLocalStorage.getObject('costingArray')
+        const data = _.find(tempArrForCosting, ['IsPartLocked', true])
+        const bopData = _.find(tempArrForCosting, ['PartType', 'BOP'])
+        const lockedData = _.find(tempArrForCosting, ['IsLocked', true])
+        const tabData = RMCCTabData[0]
+        const surfaceTabData = SurfaceTabData[0]
+        const overHeadAndProfitTabData = OverheadProfitTabData[0]
+        const discountAndOtherTabData = DiscountCostData
+        if (data !== undefined || bopData !== undefined || lockedData !== undefined) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 1, CostingEffectiveDate)
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        }
+        let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
+        const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
+        const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
+        if (surfaceData !== undefined || surfaceLockedData !== undefined) {
+          let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType)
+          dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
+        }
       }
-      let surfaceArrForCosting = reactLocalStorage.getObject('surfaceCostingArray')
-      const surfaceData = _.find(surfaceArrForCosting, ['IsPartLocked', true])
-      const surfaceLockedData = _.find(surfaceArrForCosting, ['IsLocked', true])
-      if (surfaceData !== undefined || surfaceLockedData !== undefined) {
-        let assemblyRequestedData = createToprowObjAndSave(tabData, surfaceTabData, PackageAndFreightTabData, overHeadAndProfitTabData, ToolTabData, discountAndOtherTabData, NetPOPrice, getAssemBOPCharge, 2, CostingEffectiveDate, '', '', isPartType)
-        dispatch(saveAssemblyPartRowCostingCalculation(assemblyRequestedData, res => { }))
-      }
+      dispatch(savePartNumber(''))
+      dispatch(setPartNumberArrayAPICALL([]))
+      dispatch(saveBOMLevel(''))
+      dispatch(saveAssemblyNumber([]))
+      dispatch(setRMCCErrors({}))
+      dispatch(setOverheadProfitErrors({}))
+      dispatch(setToolsErrors({}))
+      dispatch(setDiscountErrors({}))
+      dispatch(setComponentDiscountOtherItemData({}, () => { }))
+      dispatch(isDiscountDataChange(false))
+      dispatch(setOpenAllTabs(false))
+      dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
+      dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
+      props.backBtn()
     }
-    dispatch(savePartNumber(''))
-    dispatch(setPartNumberArrayAPICALL([]))
-    dispatch(saveBOMLevel(''))
-    dispatch(saveAssemblyNumber([]))
-    dispatch(setRMCCErrors({}))
-    dispatch(setOverheadProfitErrors({}))
-    dispatch(setToolsErrors({}))
-    dispatch(setDiscountErrors({}))
-    dispatch(setComponentDiscountOtherItemData({}, () => { }))
-    dispatch(isDiscountDataChange(false))
-    dispatch(setIsBreakupBoughtOutPartCostingFromAPI(false))
-    dispatch(setOtherCostData({ gridData: [], otherCostTotal: 0 }))
-    props.backBtn()
   }
+
+  if (nfrListing === true) {
+
+    return <Redirect
+      to={{
+        pathname: "/nfr",
+        state: {
+        }
+
+      }}
+    />
+  }
+
   return (
     <>
       {showLoading && <LoaderCustom customClass={'costing-loader'} />}
-      <div className="login-container signup-form">
+      {!nfrListing && <div className="login-container signup-form">
         <Row>
           <Col md="12">
             <div className="shadow-lgg login-formg">
@@ -444,12 +472,24 @@ function CostingDetailStepTwo(props) {
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Technology:</span><span className="dark-blue"> {costingData.TechnologyName}</span></p></div></td>
                       <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Part Name:</span><span className="dark-blue" title={costingData.PartName}> {costingData.PartName}</span></p></div></td>
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Revision No:</span><span className="dark-blue"> {costingData.RevisionNumber !== null ? costingData.RevisionNumber : '-'}</span></p></div></td>
-                      {(costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Vendor (Code):</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}`}</span></p></div></td>}
+
+                      {
+                        (costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId ||
+                          costingData.CostingTypeId === PFS1TypeId || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Vendor (Code):</span><span className="dark-blue" title={costingData.VendorName}> {`${costingData.VendorName}`}</span></p></div></td>
+                      }
+
                       {costingData.CostingTypeId === CBCTypeId && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Customer (Code):</span><span className="dark-blue" title={costingData.Customer}> {`${costingData.Customer}`}</span></p></div></td>}
-                      {((costingData.CostingTypeId === VBCTypeId && initialConfiguration?.IsDestinationPlantConfigure) || (costingData.CostingTypeId === CBCTypeId) || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Destination Plant (Code):</span><span className="dark-blue " title={costingData.DestinationPlantName}> {`${costingData.DestinationPlantName}`}</span></p></div></td>}
-                      {(costingData.CostingTypeId === ZBCTypeId || costingData.CostingTypeId === WACTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant (Code):</span><span className="dark-blue "
-                        title={`${costingData.PlantName}(${costingData.PlantCode})`}>
-                        {`${costingData.PlantName}`}</span></p></div></td>}
+
+                      {
+                        (((costingData.CostingTypeId === VBCTypeId || costingData.CostingTypeId === PFS1TypeId
+                          || costingData.CostingTypeId === PFS2TypeId || costingData.CostingTypeId === PFS3TypeId) && initialConfiguration?.IsDestinationPlantConfigure) || (costingData.CostingTypeId === CBCTypeId) || costingData.CostingTypeId === NCCTypeId || costingData.CostingTypeId === NFRTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Destination Plant (Code):</span><span className="dark-blue " title={costingData.DestinationPlantName}> {`${costingData.DestinationPlantName}`}</span></p></div></td>
+                      }
+
+                      {
+                        (costingData.CostingTypeId === ZBCTypeId || costingData.CostingTypeId === WACTypeId) && <td><div className={'part-info-title costing-head-overflow'}><p><span className="cr-tbl-label">Plant (Code):</span><span className="dark-blue "
+                          title={`${costingData.PlantName}(${costingData.PlantCode})`}>
+                          {`${costingData.PlantName}`}</span></p></div></td>
+                      }
 
                       {costingData.CostingTypeId !== NCCTypeId && < td > <div className={'part-info-title'}><p><span className="cr-tbl-label">SOB:</span><span className="dark-blue"> {costingData.ShareOfBusinessPercent ?? 0}%</span></p></div></td>}
                       <td><div className={'part-info-title'}><p><span className="cr-tbl-label">Costing Version:</span><span className="dark-blue"> {`${DayTime(costingData.CreatedDate).format('DD/MM/YYYY')}-${costingData.CostingNumber}`}</span></p></div></td>
@@ -555,7 +595,7 @@ function CostingDetailStepTwo(props) {
             </div >
           </Col >
         </Row >
-      </div >
+      </div >}
     </>
   );
 };

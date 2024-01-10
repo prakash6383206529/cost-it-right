@@ -7,7 +7,7 @@ import dashboardImg from '../../assests/images/dashboard-img.png';
 import classnames from 'classnames';
 import { CheckApprovalApplicableMaster, getConfigurationKey } from "../../helper";
 import { checkPermission } from "../../helper/util";
-import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, GUIDE_BUTTON_SHOW, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
+import { ADDITIONAL_MASTERS, BOP, BOP_MASTER_ID, COSTING, MACHINE, MACHINE_MASTER_ID, MASTERS, OPERATION, OPERATIONS_ID, RAW_MATERIAL, RM_MASTER_ID, SIMULATION } from "../../config/constants";
 import CalculatorWrapper from "../common/Calculator/CalculatorWrapper";
 import { setSelectedRowForPagination } from "../simulation/actions/Simulation";
 import Tabs from "./Tabs";

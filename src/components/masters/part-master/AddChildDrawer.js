@@ -123,7 +123,7 @@ class AddChildDrawer extends Component {
                                                 checked={childType === BOUGHTOUTPARTSPACING ? true : false}
                                                 onClick={() => this.checkRadio(BOUGHTOUTPARTSPACING)}
                                             />{' '}
-                                            <span>Bought Out Part</span>
+                                            <span>Insert</span>
                                         </Label>
                                     </Col>
                                 </Row>

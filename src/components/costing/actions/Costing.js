@@ -448,6 +448,9 @@ export function getRMCCTabData(data, IsUseReducer, callback) {
  * @description SET RMCC TAB DATA  
  */
 export function setRMCCData(TabData, callback) {
+
+
+
   return (dispatch) => {
     dispatch({
       type: SET_RMCC_TAB_DATA,
@@ -2546,6 +2549,23 @@ export function setOtherCostData(data) {
   }
 };
 
+
+export function getCostingLabourDetails(data, callback) {
+  return (dispatch) => {
+    const queryParams = `costingId=${data}`
+    const request = axios.get(`${API.getCostingLabourDetails}?${queryParams}`, config())
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      }
+    }).catch((error) => {
+      callback(error)
+      dispatch({ type: API_FAILURE })
+      apiErrors(error)
+    })
+  }
+}
+
 /**
  * @method setYOYCostGrid
  * @description setYOYCostGrid
@@ -2587,7 +2607,6 @@ export function getYOYCostList(data, callback) {
   }
 }
 
-
 export function saveCostingLabourDetails(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.saveCostingLabourDetails, data, config())
@@ -2602,10 +2621,10 @@ export function saveCostingLabourDetails(data, callback) {
   }
 }
 
-export function getCostingLabourDetails(data, callback) {
+
+export function createPFS2Costing(data, callback) {
   return (dispatch) => {
-    const queryParams = `costingId=${data}`
-    const request = axios.get(`${API.getCostingLabourDetails}?${queryParams}`, config())
+    const request = axios.post(API.createPFS2Costing, data, config())
     request.then((response) => {
       if (response.data.Result) {
         callback(response)
@@ -2732,6 +2751,23 @@ export function getReleaseStrategyApprovalDetails(data, callback) {
       dispatch({ type: API_FAILURE })
       apiErrors(error)
     })
+  }
+}
+//MINDA
+/**
+ * @method updateZBCSOBDetail
+ * @description UPDATE ZBC SOB DETAILS
+ */
+export function updateCostingIdFromRfqToNfrPfs(requestData, callback) {
+  return (dispatch) => {
+    dispatch({ type: API_REQUEST })
+    axios.post(`${API.updateCostingIdFromRfqToNfrPfs}`, requestData, config())
+      .then((response) => {
+        callback(response)
+      }).catch((error) => {
+        apiErrors(error)
+        dispatch({ type: API_FAILURE })
+      })
   }
 }
 

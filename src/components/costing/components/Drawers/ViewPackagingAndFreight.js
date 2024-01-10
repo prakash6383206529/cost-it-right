@@ -55,10 +55,10 @@ function ViewPackagingAndFreight(props) {
                       <td>
                         {item.PackagingDescription ? item.PackagingDescription : '-'}
                       </td>
-                      <td>{item.Applicability ? item.Applicability : '-'}</td>
-                      <td>
+                      {!isLogisticsTechnology && <td>{item.Applicability ? item.Applicability : '-'}</td>}
+                      {!isLogisticsTechnology && <td>
                         {item.IsPackagingCostFixed && item.IsPackagingCostFixed ? item.PackagingCostPercentage : 'Fixed'}
-                      </td>
+                      </td>}
                       <td>
                         {item.PackagingCost ? checkForDecimalAndNull(item.PackagingCost, initialConfiguration.NoOfDecimalForPrice) : '-'}
                       </td>

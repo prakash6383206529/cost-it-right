@@ -381,8 +381,8 @@ function RMImportListing(props) {
 
 
   /**
-  * @method editItemDetails
-  * @description edit material type
+  * @method viewOrEditItemDetails
+  * @description edit or view material type
   */
   const viewOrEditItemDetails = (Id, rowData = {}, isViewMode) => {
     let data = {

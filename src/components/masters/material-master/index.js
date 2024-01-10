@@ -263,6 +263,8 @@ function RowMaterialMaster(props) {
                                                 stopApiCallOnCancel={stopApiCallOnCancel}
                                                 selectionForListingMasterAPI='Master'
                                                 approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                            //MINDA
+                                            // approvalStatus={APPROVED_STATUS_MASTER}
                                             />
                                         </TabPane>}
 
@@ -281,6 +283,8 @@ function RowMaterialMaster(props) {
                                                 stopApiCallOnCancel={stopApiCallOnCancel}
                                                 selectionForListingMasterAPI='Master'
                                                 approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                            //MINDA
+                                            // approvalStatus={APPROVED_STATUS_MASTER}
                                             />
                                         </TabPane>}
 

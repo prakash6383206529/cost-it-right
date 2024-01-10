@@ -116,6 +116,7 @@ export const API = {
   checkStatusCodeAPI: `${BASE_URL}/masters-part/check-status-code`,
   productComponentBulkUpload: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   checkRFQBulkUpload: `${BASE_URL}/rfq-quotation/check-valid-part-via-bulk-upload`,
+  CreatComponentBySap: `${BASE_URL}/sap-sync/create-component-by-sap`,
   updateMultiplecomponentTechnology: `${BASE_URL}/masters-part/update-technology-for-multiple-component`,
 
   // PRODUCT MASTER 
@@ -124,6 +125,7 @@ export const API = {
   createProduct: `${BASE_URL}/masters-product/create`,
   updateProduct: `${BASE_URL}/masters-product/update`,
   deleteProduct: `${BASE_URL}/masters-product/delete/productid/loggedinuserid`,
+  // deleteProduct: `${BASE_URL}/masters-product/delete`, // MINDA
   productAttachment: `${BASE_URL}/masters-product/product-file-upload`,
   bulkUploadProduct: `${BASE_URL}/masters-product/bulk-upload-for-product-json`,
   productGroupSelectList: `${BASE_URL}/masters-product/select-list-get-product-group-code`,
@@ -936,6 +938,7 @@ export const API = {
   getApprovalSimulatedCostingSummary: `${BASE_URL}/app-simulation-approval-system/get-approval-simulated-costing-summary`,
   deleteDraftSimulation: `${BASE_URL}/simulation/delete-draft-simulation`,
   getAmmendentStatus: `${BASE_URL}/sap-integration/get-ammendent-status`,          						//RE
+  // getAmmendentStatus: `${BASE_URL}/sap-sync/get-ammendent-status`, //MINDA
   draftExchangeRateSimulation: `${BASE_URL}/simulation/draft-simulation-exchange-rate`,
   getverifyExchangeSimulationList: `${BASE_URL}/simulation/get-all-exchange-rate-impacted-simulation-costings`,
   runSimulationOnSelectedExchangeCosting: `${BASE_URL}/simulation/run-simulation-on-exchange-rate-costing`,
@@ -1009,10 +1012,15 @@ export const API = {
   getCostingBenchMarkRmReport: `${BASE_URL}/reports/get-rawmaterial-cost-benchmarking-report`,
   getCostingBenchMarkBopReport: `${BASE_URL}/reports/get-bop-cost-benchmarking-report`,
   getCostMovementReport: `${BASE_URL}/reports/get-cost-movement-report-by-master`,
-  getCostRatioReport: `${BASE_URL}/reports/get-cost-ratio-report`,
   getRevisionNoFromPartId: `${BASE_URL}/masters-part/select-list-revision-number-by-part-id`,
-
   getCostMovementReportByPart: `${BASE_URL}/reports/get-cost-movement-report-by-part`,
+  getCostRatioReport: `${BASE_URL}/reports/get-cost-ratio-report`,
+  getNfrInsightsDetails: `${BASE_URL}/reports/get-nfr-insights-details`,
+  getNfrInsightsStatusDetails: `${BASE_URL}/reports/get-nfr-insights-status-details`,
+
+  //RFQ
+  getQuotationList: `${BASE_URL}/rfq-quotation/get-quotation-list`,
+  createRfqQuotation: `${BASE_URL}/rfq-quotation/create`,
   getCostingBenchMarkOperationReport: `${BASE_URL}/reports/get-operation-cost-benchmarking-report`,
   getSupplierContributionData: `${BASE_URL}/reports/get-supplier-contribution-report`,
   getCostingBenchMarkMachineReport: `${BASE_URL}/reports/get-process-cost-benchmarking-report`,
@@ -1032,10 +1040,23 @@ export const API = {
   getNFRApprovals: `${BASE_URL}/nfr/get-nfr-approvals`,
   getNFRApprovalSummary: `${BASE_URL}/nfr/get-nfr-approval-summary`,
   approvedCostingByApprover: `${BASE_URL}/nfr/approved-nfr-by-approver`,
-  getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
+
+  //MINDA
+  // pushNfrOnSap: `${BASE_URL}/nfr/push-nfr-on-sap`,
+  // getSapnfrData: `${BASE_URL}/nfr/get-sap-nfr-data`,
+  // createPFS2Costing: `${BASE_URL}/nfr/create-pfs2-costing`,
+  // getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
+  // saveNFRCostingInfo: `${BASE_URL}/nfr/save-nfr-costing-info`,
+  // saveOutsourcingData: `${BASE_URL}/nfr/save-nfr-costing-outsorcing-details`,
+  // getNFRCostingOutsourcingDetails: `${BASE_URL}/nfr/get-nfr-costing-outsorcing-details`,
+  // getRMFromNFR: `${BASE_URL}/nfr/get-nfr-part-wise-raw-materials`,
+  // pushNfrRmBopOnSap: `${BASE_URL}/nfr/push-nfr-rm-bop-on-sap`,
+
   getRawMaterialByNFRPart: `${BASE_URL}/nfr/get-raw-material-by-nfr-part`,
+  getGotAndGivenDetails: `${BASE_URL}/reports/get-got-and-given-details`,
   getCostingGotAndGivenDetails: `${BASE_URL}/reports/get-head-wise-costing-got-and-given-details`,
   getPlantWiseGotAndGivenDetails: `${BASE_URL}/reports/get-plant-head-wise-details`,
+
   getProductlist: `${BASE_URL}/reports/get-product-list`,
   getProductPartDataList: `${BASE_URL}/reports/get-product-parts-list`,
   getStageOfPartDetails: `${BASE_URL}/reports/get-stage-of-parts-details`,
@@ -1044,7 +1065,7 @@ export const API = {
   getProductRolloutCostRatio: `${BASE_URL}/reports/get-cost-ratio-details`,
   getUsageRmDetails: `${BASE_URL}/reports/get-usage-rm-details`,
   getSupplierContributionDetails: `${BASE_URL}/reports/get-supplier-contribution-details`,
-
+  // updateCostingIdFromRfqToNfrPfs: `${BASE_URL}/nfr/update-costingId-from-rfq-to-nfr-pfs`,//MINDA
 
   //SUB ASSEMBLY
   getSubAssemblyAPI: `${BASE_URL}/sub-assembly/get-sub-assembly`,
@@ -1074,6 +1095,16 @@ export const API = {
   // NFR
   getNfrSelectList: `${BASE_URL}/rfq-quotation/select-list-get-nfr`,
   getNfrAnnualForecastQuantity: `${BASE_URL}/rfq-quotation/get-nfr-annual-forecast-quantity`,
+  //MINDA
+  // getNFRRMList: `${BASE_URL}/rfq-quotation/get-nfr-rm-list`,
+  // getNFRPartRMList: `${BASE_URL}/rfq-quotation/get-nfr-part-raw-material-details`,
+  // // SAP PUSH Detail
+  // saveSAPDetail: `${BASE_URL}/sap-sync/save-sap-push-details`,
+  // updateSAPDetail: `${BASE_URL}/sap-sync/update-sap-push-details`,
+  // getPurcahseOrganisationByPlant: `${BASE_URL}/sap-sync/get-purchase-organization-by-plant-id`,
+  // getMaterialGroupByPart: `${BASE_URL}/sap-sync/get-material-group-by-part-id`,
+  // getAllSAPPushDetail: `${BASE_URL}/sap-sync/get-all-sap-push-details`,
+  // getSAPDetailById: `${BASE_URL}/sap-sync/get-sap-push-details-by-id`
 }
 
 //Api constants
@@ -1539,8 +1570,8 @@ export const SET_SURFACE_COST_FOR_REJECTION_DATA = 'SET_SURFACE_COST_FOR_REJECTI
 export const SET_OVERHEAD_PROFIT_ERRORS = 'SET_OVERHEAD_PROFIT_ERRORS'
 export const SET_TOOLS_ERRORS = 'SET_TOOLS_ERRORS'
 export const SET_DISCOUNT_ERRORS = 'SET_DISCOUNT_ERRORS'
-export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
 export const SET_REJECTED_COSTING_VIEW_DATA = 'SET_REJECTED_COSTING_VIEW_DATA';
+export const RESET_EXCHANGE_RATE_DATA = 'RESET_EXCHANGE_RATE_DATA'
 export const SET_CALL_ST_API = 'SET_CALL_ST_API';
 
 // YOY
@@ -1759,6 +1790,9 @@ export const GET_DATA_FROM_REPORT = 'GET_DATA_FROM_REPORT'
 export const GET_PRODUCT_LIST = 'GET_PRODUCT_LIST'
 export const GET_PRODUCT_PART_DATA_LIST = 'GET_PRODUCT_PART_DATA_LIST'
 export const GET_STAGE_OF_PART_DETAILS = 'GET_STAGE_OF_PART_DETAILS'
+//MINDA
+export const GET_NFR_INSIGHT_DETAILS = 'GET_NFR_INSIGHT_DETAILS'
+export const GET_NFR_INSIGHT_STATUS_DETAILS = 'GET_NFR_INSIGHT_STATUS_DETAILS'
 
 //RFQ CONSTANTS
 export const GET_QUOTATION_BY_ID = 'GET_QUOTATION_BY_ID'
@@ -1805,6 +1839,7 @@ export const AWAITING_APPROVAL_ID = 6
 export const APPROVED_STATUS = '3'
 export const APPROVAL_CYCLE_STATUS_MASTER = '3,5'
 export const NON_APPROVAL_CYCLE_STATUS_MASTER = '3,5,1'
+// export const APPROVED_STATUS_MASTER = '3,5' //MINDA
 
 //DECIMAL VALUES FOR PRICE
 export const TWO_DECIMAL_PRICE = 2
@@ -1888,6 +1923,7 @@ export const SALES_PROVISION_FILE_NAME = 'Sales Provision Report'
 export const PURCHASE_PROVISION_FILE_NAME = 'Purchase Provision Report'
 export const SALES_PROVISION_REPORT = 'Sales Provision Report'          						//RE
 // export const PURCHASE_PROVISION_REPORT = 'Purchase Provision Report'          						//RE
+export const MASTER_COST_MOVEMENT_REPORT = 'Master Cost Movement'
 export const CUSTOMER_POAM_SUMMARY_REPORT = 'Customer Poam Summary Report'
 export const MASTER_MOVEMENT_REPORT = 'Master Movement Report'
 export const GOT_GIVEN_REPORT = "Got Given Report"
@@ -1896,7 +1932,7 @@ export const PLANT_HEAD_WISE = "Plant Head Wise"
 export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
 export const INSIGHT_SIMULATION_REPORT = "Simulation Insights Report"
-
+export const NFR_INSIGHT_DETAILS = 'NFR Insights' //MINDA
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
@@ -1913,7 +1949,8 @@ export const RIVET = 'Rivet';
 export const NON_FERROUS_HPDC = 'Non Ferrous HPDC';
 export const RUBBER = 'Rubber';
 export const FORGINGNAME = 'Forging';
-export const FORGING = 'Forging & Machining';          						//RE
+// export const FORGING = 'Forging & Machining';          						//RE
+export const FORGING = 'Forging';//MINDA
 export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
 export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
@@ -1932,6 +1969,7 @@ export const USER = 'User'
 export const ROLE = 'Role'
 export const DEPARTMENT = 'Department'
 export const LEVELS = 'Levels'
+export const COMPANY = 'Company'//MINDA
 export const RFQUSER = 'RFQUser'
 
 
@@ -1980,6 +2018,7 @@ export const NFR_LISTING = '/nfr'
 export const PRODUCT_ROLLOUT = '/product-rollout'
 export const RESET_PASSWORD = '/reset-password'
 export const FORGET_PASSWORD = '/forget-password'
+export const SAP_PUSH_DETAIL = '/sap-push-detail'//MINDA
 
 
 export const EMPTY_GUID = "00000000-0000-0000-0000-000000000000"
@@ -2421,7 +2460,6 @@ export const DIMENSIONLESS = 'Dimensionless'
 //UOM CATEGORY
 export const STD = 'STD'
 
-
 //SIMULATION MASTER NAME
 export const RMDOMESTIC = '1'
 export const RMIMPORT = '2'
@@ -2488,6 +2526,7 @@ export const ExchangeMaster = "Exchange-rate"
 export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 export const ReportMaster = "Report-rate"
+export const ReportSAPMaster = "SAP-Excel Download"//MINDA
 export const UserListing = "User-Listing"
 
 export const simulationMaster = "Simulation"
@@ -2525,10 +2564,20 @@ export const PROVISIONAL = "Provisional"
 export const APPROVER = 'Approver'          						//RE
 export const NEW_COMPONENT = "New Component"
 export const CUSTOMER_BASED = "Customer Based"
+
+// Original release strategy constants
 export const RELEASE_STRATEGY_B1 = "Release Strategy B1"
 export const RELEASE_STRATEGY_B2 = "Release Strategy B2"
 export const RELEASE_STRATEGY_B3 = "Release Strategy B3"
 export const RELEASE_STRATEGY_B4 = "Release Strategy B4"
+export const RELEASE_STRATEGY_B6 = "Release Strategy B6"
+
+// Transformed release strategy constants //MINDA
+export const RELEASE_STRATEGY_B1_NEW = "Release Strategy B1 (PFS rate increase upto 110%)"
+export const RELEASE_STRATEGY_B2_NEW = "Release Strategy B2 (PFS rate increase beyond upto 110%)"
+export const RELEASE_STRATEGY_B3_NEW = "Release Strategy B3 (Rate increase BOM budgeted upto 103%)"
+export const RELEASE_STRATEGY_B4_NEW = "Release Strategy B4 (Rate increase BOM budgeted beyond 103%)"
+export const RELEASE_STRATEGY_B6_NEW = "Release Strategy B6 (Regular BOM)"
 
 //default value for page size
 export const defaultPageSize = 10;
@@ -2558,7 +2607,9 @@ export const RMDOMESTICBULKUPLOAD = 'RM Domestic';
 export const RMIMPORTBULKUPLOAD = 'RM Import';
 export const RMSPECIFICATION = 'RM Specification'
 export const BOPDOMESTICBULKUPLOAD = 'BOP Domestic';
+export const INSERTDOMESTICBULKUPLOAD = 'Insert Domestic';
 export const BOPIMPORTBULKUPLOAD = 'BOP Import';
+export const INSERTIMPORTBULKUPLOAD = 'Insert Import';
 export const BOMBULKUPLOAD = 'BOM';
 export const PARTCOMPONENTBULKUPLOAD = 'Part Component';
 export const PRODUCTCOMPONENTBULKUPLOAD = 'Product Component';
@@ -2636,7 +2687,6 @@ export const statusOptions = _.sortBy([
 ], ({ label }) => label.toLowerCase());
 
 
-
 export const CRMHeads = [
   { label: "Net Sales", value: 1 },
   { label: "Consumption", value: 2 },
@@ -2694,11 +2744,17 @@ export const VBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTyp
 export const ZBCAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ZBC])
 export const WACAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[WAC])
 export const PROVISIONALAPPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm'))
+//MINDA
+export const PFS1APPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[PFS1])
+export const PFS2APPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[PFS2])
+export const PFS3APPROVALTYPEID = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[PFS3])
 
 export const CBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[CBC])
 export const NCCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[NCC])
 export const VBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[VBC])
 export const ZBCAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[ZBC])
+//MINDA
+export const PFS2APPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PFS2])
 export const PROVISIONALAPPROVALTYPEIDFULL = Number(reactLocalStorage.getObject('ApprovalTypeListFullForm')[PROVISIONAL])
 
 export const RELEASESTRATEGYTYPEID1 = Number(reactLocalStorage.getObject('ApprovalTypeListShortForm')[ReleaseStrategyB1])
@@ -2722,6 +2778,11 @@ export const APPROVED_BY_SAP = "Approved By SAP"
 // KEY AND IVgit
 export const KEY = 'gQUJ79YKYm22Cazw';
 export const IV = 'eTEFSa0PinFKTQNB'
+// KEY AND IV
+//MINDA
+
+// export const KEY = 'awvmhujtecmcecmj';
+// export const IV = 'vuqqsafvwouoqtgh'
 
 // // KEY AND IV          						//RE
 // export const KEY = 'ewswymuinfzfskjz';          						//RE

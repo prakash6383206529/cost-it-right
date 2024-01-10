@@ -29,7 +29,6 @@ function SurfaceTreatment(props) {
     mode: 'onChange',
     reValidateMode: 'onChange',
   });
-
   const dispatch = useDispatch()
 
   const initialConfiguration = useSelector(state => state.auth.initialConfiguration)
@@ -41,11 +40,11 @@ function SurfaceTreatment(props) {
   const CostingViewMode = useContext(ViewCostingContext);
   const [transportationObject, setTransportationObject] = useState({})
   const [surfaceTreatmentData, setSurfacTreatmenteData] = useState({})
-  const [surfaceTableData, setSurfacetableData] = useState(item?.CostingPartDetails?.SurfaceTreatmentDetails)
-  const [transportObj, setTrasportObj] = useState(item?.CostingPartDetails?.TransportationDetails)
-  const partType = (IdForMultiTechnology.includes(String(costData?.TechnologyId)) || costData.CostingTypeId === WACTypeId)
-
   const [callDiscountApi, setCallDiscountApi] = useState(false)
+  const [surfaceTableData, setSurfacetableData] = useState(item.CostingPartDetails.SurfaceTreatmentDetails)
+  const [transportObj, setTrasportObj] = useState(item.CostingPartDetails.TransportationDetails)
+  const partType = IdForMultiTechnology.includes(String(costData?.TechnologyId))
+
   const [errorObjectTransport, setErrorObjectTransport] = useState({})
   const [errorObjectSurfaceTreatment, setErrorObjectSurfaceTreatment] = useState({})
   const [callAPI, setCallAPI] = useState(false)

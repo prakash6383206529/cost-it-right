@@ -157,10 +157,17 @@ function Pipe(props) {
       }
     }
   }, [isOneSide])
-
   const setFinishWeight = (e) => {
     const FinishWeightOfSheet = e.target.value
+    const grossWeight = checkForNull(getValues('GrossWeight'))
+    if (e.target.value > grossWeight) {
+      setTimeout(() => {
+        setValue('FinishWeightOfSheet', 0)
+      }, 200);
 
+      Toaster.warning('Finish Weight should not be greater than gross weight')
+      return false
+    }
     switch (UOMDimension.label) {
       case G:
         setTimeout(() => {

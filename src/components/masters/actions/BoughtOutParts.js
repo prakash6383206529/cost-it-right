@@ -15,11 +15,13 @@ import {
   config,
   GET_SOB_LISTING,
   GET_INCO_SELECTLIST_SUCCESS,
-  GET_PAYMENT_SELECTLIST_SUCCESS,
-} from "../../../config/constants";
-import { apiErrors } from "../../../helper/util";
-import { bopQueryParms } from "../masterUtil";
-import { reactLocalStorage } from "reactjs-localstorage";
+  GET_PAYMENT_SELECTLIST_SUCCESS
+} from '../../../config/constants';
+import { apiErrors } from '../../../helper/util';
+import { loggedInUserId, userDetails } from '../../../helper';
+import Toaster from '../../common/Toaster';
+import { bopQueryParms } from '../masterUtil';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 // const config() = config
 
@@ -30,17 +32,15 @@ import { reactLocalStorage } from "reactjs-localstorage";
 export function createBOP(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.createBOP, data, config());
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response);
-        }
-      })
-      .catch((error) => {
-        dispatch({ type: API_FAILURE });
-        apiErrors(error);
-        callback(error);
-      });
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response);
+      }
+    }).catch((error) => {
+      dispatch({ type: API_FAILURE });
+      apiErrors(error);
+      callback(error);
+    });
   };
 }
 

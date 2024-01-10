@@ -316,6 +316,14 @@ class SimulationUploadDrawer extends Component {
                                             }
                                             if (fileHeads[i] === 'RevisedBasicRate') {
                                                 obj["NewBasicRate"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartNumber') {
+                                                obj["BoughtOutPartNumber"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartName') {
+                                                obj["BoughtOutPartName"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartCategory') {
+                                                obj["BoughtOutPartCategory"] = el;
+                                            } else if (fileHeads[i] === 'InsertPartId') {
+                                                obj["BoughtOutPartId"] = el;
                                             } else {
                                                 obj[fileHeads[i]] = el;
                                             }
@@ -433,7 +441,7 @@ class SimulationUploadDrawer extends Component {
                     //     return null;
                     // })
                     this.setState({
-                        fileData: fileData,
+                        fileData: [...fileData],
                         uploadfileName: uploadfileName,
                         correctRowCount: correctRowCount,
                         NoOfRowsWithoutChange: NoOfRowsWithoutChange

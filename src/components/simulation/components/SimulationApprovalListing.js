@@ -42,6 +42,7 @@ function SimulationApprovalListing(props) {
     const [isPendingForApproval, setIsPendingForApproval] = useState(false);
     const [showFinalLevelButtons, setShowFinalLevelButton] = useState(false)
     const [isSuperAdmin, setIsSuperAdmin] = useState(false)
+    const userData = userDetails()
 
     const dispatch = useDispatch()
     const { simualtionApprovalList, simualtionApprovalListDraft } = useSelector(state => state.simulation)
@@ -196,6 +197,8 @@ function SimulationApprovalListing(props) {
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
                 setPageNo(0)
+                setIsLoader(false)
+                dispatch(dashboardTabLock(false))
             }
             if (res && res.status === 204) {
                 setTotalRecordCount(0)
@@ -208,7 +211,6 @@ function SimulationApprovalListing(props) {
                 dispatch(dashboardTabLock(false))
                 let isReset = true
                 if (res) {
-
                     setTimeout(() => {
 
                         for (var prop in obj) {
@@ -566,7 +568,6 @@ function SimulationApprovalListing(props) {
         //     setSelectedRowData(tempArr)
         // }
     }
-
     const isRowSelectable = (rowNode) => {
         if (rowNode.data.Status === APPROVED || rowNode.data.Status === REJECTED || rowNode.data.Status === WAITING_FOR_APPROVAL || rowNode.data.Status === PUSHED || rowNode.data.Status === POUPDATED || rowNode.data.Status === ERROR || rowNode.data.Status === LINKED) {
             return false;
@@ -582,6 +583,8 @@ function SimulationApprovalListing(props) {
             return false
         }
         if (getConfigurationKey().IsReleaseStrategyConfigured) {
+            //MINDA
+            // if (getConfigurationKey().IsReleaseStrategyConfigured && selectedRowData && selectedRowData[0]?.Status === DRAFT) {
             let data = []
             selectedRowData && selectedRowData?.map(item => {
                 let obj = {}

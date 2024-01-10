@@ -311,6 +311,7 @@ class OperationListing extends Component {
         this.props.getDetails(data, rowData?.IsOperationAssociated);
     }
 
+
     /**
     * @method deleteItem
     * @description confirm delete Item.

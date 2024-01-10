@@ -559,7 +559,7 @@ export function getNetSurfaceAreaBothSide(data) {
   return checkForNull(value)
 }
 
-export function formViewData(costingSummary, header = '') {
+export function formViewData(costingSummary, header = '', isBestCost = false) {
   let temp = []
   let dataFromAPI = costingSummary
   let obj = {}
@@ -643,13 +643,16 @@ export function formViewData(costingSummary, header = '') {
     PaymentTermRemark: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark ? dataFromAPI?.CostingPartDetails?.CostingInterestRateDetail.PaymentTermDetail.Remark : '-',
   }
 
-  obj.nOverheadProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
+  obj.nOverheadProfit = isBestCost ? (dataFromAPI && dataFromAPI?.NetOverheadAndProfitCost !== undefined ? dataFromAPI?.NetOverheadAndProfitCost : 0) :
+    dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost ? dataFromAPI?.CostingPartDetails?.NetOverheadAndProfitCost : 0
 
   obj.packagingCost = dataFromAPI?.CostingPartDetails
     && dataFromAPI?.CostingPartDetails?.NetPackagingCost !== null ? dataFromAPI?.CostingPartDetails?.NetPackagingCost
     : 0
   obj.freight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFreightCost !== null ? dataFromAPI?.CostingPartDetails?.NetFreightCost : 0
-  obj.nPackagingAndFreight = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFreightPackagingCost ? dataFromAPI?.CostingPartDetails?.NetFreightPackagingCost : 0
+
+  obj.nPackagingAndFreight = isBestCost ? (dataFromAPI && dataFromAPI?.NetFreightPackagingCost !== undefined ? dataFromAPI?.NetFreightPackagingCost : 0) :
+    dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetFreightPackagingCost ? dataFromAPI?.CostingPartDetails?.NetFreightPackagingCost : 0
 
 
   obj.bopPHandlingCharges = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.BOPHandlingCharges !== null ? dataFromAPI?.CostingPartDetails?.BOPHandlingCharges : 0
@@ -667,9 +670,11 @@ export function formViewData(costingSummary, header = '') {
   }
 
   obj.toolAmortizationCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse.length > 0 && dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost !== null ? dataFromAPI?.CostingPartDetails?.CostingToolCostResponse[0].ToolAmortizationCost : 0
-  obj.totalToolCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
 
-  obj.totalCost = dataFromAPI?.CostingPartDetails && dataFromAPI.TotalCost ? dataFromAPI.TotalCost : 0
+  obj.totalToolCost = isBestCost ? (dataFromAPI && dataFromAPI?.NetToolCost !== undefined ? dataFromAPI?.NetToolCost : 0) :
+    dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetToolCost !== null ? dataFromAPI?.CostingPartDetails?.NetToolCost : 0
+
+  obj.totalCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.TotalCost ? dataFromAPI?.TotalCost : 0
   obj.otherDiscount = { discount: 'Discount %', value: 'Value', }
   obj.otherDiscountValue = {
     discountPercentValue: dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage !== null ? dataFromAPI?.CostingPartDetails?.OtherCostDetails.HundiOrDiscountPercentage : 0,
@@ -689,10 +694,10 @@ export function formViewData(costingSummary, header = '') {
     currencyValue: dataFromAPI && dataFromAPI.CurrencyExchangeRate ? dataFromAPI?.CurrencyExchangeRate : '-',
   }
 
-  obj.nPOPrice = dataFromAPI.NetPOPrice && dataFromAPI.NetPOPrice !== null ? dataFromAPI.NetPOPrice : 0
-  obj.effectiveDate = dataFromAPI.EffectiveDate ? dataFromAPI.EffectiveDate : ''
+  obj.nPOPrice = dataFromAPI?.NetPOPrice && dataFromAPI?.NetPOPrice !== null ? dataFromAPI?.NetPOPrice : 0
+  obj.effectiveDate = dataFromAPI?.EffectiveDate ? dataFromAPI?.EffectiveDate : ''
 
-  obj.attachment = dataFromAPI.Attachements ? dataFromAPI.Attachements : []
+  obj.attachment = dataFromAPI?.Attachements ? dataFromAPI?.Attachements : []
   obj.approvalButton = ''
   // //RM
   obj.netRMCostView = dataFromAPI?.CostingPartDetails ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost : []
@@ -723,46 +728,46 @@ export function formViewData(costingSummary, header = '') {
   obj.partNumber = dataFromAPI && dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.PartNumber ? dataFromAPI?.CostingPartDetails?.PartNumber : '-'
 
   // ADD PARTID KEY HERE AND BIND IT WITH PART ID
-  obj.plantId = dataFromAPI.PlantId ? dataFromAPI.PlantId : '-'
-  obj.plantName = dataFromAPI.PlantName ? dataFromAPI.PlantName : '-'
-  obj.plantCode = dataFromAPI.PlantCode ? dataFromAPI.PlantCode : '-'
-  obj.vendorId = dataFromAPI.VendorId ? dataFromAPI.VendorId : '-'
-  obj.vendorName = dataFromAPI.VendorName ? dataFromAPI.VendorName : '-'
-  obj.vendorCode = dataFromAPI.VendorCode ? dataFromAPI.VendorCode : '-'
-  obj.vendor = dataFromAPI.VendorName && dataFromAPI.VendorCode ? `${dataFromAPI.VendorName} (${dataFromAPI.VendorCode})` : '-'
-  obj.vendorPlantId = dataFromAPI.VendorPlantId ? dataFromAPI.VendorPlantId : '-'
-  obj.vendorPlantName = dataFromAPI.VendorPlantName ? dataFromAPI.VendorPlantName : '-'
-  obj.vendorPlantCode = dataFromAPI.VendorPlantCode ? dataFromAPI.VendorPlantCode : '-'
-  obj.costingId = dataFromAPI.CostingId ? dataFromAPI.CostingId : '-'
-  obj.oldPoPrice = dataFromAPI.OldPOPrice ? dataFromAPI.OldPOPrice : 0
-  obj.technology = dataFromAPI.Technology ? dataFromAPI.Technology : '-'
-  obj.technologyId = dataFromAPI.TechnologyId ? dataFromAPI.TechnologyId : '-'
-  obj.shareOfBusinessPercent = dataFromAPI.ShareOfBusinessPercent ? dataFromAPI.ShareOfBusinessPercent : 0
-  obj.destinationPlantCode = dataFromAPI.DestinationPlantCode ? dataFromAPI.DestinationPlantCode : '-'
-  obj.destinationPlantName = dataFromAPI.DestinationPlantName ? dataFromAPI.DestinationPlantName : '-'
-  obj.destinationPlantId = dataFromAPI.DestinationPlantId ? dataFromAPI.DestinationPlantId : '-'
+  obj.plantId = dataFromAPI?.PlantId ? dataFromAPI?.PlantId : '-'
+  obj.plantName = dataFromAPI?.PlantName ? dataFromAPI?.PlantName : '-'
+  obj.plantCode = dataFromAPI?.PlantCode ? dataFromAPI?.PlantCode : '-'
+  obj.vendorId = dataFromAPI?.VendorId ? dataFromAPI?.VendorId : '-'
+  obj.vendorName = dataFromAPI?.VendorName ? dataFromAPI?.VendorName : '-'
+  obj.vendorCode = dataFromAPI?.VendorCode ? dataFromAPI?.VendorCode : '-'
+  obj.vendor = dataFromAPI?.VendorName && dataFromAPI?.VendorCode ? `${dataFromAPI?.VendorName} (${dataFromAPI?.VendorCode})` : '-'
+  obj.vendorPlantId = dataFromAPI?.VendorPlantId ? dataFromAPI?.VendorPlantId : '-'
+  obj.vendorPlantName = dataFromAPI?.VendorPlantName ? dataFromAPI?.VendorPlantName : '-'
+  obj.vendorPlantCode = dataFromAPI?.VendorPlantCode ? dataFromAPI?.VendorPlantCode : '-'
+  obj.costingId = dataFromAPI?.CostingId ? dataFromAPI?.CostingId : '-'
+  obj.oldPoPrice = dataFromAPI?.OldPOPrice ? dataFromAPI?.OldPOPrice : 0
+  obj.technology = dataFromAPI?.Technology ? dataFromAPI?.Technology : '-'
+  obj.technologyId = dataFromAPI?.TechnologyId ? dataFromAPI?.TechnologyId : '-'
+  obj.shareOfBusinessPercent = dataFromAPI?.ShareOfBusinessPercent ? dataFromAPI?.ShareOfBusinessPercent : 0
+  obj.destinationPlantCode = dataFromAPI?.DestinationPlantCode ? dataFromAPI?.DestinationPlantCode : '-'
+  obj.destinationPlantName = dataFromAPI?.DestinationPlantName ? dataFromAPI?.DestinationPlantName : '-'
+  obj.destinationPlantId = dataFromAPI?.DestinationPlantId ? dataFromAPI?.DestinationPlantId : '-'
   obj.CostingHeading = header
   obj.partName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.PartName ? dataFromAPI?.CostingPartDetails?.PartName : '-'
-  obj.netOtherOperationCost = dataFromAPI && dataFromAPI.NetOtherOperationCost ? dataFromAPI.NetOtherOperationCost : 0
+  obj.netOtherOperationCost = dataFromAPI && dataFromAPI?.NetOtherOperationCost ? dataFromAPI?.NetOtherOperationCost : 0
   obj.masterBatchTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchTotal ? dataFromAPI?.CostingPartDetails?.MasterBatchTotal : 0
   obj.masterBatchRMPrice = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice ? dataFromAPI?.CostingPartDetails?.MasterBatchRMPrice : 0
   obj.masterBatchPercentage = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchPercentage ? dataFromAPI?.CostingPartDetails?.MasterBatchPercentage : 0
   obj.isApplyMasterBatch = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch ? dataFromAPI?.CostingPartDetails?.IsApplyMasterBatch : false
-  obj.IsAssemblyCosting = dataFromAPI.IsAssemblyCosting ? dataFromAPI.IsAssemblyCosting : ""
+  obj.IsAssemblyCosting = dataFromAPI?.IsAssemblyCosting ? dataFromAPI?.IsAssemblyCosting : ""
   obj.childPartBOPHandlingCharges = dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges ? dataFromAPI?.CostingPartDetails?.ChildPartBOPHandlingCharges : []
   obj.masterBatchRMName = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MasterBatchRMName ? dataFromAPI?.CostingPartDetails?.MasterBatchRMName : '-'
-  obj.costingHeadCheck = dataFromAPI.CostingHead && dataFromAPI.CostingHead !== null ? dataFromAPI.CostingHead : '';
-  obj.NCCPartQuantity = dataFromAPI.NCCPartQuantity && dataFromAPI.NCCPartQuantity !== null ? dataFromAPI.NCCPartQuantity : '';
-  obj.IsRegularized = dataFromAPI.IsRegularized && dataFromAPI.IsRegularized !== null ? dataFromAPI.IsRegularized : '';
+  obj.costingHeadCheck = dataFromAPI?.CostingHead && dataFromAPI?.CostingHead !== null ? dataFromAPI?.CostingHead : '';
+  obj.NCCPartQuantity = dataFromAPI?.NCCPartQuantity && dataFromAPI?.NCCPartQuantity !== null ? dataFromAPI?.NCCPartQuantity : '';
+  obj.IsRegularized = dataFromAPI?.IsRegularized && dataFromAPI?.IsRegularized !== null ? dataFromAPI?.IsRegularized : '';
   obj.MachiningScrapRate = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapRate : '-'
   // GETTING WARNING MESSAGE WITH APPROVER NAME AND LEVEL WHEN COSTING IS UNDER APPROVAL 
-  obj.getApprovalLockedMessage = dataFromAPI.ApprovalLockedMessage && dataFromAPI.ApprovalLockedMessage !== null ? dataFromAPI.ApprovalLockedMessage : '';
+  obj.getApprovalLockedMessage = dataFromAPI?.ApprovalLockedMessage && dataFromAPI?.ApprovalLockedMessage !== null ? dataFromAPI?.ApprovalLockedMessage : '';
 
   //MASTER BATCH OBJECT
   obj.CostingMasterBatchRawMaterialCostResponse = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse ? dataFromAPI?.CostingPartDetails?.CostingMasterBatchRawMaterialCostResponse : []
-  obj.RevisionNumber = dataFromAPI.RevisionNumber ? dataFromAPI.RevisionNumber : '-'
-  obj.AssemblyCostingId = dataFromAPI.AssemblyCostingId && dataFromAPI.AssemblyCostingId !== null ? dataFromAPI.AssemblyCostingId : '';
-  obj.SubAssemblyCostingId = dataFromAPI.SubAssemblyCostingId && dataFromAPI.SubAssemblyCostingId !== null ? dataFromAPI.SubAssemblyCostingId : '';
+  obj.RevisionNumber = dataFromAPI?.RevisionNumber ? dataFromAPI?.RevisionNumber : '-'
+  obj.AssemblyCostingId = dataFromAPI?.AssemblyCostingId && dataFromAPI?.AssemblyCostingId !== null ? dataFromAPI?.AssemblyCostingId : '';
+  obj.SubAssemblyCostingId = dataFromAPI?.SubAssemblyCostingId && dataFromAPI?.SubAssemblyCostingId !== null ? dataFromAPI?.SubAssemblyCostingId : '';
 
   //USED FOR DOWNLOAD PURPOSE
 
@@ -811,6 +816,7 @@ export function formViewData(costingSummary, header = '') {
   obj.netBoughtOutPartCost = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost ? dataFromAPI?.CostingPartDetails?.NetBoughtOutPartCost : 0
   obj.multiTechnologyCostingDetails = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails ? dataFromAPI?.CostingPartDetails?.MultiTechnologyCostingDetails : ''
   obj.isRmCutOffApplicable = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable && dataFromAPI?.CostingPartDetails?.IsRMCutOffApplicable
+  obj.isRFQFinalApprovedCosting = dataFromAPI?.IsRFQFinalApprovedCosting
   obj.isIncludeToolCostWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeToolCostWithOverheadAndProfit
   obj.isIncludeSurfaceTreatmentWithRejection = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithRejection
   obj.isIncludeSurfaceTreatmentWithOverheadAndProfit = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit && dataFromAPI?.CostingPartDetails?.IsIncludeSurfaceTreatmentWithOverheadAndProfit
@@ -1006,6 +1012,25 @@ export function isUploadSimulation(master) {
   return isUploadSimulation.includes(String(master))
 }
 
+export function getPOPriceAfterDecimal(decimalValue, PoPrice = 0) {
+  let netPo = 0
+  let quantity = 1
+  if (decimalValue === 'RoundOff') {
+    netPo = Math.round(PoPrice)
+    quantity = 1
+    return { netPo, quantity }
+  }
+  else if (decimalValue === 'Truncate') {
+    netPo = checkForDecimalAndNull(PoPrice, 2)
+    quantity = 1
+    return { netPo, quantity }
+  }
+  else if (decimalValue === 'Per100') {
+    netPo = PoPrice * 100
+    quantity = 100
+    return { netPo, quantity }
+  }
+}
 export const allEqual = arr => arr.every(val => val === arr[0]);
 
 // FOR SHOWING CURRENCY SYMBOL 
@@ -1159,7 +1184,19 @@ export function ceilByMultiple(number, multiple = 0.25) {
 
 export function userTechnologyLevelDetails(approvalTypeId, data = []) {
   let dataList = [...data]
-  let filteredData = dataList?.filter(element => element.ApprovalTypeId === costingTypeIdToApprovalTypeIdFunction(approvalTypeId))
+  let filteredData = dataList?.filter(element => Number(element.ApprovalTypeId) === Number(approvalTypeId))
+  let obj = {
+    Level: filteredData[0]?.Level,
+    LevelId: filteredData[0]?.LevelId,
+    ApprovalTypeId: filteredData[0]?.ApprovalTypeId,
+    length: filteredData?.length
+  }
+  return obj
+}
+
+export function userTechnologyLevelDetailsWithoutCostingToApproval(approvalTypeId, data = []) {
+  let dataList = [...data]
+  let filteredData = dataList?.filter(element => Number(element.ApprovalTypeId) === Number(approvalTypeId))
   let obj = {
     Level: filteredData[0]?.Level,
     LevelId: filteredData[0]?.LevelId,
@@ -1204,6 +1241,8 @@ export function compareObjects(obj1, obj2) {
 }
 
 export function removeBOPfromApplicability(list) {
+  //MINDA
+  // export function removeBOPFromList(list) {
   let tempList = list?.filter(item => !item?.label?.includes('BOP'))
   return tempList
 }

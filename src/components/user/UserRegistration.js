@@ -24,7 +24,7 @@ import { EMPTY_GUID } from "../../config/constants";
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
 import { useDispatch, useSelector } from 'react-redux'
 import { reactLocalStorage } from "reactjs-localstorage";
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from "../common/CommonFunctions";
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, transformApprovalItem } from "../common/CommonFunctions";
 import _ from "lodash";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import { PaginationWrapper } from "../common/commonPagination";
@@ -41,6 +41,10 @@ const gridOptions = {
 };
 function UserRegistration(props) {
 
+  let child = React.createRef();
+
+  const [token, setToken] = useState("");
+  const [countryCode, setCountryCode] = useState(false);
   const [lowerCaseCheck, setLowerCaseCheck] = useState(false);
   const [upperCaseCheck, setUpperCaseCheck] = useState(false);
   const [numberCheck, setNumberCheck] = useState(false);
@@ -50,6 +54,8 @@ function UserRegistration(props) {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isShowHide, setIsShowHide] = useState(false);
   const [isShowHidePassword, setIsShowHidePassword] = useState(false);
+
+  const [primaryContact, setPrimaryContact] = useState(false);
   const [department, setDepartment] = useState([]);
   const [oldDepartment, setOldDepartment] = useState([]);
   const [role, setRole] = useState([]);
@@ -61,6 +67,7 @@ function UserRegistration(props) {
   const [acc2, setAcc2] = useState(false);
   const [acc3, setAcc3] = useState(false);
   const [IsShowAdditionalPermission, setIsShowAdditionalPermission] = useState(false);
+  const [isForcefulUpdate, setIsForcefulUpdate] = useState(false);
   const [Modules, setModules] = useState([]);
   const [oldModules, setOldModules] = useState([]);
   const [technology, setTechnology] = useState([]);
@@ -91,8 +98,6 @@ function UserRegistration(props) {
   const [costingApprovalType, setCostingApprovalType] = useState([]);
   const [simulationApprovalType, setSimulationApprovalType] = useState([]);
   const [masterApprovalType, setMasterApprovalType] = useState([]);
-  const [primaryContact, setPrimaryContact] = useState(false);
-  const [isForcefulUpdate, setIsForcefulUpdate] = useState(false);
   const [grantUserWisePermission, setGrantUserWisePermission] = useState(false);
   const [gridApiTechnology, setgridApiTechnology] = useState(null);                      // DONT DELETE THIS STATE , IT IS USED BY AG GRID
   const [gridColumnApiTechnology, setgridColumnApiTechnology] = useState(null);
@@ -116,11 +121,7 @@ function UserRegistration(props) {
   const getReporterListDropDown = useSelector(state => state.comman.getReporterListDropDown)
   const approvalTypeSelectList = useSelector(state => state.comman.approvalTypeSelectList)
 
-  let child = React.createRef();
-
-  const [token, setToken] = useState("");
   const [maxLength, setMaxLength] = useState(maxLength11);
-  const [countryCode, setCountryCode] = useState(false);
 
   const defaultValues = {
     FirstName: props?.data?.isEditFlag && registerUserData && registerUserData.FirstName !== undefined ? registerUserData.FirstName : '',
@@ -398,7 +399,8 @@ function UserRegistration(props) {
         if (item.Value === '0') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && label === 'approvalTypeSimulation') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && label === 'approvalTypeMaster') return false
-        temp.push({ label: item.Text, value: item.Value })
+        const transformedText = transformApprovalItem(item);
+        temp.push({ label: transformedText, value: item.Value });
         return null
       })
       return temp;
@@ -637,7 +639,6 @@ function UserRegistration(props) {
   const moduleDataHandler = (data, ModuleName) => {
     let temp111 = data;
     let isSelectAll = true
-
     let isParentChecked = temp111.findIndex(el => el.IsChecked === true)
 
     if (ModuleName === "Costing" || ModuleName === "Simulation") {
@@ -1394,8 +1395,7 @@ function UserRegistration(props) {
         LevelId: registerUserData?.LevelId,
         LevelName: registerUserData?.LevelName,
         // DepartmentName: department.label,
-        DepartmentName: '',
-        // DepartmentName: getConfigurationKey().IsMultipleDepartmentAllowed ? '' : department.label,                 //RE
+        DepartmentName: getConfigurationKey().IsMultipleDepartmentAllowed ? '' : department.label,    //RE   COMMENTED
         TechnologyId: '',
         TechnologyName: '',
         PlantName: '',
@@ -1409,7 +1409,7 @@ function UserRegistration(props) {
         PlantId: (userDetails && userDetails.Plants) ? userDetails.Plants[0].PlantId : '',
         // DepartmentId: department.value,
         DepartmentId: '',
-        // DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,                 //RE
+        DepartmentId: getConfigurationKey().IsMultipleDepartmentAllowed ? EMPTY_GUID : department.value,                 //RE   COMMENTED
         loggedInUserId: loggedInUserId(),
         CompanyId: department.CompanyId ? department.CompanyId : '',
         EmailAddress: values.EmailAddress ? values.EmailAddress.trim() : '',
@@ -1441,8 +1441,7 @@ function UserRegistration(props) {
         updatedData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         updatedData.SimulationTechnologyLevels = tempHeadLevelArray
         updatedData.MasterLevels = tempMasterLevelArray
-        updatedData.Departments = multiDeptArr
-        // updatedData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []                 //RE
+        updatedData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []    //RE   COMMENTED
         updatedData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
       let isDepartmentUpdate = registerUserData?.Departments?.every(
@@ -1537,8 +1536,7 @@ function UserRegistration(props) {
         userData.AdditionalPermission = IsShowAdditionalPermission ? 'YES' : 'NO'
         userData.SimulationTechnologyLevels = tempHeadLevelArray
         userData.MasterLevels = tempMasterLevelArray
-        userData.Departments = multiDeptArr
-        // userData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []                 //RE
+        userData.Departments = getConfigurationKey().IsMultipleDepartmentAllowed ? multiDeptArr : []    //RE   COMMENTED
         userData.IsMultipleDepartmentAllowed = getConfigurationKey().IsMultipleDepartmentAllowed ? true : false
       }
 
@@ -2694,13 +2692,13 @@ function UserRegistration(props) {
 
               </form>
             </div>
-          </div>
-        </div>
-      </div>
+          </div >
+        </div >
+      </div >
       {
         showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.COSTING_REJECT_ALERT}`} />
       }
-    </div>
+    </div >
   );
 }
 

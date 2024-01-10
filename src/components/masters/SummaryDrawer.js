@@ -11,14 +11,18 @@ import { Fragment } from 'react';
 import MasterSendForApproval from './MasterSendForApproval';
 import LoaderCustom from '../common/LoaderCustom';
 import OperationListing from './operation/OperationListing'
-import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS } from '../../config/constants';
+import { BOP_MASTER_ID, RM_MASTER_ID, OPERATIONS_ID, MACHINE_MASTER_ID, BUDGET_ID, APPROVED_STATUS, ZBCTypeId, INR } from '../../config/constants';
 import MachineRateListing from './machine-master/MachineRateListing';
-import { checkForNull, getConfigurationKey, loggedInUserId, userTechnologyDetailByMasterId } from '../../helper';
+import { checkForNull, getCodeBySplitting, getConfigurationKey, loggedInUserId, userTechnologyDetailByMasterId } from '../../helper';
 import { checkFinalUser } from '../costing/actions/Costing';
 import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { costingTypeIdToApprovalTypeIdFunction } from '../common/CommonFunctions';
 import BudgetListing from './budget-master/BudgetListing';
 import RMImportListing from './material-master/RMImportListing';
+import { debounce } from 'lodash';
+import { approvalPushedOnSap } from '../costing/actions/Approval';
+import Toaster from '../common/Toaster';
+import DayTime from '../common/DayTimeWrapper';
 
 function SummaryDrawer(props) {
     const { approvalData } = props
@@ -56,6 +60,8 @@ function SummaryDrawer(props) {
     const [levelDetails, setLevelDetails] = useState('')
     const [isBudgetApproval, setIsBudgetApproval] = useState(false)
     const [showImport, setShowImport] = useState(false)
+    const [bopDataResponse, setBopDataResponse] = useState([])
+    const [showPushButton, setShowPushButton] = useState(false) // This is for showing push button when master is approved and need to push it for scheduling
 
     // const { rmDomesticListing, rmImportListing, bopDomesticList, bopImportList } = useSelector(state => state.material)
 
@@ -80,14 +86,14 @@ function SummaryDrawer(props) {
             } else if (checkForNull(props.masterId) === BOP_MASTER_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.BOPListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.BOPListResponse[0].Attachements)
-
+                setBopDataResponse(Data.ImpactedMasterDataList.BOPListResponse)
                 if (Data.ImpactedMasterDataList.BOPListResponse[0]?.Currency === getConfigurationKey()?.BaseCurrency) {
                     setShowImport(false)
                 } else {
                     setShowImport(true)
                 }
-
                 Data.ImpactedMasterDataList?.length > 0 ? setIsDataInMaster(true) : setIsDataInMaster(false);
+                setShowPushButton(Data?.IsPushedButtonShow)
             } else if (checkForNull(props.masterId) === OPERATIONS_ID) {
                 CostingTypeId = Data.ImpactedMasterDataList.OperationListResponse[0]?.CostingTypeId
                 setFiles(Data.ImpactedMasterDataList.OperationListResponse[0].Attachements)
@@ -149,6 +155,56 @@ function SummaryDrawer(props) {
             cancel('submit')
         }
     }
+    //MINDA
+    // const callPushAPI = debounce(() => {
+    //     let conditionArr = []
+    //     bopDataResponse[0]?.BoughtOutPartConditionsDetails.forEach((item, index) => {
+    //         let obj = {
+    //             Lifnr: getCodeBySplitting(bopDataResponse[0].Vendor),
+    //             Matnr: bopDataResponse[0].BoughtOutPartNumber,
+    //             Kschl: item.ConditionNumber,
+    //             Datab: bopDataResponse[0].EffectiveDate ? DayTime(bopDataResponse[0].EffectiveDate).format('YYYY-MM-DD') : '',
+    //             Datbi: DayTime('9999-12-31').format('YYYY-MM-DD'),
+    //             Kbetr: item.ConditionType === "Percentage" ? item?.Percentage : bopDataResponse[0].BoughtOutPartEntryType === 0 ? item?.ConditionCost : item?.ConditionCostConversion,
+    //             Konwa: INR,
+    //             Kpein: item?.ConditionQuantity ? String(item?.ConditionQuantity) : "1",
+    //             Kmein: "NO",
+    //         }
+    //         conditionArr.push(obj)
+    //     })
+    //     let pushdata = {
+    //         BoughtOutPartId: bopDataResponse[0].BoughtOutPartId,
+    //         effectiveDate: bopDataResponse[0].EffectiveDate ? DayTime(bopDataResponse[0].EffectiveDate).format('YYYY-MM-DD') : '',
+    //         vendorCode: getCodeBySplitting(bopDataResponse[0].Vendor),
+    //         materialNumber: bopDataResponse[0].BoughtOutPartNumber,
+    //         netPrice: bopDataResponse[0].BoughtOutPartEntryType === 0 ? bopDataResponse[0].NetLandedCost : bopDataResponse[0].NetLandedCostConversion,
+    //         plant: bopDataResponse[0]?.DestinationPlantCode,
+    //         currencyKey: bopDataResponse[0].currency,
+    //         materialGroup: '',
+    //         taxCode: 'YW',
+    //         basicUOM: 'NO',
+    //         purchasingGroup: '',
+    //         purchasingOrg: '',
+    //         CostingId: '',
+    //         DecimalOption: '',
+    //         InfoToConditions: conditionArr,
+    //         TokenNumber: approvalDetails?.Token,
+    //         IsRequestForCosting: false,
+    //         IsRequestForBoughtOutPartMaster: true,
+    //         Quantity: 1
+    //     }
+    //     let obj = {
+    //         LoggedInUserId: loggedInUserId(),
+    //         Request: [pushdata]
+    //     }
+    //     dispatch(approvalPushedOnSap(obj, res => {
+    //         if (res && res.status && (res.status === 200 || res.status === 204)) {
+    //             Toaster.success('Approval pushed successfully.')
+    //         }
+    //     }))
+
+    // }, 500)
+
 
     return (
         <div>
@@ -198,6 +254,15 @@ function SummaryDrawer(props) {
                                 </Col>
                             </Row>
                         }
+                        {/* MINDA */}
+                        {/* {(checkForNull(props.masterId) === BOP_MASTER_ID) && costingTypeId === ZBCTypeId && showPushButton &&
+                            <div className='d-flex justify-content-end'>
+                                <button type="submit" className="submit-button mr5 save-btn" onClick={() => callPushAPI()}>
+                                    <div className={"save-icon"}></div>
+                                    {"Repush"}
+                                </button>
+                            </div>
+                        } */}
                         {
                             !approvalDetails.IsSent &&
                             <Row className="sf-btn-footer no-gutters drawer-sticky-btn justify-content-between">

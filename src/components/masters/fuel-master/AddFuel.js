@@ -41,7 +41,6 @@ class AddFuel extends Component {
       isEditFlag: false,
       FuelDetailId: '',
       isViewMode: this.props?.data?.isViewMode ? true : false,
-
       fuel: [],
       UOM: [],
       StateName: [],
@@ -91,7 +90,7 @@ class AddFuel extends Component {
     this.getDetails(data);
     if (!(data.isEditFlag || data.isViewMode)) {
       this.props.getUOMSelectList(() => { })
-      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
     }
   }

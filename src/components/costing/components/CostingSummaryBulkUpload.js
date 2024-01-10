@@ -79,7 +79,6 @@ class CostingSummaryBulkUpload extends Component {
     buttonFormatter = (props) => {
         const row = props?.data;
         const status = row.FileUploadStatus
-
         if (status === PENDING) {
             return (
                 <>
@@ -91,19 +90,18 @@ class CostingSummaryBulkUpload extends Component {
         }
         else if (status === APPROVED || status === REJECTED) {
             return <span>-</span>
+
         }
-        // else if (row?.FileUploadStatus === "Error") {
-
-        //     return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row?.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
-
-        // }
-
-        // else if (row.IncorrectCostingCount > 0) {
-
+        // else if (row.FileUploadStatus === "Error") {
         //     return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
+        // }
+        // else if (row.NoOfIncorrectRow > 0) {
+        //     return <button className={'user-btn mr5'} onClick={() => this.downloadErrorFile(row.CostingBulkUploadFileId)} type={'button'}>Download Error File</button>
+        // }
 
         // }
     }
+
 
     /**
   * @method returnExcelColumn

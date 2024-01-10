@@ -20,6 +20,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 class CostingBulkUploadDrawer extends Component {
     constructor(props) {
         super(props);
+        this.dropzone = React.createRef();
         this.state = {
             files: [],
             fileData: '',
@@ -78,20 +79,28 @@ class CostingBulkUploadDrawer extends Component {
         this.setState({ attachmentLoader: true })
         if (status === 'removed') {
             const removedFileName = file.name
-            let tempArr = files.filter(
-                (item) => item.OriginalFileName !== removedFileName,
-            )
+            let tempArr = files.filter((item) => item.OriginalFileName !== removedFileName)
             this.setState({ files: tempArr })
         }
 
         if (status === 'done') {
-
             this.setState({ fileName: file.name, fileData: file, attachmentLoader: false })
-
         }
 
         if (status === 'rejected_file_type') {
+            this.dropzone.current.files.pop()
+            this.setState({ attachmentLoader: false })
             Toaster.warning('Allowed only xlsx files.')
+        } else if (status === 'error_file_size') {
+            this.dropzone.current.files.pop()
+            this.setState({ attachmentLoader: false })
+            Toaster.warning("File size greater than 2mb not allowed")
+        } else if (status === 'error_validation'
+            || status === 'error_upload_params' || status === 'exception_upload'
+            || status === 'aborted' || status === 'error_upload') {
+            this.dropzone.current.files.pop()
+            this.setState({ attachmentLoader: false })
+            Toaster.warning("Something went wrong")
         }
     }
 
@@ -384,13 +393,13 @@ class CostingBulkUploadDrawer extends Component {
                                             </div>
                                         ) : (
                                             <Dropzone
+                                                ref={this.dropzone}
                                                 onChangeStatus={this.handleChangeStatus}
                                                 PreviewComponent={this.Preview}
                                                 onChange={this.fileHandler}
-                                                accept="image/jpeg,image/jpg,image/png,image/PNG,.xls,.doc,.pdf,.xlsx"
+                                                accept=".xls,.xlsx"
                                                 initialFiles={this.state.initialFiles}
                                                 maxFiles={1}
-                                                maxSizeBytes={2000000}
                                                 inputContent={(files, extra) =>
                                                     extra.reject ? (
                                                         "Image, audio and video files only"

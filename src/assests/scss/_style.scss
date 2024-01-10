@@ -852,6 +852,7 @@ input::-webkit-input-placeholder {
   .tab-pane {
     .filter-block {
       position: initial;
+      height: 32px !important;
       margin-bottom: 25px;
       background-color: none;
 
@@ -6221,6 +6222,7 @@ body {
       .Under.Revision,
       .Received,
       .Open,
+      .ExternalReject,
       [class^="Pending"],
       [class^="Awaiting"],
       .Approved,
@@ -7039,6 +7041,12 @@ body {
 
   .nodate-section {
     bottom: 61px !important;
+  }
+
+  .no-content-wrapper {
+    .nodate-section {
+      bottom: 100px !important;
+    }
   }
 }
 

@@ -519,10 +519,16 @@
 }
 
 .finalize-cost {
-  color: $postiveValueColor;
+  // color: $postiveValueColor;
+  background-color: $positiveBackground !important;
+
+  .bg-grey {
+    padding-left: 0 !important;
+  }
 
   span {
-    color: $postiveValueColor;
+    // color: $postiveValueColor;
+    background-color: $positiveBackground !important;
   }
 }
 
@@ -580,6 +586,49 @@
   .multi-select-container__control {
     min-height: calc(38px * 80 / 100) !important;
     height: calc(38px * 80 / 100) !important;
+  }
+}
+
+.costing-selectable-dropdown {
+  margin-bottom: 0 !important;
+  min-width: 120px;
+
+  .multi-select-container__indicators,
+  .multi-select-container__control {
+    min-height: calc(38px * 80 / 100) !important;
+    height: calc(38px * 80 / 100) !important;
+  }
+}
+
+.rfq-summary-discard {
+  width: 32p dex;
+  height: 32px;
+  margin: 0;
+}
+
+.first-section {
+  padding-right: 0 !important;
+}
+
+
+.second-section {
+  padding: 0;
+
+  .costing-border-inner-section {
+    border-left: none !important;
+    height: 100%;
+
+    .col-md-12 {
+      margin-bottom: 1px;
+      text-align: right;
+
+      &:last-child {
+        height: calc(100% - 45px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    }
   }
 }
 

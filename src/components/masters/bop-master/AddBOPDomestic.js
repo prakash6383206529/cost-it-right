@@ -95,6 +95,7 @@ class AddBOPDomestic extends Component {
       levelDetails: {},
       vendorFilterList: [],
       isClientVendorBOP: false,
+      uomIsNo: false,
       CostingTypePermission: false,
       isTechnologyVisible: false,
       Technology: [],
@@ -121,7 +122,7 @@ class AddBOPDomestic extends Component {
     if (!(this.props.data.isEditFlag || this.state.isViewMode)) {
       this.props.getUOMSelectList(() => { })
       this.props.getBOPCategorySelectList(() => { })
-      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     }
   }
 
@@ -132,9 +133,9 @@ class AddBOPDomestic extends Component {
     let basicPriceText = ''
     if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
-        basicPriceText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+        basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
       } else {
-        basicPriceText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+        basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
       }
       netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
       this.setState({ toolTipTextNetCost: netCostText, toolTipTextBasicPrice: basicPriceText })
@@ -592,9 +593,13 @@ class AddBOPDomestic extends Component {
   * @description called
   */
   handleUOM = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ UOM: newValue, })
-    } else {
+    if (newValue && newValue !== '' && newValue.label === "No") {
+      this.setState({ UOM: newValue, uomIsNo: true })
+    }
+    else if (newValue.label !== "No") {
+      this.setState({ UOM: newValue, uomIsNo: false })
+    }
+    else {
       this.setState({ UOM: [] })
     }
   };
@@ -1144,7 +1149,7 @@ class AddBOPDomestic extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="BOP Category"
+                                  label="Insert Category"
                                   component={searchableSelect}
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("BOPCategory")}
@@ -1716,6 +1721,7 @@ class AddBOPDomestic extends Component {
               basicRateCurrency={FinalBasicPriceBaseCurrency}
               ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
               isFromMaster={true}
+              EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
             />
           }
           {

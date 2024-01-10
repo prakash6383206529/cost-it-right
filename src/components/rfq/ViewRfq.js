@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
-import { EMPTY_DATA, VBCTypeId, } from '../.././config/constants'
+import { EMPTY_DATA, NCCTypeId, VBCTypeId, } from '../.././config/constants'
 import NoContentFound from '.././common/NoContentFound';
 import { MESSAGES } from '../.././config/message';
 import Toaster from '.././common/Toaster';
@@ -18,7 +18,7 @@ import AddRfq from './AddRfq';
 import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
-import { checkForNull, formViewData, loggedInUserId } from '../../helper';
+import { checkForNull, formViewData, getCodeBySplitting, getNameBySplitting, loggedInUserId } from '../../helper';
 import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
@@ -341,9 +341,9 @@ function RfqListing(props) {
                     obj.ApprovalToken = quotationGrid[index].ApprovalToken
                     obj.typeOfCosting = 1
                     obj.partNo = quotationGrid[index]?.PartNumber
-                    obj.plantCode = quotationGrid[index]?.DestinationPlantCode
-                    obj.plantName = quotationGrid[index]?.DestinationPlantName
-                    obj.plantId = quotationGrid[index]?.DestinationPlantId
+                    obj.plantCode = getCodeBySplitting(quotationGrid[index]?.PlantName)
+                    obj.plantName = getNameBySplitting(quotationGrid[index]?.PlantName)
+                    obj.plantId = quotationGrid[index]?.PlantId
 
                     obj.vendorId = quotationGrid[index]?.VendorId
 
@@ -424,10 +424,10 @@ function RfqListing(props) {
 
                     obj.CostingHead = quotationGrid[index]?.costingHeadCheck
 
-                    obj.destinationPlantCode = quotationGrid[index]?.destinationPlantCode
-                    obj.destinationPlantName = quotationGrid[index]?.destinationPlantName
-                    obj.destinationPlantId = quotationGrid[index]?.destinationPlantId
-                    obj.costingTypeId = VBCTypeId
+                    obj.destinationPlantCode = getCodeBySplitting(quotationGrid[index]?.PlantName)
+                    obj.destinationPlantName = getNameBySplitting(quotationGrid[index]?.PlantName)
+                    obj.destinationPlantId = quotationGrid[index]?.PlantId
+                    obj.costingTypeId = quotationGrid[index]?.NfrId !== null ? NCCTypeId : VBCTypeId
                     obj.customerName = quotationGrid[index]?.customerName
                     obj.customerId = quotationGrid[index]?.customerId
                     obj.customerCode = quotationGrid[index]?.customerCode
@@ -782,7 +782,6 @@ function RfqListing(props) {
 
 
         const selectedRows = gridApi?.getSelectedRows()
-
         let partNumber = []
 
         selectedRows?.map(item => partNumber.push(item.PartNo))                 //STORE ALL PARS NUMBER

@@ -150,7 +150,7 @@ class AddVolume extends Component {
     setTimeout(() => {
       this.props.getFinancialYearSelectList(() => { })
       if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
-        this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+        this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       }
     }, 300);
     this.props.getSelectListPartType((res) => {

@@ -178,6 +178,8 @@ function ERSimulation(props) {
         resizable: true,
         filter: true,
         sortable: false,
+        headerCheckboxSelection: isFirstColumn,
+        checkboxSelection: isFirstColumn
     };
 
     const onGridReady = (params) => {

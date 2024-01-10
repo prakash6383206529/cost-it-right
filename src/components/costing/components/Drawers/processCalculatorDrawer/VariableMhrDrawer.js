@@ -143,17 +143,6 @@ function VariableMhrDrawer(props) {
           )
 
       }
-    } else if (technology === Non_Ferrous_HPDC) {
-      return (
-        <SheetMetalBaicDrawer
-          CostingViewMode={props.CostingViewMode}
-          calculateMachineTime={calculateMachineTime}
-          tonnage={tonnage}
-          item={item}
-          rmFinishWeight={props.rmFinishWeight}
-          calculatorData={calculatorData}
-        />
-      )
     } else {
       return (
         <SheetMetalBaicDrawer

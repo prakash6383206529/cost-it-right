@@ -93,7 +93,7 @@ class AddOverhead extends Component {
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }
-    this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+    this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
     this.props.fetchCostingHeadsAPI('master', res => { });
     if (!this.state.isViewMode) {
       this.props.fetchModelTypeAPI('--Model Types--', res => { });
@@ -249,9 +249,9 @@ class AddOverhead extends Component {
   }
 
   /**
-  * @method renderListing
-  * @description Used to show type of listing
-  */
+   * @method renderListing
+   * @description Used to show type of listing
+   */
   renderListing = (label) => {
     const { clientSelectList, modelTypes, plantSelectList, costingHead, rawMaterialNameSelectList, gradeSelectList } = this.props;
     const temp = [];
@@ -1307,7 +1307,7 @@ class AddOverhead extends Component {
                             />
                           </div>
                         </Col>
-                      </Row>
+                      </Row >
 
 
                       <Row>

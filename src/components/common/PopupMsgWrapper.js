@@ -35,12 +35,12 @@ function PopupMsgWrapper(props) {
           disabled={props?.disablePopup}
         >
           <div className={"save-icon"}></div>
-          {props.firstButtonName ? props.firstButtonName : 'OK'}
+          {props.firstButtonName ? props.firstButtonName : props.nfrPopup ? 'Yes' : 'OK'}
         </Button>
         {' '}
         <Button className="cancel-btn" onClick={props.closePopUp}>
           <div className={'cancel-icon'}></div>
-          {props.secondButtonName ? props.secondButtonName : 'Cancel'}
+          {props.secondButtonName ? props.secondButtonName : props.nfrPopup ? 'No' : 'Cancel'}
         </Button>
       </ModalFooter>
     </Modal>

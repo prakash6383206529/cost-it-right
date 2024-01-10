@@ -198,7 +198,6 @@ function EditPartCost(props) {
         setWeightedCost(weightedCostCalc)
         setGridData(gridTempArr)
     }
-
     const calculateWeightedCost = (arrayTemp = []) => {
         let weightedCostCalc = 0
         weightedCostCalc = arrayTemp && arrayTemp.reduce((accummlator, el) => {

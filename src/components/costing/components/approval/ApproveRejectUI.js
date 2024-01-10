@@ -5,9 +5,10 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { getConfigurationKey } from '../../../../helper'
+import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
-import { FILE_URL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4 } from '../../../../config/constants'
+import { FILE_URL, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
+import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 import DayTime from '../../../common/DayTimeWrapper'
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -18,19 +19,25 @@ import LoaderCustom from '../../../common/LoaderCustom';
 import Toaster from '../../../common/Toaster'
 import WarningMessage from '../../../common/WarningMessage'
 import { getApprovalTypeSelectList } from '../../../../actions/Common'
+import { updateCostingIdFromRfqToNfrPfs } from '../../actions/Costing'
+import { pushNfrOnSap } from '../../../masters/nfr/actions/nfr'
+import { MESSAGES } from '../../../../config/message'
+import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
+import PushSection from '../../../common/PushSection'
+import { transformApprovalItem } from '../../../common/CommonFunctions'
 import Button from '../../../layout/Button'
-import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
   const dropzone = useRef(null);
-  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails } = props
+  const { type, approvalData, showMessage, setDataFromSummary, disableReleaseStrategy, IsNotFinalLevel, isSimulation, dataSend, simulationDetail, isSimulationApprovalListing, dataInFields, approvalDropDown, handleDepartmentChange, onSubmit, callbackSetDataInFields, showApprovalTypeDropdown, releaseStrategyDetails, reasonId } = props
 
   const { TokensList } = useSelector(state => state.simulation)
 
   const { register, control, formState: { errors }, setValue } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
   })
+  const userData = userDetails()
 
   const dispatch = useDispatch()
   const [openPushButton, setOpenPushButton] = useState(false)
@@ -44,6 +51,7 @@ function ApproveRejectUI(props) {
   const [attachmentLoader, setAttachmentLoader] = useState(false)
   const [showWarningMessage, setShowWarningMessage] = useState(props?.showWarningMessage)
   const [approvalType, setApprovalType] = useState('');   // change 
+  const [showPopup, setShowPopup] = useState(false)
   const [fieldDataStore, setFieldDataStore] = useState({})
 
   const deptList = useSelector((state) => state.approval.approvalDepartmentList)
@@ -132,7 +140,8 @@ function ApproveRejectUI(props) {
     }
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map((item) => {
-        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4)) tempDropdownList.push({ label: item.Text, value: item.Value })
+        const transformedText = transformApprovalItem(item);
+        if (Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) tempDropdownList.push({ label: transformedText, value: item.Value })
         return null
       })
       return tempDropdownList
@@ -173,11 +182,11 @@ function ApproveRejectUI(props) {
   const handleApprovalTypeChange = (newValue) => {
     setApprovalType(newValue?.value)
     let obj = {
-      ...fieldDataStore, Department: { label: '', value: '' },
+      ...fieldDataStore, Department: dataInFields?.Department,
       Approver: { label: '', value: '', levelId: '', levelName: '' },
       ApprovalType: newValue
     }
-    delete obj.Department
+    // delete obj.Department
     delete obj.Approver
     setFieldDataStore(obj)
     callbackSetDataInFields(obj)
@@ -265,7 +274,17 @@ function ApproveRejectUI(props) {
       dropzone.current.files.pop()
     }
   }
-
+  const showPopupWrapper = () => {
+    setShowPopup(true)
+  }
+  const onPopupConfirm = () => {
+    onSubmit()
+    setShowPopup(false)
+  }
+  const closePopUp = () => {
+    onSubmit()
+    setShowPopup(false)
+  }
   return (
     <>
       <Drawer
@@ -326,7 +345,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={disableReleaseStrategy}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
@@ -343,7 +362,7 @@ function ApproveRejectUI(props) {
                         options={approvalDropDown}
                         mandatory={true}
                         handleChange={handleApproverChange}
-                        disabled={disableReleaseStrategy}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                         errors={errors.approver}
                       />
                     </div>
@@ -367,7 +386,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleDepartmentChange}
                         errors={errors.dept}
-                        disabled={disableReleaseStrategy}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
                       {showWarningMessage && <WarningMessage dClass={"mr-2"} message={showMessage ? showMessage : `There is no approver added against this ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'company' : 'department'}`} />}
                     </div>
@@ -385,7 +404,7 @@ function ApproveRejectUI(props) {
                         mandatory={true}
                         handleChange={handleApproverChange}
                         errors={errors.approver}
-                        disabled={disableReleaseStrategy}
+                        disabled={(disableReleaseStrategy || !(userData.Department.length > 1 && reasonId !== REASON_ID))}
                       />
                     </div>
                     {
@@ -430,6 +449,24 @@ function ApproveRejectUI(props) {
                             </div>
                           </div>
                         }
+                        {/* MINDA */}
+                        {/* {
+                          type === 'Sender' && isSimulation &&
+                          <Row className="px-3">
+                            <Col md="12">
+                              <div className="left-border">{"SAP-Push Details"}</div>
+                            </Col>
+                            <div className="w-100">
+                              <PushSection
+                                errors={errors}
+                                register={register}
+                                control={control}
+                                Controller={Controller}
+                              />
+                            </div>
+
+                          </Row>
+                        } */}
                       </>
                     }
 
@@ -583,12 +620,16 @@ function ApproveRejectUI(props) {
                     icon={"save-icon"}
                     buttonName={"Submit"}
                   />
-                </div>
-              </Row>
-            </form>
-          </div>
-        </Container>
-      </Drawer>
+                </div >
+              </Row >
+            </form >
+          </div >
+        </Container >
+        {/* MINDA */}
+        {/* {
+          (showPopup && props.isShowNFRPopUp) && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Do you want to push this vendor's costing to SAP for PFS2`} nfrPopup={true} />
+        } */}
+      </Drawer >
       {
         openPushButton && (
           <PushButtonDrawer

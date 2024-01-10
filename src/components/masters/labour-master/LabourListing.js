@@ -421,7 +421,6 @@ class LabourListing extends Component {
       dataCount
     } = this.state
     const ExcelFile = ReactExport.ExcelFile;
-
     if (toggleForm) {
       return <AddLabour hideForm={this.hideForm} data={data} />
     }

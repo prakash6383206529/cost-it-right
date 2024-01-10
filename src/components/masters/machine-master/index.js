@@ -8,6 +8,8 @@ import AddMoreDetails from './AddMoreDetails';
 import ProcessListing from './ProcessListing';
 import { checkPermission } from '../../../helper/util';
 import { APPROVAL_CYCLE_STATUS_MASTER, MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
+//MINDA
+// import { APPROVED_STATUS_MASTER, MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
 import ScrollToTop from '../../common/ScrollToTop';
 import { CheckApprovalApplicableMaster } from "../../../helper";
 import CommonApproval from '../material-master/CommonApproval';
@@ -233,6 +235,8 @@ class MachineMaster extends Component {
                                                 stopApiCallOnCancel={this.state.stopApiCallOnCancel}
                                                 selectionForListingMasterAPI='Master'
                                                 approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
+                                            //MINDA
+                                            // approvalStatus={APPROVED_STATUS_MASTER}
                                             />
                                         </TabPane>}
 

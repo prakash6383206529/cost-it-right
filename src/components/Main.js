@@ -39,7 +39,7 @@ import {
   OVERHEAD_AND_PROFIT, PART, PLANT, RAW_MATERIAL, UOM, USER, VENDOR,
   REASON, VOLUME, CLIENT, EXCHANGE_RATE, TAX, COSTING_PATH, APPROVAL_LISTING_PATH, COSTING_BREAKUP_DETAILS_REPORT, APPROVAL_APP,
   APPROVAL_SUMMARY_PATH, COSTING_BULK_UPLOAD, COSTING_SUMMARY_, COSTING_SUMMARY, Simulation_Page, Simulation_Upload, API,
-  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, RESET_PASSWORD, FORGET_PASSWORD, INSIGHT_SIMULATION_REPORT
+  DASHBOARDWITHGRAPH_PATH, SIMULATION_APPROVAL_SUMMARY_PATH, DASHBOARD_PATH, DASHBOARD_PATH_SECOND, SHEET_METAL, SIMULATION_PATH, SIMULATION_HISTORY_PATH, USER_PATH, RFQ_LISTING, RFQ, COST_RATIO_REPORT, BUDGETING, NFR_LISTING, NFR, MASTER_BENCHMARK_REPORT, COST_MOVEMENT_REPORT, SUPPLIER_CONTRIBUTION_REPORT, SALE_PROVISION_REPORT, PURCHASE_PROVISION_REPORT, CUSTOMER_POAM_REPORT, HEAD_WISE_COSTING_GOT_GIVEN, PLANT_HEAD_WISE, PRODUCT_ROLLOUT, OUTSOURCING, COSTING_DETAIL, MASTER_COST_MOVEMENT_REPORT, RESET_PASSWORD, FORGET_PASSWORD, NFR_INSIGHT_DETAILS, INSIGHT_SIMULATION_REPORT
 } from '../config/constants'
 import ApprovalSummary from './costing/components/approval/ApprovalSummary'
 import CostingSummaryBulkUpload from './costing/components/CostingSummaryBulkUpload'
@@ -75,6 +75,10 @@ import OutsourcingListing from './masters/outsourcing-master/OutsourcingListing'
 import CostingForm from './costing/components'
 import SimulationForm from './simulation/components'
 import ResetPassword from './login/ResetPassword'
+
+import SAPDetailList from './masters/sap-detail/SAPDetailList'
+import NFRInsightsReport from './report/components/NFRInsightReportFolder/NFRInsightReport'
+
 const CustomHeader = {
   'Content-Type': 'application/x-www-form-urlencoded',
   'Access-Control-Allow-Origin': '*',
@@ -141,6 +145,19 @@ class Main extends Component {
           if (res && res.status === 200) {
             let userDetail = formatLoginResult(res.data.Data);
             localStorage.setItem("userDetail", JSON.stringify(userDetail))
+            //MIL DEPARTMENT RELATED CHANGE
+            // let departmentList = ''
+            // const dept = userDetail && userDetail.Department.map((item) => {
+            //   if (item.DepartmentName === 'Corporate' || item.DepartmentName === 'Administration') {
+            //     return ''
+            //   } else {
+            //     return item.DepartmentCode
+            //   }
+
+            // })
+            // departmentList = dept.join(',')
+            // localStorage.setItem("userDetail", JSON.stringify(userDetail))
+            // reactLocalStorage.setObject("departmentList", departmentList);
             this.props.logUserIn();
             setTimeout(() => {
               this.setState({ isLoader: false })
@@ -369,13 +386,13 @@ class Main extends Component {
                     <Route path="/cost-ratio-report" component={AuthMiddleware(CostRatioReport, COST_RATIO_REPORT)} />
                     <Route path="/master-benchmarking-report" component={AuthMiddleware(CostingBenchmarkReport, MASTER_BENCHMARK_REPORT)} />
                     <Route path="/cost-movement-report" component={AuthMiddleware(CostMovementReport, COST_MOVEMENT_REPORT)} />
+                    <Route path="/master-cost-movement-report" component={AuthMiddleware(MasterCostMovement, MASTER_COST_MOVEMENT_REPORT)} />
                     <Route path="/supplier-contribution-report" component={AuthMiddleware(SupplierContributionReport, SUPPLIER_CONTRIBUTION_REPORT)} />
                     <Route path="/sale-provision-report" component={AuthMiddleware(SaleProvisionReport, SALE_PROVISION_REPORT)} />
                     <Route path="/purchase-provision-report" component={AuthMiddleware(PurchaseProvisionReport, PURCHASE_PROVISION_REPORT)} />
                     <Route path="/customer-poam-summary-report" component={AuthMiddleware(CustomerPoamSummaryReport, CUSTOMER_POAM_REPORT)} />
                     <Route path="/head-wise-costing-got-given" component={AuthMiddleware(HeadWiseCostingGotGiven, HEAD_WISE_COSTING_GOT_GIVEN)} />
                     <Route path="/plant-head-wise" component={AuthMiddleware(PlantWiseCostingGotGiven, PLANT_HEAD_WISE)} />
-                    <Route path="/master-cost-movement-report" component={MasterCostMovement} />
                     <Route path="/pipd-report" component={PipdReport} />
                     <Route path="/product-rollout" component={ProductRollout} />
                     {/*  NEED TO ADD PATH FROM BACKEND */}
@@ -385,6 +402,8 @@ class Main extends Component {
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
                     <Route path="/got-given-summary-details-report" component={GotGivenReport} />
                     <Route path="/out-sourcing-master" component={AuthMiddleware(OutsourcingListing, OUTSOURCING)} />
+                    <Route path="/sap-push-detail" component={SAPDetailList} />
+                    <Route path="/nfr-insights-details" component={AuthMiddleware(NFRInsightsReport, NFR_INSIGHT_DETAILS)} />
                     {/* <Route path='/simulation-approval-listing' component={SimulationApprovalListing} /> */}
 
                     {/* <Route path="/product-master" component={productMaster} /> */}

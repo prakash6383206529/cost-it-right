@@ -10,6 +10,8 @@ import NonFerrousCalculator from './dieCasting'
 import Ferrous from './Ferrous'
 import CorrugatedBoxCalculator from './corrugatedBox/index'
 import RubberCalciTab from './rubber'
+//MINDA
+// import RubberCalciTab from './rubber/Rubber'
 import Machining from './MachiningCalculator'
 import Pipe from './sheetMetal/Pipe'
 

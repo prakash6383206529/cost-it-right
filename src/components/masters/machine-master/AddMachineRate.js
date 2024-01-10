@@ -181,7 +181,7 @@ class AddMachineRate extends Component {
     if (!(editDetails.isEditFlag || editDetails.isViewMode)) {
       this.props.getMachineTypeSelectList(() => { })
       this.props.getCostingSpecificTechnology(loggedInUserId(), () => { })
-      this.props.getPlantSelectListByType(ZBC, "MASTER", () => { })
+      this.props.getPlantSelectListByType(ZBC, "MASTER", '', () => { })
       this.props.getClientSelectList(() => { })
     }
 
@@ -300,6 +300,7 @@ class AddMachineRate extends Component {
     this.props.change('MachineName', data && data.fieldsObj && data.fieldsObj.MachineName)
     this.props.change('MachineNumber', data && data.fieldsObj && data.fieldsObj.MachineNumber)
     this.props.change('TonnageCapacity', data && data.fieldsObj && data.fieldsObj.TonnageCapacity)
+    this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
     this.props.change('Specification', data && data.fieldsObj && data.fieldsObj.Specification)
     this.props.change('vendorName', data && data.selectedVedor)
     this.props.change('Description', data && data.fieldsObj && data.fieldsObj.Description)
@@ -908,7 +909,7 @@ class AddMachineRate extends Component {
       UOM: tempData.length === 0 ? [] : !this.state.lockUOMAndRate ? [] : UOM,
       isEditIndex: false,
       processName: [],
-    }, () => this.props.change('MachineRate', tempData.length === 0 ? '' : this.props.fieldsObj.MachineRate))
+    }, () => this.props.change('MachineRate', ''))
     this.setState({ DropdownChange: false })
   }
 

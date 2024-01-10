@@ -7,6 +7,8 @@ import NoContentFound from '../../../../common/NoContentFound';
 import { CRMHeads, EMPTY_DATA, WACTypeId } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
 import { calculatePercentage, checkForDecimalAndNull, checkForNull, removeBOPfromApplicability } from '../../../../../helper';
+//MINDA
+// import {removeBOPFromList } from '../../../../../helper';
 import AddTool from '../../Drawers/AddTool';
 import { isToolDataChange, setComponentToolItemData, setToolsErrors } from '../../../actions/Costing';
 import { ViewCostingContext } from '../../CostingDetails';
@@ -16,7 +18,7 @@ import { debounce } from 'lodash';
 import { IdForMultiTechnology } from '../../../../../config/masterData';
 import TooltipCustom from '../../../../common/Tooltip';
 import { errorCheckObject } from '../../../CostingUtil';
-import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8 } from "../../../../../helper/validation";
+import { number, decimalNumberLimit6, checkWhiteSpaces, percentageLimitValidation, decimalNumberLimit8, decimalNumberLimit13 } from "../../../../../helper/validation";
 
 let counter = 0;
 function Tool(props) {
@@ -322,6 +324,8 @@ function Tool(props) {
       });
       if (isBreakupBoughtOutPartCostingFromAPI) {
         tempList = removeBOPfromApplicability([...temp])
+        //MINDA
+        // tempList = removeBOPFromList([...temp])
       } else {
         tempList = [...temp]
       }
@@ -802,7 +806,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit6 }
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
                       }}
                       defaultValue={''}
                       className=""
@@ -825,7 +829,7 @@ function Tool(props) {
                       mandatory={false}
                       rules={{
                         required: false,
-                        validate: { number, checkWhiteSpaces, decimalNumberLimit8 }
+                        validate: { number, checkWhiteSpaces, decimalNumberLimit13 }
                       }}
                       defaultValue={''}
                       className=""

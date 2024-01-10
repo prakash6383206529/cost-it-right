@@ -1,6 +1,6 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
-import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId } from "../../config/constants";
+import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW } from "../../config/constants";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -8,7 +8,6 @@ const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedP
     tempArr = _.filter(dropdownArray, i => {
         return i[filterByName]?.toLowerCase().includes(inputValue?.toLowerCase())
     });
-
     if (selectedParts) {
         let temp = []
         tempArr && tempArr.map(item => {
@@ -142,9 +141,34 @@ export const costingTypeIdToApprovalTypeIdFunction = (value) => {
         case RELEASESTRATEGYTYPEID4:
             approvalTypeId = RELEASESTRATEGYTYPEID4;
             break;
+        case PFS2TypeId:
+            approvalTypeId = PFS2APPROVALTYPEID;
+            break;
         default:
             approvalTypeId = null; // or any default value you prefer
             break;
     }
     return approvalTypeId;
+};
+/**
+* Transforms an approval item based on its text value.
+* @param {Object} item - The approval item with properties like Text and Value.
+* @returns {string} - The transformed label for the approval item.
+*/
+export const transformApprovalItem = (item) => {
+    // Switch statement to determine the transformation based on item.Text
+    switch (item.Text) {
+        case RELEASE_STRATEGY_B1:
+            return RELEASE_STRATEGY_B1_NEW;
+        case RELEASE_STRATEGY_B2:
+            return RELEASE_STRATEGY_B2_NEW;
+        case RELEASE_STRATEGY_B3:
+            return RELEASE_STRATEGY_B3_NEW;
+        case RELEASE_STRATEGY_B4:
+            return RELEASE_STRATEGY_B4_NEW;
+        case RELEASE_STRATEGY_B6:
+            return RELEASE_STRATEGY_B6_NEW;
+        default:
+            return item.Text; // Return the original text if no transformation is needed
+    }
 };

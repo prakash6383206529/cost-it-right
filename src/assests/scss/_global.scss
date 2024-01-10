@@ -2775,7 +2775,8 @@ td,
   .Cancelled,
   .CreatedByAssembly,
   .Received,
-  .Sent {
+  .Sent,
+  .ExternalReject {
     background-color: #da94a1;
     min-width: 90px;
     height: 26px;
@@ -2823,7 +2824,8 @@ td,
     background-color: #fc5774;
   }
 
-  .Error {
+  .Error,
+  .ExternalReject {
     background-color: #f73d3d;
   }
 

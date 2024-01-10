@@ -11,18 +11,18 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import ReactExport from 'react-export-excel';
-import { ReportMaster, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
+import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../../../config/constants';
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull, searchNocontentFilter } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
 import MultiDropdownFloatingFilter from '../../masters/material-master/MultiDropdownFloatingFilter'
 import { MESSAGES } from '../../../config/message'
-import SelectRowWrapper from '../../common/SelectRowWrapper'
 import { setSelectedRowForPagination } from '../../simulation/actions/Simulation'
+import SelectRowWrapper from '../../common/SelectRowWrapper'
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage'
 const ExcelFile = ReactExport.ExcelFile;
@@ -60,6 +60,9 @@ function ReportListing(props) {
     const [isFilterButtonClicked, setIsFilterButtonClicked] = useState(false)
     const [noData, setNoData] = useState(false)
     const [disableDownload, setDisableDownload] = useState(false)
+    const [disableDownloadSap, setDisableDownloadSap] = useState(false)
+    const [disableDownloadEncode, setDisableDownloadEncode] = useState(false)
+    const [departmentCodeFilter, setDepartmentCodeFilter] = useState(false)
     const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
     const statusColumnData = useSelector((state) => state.comman.statusColumnData);
     const [dataCount, setDataCount] = useState(0)
@@ -341,8 +344,8 @@ function ReportListing(props) {
     }
 
     /**
-    * @method decimalInputOutputFormatter
-    */
+  * @method decimalInputOutputFormatter
+  */
     const decimalInputOutputFormatter = (props) => {
         const cellValue = props?.value;
         return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
@@ -386,6 +389,7 @@ function ReportListing(props) {
     }
 
     const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi) => {
+        // const getTableData = (skip, take, isPagination, data, isLastWeek, isCallApi, sapExcel, sapEncoded) => { //MINDA
 
         if (isPagination === true) {
             setLoader(true)
@@ -418,6 +422,16 @@ function ReportListing(props) {
                         if (prop !== 'DepartmentCode' && floatingFilterData[prop] !== "") {
                             isReset = false
                         }
+                        //MINDA
+                        // if (departmentCodeFilter) {
+                        //     if (floatingFilterData[prop] !== "") {
+                        //         isReset = false
+                        //     }
+                        // } else {
+                        //     if (prop !== 'DepartmentCode' && floatingFilterData[prop] !== "") {
+                        //         isReset = false
+                        //     }
+                        // }
                     }
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
@@ -431,6 +445,7 @@ function ReportListing(props) {
 
                 setTimeout(() => {
                     setIsFilterButtonClicked(false)
+                    // setDepartmentCodeFilter(false) //MINDA
                 }, 600);
             }
 
@@ -439,6 +454,11 @@ function ReportListing(props) {
                     setDisableDownload(false)
                     dispatch(disabledClass(false))
                     let button = document.getElementById('Excel-Downloads')
+
+                    // setDisableDownloadSap(false)
+                    //                 setDisableDownloadEncode(false)
+                    //                 let button = document.getElementById(`${sapExcel ? 'Excel-DownloadsSap' : sapEncoded ? 'Excel-DownloadsEncoded' : 'Excel-Downloads'}`)
+                    //                 dispatch(disabledClass(false)) //MINDA
                     button.click()
                 }, 800);
             }
@@ -526,6 +546,10 @@ function ReportListing(props) {
         if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             setWarningMessage(false)
 
+            // if (value?.filterInstance?.appliedModel === "DepartmentCode") {
+            //     setDepartmentCodeFilter(false)
+            // }
+            //MINDA
             if (!filterClick) {
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: "" })                                                         // DYNAMICALLY SETTING KEY:VALUE PAIRS IN OBJECT THAT WE ARE RECEIVING FROM THE FLOATING FILTER
             }
@@ -542,11 +566,17 @@ function ReportListing(props) {
             // if (value.column.colId !== "DepartmentCode" && (userDetails().Role !== 'SuperAdmin')) {    //MAY BE USED LATER
             //     setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: JSON.parse(localStorage.getItem('departmentList')) })
             // }
+
+            // if (value.column.colId !== "DepartmentCode" && (userDetails().Role !== 'SuperAdmin' && userDetails().Role !== 'Group Category Head')) {
+            //     // setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: JSON.parse(localStorage.getItem('departmentList')) })                                       //THIS WILL USE IN FUTURE
+            //     setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, DepartmentCode: '' })
+            // }//MINDA
             else {
                 let valueString = value?.filterInstance?.appliedModel?.filter
                 if (valueString.includes("+")) {
                     valueString = encodeURIComponent(valueString)
                 }
+                // setDepartmentCodeFilter(true)//MINDA
                 setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: valueString })
             }
         }
@@ -573,6 +603,26 @@ function ReportListing(props) {
         //         getTableData(0, 100, true, floatingFilterData, false, true);
         //     } else {
         //         getTableData(0, 100, true, floatingFilterData, false, false);
+        //     }
+        // }
+        // else {
+        //     getTableData(0, 100, true, floatingFilterData, false, true);
+
+        // }
+        //MINDA
+        // let departmentList = JSON.parse(localStorage.getItem('departmentList'))
+        // departmentList = departmentList.split(",")
+        // const found = departmentList.find(element => {
+        //     return element.toLowerCase() === floatingFilterData.DepartmentCode.toLowerCase()
+        // })
+
+        // // if (floatingFilterData.DepartmentCode !== JSON.parse(localStorage.getItem('departmentList')) && (userDetails().Role !== 'SuperAdmin' && userDetails().Role !== 'Group Category Head')) {                                           //THIS WILL USE IN FUTURE
+        // if (floatingFilterData.DepartmentCode !== "") {
+
+        //     if (found !== undefined) {
+        //         getTableData(0, 100, true, floatingFilterData, false, true);
+        //     } else {
+        //         getTableData(0, 100, true, floatingFilterData, false, true);
         //     }
         // }
         // else {
@@ -690,6 +740,14 @@ function ReportListing(props) {
         // } else {
         //     floatingFilterData.DepartmentCode = JSON.parse(localStorage.getItem('departmentList'))
         // }
+        //MINDA
+        // if (userDetails().Role === 'SuperAdmin' || userDetails().Role === 'Group Category Head') {
+        //     floatingFilterData.DepartmentCode = ""
+
+        // } else {
+        //     // floatingFilterData.DepartmentCode = JSON.parse(localStorage.getItem('departmentList'))         //THIS WILL USE IN FUTURE
+        //     floatingFilterData.DepartmentCode = ""
+        // }
 
         setFloatingFilterData(floatingFilterData)
         setWarningMessage(false)
@@ -737,6 +795,9 @@ function ReportListing(props) {
 
     const onExcelDownload = () => {
         setDisableDownload(true)
+        //MINDA
+        // setDisableDownloadSap(false)
+        // setDisableDownloadEncode(false)
         dispatch(disabledClass(true))
         let tempArr = gridApi && gridApi?.getSelectedRows()
         if (tempArr?.length > 0) {
@@ -749,6 +810,49 @@ function ReportListing(props) {
 
         } else {
             getTableData(0, defaultPageSize, false, floatingFilterData, false, true); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
+            //MINDA // getTableData(0, defaultPageSize, false, floatingFilterData, false, true, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
+        }
+
+    }
+
+    const onExcelDownloadSap = () => {
+        setDisableDownloadSap(true)
+        setDisableDownload(false)
+        setDisableDownloadEncode(false)
+        let tempArr = gridApi && gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownloadSap(false)
+                let button = document.getElementById('Excel-DownloadsSap')
+                button?.click()
+            }, 400);
+
+        } else {
+
+            getTableData(0, defaultPageSize, false, floatingFilterData, false, true, true); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
+        }
+
+    }
+
+    const onExcelDownloadEncoded = () => {
+        setDisableDownloadEncode(true)
+        setDisableDownloadSap(false)
+        setDisableDownload(false)
+        let tempArr = gridApi && gridApi?.getSelectedRows()
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setDisableDownloadEncode(false)
+                let button = document.getElementById('Excel-DownloadsEncoded')
+                button.click()
+            }, 400);
+
+        } else {
+
+            getTableData(0, defaultPageSize, false, floatingFilterData, false, true, false, true); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
         }
 
     }
@@ -776,6 +880,20 @@ function ReportListing(props) {
         </ExcelSheet>);
     }
 
+    //MINDA
+    const sapExcelDataFilter = (data) => {
+        let temp = []
+        data && data.map((item) => {
+            if (item.Status === "ApprovedByASMSimulation" || item.Status === "CreatedByAssembly") {
+                return false
+            } else {
+                temp.push(item)
+            }
+        })
+        return temp
+    }
+
+    //MINDA
     /**
     * @method onSubmit
     * @description filtering data on Apply button
@@ -788,6 +906,15 @@ function ReportListing(props) {
         // const type_of_costing = 
         getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus)
     }
+    // getTableData(tempPartNo, tempcreatedBy, tempRequestedBy, tempStatus, true)//MINDA
+
+    // COMMENT FOR NOW AS TOLD BY TR
+    // const lastWeekFilter = () => {
+
+    //     setPageNo(1)
+    //     setCurrentRowIndex(0)
+    //     getTableData(0, 100, true, floatingFilterData, true, true);
+    // } //MINDA
 
     return (
         <div className="container-fluid custom-pagination report-listing-page ag-grid-react">
@@ -817,6 +944,51 @@ function ReportListing(props) {
                                 </button>}>
                                 {renderColumn(ReportMaster)}
                             </ExcelFile>
+                            {/* //MINDA */}
+                            {/* {disableDownload ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>
+                            </button></div> :
+                                <>
+                                    <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1"></div>
+                                    
+                                        {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                    </button>
+
+                                    <ExcelFile filename={'Costing Breakup Details'} fileExtension={'.xls'} element={
+                                        <button id={'Excel-Downloads'} type="button" className='p-absolute right-22'>
+                                        </button>}>
+                                        {renderColumn(ReportMaster)}
+                                    </ExcelFile>
+                                </>
+                            } */}
+
+
+
+                            {/* {disableDownloadSap ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>SAP Excel Download
+                            </button></div> :
+                                <>
+                                    <button type="button" onClick={onExcelDownloadSap} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                        SAP Excel Download
+                                    </button>
+
+                                    <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" className='p-absolute right-22' id={'Excel-DownloadsSap'}></button>}>
+                                        {renderColumnSAP(ReportSAPMaster)}
+                                    </ExcelFile>
+                                </>
+                            } */}
+                            {/* {disableDownloadEncode ? <div className='p-relative mr5'> <LoaderCustom customClass={"download-loader"} /> <button type="button" className={'user-btn'}><div className="download mr-0"></div>Encoded Download
+                            </button></div> :
+                                <>
+                                    <button type="button" onClick={onExcelDownloadEncoded} className={'user-btn mr5'}><div className="download mr-0" title="Download"></div>
+                                        Encoded Download
+                                    </button>
+
+
+                                    <ExcelFile filename={ReportSAPMaster} fileExtension={'.xls'} element={<button type="button" id={'Excel-DownloadsEncoded'} className='p-absolute right-22'></button>}>
+                                        {renderColumnSAPEncoded(ReportSAPMaster)}
+                                    </ExcelFile>
+                                </>
+                            } */}
+                            {/* //MINDA */}
                         </div>
 
                     </Col>
@@ -918,6 +1090,8 @@ function ReportListing(props) {
                             <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net Cost Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceINR' headerName='Net Cost (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                             <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
 
                         </AgGridReact>

@@ -802,18 +802,19 @@ function RMSimulation(props) {
                                                             />
                                                         </div>
                                                     </>}
-                                                {!isImpactedMaster && list && <div className={`d-flex align-items-center simulation-label-container`}>
-                                                    <div className='d-flex'>
-                                                        <label>Technology: </label>
-                                                        <p className='technology ml-1' title={list[0]?.TechnologyName}>{list[0]?.TechnologyName}</p>
-                                                    </div>
-                                                    {list[0]?.CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
-                                                        <label className='mr-1'>Vendor (Code):</label>
-                                                        <p title={list[0]?.VendorName}>{list[0]?.VendorName ? list[0]?.VendorName : list?.[0]?.['Vendor (Code)']}</p>
+                                                {
+                                                    !isImpactedMaster && list && <div className={`d-flex align-items-center simulation-label-container`}>
+                                                        <div className='d-flex'>
+                                                            <label>Technology: </label>
+                                                            <p className='technology ml-1' title={list[0]?.TechnologyName}>{list[0]?.TechnologyName}</p>
+                                                        </div>
+                                                        {list[0]?.CostingTypeId !== CBCTypeId && <div className='d-flex pl-3'>
+                                                            <label className='mr-1'>Vendor (Code):</label>
+                                                            <p title={list[0]?.VendorName}>{list[0]?.VendorName ? list[0]?.VendorName : list?.[0]?.['Vendor (Code)']}</p>
 
+                                                        </div>}
+                                                        <button type="button" className={"apply ml-2"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
                                                     </div>}
-                                                    <button type="button" className={"apply ml-2"} id="simulation-back" onClick={cancel} disabled={isDisable}> <div className={'back-icon'}></div>Back</button>
-                                                </div>}
                                             </div>
 
 

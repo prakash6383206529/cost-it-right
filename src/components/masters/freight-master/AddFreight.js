@@ -1016,8 +1016,8 @@ class AddFreight extends Component {
                                 />
                                 {this.state.errorObj.effectiveDate && this.state.effectiveDate === "" && <div className='text-help'>This field is required.</div>}
                               </div>
-                            </div>
-                          </Col>
+                            </div >
+                          </Col >
                           <Col md="2">
                             <div className="pt-2">
                               {this.state.isEditIndex ? (
@@ -1063,7 +1063,7 @@ class AddFreight extends Component {
                               )}
                             </div>
                           </Col>
-                        </Row>
+                        </Row >
                         <Row>
                           <Col md="12">
                             <Table className="table border" size="sm">
@@ -1104,7 +1104,7 @@ class AddFreight extends Component {
                           </Col>
 
                         </Row>
-                      </div>
+                      </div >
                       <Row className="sf-btn-footer no-gutters justify-content-between bottom-footer">
                         <div className="col-sm-12 text-right bluefooter-butn">
                           <button
@@ -1143,7 +1143,8 @@ class AddFreight extends Component {
               ID={""}
               anchor={"right"}
             />
-          )}
+          )
+          }
         </div>
       </>
     );

@@ -212,13 +212,12 @@ function TabPackagingFreight(props) {
           Toaster.success(costingData.TechnologyId === LOGISTICS ? MESSAGES.FREIGHT_COSTING_SAVE_SUCCESS : MESSAGES.PACKAGE_FREIGHT_COSTING_SAVE_SUCCESS);
           dispatch(setComponentPackageFreightItemData({}, () => { }))
           InjectDiscountAPICall()
-          if (costingData.TechnologyId === LOGISTICS && gotoNextValue) {
-            props.toggle('2')
-            history.push('/costing-summary')
+          if ((costingData?.TechnologyId === LOGISTICS) && gotoNextValue) {
+            props?.toggle('2')
+            history?.push('/costing-summary')
           }
         }
       }))
-
     }
   }, 500)
 
@@ -318,10 +317,10 @@ function TabPackagingFreight(props) {
                   </button>}
                 </div>
               </form>
-            </div>
-          </Col>
-        </Row>
-      </div>
+            </div >
+          </Col >
+        </Row >
+      </div >
     </>
   );
 };

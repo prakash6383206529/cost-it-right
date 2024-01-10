@@ -524,6 +524,7 @@ export function renderTextAreaField(field) {
           id={specificId}
           placeholder={placeholder}
           disabled={disabledLabel}
+          autoComplete={'off'}
         />
       </div>
       {/* <div className="text-help mb-2">{touched && field.input.value === '' ? 'This field is required' : ""}</div> */}
@@ -729,7 +730,7 @@ export const searchableSelect = ({
           {...input}
           id={specificIdContainer}
           inputId={specificId}
-          isClearable={false}
+          isClearable={isClearable ? true : false}
           options={options}
           instanceId={input.name}
           onChange={handleChangeDescription}

@@ -420,7 +420,6 @@ class AddAssemblyPart extends Component {
   checkIsFormFilled = () => {
     const { fieldsObj } = this.props;
     if ((fieldsObj.BOMNumber === undefined || fieldsObj.BOMNumber === '') || fieldsObj.AssemblyPartNumber === undefined || fieldsObj.AssemblyPartName === undefined || Object.keys(this.state.TechnologySelected).length === 0 || this.state.effectiveDate === "") {
-
       return false;
     } else {
       return true;
@@ -438,7 +437,6 @@ class AddAssemblyPart extends Component {
 
     if (this.checkIsFormFilled() === false) {
       Toaster.warning("Please fill the mandatory fields.")
-
       return false;
     }
 
@@ -505,7 +503,6 @@ class AddAssemblyPart extends Component {
     }
 
     if (isEqual) {
-
       return false
     } else {
       this.setState({ isDisableBomNo: true })
@@ -663,7 +660,6 @@ class AddAssemblyPart extends Component {
     // CONDITION CHANGE FOR (BOMViewerData.length === 0 || BOMViewerData.length === 1)
     if (BOMViewerData && isEditFlag ? (BOMViewerData.length === 0) : (BOMViewerData.length === 0 || BOMViewerData.length === 1)) {
       Toaster.warning('Need to add Child parts');
-
       return false;
     }
 

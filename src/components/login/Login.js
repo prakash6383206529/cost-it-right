@@ -1,3 +1,4 @@
+
 import React, { Component } from "react";
 import { Field, formValueSelector, reduxForm } from "redux-form";
 import {
@@ -13,6 +14,8 @@ import { reactLocalStorage } from "reactjs-localstorage";
 import { Redirect } from 'react-router-dom';
 import { formatLoginResult } from '../../helper/ApiResponse';
 import logo from '../../assests/images/logo/company-logo.svg'
+//MINDA
+// import logo from '../../assests/images/logo/company-logo.png'
 import secondLogo from '../../assests/images/logo/CIRlogo.svg'
 import CheckIcon from '../../assests/images/mail-sent.png'
 import errorImg from '../../assests/images/box.png'
@@ -109,6 +112,8 @@ class Login extends Component {
         let departmentList = ''
         const dept = userDetail && userDetail.Department.map((item) => {
           if (item.Role === 'SuperAdmin') {
+            //MINDA
+            // if (userDetail.Role === 'Group Category Head' || userDetail.Role === 'SuperAdmin') {
             return ''
           } else {
             return item.DepartmentCode
@@ -159,6 +164,8 @@ class Login extends Component {
                   <img className="logo-first" src={logo} alt="Softude" />
                   {/* //RE */}
                   {/* <img className="logo-first" src={logo} alt="Royal Enfield" /> */}
+                  {/* MINDA */}
+                  {/* <img className="logo-first" src={logo} alt="Minda" /> */}
                 </div >
                 <h3 className="text-center">Welcome Back,<br /> Please login to your account</h3>
                 {/* <p>Welcome Back, Please login to your account</p> */}
