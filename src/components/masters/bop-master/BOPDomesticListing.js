@@ -2,9 +2,7 @@ import React, { useState, useEffect, useContext } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import { EMPTY_DATA, BOP_MASTER_ID, BOPDOMESTIC, defaultPageSize, ENTRY_TYPE_DOMESTIC, FILE_URL, DRAFTID, ZBCTypeId } from '../../../config/constants';
-import {
-    getBOPDataList, deleteBOP
-} from '../actions/BoughtOutParts';
+import { getBOPDataList, deleteBOP } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
@@ -31,6 +29,7 @@ import { hideCustomerFromExcel, hideMultipleColumnFromExcel, hideColumnFromExcel
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import { ApplyPermission } from ".";
+import { useRef } from 'react';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -38,6 +37,7 @@ const gridOptions = {};
 const BOPDomesticListing = (props) => {
     const permissions = useContext(ApplyPermission);
     const dispatch = useDispatch();
+    const searchRef = useRef(null);
     const { bopDomesticList, allBopDataList } = useSelector(state => state.boughtOutparts);
     const { initialConfiguration } = useSelector(state => state.auth);
     const { selectedRowForPagination } = useSelector(state => state.simulation)
@@ -80,7 +80,6 @@ const BOPDomesticListing = (props) => {
         attachment: false,
         viewAttachment: []
     });
-    const [searchFilter, setSearchFilter] = useState("")
     useEffect(() => {
         setTimeout(() => {
             if (!props.stopApiCallOnCancel) {
@@ -126,14 +125,7 @@ const BOPDomesticListing = (props) => {
         }
         let statusString = [props?.approvalStatus].join(",")
         const filterData = {
-            ...floatingFilterData,
-            bop_for: bopFor,
-            category_id: CategoryId,
-            vendor_id: vendorId,
-            plant_id: plantId,
-            ListFor: props.ListFor,
-            StatusId: statusString,
-            IsBOPAssociated: props?.isBOPAssociated
+            ...floatingFilterData, bop_for: bopFor, category_id: CategoryId, vendor_id: vendorId, plant_id: plantId, ListFor: props.ListFor, IsBOPAssociated: props?.isBOPAssociated
         }
         const { isMasterSummaryDrawer } = props
 
@@ -151,11 +143,8 @@ const BOPDomesticListing = (props) => {
                     props?.changeTokenCheckBox(false)
                 }
                 dataObj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
-                console.log("filterData", filterData)
-                console.log("dataObj", dataObj)
 
                 dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
-                    console.log("res", res)
                     setState((prevState) => ({ ...prevState, isLoader: false }))
                     setState((prevState) => ({ ...prevState, noData: false }))
                     if (props.isSimulation) {
@@ -216,7 +205,6 @@ const BOPDomesticListing = (props) => {
         }
     }
     const onFloatingFilterChanged = (value) => {
-        console.log("onFloatingFilterChanged: ", value)
         let originalValue;
         setTimeout(() => {
             if (bopDomesticList?.length !== 0) {
@@ -225,7 +213,6 @@ const BOPDomesticListing = (props) => {
         }, 500);
         setState((prevState) => ({ ...prevState, disableFilter: false }));
         const model = gridOptions?.api?.getFilterModel();
-        console.log("model", model)
 
         setState((prevState) => ({ ...prevState, filterModel: model }));
         if (!state.isFilterButtonClicked) {
@@ -243,7 +230,6 @@ const BOPDomesticListing = (props) => {
                     isFilterEmpty = false;
 
                     for (var property in state.floatingFilterData) {
-                        console.log("property: ", property)
                         if (property === value.column.colId) {
                             state.floatingFilterData[property] = "";
                         }
@@ -267,30 +253,24 @@ const BOPDomesticListing = (props) => {
             ) {
                 return false;
             }
-            setState((prevState) => ({
-                ...prevState,
-                floatingFilterData: { ...prevState.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, },
-            }));
+            setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, }, }));
         }
         if (value.column.colId === "BasicRate") {
             originalValue = getOriginalBasicRate(value.filterInstance.appliedModel.filter);
         } else if (value.column.colId === "NetCostWithoutConditionCost") {
             originalValue = getOriginalNetCostWithoutConditionCost(value.filterInstance.appliedModel.filter);
+        } else if (value.column.colId === "NetLandedCost") {
+            originalValue = getOriginalNetLandedCost(value.filterInstance.appliedModel.filter);
         }
         if (originalValue !== undefined) {
             setState((prevState) => ({
-                ...prevState,
-                floatingFilterData: {
-                    ...prevState.floatingFilterData,
-                    [value.column.colId]: originalValue,
-                },
+                ...prevState, floatingFilterData: { ...prevState.floatingFilterData, [value.column.colId]: originalValue, },
             }));
         }
 
     };
     const getTolerance = () => {
         const noOfDecimalForPrice = getConfigurationKey()?.NoOfDecimalForPrice;
-        console.log("noOfDecimalForPrice: ", noOfDecimalForPrice)
         if (noOfDecimalForPrice !== undefined) {
             // Tolerance should be half of the least significant digit 
             return 0.5 * Math.pow(10, -noOfDecimalForPrice);
@@ -300,26 +280,51 @@ const BOPDomesticListing = (props) => {
 
     const getOriginalBasicRate = (filteredText) => {
         const parsedFilterText = parseFloat(filteredText);
-        console.log("parsedFilterText: ", parsedFilterText)
         const tolerance = getTolerance();
-        console.log("tolerance: ", tolerance)
         const originalData = bopDomesticList.find((item) => {
-            const roundedOriginal = parseFloat(item.OriginalBasicRate.toFixed(getConfigurationKey()?.NoOfDecimalForPrice));
-            return Math.abs(roundedOriginal - parsedFilterText) <= tolerance;
+            if (item.OriginalBasicRate !== null) {
+                const roundedOriginal = parseFloat(item.OriginalBasicRate.toFixed(getConfigurationKey()?.NoOfDecimalForPrice));
+                return Math.abs(roundedOriginal - parsedFilterText) <= tolerance;
+            }
+            // Skip this iteration if the value is null
+            return false;
         });
         return originalData ? originalData.OriginalBasicRate : filteredText;
     };
+    const getOriginalNetLandedCost = (filteredText) => {
+        const parsedFilterText = parseFloat(filteredText);
+        const tolerance = getTolerance();
+        const originalData = bopDomesticList.find((item) => {
+            if (item.OriginalNetLandedCost !== null) {
+                const roundedOriginal = parseFloat(item.OriginalNetLandedCost.toFixed(getConfigurationKey()?.NoOfDecimalForPrice));
+                return Math.abs(roundedOriginal - parsedFilterText) <= tolerance;
+            }
+            // Skip this iteration if the value is null
+            return false;
+        });
+        return originalData ? originalData.OriginalNetLandedCost : filteredText;
+    };
+
     const getOriginalNetCostWithoutConditionCost = (filteredText) => {
         const parsedFilterText = parseFloat(filteredText);
         const tolerance = getTolerance();
 
-        const originalData = bopDomesticList.find((item) => {
-            const roundedOriginal = parseFloat(item.OriginalNetCostWithoutConditionCost.toFixed(getConfigurationKey()?.NoOfDecimalForPrice));
-            return Math.abs(roundedOriginal - parsedFilterText) <= tolerance;
+        // Find the first non-null item that matches the criteria
+        const originalItem = bopDomesticList.find((item) => {
+            // Continue if the original value is not null
+            if (item.OriginalNetCostWithoutConditionCost !== null) {
+                const roundedOriginal = parseFloat(item.OriginalNetCostWithoutConditionCost.toFixed(getConfigurationKey()?.NoOfDecimalForPrice));
+                return Math.abs(roundedOriginal - parsedFilterText) <= tolerance;
+            }
+            // Skip this iteration if the value is null
+            return false;
         });
 
-        return originalData ? originalData.OriginalNetCostWithoutConditionCost : filteredText;
+        // Return either the found original value as a string or the input filtered text
+        return originalItem ? originalItem.OriginalNetCostWithoutConditionCost : filteredText;
     };
+
+
 
     const onSearch = () => {
         setState((prevState) => ({
@@ -330,10 +335,6 @@ const BOPDomesticListing = (props) => {
 
     const resetState = () => {
         setState((prevState) => ({ ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false }));
-        const searchBox = document.getElementById("filter-text-box");
-        if (searchBox) {
-            searchBox.value = ""; // Reset the input field's value
-        }
         state.gridApi.setQuickFilter(null)
         state.gridApi.deselectAll();
         gridOptions?.columnApi?.resetColumnState(null);
@@ -355,10 +356,10 @@ const BOPDomesticListing = (props) => {
                 pageSize100: false,
             },
 
-        })
-
-        );
-
+        }));
+        if (searchRef.current) {
+            searchRef.current.value = '';
+        }
     };
 
     const onBtPrevious = () => {
@@ -366,10 +367,7 @@ const BOPDomesticListing = (props) => {
             const previousNo = state.currentRowIndex - 10;
             const newPageNo = state.pageNo - 1;
             setState((prevState) => ({
-                ...prevState,
-                pageNo: newPageNo >= 1 ? newPageNo : 1,
-                pageNoNew: newPageNo >= 1 ? newPageNo : 1,
-                currentRowIndex: previousNo,
+                ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo,
             }));
             getDataList("", 0, "", "", previousNo, state.globalTake, true, state.floatingFilterData);
         }
@@ -489,46 +487,22 @@ const BOPDomesticListing = (props) => {
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
         let isEditbale = false
         let isDeleteButton = false
-        if (permissions.Edit) {
+        if (permissions?.Edit) {
             isEditbale = true
         } else {
             isEditbale = false
         }
-        if (permissions.Delete && !rowData.IsBOPAssociated) {
+        if (permissions?.Delete && !rowData.IsBOPAssociated) {
             isDeleteButton = true
         } else {
             isDeleteButton = false
         }
         return (
             <>
-                <Button
-                    id={`bopDomesticListing_movement${props.rowIndex}`}
-                    className={"mr-1"}
-                    variant="cost-movement"
-                    onClick={() => showAnalytics(cellValue, rowData)}
-                    title={"Cost Movement"}
-                />
-                {permissions.View && <Button
-                    id={`bopDomesticListing_view${props.rowIndex}`}
-                    className={"mr-1"}
-                    variant="View"
-                    onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
-                    title={"View"}
-                />}
-                {isEditbale && <Button
-                    id={`bopDomesticListing_edit${props.rowIndex}`}
-                    className={"mr-1"}
-                    variant="Edit"
-                    onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
-                    title={"Edit"}
-                />}
-                {isDeleteButton && <Button
-                    id={`bopDomesticListing_delete${props.rowIndex}`}
-                    className={"mr-1"}
-                    variant="Delete"
-                    onClick={() => deleteItem(cellValue)}
-                    title={"Delete"}
-                />}
+                <Button id={`bopDomesticListing_movement${props.rowIndex}`} className={"mr-1"} variant="cost-movement" onClick={() => showAnalytics(cellValue, rowData)} title={"Cost Movement"} />
+                {permissions?.View && <Button id={`bopDomesticListing_view${props.rowIndex}`} className={"mr-1"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+                {isEditbale && <Button id={`bopDomesticListing_edit${props.rowIndex}`} className={"mr-1"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+                {isDeleteButton && <Button id={`bopDomesticListing_delete${props.rowIndex}`} className={"mr-1"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
             </>
         )
     };
@@ -589,12 +563,16 @@ const BOPDomesticListing = (props) => {
                                     {f.OriginalFileName}
                                 </a>
                             )
-                        }) : <button
-                            type='button'
-                            title='View Attachment'
-                            className='btn-a pl-0'
-                            onClick={() => viewAttachmentData(row)}
-                        >View Attachment</button>}
+                        }) :
+                        <button type='button' title='View Attachment' className='btn-a pl-0' onClick={() => viewAttachmentData(row)}                        >View Attachment</button>
+                        //  <Button
+                        //     type='button'
+                        //     id='bopDomesticListing_btnViewAttachment'
+                        //      title='View Attachment'
+                        //      className='btn-a pl-0'
+                        //      onClick={() => viewAttachmentData(row)}
+                        //      buttonName={'View Attachment'}/>
+                    }
                 </div>
             </>
         )
@@ -610,7 +588,6 @@ const BOPDomesticListing = (props) => {
         */
     const effectiveDateFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
     }
     const onGridReady = (params) => {
@@ -692,7 +669,7 @@ const BOPDomesticListing = (props) => {
     }
 
     const onFilterTextBoxChanged = (e) => {
-        setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
+        state.gridApi.setQuickFilter(e.target.value);
     }
     const { isBulkUpload, noData } = state;
     var filterParams = {
@@ -734,20 +711,11 @@ const BOPDomesticListing = (props) => {
 
     };
 
-
     var setDate = (date) => {
-        setState((prevState) => ({
-            ...prevState,
-            floatingFilterData: { ...prevState.floatingFilterData, newDate: date },
-        }));
-
-
-
+        setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, newDate: date }, }));
     };
 
-
     var handleDate = (newDate) => {
-
         let temp = state.inRangeDate
         temp.push(newDate)
         setState((prevState) => ({ ...prevState, inRangeDate: temp }))
@@ -761,10 +729,11 @@ const BOPDomesticListing = (props) => {
 
         }, 300);
     }
-
+    const handleShown = () => {
+        setState((prevState) => ({ ...prevState, shown: !state.shown }))
+    }
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
-
         var thisIsFirstColumn = displayedColumns[0] === params.column;
         if (props?.isMasterSummaryDrawer) {
             return false
@@ -811,15 +780,11 @@ const BOPDomesticListing = (props) => {
                     }
                     finalData.push(selectedRowForPagination[i])
                 }
-
             } else {
                 finalData = selectedRowForPagination
             }
-
             selectedRows = [...selectedRows, ...finalData]
-
         }
-
 
         let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
         dispatch(setSelectedRowForPagination(uniqeArray))
@@ -828,13 +793,10 @@ const BOPDomesticListing = (props) => {
         let finalArr = selectedRows
         let length = finalArr?.length
         let uniqueArray = _.uniqBy(finalArr, "BoughtOutPartId")
-
         if (props.isSimulation) {
-
             props.apply(uniqueArray, length)
         }
         setState((prevState) => ({ ...prevState, selectedRowData: selectedRows }))
-
         if (props?.benchMark) {
             let uniqueArrayNew = _.uniqBy(uniqueArray, "CategoryId");
             if (uniqueArrayNew.length > 1) {
@@ -847,20 +809,21 @@ const BOPDomesticListing = (props) => {
 
 
     return (
-        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
+        <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions?.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : props?.isMasterSummaryDrawer ? '' : 'min-height100vh'}`}>
             {/* {state.isLoader && <LoaderCustom />} */}
             {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
             {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
             < form noValidate >
                 <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} ${props?.benchMark ? 'zindex-2' : 'filter-row-large'}  ${props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
                     <Col md="3" lg="3">
-                        <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                     </Col>
                     <Col md="9" lg="9" className="mb-3">
                         <div className="d-flex justify-content-end bd-highlight w100">
                             {state.shown ? (
                                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
                                     <div className="cancel-icon-white"></div></button>
+                                // <Button type="button" className="user-btn mr5 filter-btn-top" onClick={handleShown()} icon="cancel-icon-white"/>
                             ) : (
                                 <>
                                 </>
@@ -873,39 +836,29 @@ const BOPDomesticListing = (props) => {
                             }
 
                             {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                <Button
-                                    id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter}
-                                />
+                                <Button id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
 
                             }
 
-                            {permissions.Add && (
-                                <Button
-                                    id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+                            {permissions?.Add && (
+                                <Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
                             )}
-                            {permissions.BulkUpload && (
-                                <Button
-                                    id="bopDomesticListing_add" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+                            {permissions?.BulkUpload && (
+                                <Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
                             )}
                             {
-                                permissions.Download &&
+                                permissions?.Download &&
                                 <>
-                                    <Button
-                                        className="mr5"
-                                        id={"bopDomesticListing_excel_download"}
-                                        onClick={onExcelDownload}
-                                        title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                    <Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                         icon={"download mr-1"}
                                         buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                     />
-                                    <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={
-                                        <Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
+                                    <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
                                         {onBtExport()}
                                     </ExcelFile>
                                 </>
                             }
-                            <Button
-                                id={"bopDomesticListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+                            <Button id={"bopDomesticListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 
                         </div>
                     </Col>
@@ -982,42 +935,18 @@ const BOPDomesticListing = (props) => {
                 </Col>
             </Row>
             {
-                isBulkUpload && <BulkUpload
-                    isOpen={isBulkUpload}
-                    closeDrawer={closeBulkUploadDrawer}
-                    isEditFlag={false}
-                    fileName={'BOP Domestic'}
-                    isZBCVBCTemplate={true}
-                    messageLabel={'BOP Domestic'}
-                    anchor={'right'}
-                    masterId={BOP_MASTER_ID}
-                    typeOfEntryId={ENTRY_TYPE_DOMESTIC}
-                />
+                isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'BOP Domestic'} isZBCVBCTemplate={true} messageLabel={'BOP Domestic'} anchor={'right'} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_DOMESTIC} />
             }
 
             {
                 state.analyticsDrawer &&
-                <AnalyticsDrawer
-                    isOpen={state.analyticsDrawer}
-                    ModeId={2}
-                    closeDrawer={closeAnalyticsDrawer}
-                    anchor={"right"}
-                    isReport={state.analyticsDrawer}
-                    selectedRowData={state.selectedRowData}
-                    isSimulation={true}
-                    //cellValue={cellValue}
+                <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true}
                     rowData={state.selectedRowData}
                 />
             }
             {
                 state.attachment && (
-                    <Attachament
-                        isOpen={state.attachment}
-                        index={state.viewAttachment}
-                        closeDrawer={closeAttachmentDrawer}
-                        anchor={'right'}
-                        gridListing={true}
-                    />
+                    <Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />
                 )
             }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import React, { useState, useEffect, useCallback, useContext, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
@@ -30,6 +30,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const SpecificationListing = (props) => {
   const dispatch = useDispatch();
+  const searchRef = useRef(null);
   const { rmSpecificationList } = useSelector((state) => state.material);
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
@@ -52,7 +53,6 @@ const SpecificationListing = (props) => {
     noData: false,
     dataCount: 0,
   });
-  const [searchFilter, setSearchFilter] = useState("")
 
   useEffect(() => {
     getSpecificationListData("", "");
@@ -61,7 +61,7 @@ const SpecificationListing = (props) => {
 
   const getSpecificationListData = useCallback(
     (materialId = "", gradeId = "") => {
-      const data = { MaterialId: materialId,  GradeId: gradeId,};
+      const data = { MaterialId: materialId, GradeId: gradeId, };
 
       setState((prev) => ({ ...prev, isLoader: true }));
       dispatch(
@@ -91,7 +91,8 @@ const SpecificationListing = (props) => {
     (e = "", data, type) => {
       setState(
         (prev) => ({
-          ...prev, isOpen: false,dataCount: 0,}),
+          ...prev, isOpen: false, dataCount: 0,
+        }),
         () => {
           if (type === "submit") getSpecificationListData("", "");
         }
@@ -103,24 +104,26 @@ const SpecificationListing = (props) => {
 
   const editItemDetails = useCallback((Id) => {
     setState((prev) => ({
-      ...prev, isEditFlag: true,isOpen: true, ID: Id,  }));
+      ...prev, isEditFlag: true, isOpen: true, ID: Id,
+    }));
   }, []);
 
   const openModel = useCallback(() => {
     setState((prev) => ({
-      ...prev, isOpen: true,  isEditFlag: false, }));
+      ...prev, isOpen: true, isEditFlag: false,
+    }));
   }, []);
- /**
-    * @method deleteItem
-    * @description confirm delete RM Specification
-    */
+  /**
+     * @method deleteItem
+     * @description confirm delete RM Specification
+     */
   const deleteItem = useCallback((Id) => {
     setState((prev) => ({ ...prev, showPopup: true, deletedId: Id }));
   }, []);
-/**
-    * @method confirmDelete
-    * @description confirm delete RM Specification
-    */
+  /**
+      * @method confirmDelete
+      * @description confirm delete RM Specification
+      */
   const confirmDelete = useCallback(
     (ID) => {
       const loggedInUser = loggedInUserId();
@@ -181,7 +184,7 @@ const SpecificationListing = (props) => {
     []
   );
 
- const onFloatingFilterChanged = (value) => {
+  const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       rmSpecificationList.length !== 0 &&
         setState((prevState) => ({
@@ -208,7 +211,7 @@ const SpecificationListing = (props) => {
       }
     );
   };
-  
+
 
   const densityAlert = () => {
     setState((prevState) => ({ ...prevState, showPopup2: true }));
@@ -253,8 +256,8 @@ const SpecificationListing = (props) => {
       tempArr && tempArr.length > 0
         ? tempArr
         : rmSpecificationList
-        ? rmSpecificationList
-        : [];
+          ? rmSpecificationList
+          : [];
     return returnExcelColumn(SPECIFICATIONLISTING_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -286,19 +289,18 @@ const SpecificationListing = (props) => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
+    state.gridApi.setQuickFilter(e.target.value);
   };
 
   const resetState = () => {
-    const searchBox = document.getElementById("filter-text-box");
-        if (searchBox) {
-            searchBox.value = ""; // Reset the input field's value
-        }
-        state.gridApi.setQuickFilter(null)
+    state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState(null);
     state.gridApi.setFilterModel(null);
-   };
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
+  };
 
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
@@ -318,8 +320,8 @@ const SpecificationListing = (props) => {
       dataCount: selectedRows?.length,
     }));
   };
-  
-const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
+
+  const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
   const isFirstColumn = (params) => {
     const displayedColumns = params.columnApi.getAllDisplayedColumns();
     const thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -327,7 +329,7 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
   };
 
   const defaultColDef = {
-    resizable: true, filter: true,sortable: false, headerCheckboxSelectionFilteredOnly: true,checkboxSelection: isFirstColumn,
+    resizable: true, filter: true, sortable: false, headerCheckboxSelectionFilteredOnly: true, checkboxSelection: isFirstColumn,
   };
 
   const frameworkComponents = {
@@ -337,31 +339,18 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
   };
   return (
     <div
-      className={`ag-grid-react min-height100vh ${
-        permissions.Download ? "show-table-btn" : ""
-      }`}
+      className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
+        }`}
     >
       {state.isLoader && <LoaderCustom />}
       <form noValidate>
         <Row className="pt-4">
           <Col md={6} className="text-right mb-3 search-user-block">
             {permissions.Add && (
-              <Button
-                id="rmSpecification_filter"
-                className={"mr5"}
-                onClick={openModel}
-                title={"Add"}
-                icon={"plus"}
-              />
+              <Button                id="rmSpecification_filter"                className={"mr5"}                onClick={openModel}                title={"Add"}                icon={"plus"}              />
             )}
             {permissions.BulkUpload && (
-              <Button
-                id="rmSpecification_add"
-                className={"mr5"}
-                onClick={bulkToggle}
-                title={"Bulk Upload"}
-                icon={"upload"}
-              />
+              <Button                id="rmSpecification_add"                className={"mr5"}                onClick={bulkToggle}                title={"Bulk Upload"}                icon={"upload"}              />
             )}
             {permissions.Download && (
               <>
@@ -370,21 +359,7 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
                     filename={"RM Specification"}
                     fileExtension={".xls"}
                     element={
-                      <Button
-                        className="mr5"
-                        id={"rmSpecification_excel_download"}
-                        title={`Download ${
-                          state.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                        }`}
-                        icon={"download mr-1"}
-                        buttonName={`${
-                          state.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                        }`}
-                      />
+                      <Button className="mr5"  id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0  ? "All"  : "(" + state.dataCount + ")"  }`}                        icon={"download mr-1"}  buttonName={`${state.dataCount === 0   ? "All"  : "(" + state.dataCount + ")"   }`}   />
                     }
                   >
                     {onBtExport()}
@@ -392,12 +367,7 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
                 </>
               </>
             )}
-            <Button
-              id={"rmSpecification_refresh"}
-              onClick={() => resetState()}
-              title={"Reset Grid"}
-              icon={"refresh"}
-            />
+            <Button              id={"rmSpecification_refresh"}              onClick={() => resetState()}              title={"Reset Grid"}              icon={"refresh"}            />
           </Col>
         </Row>
       </form>
@@ -405,15 +375,15 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
       <Row>
         <Col>
           <div
-            className={`ag-grid-wrapper height-width-wrapper ${
-              (rmSpecificationList && rmSpecificationList?.length <= 0) ||
+            className={`ag-grid-wrapper height-width-wrapper ${(rmSpecificationList && rmSpecificationList?.length <= 0) ||
               noData
-                ? "overlay-contain"
-                : ""
-            }`}
+              ? "overlay-contain"
+              : ""
+              }`}
           >
             <div className="ag-grid-header">
               <input
+                ref={searchRef}
                 type="text"
                 className="form-control table-search"
                 id="filter-text-box"
@@ -423,9 +393,8 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
               />
             </div>
             <div
-              className={`ag-theme-material ${
-                state.isLoader && "max-loader-height"
-              }`}
+              className={`ag-theme-material ${state.isLoader && "max-loader-height"
+                }`}
             >
               {noData && (
                 <NoContentFound
@@ -472,7 +441,7 @@ const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
                 ></AgGridColumn>
               </AgGridReact>
               {
-                <PaginationWrapper  gridApi={state.gridApi}  setPage={onPageSizeChanged} />
+                <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />
               }
             </div>
           </div>

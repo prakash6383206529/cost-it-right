@@ -7,11 +7,7 @@ import NoContentFound from "../../common/NoContentFound";
 import Switch from "react-switch";
 import BulkUpload from "../../massUpload/BulkUpload";
 import AddVendorDrawer from "./AddVendorDrawer";
-import {
-  checkPermission,
-  searchNocontentFilter,
-  showTitleForActiveToggle,
-} from "../../../helper/util";
+import { checkPermission, searchNocontentFilter, showTitleForActiveToggle, } from "../../../helper/util";
 import { MASTERS, VENDOR, VendorMaster } from "../../../config/constants";
 import { getConfigurationKey, loggedInUserId } from "../../../helper";
 import LoaderCustom from "../../common/LoaderCustom";
@@ -26,23 +22,21 @@ import ScrollToTop from "../../common/ScrollToTop";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { setSelectedRowForPagination } from "../../simulation/actions/Simulation";
 import { disabledClass, isResetClick } from "../../../actions/Common";
-import {
-  getSupplierDataList,
-  activeInactiveVendorStatus,
-  deleteSupplierAPI,
-} from "../actions/Supplier";
+import { getSupplierDataList, activeInactiveVendorStatus, deleteSupplierAPI, } from "../actions/Supplier";
 import _ from "lodash";
 import MultiDropdownFloatingFilter from "../material-master/MultiDropdownFloatingFilter";
 import { hideMultipleColumnFromExcel } from "../../common/CommonFunctions";
 import { useDispatch, useSelector } from "react-redux";
+import Button from '../../layout/Button';
+import { useRef } from "react";
+
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const VendorListing = () => {
   const dispatch = useDispatch();
-  const { supplierDataList, allSupplierDataList } = useSelector(
-    (state) => state.supplier
-  );
+  const searchRef = useRef(null);
+  const { supplierDataList, allSupplierDataList } = useSelector((state) => state.supplier);
   const { statusColumnData } = useSelector((state) => state.comman);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { selectedRowForPagination } = useSelector((state) => state.simulation);
@@ -96,7 +90,6 @@ const VendorListing = () => {
     noData: false,
     dataCount: 0,
   });
-  const [searchFilter, setSearchFilter] = useState("")
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
@@ -118,23 +111,11 @@ const VendorListing = () => {
     setTimeout(() => {
       if (statusColumnData?.data) {
         setState((prevState) => ({
-          ...prevState,
-          disableFilter: false,
-          warningMessage: true,
-          floatingFilterData: {
-            ...prevState.floatingFilterData,
-            VendorType: statusColumnData.data,
-          },
+          ...prevState, disableFilter: false, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, },
         }));
       } else {
         setState((prevState) => ({
-          ...prevState,
-          warningMessage: false,
-          disableFilter: false,
-          floatingFilterData: {
-            ...prevState.floatingFilterData,
-            VendorType: "",
-          },
+          ...prevState, warningMessage: false, disableFilter: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", },
         }));
       }
     }, 500);
@@ -156,29 +137,13 @@ const VendorListing = () => {
 
       if (permmisionData !== undefined) {
         setState((prevState) => ({
-          ...prevState,
-          ViewAccessibility:
-            permmisionData && permmisionData.View ? permmisionData.View : false,
-          AddAccessibility:
-            permmisionData && permmisionData.Add ? permmisionData.Add : false,
-          EditAccessibility:
-            permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-          DeleteAccessibility:
-            permmisionData && permmisionData.Delete
-              ? permmisionData.Delete
-              : false,
-          DownloadAccessibility:
-            permmisionData && permmisionData.Download
-              ? permmisionData.Download
-              : false,
-          BulkUploadAccessibility:
-            permmisionData && permmisionData.BulkUpload
-              ? permmisionData.BulkUpload
-              : false,
-          ActivateAccessibility:
-            permmisionData && permmisionData.Activate
-              ? permmisionData.Activate
-              : false,
+          ...prevState, ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+          ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
         }));
       }
     }
@@ -191,10 +156,7 @@ const VendorListing = () => {
   const getTableListData = (
     skip, obj, take, isPagination
   ) => {
-    setState((prevState) => ({
-      ...prevState,
-      isLoader: isPagination ? true : false,
-    }));
+    setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false, }));
 
     let constantFilterData = state.filterModel;
     let object = { ...state.floatingFilterData };
@@ -335,11 +297,7 @@ const VendorListing = () => {
       }
       // setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData }));
       setState((prevState) => ({
-        ...prevState,
-        floatingFilterData: {
-          ...prevState.floatingFilterData,
-          [value.column.colId]: value.filterInstance.appliedModel.filter,
-        },
+        ...prevState, floatingFilterData: { ...prevState.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, },
       }));
     }
   };
@@ -452,28 +410,11 @@ const VendorListing = () => {
     return (
       <>
         {ViewAccessibility && (
-          <button
-            title="View"
-            className="View"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, true)}
-          />
+          <Button id={`vendorListing_view${props.rowIndex}`} className={"View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
-        {EditAccessibility && (
-          <button
-            title="Edit"
-            className="Edit"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, false)}
-          />
+        {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
-        {DeleteAccessibility && (
-          <button
-            title="Delete"
-            className="Delete"
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
+        {DeleteAccessibility && (<Button id={`vendorListing_delete${props.rowIndex}`} className={"mr-1"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
@@ -560,18 +501,7 @@ const VendorListing = () => {
       <>
         <label htmlFor="normal-switch" className="normal-switch">
           {/* <span>Switch with default style</span> */}
-          <Switch
-            onChange={() => handleChange(cellValue, rowData)}
-            checked={cellValue}
-            disabled={!ActivateAccessibility}
-            background="#ff6600"
-            onColor="#4DC771"
-            onHandleColor="#ffffff"
-            offColor="#FC5774"
-            id="normal-switch"
-            height={24}
-            className={cellValue ? "active-switch" : "inactive-switch"}
-          />
+          <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
         </label>
       </>
     );
@@ -603,10 +533,7 @@ const VendorListing = () => {
    */
   const closeBulkUploadDrawer = (event, type) => {
     setState(
-      (prevState) => ({
-        ...prevState,
-        isBulkUpload: false,
-      }),
+      (prevState) => ({ ...prevState, isBulkUpload: false, }),
       () => {
         if (type !== "cancel") {
           setTimeout(() => {
@@ -700,15 +627,9 @@ const VendorListing = () => {
    * @description reset Column, filter, select cells
    */
   const resetState = () => {
-    const searchBox = document.getElementById("filter-text-box");
-        if (searchBox) {
-            searchBox.value = ""; // Reset the input field's value
-        }
-        state.gridApi.setQuickFilter(null)
-    setState((prevState) => ({
-      ...prevState,
-      noData: false,
-    }));
+
+    state.gridApi.setQuickFilter(null)
+    setState((prevState) => ({ ...prevState, noData: false, }));
     dispatch(isResetClick(true, "vendorType"));
     setState((prevState) => ({
       ...prevState,
@@ -737,6 +658,9 @@ const VendorListing = () => {
         pageSize100: false,
       },
     }));
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
   };
 
   const onExcelDownload = () => {
@@ -845,7 +769,7 @@ const VendorListing = () => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
+    state.gridApi.setQuickFilter(e.target.value);
   };
 
   const {
@@ -891,6 +815,7 @@ const VendorListing = () => {
         <Col md="3">
           {" "}
           <input
+            ref={searchRef}
             type="text"
             className="form-control table-search"
             id="filter-text-box"
@@ -913,67 +838,25 @@ const VendorListing = () => {
               )}
             </div>
             <div className="d-flex">
-              <button
-                title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch(this)} disabled={state.disableFilter}
-              >
-                <div class="filter mr-0"></div>
-              </button>
+              <Button id="vendorListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter}
+              />
               {AddAccessibility && (
-                <button
-                  type="button" className={"user-btn mr5"} onClick={formToggle} title="Add"
-                >
-                  <div className={"plus mr-0"}></div>
-                </button>
+                <Button id="vendorListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
               )}
               {BulkUploadAccessibility && (
-                <button
-                  type="button"
-                  className={"user-btn mr5"}
-                  onClick={bulkToggle}
-                  title="Bulk Upload"
-                >
-                  <div className={"upload mr-0"}></div>
-                </button>
+                <Button id="vendorListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
               )}
               {DownloadAccessibility && (
                 <>
-                  <button
-                    title={`Download ${state.dataCount === 0
-                      ? "All"
-                      : "(" + state.dataCount + ")"
-                      }`}
-                    type="button"
-                    onClick={onExcelDownload}
-                    className={"user-btn mr5"}
-                  >
-                    <div className="download mr-1"></div>
-                    {`${state.dataCount === 0
-                      ? "All"
-                      : "(" + state.dataCount + ")"
-                      }`}
-                  </button>
+                  <Button className="mr5" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                  />
 
-                  <ExcelFile
-                    filename={"Vendor"}
-                    fileExtension={".xls"}
-                    element={
-                      <button
-                        id={"Excel-Downloads-vendor"}
-                        className="p-absolute"
-                        type="button"
-                      ></button>
-                    }
-                  >
+                  <ExcelFile filename={"Vendor"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-vendor"} className="p-absolute" />}>
                     {onBtExport()}
                   </ExcelFile>
                 </>
               )}
-
-              <button
-                type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}
-              >
-                <div className="refresh mr-0"></div>
-              </button>
+              <Button id={"vendorListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
           </div>
         </Col>
@@ -991,10 +874,7 @@ const VendorListing = () => {
               }`}
           >
             {state.noData && (
-              <NoContentFound
-                title={EMPTY_DATA}
-                customClassName="no-content-found"
-              />
+              <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
             )}
             <AgGridReact
               defaultColDef={defaultColDef}
@@ -1018,78 +898,26 @@ const VendorListing = () => {
               enablePivot={true}
               enableBrowserTooltips={true}
             >
-              <AgGridColumn
-                field="VendorType"
-                tooltipField="VendorType"
-                width={"240px"}
-                headerName="Vendor Type"
-                cellRenderer={"checkBoxRenderer"}
-                floatingFilterComponent="valuesFloatingFilter"
-                floatingFilterComponentParams={floatingFilterVendorType}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="VendorName"
-                headerName="Vendor Name"
-              ></AgGridColumn>
-              <AgGridColumn
-                field="VendorCode"
-                headerName="Vendor Code"
-              ></AgGridColumn>
-              <AgGridColumn
-                field="Country"
-                headerName="Country"
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="State"
-                headerName="State"
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="City"
-                headerName="City"
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
+              <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
+              <AgGridColumn field="VendorName" headerName="Vendor Name"              ></AgGridColumn>
+              <AgGridColumn field="VendorCode" headerName="Vendor Code"              ></AgGridColumn>
+              <AgGridColumn field="Country"
+                headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
+              <AgGridColumn field="State" headerName="State" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
+              <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
               {getConfigurationKey()?.IsCriticalVendorConfigured && (
-                <AgGridColumn
-                  field="IsCriticalVendor"
-                  headerName="Is Critical Vendor"
-                ></AgGridColumn>
+                <AgGridColumn field="IsCriticalVendor" headerName="Is Critical Vendor"                ></AgGridColumn>
               )}
-              <AgGridColumn
-                field="VendorId"
-                minWidth={"180"}
-                cellClass="actions-wrapper ag-grid-action-container"
-                headerName="Actions"
-                type="rightAligned"
-                floatingFilter={false}
-                cellRenderer={"totalValueRenderer"}
-              ></AgGridColumn>
-              <AgGridColumn
-                width="150"
-                pinned="right"
-                field="IsActive"
-                headerName="Status"
-                floatingFilter={false}
-                cellRenderer={"statusButtonFormatter"}
-              ></AgGridColumn>
+              <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}              ></AgGridColumn>
+              <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"}              ></AgGridColumn>
             </AgGridReact>
             <div className="button-wrapper">
               {!state.isLoader && (
-                <PaginationWrapper
-                  gridApi={state.gridApi}
-                  setPage={onPageSizeChanged}
-                  globalTake={state.globalTake}
-                />
+                <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />
               )}
               <div className="d-flex pagination-button-container">
-                <p>
-                  <button
-                    className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}
-                  >
-                    {" "}
-                  </button>
-                </p>
+
+                <p><Button id="vebdorListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
 
                 {state?.pageSize?.pageSize10 && (
                   <p className="next-page-pg custom-left-arrow">
@@ -1109,13 +937,7 @@ const VendorListing = () => {
                     {Math.ceil(state.totalRecordCount / 100)}
                   </p>
                 )}
-                <p>
-                  <button
-                    className="next-btn" type="button" onClick={() => onBtNext()}
-                  >
-                    {" "}
-                  </button>
-                </p>
+                <p><Button id="vendorListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
               </div>
             </div>
           </div>
@@ -1123,44 +945,16 @@ const VendorListing = () => {
       )}
 
       {state.isBulkUpload && (
-        <BulkUpload
-          isOpen={state.isBulkUpload}
-          closeDrawer={closeBulkUploadDrawer}
-          isEditFlag={false}
-          isZBCVBCTemplate={false}
-          fileName={"Vendor"}
-          messageLabel={"Vendor"}
-          anchor={"right"}
-        />
+        <BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} isZBCVBCTemplate={false} fileName={"Vendor"} messageLabel={"Vendor"} anchor={"right"} />
       )}
       {isOpenVendor && (
-        <AddVendorDrawer
-          isOpen={isOpenVendor}
-          closeDrawer={closeVendorDrawer}
-          isEditFlag={state.isEditFlag}
-          isRM={false}
-          isViewMode={state.isViewMode}
-          ID={state.ID}
-          anchor={"right"}
-        />
+        <AddVendorDrawer isOpen={isOpenVendor} closeDrawer={closeVendorDrawer} isEditFlag={state.isEditFlag} isRM={false} isViewMode={state.isViewMode} ID={state.ID} anchor={"right"} />
       )}
       {state.showPopup && (
-        <PopupMsgWrapper
-          isOpen={state.showPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          message={`Are you sure you want to delete this Vendor?`}
-        />
+        <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
       )}
       {state.showPopupToggle && (
-        <PopupMsgWrapper
-          isOpen={state.showPopupToggle}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirmToggle}
-          message={`${state.cellValue
-            ? MESSAGES.VENDOR_DEACTIVE_ALERT
-            : MESSAGES.VENDOR_ACTIVE_ALERT
-            }`}
+        <PopupMsgWrapper isOpen={state.showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${state.cellValue ? MESSAGES.VENDOR_DEACTIVE_ALERT : MESSAGES.VENDOR_ACTIVE_ALERT}`}
         />
       )}
     </div>

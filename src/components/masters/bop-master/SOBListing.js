@@ -1,15 +1,13 @@
-import React, { Component, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { checkForDecimalAndNull } from "../../../helper/validation";
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import { getManageBOPSOBDataList } from '../actions/BoughtOutParts';
 import NoContentFound from '../../common/NoContentFound';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, searchNocontentFilter } from '../../../helper';
+import { searchNocontentFilter } from '../../../helper';
 import { Sob } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -20,6 +18,8 @@ import DayTime from '../../common/DayTimeWrapper';
 import { useContext } from 'react';
 import { useState } from 'react';
 import { ApplyPermission } from '.';
+import { useRef } from 'react';
+import Button from '../../layout/Button';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -28,6 +28,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const SOBListing = (props) => {
   const dispatch = useDispatch();
+  const searchRef = useRef(null);
   const { bopSobList } = useSelector((state) => state.boughtOutparts);
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
@@ -50,11 +51,9 @@ const SOBListing = (props) => {
     noData: false,
     dataCount: 0,
   });
-  const [searchFilter, setSearchFilter] = useState("")
 
   useEffect(() => {
     getDataList();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -113,7 +112,8 @@ const SOBListing = (props) => {
     const cellValue = params?.valueFormatted ? params.valueFormatted : params?.value;
     return (
       <>
-        {permissions.Edit && <button title='Edit' className="Edit" type={'button'} onClick={() => editItemDetails(cellValue)} />}
+        {permissions.Edit && <Button id={`clientListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue)} title={"Edit"} />
+        }
       </>
     );
   };
@@ -218,7 +218,7 @@ const SOBListing = (props) => {
   }
 
   const onFilterTextBoxChanged = (e) => {
-    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
+    state.gridApi.setQuickFilter(e.target.value);
   }
 
   /**
@@ -235,14 +235,16 @@ const SOBListing = (props) => {
 
 
   const resetState = () => {
-    const searchBox = document.getElementById("filter-text-box");
-    if (searchBox) {
-      searchBox.value = ""; // Reset the input field's value
-    }
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
+  }
+  const handleShown = () => {
+    setState((prevState) => ({ ...prevState, shown: !state.shown }))
   }
 
   const commonCostFormatter = (props) => {
@@ -285,8 +287,9 @@ const SOBListing = (props) => {
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               {state.shown ? (
-                <button type="button" className="user-btn filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
+                <button type="button" className="user-btn filter-btn-top" onClick={ handleShown()} >
                   <div className="cancel-icon-white"></div></button>
+                // <Button id={"sobListing_close"} className="user-btn filter-btn-top" onClick={handleShown()} icon={"cancel-icon-white"} />
               ) : (
                 <>
                 </>
@@ -294,19 +297,16 @@ const SOBListing = (props) => {
               {
                 permissions.Download &&
                 <>
-                  <ExcelFile filename={Sob} fileExtension={'.xls'} element={
-                    <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
-                      {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                    </button>}>
+                  <ExcelFile filename={Sob} fileExtension={'.xls'}
+                    element={
+                      <Button id={"Excel-Downloads-sobListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                    }>
                     {onBtExport()}
                   </ExcelFile>
                 </>
               }
-
-              <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                <div className="refresh mr-0"></div>
-              </button>
-
+              <Button
+                id={"sobListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
           </Col>
         </Row>
@@ -316,7 +316,7 @@ const SOBListing = (props) => {
         <Col>
           <div className={`ag-grid-wrapper height-width-wrapper ${(bopSobList && bopSobList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+              <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
             <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
