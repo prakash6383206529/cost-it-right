@@ -3,12 +3,11 @@ import { API, API_FAILURE, config, GET_LOGIN_AUDIT_SUCCESS } from '../../../conf
 
 
 export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc, sortName, callback) {
+
     return (dispatch) => {
         const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
-
         // Create an instance of URLSearchParams
         let queryParams = new URLSearchParams();
-
         // Map of parameters to potentially add. If the value is truthy, or a boolean, add it to the query params
         const paramsToAdd = {
             userid: data.userId || DEFAULT_USER_ID,
