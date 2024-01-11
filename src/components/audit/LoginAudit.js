@@ -10,13 +10,12 @@ import { Col, Row } from 'reactstrap';
 import DayTime from '../common/DayTimeWrapper';
 import { setSelectedRowForPagination, } from '../simulation/actions/Simulation';
 import { _ } from 'ag-grid-community';
-import { checkPermission, getConfigurationKey, searchNocontentFilter } from '../../helper';
+import { checkPermission, searchNocontentFilter } from '../../helper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
-import { disabledClass, isResetClick } from '../../actions/Common';
+import { disabledClass } from '../../actions/Common';
 import { AUDIT_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import ReactExport from 'react-export-excel';
-import { hideCustomerFromExcel } from '../common/CommonFunctions';
 
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -59,6 +58,7 @@ function LoginAudit(props) {
     const [searchText, setSearchText] = useState('');
     const { selectedRowForPagination } = useSelector(state => state.simulation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
+    console.log('topAndLeftMenuData: ', topAndLeftMenuData);
     // useEffect to fetch data initially or when filters change.
 
     useEffect(() => {
@@ -70,15 +70,7 @@ function LoginAudit(props) {
         dispatch(setSelectedRowForPagination([]));
         // eslint-disable-next-line
     }, []);
-    const formatDateForApi = (dateString) => {
-        if (!dateString) return '';
-        // Assuming the dateString is in 'DD/MM/YYYY' format and you want 'YYYY-MM-DDTHH:mm:ss.SSS' format
-        const dateParts = dateString.split('/');
-        // Convert to the desired format YYYY-MM-DD
-        const newDateString = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
-        // Adding a default time if needed (for example 'T13:49:38.907')
-        return `${newDateString}T00:00:00.000`;
-    };
+
 
     const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
@@ -86,9 +78,12 @@ function LoginAudit(props) {
 
 
         if (state.filterModel?.LoginTime) {
-            const fromDateFormatted = formatDateForApi(state.filterModel.LoginTime.dateFrom);
-            const toDateFormatted = formatDateForApi(state.filterModel.LoginTime.dateTo);
-            dataObj.dateArray = [fromDateFormatted, toDateFormatted];
+            if (state.filterModel.LoginTime.dateTo) {
+                let temp = []
+                temp.push(DayTime(state.filterModel.LoginTime.dateFrom))
+                temp.push(DayTime(state.filterModel.LoginTime.dateTo))
+                dataObj.dateArray = temp
+            }
         }
 
 
@@ -115,13 +110,7 @@ function LoginAudit(props) {
             if (res && res.status === 204) {
                 setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }))
             }
-            let FloatingfilterData = state.filterModel
-
-            let obj = { ...state.floatingFilterData }
-
             setState(prevState => ({ ...prevState, totalRecordCount: res?.data?.DataList && res?.data?.DataList[0]?.TotalRecordCount }))
-            let isReset = true
-
             setTimeout(() => {
                 setState(prevState => ({ ...prevState, warningMessage: false }))
             }, 335);
@@ -393,10 +382,10 @@ function LoginAudit(props) {
 
         totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
 
-        getDataList({}, state.currentRowIndex,
+        getDataList(state.currentRowIndex,
             pageSize,
             true,
-            true)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+            state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
 
 
         setState((prevState) => ({
@@ -466,8 +455,7 @@ function LoginAudit(props) {
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
-    const handleDate = (newDate) => {
-
+    var handleDate = (newDate) => {
         let temp = state.inRangeDate
         temp.push(newDate)
         setState(prevState => ({ ...prevState, inRangeDate: temp }))
@@ -483,7 +471,7 @@ function LoginAudit(props) {
     }
 
 
-    const setDate = (date) => {
+    var setDate = (date) => {
         setState(prevState => ({ ...prevState, floatingFilterData: { ...state.floatingFilterData, LoginTime: date } }))
     }
 
@@ -637,6 +625,5 @@ function LoginAudit(props) {
         </div>
     )
 }
-
 
 export default LoginAudit
