@@ -91,7 +91,7 @@ const BOPImportListing = (props) => {
       NetLandedCost: "",
       EffectiveDateNew: "",
       Currency: "",
-      
+
       DepartmentName:
         props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant
           ? userDepartmetList()
@@ -468,7 +468,7 @@ const BOPImportListing = (props) => {
       ...prevState,
       globalTake: 10,
       dataCount: 0,
-     
+
 
       pageSize: {
         ...prevState.pageSize,
@@ -652,7 +652,6 @@ const BOPImportListing = (props) => {
       ? props.valueFormatted
       : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    console.log("permission.Edit",permissions)
     let isEditable = false;
     let isDeleteButton = false;
 
@@ -805,7 +804,7 @@ const BOPImportListing = (props) => {
    * @method onSubmit
    * @description Used to Submit the form
    */
-  const onSubmit = (values) => {};
+  const onSubmit = (values) => { };
 
   /**
    * @method hyphenFormatter
@@ -864,8 +863,8 @@ const BOPImportListing = (props) => {
       tempArr && tempArr.length > 0
         ? tempArr
         : allBopDataList
-        ? allBopDataList
-        : [];
+          ? allBopDataList
+          : [];
     return returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -983,18 +982,18 @@ const BOPImportListing = (props) => {
     let temp = state.inRangeDate || []; // Ensure that state.inRangeDate is an array
     temp.push(newDate);
     setState((prevState) => ({ ...prevState, inRangeDate: temp }));
-  
+
     if (props?.benchMark) {
       handleDate(state.inRangeDate);
     }
-  
+
     setTimeout(() => {
       var y = document.getElementsByClassName("ag-radio-button-input");
       var radioBtn = y[0];
       radioBtn?.click();
     }, 300);
   };
-  
+
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -1103,15 +1102,13 @@ const BOPImportListing = (props) => {
     <div>
       {!editSelectedList && (
         <div
-          className={`ag-grid-react custom-pagination ${
-            DownloadAccessibility ? "show-table-btn" : ""
-          } ${
-            props.isSimulation
+          className={`ag-grid-react custom-pagination ${DownloadAccessibility ? "show-table-btn" : ""
+            } ${props.isSimulation
               ? "simulation-height"
               : props.isMasterSummaryDrawer
-              ? ""
-              : "min-height100vh"
-          }`}
+                ? ""
+                : "min-height100vh"
+            }`}
         >
           {state.isLoader && !props.isMasterSummaryDrawer ? (
             <LoaderCustom customClass="simulation-Loader" />
@@ -1122,9 +1119,8 @@ const BOPImportListing = (props) => {
               )}
               <form onSubmit={handleSubmit(onSubmit.bind(this))} noValidate>
                 <Row
-                  className={`pt-4  ${
-                    props?.benchMark ? "zindex-2" : "filter-row-large"
-                  } ${props.isSimulation ? "simulation-filter zindex-0" : ""}`}
+                  className={`pt-4  ${props?.benchMark ? "zindex-2" : "filter-row-large"
+                    } ${props.isSimulation ? "simulation-filter zindex-0" : ""}`}
                 >
                   <Col md="3" lg="3">
                     <input
@@ -1213,22 +1209,20 @@ const BOPImportListing = (props) => {
                       {DownloadAccessibility && (
                         <>
                           <button
-                            title={`Download ${
-                              state.dataCount === 0
-                                ? "All"
-                                : "(" + state.dataCount + ")"
-                            }`}
+                            title={`Download ${state.dataCount === 0
+                              ? "All"
+                              : "(" + state.dataCount + ")"
+                              }`}
                             type="button"
                             onClick={onExcelDownload}
                             className={"user-btn mr5"}
                           >
                             <div className="download mr-1"></div>
                             {/* DOWNLOAD */}
-                            {`${
-                              state.dataCount === 0
-                                ? "All"
-                                : "(" + state.dataCount + ")"
-                            }`}
+                            {`${state.dataCount === 0
+                              ? "All"
+                              : "(" + state.dataCount + ")"
+                              }`}
                           </button>
 
                           <ExcelFile
@@ -1272,16 +1266,14 @@ const BOPImportListing = (props) => {
               <Row>
                 <Col>
                   <div
-                    className={`ag-grid-wrapper bop-import-listing ${
-                      (bopImportList && bopImportList?.length <= 0) || noData
-                        ? "overlay-contain"
-                        : ""
-                    }`}
+                    className={`ag-grid-wrapper bop-import-listing ${(bopImportList && bopImportList?.length <= 0) || noData
+                      ? "overlay-contain"
+                      : ""
+                      }`}
                   >
                     <div
-                      className={`ag-theme-material p-relative ${
-                        state.isLoader && "max-loader-height"
-                      }`}
+                      className={`ag-theme-material p-relative ${state.isLoader && "max-loader-height"
+                        }`}
                     >
                       {noData && (
                         <NoContentFound
@@ -1351,12 +1343,12 @@ const BOPImportListing = (props) => {
                         {reactLocalStorage.getObject(
                           "cbcCostingPermission"
                         ) && (
-                          <AgGridColumn
-                            field="CustomerName"
-                            headerName="Customer (Code)"
-                            cellRenderer={"hyphenFormatter"}
-                          ></AgGridColumn>
-                        )}
+                            <AgGridColumn
+                              field="CustomerName"
+                              headerName="Customer (Code)"
+                              cellRenderer={"hyphenFormatter"}
+                            ></AgGridColumn>
+                          )}
                         <AgGridColumn
                           field="IncoTermDescriptionAndInfoTerm"
                           headerName="Inco Terms"
@@ -1364,11 +1356,11 @@ const BOPImportListing = (props) => {
                         {/* <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn> FOR MINDA ONLY*/}
                         {getConfigurationKey()
                           .IsMinimumOrderQuantityVisible && (
-                          <AgGridColumn
-                            field="NumberOfPieces"
-                            headerName="Minimum Order Quantity"
-                          ></AgGridColumn>
-                        )}
+                            <AgGridColumn
+                              field="NumberOfPieces"
+                              headerName="Minimum Order Quantity"
+                            ></AgGridColumn>
+                          )}
                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (
                           <AgGridColumn
@@ -1425,7 +1417,7 @@ const BOPImportListing = (props) => {
                           ?.IsBasicRateAndCostingConditionVisible &&
                           ((props.isMasterSummaryDrawer &&
                             props.bopImportList[0]?.CostingTypeId ===
-                              ZBCTypeId) ||
+                            ZBCTypeId) ||
                             !props.isMasterSummaryDrawer) &&
                           !props?.isFromVerifyPage && (
                             <AgGridColumn

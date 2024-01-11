@@ -4,7 +4,7 @@ import { Row, Col } from "reactstrap";
 import { getAssemblyPartDataList, deleteAssemblyPart } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
-import {  defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import DayTime from "../../common/DayTimeWrapper";
 import BOMViewer from "./BOMViewer";
@@ -38,7 +38,7 @@ const AssemblyPartListing = React.memo((props) => {
 
   const [tableData, setTableData] = useState([]);
   const [selectedRowData, setSelectedRowData] = useState([]);
-  const[searchText,setSearchText]=useState("");
+  const [searchText, setSearchText] = useState("");
 
   const [state, setState] = useState({
     isEditFlag: false,
@@ -54,7 +54,7 @@ const AssemblyPartListing = React.memo((props) => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
-    ID: "",
+    Id: "",
     isViewMode: false,
     isActivate: false,
     isDownload: false,
@@ -101,7 +101,7 @@ const AssemblyPartListing = React.memo((props) => {
     getDetails(requestData);
   }
 
-  
+
   const deleteItem = (Id) => {
 
     setState((prevState) => ({
@@ -161,7 +161,7 @@ const AssemblyPartListing = React.memo((props) => {
 
 
 
-  
+
   const closeVisualDrawer = () => {
     setState((prevState) => ({
       ...prevState,
@@ -173,7 +173,6 @@ const AssemblyPartListing = React.memo((props) => {
   const buttonFormatter = useCallback((props) => {
     const cellValue = props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-    console.log(permissions, "permissions");
     return (
       <>
         {permissions.View && (
@@ -329,18 +328,10 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    setSearchText( state.gridApi.setQuickFilter(e.target.value))
+    setSearchText(state.gridApi.setQuickFilter(e.target.value))
   };
 
   const resetState = () => {
-    console.log("COMING IN RESET FUNCTION", state);
-    
-    const searchBox = document.getElementById("filter-text-box");
-    if (searchBox) {
-      searchBox.value = ""; // Reset the input field's value
-    }
-    state.gridApi.setQuickFilter(null)
-
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -366,9 +357,8 @@ const AssemblyPartListing = React.memo((props) => {
 
   return (
     <div
-      className={`ag-grid-react p-relative ${
-        permissions.Download ? "show-table-btn" : ""
-      }`}
+      className={`ag-grid-react p-relative ${permissions.Download ? "show-table-btn" : ""
+        }`}
     >
       {state.isLoader ? <LoaderCustom /> : ""}
       <Row className="pt-4 no-filter-row">
@@ -403,21 +393,19 @@ const AssemblyPartListing = React.memo((props) => {
                     fileExtension={".xls"}
                     element={
                       <button
-                        title={`Download ${
-                          state.dataCount=== 0
-                            ? "All"
-                            : `(${state.dataCount})`
-                        }`}
+                        title={`Download ${state.dataCount === 0
+                          ? "All"
+                          : `(${state.dataCount})`
+                          }`}
                         type="button"
                         className={"user-btn mr5"}
                         onClick={onBtExport}
                       >
                         <div className="download mr-1"></div>
-                        {`${
-                          state.dataCount === 0
-                            ? "All"
-                            : `(${state.dataCount})`
-                        }`}
+                        {`${state.dataCount === 0
+                          ? "All"
+                          : `(${state.dataCount})`
+                          }`}
                       </button>
                     }
                   >
@@ -439,11 +427,10 @@ const AssemblyPartListing = React.memo((props) => {
       </Row>
       {Object.keys(permissions).length > 0 && (
         <div
-          className={`ag-grid-wrapper height-width-wrapper ${
-            (partsListing && partsListing?.length <= 0) || state.noData
-              ? "overlay-contain"
-              : ""
-          }`}
+          className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || state.noData
+            ? "overlay-contain"
+            : ""
+            }`}
         >
           <div className="ag-grid-header">
             <input
@@ -456,9 +443,8 @@ const AssemblyPartListing = React.memo((props) => {
             />
           </div>
           <div
-            className={`ag-theme-material ${
-              state.isLoader && "max-loader-height"
-            }`}
+            className={`ag-theme-material ${state.isLoader && "max-loader-height"
+              }`}
           >
             {state.noData && (
               <NoContentFound

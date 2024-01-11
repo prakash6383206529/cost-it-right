@@ -1563,7 +1563,6 @@ class AddRMDomestic extends Component {
                         <h1>
                           {isViewFlag ? 'View' : isEditFlag ? 'Update' : 'Add'} Raw Material (Domestic)
 
-                          {console.log('showTour: ', this.state.showTour)}
                           {this.state.showTour && <TourWrapper
                             buttonSpecificProp={{ id: "RM_domestic_form" }}
                             stepsSpecificProp={{

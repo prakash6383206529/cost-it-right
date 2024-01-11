@@ -1438,7 +1438,7 @@ function OverheadProfit(props) {
                                 <label>
                                     {'Net Overhead & Profit'}
                                 </label>
-                                <input placeholder='-' className="form-control" disabled value={showValueInInput()} />
+                                <input id="net_overhead_profit_input" placeholder='-' className="form-control" disabled value={showValueInInput()} />
                             </Col>
 
                             <Col md="12" className="">
@@ -2294,6 +2294,7 @@ function OverheadProfit(props) {
                             <div className="col-sm-12 text-right bluefooter-butn ">
                                 {!CostingViewMode && <button
                                     type={'button'}
+                                    id="overhead_profit_save"
                                     onClick={onSubmit}
                                     className="submit-button save-btn">
                                     <div className={"save-icon"}></div>

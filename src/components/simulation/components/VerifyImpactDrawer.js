@@ -15,7 +15,7 @@ import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper';
 
 
 function VerifyImpactDrawer(props) {
-  const { SimulationTechnologyIdState, simulationId, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, isSimulationWithCosting } = props
+  const { SimulationTechnologyIdState, simulationId, costingIdArray, approvalSummaryTrue, vendorIdState, EffectiveDate, CostingTypeId, amendmentDetails, dataForAssemblyImpactInVerifyImpact, assemblyImpactButtonTrue, costingDrawer, isSimulationWithCosting } = props
   const [impactedMasterDataListForLastRevisionData, setImpactedMasterDataListForLastRevisionData] = useState([])
   const [impactedMasterDataListForImpactedMaster, setImpactedMasterDataListForImpactedMaster] = useState([])
   const [showAssemblyWise, setShowAssemblyWise] = useState(false)
@@ -26,9 +26,7 @@ function VerifyImpactDrawer(props) {
   const [lastRevisionDataAcc, setLastRevisionDataAcc] = useState(false)
   const [masterIdForLastRevision, setMasterIdForLastRevision] = useState('')
   const [editWarning, setEditWarning] = useState(false)
-  const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
-  const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
-  const childField = ['PartNumber', 'ECNNumber', 'PartName', 'ExistingCost', 'RevisedCost', 'Quantity', 'VariancePerPiece', '-', '-', '-']
+  const [accDisable, setAccDisable] = useState(false)
 
   const dispatch = useDispatch()
 
@@ -78,6 +76,12 @@ function VerifyImpactDrawer(props) {
     }
 
   }, [EffectiveDate, vendorIdState, simulationId])
+
+  // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
+  const fgWiseAccDisable = (data) => {
+    setAccDisable(data)
+  }
+
   return (
     <>
       <Drawer
@@ -154,7 +158,7 @@ function VerifyImpactDrawer(props) {
                 <Col md="6"> <HeaderTitle title={'FG wise Impact:'} /></Col>
                 <Col md="6">
                   <div className={'right-details'}>
-                    <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
+                    <button className="btn btn-small-primary-circle ml-1 float-right" disabled={accDisable} type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
                       {fgWiseAcc ? (
                         <i className="fa fa-minus"></i>
                       ) : (
@@ -168,12 +172,11 @@ function VerifyImpactDrawer(props) {
               {fgWiseAcc && <Row className="mb-3 pr-0 mx-0">
                 <Col md="12">
                   <Fgwiseimactdata
-                    // DisplayCompareCosting={DisplayCompareCosting}
-                    // SimulationId={simulationDetail.SimulationId}
-                    headerName={headerName}
-                    parentField={parentField}
-                    childField={childField}
-                    impactType={'FgWise'}
+                    SimulationId={simulationId}
+                    costingIdArray={costingIdArray}
+                    approvalSummaryTrue={approvalSummaryTrue}
+                    isVerifyImpactDrawer={true}
+                    fgWiseAccDisable={fgWiseAccDisable}
                     tooltipEffectiveDate={DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}
                   />
                 </Col>

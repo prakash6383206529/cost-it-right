@@ -8,6 +8,7 @@ import AddPackaging from '../../Drawers/AddPackaging';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
 import { LOGISTICS } from '../../../../../config/masterData';
+import Button from '../../../../layout/Button';
 
 function PackageCost(props) {
 
@@ -89,11 +90,14 @@ function PackageCost(props) {
               </div>
             </Col>
             <Col col={'4'}>
-              {!CostingViewMode && <button
-                type="button"
-                className={'user-btn'}
-                onClick={DrawerToggle}>
-                <div className={'plus'}></div>{costingData.TechnologyId === LOGISTICS ? 'FREIGHT' : 'PACKAGING'}</button>}
+              {!CostingViewMode &&
+                <Button
+                  id="Costing_addPackaging"
+                  onClick={DrawerToggle}
+                  icon={"plus"}
+                  buttonName={costingData.TechnologyId === LOGISTICS ? 'FREIGHT' : 'PACKAGING'}
+                />}
+
             </Col>
           </Row>
           <Row>

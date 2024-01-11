@@ -602,6 +602,7 @@ function TabOverheadProfit(props) {
 
                 <Col md="12" className="py-3 overhead-profit-tab">
                   <label
+                    id="Overhead_profit_checkbox1"
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatment}
                   >
@@ -618,6 +619,7 @@ function TabOverheadProfit(props) {
                     />
                   </label>
                   <label
+                    id="Overhead_profit_checkbox2"
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeSurfaceTreatmentRejection}
                   >
@@ -635,6 +637,7 @@ function TabOverheadProfit(props) {
                   </label>
 
                   <label
+                    id="Overhead_profit_checkbox3"
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeToolCost}
                   >
@@ -652,6 +655,7 @@ function TabOverheadProfit(props) {
                   </label>
 
                   <label
+                    id="Overhead_profit_checkbox4"
                     className={`custom-checkbox mb-0 w-fit-content`}
                     onChange={onPressIncludeOverheadProfitInIcc}
                   >
