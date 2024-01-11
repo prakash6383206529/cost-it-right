@@ -1873,6 +1873,7 @@ export const PLANT_HEAD_WISE = "Plant Head Wise"
 export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
 export const INSIGHT_SIMULATION_REPORT = "Simulation Insights Report"
+export const lOGIN_AUDIT = 'Login Audit'
 
 //export const SIMULATION_HISTORY = 'Simulation History'
 
