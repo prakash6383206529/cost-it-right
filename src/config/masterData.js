@@ -5753,7 +5753,6 @@ export const AUDIT_LISTING_DOWNLOAD_EXCEl = [
     { label: "macAddress", value: "MacAddress", },
     { label: "LoginTime", value: "LoginTime", },
     { label: "UserAgent", value: "UserAgent", },
-    { label: "UserAuditLogId", value: "UserAuditLogId", }
 
 ]
 

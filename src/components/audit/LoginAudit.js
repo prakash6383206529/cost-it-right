@@ -3,13 +3,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import NoContentFound from '../common/NoContentFound';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import LoaderCustom from '../common/LoaderCustom';
-import { AUDIT, AuditLisitng, EMPTY_DATA, defaultPageSize } from '../../config/constants';
+import { AuditLisitng, EMPTY_DATA, defaultPageSize } from '../../config/constants';
 import { getUserAuditLog } from './actions/AuditListing';
 import { PaginationWrapper } from '../common/commonPagination';
 import { Col, Row } from 'reactstrap';
 import DayTime from '../common/DayTimeWrapper';
 import { setSelectedRowForPagination, } from '../simulation/actions/Simulation';
-import { _ } from 'ag-grid-community';
+import _ from 'lodash';
 import { checkPermission, searchNocontentFilter } from '../../helper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
@@ -20,7 +20,6 @@ import ReactExport from 'react-export-excel';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
 const gridOptions = {};
 
 function LoginAudit(props) {
@@ -36,33 +35,31 @@ function LoginAudit(props) {
         currentRowIndex: 0,
         totalRecordCount: 0,
         filterModel: {},
-        disableFilter: false,
-
+        inRangeDate: [],
+        sortModel: {},
+        columnDefs: [],
+        columnDefsForPopup: [],
+        floatingFilter: true,
+        disableFilter: true,
+        filterText: '',
         showPopup: false,
         globalTake: defaultPageSize,
         pageNo: 1,
         pageNoNew: 1,
         isFilterButtonClicked: false,
         warningMessage: false,
-        floatingFilterData: {
-            UserName: '',
-            UserId: 0,
-            LoginTime: '',
-            IPAddress: '',
-            MacAddress: '',
-            UserAgent: '',
-        },
+        floatingFilterData: { UserName: '', UserId: 0, LoginTime: '', IPAddress: '', MacAddress: '', UserAgent: '', },
         pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-        DownloadAccessibility: true
+        DownloadAccessibility: false
     })
     const [searchText, setSearchText] = useState('');
     const { selectedRowForPagination } = useSelector(state => state.simulation);
+
     const { topAndLeftMenuData } = useSelector(state => state.auth);
-    console.log('topAndLeftMenuData: ', topAndLeftMenuData);
-    // useEffect to fetch data initially or when filters change.
 
     useEffect(() => {
-        getDataList(0, state.globalTake, true, state.floatingFilterData); // Adjust the parameters as needed
+        getDataList(0, state.globalTake, true, state.floatingFilterData);
+        // eslint-disable-next-line
     }, [])
 
     useEffect(() => {
@@ -71,25 +68,22 @@ function LoginAudit(props) {
         // eslint-disable-next-line
     }, []);
 
-
+    useEffect(() => {
+        applyPermission(topAndLeftMenuData)
+    }, [topAndLeftMenuData])
     const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
 
-
-
-        if (state.filterModel?.LoginTime) {
-            if (state.filterModel.LoginTime.dateTo) {
+        if (state.filterModel?.EffectiveDate) {
+            if (state.filterModel.EffectiveDate.dateTo) {
                 let temp = []
-                temp.push(DayTime(state.filterModel.LoginTime.dateFrom))
-                temp.push(DayTime(state.filterModel.LoginTime.dateTo))
+                temp.push(DayTime(state.filterModel.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
+                temp.push(DayTime(state.filterModel.EffectiveDate.dateTo).format('DD/MM/YYYY'))
                 dataObj.dateArray = temp
             }
         }
-
-
         dispatch(getUserAuditLog(dataObj, skip, take, isPagination, true, '', res => {
             setState(prevState => ({ ...prevState, noData: false }))
-
             setState(prevState => ({ ...prevState, isLoader: false }))
             if (res.status === 204 && res.data === '') {
                 setState(prevState => ({ ...prevState, auditDataList: [] }))
@@ -105,10 +99,20 @@ function LoginAudit(props) {
                     button && button.click()
                 }, 500);
             }
-
             // PAGINATION CODE
             if (res && res.status === 204) {
                 setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }))
+            }
+            if (res) {
+                let isReset = true
+                setTimeout(() => {
+                    for (var prop in state.floatingFilterData) {
+                        if (state.floatingFilterData[prop] !== "") {
+                            isReset = false
+                        }
+                    }
+                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
+                }, 300);
             }
             setState(prevState => ({ ...prevState, totalRecordCount: res?.data?.DataList && res?.data?.DataList[0]?.TotalRecordCount }))
             setTimeout(() => {
@@ -122,16 +126,12 @@ function LoginAudit(props) {
 
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === AUDIT);
-            const accessData = Data && Data.Pages.find(el => el.PageName === AUDIT)
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === "Audit");
+            const accessData = Data && Data.Pages.find(el => el.PageName === "Login Audit")
             const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
             if (permissionData !== undefined) {
-                setState((prevState) => ({
-                    ...prevState,
-                    DownloadAccessibility: permissionData && permissionData.Download ? permissionData.Download : false,
-
-                }))
+                setState((prevState) => ({ ...prevState, DownloadAccessibility: permissionData && permissionData.Download ? permissionData.Download : false, }))
             }
         }
     }
@@ -142,13 +142,7 @@ function LoginAudit(props) {
         if (state.currentRowIndex >= 10) {
             const previousNo = state.currentRowIndex - 10;
             const newPageNo = state.pageNo - 1;
-
-            setState((prevState) => ({
-                ...prevState,
-                pageNo: newPageNo >= 1 ? newPageNo : 1,
-                pageNoNew: newPageNo >= 1 ? newPageNo : 1,
-                currentRowIndex: previousNo,
-            }));
+            setState((prevState) => ({ ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo, }));
             getDataList(skip, pageSize, true, state.floatingFilterData);
         }
     };
@@ -157,57 +151,36 @@ function LoginAudit(props) {
         let pageSize = state.globalTake;
         let nextPage = state.pageNo + 1;
         let skip = (nextPage - 1) * pageSize;
-        if (
-            state.pageSize?.pageSize50 &&
-            state.pageNo >= Math.ceil(state.totalRecordCount / 50)
-        ) {
+        if (state.pageSize?.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)) {
             return false;
         }
-        if (
-            state.pageSize?.pageSize100 &&
-            state.pageNo >= Math.ceil(state.totalRecordCount / 100)
-        ) {
+        if (state.pageSize?.pageSize100 && state.pageNo >= Math.ceil(state.totalRecordCount / 100)) {
             return false;
         }
         if (state.currentRowIndex < state.totalRecordCount - 10) {
-            setState((prevState) => ({
-                ...prevState,
-                pageNo: nextPage,
-                pageNoNew: nextPage,
-            }));
+            setState((prevState) => ({ ...prevState, pageNo: nextPage, pageNoNew: nextPage, }));
             const nextNo = state.currentRowIndex + 10;
             getDataList(skip, pageSize, true, state.floatingFilterData);
             setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
         }
     };
-
-
-
     const onFilterTextBoxChanged = (e) => {
-        state.gridApi.setQuickFilter(e.target.value);
+        setSearchText(state.gridApi.setQuickFilter(e.target.value));
     }
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (state.auditDataList?.length !== 0) {
-                setState((prevState) => ({
-                    ...prevState,
-                    noData: searchNocontentFilter(value, state.noData),
-                }));
+                setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
             }
         }, 500);
         setState((prevState) => ({ ...prevState, disableFilter: false }));
         const model = gridOptions?.api?.getFilterModel();
-        setState((prevState) => ({ ...prevState, filterModel: model }));
+        setState((prevState) => ({ ...prevState, filterModel: { ...model } }));
         if (!state.isFilterButtonClicked) {
             setState((prevState) => ({ ...prevState, warningMessage: true }));
         }
-
-        if (
-            value?.filterInstance?.appliedModel === null ||
-            value?.filterInstance?.appliedModel?.filter === ""
-        ) {
+        if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
             let isFilterEmpty = true;
-
             if (model !== undefined && model !== null) {
                 if (Object.keys(model).length > 0) {
                     isFilterEmpty = false;
@@ -216,51 +189,29 @@ function LoginAudit(props) {
                             state.floatingFilterData[property] = "";
                         }
                     }
-                    setState((prevState) => ({
-                        ...prevState,
-                        floatingFilterData: state.floatingFilterData,
-                    }));
+                    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, }));
                 }
                 if (isFilterEmpty) {
                     setState((prevState) => ({ ...prevState, warningMessage: false }));
                     for (var prop in state.floatingFilterData) {
                         state.floatingFilterData[prop] = "";
                     }
-                    setState((prevState) => ({
-                        ...prevState,
-                        // floatingFilterData: state.floatingFilterData,
-                    }));
+                    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, }));
                 }
             }
         } else {
-            if (
-                value.column.colId === "LoginTime" ||
-                value.column.colId === "LoginTime"
-            ) {
+            if (value.column.colId === "LoginTime") {
                 return false;
             }
             setState((prevState) => ({
-                ...prevState,
-                floatingFilterData: {
-                    ...prevState.floatingFilterData,
-                    [value.column.colId]: value.filterInstance.appliedModel.filter,
-                },
+                ...prevState, floatingFilterData: { ...prevState.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, },
             }));
         }
     };
 
     const resetState = () => {
-        setState((prevState) => ({
-            ...prevState,
-            noData: false,
-            warningMessage: false,
-
-        }));
-        setState((prevState) => ({
-            ...prevState,
-
-            isFilterButtonClicked: false,
-        }));
+        setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
+        setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state.gridApi) {
             state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
@@ -268,51 +219,26 @@ function LoginAudit(props) {
         state.gridApi.deselectAll();
         gridOptions?.columnApi?.resetColumnState(null);
         const val = gridOptions?.api?.setFilterModel({});
-
-
-
         for (var prop in state.floatingFilterData) {
             state.floatingFilterData[prop] = "";
         }
-        setState((prevState) => ({
-            ...prevState,
-            floatingFilterData: state.floatingFilterData,
-            warningMessage: false,
-
-            pageNo: 1,
-            pageNoNew: 1,
-            currentRowIndex: 0,
-        }));
-
+        setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
         getDataList(0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         dispatch(setSelectedRowForPagination([]));
 
-        setState((prevState) => ({
-            ...prevState,
-            globalTake: 10,
-            dataCount: 0,
-
-            pageSize: {
-                ...prevState.pageSize,
-                pageSize10: true,
-                pageSize50: false,
-                pageSize100: false,
-            },
-        }));
+        setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, geSize100: false, }, }));
         setSearchText(''); // Assuming this state is bound to the input value
-
     };
     const onRowSelect = (event) => {
         var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
+
         if (selectedRows === undefined || selectedRows === null) {     //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
         } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
-
             let finalData = []
             if (event.node.isSelected() === false) {  // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
-
                 for (let i = 0; i < selectedRowForPagination.length; i++) {
-                    if (selectedRowForPagination[i].UserId === event.data.UserId) {  // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                    if (selectedRowForPagination[i].UserAuditLogId === event.data.UserAuditLogId) {  // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
                         continue;
                     }
                     finalData.push(selectedRowForPagination[i])
@@ -321,23 +247,37 @@ function LoginAudit(props) {
                 finalData = selectedRowForPagination
             }
             selectedRows = [...selectedRows, ...finalData]
+
         }
 
-        let uniqeArray = _.uniqBy(selectedRows, "UserId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        let uniqeArray = _.uniqBy(selectedRows, "UserAuditLogId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
         dispatch(setSelectedRowForPagination(uniqeArray))               //SETTING CHECKBOX STATE DATA IN REDUCER
         setState(prevState => ({ ...prevState, dataCount: uniqeArray.length }))
         let finalArr = selectedRows
         let length = finalArr?.length
-        let uniqueArray = _.uniqBy(finalArr, "UserId")
+        let uniqueArray = _.uniqBy(finalArr, "UserAuditLogId")
         if (props.isSimulation) {
-
             props.apply(uniqueArray, length)
         }
-
         setState(prevState => ({ ...prevState, selectedRowData: selectedRows }))
 
     }
+    const costingHeadFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        if (selectedRowForPagination?.length > 0) {
+            selectedRowForPagination.map((item) => {
+                if (item.UserAuditLogId === props.node.data.UserAuditLogId) {
+                    props.node.setSelected(true)
+                }
+                return null
+            })
+            return cellValue
+        } else {
+            return cellValue
+        }
+    }
     const effectiveDateFormatter = (props) => {
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
     }
@@ -371,7 +311,6 @@ function LoginAudit(props) {
     };
     const onPageSizeChanged = (newPageSize) => {
         let pageSize, totalRecordCount;
-
         if (Number(newPageSize) === 10) {
             pageSize = 10;
         } else if (Number(newPageSize) === 50) {
@@ -445,17 +384,15 @@ function LoginAudit(props) {
             if (item.MacAddress === null) {
                 item.MacAddress = ' '
             }
-
             return item
         })
-
         return (
-
             <ExcelSheet data={temp} name={AuditLisitng}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
-    var handleDate = (newDate) => {
+    const handleDate = (newDate) => {
+
         let temp = state.inRangeDate
         temp.push(newDate)
         setState(prevState => ({ ...prevState, inRangeDate: temp }))
@@ -471,7 +408,7 @@ function LoginAudit(props) {
     }
 
 
-    var setDate = (date) => {
+    const setDate = (date) => {
         setState(prevState => ({ ...prevState, floatingFilterData: { ...state.floatingFilterData, LoginTime: date } }))
     }
 
@@ -514,6 +451,7 @@ function LoginAudit(props) {
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
         effectiveDateFormatter: effectiveDateFormatter,
+        costingHeadFormatter: costingHeadFormatter
 
     };
     const ExcelFile = ReactExport.ExcelFile;
@@ -536,7 +474,6 @@ function LoginAudit(props) {
 
                                 { }
                                 <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-
                                 {state.shown ?
                                     <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => setState(prevState => ({ ...prevState, shown: !state.shown }))}>
                                         <div className="cancel-icon-white"></div>
@@ -544,8 +481,7 @@ function LoginAudit(props) {
                                     :
                                     ""
                                 }
-                                {
-                                    state.DownloadAccessibility &&
+                                {state.DownloadAccessibility &&
                                     <>
                                         <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button"
                                             onClick={onExcelDownload}
@@ -553,7 +489,6 @@ function LoginAudit(props) {
                                             {/* DOWNLOAD */}
                                             {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                         </button>
-
                                         <ExcelFile filename={'Audit'} fileExtension={'.xls'} element={
                                             <button id={'Excel-Downloads-LoginAudit-DownloadExcel'} className="p-absolute" type="button" >
                                             </button>}>
@@ -561,15 +496,9 @@ function LoginAudit(props) {
                                         </ExcelFile>
                                     </>
                                 }
-
-
                             </div>
-
-                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
-                                <div className="refresh mr-0"></div>
-                            </button>
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>  <div className="refresh mr-0"></div> </button>
                         </Col>
-
                     </Row>
                 </form>
                 <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !state.noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || state.noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
@@ -581,31 +510,22 @@ function LoginAudit(props) {
                             domLayout='autoHeight'
                             rowData={state.auditDataList}
                             pagination={true}
-
                             paginationPageSize={state.globalTake}
                             onGridReady={onGridReady}
                             gridOptions={gridOptions}
                             noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{
-                                title: EMPTY_DATA,
-                                imagClass: 'imagClass'
-                            }}
+                            noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                             frameworkComponents={frameworkComponents}
                             rowSelection={'multiple'}
-                            //onSelectionChanged={onRowSelect}
                             onRowSelected={onRowSelect}
                             suppressRowClickSelection={true}
                             onFilterModified={onFloatingFilterChanged}
                             enableBrowserTooltips={true}
                         >
                             <AgGridColumn field="UserName" headerName="UserName" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                            {/* <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn> */}
                             <AgGridColumn field="IPAddress" headerName="IPAddress"></AgGridColumn>
                             <AgGridColumn field="UserAgent" headerName="UserAgent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="LoginTime" headerName="LoginTime (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter"
-                                filterParams={filterParams}
-                            ></AgGridColumn>
-
+                            <AgGridColumn field="LoginTime" headerName="LoginTime (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                         </AgGridReact>}
                         <div className='button-wrapper'>
                             <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} pageNo={state.pageNo} totalRecordCount={state.totalRecordCount} />

@@ -783,11 +783,11 @@ class SideBar extends Component {
                 className={`nav-link ${reactLocalStorage.get("ModuleId") === el.ModuleId ? 'IsActive' : ''}`}
                 onClick={() => this.setLeftMenu(el.ModuleId)}
                 to={{
-                  pathname: "/audit",
+                  pathname: "/login-audit",
                   state: {
                     ModuleId: el.ModuleId,
                     PageName: "Audit",
-                    PageURL: "/audit",
+                    PageURL: "/login-audit",
                   },
                 }}
               >
@@ -927,7 +927,7 @@ class SideBar extends Component {
                   <li className="nav-item d-xl-inline-block">
                     <div className="d-flex align-items-center">
                       <LanguageDropdown />
-                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" :"d-none"}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
+                      <button className={`custom-width-26px custom-height-26px ml-1 guide-bulb${showTour ? "-on" : ""} ${GUIDE_BUTTON_SHOW ? "" : "d-none"}`} title={`Guide ${showTour ? "on" : "off"}`} onClick={this.tourStart}></button>
                     </div>
                   </li>
                   <li className="nav-item d-xl-inline-block version">
