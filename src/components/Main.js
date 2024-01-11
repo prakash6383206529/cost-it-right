@@ -386,7 +386,7 @@ class Main extends Component {
                     <Route path="/budgeting" component={AuthMiddleware(BudgetMaster, BUDGETING)} />
                     <Route path="/got-given-summary-details-report" component={GotGivenReport} />
                     <Route path="/out-sourcing-master" component={AuthMiddleware(OutsourcingListing, OUTSOURCING)} />
-                    <Route path="/login-audit" component={LoginAudit} />
+                    <Route path="/login-audit" component={AuthMiddleware(LoginAudit, AUDIT)} />
 
 
 

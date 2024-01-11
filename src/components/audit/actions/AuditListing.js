@@ -3,7 +3,6 @@ import { API, API_FAILURE, config, GET_LOGIN_AUDIT_SUCCESS } from '../../../conf
 
 
 export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc, sortName, callback) {
-
     return (dispatch) => {
         const DEFAULT_USER_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -28,6 +27,7 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
             search: data.search,
             departments: data.departments
         };
+
 
 
         // Only add parameters which are not undefined, empty string or null
