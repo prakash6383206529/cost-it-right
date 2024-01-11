@@ -18,7 +18,7 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
-import Button from '../../layout/Button';
+import Button from '../layout/Button';
 
 const gridOptions = {};
 const DepartmentsListing = () => {

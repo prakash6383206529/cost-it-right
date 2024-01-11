@@ -19,7 +19,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
-import Button from '../../layout/Button';
+import Button from '../layout/Button';
 
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
