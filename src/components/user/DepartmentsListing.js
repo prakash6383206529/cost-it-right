@@ -1,8 +1,7 @@
-import React, { useState,useEffect } from 'react';
-import {
-  Row, Col
-} from 'reactstrap';
-import {useDispatch, useSelector} from 'react-redux';
+import React, { useState, useEffect } from 'react';
+import { Row, Col } from 'reactstrap';
+import { useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
@@ -19,6 +18,8 @@ import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import LoaderCustom from '../common/LoaderCustom';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
+import Button from '../../layout/Button';
+
 const gridOptions = {};
 const DepartmentsListing = () => {
   const [state, setState] = useState({
@@ -38,46 +39,32 @@ const DepartmentsListing = () => {
     deletedId: '',
     noData: false
   });
-  const [searchFilter, setSearchFilter] = useState("")
   const dispatch = useDispatch();
-  const {topAndLeftMenuData } =useSelector((state) => state.auth)
-
+  const searchRef = useRef(null);
+  const { topAndLeftMenuData } = useSelector((state) => state.auth)
   useEffect(() => {
-    setState((prevState) => ({ ...prevState, isLoader: true ,showGrid:true}));
+    setState((prevState) => ({ ...prevState, isLoader: true, showGrid: true }));
     if (topAndLeftMenuData) {
       const userMenu = topAndLeftMenuData.find(el => el.ModuleName === 'Users');
       const accessData = userMenu?.Pages.find(el => el.PageName === DEPARTMENT);
       const permissionData = accessData?.Actions && checkPermission(accessData.Actions);
-
       if (permissionData) {
-        setState((prevState) => ({
-          ...prevState,
-          AddAccessibility: permissionData.Add ?? false,
-          EditAccessibility: permissionData.Edit ?? false,
-          DeleteAccessibility: permissionData.Delete ?? false
-        }));
+        setState((prevState) => ({ ...prevState, AddAccessibility: permissionData.Add ?? false, EditAccessibility: permissionData.Edit ?? false, DeleteAccessibility: permissionData.Delete ?? false }));
       }
     }
-   
+
     getDepartmentListData();
- ;
+    ;
   }, []);
 
   const getDepartmentListData = () => {
     dispatch(getAllDepartmentAPI((res) => {
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
-        setState((prevState) => ({
-          ...prevState,
-          tableData:Data,
-          isLoader: false
-        }));
+        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }));
       }
       else {
-        setState((prevState) => ({
-          ...prevState,
-          isLoader: false
-        }));
+        setState((prevState) => ({ ...prevState, isLoader: false }));
       }
     }
     ));
@@ -100,11 +87,7 @@ const DepartmentsListing = () => {
    * @description  used to open filter form 
    */
   const openModel = () => {
-    setState((prevState)=>({
-        ...prevState,
-      isOpen: true,
-      isEditFlag: false
-    }))
+    setState((prevState) => ({ ...prevState, isOpen: true, isEditFlag: false }))
   }
 
   /**
@@ -112,12 +95,7 @@ const DepartmentsListing = () => {
   * @description confirm edit item
   */
   const editItemDetails = (Id) => {
-    setState((prevState)=>({
-        ...prevState,
-      isEditFlag: true,
-      isOpen: true,
-      DepartmentId: Id,
-    }))
+    setState((prevState) => ({ ...prevState, isEditFlag: true, isOpen: true, DepartmentId: Id, }))
   }
 
   /**
@@ -125,7 +103,7 @@ const DepartmentsListing = () => {
   * @description confirm delete Department
   */
   const deleteItem = (Id) => {
-    setState((prevState)=>({ ...prevState,showPopup: true, deletedId: Id }))
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }))
   }
 
   const onPopupConfirm = () => {
@@ -133,7 +111,7 @@ const DepartmentsListing = () => {
 
   }
   const closePopUp = () => {
-    setState((prevState)=>({ ...prevState,showPopup: false }))
+    setState((prevState) => ({ ...prevState, showPopup: false }))
   }
   /**
    * @method confirmDeleteItem
@@ -148,42 +126,33 @@ const DepartmentsListing = () => {
         Toaster.warning(res.data.Message)
       }
     }));
-    setState((prevState)=>({...prevState, showPopup: false }))
+    setState((prevState) => ({ ...prevState, showPopup: false }))
   }
 
- /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
- console.log("EditAccessibility1", state.EditAccessibility)
+  /**
+   * @method buttonFormatter
+   * @description Renders buttons
+   */
 
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
     const { EditAccessibility, DeleteAccessibility } = state;
-    setTimeout(() => {
-      console.log("inbuttonFormatter", state)
-    },600)
-    
+
+
     return (
       <>
-        {EditAccessibility && 
-        <button title='Edit' className="Edit" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />
-     } 
-        {DeleteAccessibility && 
-        <button title='Delete' className="Delete ml5" type={'button'} onClick={() => deleteItem(cellValue)} />
-         } 
+        {EditAccessibility && <Button id={`departmentListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
+        {DeleteAccessibility && <Button id={`departmentListing_delete${props.rowIndex}`} className={"Delete m15"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };
 
 
- const  onGridReady = (params) => {
+  const onGridReady = (params) => {
     state.gridApi = params.api;
     state.gridApi.sizeColumnsToFit();
-    setState((prevState)=>({ ...prevState,gridApi: params.api, gridColumnApi: params.columnApi }))
-    console.log("ongridgridApi", state.EditAccessibility)
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
 
@@ -191,22 +160,20 @@ const DepartmentsListing = () => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  const onFilterTextBoxChanged=(e)=> {
-    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
+  const onFilterTextBoxChanged = (e) => {
+    state.gridApi.setQuickFilter(e.target.value)
   }
 
-  const resetState=() =>{
-    const searchBox = document.getElementById("filter-text-box");
-    if (searchBox) {
-        searchBox.value = ""; // Reset the input field's value
-    }
+  const resetState = () => {
     state.gridApi.setQuickFilter(null)
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
   }
 
   const { isOpen, isEditFlag, DepartmentId, AddAccessibility, noData } = state;
-
   const defaultColDef = {
     resizable: true,
     filter: true,
@@ -226,21 +193,9 @@ const DepartmentsListing = () => {
         <Row className="pt-4 no-filter-row">
           <Col md="6" className="filter-block"></Col>
           <Col md="6" className="text-right search-user-block pr-0">
-            {AddAccessibility && (
-              <>
-                <button
-                  type={"button"}
-                  className={"user-btn mr5"}
-                  onClick={openModel}
-                  title="Add"
-                >
-                  <div className={"plus mr-0"}></div>
-                </button>
-              </>
+            {AddAccessibility && (<>    <Button id="departmentListing_add" className={"mr5"} onClick={openModel} title={"Add"} icon={"plus"} />              </>
             )}
-            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-              <div className="refresh mr-0"></div>
-            </button>
+            <Button id={"clientListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
           </Col>
 
         </Row>
@@ -249,7 +204,7 @@ const DepartmentsListing = () => {
           <Col>
             <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -267,7 +222,7 @@ const DepartmentsListing = () => {
                   noRowsOverlayComponent={'customNoRowsOverlay'}
                   onFilterModified={(e) => {
                     setTimeout(() => {
-                      setState((prevState)=>({ ...prevState,noData: searchNocontentFilter(e) }));
+                      setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
                     }, 500);
                   }}
                   noRowsOverlayComponentParams={{
@@ -288,15 +243,7 @@ const DepartmentsListing = () => {
 
           </Col>
         </Row>
-        {isOpen && (
-          <Department
-            isOpen={isOpen}
-            closeDrawer={closeDrawer}
-            isEditFlag={isEditFlag}
-            DepartmentId={DepartmentId}
-            anchor={"right"}
-            className={"test-rahul"}
-          />
+        {isOpen && (<Department isOpen={isOpen} closeDrawer={closeDrawer} isEditFlag={isEditFlag} DepartmentId={DepartmentId} anchor={"right"} className={"test-rahul"} />
         )}
         {
           state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DEPARTMENT_DELETE_ALERT}`} />

@@ -19,6 +19,8 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../common/commonPagination';
 import ScrollToTop from '../common/ScrollToTop';
+import Button from '../../layout/Button';
+
 export const ApplyPermission = React.createContext();
 const gridOptions = {};
 
@@ -53,17 +55,16 @@ const LevelsListing = (props) => {
 		approvalTypeId: ''
 	});
 	const [permissionData, setPermissionData] = useState({});
-	const [searchFilter, setSearchFilter] = useState("")
 	const dispatch = useDispatch();
 	const { usersListByTechnologyAndLevel, topAndLeftMenuData } = useSelector(state => state.auth)
 	const child = useRef();
+	const searchRef = useRef(null);
 
 	useEffect(() => {
 		if (topAndLeftMenuData !== undefined) {
 			const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
 			const accessData = userMenu && userMenu.Pages.find(el => el.PageName === LEVELS)
 			const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
-
 			if (permmisionData !== undefined) {
 				setPermissionData(permmisionData);
 				setState(prevState => ({
@@ -102,18 +103,14 @@ const LevelsListing = (props) => {
 	};
 
 	const mappingToggler = () => {
-		setState(prevState => ({
-			...prevState, isShowMappingForm: true, isOpen: true, isShowForm: false,
-		}));
+		setState(prevState => ({ ...prevState, isShowMappingForm: true, isOpen: true, isShowForm: false, }));
 	};
 	/**
 	   * @method closeDrawer
 	   * @description  used to cancel filter form
 	   */
 	const closeDrawer = (e = '') => {
-		setState(prevState => ({
-			...prevState, isOpen: false, isShowMappingForm: false, isShowForm: false, isEditFlag: false, updateApi: !prevState.updateApi, cancelButton: e === 'cancel' ? true : false
-		}));
+		setState(prevState => ({ ...prevState, isOpen: false, isShowMappingForm: false, isShowForm: false, isEditFlag: false, updateApi: !prevState.updateApi, cancelButton: e === 'cancel' ? true : false }));
 	};
 
 	/**
@@ -123,9 +120,7 @@ const LevelsListing = (props) => {
 	const getLevelMappingDetail = (Id, levelType, approvalTypeId) => {
 		let obj = {}
 		obj[levelType] = approvalTypeId
-		setState(prevState => ({
-			...prevState, isEditFlag: true, TechnologyId: Id, isOpen: true, isShowForm: false, isShowMappingForm: true, levelType: levelType, approvalTypeId: obj
-		}));
+		setState(prevState => ({ ...prevState, isEditFlag: true, TechnologyId: Id, isOpen: true, isShowForm: false, isShowMappingForm: true, levelType: levelType, approvalTypeId: obj }));
 	};
 
 	/**
@@ -133,23 +128,17 @@ const LevelsListing = (props) => {
 	 * @description confirm edit item
 	 */
 	const editItemDetails = (cell, Id) => {
-		setState(prevState => ({
-			...prevState, idForImpact: Id, showImpact: true, isShowMappingForm: false,
-		}));
+		setState(prevState => ({ ...prevState, idForImpact: Id, showImpact: true, isShowMappingForm: false, }));
 	};
 
 	const closeImpactDrawer = (e = '', ImpactValue = '') => {
 		const { idForImpact, tableData } = state;
 
 		let tempData = tableData[idForImpact];
-		tempData = {
-			...tempData, Condition: ImpactValue
-		};
+		tempData = { ...tempData, Condition: ImpactValue };
 		let gridTempArr = Object.assign([...tableData], { [idForImpact]: tempData });
 
-		setState(prevState => ({
-			...prevState, tableData: gridTempArr, isShowForm: false, showImpact: false
-		}), () => {
+		setState(prevState => ({ ...prevState, tableData: gridTempArr, isShowForm: false, showImpact: false }), () => {
 			getUpdatedData();
 			child.current.getUpdatedData();
 		});
@@ -187,7 +176,7 @@ const LevelsListing = (props) => {
 		const { EditAccessibility } = state;
 		return (
 			<>
-				{EditAccessibility && <button title='Edit' type={'button'} className="Edit mr-2" onClick={() => editItemDetails(cell, rowIndex)} />}
+				{EditAccessibility && <Button id={`clientListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => editItemDetails(cell, rowIndex)} title={"Edit"} />}
 				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => deleteItem(cell)} />} */}
 			</>
 		);
@@ -207,18 +196,17 @@ const LevelsListing = (props) => {
 	};
 
 	const onFilterTextBoxChanged = (e) => {
-		setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
+		state.gridApi.setQuickFilter(e.target.value)
 	};
 
 	const resetState = () => {
-		const searchBox = document.getElementById("filter-text-box-levels");
-		if (searchBox) {
-			searchBox.value = ""; // Reset the input field's value
-		}
 		state.gridApi.setQuickFilter(null)
 		gridOptions.columnApi.resetColumnState();
 		gridOptions.api.setFilterModel(null);
 		state.gridApi.sizeColumnsToFit();
+		if (searchRef.current) {
+			searchRef.current.value = '';
+		}
 	};
 	const { isEditFlag, isShowForm, isShowMappingForm, isOpen, TechnologyId,
 		showImpact, noData } = state;
@@ -265,9 +253,8 @@ const LevelsListing = (props) => {
 								<Row>
 									<Col md="6" className=""></Col>
 									<Col md="6" className="search-user-block mb-3 text-right">
-										<button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-											<div className="refresh mr-0"></div>
-										</button>
+										<Button
+											id={"levelListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 									</Col>
 								</Row>
 								<Row>
@@ -275,7 +262,7 @@ const LevelsListing = (props) => {
 
 										<div className={`ag-grid-wrapper height-width-wrapper ${(usersListByTechnologyAndLevel && usersListByTechnologyAndLevel?.length <= 0) || noData ? "overlay-contain" : ""}`}>
 											<div className="ag-grid-header">
-												<input type="text" className="form-control table-search" id="filter-text-box-levels" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+												<input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box-levels" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
 											</div>
 											<div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
 												{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
@@ -319,29 +306,9 @@ const LevelsListing = (props) => {
 
 						</Row>
 
-						{isOpen && (
-							<Level
-								isOpen={isOpen}
-								isShowForm={isShowForm}
-								isShowMappingForm={isShowMappingForm}
-								closeDrawer={closeDrawer}
-								isEditFlag={isEditFlag}
-								TechnologyId={TechnologyId}
-								anchor={'right'}
-								isEditedlevelType={state.levelType}
-								approvalTypeId={state.approvalTypeId}
-							/>
+						{isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} />
 						)}
-						{showImpact && (
-							<ImpactDrawer
-								isOpen={showImpact}
-								isShowForm={isShowForm}
-								isShowMappingForm={isShowMappingForm}
-								closeDrawer={closeImpactDrawer}
-								//isEditFlag={isEditFlag}
-								//LevelId={LevelId}
-								anchor={'right'}
-							/>
+						{showImpact && (<ImpactDrawer isOpen={showImpact} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeImpactDrawer} anchor={'right'} />
 						)}
 					</form>
 				</>

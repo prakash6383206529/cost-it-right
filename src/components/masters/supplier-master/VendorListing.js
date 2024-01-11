@@ -92,31 +92,34 @@ const VendorListing = () => {
   });
 
   useEffect(() => {
+    if (!topAndLeftMenuData) {
+      setState(prevState => ({ ...prevState, isLoader: true }));
+      return;
+    }
     applyPermission(topAndLeftMenuData);
     getTableListData(0, state.floatingFilterData, defaultPageSize, true);
+    setTimeout(() => {
+      setState(prevState => ({ ...prevState, isLoader: false }));
+    }, 300);
     return () => {
       dispatch(setSelectedRowForPagination([]));
     };
-  }, []);
+  }, [topAndLeftMenuData]);
 
   useEffect(() => {
     dispatch(setSelectedRowForPagination([]));
     dispatch(isResetClick(true, "vendorType"));
+
   }, []);
 
   // Effect to handle updates related to topAndLeftMenuData
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
-
     setTimeout(() => {
       if (statusColumnData?.data) {
-        setState((prevState) => ({
-          ...prevState, disableFilter: false, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, },
-        }));
+        setState((prevState) => ({ ...prevState, disableFilter: false, warningMessage: true, floatingFilterData: { ...prevState.floatingFilterData, VendorType: statusColumnData.data, }, }));
       } else {
-        setState((prevState) => ({
-          ...prevState, warningMessage: false, disableFilter: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", },
-        }));
+        setState((prevState) => ({ ...prevState, warningMessage: false, disableFilter: false, floatingFilterData: { ...prevState.floatingFilterData, VendorType: "", }, }));
       }
     }, 500);
   }, [topAndLeftMenuData, statusColumnData]);
@@ -127,13 +130,10 @@ const VendorListing = () => {
    */
   const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
-      const Data =
-        topAndLeftMenuData &&
+      const Data = topAndLeftMenuData &&
         topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-      const accessData =
-        Data && Data.Pages.find((el) => el.PageName === VENDOR);
-      const permmisionData =
-        accessData && accessData.Actions && checkPermission(accessData.Actions);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === VENDOR);
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
 
       if (permmisionData !== undefined) {
         setState((prevState) => ({
@@ -180,7 +180,6 @@ const VendorListing = () => {
             ...prevState, tableData: Data, totalRecordCount: Data[0].TotalRecordCount,
           }));
         }
-
         if (res && isPagination === false) {
           setState((prevState) => ({ ...prevState, disableDownload: false }));
           dispatch(disabledClass(false));
@@ -192,14 +191,10 @@ const VendorListing = () => {
 
         if (res) {
           if (res && res.status === 204) {
-            setState((prevState) => ({
-              ...prevState, totalRecordCount: 0, pageNo: 0,
-            }));
+            setState((prevState) => ({ ...prevState, totalRecordCount: 0, pageNo: 0, }));
           }
           if (res && res.data && res.data.DataList.length > 0) {
-            setState((prevState) => ({
-              ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount,
-            }));
+            setState((prevState) => ({ ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount, }));
           }
           let isReset = true;
           setTimeout(() => {
@@ -216,9 +211,7 @@ const VendorListing = () => {
               gridOptions?.api?.setFilterModel(constantFilterData);
             }
             setTimeout(() => {
-              setState((prevState) => ({
-                ...prevState, warningMessage: false
-              }));
+              setState((prevState) => ({ ...prevState, warningMessage: false }));
             }, 23);
           }, 300);
 
@@ -243,10 +236,7 @@ const VendorListing = () => {
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       if (supplierDataList?.length !== 0) {
-        setState((prevState) => ({
-          ...prevState,
-          noData: searchNocontentFilter(value, state.noData),
-        }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
@@ -266,16 +256,12 @@ const VendorListing = () => {
       if (model !== undefined && model !== null) {
         if (Object.keys(model).length > 0) {
           isFilterEmpty = false;
-
           for (var property in state.floatingFilterData) {
             if (property === value.column.colId) {
               state.floatingFilterData[property] = "";
             }
           }
-
-          setState((prevState) => ({
-            ...prevState, floatingFilterData: state.floatingFilterData,
-          }));
+          setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, }));
         }
 
         if (isFilterEmpty) {
@@ -283,9 +269,7 @@ const VendorListing = () => {
           for (var prop in state.floatingFilterData) {
             state.floatingFilterData[prop] = "";
           }
-          setState((prevState) => ({
-            ...prevState, floatingFilterData: state.floatingFilterData,
-          }));
+          setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, }));
         }
       }
     } else {
@@ -306,9 +290,7 @@ const VendorListing = () => {
    * filter data
    */
   const onSearch = () => {
-    setState((prevState) => ({
-      ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
-    }));
+    setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
     getTableListData(0, state.floatingFilterData, state.globalTake, true);
   };
 
@@ -322,8 +304,7 @@ const VendorListing = () => {
     if (state.currentRowIndex >= 10) {
       setState((prevState) => ({ ...prevState, pageNo: state.pageNo - 1, pageNoNew: state.pageNo - 1 }))
       const previousNo = state.currentRowIndex - 10;
-      getTableListData(
-        previousNo, state.floatingFilterData, state.globalTake, true);
+      getTableListData(previousNo, state.floatingFilterData, state.globalTake, true);
 
       setState((prevState) => ({ ...prevState, currentRowIndex: previousNo }))
     };
@@ -343,8 +324,7 @@ const VendorListing = () => {
       setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1 }))
       const nextNo = state.currentRowIndex + 10;
 
-      getTableListData(
-        nextNo, state.floatingFilterData, state.globalTake, true);
+      getTableListData(nextNo, state.floatingFilterData, state.globalTake, true);
 
       setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }))
     }
@@ -356,9 +336,7 @@ const VendorListing = () => {
    * @description confirm edit item
    */
   const viewOrEditItemDetails = (Id, isViewMode) => {
-    setState((prevState) => ({
-      ...prevState, isOpenVendor: true, isEditFlag: true, ID: Id, isViewMode: isViewMode,
-    }));
+    setState((prevState) => ({ ...prevState, isOpenVendor: true, isEditFlag: true, ID: Id, isViewMode: isViewMode, }));
   };
 
   /**
@@ -375,17 +353,16 @@ const VendorListing = () => {
    */
   const confirmDeleteItem = (ID) => {
     const loggedInUser = loggedInUserId();
-    dispatch(
-      deleteSupplierAPI(ID, loggedInUser, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
-          filterList();
-          //getTableListData(null, null, null)
-          dispatch(setSelectedRowForPagination([]));
-          setState((prevState) => ({ ...prevState, dataCount: 0 }));
-          state.gridApi.deselectAll();
-        }
-      })
+    dispatch(deleteSupplierAPI(ID, loggedInUser, (res) => {
+      if (res.data.Result === true) {
+        Toaster.success(MESSAGES.DELETE_SUPPLIER_SUCCESS);
+        filterList();
+        //getTableListData(null, null, null)
+        dispatch(setSelectedRowForPagination([]));
+        setState((prevState) => ({ ...prevState, dataCount: 0 }));
+        state.gridApi.deselectAll();
+      }
+    })
     );
     setState((prevState) => ({ ...prevState, showPopup: false }));
   };
@@ -409,8 +386,7 @@ const VendorListing = () => {
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
-        {ViewAccessibility && (
-          <Button id={`vendorListing_view${props.rowIndex}`} className={"View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
+        {ViewAccessibility && (<Button id={`vendorListing_view${props.rowIndex}`} className={"View"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
         )}
         {EditAccessibility && (<Button id={`vebdorListing_edit${props.rowIndex}`} className={"mr-1"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
         )}
@@ -458,9 +434,7 @@ const VendorListing = () => {
     let data = {
       Id: row.VendorId, ModifiedBy: loggedInUserId(), IsActive: !cell, //Status of the user.
     };
-    setState((prevState) => ({
-      ...prevState, showPopupToggle: true, cellData: data, cellValue: cell,
-    }));
+    setState((prevState) => ({ ...prevState, showPopupToggle: true, cellData: data, cellValue: cell, }));
   };
 
   /**
@@ -559,16 +533,12 @@ const VendorListing = () => {
   };
 
   const formToggle = () => {
-    setState((prevState) => ({
-      ...prevState, isOpenVendor: true, isViewMode: false,
-    }));
+    setState((prevState) => ({ ...prevState, isOpenVendor: true, isViewMode: false, }));
   };
 
   const closeVendorDrawer = (e = "", formdata, type) => {
     setState(
-      (prevState) => ({
-        ...prevState, isOpenVendor: false, isEditFlag: false, ID: "",
-      }),
+      (prevState) => ({ ...prevState, isOpenVendor: false, isEditFlag: false, ID: "", }),
       () => {
         if (type === "submit") {
           filterList();
@@ -602,23 +572,11 @@ const VendorListing = () => {
     } else if (Number(newPageSize) === 100) {
       pageSize = 100;
     }
-
     totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-
     getTableListData(
       state.currentRowIndex, state.floatingFilterData, pageSize, true);
 
-    setState((prevState) => ({
-      ...prevState,
-      globalTake: pageSize,
-      pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
-      pageSize: {
-        pageSize10: pageSize === 10,
-        pageSize50: pageSize === 50,
-        pageSize100: pageSize === 100,
-      },
-    }));
-
+    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), pageSize: { pageSize10: pageSize === 10, pageSize50: pageSize === 50, pageSize100: pageSize === 100, }, }));
     state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
@@ -627,16 +585,10 @@ const VendorListing = () => {
    * @description reset Column, filter, select cells
    */
   const resetState = () => {
-
     state.gridApi.setQuickFilter(null)
     setState((prevState) => ({ ...prevState, noData: false, }));
     dispatch(isResetClick(true, "vendorType"));
-    setState((prevState) => ({
-      ...prevState,
-
-      isFilterButtonClicked: false,
-    }));
-
+    setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -644,20 +596,10 @@ const VendorListing = () => {
     for (var prop in state.floatingFilterData) {
       state.floatingFilterData[prop] = "";
     }
-    setState((prevState) => ({
-      ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0,
-    }));
+    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
     getTableListData(0, state.floatingFilterData, 10, true);
     dispatch(setSelectedRowForPagination([]));
-    setState((prevState) => ({
-      ...prevState, globalTake: 10, dataCount: 0,
-      pageSize: {
-        ...prevState.pageSize,
-        pageSize10: true,
-        pageSize50: false,
-        pageSize100: false,
-      },
-    }));
+    setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, }, }));
     if (searchRef.current) {
       searchRef.current.value = '';
     }
@@ -672,20 +614,13 @@ const VendorListing = () => {
 
     if (tempArr?.length > 0) {
       setTimeout(() => {
-        setState((prevState) => {
-          return { ...prevState, disableDownload: false };
-        });
+        setState((prevState) => { return { ...prevState, disableDownload: false }; });
         dispatch(disabledClass(false));
         let button = document.getElementById("Excel-Downloads-vendor");
         button && button.click();
       }, 400);
     } else {
-      getTableListData(
-        0,
-        state.floatingFilterData,
-        state.defaultPageSize,
-        false
-      ); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+      getTableListData(0, state.floatingFilterData, state.defaultPageSize, false); // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   };
 
@@ -722,47 +657,29 @@ const VendorListing = () => {
     // tempArr = state.gridApi && state.gridApi?.getSelectedRows();
     tempArr = selectedRowForPagination
 
-    tempArr =
-      tempArr && tempArr.length > 0
-        ? tempArr
-        : allSupplierDataList
-          ? allSupplierDataList
-          : [];
-    return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
+    tempArr = tempArr && tempArr.length > 0 ? tempArr : allSupplierDataList ? allSupplierDataList : []; return returnExcelColumn(VENDOR_DOWNLOAD_EXCEl, tempArr);
   };
-
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
     let excelData = [...data];
     if (!getConfigurationKey()?.IsCriticalVendorConfigured) {
-      excelData = hideMultipleColumnFromExcel(excelData, [
-        "IsCriticalVendor",
-        "VendorTechnology",
-        "VendorPlant",
-      ]);
+      excelData = hideMultipleColumnFromExcel(excelData, ["IsCriticalVendor", "VendorTechnology", "VendorPlant",]);
     }
-    temp =
-      TempData &&
-      TempData.map((item) => {
-        if (String(item.Country) === "NA") {
-          item.Country = " ";
-        } else if (String(item.State) === "NA") {
-          item.State = " ";
-        } else if (String(item.City) === "NA") {
-          item.City = " ";
-        }
-        return item;
-      });
+    temp = TempData && TempData.map((item) => {
+      if (String(item.Country) === "NA") {
+        item.Country = " ";
+      } else if (String(item.State) === "NA") {
+        item.State = " ";
+      } else if (String(item.City) === "NA") {
+        item.City = " ";
+      }
+      return item;
+    });
     return (
       <ExcelSheet data={temp} name={VendorMaster}>
         {excelData &&
           excelData.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
+            <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
           ))}
       </ExcelSheet>
     );
@@ -804,35 +721,21 @@ const VendorListing = () => {
     >
       <ScrollToTop pointProp="go-to-top" />
       {state.disableDownload && (
-        <LoaderCustom
-          message={MESSAGES.DOWNLOADING_MESSAGE}
-          customClass="mt-5"
-        />
+        <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />
       )}
       {state.isLoader && <LoaderCustom customClass={"loader-center"} />}
 
       <Row className="pb-4 mb-3 no-filter-row zindex-2">
         <Col md="3">
           {" "}
-          <input
-            ref={searchRef}
-            type="text"
-            className="form-control table-search"
-            id="filter-text-box"
-            placeholder="Search"
-            autoComplete={"off"}
-            onChange={(e) => onFilterTextBoxChanged(e)}
-          />
+          <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
         </Col>
         <Col md="9">
           <div className="d-flex justify-content-end bd-highlight w100 ">
             <div className="warning-message d-flex align-items-center">
               {state.warningMessage && !state.disableDownload && (
                 <>
-                  <WarningMessage
-                    dClass="mr-3"
-                    message={"Please click on filter button to filter all data"}
-                  />
+                  <WarningMessage dClass="mr-3" message={"Please click on filter button to filter all data"} />
                   <div className="right-hand-arrow mr-2"></div>
                 </>
               )}
@@ -840,21 +743,18 @@ const VendorListing = () => {
             <div className="d-flex">
               <Button id="vendorListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter}
               />
-              {AddAccessibility && (
-                <Button id="vendorListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+              {AddAccessibility && (<Button id="vendorListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
               )}
-              {BulkUploadAccessibility && (
-                <Button id="vendorListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+              {BulkUploadAccessibility && (<Button id="vendorListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
               )}
-              {DownloadAccessibility && (
-                <>
-                  <Button className="mr5" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                  />
+              {DownloadAccessibility && (<>
+                <Button className="mr5" id={"vendorListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                />
 
-                  <ExcelFile filename={"Vendor"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-vendor"} className="p-absolute" />}>
-                    {onBtExport()}
-                  </ExcelFile>
-                </>
+                <ExcelFile filename={"Vendor"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-vendor"} className="p-absolute" />}>
+                  {onBtExport()}
+                </ExcelFile>
+              </>
               )}
               <Button id={"vendorListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
@@ -944,18 +844,14 @@ const VendorListing = () => {
         </div>
       )}
 
-      {state.isBulkUpload && (
-        <BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} isZBCVBCTemplate={false} fileName={"Vendor"} messageLabel={"Vendor"} anchor={"right"} />
+      {state.isBulkUpload && (<BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} isZBCVBCTemplate={false} fileName={"Vendor"} messageLabel={"Vendor"} anchor={"right"} />
       )}
-      {isOpenVendor && (
-        <AddVendorDrawer isOpen={isOpenVendor} closeDrawer={closeVendorDrawer} isEditFlag={state.isEditFlag} isRM={false} isViewMode={state.isViewMode} ID={state.ID} anchor={"right"} />
+      {isOpenVendor && (<AddVendorDrawer isOpen={isOpenVendor} closeDrawer={closeVendorDrawer} isEditFlag={state.isEditFlag} isRM={false} isViewMode={state.isViewMode} ID={state.ID} anchor={"right"} />
       )}
-      {state.showPopup && (
-        <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
+      {state.showPopup && (<PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Are you sure you want to delete this Vendor?`} />
       )}
-      {state.showPopupToggle && (
-        <PopupMsgWrapper isOpen={state.showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${state.cellValue ? MESSAGES.VENDOR_DEACTIVE_ALERT : MESSAGES.VENDOR_ACTIVE_ALERT}`}
-        />
+      {state.showPopupToggle && (<PopupMsgWrapper isOpen={state.showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${state.cellValue ? MESSAGES.VENDOR_DEACTIVE_ALERT : MESSAGES.VENDOR_ACTIVE_ALERT}`}
+      />
       )}
     </div>
   );

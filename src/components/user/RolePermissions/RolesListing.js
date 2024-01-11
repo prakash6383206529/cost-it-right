@@ -17,6 +17,9 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId, userDetails } from '../../../helper';
 import Switch from "react-switch";
 import ScrollToTop from '../../common/ScrollToTop';
+import { useRef } from 'react';
+import Button from '../../layout/Button';
+
 const gridOptions = {};
 const RolesListing = (props) => {
   const [state, setState] = useState({
@@ -38,13 +41,12 @@ const RolesListing = (props) => {
     cell: '',
     noData: false
   });
-  const [searchFilter, setSearchFilter] = useState("")
+
   const dispatch = useDispatch();
+  const searchRef = useRef(null);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   useEffect(() => {
-    setState((prevState) => ({
-      ...prevState, isLoader: true
-    }))
+    setState((prevState) => ({ ...prevState, isLoader: true }))
     if (topAndLeftMenuData !== undefined) {
       const userMenu = topAndLeftMenuData?.find(el => el.ModuleName === 'Users');
       const accessData = userMenu?.Pages.find(el => el.PageName === ROLE);
@@ -71,15 +73,10 @@ const RolesListing = (props) => {
     dispatch(getAllRoleAPI(res => {
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
-        setState(prevState => ({
-          ...prevState, tableData: Data, isLoader: false, // this will update `isLoader` in the same state-setting function
-        }));
+        setState(prevState => ({ ...prevState, tableData: Data, isLoader: false, }));
       }
       else {
-        setState((prevState) => ({
-          ...prevState,
-          isLoader: false
-        }));
+        setState((prevState) => ({ ...prevState, isLoader: false }));
       }
     }));
   };
@@ -89,10 +86,7 @@ const RolesListing = (props) => {
    * @description confirm edit item
    */
   const editItemDetails = (Id) => {
-    let requestData = {
-      isEditFlag: true,
-      RoleId: Id,
-    }
+    let requestData = { isEditFlag: true, RoleId: Id, }
     props.getDetail(requestData)
   }
 
@@ -113,7 +107,9 @@ const RolesListing = (props) => {
 
     return (
       <>
-        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
+        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <Button id={`roleListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
+        }
+        editItemDetails(cellValue, rowData)
         {/* {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />} */}
       </>
     )
@@ -135,30 +131,24 @@ const RolesListing = (props) => {
   };
 
   const onFilterTextBoxChanged = (e) => {
-    setSearchFilter(state.gridApi.setQuickFilter(e.target.value));
+    state.gridApi.setQuickFilter(e.target.value)
   }
 
   const resetState = () => {
-    const searchBox = document.getElementById("filter-text-box");
-    if (searchBox) {
-      searchBox.value = ""; // Reset the input field's value
-    }
     state?.gridApi?.setQuickFilter(null)
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
   }
 
   const handleChange = (cell, row) => {
-
     setState((prevState) => ({ ...prevState, showPopup: true, row: row, cell: cell }))
 
   }
   const onPopupConfirm = () => {
-    let data = {
-      Id: state.row.RoleId,
-      ModifiedBy: loggedInUserId(),
-      IsActive: !state.cell, //Status of the Reason.
-    }
+    let data = { Id: state.row.RoleId, ModifiedBy: loggedInUserId(), IsActive: !state.cell, }
     dispatch(activeInactiveRole(data, (res) => {
       if (res && res.data && res.data.Result) {
         if (Boolean(state.cell) === true) {
@@ -190,18 +180,7 @@ const RolesListing = (props) => {
       <>
         <label htmlFor="normal-switch" className="normal-switch">
           {/* <span>Switch with default style</span> */}
-          <Switch
-            onChange={() => handleChange(cellValue, rowData)}
-            checked={cellValue}
-            disabled={!ActivateAccessibility}
-            background="#ff6600"
-            onColor="#4DC771"
-            onHandleColor="#ffffff"
-            offColor="#FC5774"
-            id="normal-switch"
-            height={24}
-            className={cellValue ? "active-switch" : "inactive-switch"}
-          />
+          <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
         </label>
       </>
     )
@@ -209,11 +188,7 @@ const RolesListing = (props) => {
 
   const { AddAccessibility, noData } = state;
 
-  const defaultColDef = {
-    resizable: true,
-    filter: true,
-    sortable: false,
-  };
+  const defaultColDef = { resizable: true, filter: true, sortable: false, };
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
@@ -233,17 +208,13 @@ const RolesListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               {AddAccessibility &&
                 <div>
-                  <button
-                    type="button"
-                    className={'user-btn mr5'}
-                    title="Add"
-                    onClick={formToggle}>
-                    <div className={'plus mr-0'}></div></button>
+
+                  <Button id="roletListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
                 </div>
               }
-              <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                <div className="refresh mr-0"></div>
-              </button>
+
+              <Button
+                id={"roleListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
 
 
@@ -253,7 +224,7 @@ const RolesListing = (props) => {
           <Col className="table-mt-0">
             <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
               <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
               </div>
               <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}

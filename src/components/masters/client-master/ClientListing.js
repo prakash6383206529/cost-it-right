@@ -26,7 +26,8 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const ExcelFile = ReactExport.ExcelFile;
 const gridOptions = {};
 
-const ClientListing = () => {
+const ClientListing = React.memo(() => {
+
   const dispatch = useDispatch();
   const searchRef = useRef(null);
   const clientDataList = useSelector((state) => state.client.clientDataList);
@@ -57,13 +58,29 @@ const ClientListing = () => {
   });
 
   useEffect(() => {
+    console.log("11111")
+    if (!topAndLeftMenuData) {
+      setState(prevState => ({ ...prevState, isLoader: true }));
+      return;
+    }
+
     applyPermission(topAndLeftMenuData);
-    getTableListData(null, null);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    getTableListData();
+
+    setTimeout(() => {
+      setState(prevState => ({ ...prevState, isLoader: false }));
+    }, 400);
+
+    // return () => clearTimeout(loaderTimeout);
+
+  }, [topAndLeftMenuData]);
+
+
 
   useEffect(() => {
     if (topAndLeftMenuData) {
+      console.log("hi2")
+
       setState((prevState) => ({ ...prevState, isLoader: true }));
       applyPermission(topAndLeftMenuData);
       setTimeout(() => {
@@ -92,7 +109,7 @@ const ClientListing = () => {
         }));
       }
     }
-  };
+  }
   /**
      * @method buttonFormatter
      * @description Renders buttons
@@ -100,6 +117,7 @@ const ClientListing = () => {
 
   const buttonFormatter = (props) => {
     const { ViewAccessibility, EditAccessibility, DeleteAccessibility } = state;
+    console.log("ViewAccessibility", ViewAccessibility, EditAccessibility, DeleteAccessibility);
     const cellValue = props?.value;
 
     return (
@@ -120,7 +138,7 @@ const ClientListing = () => {
    * @description Get user list data
    */
 
-  const getTableListData = (clientName = null, companyName = null) => {
+  const getTableListData = useCallback((clientName = null, companyName = null) => {
     const filterData = {
       clientName: clientName,
       companyName: companyName,
@@ -136,7 +154,7 @@ const ClientListing = () => {
         }
       })
     );
-  };
+  }, []);
 
   /**
    * @method editItemDetails
@@ -339,7 +357,7 @@ const ClientListing = () => {
           <div
             className={`ag-theme-material ${state.isLoader && "max-loader-height"}`} >
             {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
-            <AgGridReact
+            {!state.isLoader && <AgGridReact
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout="autoHeight"
@@ -368,7 +386,7 @@ const ClientListing = () => {
               <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
               <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
               <AgGridColumn field="ClientId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-            </AgGridReact>
+            </AgGridReact>}
             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
           </div>
         </div>
@@ -383,6 +401,6 @@ const ClientListing = () => {
       )}
     </div>
   );
-};
+});
 
 export default ClientListing
