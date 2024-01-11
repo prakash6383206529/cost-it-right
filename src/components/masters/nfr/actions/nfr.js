@@ -10,6 +10,7 @@ import {
 } from '../../../../config/constants';
 import { apiErrors } from '../../../../helper/util';
 import { userDepartmetList } from '../../../../helper';
+import Toaster from '../../../common/Toaster';
 
 export function getAllNfrList(callback) {
     return (dispatch) => {
@@ -87,8 +88,13 @@ export function nfrSendToApproverBySender(requestData, callback) {
     return (dispatch) => {
         axios.post(API.nfrSendToApproverBySender, requestData, config())
             .then((response) => {
-                if (response && response.status === 200) {
+                if ((response && response.status === 200) || response.data.Result) {
                     callback(response);
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        Toaster.error(response.data.Message)
+                    }
                 }
             }).catch((error) => {
                 apiErrors(error);
@@ -143,8 +149,13 @@ export function approvedCostingByApprover(requestData, callback) {
     return (dispatch) => {
         axios.post(API.approvedCostingByApprover, requestData, config())
             .then((response) => {
-                if (response && response.status === 200) {
+                if ((response && response.status === 200) || response?.data?.Result) {
                     callback(response);
+                } else {
+                    dispatch({ type: API_FAILURE })
+                    if (response.data.Message) {
+                        Toaster.error(response.data.Message)
+                    }
                 }
             }).catch((error) => {
                 apiErrors(error);

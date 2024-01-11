@@ -6,16 +6,12 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGING, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
-import { useDispatch, useSelector } from 'react-redux';
-import { getUsersSimulationTechnologyLevelAPI } from '../actions/auth/AuthActions'
-import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
 import TooltipCustom from '../components/common/Tooltip';
-import { SHEETMETAL } from '../config/masterData';
-
+import { FORGING, SHEETMETAL } from '../config/masterData';
 /**
  * @method  apiErrors
  * @desc Response error handler.
@@ -1064,18 +1060,24 @@ export const displayUOM = (value) => {
       temp.push(value.charAt(i))
     }
     temp.splice(temp.length - 2, 1);
-    const UOMValue = <div className='p-relative'>{temp.map(item => {
-      return <span className='unit-text'>{item}</span>
+    const UOMValue = <span>{temp.map((item, ind) => {
+      if (temp.length !== ind + 1) {
+        return <>{item}</>
+      } else {
+        return <sup>{item}</sup>
+      }
     })}
-    </div>
+    </span>
     return UOMValue
   }
   return value
 }
 export const labelWithUOMAndCurrency = (label, UOM, currency) => {
-  return <div>
-    <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
-  </div>
+  return <>{label}({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</>
+}
+
+export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
+  return <>{label}({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</>
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID

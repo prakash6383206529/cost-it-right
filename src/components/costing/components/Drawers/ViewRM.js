@@ -43,7 +43,7 @@ function ViewRM(props) {
     setIndex(index)
 
     const tempData = viewCostingData[props.index]
-    if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID))) {
+    if (props.simulationMode && String(tempData.CostingHeading) === String("New Costing") && (Number(tempData.SimulationStatusId) === Number(REJECTEDID) || Number(tempData.SimulationStatusId) === Number(PENDING_FOR_APPROVAL_ID) || Number(tempData.SimulationStatusId) === Number(AWAITING_APPROVAL_ID)) && viewRM[index]?.RawMaterialCalculatorId === null && viewRM[index]?.IsCalculatorAvailable === true) {
       switch ((Number(tempData.technologyId))) {
         case Ferrous_Casting:
           dispatch(getSimulationRmFerrousCastingCalculation(tempData.SimulationId, tempData.netRMCostView[index].CostingId, res => {
@@ -89,8 +89,6 @@ function ViewRM(props) {
         default:
           return "none";
       }
-
-
     }
     else {
       if (viewRM[index].RawMaterialCalculatorId === 0 || viewRM[index].RawMaterialCalculatorId === null) {
@@ -174,6 +172,7 @@ function ViewRM(props) {
           {(viewCostingData[props.index].technologyId === Ferrous_Casting || viewCostingData[props.index].technologyId === RUBBER) && <button
             className="secondary-btn"
             type={'button'}
+            disabled={viewCostingData[props?.index]?.CostingPartDetails?.CostingRawMaterialsCost?.length === 0 ? true : false}
             onClick={() => { getWeightData(0) }}
           >
             <div className='CalculatorIcon cr-cl-icon '></div>Weight Calculator</button>}
@@ -228,7 +227,7 @@ function ViewRM(props) {
                   <td>{item.BurningLossWeight ? checkForDecimalAndNull(item.BurningLossWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>
                   {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.CastingWeight ? checkForDecimalAndNull(item.CastingWeight, initialConfiguration.NoOfDecimalForInputOutput) : '-'}</td>}
                   {viewCostingData[0].technologyId === DIE_CASTING && <td>{item.MeltingLoss ? `${checkForDecimalAndNull(item.MeltingLoss, initialConfiguration.NoOfDecimalForInputOutput)}(${item.LossPercentage}%)` : '-'}</td>}
-                  <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}{!(viewCostingData[props.index]?.technologyId === MACHINING && item?.UOM === "Meter" && getConfigurationKey().IsShowMachiningCalculatorForMeter) && <TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}</div>{item.RawMaterialCalculatorId === null && item.GrossWeight !== null && viewCostingData[props.index].technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
+                  <td> <div className='w-fit d-flex'><div id={`net-rm-cost${index}`}>{checkForDecimalAndNull(item.NetLandedCost, initialConfiguration.NoOfDecimalForPrice)}{<TooltipCustom disabledIcon={true} tooltipClass="net-rm-cost" id={`net-rm-cost${index}`} tooltipText={(viewCostingData[props.index]?.technologyId === MACHINING && item?.IsCalculatorAvailable === true) ? 'Net RM Cost = RM/Pc - ScrapCost' : 'Net RM Cost = (RM Rate * Gross Weight) - (Scrap Weight * Scrap Rate)'} />}</div>{item.RawMaterialCalculatorId === null && item.GrossWeight !== null && viewCostingData[props.index].technologyId === FORGING && <TooltipCustom id={`forging-tooltip${index}`} customClass={"mt-1 ml-2"} tooltipText={`RMC is calculated on the basis of Forging Scrap Rate.`} />}</div></td>
                   {initialConfiguration.IsShowCRMHead && <td>{item.RawMaterialCRMHead}</td>}
                   <td>
                     <div className={`${isPDFShow ? '' : 'remark-overflow'}`} title={item.Remark}>

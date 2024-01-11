@@ -28,7 +28,7 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import VolumeBulkUploadDrawer from '../../massUpload/VolumeBulkUploadDrawer'
 import { Drawer } from '@material-ui/core'
 import classnames from 'classnames';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions'
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions'
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -200,7 +200,10 @@ function VolumeListing(props) {
   const getTableListData = (skip = 0, take = 10, isPagination = true) => {
     if (isPagination === true || isPagination === null) setIsLoader(true)
     let dataObj = { ...floatingFilterData }
-    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+    const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
+    dataObj.IsCustomerDataShow = cbc
+    dataObj.IsVendorDataShow = vbc
+    dataObj.IsZeroDataShow = zbc
     dispatch(getVolumeDataList(skip, take, isPagination, dataObj, (res) => {
       if (isPagination === true || isPagination === null) setIsLoader(false)
 
@@ -338,7 +341,9 @@ function VolumeListing(props) {
 
 
   const formToggle = () => {
-    setShowVolumeForm(true)
+    if (checkMasterCreateByCostingPermission()) {
+      setShowVolumeForm(true)
+    }
   }
 
   const returnExcelColumn = (data = [], TempData) => {
@@ -751,7 +756,7 @@ function VolumeListing(props) {
                   <AgGridColumn field="Year" headerName="Year"></AgGridColumn>
                   <AgGridColumn field="Month" headerName="Month"></AgGridColumn>
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                  {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                  {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="PartType" headerName="Part Type" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn field="PartNumber" headerName="Part No. (Revision No.)" width={200}></AgGridColumn>

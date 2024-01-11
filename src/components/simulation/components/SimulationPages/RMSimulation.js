@@ -617,6 +617,14 @@ function RMSimulation(props) {
         )
     }
 
+    /**
+     * @method hyphenFormatter
+     */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? cellValue : '-';
+    }
+
     const changeList = (value) => {
         setIsLoader(true)
         list && list?.map(item => {
@@ -666,7 +674,8 @@ function RMSimulation(props) {
         percentageFormatter: percentageFormatter,
         percentageHeader: percentageHeader,
         nullHandler: props.nullHandler && props.nullHandler,
-        oldScrapRateFormatterPerScrapUOM: oldScrapRateFormatterPerScrapUOM
+        oldScrapRateFormatterPerScrapUOM: oldScrapRateFormatterPerScrapUOM,
+        hyphenFormatter: hyphenFormatter,
 
     };
 
@@ -863,6 +872,7 @@ function RMSimulation(props) {
                                                 {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={160} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                                 {!isImpactedMaster && <AgGridColumn width={160} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
                                                 <AgGridColumn width={100} field="UnitOfMeasurementName" tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>
+                                                {isScrapUOMApplyTemp && <AgGridColumn width={150} field="ScrapUnitOfMeasurement" tooltipField='ScrapUnitOfMeasurement' editable='false' headerName="Scrap UOM" cellRenderer='hyphenFormatter'></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                                 {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
 

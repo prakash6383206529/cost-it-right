@@ -34,7 +34,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -195,6 +195,7 @@ class AddBOPImport extends Component {
    */
   componentDidMount() {
     const { initialConfiguration } = this.props
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     const { currency } = this.state
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
@@ -1358,7 +1359,7 @@ class AddBOPImport extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label id='bop_import_zeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id='bop_import_zeroBased' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1373,8 +1374,8 @@ class AddBOPImport extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Zero Based</span>
-                            </Label>
-                            <Label id='bop_import_vendor_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            </Label>}
+                            {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label id='bop_import_vendor_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1389,8 +1390,8 @@ class AddBOPImport extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Vendor Based</span>
-                            </Label>
-                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label id='bop_import_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            </Label>}
+                            {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id='bop_import_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"

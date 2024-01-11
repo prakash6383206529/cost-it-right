@@ -29,7 +29,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import { disabledClass } from '../../../actions/Common';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -139,7 +139,10 @@ class MachineRateListing extends Component {
             plant_id: plant_id,
             StatusId: statusString
         }
-        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+        const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
+        dataObj.IsCustomerDataShow = cbc
+        dataObj.IsVendorDataShow = vbc
+        dataObj.IsZeroDataShow = zbc
         if (this.props.isSimulation) {
             dataObj.TechnologyId = this.props.technology.value
             dataObj.Technologies = this.props.technology.label
@@ -508,7 +511,9 @@ class MachineRateListing extends Component {
 
 
     displayForm = () => {
-        this.props.displayForm()
+        if (checkMasterCreateByCostingPermission()) {
+            this.props.displayForm()
+        }
     }
 
     /**
@@ -850,7 +855,7 @@ class MachineRateListing extends Component {
                                     <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                                     <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
                                     <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                    {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                    {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                     <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                                     <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                                     <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>

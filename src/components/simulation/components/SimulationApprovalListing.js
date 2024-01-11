@@ -179,7 +179,11 @@ function SimulationApprovalListing(props) {
         if (isDashboard) {
             dataObj.DisplayStatus = props.status
         }
-        let IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+
+        const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission')
+        dataObj.IsCustomerDataShow = cbc
+        dataObj.IsVendorDataShow = vbc
+        dataObj.IsZeroDataShow = zbc
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
@@ -192,7 +196,7 @@ function SimulationApprovalListing(props) {
         setIsLoader(true)
         isDashboard && dispatch(dashboardTabLock(true))
         let obj = { ...dataObj }
-        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
+        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
             dispatch(dashboardTabLock(false))
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)

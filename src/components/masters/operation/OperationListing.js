@@ -30,7 +30,7 @@ import { disabledClass } from '../../../actions/Common';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import AnalyticsDrawer from '../material-master/AnalyticsDrawer';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -190,7 +190,10 @@ class OperationListing extends Component {
                 filterData.OperationType = ''
             }
 
-            dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+            const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
+            dataObj.IsCustomerDataShow = cbc
+            dataObj.IsVendorDataShow = vbc
+            dataObj.IsZeroDataShow = zbc
             this.props.getOperationsDataList(filterData, skip, take, isPagination, dataObj, res => {
                 this.setState({ noData: false })
                 if (this.props.isSimulation) {
@@ -474,8 +477,9 @@ class OperationListing extends Component {
     }
 
     formToggle = () => {
-
-        this.props.formToggle()
+        if (checkMasterCreateByCostingPermission()) {
+            this.props.formToggle()
+        }
     }
 
     hideForm = () => {
@@ -833,7 +837,7 @@ class OperationListing extends Component {
                                 <AgGridColumn field="OperationCode" headerName="Operation Code" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                 <AgGridColumn field="Plants" headerName="Plant (Code)"  ></AgGridColumn>
                                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                                {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                                 <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={'commonCostFormatter'}></AgGridColumn>

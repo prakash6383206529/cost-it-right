@@ -419,14 +419,17 @@ function TabDiscountOther(props) {
             setCurrency(Data.Currency !== null ? { label: Data.Currency, value: Data.CurrencyId } : [])
             setValue('BasicRateINR', Data.BasicRate !== null ? checkForDecimalAndNull(Data.BasicRate, initialConfiguration?.NoOfDecimalForPrice) : '')
             setValue('NetPOPriceINR', Data.NetPOPrice !== null ? checkForDecimalAndNull(Data.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '')
-            setValue('AnyOtherCost', costDetail.NetOtherCost !== null ? checkForDecimalAndNull(costDetail.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice) : '')
             setValue('Currency', Data.Currency !== null ? { label: Data.Currency, value: Data.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', Data.NetPOPriceInOtherCurrency !== null ? checkForDecimalAndNull(Data.NetPOPriceInOtherCurrency, initialConfiguration?.NoOfDecimalForPrice) : '')
-            setNetPoPriceCurrencyState(Data.NetPOPriceInOtherCurrency !== null ? Data.NetPOPriceInOtherCurrency : '')
             setValue('Remarks', Data.Remark !== null ? Data.Remark : '')
-            setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
-            setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
+            //MINDA
+            // setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
+            // setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
 
+            setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+            setValue('AnyOtherCost', costDetail.NetOtherCost !== null ? checkForDecimalAndNull(costDetail.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice) : '')
+            setNetPoPriceCurrencyState(Data.NetPOPriceInOtherCurrency !== null ? Data.NetPOPriceInOtherCurrency : '')
+            setValue('discountDescriptionRemark', Data !== undefined && Data?.CostingPartDetails?.DiscountCostDetails[0]?.Description)
             if (costDetail?.DiscountCostDetails?.length !== 0) {
               setValue('HundiOrDiscountPercentage', costDetail?.DiscountCostDetails[0]?.Value !== null ? costDetail?.DiscountCostDetails[0]?.Value : '')
               setValue('HundiOrDiscountValue', costDetail?.DiscountCostDetails[0]?.NetCost !== null ? checkForDecimalAndNull(costDetail?.DiscountCostDetails[0]?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '')

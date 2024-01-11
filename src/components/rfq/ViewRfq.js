@@ -1009,6 +1009,7 @@ function RfqListing(props) {
                         isSimulation={false}
                         simulationDrawer={false}
                         isReportLoader={isReportLoader}
+                        isRfqCosting={true}
                     />
                 }
                 {rejectDrawer && (

@@ -22,7 +22,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { onFocus, showDataOnHover } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { getRawMaterialNameChild, getRMGradeSelectListByRawMaterial } from '../actions/Material'
 import { ASSEMBLY } from '../../../config/masterData';
@@ -90,6 +90,7 @@ class AddOverhead extends Component {
    * @description Called after rendering the component
    */
   componentDidMount() {
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC) {
       this.props.getRawMaterialNameChild(() => { })
     }
@@ -975,7 +976,7 @@ class AddOverhead extends Component {
                     <div className="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label id="AddOverhead_zerobased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                          {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id="AddOverhead_zerobased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -988,8 +989,8 @@ class AddOverhead extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Zero Based</span>
-                          </Label>
-                          <Label id="AddOverhead_vendorbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                          </Label>}
+                          {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label id="AddOverhead_vendorbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1002,8 +1003,8 @@ class AddOverhead extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Vendor Based</span>
-                          </Label>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddOverhead_customerbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
+                          </Label>}
+                          {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddOverhead_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"

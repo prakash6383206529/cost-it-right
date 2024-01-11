@@ -564,6 +564,7 @@ function SimulationApproveReject(props) {
         isDisable={isDisable}
         disableReleaseStrategy={disableReleaseStrategy}
         fileDataCallback={fileDataCallback}
+        isSimulationApprovalListing={props?.isSimulationApprovalListing}
       />
 
       {

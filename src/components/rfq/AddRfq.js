@@ -1722,7 +1722,7 @@ function AddRfq(props) {
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain border" : ""} `}>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain non-filter border" : ""} `}>
 
                                                         <div className={`ag-theme-material  max-loader-height`}>
                                                             <AgGridReact
@@ -1738,7 +1738,7 @@ function AddRfq(props) {
                                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                 noRowsOverlayComponentParams={{
                                                                     title: EMPTY_DATA,
-                                                                    imagClass: 'imagClass'
+                                                                    imagClass: 'imagClass mt-0'
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >

@@ -114,7 +114,7 @@ function VerifyImpactDrawer(props) {
                     <Table responsive className="border impact-drawer-table sub-table">
                       <tbody>
                         <tr>
-                          {CostingTypeId !== CBCTypeId && <th>Vendor (Code):</th>}
+                          {CostingTypeId === CBCTypeId ? <th>Customer (Code):</th> : <th>Vendor (Code):</th>}
                           {isSimulationWithCosting ? <th>Technology:</th> : <th>Association:</th>}
                           <th>Master:</th>
                           <th>Costing Head:</th>
@@ -126,11 +126,10 @@ function VerifyImpactDrawer(props) {
                       </tbody>
                       <tbody>
                         <tr>
-                          {CostingTypeId !== CBCTypeId && <td>{amendmentDetails.Vendor}</td>}
+                          {CostingTypeId === CBCTypeId ? <td>{amendmentDetails.CustomerName}</td> : <td>{amendmentDetails.Vendor}</td>}
                           {isSimulationWithCosting ? <td>{amendmentDetails.Technology}</td> : <td>{'Non Associated'}</td>}
                           <td>{amendmentDetails.SimulationAppliedOn}</td>
                           <td>{amendmentDetails.CostingHead}</td>
-                          {CostingTypeId === CBCTypeId && <td>{amendmentDetails.CustomerName}</td>}
                           <td>{amendmentDetails.EffectiveDate === '' ? '-' : DayTime(amendmentDetails.EffectiveDate).format('DD-MM-YYYY')}</td>
                           <td>{impactedMasterData.TotalImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>
                           <td>{impactedMasterData.TotalBudgetedPriceImpactPerQuarter === '' ? '-' : checkForDecimalAndNull(impactedMasterData.TotalBudgetedPriceImpactPerQuarter, getConfigurationKey().NoOfDecimalForPrice)}</td>

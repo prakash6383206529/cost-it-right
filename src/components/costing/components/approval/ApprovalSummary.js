@@ -611,7 +611,7 @@ function ApprovalSummary(props) {
                       {approvalDetails.CostingTypeId === VBCTypeId && (
                         <th>{`ZBC/Vendor (Code):`}</th>
                       )}
-                      {approvalDetails.CostingTypeId === CBCTypeId && reactLocalStorage.getObject('cbcCostingPermission') && (
+                      {approvalDetails.CostingTypeId === CBCTypeId && reactLocalStorage.getObject('CostingTypePermission').cbc && (
                         <th>{`Customer (Code)`}</th>
                       )}
                       {

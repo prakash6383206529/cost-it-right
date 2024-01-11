@@ -374,7 +374,7 @@ function Simulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let templateArray
-        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
             templateArray = hideColumnFromExcel(data, 'CustomerName')
         } else if (isMasterAssociatedWithCosting) {
             templateArray = hideColumnFromExcel(data, 'Percentage')
@@ -821,7 +821,7 @@ function Simulation(props) {
                             setEditWarning(true);
                             vendorFlag = false
                         }
-                        if (element.PlantId !== Data[index - 1].PlantId) {
+                        if (element.PlantId !== Data[index - 1].PlantId || element.DestinationPlantId !== Data[index - 1].DestinationPlantId) {
                             (Data.length !== 0) && setFilterStatus('Please filter out the Plant')
                             setEditWarning(true);
                             plantFlag = false

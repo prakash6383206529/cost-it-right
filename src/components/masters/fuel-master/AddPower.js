@@ -1435,7 +1435,7 @@ class AddPower extends Component {
                       <Row>
 
                         <Col md="12">
-                          <Label id="AddPower_zerobased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                          {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="AddPower_zerobased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1448,8 +1448,8 @@ class AddPower extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Zero Based</span>
-                          </Label>
-                          <Label id="AddPower_vendorbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                          </Label>}
+                          {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="AddPower_vendorbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1462,8 +1462,8 @@ class AddPower extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Vendor Based</span>
-                          </Label>
-                          {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddPower_customerbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
+                          </Label>}
+                          {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="AddPower_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1478,7 +1478,7 @@ class AddPower extends Component {
                             <span>Customer Based</span>
                           </Label>}
                         </Col>
-                      </Row>
+                      </Row >
 
 
                       <Row>
@@ -1657,7 +1657,8 @@ class AddPower extends Component {
                       </Row>
 
 
-                      {isDetailEntry &&
+                      {
+                        isDetailEntry &&
                         <>
                           <Row className='child-form-container'>
                             <Col md="12" className="filter-block">
@@ -2171,7 +2172,7 @@ class AddPower extends Component {
                           </Row>
                         </>
                       }
-                    </div>
+                    </div >
                     <Row className="sf-btn-footer no-gutters bottom-footer justify-content-between">
                       <div className="col-sm-12 text-right bluefooter-butn">
                         <button id="AddPower_Cancel"
@@ -2192,11 +2193,11 @@ class AddPower extends Component {
                       </div>
                     </Row>
 
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
+                  </form >
+                </div >
+              </div >
+            </div >
+          </div >
         </div >
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />

@@ -17,7 +17,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { CBCTypeId, searchCount, SPACEBAR, VBC_VENDOR_TYPE, VBCTypeId, ZBCTypeId } from '../../../config/constants';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AsyncSelect from 'react-select/async';
-import { autoCompleteDropdown } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import { getClientSelectList, } from '../actions/Client';
 import { getVendorNameByVendorSelectList } from '../../../actions/Common';
 const
@@ -54,6 +54,7 @@ class AddExchangeRate extends Component {
    * @description called after render the component
    */
   componentDidMount() {
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     if (!(this.props.data.isEditFlag || this.props.data.isViewFlag)) {
       this.props.getCurrencySelectList(() => { })
     }
@@ -426,7 +427,7 @@ class AddExchangeRate extends Component {
                   <div className="add-min-height">
                     <Row>
                       <Col md="12">
-                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -439,8 +440,8 @@ class AddExchangeRate extends Component {
                             disabled={isEditFlag ? true : false}
                           />{" "}
                           <span>Zero Based</span>
-                        </Label>
-                        <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                        </Label>}
+                        {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"
@@ -453,8 +454,8 @@ class AddExchangeRate extends Component {
                             disabled={isEditFlag ? true : false}
                           />{" "}
                           <span>Vendor Based</span>
-                        </Label>
-                        {reactLocalStorage.getObject('cbcCostingPermission') && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                        </Label>}
+                        {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                           <input
                             type="radio"
                             name="costingHead"

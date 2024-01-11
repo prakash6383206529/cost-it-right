@@ -21,6 +21,7 @@ import {
 } from '../../../config/constants';
 import { userDetails } from '../../../helper';
 import { apiErrors } from '../../../helper/util';
+import { reactLocalStorage } from 'reactjs-localstorage';
 
 // const config() = config;
 
@@ -85,9 +86,10 @@ export function updateFuelDetail(data, callback) {
  * @description create fuel detail list
  */
 export function getFuelDetailDataList(isAPICall, data, callback) {
+    const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
         if (isAPICall) {
-            const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}`, config());
+            const request = axios.get(`${API.getFuelDetailDataList}?fuelId=${data.fuelName}&stateId=${data.stateName}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
             request.then((response) => {
                 if (response && (response.data.Result === true || response.status === 204)) {
                     dispatch({
@@ -398,8 +400,9 @@ export function updateVendorPowerDetail(data, callback) {
 export function getPowerDetailDataList(data, callback) {
     let plantID = data && data.plantID === undefined ? null : data.plantID;
     let stateID = data && data.stateID === undefined ? null : data.stateID;
+    const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission');
     return (dispatch) => {
-        const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}`, config());
+        const request = axios.get(`${API.getPowerDetailDataList}?plantId=${plantID}&stateId=${stateID}&IsCustomerDataShow=${cbc}&IsVendorDataShow=${vbc}&IsZeroDataShow=${zbc}`, config());
         request.then((response) => {
             if (response.data.Result || response.status === 204) {
                 dispatch({

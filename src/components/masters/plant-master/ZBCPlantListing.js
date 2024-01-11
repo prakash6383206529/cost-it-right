@@ -49,13 +49,19 @@ const ZBCPlantListing = (props) => {
         isLoader: false,
         selectedRowData: false,
         noData: false,
-        dataCount: 0
+        dataCount: 0,
+        type: '',
     });
 
     useEffect(() => {
         filterList();
     }, []);
 
+    useEffect(() => {
+        if (state.isOpenVendor === false && state.type === 'submit') {
+            filterList();
+        }
+    }, [state.isOpenVendor, state.type]);
 
     const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
         setState(prevState => ({
@@ -186,7 +192,6 @@ const ZBCPlantListing = (props) => {
     * @description FILTER DATALIST
     */
     const filterList = () => {
-
         setState(prevState => ({ ...prevState, isLoader: true }));
 
         let filterData = {
@@ -220,17 +225,9 @@ const ZBCPlantListing = (props) => {
             ...prevState,
             isOpenVendor: false,
             isEditFlag: false,
-            ID: ''
-        }), () => {
-            if (type === 'submit') {
-                filterList(); // Assuming filterList is a function that updates the data list
-                setState(prevState => ({
-                    ...prevState,
-                    noData: false,
-                    dataCount: 0
-                }));
-            }
-        });
+            ID: '',
+            type: type
+        }));
     };
     /**
    * @method onFloatingFilterChanged

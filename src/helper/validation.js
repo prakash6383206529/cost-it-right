@@ -3,6 +3,10 @@ import Toaster from '../components/common/Toaster';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import _ from 'lodash'
 import { NUMBERMAXLENGTH } from '../config/masterData';
+import BigNumber from 'bignumber.js';
+
+// Ensure your configuration for BigNumber, only needs to be done once:
+BigNumber.config({ DECIMAL_PLACES: 10 });
 
 export const minLength = min => value =>
     value && value.length < min ? `Min length must be ${min}.` : undefined;
@@ -292,11 +296,6 @@ export const applySuperScript = (cell) => {
     }
 }
 
-export const checkForNull = (ele) => {
-    const number = (ele == null || isNaN(Number(ele)) || ele === undefined || ele === Infinity || ele === -Infinity) ? 0 : Number(ele);
-    return number
-}
-
 export const trimTwoDecimalPlace = (floatValue) => {
     var decimalTextLength = 0;
     if (undefined !== floatValue.toString().split('.')[1]) {
@@ -321,28 +320,43 @@ export const trimFourDecimalPlace = (floatValue) => {
     return floatValue;
 }
 
-export const trimDecimalPlace = (floatValue, Number) => {
-    var decimalTextLength = 0;
-    if (floatValue !== undefined) {
-        if (floatValue !== null && floatValue.toString().split('.')[1] !== undefined && floatValue.toString() !== null) {
-            decimalTextLength = (floatValue.toString().split('.')[1]).length;
-        }
-    }
-    if (decimalTextLength > Number) {
-        floatValue = parseFloat(floatValue.toString().substring(0, (floatValue.toString().length - (((floatValue.toString().split('.')[1]).length) - Number))));
+export const trimDecimalPlace = (floatValue, decimalPlaces) => {
+    if (floatValue !== null && !isNaN(floatValue)) {
+        const roundedValue = new BigNumber(floatValue).decimalPlaces(decimalPlaces);
+        return roundedValue.toNumber();
     }
     return floatValue;
-}
+};
 
-export const checkForDecimalAndNull = (floatValue, Number) => {
+export const checkForDecimalAndNull = (floatValue, decimalPlaces) => {
     const localStorage = reactLocalStorage.getObject('InitialConfiguration');
-    if (localStorage.IsRoundingVisible) {
-        return checkForNull(_.round(floatValue, Number))
-    } else {
 
-        return checkForNull(trimDecimalPlace(floatValue, Number))
+    // Ensure floatValue is wrapped in a BigNumber, even if null or undefined
+    let value = new BigNumber(floatValue ?? 0);
+
+    if (localStorage && localStorage.IsRoundingVisible) {
+        // Make sure decimalPlaces is a valid number before rounding
+        if (typeof decimalPlaces === 'number' && decimalPlaces >= 0) {
+            value = value.decimalPlaces(decimalPlaces);
+        }
+    } else {
+        // Ensure trimDecimalPlace returns BigNumber and use decimalPlaces method
+        // Assuming trimDecimalPlace is supposed to handle null or undefined values inside
+        value = new BigNumber(trimDecimalPlace(value.toNumber(), decimalPlaces));
     }
-}
+
+    // Convert the resulting BigNumber to a number and use checkForNull to validate
+    const number = value.toNumber();
+    return checkForNull(number);
+};
+export const checkForNull = (ele) => {
+    if (ele == null || ele === '' || isNaN(Number(ele)) || ele === undefined || ele === Infinity || ele === -Infinity) {
+        return 0; // Return zero directly if the input is not a valid number.
+    } else {
+        // Enforce a maximum number of decimal places that can be safely operated on.
+        return Number(new BigNumber(ele).toFixed(16)); // Change 16 to however many decimal places you deem safe.
+    }
+};
 
 export const Numeric = value => {
     return value && /[^0-9]/i.test(value) ? 'Please enter valid number' : undefined;

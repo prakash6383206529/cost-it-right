@@ -1,6 +1,7 @@
 import { reactLocalStorage } from "reactjs-localstorage";
 import _ from 'lodash';
 import { CBCAPPROVALTYPEID, CBCTypeId, dropdownLimit, NCCAPPROVALTYPEID, NCCTypeId, NFRAPPROVALTYPEID, NFRTypeId, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, VBCAPPROVALTYPEID, VBCTypeId, WACAPPROVALTYPEID, WACTypeId, ZBCAPPROVALTYPEID, ZBCTypeId, PFS2APPROVALTYPEID, PFS2TypeId, RELEASE_STRATEGY_B1, RELEASE_STRATEGY_B1_NEW, RELEASE_STRATEGY_B2, RELEASE_STRATEGY_B2_NEW, RELEASE_STRATEGY_B3, RELEASE_STRATEGY_B3_NEW, RELEASE_STRATEGY_B4, RELEASE_STRATEGY_B6, RELEASE_STRATEGY_B6_NEW, RELEASE_STRATEGY_B4_NEW } from "../../config/constants";
+import Toaster from "./Toaster";
 
 // COMMON FILTER FUNCTION FOR AUTOCOMPLETE DROPDOWN
 const commonFilterFunction = (inputValue, dropdownArray, filterByName, selectedParts = false) => {
@@ -87,7 +88,7 @@ export const autoCompleteDropdownPart = (inputValue, dropdownArray, tempBoolean 
 //FUNCTION FOR HIDING CUSTOMER COLUMN FROM LISTING 
 export const hideCustomerFromExcel = (data, value) => {
     let excelData
-    if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+    if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
         excelData = data && data.filter((item) => item.value !== value)
     }
     else {
@@ -172,3 +173,28 @@ export const transformApprovalItem = (item) => {
             return item.Text; // Return the original text if no transformation is needed
     }
 };
+
+export const getCostingTypeIdByCostingPermission = () => {
+    const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission');
+    const costingTypeId = zbc ? ZBCTypeId : vbc ? VBCTypeId : cbc ? CBCTypeId : null;
+    return costingTypeId;
+}
+
+export const checkMasterCreateByCostingPermission = () => {
+    const costingPermision = reactLocalStorage.getObject('CostingTypePermission');
+    let count = 0;
+    for (const key in costingPermision) {
+        if (costingPermision.hasOwnProperty(key)) {
+            const value = costingPermision[key];
+            if (value) {
+                count = count + 1
+            }
+        }
+    }
+    if (count === 0) {
+        Toaster.warning("You have not enough permission for creating this master.")
+        return false;
+    }
+    return true;
+}
+

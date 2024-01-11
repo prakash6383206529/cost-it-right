@@ -2810,7 +2810,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.292.3";
+export const VERSION = "V2.1.305";
 
 
 

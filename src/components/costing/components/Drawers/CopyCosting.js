@@ -346,7 +346,7 @@ function CopyCosting(props) {
                   <div className="left-border">{"To:"}</div>
                 </Col>
                 <Col md="12">
-                  <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                  {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                     <input
                       type="radio"
                       name="costingHead"
@@ -360,8 +360,8 @@ function CopyCosting(props) {
                       }
                     />{" "}
                     <span>Zero Based</span>
-                  </Label>
-                  <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                  </Label>}
+                  {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                     <input
                       type="radio"
                       name="costingHead"
@@ -375,8 +375,8 @@ function CopyCosting(props) {
                       }
                     />{" "}
                     <span>Vendor Based</span>
-                  </Label>
-                  {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                  </Label>}
+                  {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                     <input
                       type="radio"
                       name="costingHead"

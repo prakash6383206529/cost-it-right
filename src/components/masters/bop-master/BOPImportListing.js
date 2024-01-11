@@ -886,7 +886,7 @@ const BOPImportListing = (props) => {
         "NetConditionCost",
         "NetConditionCostConversion",
       ]);
-    } else if (!reactLocalStorage.getObject("cbcCostingPermission")) {
+    } else if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
       tempData = hideColumnFromExcel(tempData, "CustomerName");
     } else {
       tempData = data;

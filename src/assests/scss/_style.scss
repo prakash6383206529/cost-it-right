@@ -6913,6 +6913,10 @@ body {
 
 .imagClass {
   margin-top: 45px !important;
+
+  &.mt-0 {
+    margin-top: 0 !important;
+  }
 }
 
 .imagClass.power-listing {
@@ -8620,17 +8624,7 @@ table.group-process-table {
   }
 }
 
-.inputbox,
-.ag-react-container {
-  .p-relative {
-    padding-right: 8px;
 
-    .unit-text:last-child {
-      position: absolute;
-      top: -4px;
-    }
-  }
-}
 
 .encrpt-pwd {
   font-size: 26px;

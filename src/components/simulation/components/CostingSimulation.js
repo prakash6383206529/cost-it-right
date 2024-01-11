@@ -1201,7 +1201,7 @@ function CostingSimulation(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let tempData = [...data]
-        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
         } else {
             if (amendmentDetails.SimulationHeadId === CBCTypeId) {
@@ -1515,6 +1515,9 @@ function CostingSimulation(props) {
     };
 
     const isRowSelectable = rowNode => statusForLinkedToken === true ? false : true;
+
+    const headers = { netCostHeadder: `Net Cost (${getConfigurationKey()?.BaseCurrency})` }
+
     return (
         <>
             {isMasterLoader ? <LoaderCustom customClass={`center-loader`} /> :

@@ -467,6 +467,8 @@ function CostReportForm(props) {
         setValue('Technology', '')
         setValue('Part', '')
         setValue('Customer', '')
+        setValue('vendor', '')
+        setValue('PartType', '')
         resetRevisionVendorPlant()
     }
 

@@ -209,14 +209,14 @@ class Level extends Component {
     // RENDER WHEN COSTING TECHNOLOGY LIST IN USE
     if (label === 'ApprovalType') {
       approvalTypeSelectList && approvalTypeSelectList.map(item => {
-        if (item.Value === '0') return false;
-        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6)) && this.state.levelType === 'Simulation') return false
-        if (item.Text === PROVISIONAL && this.state.levelType !== 'Simulation') return false
+        if (item.Value === '0') return false
+        if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId) || Number(item.Value) === Number(NFRAPPROVALTYPEID)) && this.state.levelType === 'Simulation') return false
+        if ((Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || (!getConfigurationKey().IsNFRConfigured && Number(item.Value) === Number(NFRAPPROVALTYPEID))) && this.state.levelType === 'Costing') return false
         if ((Number(item.Value) === Number(RELEASESTRATEGYTYPEID1) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID2) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID3) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID4) || Number(item.Value) === Number(RELEASESTRATEGYTYPEID6) || Number(item.Value) === Number(WACAPPROVALTYPEID) || Number(item.Value) === Number(PROVISIONALAPPROVALTYPEIDFULL) || Number(item.Value) === Number(NFRAPPROVALTYPEID) || Number(item.Value) === Number(NCCTypeId)) && this.state.levelType === 'Master') return false
-        // if ((item.Text === NEW_COMPONENT || item.Text === RELEASE_STRATEGY_B1 || item.Text === RELEASE_STRATEGY_B2 || item.Text === RELEASE_STRATEGY_B3 || item.Text === RELEASE_STRATEGY_B4) && this.state.levelType === 'Master') return false                 //RE
-        if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('cbcCostingPermission'))) return false
+        if (item.Text === CUSTOMER_BASED && !(reactLocalStorage.getObject('CostingTypePermission').cbc)) return false
         const transformedText = transformApprovalItem(item);
         temp.push({ label: transformedText, value: item.Value });
+
         return null;
       });
       return temp;

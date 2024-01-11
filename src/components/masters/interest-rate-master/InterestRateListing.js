@@ -28,7 +28,7 @@ import { getConfigurationKey, loggedInUserId } from '../../../helper';
 import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
-import { hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { agGridStatus, isResetClick } from '../../../actions/Common';
 
 const ExcelFile = ReactExport.ExcelFile;
@@ -131,11 +131,14 @@ class InterestRateListing extends Component {
   * @description Get list data
   */
   getTableListData = (vendor = '', icc_applicability = '', payment_term_applicability = '') => {
+    const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
     let filterData = {
       vendor: vendor,
       icc_applicability: icc_applicability,
       payment_term_applicability: payment_term_applicability,
-      IsCustomerDataShow: reactLocalStorage.getObject('cbcCostingPermission')
+      IsCustomerDataShow: cbc,
+      IsVendorDataShow: vbc,
+      IsZeroDataShow: zbc
     }
     this.props.getInterestRateDataList(true, filterData, res => {
       if (res.status === 204 && res.data === '') {
@@ -292,7 +295,9 @@ class InterestRateListing extends Component {
 
 
   formToggle = () => {
-    this.setState({ toggleForm: true })
+    if (checkMasterCreateByCostingPermission()) {
+      this.setState({ toggleForm: true })
+    }
   }
 
   hideForm = (type) => {
@@ -532,7 +537,7 @@ class InterestRateListing extends Component {
                   {getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC && <AgGridColumn field="RawMaterialGrade" headerName="Raw Material Grade"></AgGridColumn>}
                   {(getConfigurationKey().IsPlantRequiredForOverheadProfitInterestRate || getConfigurationKey().IsDestinationPlantConfigure) && <AgGridColumn field="PlantName" headerName="Plant (Code)"></AgGridColumn>}
                   <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                  {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                  {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                   <AgGridColumn field="ICCApplicability" headerName="ICC Applicability" floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={this.floatingFilterIcc}></AgGridColumn>
                   <AgGridColumn width={140} field="ICCPercent" headerName="Annual ICC (%)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                   <AgGridColumn width={220} field="PaymentTermApplicability" headerName="Payment Term Applicability" cellRenderer={'hyphenFormatter'}></AgGridColumn>

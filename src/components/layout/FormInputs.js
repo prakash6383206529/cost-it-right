@@ -703,8 +703,6 @@ export const searchableSelect = ({
   multi,
   className,
   children,
-  onKeyDown
-
 }) => {
   let isDisable = disabled && disabled === true ? true : false;
   const filterConfig = {

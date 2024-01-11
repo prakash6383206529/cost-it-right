@@ -9,7 +9,6 @@ import NoContentFound from "../../common/NoContentFound";
 import { EMPTY_DATA } from "../../../config/constants";
 import { COSTING, } from "../../../config/constants";
 import { renderActionCommon } from '../userUtil';
-import { scrollReset } from '../../../helper/util';
 import { costingTypeLabel } from '../../../config/constants';
 
 class CostingTab extends Component {
@@ -29,14 +28,9 @@ class CostingTab extends Component {
 
 
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (nextProps.data !== this.state.data) {
-      const { data, actionData, actionSelectList, scrollRef } = nextProps;
-      if (scrollRef) {
-        scrollReset('costingTab')
-      } else {
-        scrollReset('costingTab')
-      }
+  UNSAFE_componentWillReceiveProps(nextProps, nextState) {
+    if (nextProps.data !== this.state.actionData) {
+      const { data, actionData, actionSelectList } = nextProps;
       this.setState({
         actionData: actionData,
         Modules: data && data.sort((a, b) => a.Sequence - b.Sequence),
