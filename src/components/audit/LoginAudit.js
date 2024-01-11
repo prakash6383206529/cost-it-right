@@ -74,11 +74,11 @@ function LoginAudit(props) {
     const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
 
-        if (state.filterModel?.EffectiveDate) {
-            if (state.filterModel.EffectiveDate.dateTo) {
+        if (state.filterModel?.LoginTime) {
+            if (state.filterModel.LoginTime.dateTo) {
                 let temp = []
-                temp.push(DayTime(state.filterModel.EffectiveDate.dateFrom).format('DD/MM/YYYY'))
-                temp.push(DayTime(state.filterModel.EffectiveDate.dateTo).format('DD/MM/YYYY'))
+                temp.push(DayTime(state.filterModel.LoginTime.dateFrom).format('DD/MM/YYYY[T]hh:mm:ss'))
+                temp.push(DayTime(state.filterModel.LoginTime.dateTo).format('DD/MM/YYYY[T]hh:mm:ss'))
                 dataObj.dateArray = temp
             }
         }
@@ -279,7 +279,7 @@ function LoginAudit(props) {
     const effectiveDateFormatter = (props) => {
 
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY - HH:mm:ss') : '-';
     }
     const onGridReady = (params) => {
         setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
@@ -393,6 +393,7 @@ function LoginAudit(props) {
     }
     const handleDate = (newDate) => {
 
+
         let temp = state.inRangeDate
         temp.push(newDate)
         setState(prevState => ({ ...prevState, inRangeDate: temp }))
@@ -416,7 +417,8 @@ function LoginAudit(props) {
         date: "",
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY[T]HH:mm:ss') : '';
 
             setDate(newDate)
             handleDate(newDate)
