@@ -241,6 +241,7 @@ const Role = (props) => {
 													register={register}
 													name={"RoleName"}
 													defaultValue={""}
+													customClassName={'withBorder'}
 													mandatory
 													errors={errors.RoleName}
 													rules={{}}
@@ -263,8 +264,8 @@ const Role = (props) => {
 													/>
 												</label>
 												<TooltipCustom
-													customClass="mt-1"
-													id="bop-net-cost"
+													customClass="mt-2"
+													id="all-data-tooltip"
 													tooltipText={"All data will be visible to this role"}
 												/>
 											</div>
