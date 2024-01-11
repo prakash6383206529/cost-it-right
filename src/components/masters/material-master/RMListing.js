@@ -23,12 +23,14 @@ import { PaginationWrapper } from "../../common/commonPagination";
 import { searchNocontentFilter } from "../../../helper";
 import Button from "../../layout/Button";
 import { ApplyPermission } from ".";
+import { useRef } from "react";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const RMListing = (props) => {
   const dispatch = useDispatch();
+  const searchRef = useRef(null);
   const { rawMaterialTypeDataList } = useSelector((state) => state.material);
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
@@ -46,7 +48,6 @@ const RMListing = (props) => {
     noData: false,
     dataCount: 0,
   });
-
   useEffect(() => {
     getListData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -196,11 +197,8 @@ const RMListing = (props) => {
   };
 
   const onGridReady = (params) => {
-    setState((prevState) => ({
-      ...prevState,
-      gridApi: params.api,
-      gridColumnApi: params.columnApi,
-    }));
+    params.api.sizeColumnsToFit();
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
     params.api.paginationGoToPage(0);
   };
 
@@ -210,11 +208,7 @@ const RMListing = (props) => {
 
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows();
-    setState((prevState) => ({
-      ...prevState,
-      selectedRowData: selectedRows,
-      dataCount: selectedRows.length,
-    }));
+    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length, }));
   };
 
   const onBtExport = () => {
@@ -266,14 +260,16 @@ const RMListing = (props) => {
    * @description Resets the state
    */
   const resetState = () => {
+    state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
 
   };
   const { isOpen, isEditFlag, ID, noData } = state;
-  // const { AddAccessibility, DownloadAccessibility } = props;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -301,24 +297,10 @@ const RMListing = (props) => {
       <Row className="pt-4 no-filter-row">
         <Col md={6} className="text-right search-user-block pr-0">
           {permissions.Add && (
-            <Button
-              id="rmSpecification_addAssociation"
-              className="mr5"
-              onClick={openAssociationModel}
-              title="Add Association"
-              icon="plus mr-0 ml5"
-              buttonName="A"
-            />
+            <Button id="rmSpecification_addAssociation" className="mr5" onClick={openAssociationModel} title="Add Association" icon="plus mr-0 ml5" buttonName="A" />
           )}
           {permissions.Add && (
-            <Button
-              id="rmSpecification_addMaterial"
-              className="mr5"
-              onClick={openModel}
-              title="Add Material"
-              icon={"plus mr-0 ml5"}
-              buttonName="M"
-            />
+            <Button id="rmSpecification_addMaterial" className="mr5" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
           )}
           {permissions.Download && (
             <>
@@ -327,20 +309,7 @@ const RMListing = (props) => {
                   filename={"Rm Material"}
                   fileExtension={".xls"}
                   element={
-                    <button
-                      title={`Download ${state.dataCount === 0
-                          ? "All"
-                          : "(" + state.dataCount + ")"
-                        }`}
-                      type="button"
-                      className={"user-btn mr5"}
-                    >
-                      <div className="download mr-1"></div>
-                      {`${state.dataCount === 0
-                          ? "All"
-                          : "(" + state.dataCount + ")"
-                        }`}
-                    </button>
+                    <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                   }
                 >
                   {onBtExport()}
@@ -348,12 +317,7 @@ const RMListing = (props) => {
               </>
             </>
           )}
-          <Button
-            id={"rmSpecification_refresh"}
-            onClick={() => resetState()}
-            title={"Reset Grid"}
-            icon={"refresh"}
-          />
+          <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
         </Col>
       </Row>
 
@@ -361,14 +325,15 @@ const RMListing = (props) => {
         <Col>
           <div
             className={`ag-grid-wrapper height-width-wrapper ${(rawMaterialTypeDataList &&
-                props.rawMaterialTypeDataList?.length <= 0) ||
-                noData
-                ? "overlay-contain"
-                : ""
+              props.rawMaterialTypeDataList?.length <= 0) ||
+              noData
+              ? "overlay-contain"
+              : ""
               }`}
           >
             <div className="ag-grid-header">
               <input
+                ref={searchRef}
                 type="text"
                 className="form-control table-search"
                 id="filter-text-box"

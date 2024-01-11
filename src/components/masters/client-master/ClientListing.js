@@ -1,8 +1,6 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { reduxForm } from "redux-form";
 import { Row, Col } from "reactstrap";
-import { focusOnError } from "../../layout/FormInputs";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
@@ -21,14 +19,17 @@ import PopupMsgWrapper from "../../common/PopupMsgWrapper";
 import ScrollToTop from "../../common/ScrollToTop";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { loggedInUserId } from "../../../helper";
+import Button from '../../layout/Button';
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
+const ExcelFile = ReactExport.ExcelFile;
 const gridOptions = {};
 
-const ClientListing = () => {
+const ClientListing = React.memo(() => {
+
   const dispatch = useDispatch();
+  const searchRef = useRef(null);
   const clientDataList = useSelector((state) => state.client.clientDataList);
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const [state, setState] = useState({
@@ -53,19 +54,33 @@ const ClientListing = () => {
     selectedRowData: false,
     noData: false,
     dataCount: 0,
+
   });
 
-
-
   useEffect(() => {
-    applyPermission(topAndLeftMenuData);
-    getTableListData(null, null);
+    console.log("11111")
+    if (!topAndLeftMenuData) {
+      setState(prevState => ({ ...prevState, isLoader: true }));
+      return;
+    }
 
-  }, []);
+    applyPermission(topAndLeftMenuData);
+    getTableListData();
+
+    setTimeout(() => {
+      setState(prevState => ({ ...prevState, isLoader: false }));
+    }, 400);
+
+    // return () => clearTimeout(loaderTimeout);
+
+  }, [topAndLeftMenuData]);
+
 
 
   useEffect(() => {
     if (topAndLeftMenuData) {
+      console.log("hi2")
+
       setState((prevState) => ({ ...prevState, isLoader: true }));
       applyPermission(topAndLeftMenuData);
       setTimeout(() => {
@@ -74,18 +89,15 @@ const ClientListing = () => {
     }
   }, [topAndLeftMenuData]);
 
-
   /**
-   * @method applyPermission
-   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
-   */
+     * @method applyPermission
+     * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+     */
   const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
       const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-
       const accessData = Data && Data.Pages.find((el) => el.PageName === CLIENT);
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
-
       if (permmisionData !== undefined) {
         setState((prevState) => ({
           ...prevState,
@@ -94,27 +106,27 @@ const ClientListing = () => {
           EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
           DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
           DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-
         }));
       }
     }
-  };
-
+  }
   /**
-   * @method buttonFormatter
-   * @description Renders buttons
-   */
+     * @method buttonFormatter
+     * @description Renders buttons
+     */
 
   const buttonFormatter = (props) => {
     const { ViewAccessibility, EditAccessibility, DeleteAccessibility } = state;
-
+    console.log("ViewAccessibility", ViewAccessibility, EditAccessibility, DeleteAccessibility);
     const cellValue = props?.value;
 
     return (
       <>
-        {ViewAccessibility && (<button title="View" className="View mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, true)} />)}
-        {EditAccessibility && (<button title="Edit" className="Edit mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, false)} />)}
-        {DeleteAccessibility && (<button title="Delete" className="Delete" type="button" onClick={() => deleteItem(cellValue)} />
+        {ViewAccessibility && (<Button id={`clientListing_View${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />
+        )}
+        {EditAccessibility && (<Button id={`clientListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />
+        )}
+        {DeleteAccessibility && (<Button id={`clientListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
@@ -126,7 +138,7 @@ const ClientListing = () => {
    * @description Get user list data
    */
 
-  const getTableListData = (clientName = null, companyName = null) => {
+  const getTableListData = useCallback((clientName = null, companyName = null) => {
     const filterData = {
       clientName: clientName,
       companyName: companyName,
@@ -135,22 +147,14 @@ const ClientListing = () => {
     dispatch(
       getClientDataList(filterData, (res) => {
         if (res.status === 204 && res.data === "") {
-          setState((prevState) => ({
-            ...prevState,
-            tableData: [],
-            isLoader: false,
-          }));
+          setState((prevState) => ({ ...prevState, tableData: [], isLoader: false, }));
         } else if (res && res.data && res.data.DataList) {
           const Data = res.data.DataList;
-          setState((prevState) => ({
-            ...prevState,
-            tableData: Data,
-            isLoader: false,
-          }));
+          setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false, }));
         }
       })
     );
-  };
+  }, []);
 
   /**
    * @method editItemDetails
@@ -158,13 +162,7 @@ const ClientListing = () => {
    */
 
   const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenVendor: true,
-      isEditFlag: true,
-      ID: Id,
-      isViewMode: isViewMode,
-    }));
+    setState((prevState) => ({ ...prevState, isOpenVendor: true, isEditFlag: true, ID: Id, isViewMode: isViewMode, }));
   }, []);
   /**
    * @method deleteItem
@@ -213,20 +211,11 @@ const ClientListing = () => {
   };
 
   const formToggle = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenVendor: true,
-      isViewMode: false,
-    }));
+    setState((prevState) => ({ ...prevState, isOpenVendor: true, isViewMode: false, }));
   };
   const closeVendorDrawer = (e = "", type) => {
     setState(
-      (prevState) => ({
-        ...prevState,
-        isOpenVendor: false,
-        isEditFlag: false,
-        ID: "",
-      }),
+      (prevState) => ({ ...prevState, isOpenVendor: false, isEditFlag: false, ID: "", }),
       () => {
         if (type === "submit") getTableListData(null, null);
         setState((prevState) => ({ ...prevState, dataCount: 0 }));
@@ -240,21 +229,14 @@ const ClientListing = () => {
    */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      setState((prevState) => ({
-        ...prevState,
-        noData: searchNocontentFilter(value, prevState.noData),
-      }));
+      setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, prevState.noData), }));
     }, 500);
   };
 
   const onGridReady = (params) => {
     state.gridApi = params.api;
     state.gridApi.sizeColumnsToFit();
-    setState((prevState) => ({
-      ...prevState,
-      gridApi: params.api,
-      gridColumnApi: params.columnApi,
-    }));
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
     params.api.paginationGoToPage(0);
   };
 
@@ -273,8 +255,8 @@ const ClientListing = () => {
     tempArr = tempArr && tempArr.length > 0 ? tempArr : clientDataList ? clientDataList : [];
     return returnExcelColumn(CLIENT_DOWNLOAD_EXCEl, tempArr);
   };
-
   const returnExcelColumn = (data = [], TempData) => {
+    // let excelData = hideCustomerFromExcel(data, "CustomerName")
     let temp = [];
     temp =
       TempData && TempData.map((item) => {
@@ -283,8 +265,9 @@ const ClientListing = () => {
         }
         return item;
       });
+
     return (
-      <ExcelSheet data={temp} name={Clientmaster}>
+      <ExcelSheet data={temp} name={"Customer"}>
         {data && data.map((ele, index) => (
           <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
         ))}
@@ -292,22 +275,25 @@ const ClientListing = () => {
     );
   };
 
+
   const onFilterTextBoxChanged = (e) => {
     state.gridApi.setQuickFilter(e.target.value);
-  };
+  }
 
   const resetState = () => {
+    state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null); // Reset any header filters
     if (window.screen.width >= 1600) {
       state.gridApi.sizeColumnsToFit();
     }
+    // Update the value of input field
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
   };
-
-
   const { isOpenVendor, noData } = state;
-  const ExcelFile = ReactExport.ExcelFile;
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -338,24 +324,27 @@ const ClientListing = () => {
             <Col md="2" className="search-user-block">
               <div className="d-flex justify-content-end bd-highlight">
                 {state.AddAccessibility && (
-                  <button type="button" className={"user-btn mr5"} onClick={formToggle} title="Add"                  >
-                    <div className={"plus mr-0"}></div>
-                  </button>
-                )}
-                {state?.DownloadAccessibility && (
 
-                  <ExcelFile filename={Clientmaster} fileExtension={".xls"}
-                    element={<button title={`Download ${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`}
-                      type="button" className={"user-btn mr5"}>
-                      <div className="download mr-1"></div>
-                      {`${state?.dataCount === 0 ? "All" : "(" + state?.dataCount + ")"}`}
-                    </button>
-                    }>{onBtExport()} </ExcelFile>
+                  <Button id="clientListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
                 )}
+                {
+                  state.DownloadAccessibility &&
+                  <>
+                    <>
+                      <ExcelFile filename={Clientmaster} fileExtension={'.xls'}
+                        element={
+                          <Button id={"Excel-Downloads-clientListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                        }>
+                        {onBtExport()
+                        }
+                      </ExcelFile>
+                    </>
 
-                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}                >
-                  <div className="refresh mr-0"></div>
-                </button>
+                  </>
+
+                }
+                <Button
+                  id={"clientListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
               </div>
             </Col>
           </Row>
@@ -363,12 +352,12 @@ const ClientListing = () => {
 
         <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0 && !state.isLoader) || noData ? "overlay-contain" : ""}`}>
           <div className="ag-grid-header">
-            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+            <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
           </div>
           <div
             className={`ag-theme-material ${state.isLoader && "max-loader-height"}`} >
             {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
-            <AgGridReact
+            {!state.isLoader && <AgGridReact
               defaultColDef={defaultColDef}
               floatingFilter={true}
               domLayout="autoHeight"
@@ -397,33 +386,21 @@ const ClientListing = () => {
               <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
               <AgGridColumn field="CityName" headerName="City"></AgGridColumn>
               <AgGridColumn field="ClientId" cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-            </AgGridReact>
+            </AgGridReact>}
             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
           </div>
         </div>
 
         {isOpenVendor && (
-          <AddClientDrawer
-            isOpen={state.isOpenVendor}
-            closeDrawer={closeVendorDrawer}
-            isEditFlag={state.isEditFlag}
-            isViewMode={state.isViewMode}
-            ID={state.ID}
-            anchor={"right"}
-          />
+          <AddClientDrawer isOpen={state.isOpenVendor} closeDrawer={closeVendorDrawer} isEditFlag={state.isEditFlag} isViewMode={state.isViewMode} ID={state.ID} anchor={"right"} />
         )}
       </div>}
 
       {state.showPopup && (
-        <PopupMsgWrapper
-          isOpen={state.showPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          message={`${MESSAGES.CLIENT_DELETE_ALERT}`}
-        />
+        <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CLIENT_DELETE_ALERT}`} />
       )}
     </div>
   );
-};
+});
 
 export default ClientListing

@@ -1,10 +1,10 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Row, Col, } from 'reactstrap';
-import { getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser, } from '../../actions/auth/AuthActions';
+import React, { useState, useEffect, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Field } from "redux-form";
+import { Row, Col } from 'reactstrap';
+import { getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser } from '../../actions/auth/AuthActions';
 import $ from 'jquery';
-import { focusOnError, searchableSelect } from "../layout/FormInputs";
+import { searchableSelect } from "../layout/FormInputs";
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
@@ -14,7 +14,6 @@ import Switch from "react-switch";
 import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../helper/util';
-import { GridTotalFormate } from '../common/TableGridFunctions';
 import LoaderCustom from '../common/LoaderCustom';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
@@ -24,8 +23,8 @@ import ReactExport from 'react-export-excel';
 import { USER_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import { UserListing } from '../../config/constants';
 import { PaginationWrapper } from '../common/commonPagination';
-import SelectRowWrapper from '../common/SelectRowWrapper';
 import ScrollToTop from '../common/ScrollToTop';
+import Button from '../layout/Button';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -33,74 +32,74 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-class UsersListing extends Component {
-	constructor(props) {
-		super(props);
-		this.state = {
-			isEditFlag: false,
-			shown: false,
-			RoleId: '',
-			userData: [],
-			departmentType: {},
-			roleType: {},
-			department: [],
-			role: [],
-			UserId: '',
-			isOpen: false,
-			AddAccessibility: false,
-			EditAccessibility: false,
-			DeleteAccessibility: false,
-			ActivateAccessibility: false,
-			gridApi: null,
-			gridColumnApi: null,
-			rowData: null,
-			showPopup: false,
-			showPopup2: false,
-			deletedId: '',
-			cell: [],
-			row: [],
-			isLoader: false,
-			noData: false,
-			dataCount: 0
-		}
-	}
-
-	componentDidMount() {
-		this.getUsersListData(null, null);
-		const { topAndLeftMenuData } = this.props;
-		if (this.props.tabId === '1') {
+const UsersListing = (props) => {
+	const dispatch = useDispatch();
+	const searchRef = useRef(null);
+	const { userDataList, rfqUserList, roleList, departmentList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state.auth);
+	const [state, setState] = useState({
+		isEditFlag: false,
+		shown: false,
+		RoleId: '',
+		userData: [],
+		departmentType: {},
+		roleType: {},
+		department: [],
+		role: [],
+		UserId: '',
+		isOpen: false,
+		AddAccessibility: false,
+		EditAccessibility: false,
+		DeleteAccessibility: false,
+		ActivateAccessibility: false,
+		gridApi: null,
+		gridColumnApi: null,
+		rowData: null,
+		showPopup: false,
+		showPopup2: false,
+		deletedId: '',
+		cell: [],
+		row: [],
+		isLoader: false,
+		noData: false,
+		dataCount: 0
+	});
+	useEffect(() => {
+		getUsersListData(null, null);
+		if (props.tabId === '1') {
 			if (topAndLeftMenuData !== undefined) {
 				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
 				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === USER);
 				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
 				if (permmisionData !== undefined) {
-					this.setState({
+					setState((prevState) => ({
+						...prevState,
 						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
 						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
 						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
 						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-					})
+					}))
 				}
 			}
 		}
-		if (this.props.tabId === '5') {
+		if (props.tabId === '5') {
 			if (topAndLeftMenuData !== undefined) {
 				const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
 				const userPermissions = userMenu && userMenu.Pages.find(el => el.PageName === RFQUSER);
 				const permmisionData = userPermissions && userPermissions.Actions && checkPermission(userPermissions.Actions)
 				if (permmisionData !== undefined) {
-					this.setState({
+					setState((prevState) => ({
+						...prevState,
 						AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
 						EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
 						DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
 						ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-					})
+					}))
 				}
 			}
 		}
 
 		//Get Department Listing
-		this.props.getAllDepartmentAPI((res) => {
+		dispatch(getAllDepartmentAPI((res) => {
 			if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
 				let obj = {}
@@ -108,14 +107,12 @@ class UsersListing extends Component {
 					obj[el.DepartmentId] = el.DepartmentName
 					return null
 				})
-				this.setState({
-					departmentType: obj,
-				})
+				setState((prevState) => ({ ...prevState, departmentType: obj, }))
 			}
-		})
+		}))
 
 		// Get roles listing
-		this.props.getAllRoleAPI((res) => {
+		dispatch(getAllRoleAPI((res) => {
 			if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
 				let obj = {}
@@ -123,27 +120,42 @@ class UsersListing extends Component {
 					obj[el.RoleId] = el.RoleName
 					return null
 				})
-				this.setState({
-					roleType: obj,
-				})
+				setState((prevState) => ({ ...prevState, roleType: obj, }))
 			}
-		})
+		}))
 
+	}, []);
+	/**
+		* @method getUsersListData
+		* @description Get user list data
+		*/
+	const getUsersListData = (departmentId = null, roleId = null) => {
+		let data = { logged_in_user: loggedInUserId(), DepartmentId: departmentId, RoleId: roleId, userType: props.RFQUser ? 'RFQ' : 'CIR' }
+		setState((prevState) => ({ ...prevState, isLoader: true }))
+		dispatch(getAllUserDataAPI(data, res => {
+			setState((prevState) => ({ ...prevState, isLoader: false }))
+			if (res.status === 204 && res.data === '') {
+				setState((prevState) => ({ ...prevState, userData: [], }))
+			} else if (res && res.data && res.data.DataList) {
+				let Data = res.data.DataList;
+				setState((prevState) => ({ ...prevState, userData: Data, }))
+			} else {
+			}
+		}))
+	}
+	const onRowSelect = () => {
+		const selectedRows = state.gridApi?.getSelectedRows()
+		setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
 	}
 
-	onRowSelect = () => {
-		const selectedRows = this.state.gridApi?.getSelectedRows()
-		this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
-	}
-
-	onBtExport = () => {
+	const onBtExport = () => {
 		let tempArr = []
-		tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-		tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.userDataList ? this.props.userDataList : [])
-		return this.returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
+		tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+		tempArr = (tempArr && tempArr.length > 0) ? tempArr : (userDataList ? userDataList : [])
+		return returnExcelColumn(USER_LISTING_DOWNLOAD_EXCEl, tempArr)
 	};
 
-	returnExcelColumn = (data = [], TempData) => {
+	const returnExcelColumn = (data = [], TempData) => {
 		let temp = []
 		temp = TempData && TempData.map((item) => {
 			return temp;
@@ -153,248 +165,127 @@ class UsersListing extends Component {
 				{data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
 			</ExcelSheet>);
 	}
-
-
-	// Get updated user list after any action performed.
-	getUpdatedData = () => {
-		this.getUsersListData(null, null);
-	}
-
 	/**
-	* @method getUsersListData
-	* @description Get user list data
-	*/
-	getUsersListData = (departmentId = null, roleId = null) => {
-		let data = {
-			logged_in_user: loggedInUserId(),
-			DepartmentId: departmentId,
-			RoleId: roleId,
-			userType: this.props.RFQUser ? 'RFQ' : 'CIR'
-		}
-		this.setState({ isLoader: true })
-
-		this.props.getAllUserDataAPI(data, res => {
-			this.setState({ isLoader: false })
-			if (res.status === 204 && res.data === '') {
-				this.setState({ userData: [], })
-			} else if (res && res.data && res.data.DataList) {
-				let Data = res.data.DataList;
-				this.setState({
-					userData: Data,
-				})
-			} else {
-			}
-		})
-	}
-
-	/**
- * @method selectType
- * @description Used show listing of unit of measurement
- */
-	searchableSelectType = (label) => {
-		const { roleList, departmentList } = this.props;
+	 * @method selectType
+	 * @description Used show listing of unit of measurement
+	 */
+	const searchableSelectType = (label) => {
 		const temp = [];
-
 		if (label === 'role') {
 			roleList && roleList.map(item =>
 				temp.push({ label: item.RoleName, value: item.RoleId })
 			);
 			return temp;
 		}
-
 		if (label === 'department') {
 			departmentList && departmentList.map(item =>
 				temp.push({ label: item.DepartmentName, value: item.DepartmentId })
 			);
 			return temp;
 		}
-
 	}
 
 	/**
 	 * @method departmentHandler
 	 * @description Used to handle 
 	 */
-	departmentHandler = (newValue, actionMeta) => {
-		this.setState({ department: newValue });
+	const departmentHandler = (newValue, actionMeta) => {
+		setState((prevState) => ({ ...prevState, department: newValue }));
 	};
 	/**
 		 * @method roleHandler
 		 * @description Used to handle 
 		 */
-	roleHandler = (newValue, actionMeta) => {
-		this.setState({ role: newValue });
+	const roleHandler = (newValue, actionMeta) => {
+		setState((prevState) => ({ ...prevState, role: newValue }));
 	};
 
 	/**
 	* @method editItemDetails
 	* @description confirm edit item
 	*/
-	editItemDetails = (Id, passwordFlag = false) => {
-
-		let data = {
-			isEditFlag: true,
-			UserId: Id,
-			passwordFlag: passwordFlag,
-			RFQUser: this.props.RFQUser
-		}
-		this.closeUserDetails()
-		this.props.getUserDetail(data)
+	const editItemDetails = (Id, passwordFlag = false) => {
+		let data = { isEditFlag: true, UserId: Id, passwordFlag: passwordFlag, RFQUser: props.RFQUser }
+		closeUserDetails()
+		props.getUserDetail(data)
 	}
-	onPopupConfirm = () => {
-
-
-		let data = {
-			Id: this.state.row.UserId,
-			ModifiedBy: loggedInUserId(),
-			IsActive: !this.state.cell, //Status of the Reason.
-		}
-		this.props.activeInactiveUser(data, (res) => {
+	const onPopupConfirm = () => {
+		let data = { Id: state.row.UserId, ModifiedBy: loggedInUserId(), IsActive: !state.cell, }
+		dispatch(activeInactiveUser(data, (res) => {
 			if (res && res.data && res.data.Result) {
-				if (Boolean(this.state.cell) === true) {
+				if (Boolean(state.cell) === true) {
 					Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
 				} else {
 					Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
 				}
-				this.getUsersListData(null, null);
-				this.setState({ dataCount: 0 })
+				getUsersListData(null, null);
+				setState((prevState) => ({ ...prevState, dataCount: 0 }))
 			}
-		})
-
-
-		this.setState({ showPopup: false })
-		this.setState({ showPopup2: false })
-
+		}))
+		setState((prevState) => ({ ...prevState, showPopup: false }))
+		setState((prevState) => ({ ...prevState, showPopup2: false }))
 
 	}
-	onPopupConfirm2 = () => {
-		this.deleteItem(this.state.deletedId);
-
-	}
-	closePopUp = () => {
-		this.setState({ showPopup: false })
-		this.setState({ showPopup2: false })
+	const closePopUp = () => {
+		setState((prevState) => ({ ...prevState, showPopup: false }))
+		setState((prevState) => ({ ...prevState, showPopup2: false }))
 	}
 	/**
-	* @method deleteItem
-	* @description confirm delete part
-	*/
-	deleteItem = (Id) => {
-
-		this.setState({ showPopup2: true, deletedId: Id })
-		const toastrConfirmOptions = {
-			onOk: () => {
-				this.confirmDeleteItem(Id)
-				this.setState({ showPopup: false })
-				this.setState({ showPopup2: false })
-			},
-			onCancel: () => {
-				this.setState({ showPopup: false })
-				this.setState({ showPopup2: false })
-			}
-		};
-		return Toaster.confirm(`${MESSAGES.USER_DELETE_ALERT}`, toastrConfirmOptions);
-	}
-
-	/**
-	* @method confirmDeleteItem
-	* @description confirm delete user item
-	*/
-	confirmDeleteItem = (UserId) => {
-		this.props.deleteUser(UserId, (res) => {
+		* @method confirmDeleteItem
+		* @description confirm delete user item
+		*/
+	const confirmDeleteItem = (UserId) => {
+		dispatch(deleteUser(UserId, (res) => {
 			if (res.data.Result === true) {
 				Toaster.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
-				this.getUsersListData(null, null);
+				getUsersListData(null, null);
 			}
-		});
+		}));
 	}
 
 	/**
 	* @method buttonFormatter
 	* @description Renders buttons
 	*/
-	buttonFormatter = (props) => {
+	const buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-		const { EditAccessibility } = this.state;
+		const { EditAccessibility } = state;
 		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <button title='Edit' className="Edit " type={'button'} onClick={() => this.editItemDetails(rowData?.UserId, false)} />}
-				{/* <Button className="btn btn-danger" onClick={() => this.deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
+				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} />
+				}
+				{/* <Button className="btn btn-danger" onClick={() => deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
 			</div>
 		)
 	}
-
 	/**
-	* @method hyphenFormatter
-	*/
-	hyphenFormatter = (props) => {
+		* @method hyphenFormatter
+		*/
+	const hyphenFormatter = (props) => {
 		const cellValue = props?.value;
 		return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
 	}
 
-	departmentFormatter = (props) => {
-		const cellValue = props?.data?.Departments
-		let temp = ''
-		cellValue && cellValue.map(dept => {
-			temp = temp + ',' + dept.DepartmentName
-		})
-		return temp.split(',')[1];
+	const handleChange = (cell, row) => {
+		setState((prevState) => ({ ...prevState, showPopup: true, row: row, cell: cell }))
 	}
-
-	handleChange = (cell, row) => {
-
-		this.setState({ showPopup: true, row: row, cell: cell })
-
-	}
-
 	/**
-	* @method confirmDeactivateItem
-	* @description confirm deactivate user item
-	*/
-	confirmDeactivateItem = (data, cell) => {
-		this.props.activeInactiveUser(data, res => {
-			if (res && res.data && res.data.Result) {
-				// if (cell == true) {
-				// 	Toaster.success(MESSAGES.USER_INACTIVE_SUCCESSFULLY)
-				// } else {
-				// 	Toaster.success(MESSAGES.USER_ACTIVE_SUCCESSFULLY)
-				// }
-				this.getUsersListData(null, null);
-			}
-		})
-	}
-
-
-
-	/**
-	* @method statusButtonFormatter
-	* @description Renders buttons
-	*/
-	statusButtonFormatter = (props) => {
+		* @method statusButtonFormatter
+		* @description Renders buttons
+		*/
+	const statusButtonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-		const { ActivateAccessibility } = this.state;
+		const { ActivateAccessibility } = state;
 		if (rowData.UserId === loggedInUserId()) return null;
 		showTitleForActiveToggle(props?.rowIndex)
 		return (
 			<>
 				<label htmlFor="normal-switch" className="normal-switch">
 					{/* <span>Switch with default style</span> */}
-					<Switch
-						onChange={() => this.handleChange(cellValue, rowData)}
-						checked={cellValue}
-						disabled={!ActivateAccessibility}
-						background="#ff6600"
-						onColor="#4DC771"
-						onHandleColor="#ffffff"
-						offColor="#FC5774"
-						id="normal-switch"
-						height={24}
-						className={cellValue ? "active-switch" : "inactive-switch"}
-					/>
+					<Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
 				</label>
 			</>
 		)
@@ -405,371 +296,258 @@ class UsersListing extends Component {
 	* @description Renders Name link
 	*/
 
-
-	linkableFormatter = (props) => {
-
+	const linkableFormatter = (props) => {
 		const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const row = props?.valueFormatted ? props.valueFormatted : props?.data;
 		return (
-			<>
-				<div
-					onClick={() => this.viewDetails(row.UserId)}
-					className={'link'}
-				>{cell}</div>
-			</>
+			<><div onClick={() => viewDetails(row.UserId)} className={'link'}>{cell}</div></>
 		)
 	}
 
-
-	// linkableFormatter = (cell, row, enumObject, rowIndex) => {
-	// 	return (
-	// 		<>
-	// 			<div
-	// 				onClick={() => this.viewDetails(row.UserId)}
-	// 				className={'link'}
-	// 			>{cell}</div>
-	// 		</>
-	// 	)
-	// }
-
-	viewDetails = (UserId) => {
+	const viewDetails = (UserId) => {
 		$('html, body').animate({ scrollTop: 0 }, 'slow');
-		this.setState({
-			UserId: UserId,
-			isOpen: true,
-		})
+		setState((prevState) => ({ ...prevState, UserId: UserId, isOpen: true, }))
 
 	}
 
-	closeUserDetails = () => {
-		this.setState({
-			UserId: '',
-			isOpen: false,
-		})
+	const closeUserDetails = () => {
+		setState((prevState) => ({ ...prevState, UserId: '', isOpen: false, }))
 	}
-
 	/**
-	* @method indexFormatter
-	* @description Renders serial number
-	*/
-	indexFormatter = (cell, row, enumObject, rowIndex) => {
-		let currentPage = this.refs.table.state.currPage;
-		let sizePerPage = this.refs.table.state.sizePerPage;
-		let serialNumber = '';
-		if (currentPage === 1) {
-			serialNumber = rowIndex + 1;
-		} else {
-			serialNumber = (rowIndex + 1) + (sizePerPage * (currentPage - 1));
-		}
-		return serialNumber;
-	}
-
-	onExportToCSV = (row) => {
-		return this.state.userData; // must return the data which you want to be exported
-	}
-
-	renderPaginationShowsTotal(start, to, total) {
-		return <GridTotalFormate start={start} to={to} total={total} />
-	}
-
-	/**
-	* @method filterList
-	* @description Filter user listing on the basis of role and department
-	*/
-	filterList = () => {
-		const { role, department } = this.state;
+			* @method filterList
+			* @description Filter user listing on the basis of role and department
+			*/
+	const filterList = () => {
+		const { role, department } = state;
 		const filterDepartment = department ? department.value : '';
 		const filterRole = role ? role.value : '';
-		this.getUsersListData(filterDepartment, filterRole)
+		getUsersListData(filterDepartment, filterRole)
 	}
 
 	/**
 	* @method resetFilter
 	* @description Reset user filter
 	*/
-	resetFilter = () => {
-		this.setState({
-			role: [],
-			department: []
-		}, () => {
-			const { role, department } = this.state;
-			const filterDepartment = department ? department.value : '';
-			const filterRole = role ? role.value : '';
-			this.getUsersListData(filterDepartment, filterRole)
-		})
-	}
+	const resetFilter = () => {
+		setState(
+			(prevState) => ({ ...prevState, role: [], department: [], }),
+			() => {
+				const { role, department } = state;
+				const filterDepartment = department ? department.value : '';
+				const filterRole = role ? role.value : '';
+				getUsersListData(filterDepartment, filterRole);
+			}
+		);
 
-	formToggle = () => {
-		this.props.formToggle(this.props?.RFQUser)
-	}
-
-	onPageSizeChanged = (newPageSize) => {
-		this.state.gridApi.paginationSetPageSize(Number(newPageSize));
 	};
 
-	onFilterTextBoxChanged = (e) => {
-		this.state.gridApi.setQuickFilter(e.target.value);
+
+	const formToggle = () => {
+		props.formToggle(props?.RFQUser)
 	}
 
-	resetState = () => {
+	const onPageSizeChanged = (newPageSize) => {
+		state.gridApi.paginationSetPageSize(Number(newPageSize));
+	};
+
+	const onFilterTextBoxChanged = (e) => {
+		state.gridApi.setQuickFilter(e.target.value)
+
+	}
+	const resetState = () => {
+		setState((prevState) => ({ ...prevState, noData: false }));
+		state.gridApi.setQuickFilter(null)
+		state.gridApi.deselectAll();
 		gridOptions.columnApi.resetColumnState();
 		gridOptions.api.setFilterModel(null);
-		window.screen.width >= 1920 && this.state.gridApi.sizeColumnsToFit()
+		window.screen.width >= 1920 && state.gridApi.sizeColumnsToFit()
+		if (searchRef.current) {
+			searchRef.current.value = '';
+		}
 	}
-
-	onGridReady = (params) => {
-		this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+	const onGridReady = (params) => {
+		setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
 		params.api.paginationGoToPage(0);
-
 		//if resolution greater than 1920 table listing fit to 100%
 		window.screen.width >= 1920 && params.api.sizeColumnsToFit()
 		//if resolution greater than 1920 table listing fit to 100%
 	};
 
-	/**
-	* @name onSubmit
-	* @param values
-	* @desc Submit the signup form values.
-	* @returns {{}}
-	*/
-	onSubmit(values) { }
-
-	/**
-	* @method render
-	* @description Renders the component
-	*/
-	render() {
-		const { handleSubmit, initialConfiguration } = this.props;
-		const { EditAccessibility, AddAccessibility, noData, dataCount } = this.state;
-
-		const isFirstColumn = (params) => {
-
-			var displayedColumns = params.columnApi.getAllDisplayedColumns();
-			var thisIsFirstColumn = displayedColumns[0] === params.column;
-			return thisIsFirstColumn;
-		}
-
-		const defaultColDef = {
-			resizable: true,
-			filter: true,
-			sortable: false,
-			headerCheckboxSelectionFilteredOnly: true,
-			checkboxSelection: isFirstColumn
-
-		};
-
-		const frameworkComponents = {
-			totalValueRenderer: this.buttonFormatter,
-			customNoRowsOverlay: NoContentFound,
-			statusButtonFormatter: this.statusButtonFormatter,
-			hyphenFormatter: this.hyphenFormatter,
-			departmentFormatter: this.departmentFormatter,
-			linkableFormatter: this.linkableFormatter
-		};
-		return (
-			<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
-				<ScrollToTop pointProp={"userlist-go-to-top"} />
-				<>
-
-					<form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-						<Row className="pt-4">
-							{this.state.shown &&
-								<Col md="8" className="filter-block">
-									<div className="d-inline-flex justify-content-start align-items-top w100">
-										<div className="flex-fills">
-											<h5>{`Filter By:`}</h5>
-										</div>
-										<div className="flex-fill">
-											<Field
-												name="DepartmentId"
-												type="text"
-												component={searchableSelect}
-												placeholder={"Department"}
-												// placeholder={"Purchase Group"}						//RE
-												// placeholder={"Company"} //MINDA
-												options={this.searchableSelectType("department")}
-												//onKeyUp={(e) => this.changeItemDesc(e)}
-												//validate={(this.state.department == null || this.state.department.length == 0) ? [required] : []}
-												//required={true}
-												handleChangeDescription={this.departmentHandler}
-												valueDescription={this.state.department}
-											/>
-										</div>
-										<div className="flex-fill">
-											<Field
-												name="RoleId"
-												type="text"
-												component={searchableSelect}
-												placeholder={"Role"}
-												options={this.searchableSelectType("role")}
-												//onKeyUp={(e) => this.changeItemDesc(e)}
-												//validate={(this.state.role == null || this.state.role.length == 0) ? [required] : []}
-												//required={true}
-												handleChangeDescription={this.roleHandler}
-												valueDescription={this.state.role}
-											/>
-										</div>
-										<div className="flex-fill">
-											<button
-												type="button"
-												//disabled={pristine || submitting}
-												onClick={this.resetFilter}
-												className="reset mr10"
-											>
-												{"Reset"}
-											</button>
-
-											<button
-												type="button"
-												//disabled={pristine || submitting}
-												onClick={this.filterList}
-												className="user-btn mr5"
-											>
-												{"Apply"}
-											</button>
-										</div>
-									</div>
-								</Col>
-							}
-							<Col md="6" className="search-user-block mb-3">
-								<div className="d-flex justify-content-end bd-highlight w100">
-									{AddAccessibility && (
-										<div>
-											<ExcelFile filename={`${this.props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
-												{`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
-												{this.onBtExport()}
-											</ExcelFile>
-											<button
-												type="button"
-												className={"user-btn mr5"}
-												onClick={this.formToggle}
-												title="Add"
-											>
-												<div className={"plus mr-0"}></div>
-											</button>
-										</div>
-									)}
-									<button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-										<div className="refresh mr-0"></div>
-									</button>
-								</div>
-
-
-							</Col>
-						</Row>
-					</form>
-					{this.state.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.userDataList && this.props.userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-						<div className="ag-grid-header">
-							<input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-						</div>
-						<div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-							{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-							<AgGridReact
-								defaultColDef={defaultColDef}
-								floatingFilter={true}
-								domLayout='autoHeight'
-								// columnDefs={c}
-								rowData={this.props.RFQUser ? this.props.rfqUserList : this.props.userDataList}
-								pagination={true}
-								paginationPageSize={defaultPageSize}
-								onGridReady={this.onGridReady}
-								gridOptions={gridOptions}
-								noRowsOverlayComponent={'customNoRowsOverlay'}
-								noRowsOverlayComponentParams={{
-									title: EMPTY_DATA,
-									imagClass: 'imagClass'
-								}}
-								frameworkComponents={frameworkComponents}
-								enableBrowserTooltips={true}
-								onSelectionChanged={this.onRowSelect}
-								onFilterModified={(e) => {
-									setTimeout(() => {
-										this.setState({ noData: searchNocontentFilter(e) });
-									}, 500);
-								}}
-								rowSelection={'multiple'}
-								suppressRowClickSelection={true}
-							>
-								{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-								<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
-								{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
-									<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
-								) : null}
-								{this.props?.RFQUser && <AgGridColumn field="VendorName" headerName="Vendor (code)"></AgGridColumn>}
-								<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
-								<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-								<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
-								{/* {getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
-								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
-								<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Company"></AgGridColumn>
-								{/* //RE    */}
-								{this.props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
-								<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-
-								<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-								<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-							</AgGridReact >
-							{< PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-						</div>
-					</div >}
-
-					{
-						this.state.isOpen && (
-							<ViewUserDetails
-								UserId={this.state.UserId}
-								isOpen={this.state.isOpen}
-								editItemDetails={this.editItemDetails}
-								closeUserDetails={this.closeUserDetails}
-								EditAccessibility={EditAccessibility}
-								anchor={"right"}
-								IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure}
-								RFQUser={this.props.RFQUser}
-							/>
-						)
-					}
-
-				</>
-				{
-					this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${this.state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />
-				}
-				{/* {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup2} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm2} message={`${MESSAGES.USER_DELETE_ALERT}`}  />
-                } */}
-			</div >
-
-		);
+	// rest of the component logic
+	const { EditAccessibility, AddAccessibility, noData } = state;
+	const isFirstColumn = (params) => {
+		var displayedColumns = params.columnApi.getAllDisplayedColumns();
+		var thisIsFirstColumn = displayedColumns[0] === params.column;
+		return thisIsFirstColumn;
 	}
-}
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ auth }) {
-	const { userDataList, rfqUserList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData } = auth;
+	const defaultColDef = {
+		resizable: true,
+		filter: true,
+		sortable: false,
+		headerCheckboxSelectionFilteredOnly: true,
+		checkboxSelection: isFirstColumn
 
-	return { userDataList, rfqUserList, roleList, departmentList, leftMenuData, initialConfiguration, loading, topAndLeftMenuData };
-}
+	};
+
+	const frameworkComponents = {
+		totalValueRenderer: buttonFormatter,
+		customNoRowsOverlay: NoContentFound,
+		statusButtonFormatter: statusButtonFormatter,
+		hyphenFormatter: hyphenFormatter,
+		linkableFormatter: linkableFormatter
+	};
+
+	return (
+		<div className={"ag-grid-react"} id={'userlist-go-to-top'}>
+			<ScrollToTop pointProp={"userlist-go-to-top"} />
+			<>
+				<form noValidate>
+					<Row className="pt-4">
+						{state.shown &&
+							<Col md="8" className="filter-block">
+								<div className="d-inline-flex justify-content-start align-items-top w100">
+									<div className="flex-fills">
+										<h5>{`Filter By:`}</h5>
+									</div>
+									<div className="flex-fill">
+										<Field
+											name="DepartmentId"
+											type="text"
+											component={searchableSelect}
+											placeholder={"Department"}
+											options={searchableSelectType("department")}
+											// placeholder={"Purchase Group"}						//RE
+											// placeholder={"Company"} //MINDA
+											//onKeyUp={(e) => changeItemDesc(e)}
+											//validate={(state.department == null || state.department.length == 0) ? [required] : []}
+											//required={true}
+											handleChangeDescription={departmentHandler}
+											valueDescription={state.department}
+										/>
+									</div>
+									<div className="flex-fill">
+										<Field
+											name="RoleId"
+											type="text"
+											component={searchableSelect}
+											placeholder={"Role"}
+											options={searchableSelectType("role")}
+											//onKeyUp={(e) => changeItemDesc(e)}
+											//validate={(state.role == null || state.role.length == 0) ? [required] : []}
+											//required={true}
+											handleChangeDescription={roleHandler}
+											valueDescription={state.role}
+										/>
+									</div>
+									<div className="flex-fill">
+										<button
+											type="button"
+											//disabled={pristine || submitting}
+											onClick={resetFilter}
+											className="reset mr10"
+										>
+											{"Reset"}
+										</button>
+
+										<button
+											type="button"
+											//disabled={pristine || submitting}
+											onClick={filterList}
+											className="user-btn mr5"
+										>
+											{"Apply"}
+										</button>
+									</div>
+								</div>
+							</Col>
+						}
+						<Col md="6" className="search-user-block mb-3">
+							<div className="d-flex justify-content-end bd-highlight w100">
+								{AddAccessibility && (
+									<div>
+										<ExcelFile filename={`${props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={
+											<Button id={"Excel-Downloads-userListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+
+										}>
+											{onBtExport()}
+										</ExcelFile>
+										<Button id="userListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+									</div>
+								)}
+								<Button
+									id={"userListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+							</div>
 
 
-/**
-* @method connect
-* @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
+						</Col>
+					</Row>
+				</form>
+				{state.isLoader ? <LoaderCustom customClass="loader-center" /> : <div className={`ag-grid-wrapper height-width-wrapper ${(userDataList && userDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+					<div className="ag-grid-header">
+						<input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+					</div>
+					<div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+						{noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+						<AgGridReact
+							defaultColDef={defaultColDef}
+							floatingFilter={true}
+							domLayout='autoHeight'
+							// columnDefs={c}
+							rowData={props.RFQUser ? rfqUserList : userDataList}
+							pagination={true}
+							paginationPageSize={defaultPageSize}
+							onGridReady={onGridReady}
+							gridOptions={gridOptions}
+							noRowsOverlayComponent={'customNoRowsOverlay'}
+							noRowsOverlayComponentParams={{
+								title: EMPTY_DATA,
+								imagClass: 'imagClass'
+							}}
+							frameworkComponents={frameworkComponents}
+							enableBrowserTooltips={true}
+							onSelectionChanged={onRowSelect}
+							onFilterModified={(e) => {
+								setTimeout(() => {
+									setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
+								}, 500);
+							}}
+							rowSelection={'multiple'}
+							suppressRowClickSelection={true}
+						>
+							{/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+							<AgGridColumn field="FullName" headerName="Name" cellRenderer={'linkableFormatter'}></AgGridColumn>
+							{initialConfiguration && !initialConfiguration.IsLoginEmailConfigure ? (
+								<AgGridColumn field="UserName" headerName="User Name"></AgGridColumn>
+							) : null}
+							{props?.RFQUser && <AgGridColumn field="VendorName" headerName="Vendor (code)"></AgGridColumn>}
+							<AgGridColumn field="EmailAddress" headerName="Email Id"></AgGridColumn>
+							<AgGridColumn field="Mobile" headerName="Mobile No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+							<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
+							{/* {getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
+								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
+							<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Department"></AgGridColumn>
+							{/* //RE    */}
+							{props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
+							<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+							<AgGridColumn pinned="right" field="IsActive" width={120} headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+							<AgGridColumn field="RoleName" width={120} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+						</AgGridReact>
+						{<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+					</div>
+				</div>}
 
-export default connect(mapStateToProps, {
-	getAllUserDataAPI,
-	deleteUser,
-	getAllDepartmentAPI,
-	getAllRoleAPI,
-	activeInactiveUser,
-})(reduxForm({
-	form: 'UsersListing',
-	onSubmitFail: errors => {
-		focusOnError(errors);
-	},
-	enableReinitialize: true,
-})(UsersListing));
+				{state.isOpen && (
+					<ViewUserDetails UserId={state.UserId} isOpen={state.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props.RFQUser} />
+				)}
+
+			</>
+			{
+				state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />
+			}
+
+		</div >
+	);
+};
+
+export default UsersListing

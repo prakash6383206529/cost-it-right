@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, } from 'reactstrap';
-import { getAllRoleAPI, deleteRoleAPI, activeInactiveRole } from '../../../actions/auth/AuthActions';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllRoleAPI, activeInactiveRole } from '../../../actions/auth/AuthActions';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { EMPTY_DATA } from '../../../config/constants';
@@ -17,164 +17,150 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId, userDetails } from '../../../helper';
 import Switch from "react-switch";
 import ScrollToTop from '../../common/ScrollToTop';
+import { useRef } from 'react';
+import Button from '../../layout/Button';
 
 const gridOptions = {};
+const RolesListing = (props) => {
+  const [state, setState] = useState({
+    isEditFlag: false,
+    RoleId: '',
+    tableData: [],
+    AddAccessibility: false,
+    EditAccessibility: false,
+    DeleteAccessibility: false,
+    ActivateAccessibility: false,
+    isLoader: false,
+    gridApi: null,
+    gridColumnApi: null,
+    rowData: null,
+    sideBar: { toolPanels: ['columns'] },
+    showData: false,
+    showPopup: false,
+    deletedId: '',
+    cell: '',
+    noData: false
+  });
 
-class RolesListing extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isEditFlag: false,
-      RoleId: '',
-      tableData: [],
-      AddAccessibility: false,
-      EditAccessibility: false,
-      DeleteAccessibility: false,
-      ActivateAccessibility: false,
-      isLoader: false,
-      gridApi: null,
-      gridColumnApi: null,
-      rowData: null,
-      sideBar: { toolPanels: ['columns'] },
-      showData: false,
-      showPopup: false,
-      deletedId: '',
-      cell: '',
-      noData: false
-    }
-  }
-
-  componentDidMount() {
-    this.setState({ isLoader: true })
-    const { topAndLeftMenuData } = this.props;
+  const dispatch = useDispatch();
+  const searchRef = useRef(null);
+  const { topAndLeftMenuData } = useSelector((state) => state.auth);
+  useEffect(() => {
+    setState((prevState) => ({ ...prevState, isLoader: true }))
     if (topAndLeftMenuData !== undefined) {
-      const userMenu = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === 'Users');
-      const accessData = userMenu && userMenu.Pages.find(el => el.PageName === ROLE)
-      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+      const userMenu = topAndLeftMenuData?.find(el => el.ModuleName === 'Users');
+      const accessData = userMenu?.Pages.find(el => el.PageName === ROLE);
+      const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
 
       if (permmisionData !== undefined) {
-        this.setState({
+        setState((prevState) => ({
+          ...prevState,
           AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
           EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
           DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
           ActivateAccessibility: permmisionData && permmisionData.Activate ? permmisionData.Activate : false,
-        })
+        }));
       }
     }
-
     setTimeout(() => {
-      this.getRolesListData()
+      getRolesListData();
     }, 500);
-  }
 
-  getRolesListData = () => {
-    this.props.getAllRoleAPI(res => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const getRolesListData = () => {
+    dispatch(getAllRoleAPI(res => {
       if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
-        this.setState({
-          tableData: Data,
-        }, () => this.setState({ isLoader: false }))
+        setState(prevState => ({ ...prevState, tableData: Data, isLoader: false, }));
       }
-    });
+      else {
+        setState((prevState) => ({ ...prevState, isLoader: false }));
+      }
+    }));
+  };
+
+  /**
+   * @method editItemDetails
+   * @description confirm edit item
+   */
+  const editItemDetails = (Id) => {
+    let requestData = { isEditFlag: true, RoleId: Id, }
+    props.getDetail(requestData)
+  }
+
+  const closePopUp = () => {
+    setState((prevState) => ({ ...prevState, showPopup: false }))
   }
 
   /**
-  * @method getUpdatedData
-  * @description get updated data after updatesuccess
-  */
-  getUpdatedData = () => {
-    this.getRolesListData()
-  }
+    * @method buttonFormatter
+    * @description Renders buttons
+    */
 
-  /**
-  * @method editItemDetails
-  * @description confirm edit item
-  */
-  editItemDetails = (Id) => {
-    let requestData = {
-      isEditFlag: true,
-      RoleId: Id,
-    }
-    //this.props.getRoleDetail(requestData)
-    this.props.getDetail(requestData)
-  }
-
-
-
-
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
-
-
-  /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
-  buttonFormatter = (props) => {
+  const { EditAccessibility } = state;
+  const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data
     const userRoleCheck = userDetails()?.Role
-    const { EditAccessibility, DeleteAccessibility } = this.state;
+
     return (
       <>
-        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <Button id={`roleListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
+        }
+        editItemDetails(cellValue, rowData)
+        {/* {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />} */}
       </>
     )
   };
 
-  formToggle = () => {
-    this.props.formToggle()
+  const formToggle = () => {
+    props.formToggle()
   }
 
-  onGridReady = (params) => {
-    this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
-    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+  const onGridReady = (params) => {
+    state.gridApi = params.api;
+    state.gridApi.sizeColumnsToFit();
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
 
-  onPageSizeChanged = (newPageSize) => {
-    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
+  const onFilterTextBoxChanged = (e) => {
+    state.gridApi.setQuickFilter(e.target.value)
   }
 
-  resetState() {
+  const resetState = () => {
+    state?.gridApi?.setQuickFilter(null)
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-  }
-
-  handleChange = (cell, row) => {
-
-    this.setState({ showPopup: true, row: row, cell: cell })
-      ;
-  }
-  onPopupConfirm = () => {
-
-
-    let data = {
-      Id: this.state.row.RoleId,
-      ModifiedBy: loggedInUserId(),
-      IsActive: !this.state.cell, //Status of the Reason.
+    if (searchRef.current) {
+      searchRef.current.value = '';
     }
-    this.props.activeInactiveRole(data, (res) => {
+  }
+
+  const handleChange = (cell, row) => {
+    setState((prevState) => ({ ...prevState, showPopup: true, row: row, cell: cell }))
+
+  }
+  const onPopupConfirm = () => {
+    let data = { Id: state.row.RoleId, ModifiedBy: loggedInUserId(), IsActive: !state.cell, }
+    dispatch(activeInactiveRole(data, (res) => {
       if (res && res.data && res.data.Result) {
-        if (Boolean(this.state.cell) === true) {
+        if (Boolean(state.cell) === true) {
           Toaster.success(MESSAGES.ROLE_INACTIVE_SUCCESSFULLY)
         } else {
           Toaster.success(MESSAGES.ROLE_ACTIVE_SUCCESSFULLY)
         }
-        this.getRolesListData();
+        getRolesListData();
       }
-    })
-
-
-    this.setState({ showPopup: false })
-    this.setState({ showPopup2: false })
+    }))
+    setState((prevState) => ({ ...prevState, showPopup: false }))
+    setState((prevState) => ({ ...prevState, showPopup2: false }))
 
 
   }
@@ -183,149 +169,107 @@ class RolesListing extends Component {
 * @method statusButtonFormatter
 * @description Renders buttons
 */
-  statusButtonFormatter = (props) => {
+
+  const { ActivateAccessibility } = state;
+  const statusButtonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
-    const { ActivateAccessibility } = this.state;
     if (rowData.UserId === loggedInUserId() || rowData.RoleName === 'RFQUser') return null;
     showTitleForActiveToggle(props)
     return (
       <>
         <label htmlFor="normal-switch" className="normal-switch">
           {/* <span>Switch with default style</span> */}
-          <Switch
-            onChange={() => this.handleChange(cellValue, rowData)}
-            checked={cellValue}
-            disabled={!ActivateAccessibility}
-            background="#ff6600"
-            onColor="#4DC771"
-            onHandleColor="#ffffff"
-            offColor="#FC5774"
-            id="normal-switch"
-            height={24}
-            className={cellValue ? "active-switch" : "inactive-switch"}
-          />
+          <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
         </label>
       </>
     )
   }
 
+  const { AddAccessibility, noData } = state;
 
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { AddAccessibility, noData } = this.state;
+  const defaultColDef = { resizable: true, filter: true, sortable: false, };
 
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: false,
-    };
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    customNoRowsOverlay: NoContentFound,
+    statusButtonFormatter: statusButtonFormatter,
+  };
+  return (
+    <div className={"ag-grid-react"} id={'role-go-to-top'}>
+      <ScrollToTop pointProp={"role-go-to-top"} />
+      <>
+        {state.isLoader && <LoaderCustom />}
+        <Row className="pt-4 ">
+          <Col md="8" className="mb-2">
 
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      customNoRowsOverlay: NoContentFound,
-      statusButtonFormatter: this.statusButtonFormatter,
-    };
+          </Col>
+          <Col md="6" className="search-user-block mb-3">
+            <div className="d-flex justify-content-end bd-highlight w100">
+              {AddAccessibility &&
+                <div>
 
-    return (
-      <div className={"ag-grid-react"} id={'role-go-to-top'}>
-        <ScrollToTop pointProp={"role-go-to-top"} />
-        <>
-          {this.state.isLoader && <LoaderCustom />}
-          <Row className="pt-4 ">
-            <Col md="8" className="mb-2">
-
-            </Col>
-            <Col md="6" className="search-user-block mb-3">
-              <div className="d-flex justify-content-end bd-highlight w100">
-                {AddAccessibility &&
-                  <div>
-                    <button
-                      type="button"
-                      className={'user-btn mr5'}
-                      title="Add"
-                      onClick={this.formToggle}>
-                      <div className={'plus mr-0'}></div></button>
-                  </div>
-                }
-                <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                  <div className="refresh mr-0"></div>
-                </button>
-              </div>
-
-
-            </Col>
-          </Row>
-          <Row class="">
-            <Col className="table-mt-0">
-              <div className={`ag-grid-wrapper height-width-wrapper ${(this.state.tableData && this.state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-                <div className="ag-grid-header">
-                  <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
+                  <Button id="roletListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
                 </div>
-                <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                  {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                  <AgGridReact
-                    defaultColDef={defaultColDef}
-                    floatingFilter={true}
-                    domLayout='autoHeight'
-                    // columnDefs={c}
-                    rowData={this.state.tableData}
-                    pagination={true}
-                    paginationPageSize={10}
-                    onGridReady={this.onGridReady}
-                    gridOptions={gridOptions}
-                    noRowsOverlayComponent={'customNoRowsOverlay'}
-                    onFilterModified={(e) => {
-                      setTimeout(() => {
-                        this.setState({ noData: searchNocontentFilter(e) });
-                      }, 500);
-                    }}
-                    noRowsOverlayComponentParams={{
-                      title: EMPTY_DATA,
-                      imagClass: 'imagClass'
-                    }}
-                    frameworkComponents={frameworkComponents}
-                  >
-                    {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                    <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
-                    <AgGridColumn field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
-                    <AgGridColumn field="RoleId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                  </AgGridReact>
-                  {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-                </div>
-              </div>
-              {
-                this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${this.state.cell ? MESSAGES.ROLE_DEACTIVE_ALERT : MESSAGES.ROLE_ACTIVE_ALERT}`} />
               }
 
-            </Col>
-          </Row>
-        </ >
-      </div>
-    );
-  }
-}
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ auth }) {
-  const { roleList, leftMenuData, loading, topAndLeftMenuData } = auth;
-
-  return { roleList, leftMenuData, loading, topAndLeftMenuData };
-}
+              <Button
+                id={"roleListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+            </div>
 
 
-export default connect(mapStateToProps,
-  {
-    getAllRoleAPI,
-    deleteRoleAPI,
-    activeInactiveRole
-  })(RolesListing);
+          </Col>
+        </Row>
+        <Row class="">
+          <Col className="table-mt-0">
+            <div className={`ag-grid-wrapper height-width-wrapper ${(state.tableData && state.tableData?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+              <div className="ag-grid-header">
+                <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+              </div>
+              <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                {!state.isLoader && <AgGridReact
+                  defaultColDef={defaultColDef}
+                  floatingFilter={true}
+                  domLayout='autoHeight'
+                  // columnDefs={c}
+                  rowData={state.tableData}
+                  pagination={true}
+                  paginationPageSize={10}
+                  onGridReady={onGridReady}
+                  gridOptions={gridOptions}
+                  noRowsOverlayComponent={'customNoRowsOverlay'}
+                  onFilterModified={(e) => {
+                    setTimeout(() => {
+                      setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
+                    }, 500);
+                  }}
+                  noRowsOverlayComponentParams={{
+                    title: EMPTY_DATA,
+                    imagClass: 'imagClass'
+                  }}
+                  frameworkComponents={frameworkComponents}
+                >
+                  {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                  <AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>
+                  <AgGridColumn field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={'statusButtonFormatter'}></AgGridColumn>
+                  <AgGridColumn field="RoleId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+                </AgGridReact>
+                }
 
+                {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+              </div>
+            </div>
+            {
+              state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.ROLE_DEACTIVE_ALERT : MESSAGES.ROLE_ACTIVE_ALERT}`} />
+            }
+
+          </Col>
+        </Row>
+      </ >
+    </div>
+  );
+
+
+};
+export default RolesListing

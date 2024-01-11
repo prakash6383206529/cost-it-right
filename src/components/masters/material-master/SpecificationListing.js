@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback, useContext } from "react";
+import React, { useState, useEffect, useCallback, useContext, useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { reduxForm } from "redux-form";
 import { Row, Col } from "reactstrap";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
@@ -31,6 +30,7 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const SpecificationListing = (props) => {
   const dispatch = useDispatch();
+  const searchRef = useRef(null);
   const { rmSpecificationList } = useSelector((state) => state.material);
   const permissions = useContext(ApplyPermission);
   const [state, setState] = useState({
@@ -293,9 +293,13 @@ const SpecificationListing = (props) => {
   };
 
   const resetState = () => {
+    state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState(null);
     state.gridApi.setFilterModel(null);
+    if (searchRef.current) {
+      searchRef.current.value = '';
+    }
   };
 
   const hyphenFormatter = (props) => {
@@ -343,56 +347,22 @@ const SpecificationListing = (props) => {
         <Row className="pt-4">
           <Col md={6} className="text-right mb-3 search-user-block">
             {permissions.Add && (
-              <Button
-                id="rmSpecification_filter"
-                className={"mr5"}
-                onClick={openModel}
-                title={"Add"}
-                icon={"plus"}
-              />
+              <Button id="rmSpecification_filter" className={"mr5"} onClick={openModel} title={"Add"} icon={"plus"} />
             )}
-            {permissions.BulkUpload && (
-              <Button
-                id="rmSpecification_add"
-                className={"mr5"}
-                onClick={bulkToggle}
-                title={"Bulk Upload"}
-                icon={"upload"}
-              />
+            {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
             )}
             {permissions.Download && (
               <>
                 <>
-                  <ExcelFile
-                    filename={"RM Specification"}
-                    fileExtension={".xls"}
-                    element={
-                      <Button
-                        className="mr5"
-                        id={"rmSpecification_excel_download"}
-                        title={`Download ${state.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                          }`}
-                        icon={"download mr-1"}
-                        buttonName={`${state.dataCount === 0
-                            ? "All"
-                            : "(" + state.dataCount + ")"
-                          }`}
-                      />
-                    }
+                  <ExcelFile filename={"RM Specification"} fileExtension={".xls"} element={
+                    <Button className="mr5" id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                  }
                   >
-                    {onBtExport()}
-                  </ExcelFile>
+                    {onBtExport()} </ExcelFile>
                 </>
               </>
             )}
-            <Button
-              id={"rmSpecification_refresh"}
-              onClick={() => resetState()}
-              title={"Reset Grid"}
-              icon={"refresh"}
-            />
+            <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
           </Col>
         </Row>
       </form>
@@ -401,31 +371,16 @@ const SpecificationListing = (props) => {
         <Col>
           <div
             className={`ag-grid-wrapper height-width-wrapper ${(rmSpecificationList && rmSpecificationList?.length <= 0) ||
-                noData
-                ? "overlay-contain"
-                : ""
+              noData
+              ? "overlay-contain"
+              : ""
               }`}
           >
             <div className="ag-grid-header">
-              <input
-                type="text"
-                className="form-control table-search"
-                id="filter-text-box"
-                placeholder="Search"
-                autoComplete={"off"}
-                onChange={(e) => onFilterTextBoxChanged(e)}
-              />
+              <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
-            <div
-              className={`ag-theme-material ${state.isLoader && "max-loader-height"
-                }`}
-            >
-              {noData && (
-                <NoContentFound
-                  title={EMPTY_DATA}
-                  customClassName="no-content-found"
-                />
-              )}
+            <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}            >
+              {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
@@ -450,23 +405,10 @@ const SpecificationListing = (props) => {
                 <AgGridColumn field="RMName"></AgGridColumn>
                 <AgGridColumn field="RMGrade" headerName="Grade"></AgGridColumn>
                 <AgGridColumn field="RMSpec" headerName="Spec"></AgGridColumn>
-                <AgGridColumn
-                  field="RawMaterialCode"
-                  headerName="Code"
-                  cellRenderer="hyphenFormatter"
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="SpecificationId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
+                <AgGridColumn field="RawMaterialCode" headerName="Code" cellRenderer="hyphenFormatter"               ></AgGridColumn>
+                <AgGridColumn field="SpecificationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}                ></AgGridColumn>
               </AgGridReact>
-              {
-                <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />
-              }
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
             </div>
           </div>
         </Col>
@@ -514,7 +456,4 @@ const SpecificationListing = (props) => {
   );
 };
 
-export default reduxForm({
-  form: "SpecificationListing",
-  enableReinitialize: true,
-})(SpecificationListing);
+export default SpecificationListing
