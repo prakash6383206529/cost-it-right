@@ -1,0 +1,629 @@
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import NoContentFound from '../common/NoContentFound';
+import { AgGridColumn, AgGridReact } from 'ag-grid-react';
+import LoaderCustom from '../common/LoaderCustom';
+import { AUDIT, AuditLisitng, EMPTY_DATA, defaultPageSize } from '../../config/constants';
+import { getUserAuditLog } from './actions/AuditListing';
+import { PaginationWrapper } from '../common/commonPagination';
+import { Col, Row } from 'reactstrap';
+import DayTime from '../common/DayTimeWrapper';
+import { setSelectedRowForPagination, } from '../simulation/actions/Simulation';
+import { _ } from 'ag-grid-community';
+import { checkPermission, searchNocontentFilter } from '../../helper';
+import { MESSAGES } from '../../config/message';
+import WarningMessage from '../common/WarningMessage';
+import { disabledClass } from '../../actions/Common';
+import { AUDIT_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
+import ReactExport from 'react-export-excel';
+
+
+const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
+const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
+const gridOptions = {};
+
+function LoginAudit(props) {
+    const dispatch = useDispatch()
+    const [state, setState] = useState({
+        auditDataList: [],
+        isLoader: false,
+        noData: false,
+        dataCount: 0,
+        gridApi: null,
+        gridColumnApi: null,
+        rowData: null,
+        currentRowIndex: 0,
+        totalRecordCount: 0,
+        filterModel: {},
+        disableFilter: false,
+
+        showPopup: false,
+        globalTake: defaultPageSize,
+        pageNo: 1,
+        pageNoNew: 1,
+        isFilterButtonClicked: false,
+        warningMessage: false,
+        floatingFilterData: {
+            UserName: '',
+            UserId: 0,
+            LoginTime: '',
+            IPAddress: '',
+            MacAddress: '',
+            UserAgent: '',
+        },
+        pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
+        DownloadAccessibility: true
+    })
+    const [searchText, setSearchText] = useState('');
+    const { selectedRowForPagination } = useSelector(state => state.simulation);
+    const { topAndLeftMenuData } = useSelector(state => state.auth);
+    console.log('topAndLeftMenuData: ', topAndLeftMenuData);
+    // useEffect to fetch data initially or when filters change.
+
+    useEffect(() => {
+        getDataList(0, state.globalTake, true, state.floatingFilterData); // Adjust the parameters as needed
+    }, [])
+
+    useEffect(() => {
+        applyPermission(topAndLeftMenuData)
+        dispatch(setSelectedRowForPagination([]));
+        // eslint-disable-next-line
+    }, []);
+
+
+    const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
+        setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
+
+
+
+        if (state.filterModel?.LoginTime) {
+            if (state.filterModel.LoginTime.dateTo) {
+                let temp = []
+                temp.push(DayTime(state.filterModel.LoginTime.dateFrom))
+                temp.push(DayTime(state.filterModel.LoginTime.dateTo))
+                dataObj.dateArray = temp
+            }
+        }
+
+
+        dispatch(getUserAuditLog(dataObj, skip, take, isPagination, true, '', res => {
+            setState(prevState => ({ ...prevState, noData: false }))
+
+            setState(prevState => ({ ...prevState, isLoader: false }))
+            if (res.status === 204 && res.data === '') {
+                setState(prevState => ({ ...prevState, auditDataList: [] }))
+            } else {
+                setState(prevState => ({ ...prevState, auditDataList: res.data.DataList }))
+            }
+            // CODE FOR DOWNLOAD BUTTON LOGIC
+            if (res && isPagination === false) {
+                setState(prevState => ({ ...prevState, disableDownload: false }))
+                dispatch(disabledClass(false))
+                setTimeout(() => {
+                    let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel')
+                    button && button.click()
+                }, 500);
+            }
+
+            // PAGINATION CODE
+            if (res && res.status === 204) {
+                setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }))
+            }
+            setState(prevState => ({ ...prevState, totalRecordCount: res?.data?.DataList && res?.data?.DataList[0]?.TotalRecordCount }))
+            setTimeout(() => {
+                setState(prevState => ({ ...prevState, warningMessage: false }))
+            }, 335);
+            setTimeout(() => {
+                setState(prevState => ({ ...prevState, isFilterButtonClicked: false }))
+            }, 600);
+        }));
+    }
+
+    const applyPermission = (topAndLeftMenuData) => {
+        if (topAndLeftMenuData !== undefined) {
+            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === AUDIT);
+            const accessData = Data && Data.Pages.find(el => el.PageName === AUDIT)
+            const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+
+            if (permissionData !== undefined) {
+                setState((prevState) => ({
+                    ...prevState,
+                    DownloadAccessibility: permissionData && permissionData.Download ? permissionData.Download : false,
+
+                }))
+            }
+        }
+    }
+    const onBtPrevious = () => {
+        let pageSize = state.globalTake;
+        let previousPage = state.pageNo - 1;
+        let skip = (previousPage - 1) * pageSize;
+        if (state.currentRowIndex >= 10) {
+            const previousNo = state.currentRowIndex - 10;
+            const newPageNo = state.pageNo - 1;
+
+            setState((prevState) => ({
+                ...prevState,
+                pageNo: newPageNo >= 1 ? newPageNo : 1,
+                pageNoNew: newPageNo >= 1 ? newPageNo : 1,
+                currentRowIndex: previousNo,
+            }));
+            getDataList(skip, pageSize, true, state.floatingFilterData);
+        }
+    };
+
+    const onBtNext = () => {
+        let pageSize = state.globalTake;
+        let nextPage = state.pageNo + 1;
+        let skip = (nextPage - 1) * pageSize;
+        if (
+            state.pageSize?.pageSize50 &&
+            state.pageNo >= Math.ceil(state.totalRecordCount / 50)
+        ) {
+            return false;
+        }
+        if (
+            state.pageSize?.pageSize100 &&
+            state.pageNo >= Math.ceil(state.totalRecordCount / 100)
+        ) {
+            return false;
+        }
+        if (state.currentRowIndex < state.totalRecordCount - 10) {
+            setState((prevState) => ({
+                ...prevState,
+                pageNo: nextPage,
+                pageNoNew: nextPage,
+            }));
+            const nextNo = state.currentRowIndex + 10;
+            getDataList(skip, pageSize, true, state.floatingFilterData);
+            setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
+        }
+    };
+
+
+
+    const onFilterTextBoxChanged = (e) => {
+        state.gridApi.setQuickFilter(e.target.value);
+    }
+    const onFloatingFilterChanged = (value) => {
+        setTimeout(() => {
+            if (state.auditDataList?.length !== 0) {
+                setState((prevState) => ({
+                    ...prevState,
+                    noData: searchNocontentFilter(value, state.noData),
+                }));
+            }
+        }, 500);
+        setState((prevState) => ({ ...prevState, disableFilter: false }));
+        const model = gridOptions?.api?.getFilterModel();
+        setState((prevState) => ({ ...prevState, filterModel: model }));
+        if (!state.isFilterButtonClicked) {
+            setState((prevState) => ({ ...prevState, warningMessage: true }));
+        }
+
+        if (
+            value?.filterInstance?.appliedModel === null ||
+            value?.filterInstance?.appliedModel?.filter === ""
+        ) {
+            let isFilterEmpty = true;
+
+            if (model !== undefined && model !== null) {
+                if (Object.keys(model).length > 0) {
+                    isFilterEmpty = false;
+                    for (var property in state.floatingFilterData) {
+                        if (property === value.column.colId) {
+                            state.floatingFilterData[property] = "";
+                        }
+                    }
+                    setState((prevState) => ({
+                        ...prevState,
+                        floatingFilterData: state.floatingFilterData,
+                    }));
+                }
+                if (isFilterEmpty) {
+                    setState((prevState) => ({ ...prevState, warningMessage: false }));
+                    for (var prop in state.floatingFilterData) {
+                        state.floatingFilterData[prop] = "";
+                    }
+                    setState((prevState) => ({
+                        ...prevState,
+                        // floatingFilterData: state.floatingFilterData,
+                    }));
+                }
+            }
+        } else {
+            if (
+                value.column.colId === "LoginTime" ||
+                value.column.colId === "LoginTime"
+            ) {
+                return false;
+            }
+            setState((prevState) => ({
+                ...prevState,
+                floatingFilterData: {
+                    ...prevState.floatingFilterData,
+                    [value.column.colId]: value.filterInstance.appliedModel.filter,
+                },
+            }));
+        }
+    };
+
+    const resetState = () => {
+        setState((prevState) => ({
+            ...prevState,
+            noData: false,
+            warningMessage: false,
+
+        }));
+        setState((prevState) => ({
+            ...prevState,
+
+            isFilterButtonClicked: false,
+        }));
+        setSearchText(''); // Clear the search text state
+        if (state.gridApi) {
+            state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
+        }
+        state.gridApi.deselectAll();
+        gridOptions?.columnApi?.resetColumnState(null);
+        const val = gridOptions?.api?.setFilterModel({});
+
+
+
+        for (var prop in state.floatingFilterData) {
+            state.floatingFilterData[prop] = "";
+        }
+        setState((prevState) => ({
+            ...prevState,
+            floatingFilterData: state.floatingFilterData,
+            warningMessage: false,
+
+            pageNo: 1,
+            pageNoNew: 1,
+            currentRowIndex: 0,
+        }));
+
+        getDataList(0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        dispatch(setSelectedRowForPagination([]));
+
+        setState((prevState) => ({
+            ...prevState,
+            globalTake: 10,
+            dataCount: 0,
+
+            pageSize: {
+                ...prevState.pageSize,
+                pageSize10: true,
+                pageSize50: false,
+                pageSize100: false,
+            },
+        }));
+        setSearchText(''); // Assuming this state is bound to the input value
+
+    };
+    const onRowSelect = (event) => {
+        var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
+        if (selectedRows === undefined || selectedRows === null) {     //CONDITION FOR FIRST RENDERING OF COMPONENT
+            selectedRows = selectedRowForPagination
+        } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
+
+            let finalData = []
+            if (event.node.isSelected() === false) {  // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
+
+                for (let i = 0; i < selectedRowForPagination.length; i++) {
+                    if (selectedRowForPagination[i].UserId === event.data.UserId) {  // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
+                        continue;
+                    }
+                    finalData.push(selectedRowForPagination[i])
+                }
+            } else {
+                finalData = selectedRowForPagination
+            }
+            selectedRows = [...selectedRows, ...finalData]
+        }
+
+        let uniqeArray = _.uniqBy(selectedRows, "UserId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+        dispatch(setSelectedRowForPagination(uniqeArray))               //SETTING CHECKBOX STATE DATA IN REDUCER
+        setState(prevState => ({ ...prevState, dataCount: uniqeArray.length }))
+        let finalArr = selectedRows
+        let length = finalArr?.length
+        let uniqueArray = _.uniqBy(finalArr, "UserId")
+        if (props.isSimulation) {
+
+            props.apply(uniqueArray, length)
+        }
+
+        setState(prevState => ({ ...prevState, selectedRowData: selectedRows }))
+
+    }
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
+    }
+    const onGridReady = (params) => {
+        setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
+
+        params.api.paginationGoToPage(0);
+        params.api.sizeColumnsToFit()
+        const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
+        checkBoxInstance.forEach((checkBox, index) => {
+            const specificId = `audit_Checkbox${index / 11}`;
+            checkBox.id = specificId;
+        })
+        const floatingFilterInstances = document.querySelectorAll('.ag-input-field-input.ag-text-field-input');
+        floatingFilterInstances.forEach((floatingFilter, index) => {
+            const specificId = `audit_Floating${index}`;
+            floatingFilter.id = specificId;
+        });
+    };
+    const onSearch = () => {
+
+        setState((prevState) => ({
+            ...prevState,
+            warningMessage: false,
+            pageNo: 1,
+            pageNoNew: 1,
+            currentRowIndex: 0,
+        }));
+
+        getDataList(0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+    };
+    const onPageSizeChanged = (newPageSize) => {
+        let pageSize, totalRecordCount;
+
+        if (Number(newPageSize) === 10) {
+            pageSize = 10;
+        } else if (Number(newPageSize) === 50) {
+            pageSize = 50;
+        } else if (Number(newPageSize) === 100) {
+            pageSize = 100;
+        }
+
+        totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
+
+        getDataList(state.currentRowIndex,
+            pageSize,
+            true,
+            state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
+
+        setState((prevState) => ({
+            ...prevState,
+            globalTake: pageSize,
+            auditDataList: [],
+            pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
+            pageSize: {
+                pageSize10: pageSize === 10,
+                pageSize50: pageSize === 50,
+                pageSize100: pageSize === 100,
+            },
+        }));
+
+        state.gridApi.paginationSetPageSize(Number(newPageSize));
+    };
+
+    const isFirstColumn = (params) => {
+        var displayedColumns = params.columnApi.getAllDisplayedColumns();
+        var thisIsFirstColumn = displayedColumns[0] === params.column;
+
+        if (props?.isMasterSummaryDrawer) {
+            return false
+        } else {
+            return thisIsFirstColumn;
+        }
+    }
+    const onExcelDownload = () => {
+
+        setState(prevState => ({ ...prevState, disableDownload: true }))
+        dispatch(disabledClass(true))
+        let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+        // let tempArr = selectedRowForPagination
+        if (tempArr?.length > 0) {
+            setTimeout(() => {
+                setState(prevState => ({ ...prevState, disableDownload: false }))
+                dispatch(disabledClass(false))
+                let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel');
+                button && button.click()
+            }, 400);
+
+        } else {
+            getDataList(0, defaultPageSize, false, state.floatingFilterData)
+        }
+    }
+    const onBtExport = () => {
+        let tempArr = []
+        //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+        tempArr = selectedRowForPagination
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (state.auditDataList ? state.auditDataList : [])
+        return returnExcelColumn(AUDIT_LISTING_DOWNLOAD_EXCEl, tempArr)
+    };
+    const returnExcelColumn = (data = [], TempData) => {
+        let temp = []
+        temp = TempData && TempData.map((item) => {
+
+            if (item.MacAddress === null) {
+                item.MacAddress = ' '
+            }
+
+            return item
+        })
+
+        return (
+
+            <ExcelSheet data={temp} name={AuditLisitng}>
+                {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+            </ExcelSheet>);
+    }
+    var handleDate = (newDate) => {
+        let temp = state.inRangeDate
+        temp.push(newDate)
+        setState(prevState => ({ ...prevState, inRangeDate: temp }))
+        if (props?.benchMark) {
+            props?.handleDate(state.inRangeDate)
+        }
+        setTimeout(() => {
+            var y = document.getElementsByClassName('ag-radio-button-input');
+            var radioBtn = y[0];
+            radioBtn?.click()
+
+        }, 300);
+    }
+
+
+    var setDate = (date) => {
+        setState(prevState => ({ ...prevState, floatingFilterData: { ...state.floatingFilterData, LoginTime: date } }))
+    }
+
+    const filterParams = {
+        date: "",
+        comparator: function (filterLocalDateAtMidnight, cellValue) {
+            var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+
+            setDate(newDate)
+            handleDate(newDate)
+            if (dateAsString == null) return -1;
+            var dateParts = dateAsString.split('/');
+            var cellDate = new Date(
+                Number(dateParts[2]),
+                Number(dateParts[1]) - 1,
+                Number(dateParts[0])
+            );
+            if (filterLocalDateAtMidnight.getTime() === cellDate.getTime()) {
+                return 0;
+            }
+            if (cellDate < filterLocalDateAtMidnight) {
+                return -1;
+            }
+            if (cellDate > filterLocalDateAtMidnight) {
+                return 1;
+            }
+        },
+        browserDatePicker: true,
+        minValidYear: 2000,
+    };
+
+    const defaultColDef = {
+        resizable: true,
+        filter: true,
+        sortable: false,
+        headerCheckboxSelectionFilteredOnly: true,
+        checkboxSelection: isFirstColumn
+    };
+    const frameworkComponents = {
+        customNoRowsOverlay: NoContentFound,
+        effectiveDateFormatter: effectiveDateFormatter,
+
+    };
+    const ExcelFile = ReactExport.ExcelFile;
+
+    return (
+        <div className={`min-height100vh`}>
+            {(state.isLoader) && <LoaderCustom customClass="simulation-Loader" />}      {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${state.DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                <form>
+                    <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before`}>
+                        <Col md="3" lg="3">
+                            <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                        </Col>
+                        <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
+                            <div className="d-flex justify-content-end bd-highlight w100">
+                                <div className="warning-message d-flex align-items-center">
+                                    {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                </div>
+
+
+                                { }
+                                <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+
+                                {state.shown ?
+                                    <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => setState(prevState => ({ ...prevState, shown: !state.shown }))}>
+                                        <div className="cancel-icon-white"></div>
+                                    </button>
+                                    :
+                                    ""
+                                }
+                                {
+                                    state.DownloadAccessibility &&
+                                    <>
+                                        <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button"
+                                            onClick={onExcelDownload}
+                                            className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                            {/* DOWNLOAD */}
+                                            {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                        </button>
+
+                                        <ExcelFile filename={'Audit'} fileExtension={'.xls'} element={
+                                            <button id={'Excel-Downloads-LoginAudit-DownloadExcel'} className="p-absolute" type="button" >
+                                            </button>}>
+                                            {onBtExport()}
+                                        </ExcelFile>
+                                    </>
+                                }
+
+
+                            </div>
+
+                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>
+                                <div className="refresh mr-0"></div>
+                            </button>
+                        </Col>
+
+                    </Row>
+                </form>
+                <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !state.noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || state.noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
+                    <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                        {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                        {!state.isLoader && <AgGridReact
+                            defaultColDef={defaultColDef}
+                            floatingFilter={true}
+                            domLayout='autoHeight'
+                            rowData={state.auditDataList}
+                            pagination={true}
+
+                            paginationPageSize={state.globalTake}
+                            onGridReady={onGridReady}
+                            gridOptions={gridOptions}
+                            noRowsOverlayComponent={'customNoRowsOverlay'}
+                            noRowsOverlayComponentParams={{
+                                title: EMPTY_DATA,
+                                imagClass: 'imagClass'
+                            }}
+                            frameworkComponents={frameworkComponents}
+                            rowSelection={'multiple'}
+                            //onSelectionChanged={onRowSelect}
+                            onRowSelected={onRowSelect}
+                            suppressRowClickSelection={true}
+                            onFilterModified={onFloatingFilterChanged}
+                            enableBrowserTooltips={true}
+                        >
+                            <AgGridColumn field="UserName" headerName="UserName" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+                            {/* <AgGridColumn field="Technology" tooltipField='Technology' filter={true} floatingFilter={true} headerName="Technology"></AgGridColumn> */}
+                            <AgGridColumn field="IPAddress" headerName="IPAddress"></AgGridColumn>
+                            <AgGridColumn field="UserAgent" headerName="UserAgent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            <AgGridColumn field="LoginTime" headerName="LoginTime (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter"
+                                filterParams={filterParams}
+                            ></AgGridColumn>
+
+                        </AgGridReact>}
+                        <div className='button-wrapper'>
+                            <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} pageNo={state.pageNo} totalRecordCount={state.totalRecordCount} />
+                            <div className="d-flex pagination-button-container">
+                                <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                {state?.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(Number(state.totalRecordCount ? state.totalRecordCount / 10 : 0 / 10))}</p>}
+                                {state?.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
+                                {state?.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
+                                <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    )
+}
+
+export default LoginAudit
