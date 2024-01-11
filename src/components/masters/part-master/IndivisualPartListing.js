@@ -1,13 +1,8 @@
-import React, { useState, useEffect, useContext, useCallback } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Row, Col } from "reactstrap";
 import { isResetClick } from "../../../actions/Common";
-import {
-  getPartDataList,
-  deletePart,
-  //   activeInactivePartStatus,
-  //   checkStatusCodeAPI,
-} from "../actions/Part";
+import { getPartDataList, deletePart, } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
@@ -54,32 +49,15 @@ const IndivisualPartListing = (props) => {
     warningMessage: false,
     searchText: "",
     isFilterButtonClicked: false,
-    pageSize: {
-      pageSize10: true,
-      pageSize50: false,
-      pageSize100: false,
-    },
-    floatingFilterData: {
-      Technology: "",
-      PartNumber: "",
-      PartName: "",
-      ECNNumber: "",
-      RevisionNumber: "",
-      DrawingNumber: "",
-      EffectiveDate: "",
-    },
+    pageSize: { pageSize10: true, pageSize50: false, pageSize100: false, },
+    floatingFilterData: { Technology: "", PartNumber: "", PartName: "", ECNNumber: "", RevisionNumber: "", DrawingNumber: "", EffectiveDate: "", },
     tableData: [],
     isBulkUpload: false,
     deletedId: "",
   });
-  const[searchText, setSearchText] = useState('');
-  console.log(state.dataCount,"COUNT")
+  const [searchText, setSearchText] = useState('');
 
-  const {
-    partsListing,
-    initialConfiguration,
-    selectedRowForPagination,
-  } = useSelector((state) => ({
+  const { partsListing, initialConfiguration, selectedRowForPagination, } = useSelector((state) => ({
     partsListing: state.part.partsListing,
     initialConfiguration: state.auth.initialConfiguration,
     selectedRowForPagination: state.simulation.selectedRowForPagination,
@@ -93,7 +71,7 @@ const IndivisualPartListing = (props) => {
   }, []);
 
   useEffect(() => {
-   setState((prevState) => ({ ...prevState, isLoader: true }));
+    setState((prevState) => ({ ...prevState, isLoader: true }));
     setTimeout(() => {
       setState((prevState) => ({ ...prevState, isLoader: false }));
     }, 200);
@@ -119,16 +97,17 @@ const IndivisualPartListing = (props) => {
         }, 300);
 
         if (res.status === 202) {
-          setState((prevState) => ({ ...prevState, totalRecordCount: 0 , pageNo: 0 }));
+          setState((prevState) => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }));
         } else if (res.status === 204 && (!res.data || res.data === "")) {
-          setState((prevState) => ({ ...prevState, noData: true, tableData: [] , pageNo: 0 , totalRecordCount: 0 }))
+          setState((prevState) => ({ ...prevState, noData: true, tableData: [], pageNo: 0, totalRecordCount: 0 }))
 
         } else if (res.status === 200 && res.data && res.data.DataList) {
           let Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, noData: false, tableData: Data, totalRecordCount: Data[0].TotalRecordCount })); }
+          setState((prevState) => ({ ...prevState, noData: false, tableData: Data, totalRecordCount: Data[0].TotalRecordCount }));
+        }
 
         if (isPagination === false) {
-          setState((prevState) => ({ ...prevState, disableFilter: false,disableDownload: false }));
+          setState((prevState) => ({ ...prevState, disableFilter: false, disableDownload: false }));
           dispatch(disabledClass(false));
           setTimeout(() => {
             let button = document.getElementById(
@@ -153,8 +132,8 @@ const IndivisualPartListing = (props) => {
         }
         setState((prevState) => ({
           ...prevState,
-          totalRecordCount : res.data && res.data.DataList[0].TotalRecordCount || 0 ,
-          tableData : res.data.DataList || [] , noData: !res.data.DataList || res.data.DataList.length === 0 ,isFilterButtonClicked : false
+          totalRecordCount: res.data && res.data.DataList[0].TotalRecordCount || 0,
+          tableData: res.data.DataList || [], noData: !res.data.DataList || res.data.DataList.length === 0, isFilterButtonClicked: false
         }))
       })
     );
@@ -164,30 +143,32 @@ const IndivisualPartListing = (props) => {
 
 
   const onFloatingFilterChanged = (value) => {
-  
+
 
     setTimeout(() => {  // <-- this may introduce asynchronous behavior
       if (partsListing?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData 
-        :searchNocontentFilter(value, state.noData),disableFilter: false }));
+        setState((prevState) => ({
+          ...prevState, noData
+            : searchNocontentFilter(value, state.noData), disableFilter: false
+        }));
       }
     }, 500);
-   
+
 
     const model = gridOptions?.api?.getFilterModel();
-    console.log('model: ', model);
+
     setState((prevState) => ({
       ...prevState,
       filterModel: model,
     }))
-    
+
     if (!state.isFilterButtonClicked) {
       setState((prevState) => ({
         ...prevState,
         warningMessage: true
       }))
     }
-    console.log(value?.filterInstance?.appliedModel , "value");
+
 
     if (
       value?.filterInstance?.appliedModel === null ||
@@ -242,7 +223,7 @@ const IndivisualPartListing = (props) => {
 
 
   const onSearch = () => {
-   setState((prevState) => ({ ...prevState, warningMessage: false,isFilterButtonClicked: true, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 }));
+    setState((prevState) => ({ ...prevState, warningMessage: false, isFilterButtonClicked: true, pageNo: 1, pageNoNew: 1, currentRowIndex: 0 }));
 
     getTableListData(0, state.globalTake, state.floatingFilterData, true);
   };
@@ -252,7 +233,7 @@ const IndivisualPartListing = (props) => {
       ...prevState,
       noData: false,
       warningMessage: false,
-      
+
     }));
     dispatch(isResetClick(true, "Operation"));
     setState((prevState) => ({
@@ -330,7 +311,8 @@ const IndivisualPartListing = (props) => {
     totalRecordCount = Math.ceil(totalRecordCount / pageSize);
 
     getTableListData(state.currentRowIndex, pageSize, state.floatingFilterData, true);
-    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: 1, pageNoNew: Math.min(state.pageNo, totalRecordCount),
+    setState((prevState) => ({
+      ...prevState, globalTake: pageSize, pageNo: 1, pageNoNew: Math.min(state.pageNo, totalRecordCount),
       pageSize: {
         ...prevState.pageSize,
         pageSize10: pageSize === 10,
@@ -353,7 +335,8 @@ const IndivisualPartListing = (props) => {
   };
 
   const deleteItem = (ID) => {
-    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: ID }));};
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: ID }));
+  };
 
   const confirmDeleteItem = (ID) => {
     dispatch(
@@ -445,17 +428,17 @@ const IndivisualPartListing = (props) => {
   };
 
   const checkBoxRenderer = (props) => {
-    console.log('props: ', props);
-    const cellValue = props?.valueFormatted? props.valueFormatted: props?.value;
 
-    console.log('selectedRowForPagination: ', selectedRowForPagination);
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
+
     if (selectedRowForPagination?.length > 0) {
-      console.log('selectedRowForPagination: ', selectedRowForPagination);
+
 
       selectedRowForPagination.map((item) => {
-        console.log('item: ', item);
+
         if (item.PartId === props.node.data.PartId) {
-          console.log("In if");
+
           props.node.setSelected(true);
         }
         return null;
@@ -472,9 +455,9 @@ const IndivisualPartListing = (props) => {
    */
   const effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted
-    ? props.valueFormatted
-    : props?.value;
-    console.log('cellValue: ', cellValue);
+      ? props.valueFormatted
+      : props?.value;
+
     return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
     // return cellValue != null ? cellValue : '';
   };
@@ -508,7 +491,7 @@ const IndivisualPartListing = (props) => {
     dispatch(disabledClass(true));
 
     // let tempArr = selectedRowForPagination; // Assuming `selectedCostingListSimulation` is an array
-        let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+    let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
 
     if (tempArr?.length > 0) {
       setTimeout(() => {
@@ -527,7 +510,7 @@ const IndivisualPartListing = (props) => {
 
 
   const onBtExport = () => {
-   
+
     let tempArr = [];
     //tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination;
@@ -570,7 +553,7 @@ const IndivisualPartListing = (props) => {
   };
   const onFilterTextBoxChanged = (e) => {
     setSearchText(state.gridApi.setQuickFilter(e.target.value));
-}
+  }
   const ExcelFile = ReactExport.ExcelFile;
 
   var filterParams = {
@@ -616,22 +599,22 @@ const IndivisualPartListing = (props) => {
   };
 
   const onRowSelected = (event) => {
-console.log("ON ROW SELECTED");
+
     var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {
       selectedRows = selectedRowForPagination;
-      console.log('selectedRowForPagination: ', selectedRowForPagination);
-    } else if (selectedRowForPagination &&selectedRowForPagination.length > 0) {
-      console.log('selectedRowForPagination: ', selectedRowForPagination);
+
+    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {
+
       let finalData = [];
       if (event.node.isSelected() === false) {
         for (let i = 0; i < selectedRowForPagination.length; i++) {
-          if (selectedRowForPagination[i].PartId ===event.data.PartId
+          if (selectedRowForPagination[i].PartId === event.data.PartId
           ) {
             continue;
           }
           finalData.push(selectedRowForPagination[i]);
-        } 
+        }
       } else {
         finalData = selectedRowForPagination;
       }
@@ -640,7 +623,7 @@ console.log("ON ROW SELECTED");
 
     let uniqeArrayPartId = _.uniqBy(selectedRows, (v) =>
       [v.PartId, v.PartId].join()
-    ); 
+    );
     setState((prevState) => ({ ...prevState, dataCount: uniqeArrayPartId.length }));
     dispatch(setSelectedRowForPagination(uniqeArrayPartId)); //SETTING CHECKBOX STATE DATA IN REDUCER
   };
@@ -718,16 +701,16 @@ console.log("ON ROW SELECTED");
                 )}
                 {permissions.Download && (
                   <>
-                  <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
+                    <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
                       {/* DOWNLOAD */}
                       {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                  </button>
-                  <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
+                    </button>
+                    <ExcelFile filename={'Component Part'} fileExtension={'.xls'} element={
                       <button id={'Excel-Downloads-component-part'} className="p-absolute" type="button" >
                       </button>}>
                       {onBtExport()}
-                  </ExcelFile>
-              </>
+                    </ExcelFile>
+                  </>
 
                 )}
 
@@ -769,78 +752,78 @@ console.log("ON ROW SELECTED");
                 customClassName="no-content-found"
               />
             )}
- {!state.isLoader &&
-            <AgGridReact
-              defaultColDef={defaultColDef}
-              floatingFilter={true}
-              domLayout="autoHeight"
-              rowData={state.tableData}
-              pagination={true}
-              paginationPageSize={state.globalTake}
-              onGridReady={onGridReady}
-              gridOptions={gridOptions}
-              onFilterModified={onFloatingFilterChanged}
-              rowSelection={"multiple"}
-              onRowSelected={onRowSelected}
-              noRowsOverlayComponent={"customNoRowsOverlay"}
-              noRowsOverlayComponentParams={{
-                title: EMPTY_DATA,
-                imagClass: "imagClass",
-              }}
-              frameworkComponents={frameworkComponents}
-              suppressRowClickSelection={true}
-            >
-              <AgGridColumn
-                field="Technology"
-                headerName="Technology"
-                cellRenderer={checkBoxRenderer}      
-                
-                        ></AgGridColumn>
-              <AgGridColumn
-                field="PartNumber"
-                headerName="Part No."
-              ></AgGridColumn>
-              <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-              {initialConfiguration?.IsSAPCodeRequired && (
+            {!state.isLoader &&
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                floatingFilter={true}
+                domLayout="autoHeight"
+                rowData={state.tableData}
+                pagination={true}
+                paginationPageSize={state.globalTake}
+                onGridReady={onGridReady}
+                gridOptions={gridOptions}
+                onFilterModified={onFloatingFilterChanged}
+                rowSelection={"multiple"}
+                onRowSelected={onRowSelected}
+                noRowsOverlayComponent={"customNoRowsOverlay"}
+                noRowsOverlayComponentParams={{
+                  title: EMPTY_DATA,
+                  imagClass: "imagClass",
+                }}
+                frameworkComponents={frameworkComponents}
+                suppressRowClickSelection={true}
+              >
                 <AgGridColumn
-                  field="SAPCode"
-                  headerName="SAP Code"
+                  field="Technology"
+                  headerName="Technology"
+                  cellRenderer={checkBoxRenderer}
+
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="PartNumber"
+                  headerName="Part No."
+                ></AgGridColumn>
+                <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
+                {initialConfiguration?.IsSAPCodeRequired && (
+                  <AgGridColumn
+                    field="SAPCode"
+                    headerName="SAP Code"
+                    cellRenderer={"hyphenFormatter"}
+                  ></AgGridColumn>
+                )}
+                <AgGridColumn
+                  field="ECNNumber"
+                  headerName="ECN No."
                   cellRenderer={"hyphenFormatter"}
                 ></AgGridColumn>
-              )}
-              <AgGridColumn
-                field="ECNNumber"
-                headerName="ECN No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="RevisionNumber"
-                headerName="Revision No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="DrawingNumber"
-                headerName="Drawing No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="EffectiveDate"
-                headerName="Effective Date"
-                cellRenderer={"effectiveDateFormatter"}
-                filter="agDateColumnFilter"
-                filterParams={filterParams}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="PartId"
-                cellClass="ag-grid-action-container"
-                headerName="Action"
-                width={160}
-                pinned="right"
-                type="rightAligned"
-                floatingFilter={false}
-                cellRenderer={"totalValueRenderer"}
-              ></AgGridColumn>
-            </AgGridReact>}
+                <AgGridColumn
+                  field="RevisionNumber"
+                  headerName="Revision No."
+                  cellRenderer={"hyphenFormatter"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="DrawingNumber"
+                  headerName="Drawing No."
+                  cellRenderer={"hyphenFormatter"}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="EffectiveDate"
+                  headerName="Effective Date"
+                  cellRenderer={"effectiveDateFormatter"}
+                  filter="agDateColumnFilter"
+                  filterParams={filterParams}
+                ></AgGridColumn>
+                <AgGridColumn
+                  field="PartId"
+                  cellClass="ag-grid-action-container"
+                  headerName="Action"
+                  width={160}
+                  pinned="right"
+                  type="rightAligned"
+                  floatingFilter={false}
+                  cellRenderer={"totalValueRenderer"}
+                ></AgGridColumn>
+              </AgGridReact>}
             <div className="button-wrapper">
               {!state.isLoader && (
                 <PaginationWrapper

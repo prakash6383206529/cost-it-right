@@ -71,6 +71,9 @@ function ApprovalSummary(props) {
   const [conditionInfo, setConditionInfo] = useState([])
   const [vendorCodeForSap, setVendorCodeForSap] = useState('')
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+  const [costingIdArray, setCostingIdArray] = useState({})
+  const [fgWise, setFgWise] = useState(false)
+  const [accDisable, setAccDisable] = useState(false)
 
   const headerName = ['Revision No.', 'Name', 'Existing Cost/Pc', 'Revised Cost/Pc', 'Quantity', 'Impact/Pc', 'Volume/Year', 'Impact/Quarter', 'Impact/Year']
   const parentField = ['PartNumber', '-', 'PartName', '-', '-', '-', 'VariancePerPiece', 'VolumePerYear', 'ImpactPerQuarter', 'ImpactPerYear']
@@ -131,7 +134,7 @@ function ApprovalSummary(props) {
 
       const { PartDetails, ApprovalDetails, ApprovalLevelStep, DepartmentId, Technology, ApprovalProcessId,
         ApprovalProcessSummaryId, ApprovalNumber, IsSent, IsFinalLevelButtonShow, IsPushedButtonShow,
-        CostingId, PartId, PartNumber, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId } = res?.data?.Data?.Costings[0];
+        CostingId, PartId, PartNumber, DepartmentCode, LastCostingId, DecimalOption, VendorId, IsRegularizationLimitCrossed, CostingHead, NCCPartQuantity, IsRegularized, ApprovalTypeId, CostingTypeId, BestCostAndShouldCostDetails, QuotationId } = res?.data?.Data?.Costings[0];
       setApprovalTypeId(ApprovalTypeId)
 
       dispatch(setQuotationIdForRFQ(QuotationId))
@@ -179,6 +182,7 @@ function ApprovalSummary(props) {
       setIsRegularized(IsRegularized)
       setCostingHead(CostingHead)
       const technologyId = res?.data?.Data?.Costings[0].PartDetails.TechnologyId
+      const Data = res?.data?.Data?.Costings[0].ApprovalDetails[0]
       setIsRegularizationLimit(IsRegularizationLimitCrossed ? IsRegularizationLimitCrossed : false)
       setIsLoader(false)
       dispatch(storePartNumber({ partId: PartId, partNumber: PartNumber }))
@@ -199,9 +203,23 @@ function ApprovalSummary(props) {
         ReasonId: ApprovalDetails[0].ReasonId,
         DecimalOption: DecimalOption,
         LastCostingId: LastCostingId,
+        PartNumber: PartNumber,
+        VendorCode: Data.VendorCode,
+        VendorName: Data.VendorName,
+        Plant: Data.TypeOfCosting === 'VBC' ? Data.DestinationPlantCode : Data.PlantCode,
+        DepartmentCode: DepartmentCode,
+        NewPOPrice: Data.NewPOPrice,
         EffectiveDate: ApprovalDetails[0].EffectiveDate,
         VendorId: VendorId
       })
+      let requestArray = []
+      let requestObject = {}
+
+      requestArray.push(CostingId)
+      requestObject.IsCreate = false
+      requestObject.CostingId = requestArray
+      setCostingIdArray(requestObject)
+
 
       if (initialConfiguration.IsReleaseStrategyConfigured) {
         let requestObject = {
@@ -403,6 +421,23 @@ function ApprovalSummary(props) {
     setShowListing(true)
 
   }, 500)
+
+  const displayCompareCostingFgWise = (CostingApprovalProcessSummaryId) => {
+    setFgWise(true)
+    dispatch(getSingleCostingDetails(CostingApprovalProcessSummaryId, res => {
+      const Data = res.data.Data
+      const newObj = formViewData(Data)
+      dispatch(setCostingViewData(newObj))
+      setTimeout(() => {
+        setCostingSummary(true)
+      }, 500);
+    }))
+  }
+
+  // WHEN FGWISE API IS PENDING THEN THIS CODE WILL MOUNT FOR DISABLED FGWISE ACCORDION
+  const fgWiseAccDisable = (data) => {
+    setAccDisable(data)
+  }
 
   return (
 
@@ -634,12 +669,11 @@ function ApprovalSummary(props) {
               </Col>
             </Row>
             {/* THIS SHOULD BE COMMENTED IN MINDA */}
-            {/* 
             <Row className="mb-3">
               <Col md="6"> <div className="left-border">{'FG wise Impact:'}</div></Col>
               <Col md="6">
                 <div className={'right-details'}>
-                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
+                  <button className="btn btn-small-primary-circle ml-1 float-right" type="button" disabled={accDisable} onClick={() => { setFgWiseAcc(!fgWiseAcc) }}>
                     {fgWiseAcc ? (
                       <i className="fa fa-minus"></i>
                     ) : (
@@ -649,8 +683,8 @@ function ApprovalSummary(props) {
                 </div>
               </Col>
             </Row>
-           
-           {fgWiseAcc && <Row className="mb-3">
+
+            {fgWiseAcc && <Row className="mb-3">
               <Col md="12">
                 <Fgwiseimactdata
                   headerName={headerName}
@@ -658,9 +692,15 @@ function ApprovalSummary(props) {
                   childField={childField}
                   impactType={'FgWise'}
                   approvalSummaryTrue={true}
+                  costingId={approvalData.CostingId}
+                  DisplayCompareCostingFgWise={displayCompareCostingFgWise}
+                  costingIdArray={costingIdArray}
+                  isVerifyImpactDrawer={false}
+                  fgWiseAccDisable={fgWiseAccDisable}
+                  tooltipEffectiveDate={partDetail.EffectiveDate ? DayTime(partDetail.EffectiveDate).format('DD/MM/YYYY') : '-'}
                 />
               </Col>
-            </Row> */}
+            </Row>}
             {/* HIDE FOR @MIL START*/}
             {/* {approvalDetails.CostingTypeId === VBCTypeId && <>
               <Row className="mb-3">
@@ -706,7 +746,7 @@ function ApprovalSummary(props) {
             <Row className="mb-4">
               <Col md="12" className="costing-summary-row">
                 {/* SEND isApproval FALSE WHEN OPENING FROM FGWISE */}
-                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={approvalData.LastCostingId !== EMPTY_GUID ? true : false} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} />}
+                {costingSummary && <CostingSummaryTable VendorId={approvalData.VendorId} viewMode={true} costingID={approvalDetails.CostingId} approvalMode={true} isApproval={(approvalData.LastCostingId === EMPTY_GUID || fgWise) ? false : true} simulationMode={false} costingIdExist={true} uniqueShouldCostingId={uniqueShouldCostingId} isRfqCosting={isRFQ} costingIdList={costingIdList} notSelectedCostingId={notSelectedCostingId} />}
               </Col>
             </Row>
             {/* Costing Summary page here */}

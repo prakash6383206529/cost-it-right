@@ -13,5 +13,94 @@
         "editCosting": "Edit Costing",
         "deleteCosting": "Delete Costing",
         "discard": "If you want to remove this plant and vendor from list you can remove it from here"
+    },
+    "costingTabs": {
+        "effectiveDate": "Choose the effective date before the create costing",
+        "RMC_tabs": "You can add your all RMC Cost in below tab.",
+        "Surface_Treatment_tabs": "You can add your Surface Treatment Cost in below tab.",
+        "Overheads_Profits_tabs": "You can add your Overhead & Profit Cost in below tab.",
+        "Packaging_Freight_tabs": "You can add your Packaging & Freight Cost in below tab.",
+        "Tool_tabs": "You can add your Tool Cost in below tab.",
+        "Discount_Other_tabs": "You can add your Discount & Other Cost in below tab."
+    },
+    "Hints": {
+        "partHint": "Click on the arrow for creating and view RMC data",
+        "overheadHint": "Click on the arrow for adding and view Overhead & Profit data",
+        "surfaceTreamentButton": "Click on the button, for adding Surface Treatment"
+    },
+    "RMCtabs": {
+        "AddRM": "Here you can add your Raw Materials",
+        "AddBOP": "Here you can add your BOPs",
+        "AddProcess": "Here you can add your Processes",
+        "AddOperation": "Here you can add your Operations",
+        "AddOtherOperation": "Here you can add your Other Operation"
+    },
+    "addSTCost": {
+        "addSt": "Add Surface select from drawer grid"
+    },
+    "addSTCost": {
+        "addSt": "Add Surface select from drawer grid"
+    },
+    "OverheadProfitTab": {
+        "checkBox1": "if you want to Include Surface Treatment Cost in CC for Overhead and Profit,click on the checkbox",
+        "checkBox2": "if you want to Include Surface Treatment Cost in CC for Rejection,click on the checkbox",
+        "checkBox3": "if you want to Include Tool cost in CC for Overhead and Profit,click on the checkbox",
+        "checkBox4": "if you want to Include Overhead & Profit in ICC,click on the checkbox",
+        "modelType": "Select the model type, basis of the madoel type you will see the overhead and profit data below table",
+        "RejectionApplicability": "Select the applicability",
+        "RejectionPercentage": "Enter the Rejection Percentage",
+        "rejectionRemark": "Add specific remarks",
+        "iccCost": "If you want to add icc cost, please switch the toggle you will see the input fields",
+        "paymentTermCost": "If you want to add Payment Term cost, please switch the toggle you will see the input fields",
+        "refreshButton": "After filled the all data, please refresh for update cost",
+        "overheadCost": "You can see the total cost here",
+        "saveOverheadCost": "After filled data and verify data, don't forget to save data"
+    },
+    "PackagingFreightTab": {
+        "AddPackaging": "Add Packaging cost from here ",
+        "AddFreight": "Add Freight cost from here"
+    },
+    "ToolTab": {
+        "switch": "You can swtich the process from here",
+        "MaintananceCostApplicability": "You can choose applicability",
+        "toolMaintainanceApplicability": "You can choose applicability",
+        "maintanencePercentage": "Enter the percentage here",
+        "ToolCost": "Enter the tool cost"
+    },
+    "DiscountTab": {
+        "discountRemark": "ERMC_tabsnter the Descount descriptions or remark",
+        "discountApplicability": "Choose the discount applicability",
+        "discountTypePercentage": "If you choose applicability other than 'Fixed',t his field will be enabled; otherwise, it will remain disabled.",
+        "discountTypeFixed": "If you choose applicability'Fixed', this field will be enabled; otherwise, it will remain disabled.",
+        "otherCost": "You can add other costs from here; clicking on it will open a drawer.",
+        "conditionCost": "You can add condition cost from here; clicking on it will open a drawer.",
+        "refreshData": "After the added other cost and condition cost from drawers, please refresh to see the updated total cost.",
+        "changeCurrency": "Clicking on the checkbox, you will see the two field one is currency change dropdown and other one is converted cost.",
+        "remark": "Add Remarks here.",
+        "attachment": "Add attachments here",
+        "saveData": "please save the data before leave the section",
+        "nextData": "from here, you will go to summary drawer and data will save"
+    },
+    "RawMaterialCost": {
+        "calculator": "Add finish weight and gross weight using this calculator",
+        "grossWeight": "Add gross weight here.",
+        "finishWeight": "Add finish weight here.",
+        "delete": "You can delete the RM from here",
+        "remark": "You can add remarks or note here"
+    },
+    "BopCost": {
+        "edit": "You can edit the BOP from here",
+        "delete": "You can delete the BOP from here",
+        "bopHanlding": "You can add your BOP handling charge from here"
+    },
+    "processCost": {
+        "calculator": "You can fill data from calculator for process cost",
+        "delete": "You can delete the process from here",
+        "remark": "You can add remarks or notes from here.S"
+    },
+    "operationCost": {
+        "edit": "You can edit the operation from here",
+        "delete": "You can delete the operation from here",
+        "remark": "You can add remarks or notes from here."
     }
 }

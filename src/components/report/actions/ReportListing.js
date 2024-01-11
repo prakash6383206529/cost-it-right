@@ -13,7 +13,7 @@ import {
     GET_PRODUCT_PART_DATA_LIST,
     GET_STAGE_OF_PART_DETAILS
 } from '../../../config/constants';
-import { apiErrors } from '../../../helper';
+import { apiErrors, loggedInUserId, userDetails } from '../../../helper';
 
 // const config() = config
 
@@ -546,4 +546,32 @@ export function getSupplierContributionDetails(productId, callback) {
             callback(error)
         })
     }
+}
+
+/**
+ * @method getRMImportDataList
+ * @description Used to get RM Import Datalist
+ */
+export function getSimulationInsightReport(skip, take, isPagination, obj, callback) {
+
+    return (dispatch) => {
+
+        if (isPagination === true) {
+
+            const queryParams = `isDashboard=false&logged_in_user_id=${loggedInUserId()}&logged_in_user_level_id=${userDetails().LoggedInLevelId}&applyPagination=${isPagination}&skip=${skip}&take=${take}`
+            const queryParamsSecond = `tokenNumber=${obj.ApprovalTokenNumber ?? obj.ApprovalTokenNumber}&createdDate=${obj.createdDate ?? obj.createdDate}&simulatedBy=${obj.SimulatedByName ?? obj.SimulatedByName}&costingHead=${obj.CostingHead ?? obj.CostingHead}&technologyName=${obj.TechnologyName ?? obj.TechnologyName}&masters=${obj.SimulationTechnologyHead ?? obj.SimulationTechnologyHead}&departmentName=${obj.DepartmentName ?? obj.DepartmentName}&depaetmentCode=${obj.DepartmentCode ?? obj.DepartmentCode}&initiatedBy=${obj.SenderUserName ?? obj.SenderUserName}&simulationStatus=${obj.SimulationStatus ?? obj.SimulationStatus}&effectiveDate=${obj.EffectiveDate ?? obj.EffectiveDate}&requestedOn=${obj.SentDate ?? obj.SentDate}`
+            const request = axios.get(`${API.getSimualtionInsightReport}?${queryParams}&${queryParamsSecond}`, config());
+            request.then((response) => {
+                if (response.data.Result || response.status === 204) {
+                    callback(response);
+                }
+            }).catch((error) => {
+                dispatch({ type: API_FAILURE, });
+                callback(error);
+            });
+        } else {
+            callback([]);
+        }
+    };
+
 }

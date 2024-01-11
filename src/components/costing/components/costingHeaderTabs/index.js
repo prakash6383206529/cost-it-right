@@ -29,14 +29,17 @@ import { IdForMultiTechnology } from '../../../../config/masterData';
 import WarningMessage from '../../../common/WarningMessage';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { LOGISTICS } from '../../../../config/masterData';
+import TourWrapper from '../../../common/Tour/TourWrapper';
+import { Steps } from '../TourMessages';
+import { useTranslation } from 'react-i18next';
 
 function CostingHeaderTabs(props) {
   const dispatch = useDispatch()
-
+  const { t } = useTranslation("Costing");
   const { ComponentItemData, ComponentItemOverheadData, ComponentItemPackageFreightData, ComponentItemToolData,
     ComponentItemDiscountData, IsIncludedSurfaceInOverheadProfit, costingData, CostingEffectiveDate,
     IsCostingDateDisabled, CostingDataList, RMCCTabData, getAssemBOPCharge, SurfaceTabData, OverheadProfitTabData, PackageAndFreightTabData, ToolTabData, DiscountCostData, checkIsDataChange, checkIsOverheadProfitChange, checkIsFreightPackageChange, checkIsToolTabChange, messageForAssembly, checkIsDiscountChange, IsIncludedSurfaceInRejection, IsIncludedToolCost } = useSelector(state => state.costing)
-  const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount } = useSelector(state => state.costing)
+  const { ErrorObjRMCC, ErrorObjOverheadProfit, ErrorObjTools, ErrorObjDiscount, costingOpenCloseStatus } = useSelector(state => state.costing)
 
   const [activeTab, setActiveTab] = useState('1');
   const [IsOpenViewHirarchy, setIsOpenViewHirarchy] = useState(false);
@@ -46,7 +49,11 @@ function CostingHeaderTabs(props) {
     tabName: '',
     messageShow: false
   })
-
+  const [tabsTour, setTabsTour] = useState({
+    steps: [],
+    hints: [],
+    tourStarted: false
+  })
   const costData = useContext(costingInfoContext);
   const CostingViewMode = useContext(ViewCostingContext);
   const netPOPrice = useContext(NetPOPriceContext);
@@ -284,6 +291,7 @@ function CostingHeaderTabs(props) {
     if (CheckIsCostingDateSelected(CostingEffectiveDate)) return false;
     let tempErrorObjRMCC = { ...ErrorObjRMCC }
     delete tempErrorObjRMCC?.bopGridFields
+    // tourStartRef()
     if (errorCheck(ErrorObjRMCC) || errorCheckObject(tempErrorObjRMCC) || errorCheckObject(ErrorObjOverheadProfit) || errorCheckObject(ErrorObjTools) || errorCheckObject(ErrorObjDiscount)) return false;
 
     if (activeTab !== tab) {
@@ -362,9 +370,104 @@ function CostingHeaderTabs(props) {
   * @method closeVisualDrawer
   * @description CLOSE VISUAL AD DRAWER
   */
+
   const closeVisualDrawer = () => {
     setIsOpenViewHirarchy(false)
   }
+  const tourStart = () => {
+    setTabsTour(prevState => ({
+      ...prevState,
+      tourStarted: true
+    }))
+    tourStartRef()
+  }
+  const tourStartRef = () => {
+    switch (Number(activeTab)) {
+      case 1:
+        if (costingOpenCloseStatus.RMC) {
+
+          setTabsTour(prevState => ({
+            ...prevState,
+            steps: Steps(t).TAB_RMC,
+            hints: []
+          }))
+        } else {
+          const tempStep = [];
+          if ((CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid()))) {
+            for (let i = 1; i < Steps(t).COSTING_TABS.length; i++) {
+              tempStep.push(Steps(t).COSTING_TABS[i])
+            }
+            setTabsTour(prevState => ({
+              ...prevState,
+              steps: tempStep,
+              hints: Steps(t).PART_HINT
+            }))
+          } else {
+            setTabsTour(prevState => ({
+              ...prevState,
+              steps: Steps(t).COSTING_TABS,
+              hints: Steps(t).PART_HINT
+            }))
+          }
+        }
+        break;
+      case 2:
+        setTabsTour(prevState => ({
+          ...prevState,
+          steps: Steps(t).TAB_ST,
+          hints: []
+        }))
+        break;
+      case 3:
+        if (costingOpenCloseStatus.overheadProfit) {
+          setTabsTour(prevState => ({
+            ...prevState,
+            steps: Steps(t).TAB_OVERHEAD_PROFIT,
+            hints: []
+          }))
+        } else {
+          let tempStep = Steps(t).TAB_OVERHEAD_PROFIT.filter((item, ind) => ind < 4)
+          setTabsTour(prevState => ({
+            ...prevState,
+            steps: tempStep,
+            hints: Steps(t).OVERHEAD_HINT
+          }))
+        }
+        break;
+      case 4:
+        setTabsTour(prevState => ({
+          ...prevState,
+          steps: Steps(t).TAB_PACKAGE_FREIGHT,
+          hints: []
+        }))
+        break;
+      case 5:
+        setTabsTour(prevState => ({
+          ...prevState,
+          steps: Steps(t).TAB_TOOL,
+          hints: []
+        }))
+        break;
+      case 6:
+        setTabsTour(prevState => ({
+          ...prevState,
+          steps: Steps(t).TAB_DISCOUNT_OTHERS,
+          hints: []
+        }))
+        break;
+
+      default:
+        break;
+    }
+
+  }
+
+  const [countKey, setCountKey] = useState(0);
+
+  useEffect(() => {
+    setCountKey(countKey + 1)
+    tourStartRef()
+  }, [activeTab])
 
   const warningMessage = <span className='part-flow'>Child Parts (<span title={messageForAssembly}>{messageForAssembly}</span>) costing is under approval flow</span>
   return (
@@ -375,9 +478,10 @@ function CostingHeaderTabs(props) {
           <Col md="auto">
             <div className="form-group mb-0">
               <label>Costing Effective Date<span className="asterisk-required">*</span></label>
-              <div className="inputbox date-section">
+              <div className="inputbox date-section d-flex align-items-center">
                 <DatePicker
                   name="EffectiveDate"
+                  id="costing_effective_date"
                   //selected={effectiveDate ? new Date(effectiveDate) : ''}
                   selected={DayTime(effectiveDate).isValid() ? new Date(effectiveDate) : ''}
                   onChange={handleEffectiveDateChange}
@@ -395,6 +499,12 @@ function CostingHeaderTabs(props) {
                   onChangeRaw={(e) => e.preventDefault()}
                   disabled={(CostingViewMode || IsCostingDateDisabled || (CostingEditMode & costData?.EffectiveDate !== null && costData?.EffectiveDate !== undefined && DayTime(new Date(costData?.EffectiveDate)).isValid())) ? true : false}
                 />
+                <TourWrapper
+                  buttonSpecificProp={{ id: "Costing_Tabs", onClick: tourStart }}
+                  stepsSpecificProp={{
+                    steps: tabsTour.steps,
+                    hints: tabsTour.hints
+                  }} />
               </div>
             </div>
           </Col>
@@ -422,32 +532,32 @@ function CostingHeaderTabs(props) {
         <div className='costing-tabs-container'>
           <Nav tabs className="subtabs cr-subtabs-head">
             {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
+              <NavLink id='RMC_tabs' className={classnames({ active: activeTab === '1' })} onClick={() => { toggle('1'); }}>
                 {(IdForMultiTechnology.includes(String(costingData?.TechnologyId)) || costData.CostingTypeId === WACTypeId) ? 'Part Cost' : 'RM + CC'}
               </NavLink>
             </NavItem>}
             {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
+              <NavLink id='Surface_Treatment_tabs' className={classnames({ active: activeTab === '2' })} onClick={() => { toggle('2'); }}>
                 Surface Treatment
               </NavLink>
             </NavItem>}
             {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
+              <NavLink id='Overheads_Profits_tabs' className={classnames({ active: activeTab === '3' })} onClick={() => { toggle('3'); }}>
                 Overheads & Profits
               </NavLink>
             </NavItem>}
             <NavItem>
-              <NavLink className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
+              <NavLink id='Packaging_Freight_tabs' className={classnames({ active: activeTab === '4' })} onClick={() => { toggle('4'); }}>
                 {costingData?.TechnologyId !== LOGISTICS && 'Packaging &'} Freight
               </NavLink>
             </NavItem>
             {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
+              <NavLink id='Tool_tabs' className={classnames({ active: activeTab === '5' })} onClick={() => { toggle('5'); }}>
                 Tool Cost
               </NavLink>
             </NavItem>}
             {costingData.TechnologyId !== LOGISTICS && <NavItem>
-              <NavLink className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
+              <NavLink id='Discount_Other_tabs' className={classnames({ active: activeTab === '6' })} onClick={() => { toggle('6'); }}>
                 Discount & Other Cost
               </NavLink>
             </NavItem>}

@@ -7,7 +7,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import AddPlantDrawer from './AddPlantDrawer';
 import NoContentFound from '../../common/NoContentFound';
-import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR, VBC, BOUGHTOUTPARTSPACING, COMPONENT_PART, GUIDE_BUTTON_SHOW } from '../../../config/constants';
+import { CBCTypeId, CBC_COSTING, EMPTY_DATA, NCCTypeId, NCC_COSTING, REJECTED_BY_SYSTEM, VBCTypeId, VBC_COSTING, ZBCTypeId, ZBC_COSTING, NCC, searchCount, WACTypeId, ASSEMBLYNAME, PRODUCT_ID, ERROR, VBC, BOUGHTOUTPARTSPACING, COMPONENT_PART, GUIDE_BUTTON_SHOW, WAC_COSTING } from '../../../config/constants';
 import AddVendorDrawer from './AddVendorDrawer';
 import Toaster from '../../common/Toaster';
 import { checkForDecimalAndNull, checkForNull, checkPermission, checkVendorPlantConfigurable, getConfigurationKey, getTechnologyPermission, loggedInUserId, userDetails, number, decimalNumberLimit6, percentageLimitValidation } from '../../../helper';
@@ -113,8 +113,8 @@ function CostingDetails(props) {
   const [CopyAccessibility, setCopyAccessibility] = useState(true)
   const [SOBAccessibility, setSOBAccessibility] = useState(true)
   const costingMode = useSelector(state => state.costing.costingMode);
-  const [step, setStep] = useState([])
-  const [tourType, setTourType] = useState('')
+  const [addVendorsTourStep, setAddVendorsTourStep] = useState([])
+  const [createCostingTourSteps, setCreateCostingTourSteps] = useState([])
 
   //FOR VIEW MODE COSTING
   const [IsCostingViewMode, setIsCostingViewMode] = useState(props?.isNFR ? props?.isViewModeCosting : false)
@@ -216,7 +216,8 @@ function CostingDetails(props) {
       const VBCAccessData = Data && Data.Pages.find(el => el.PageName === VBC_COSTING)
       const NCCAccessData = Data && Data.Pages.find(el => el.PageName === NCC_COSTING)
       const CBCAccessData = Data && Data.Pages.find(el => el.PageName === CBC_COSTING)
-      setShowCostingSection({ ZBC: ZBCAccessData ? ZBCAccessData?.IsChecked : false, VBC: VBCAccessData ? VBCAccessData?.IsChecked : false, NCC: NCCAccessData ? NCCAccessData?.IsChecked : false, CBC: CBCAccessData ? CBCAccessData?.IsChecked : false })
+      const WACAccessData = Data && Data.Pages.find(el => el.PageName === WAC_COSTING)
+      setShowCostingSection({ ZBC: ZBCAccessData ? ZBCAccessData?.IsChecked : false, VBC: VBCAccessData ? VBCAccessData?.IsChecked : false, NCC: NCCAccessData ? NCCAccessData?.IsChecked : false, CBC: CBCAccessData ? CBCAccessData?.IsChecked : false, WAC: WACAccessData ? WACAccessData?.IsChecked : false })
       if (ZBCAccessData && ZBCAccessData.IsChecked) {
         const permmisionData = ZBCAccessData?.Actions && checkPermission(ZBCAccessData.Actions)
         setActionPermission(prevState => ({ ...prevState, addZBC: permmisionData.Add, copyZBC: permmisionData.Copy, deleteZBC: permmisionData.Delete, viewZBC: permmisionData.View, editZBC: permmisionData.Edit }))
@@ -1994,6 +1995,23 @@ function CostingDetails(props) {
       }}
     />
   }
+  const vendorTourStart = () => {
+    const steps = Steps(t).COSTING_STEP_TWO;
+    const tempStep = [];
+
+    const pushStep = (condition, stepIndex) => {
+      if (condition && !breakupBOP) {
+        tempStep.push(steps[stepIndex]);
+      }
+    };
+    pushStep(showCostingSection.ZBC, 0);
+    pushStep(showCostingSection.NCC, 1);
+    pushStep(showCostingSection.VBC, 2);
+    pushStep(showCostingSection.CBC, 3);
+    pushStep(showCostingSection.WAC && partInfo?.PartType === ASSEMBLYNAME, 4);
+
+    setAddVendorsTourStep(tempStep);
+  }
   const tourStart = (costingType, costingData) => {
     if (costingData.length !== 0) {
       if (costingData[0].CostingOptions.length === 0) {
@@ -2003,7 +2021,7 @@ function CostingDetails(props) {
         }
         const stepArr = Steps(t, costingType).VENDOR_COSTING_GRID
           .filter(el => elementsToCheck.some(keyword => el.element.includes(keyword)));
-        setStep(stepArr)
+        setCreateCostingTourSteps(stepArr)
       } else {
 
         const status = costingData[0].Status;
@@ -2023,7 +2041,7 @@ function CostingDetails(props) {
         }
         const stepArr = Steps(t, costingType).VENDOR_COSTING_GRID
           .filter(el => elementsToCheck.some(keyword => el.element.includes(keyword)));
-        setStep(stepArr);
+        setCreateCostingTourSteps(stepArr);
       }
     }
   }
@@ -2067,9 +2085,9 @@ function CostingDetails(props) {
                     <Row>
                       <Col md="12">
                         <div className="left-border mt-3 ">{"Part Details:"}{IsOpenVendorSOBDetails ? <TourWrapper
-                          buttonSpecificProp={{ id: "Costing_Details_form" }}
+                          buttonSpecificProp={{ id: "Costing_Details_form", onClick: () => vendorTourStart() }}
                           stepsSpecificProp={{
-                            steps: Steps(t).COSTING_STEP_TWO
+                            steps: addVendorsTourStep
                           }} /> : <TourWrapper
                           buttonSpecificProp={{ id: "Costing_Details_form" }}
                           stepsSpecificProp={{
@@ -2291,7 +2309,7 @@ function CostingDetails(props) {
                                 <h6 className="dark-blue-text sec-heading">ZBC:{zbcPlantGrid && zbcPlantGrid.length !== 0 && <TourWrapper
                                   buttonSpecificProp={{ id: "zbc_Costing", onClick: () => tourStart("zbc", zbcPlantGrid) }}
                                   stepsSpecificProp={{
-                                    steps: step
+                                    steps: createCostingTourSteps
                                   }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
@@ -2428,7 +2446,7 @@ function CostingDetails(props) {
                                 <h6 className="dark-blue-text sec-heading">NCC:{nccGrid && nccGrid.length !== 0 && <TourWrapper
                                   buttonSpecificProp={{ id: "ncc_Costing", onClick: () => tourStart("ncc", nccGrid) }}
                                   stepsSpecificProp={{
-                                    steps: step
+                                    steps: createCostingTourSteps
                                   }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
@@ -2535,7 +2553,7 @@ function CostingDetails(props) {
                                 <h6 className="dark-blue-text sec-heading">VBC: {vbcVendorGrid && vbcVendorGrid.length !== 0 && <TourWrapper
                                   buttonSpecificProp={{ id: "Vendor_Costing", onClick: () => tourStart("vbc", vbcVendorGrid) }}
                                   stepsSpecificProp={{
-                                    steps: step
+                                    steps: createCostingTourSteps
                                   }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
@@ -2670,7 +2688,7 @@ function CostingDetails(props) {
                                 <h6 className="dark-blue-text sec-heading">CBC: {cbcGrid && cbcGrid.length !== 0 && <TourWrapper
                                   buttonSpecificProp={{ id: "cbc_Costing", onClick: () => tourStart("cbc", cbcGrid) }}
                                   stepsSpecificProp={{
-                                    steps: step
+                                    steps: createCostingTourSteps
                                   }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>
@@ -2769,14 +2787,14 @@ function CostingDetails(props) {
                         )}
 
 
-                        {IsOpenVendorSOBDetails && showCostingSection.ZBC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && (
+                        {IsOpenVendorSOBDetails && showCostingSection.WAC && partInfo?.PartType === ASSEMBLYNAME && !breakupBOP && (
                           <>
                             <Row className="align-items-center">
                               <Col md="6" className={"mb-2 mt-3"}>
                                 <h6 className="dark-blue-text sec-heading">WAC:{wacPlantGrid && wacPlantGrid.length !== 0 && <TourWrapper
                                   buttonSpecificProp={{ id: "wac_Costing", onClick: () => tourStart("wac", wacPlantGrid) }}
                                   stepsSpecificProp={{
-                                    steps: step
+                                    steps: createCostingTourSteps
                                   }} />}</h6>
                               </Col>
                               <Col md="6" className={"mb-2 mt-3"}>

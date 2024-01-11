@@ -474,6 +474,7 @@ export const API = {
   getCostingLabourDetails: `${BASE_URL}/costing/get-costing-labour-details`,
   getLabourDetailsByFilter: `${BASE_URL}/masters-labour/get-all-by-filter`,
   checkPartNoExistInBop: `${BASE_URL}/masters-bought-out-part/check-part-number-exist-in-bought-out-parts-against-vendor`,
+  getExternalIntegrationFgWiseImpactData: `${BASE_URL}/ExternalIntegration/get-fg-wise-impact-data`,
 
   getRMCCTabData: `${BASE_URL}/costing/get-costing-detail-for-rm-bop-cc`,
   getRMDrawerDataList: `${BASE_URL}/costing/get-costing-raw-materials-detail`,
@@ -980,6 +981,7 @@ export const API = {
   simulationSendToApprover: `${BASE_URL}/app-simulation-approval-system/simulation-send-to-approver-by-sender`,
   simulationComparisionData: `${BASE_URL}/app-simulation-approval-system/get-simulation-costing-comparison`,
   getallSimualtionStatus: `${BASE_URL}/app-simulation-approval-system/get-all-approval-status`,
+  getSimualtionInsightReport: `${BASE_URL}/app-simulation-approval-system/get-simulation-insights`,
 
   //REPORT
   getReportListing: `${BASE_URL}/dashboard/get-costings-for-dashboard`,
@@ -1435,6 +1437,9 @@ export const SAVE_ASSEMBLY_NUMBER_STOP_API_CALL = 'SAVE_ASSEMBLY_NUMBER_STOP_API
 export const SET_BREAKUP_BOP = 'SET_BREAKUP_BOP'
 export const SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API = 'SET_IS_BREAKUP_BOUGHTOUTPART_COSTING_FROM_API'
 export const SET_COSTING_MODE = 'SET_COSTING_MODE'
+export const COSTING_ACC_OPEN_CLOSE_STATUS = 'COSTING_ACC_OPEN_CLOSE_STATUS'
+
+export const GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA = 'GET_EXTERNAL_INTEGRATION_FG_WISE_IMPACT_DATA'
 
 //WEIGHT CALCULATION COSTING
 
@@ -1860,6 +1865,7 @@ export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
 export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
+export const INSIGHT_SIMULATION_REPORT = "Simulation Insights Report"
 
 //export const SIMULATION_HISTORY = 'Simulation History'
 
@@ -2698,7 +2704,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.289";
+export const VERSION = "V2.1.292.3";
 
 
 

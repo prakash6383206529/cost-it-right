@@ -244,17 +244,16 @@ export function getReasonSelectList(callback) {
 export function sendForApprovalBySender(data, callback) {
   return (dispatch) => {
     const request = axios.post(API.sendForApprovalBySender, data, config())
-    request
-      .then((response) => {
-        if (response.data.Result) {
-          callback(response)
-        } else {
-          dispatch({ type: API_FAILURE })
-          if (response.data.Message) {
-            Toaster.error(response.data.Message)
-          }
+    request.then((response) => {
+      if (response.data.Result) {
+        callback(response)
+      } else {
+        dispatch({ type: API_FAILURE })
+        if (response.data.Message) {
+          Toaster.error(response.data.Message)
         }
-      })
+      }
+    })
       .catch((error) => {
         dispatch({ type: API_FAILURE })
         apiErrors(error)

@@ -9,6 +9,7 @@ import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isPackageAndFreightDataChange } from '../../../actions/Costing';
 import { checkForDecimalAndNull, CheckIsCostingDateSelected } from '../../../../../helper';
 import { LOGISTICS } from '../../../../../config/masterData';
+import Button from '../../../../layout/Button';
 
 function FreightCost(props) {
 
@@ -95,11 +96,14 @@ function FreightCost(props) {
               </div>
             </Col>
             <Col col={'2'}>
-              {!CostingViewMode && <button
-                type="button"
-                className={'user-btn'}
-                onClick={DrawerToggle}>
-                <div className={'plus'}></div>FREIGHT</button>}
+              {!CostingViewMode &&
+
+                <Button
+                  id="Costing_addFreight"
+                  onClick={DrawerToggle}
+                  icon={"plus"}
+                  buttonName={"FREIGHT"}
+                />}
             </Col>
           </Row>
           <Row>

@@ -96,6 +96,7 @@ function PartSurfaceTreatment(props) {
 
               <button
                 type="button"
+                id="costing_surface_treatment_btn"
                 className={'user-btn surface-treatment-btn'}
                 //onClick={DrawerToggle}
                 onClick={() => toggle(item.BOMLevel, item.PartNumber)}
@@ -104,6 +105,7 @@ function PartSurfaceTreatment(props) {
               :
               <button
                 type="button"
+                id="costing_surface_treatment_btn"
                 className={'user-btn surface-treatment-btn'}
                 //onClick={DrawerToggle}
                 onClick={() => toggle(item.BOMLevel, item.PartNumber)}

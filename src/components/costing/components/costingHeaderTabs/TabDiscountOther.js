@@ -400,7 +400,6 @@ function TabDiscountOther(props) {
             let attachmentCapacity = filterAttachments(Data.Attachements, CAPACITY)
             let attachmentTimeline = filterAttachments(Data.Attachements, TIMELINE)
             setIsRfqAttachement(Data.Attachements.length !== attachmentList.length)
-            setDiscountObj({ ...Data, ...Data?.CostingPartDetails, totalConditionCost: costDetail?.NetConditionCost, totalNpvCost: costDetail?.NetNpvCost, AnyOtherCost: costDetail.NetOtherCost !== null ? checkForNull(costDetail.NetOtherCost) : '', })
 
             setIsCurrencyChange(Data.IsChangeCurrency ? true : false)
             setCurrencyExchangeRate(Data.CurrencyExchangeRate)
@@ -410,18 +409,19 @@ function TabDiscountOther(props) {
             setTimelineFiles(attachmentTimeline ? attachmentTimeline : [])
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             setCurrency(Data.Currency !== null ? { label: Data.Currency, value: Data.CurrencyId } : [])
-            setValue('HundiOrDiscountPercentage', costDetail.DiscountCostDetails[0].Value !== null ? costDetail.DiscountCostDetails[0].Value : '')
             setValue('BasicRateINR', Data.BasicRate !== null ? checkForDecimalAndNull(Data.BasicRate, initialConfiguration?.NoOfDecimalForPrice) : '')
             setValue('NetPOPriceINR', Data.NetPOPrice !== null ? checkForDecimalAndNull(Data.NetPOPrice, initialConfiguration?.NoOfDecimalForPrice) : '')
-            setValue('HundiOrDiscountValue', costDetail.DiscountCostDetails[0].NetCost !== null ? checkForDecimalAndNull(costDetail.DiscountCostDetails[0].NetCost, initialConfiguration?.NoOfDecimalForPrice) : '')
-            setValue('AnyOtherCost', costDetail.NetOtherCost !== null ? checkForDecimalAndNull(costDetail.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice) : '')
             setValue('Currency', Data.Currency !== null ? { label: Data.Currency, value: Data.CurrencyId } : [])
             setValue('NetPOPriceOtherCurrency', Data.NetPOPriceInOtherCurrency !== null ? checkForDecimalAndNull(Data.NetPOPriceInOtherCurrency, initialConfiguration?.NoOfDecimalForPrice) : '')
-            setNetPoPriceCurrencyState(Data.NetPOPriceInOtherCurrency !== null ? Data.NetPOPriceInOtherCurrency : '')
             setValue('Remarks', Data.Remark !== null ? Data.Remark : '')
-            setValue('discountDescriptionRemark', Data !== undefined && Data?.CostingPartDetails?.DiscountCostDetails[0]?.Description)
-
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
+            setValue('AnyOtherCost', costDetail.NetOtherCost !== null ? checkForDecimalAndNull(costDetail.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice) : '')
+            setNetPoPriceCurrencyState(Data.NetPOPriceInOtherCurrency !== null ? Data.NetPOPriceInOtherCurrency : '')
+            setValue('discountDescriptionRemark', Data !== undefined && Data?.CostingPartDetails?.DiscountCostDetails[0]?.Description)
+            if (costDetail?.DiscountCostDetails?.length !== 0) {
+              setValue('HundiOrDiscountPercentage', costDetail?.DiscountCostDetails[0]?.Value !== null ? costDetail?.DiscountCostDetails[0]?.Value : '')
+              setValue('HundiOrDiscountValue', costDetail?.DiscountCostDetails[0]?.NetCost !== null ? checkForDecimalAndNull(costDetail?.DiscountCostDetails[0]?.NetCost, initialConfiguration?.NoOfDecimalForPrice) : '')
+            }
             let temp = []
             let otherTotalCost = 0
             Data?.CostingPartDetails?.OtherCostDetails && Data?.CostingPartDetails?.OtherCostDetails.map((item) => {
@@ -435,25 +435,24 @@ function TabDiscountOther(props) {
               obj.CRMHead = item?.CRMHead
               temp.push(obj)
             })
-
             setOtherCostArray(temp)
             dispatch(setOtherCostData({ gridData: temp, otherCostTotal: otherTotalCost }))
 
-            setDiscountCostApplicability({ label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
-            setValue('DiscountCostApplicability', { label: costDetail.DiscountCostDetails[0].ApplicabilityType, value: costDetail.DiscountCostDetails[0].ApplicabilityType })
-            setValue('crmHeadDiscount', { label: costDetail.DiscountCostDetails[0].CRMHead, value: 1 })
+            costDetail?.DiscountCostDetails && setDiscountCostApplicability({ label: costDetail?.DiscountCostDetails[0]?.ApplicabilityType, value: costDetail?.DiscountCostDetails[0]?.ApplicabilityType })
+            costDetail?.DiscountCostDetails && setValue('DiscountCostApplicability', { label: costDetail?.DiscountCostDetails[0]?.ApplicabilityType, value: costDetail?.DiscountCostDetails[0]?.ApplicabilityType })
+            costDetail?.DiscountCostDetails && setValue('crmHeadDiscount', { label: costDetail?.DiscountCostDetails[0]?.CRMHead, value: 1 })
 
             // BELOW CONDITION UPDATES VALUES IN EDIT OR GET MODE
             const discountValues = {
               BasicRateINR: Data.BasicRate !== null ? checkForNull(Data.BasicRate) : '',
               NetPOPriceINR: Data.NetPOPrice !== null ? checkForNull(Data.NetPOPrice) : '',
 
-              HundiOrDiscountValue: costDetail.DiscountCostDetails[0].NetCost !== null ? checkForNull(costDetail.DiscountCostDetails[0].NetCost) : '',
+              HundiOrDiscountValue: costDetail?.DiscountCostDetails && costDetail?.DiscountCostDetails[0]?.NetCost !== null ? checkForNull(costDetail?.DiscountCostDetails[0]?.NetCost) : '',
               AnyOtherCost: costDetail.NetOtherCost !== null ? checkForNull(costDetail.NetOtherCost) : '',
-              HundiOrDiscountPercentage: costDetail.DiscountCostDetails[0].Value !== null ? checkForNull(costDetail.DiscountCostDetails[0].Value) : '',
+              HundiOrDiscountPercentage: costDetail?.DiscountCostDetails && costDetail?.DiscountCostDetails[0]?.Value !== null ? checkForNull(costDetail?.DiscountCostDetails[0]?.Value) : '',
               //DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-              DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType,
+              DiscountApplicability: costDetail?.DiscountCostDetails ? costDetail?.DiscountCostDetails[0]?.ApplicabilityType : '',
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
@@ -461,15 +460,16 @@ function TabDiscountOther(props) {
 
             // setTimeout(() => {           // IF ANY ISSUE COME IN DISCOUNT TAB UNCOMMENT THE SETTIMEOUT ON FIRST PRIORITY AND TEST 
             let topHeaderData = {
-              DiscountsAndOtherCost: checkForNull(costDetail.DiscountCostDetails[0].NetCost),
+              ...Data, ...Data?.CostingPartDetails,
+              DiscountsAndOtherCost: costDetail?.DiscountCostDetails ? checkForNull(costDetail?.DiscountCostDetails[0]?.NetCost) : '',
               HundiOrDiscountPercentage: getValues('HundiOrDiscountPercentage'),
               AnyOtherCost: checkForNull(costDetail.NetOtherCost),
               // OtherCostType: OtherCostDetails.OtherCostType,
               // PercentageOtherCost: checkForNull(OtherCostDetails.PercentageOtherCost),
-              HundiOrDiscountValue: checkForNull(costDetail.DiscountCostDetails[0].NetCost !== null ? costDetail.DiscountCostDetails[0].NetCost : ''),
+              HundiOrDiscountValue: costDetail?.DiscountCostDetails && checkForNull(costDetail?.DiscountCostDetails[0]?.NetCost !== null ? costDetail?.DiscountCostDetails[0]?.NetCost : ''),
               //DiscountCostType: OtherCostDetails.DiscountCostType !== null ? OtherCostDetails.DiscountCostType : '',
               // OtherCostApplicability: OtherCostDetails.OtherCostApplicability,
-              DiscountApplicability: costDetail.DiscountCostDetails[0].ApplicabilityType,
+              DiscountApplicability: costDetail?.DiscountCostDetails ? costDetail?.DiscountCostDetails[0]?.ApplicabilityType : '',
               totalNpvCost: discountObj?.totalNpvCost ? discountObj?.totalNpvCost : costDetail?.NetNpvCost,
               totalConditionCost: discountObj?.totalConditionCost ? discountObj?.totalConditionCost : costDetail?.NetConditionCost,
             }
@@ -1525,8 +1525,8 @@ function TabDiscountOther(props) {
                       <span >Total Cost:</span>
                       <TooltipCustom width={"300px"} disabledIcon={true} id={'total-cost-tab-discount'} tooltipText={'Total Cost = Net RM BOP CC + SurfaceTreatment Cost + Overheads&Profit Cost + Packaging&Freight Cost + Tool Cost'} />
                       <p id={'total-cost-tab-discount'} className='disabled-input-data'>{`${totalCost && totalCost !== undefined ? checkForDecimalAndNull(totalCost, initialConfiguration.NoOfDecimalForPrice) : 0}`}</p>
-                      <button type="button" id="overhead-refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
-                      <TooltipCustom disabledIcon={true} id="overhead-refresh" tooltipText="Refresh to update Discount, Other cost and Cost" />
+                      <button type="button" id="total_refresh" className={'refresh-icon ml-2'} onClick={() => refreshAllData()}></button>
+                      <TooltipCustom disabledIcon={true} id="total_refresh" tooltipText="Refresh to update Discount, Other cost and Cost" />
                     </div>
                   </Col>
                 </Row>
@@ -1745,6 +1745,7 @@ function TabDiscountOther(props) {
                       <label
                         className={`custom-checkbox`}
                         onChange={onPressChangeCurrency}
+                        id="change_currency_input"
                       >
                         Change Currency
                         <input
@@ -1839,7 +1840,7 @@ function TabDiscountOther(props) {
                         <div className={`alert alert-danger mt-2 ${files.length === 4 ? '' : 'd-none'}`} role="alert">
                           Maximum file upload limit reached.
                         </div>
-                        <div className={`${files.length >= 4 ? 'd-none' : ''}`}>
+                        <div className={`${files.length >= 4 ? 'd-none' : ''}`} id="tabDiscount_attachments">
                           <Dropzone
                             ref={dropzone}
                             onChangeStatus={handleChangeStatus}
@@ -2222,18 +2223,21 @@ function TabDiscountOther(props) {
                   <Row className="no-gutters justify-content-between costing-disacount-other-cost-footer sticky-btn-footer">
                     <div className="col-sm-12 text-right bluefooter-butn mt-3">
 
-                      {!CostingViewMode && <button
-                        type="button"
-                        className="submit-button mr5 save-btn"
-                        onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
-                        disabled={isDisable}
-                      >
-                        <div className={"save-icon"}></div>
-                        {"Save"}
-                      </button>}
+                      {!CostingViewMode &&
+                        <button
+                          id="discountTab_save"
+                          type="button"
+                          className="submit-button mr5 save-btn"
+                          onClick={(data, e) => { handleSubmit(onSubmit(data, e, false)) }}
+                          disabled={isDisable}
+                        >
+                          <div className={"save-icon"}></div>
+                          {"Save"}
+                        </button>}
 
                       {!CostingViewMode && <button
                         type="button"
+                        id="discountTab_next"
                         className="submit-button save-btn"
                         onClick={(data, e) => { handleSubmit(onSubmit(data, e, true)) }}
                         disabled={isDisable}
@@ -2264,4 +2268,5 @@ function TabDiscountOther(props) {
   );
 };
 
-export default React.memo(TabDiscountOther); 
+export default React.memo(TabDiscountOther);
+// CIR-I6272

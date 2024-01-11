@@ -21,6 +21,10 @@ const TourButton = ({ onClick, showTour, buttonSpecificProp }) => {
 };
 
 const GuidedSteps = ({ showTour, onExit, steps, hints, initialHintEnable, onChange, onComplete, stepsSpecificProp }) => {
+    const [hintEnable, setHintsEnabled] = useState(!showTour)
+    useEffect(() => {
+        setHintsEnabled(!showTour)
+    }, [showTour])
     return (
         <>
             {showTour && <Steps
@@ -32,7 +36,7 @@ const GuidedSteps = ({ showTour, onExit, steps, hints, initialHintEnable, onChan
                 onComplete={onComplete ?? (() => { })}
                 onChange={onChange ?? (() => { })}
             />}
-            {/* <Hints enabled={initialHintEnable} hints={hints ? hints : []} onClose={() => setHintsEnabled(false)} options={{ tooltipClass: 'hint-tooltip' }} /> */}
+            {hintEnable && <Hints enabled={initialHintEnable} hints={hints ? hints : []} onClose={() => setHintsEnabled(false)} options={{ tooltipClass: 'hint-tooltip' }} />}
         </>
     );
 };
@@ -40,6 +44,7 @@ const GuidedSteps = ({ showTour, onExit, steps, hints, initialHintEnable, onChan
 const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp }) => {
     const tourStartData = useSelector(state => state.comman.tourStartData);
     const [showTour, setShowTour] = useState(false);
+    const [hintEnable, setHintEnable] = useState(false)
 
     const handleClick = () => {
         buttonSpecificProp.onClick && buttonSpecificProp.onClick();
@@ -53,6 +58,7 @@ const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp }) => {
             stepsSpecificProp.onExit()
         }
         setShowTour(false);
+        setHintEnable(true)
     }
 
     return (
@@ -67,7 +73,7 @@ const TourWrapper = ({ buttonSpecificProp, stepsSpecificProp }) => {
                 onExit={onExit}
                 steps={stepsSpecificProp.steps}
                 hints={stepsSpecificProp.hints}
-                initialHintEnable={stepsSpecificProp.initialHintEnable}
+                initialHintEnable={hintEnable}
                 onChange={stepsSpecificProp.onChange}
                 onComplete={stepsSpecificProp.onComplete}
                 stepsSpecificProp={stepsSpecificProp}

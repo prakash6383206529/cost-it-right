@@ -62,8 +62,6 @@ export function getBOPDataList(
   isImport,
   callback
 ) {
-  console.log("obj", obj);
-  console.log("data", data);
   return (dispatch) => {
     // dispatch({ type: API_REQUEST});
     if (isPagination === true) {
@@ -72,34 +70,20 @@ export function getBOPDataList(
         payload: undefined,
       });
     }
-    const queryParams = `bop_for=${data.bop_for}&NetCost=${
-      obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""
-    }&ListFor=${data.ListFor ? data.ListFor : ""}
+    const queryParams = `bop_for=${data.bop_for}&NetCost=${obj.NetLandedCost !== undefined ? obj.NetLandedCost : ""
+      }&ListFor=${data.ListFor ? data.ListFor : ""}
    
-        &StatusId=${data.StatusId ? data.StatusId : ""}&DepartmentCode=${
-      obj.DepartmentName !== undefined ? obj.DepartmentName : ""
-    }&CustomerName=${
-      obj.CustomerName !== undefined ? obj.CustomerName : ""
-    }&TechnologyName=${
-        obj.TechnologyName !== undefined ? obj.TechnologyName : ""
-      }&FromDate=${
-      obj.dateArray && obj.dateArray.length > 1 ? obj.dateArray[0] : ""
-    }&ToDate=${
-      obj.dateArray && obj.dateArray.length > 1 ? obj.dateArray[1] : ""
-    }&IsCustomerDataShow=${
-      reactLocalStorage.getObject("cbcCostingPermission") !== undefined
+        &StatusId=${data.StatusId ? data.StatusId : ""}&DepartmentCode=${obj.DepartmentName !== undefined ? obj.DepartmentName : ""
+      }&CustomerName=${obj.CustomerName !== undefined ? obj.CustomerName : ""
+      }&TechnologyName=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""
+      }&FromDate=${obj.dateArray && obj.dateArray.length > 1 ? obj.dateArray[0] : ""
+      }&ToDate=${obj.dateArray && obj.dateArray.length > 1 ? obj.dateArray[1] : ""
+      }&IsCustomerDataShow=${reactLocalStorage.getObject("cbcCostingPermission") !== undefined
         ? reactLocalStorage.getObject("cbcCostingPermission")
         : false
-    }&IsBOPAssociated=${data?.IsBOPAssociated}&IsBreakupBoughtOutPart=${
-      data?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : false
-    }`;
+      }&IsBOPAssociated=${data?.IsBOPAssociated}&IsBreakupBoughtOutPart=${data?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : false
+      }`;
     const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj);
-    console.log(
-      "queryParams",
-      queryParams,
-      "queryParamsSecond",
-      queryParamsSecond
-    );
     const request = axios.get(
       `${API.getBOPDataList}?${queryParams}&${queryParamsSecond}`,
       config()
