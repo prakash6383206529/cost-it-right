@@ -1,21 +1,13 @@
-import React, { Component, useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { reduxForm } from "redux-form";
 import { Row, Col } from "reactstrap";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
-import {
-  deleteProcess,
-  getProcessDataList,
-  getMachineSelectListByPlant,
-  getInitialMachineSelectList,
-} from "../actions/Process";
+import { deleteProcess, getProcessDataList } from "../actions/Process";
 import NoContentFound from "../../common/NoContentFound";
 import { MESSAGES } from "../../../config/message";
 import Toaster from "../../common/Toaster";
 import AddProcessDrawer from "./AddProcessDrawer";
-import { GridTotalFormate } from "../../common/TableGridFunctions";
 import LoaderCustom from "../../common/LoaderCustom";
-import DayTime from "../../common/DayTimeWrapper";
 import { ProcessMaster } from "../../../config/constants";
 import ReactExport from "react-export-excel";
 import { PROCESSLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
@@ -51,10 +43,10 @@ const ProcessListing = (props) => {
     dataCount: 0,
   });
   const permissions = useContext(ApplyPermission);
-  console.log(permissions);
+
   const { processList } = useSelector((state) => state.process);
-  console.log(processList);
-  console.log(props);
+
+
   useEffect(() => {
     setTimeout(() => {
       getDataList();
@@ -62,38 +54,17 @@ const ProcessListing = (props) => {
   }, []);
 
   const editItemDetails = (Id) => {
-    setState((prevState) => ({
-      ...prevState,
-      isOpenProcessDrawer: true,
-      isEditFlag: true,
-      Id: Id,
-    }));
+    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: true, isEditFlag: true, Id: Id, }));
   };
 
   const buttonFormatter = (props) => {
-    const cellValue = props?.valueFormatted
-      ? props.valueFormatted
-      : props?.value;
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     return (
       <>
-        {permissions.Edit && (
-          <button
-            title="Edit"
-            className="Edit mr-2"
-            type={"button"}
-            onClick={() => editItemDetails(cellValue, rowData)}
-          />
-        )}
-        {permissions.Delete && (
-          <button
-            title="Delete"
-            className="Delete"
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
-        )}
+        {permissions.Edit && (<button title="Edit" className="Edit mr-2" type={"button"} onClick={() => editItemDetails(cellValue, rowData)} />)}
+        {permissions.Delete && (<button title="Delete" className="Delete" type={"button"} onClick={() => deleteItem(cellValue)} />)}
       </>
     );
   };
@@ -103,67 +74,61 @@ const ProcessListing = (props) => {
   };
 
   const getDataList = (ProcessName = "", ProcessCode = "") => {
-    const filterData = {
-      ProcessName: ProcessName,
-      ProcessCode: ProcessCode,
-    };
+    const filterData = { ProcessName: ProcessName, ProcessCode: ProcessCode, };
     setState((prevState) => ({ ...prevState, isLoader: true }));
-    dispatch(
-      getProcessDataList(filterData, (res) => {
-        console.log(res);
-        setState((prevState) => ({ ...prevState, isLoader: false }));
-        if (res && res.status === 200) {
-          let Data = res.data.DataList;
-          setState((prevState) => ({ ...prevState, tableData: Data }));
-        } else if (res && res.response && res.response.status === 412) {
-          setState((prevState) => ({ ...prevState, tableData: [] }));
-        } else {
-          setState((prevState) => ({ ...prevState, tableData: [] }));
-        }
-      })
+    dispatch(getProcessDataList(filterData, (res) => {
+      setState((prevState) => ({ ...prevState, isLoader: false }));
+      if (res && res.status === 200) {
+        let Data = res.data.DataList;
+        setState((prevState) => ({ ...prevState, tableData: Data }));
+      } else if (res && res.response && res.response.status === 412) {
+        setState((prevState) => ({ ...prevState, tableData: [] }));
+      } else {
+        setState((prevState) => ({ ...prevState, tableData: [] }));
+      }
+    })
     );
   };
 
   const deleteItem = (Id) => {
-    setState((prevState)=> ({ ...prevState, showPopup: true, deletedId: Id }));
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
   };
 
   const confirmDelete = (ID) => {
     const loggedInUser = loggedInUserId();
-    dispatch(
-      deleteProcess(ID, loggedInUser, (res) => {
-        if (res.data.Result === true) {
-          Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
-          getDataList();
-          setState({ dataCount: 0 });
-        }
-      })
+    dispatch(deleteProcess(ID, loggedInUser, (res) => {
+      if (res.data.Result === true) {
+        Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
+        getDataList();
+        setState({ dataCount: 0 });
+      }
+    })
     );
-    setState((prevState) =>({...prevState,showPopup: false }))
+    setState((prevState) => ({ ...prevState, showPopup: false }))
   };
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   };
 
   const closePopUp = () => {
-    setState((prevState) =>({...prevState,showPopup: false }));
+    setState((prevState) => ({ ...prevState, showPopup: false }));
   };
 
   const processToggler = () => {
-    setState((prevState) =>({...prevState, isOpenProcessDrawer: true, isEditFlag: false, Id: "" }));
+    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: true, isEditFlag: false, Id: "" }));
   };
 
   const closeProcessDrawer = (e = "", formData, type) => {
-    setState((prevState) =>({...prevState, isOpenProcessDrawer: false }, () => {
+    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: false }, () => {
       if (type === "submit") getDataList();
-      setState((prevState) =>({...prevState, dataCount: 0 }));
+      setState((prevState) => ({ ...prevState, dataCount: 0 }));
     }));
   };
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       props.processList.length !== 0 &&
-        setState((prevState) =>({...prevState, noData: searchNocontentFilter(value, state.noData) }));
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }));
     }, 500);
   };
 
@@ -171,27 +136,14 @@ const ProcessListing = (props) => {
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
     temp = TempData;
-
     return (
       <ExcelSheet data={temp} name={`${ProcessMaster}`}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
+        {data && data.map((ele, index) => (<ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />))}
       </ExcelSheet>
     );
   };
   const onGridReady = (params) => {
-    setState((prevState) => ({
-      ...prevState,
-      gridApi: params.api,
-      gridColumnApi: params.columnApi,
-    }));
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
     params.api.paginationGoToPage(0);
   };
   const onPageSizeChanged = (newPageSize) => {
@@ -199,30 +151,20 @@ const ProcessListing = (props) => {
   };
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows();
-    setState((prevState) =>({...prevState,selectedRowData: selectedRows, dataCount: selectedRows.length }));
+    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }));
   };
   const onBtExport = () => {
     let tempArr = [];
     tempArr = state.gridApi && state.gridApi?.getSelectedRows();
-    tempArr =
-      tempArr && tempArr.length > 0
-        ? tempArr
-        : props.processList
-        ? props.processList
-        : [];
+    tempArr = tempArr && tempArr.length > 0 ? tempArr : props.processList ? props.processList : [];
     return returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr);
   };
 
   const onFilterTextBoxChanged = (e) => {
-    console.log(e.target.value);
+
     state.gridApi.setQuickFilter(e.target.value);
-    if (
-      e.target.value === "" ||
-      e.target.value === null ||
-      e.target.value === undefined
-    ) {
+    if (e.target.value === "" || e.target.value === null || e.target.value === undefined) {
       resetState();
-      
     }
   };
 
@@ -260,72 +202,21 @@ const ProcessListing = (props) => {
     customNoRowsOverlay: NoContentFound,
   };
   return (
-    <div
-      className={`ag-grid-react ${
-        permissions.Download ? "show-table-btn" : ""
-      }`}
-    >
+    <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`} >
       {state.isLoader && <LoaderCustom />}
       <form noValidate>
         <Row className="pt-4">
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
-                {state.shown ? (
-                  <button
-                    type="button"
-                    className="user-btn mr5 filter-btn-top"
-                    onClick={() => setState((prevState) =>({...prevState, shown: !state.shown }))}
-                  >
-                    <div className="cancel-icon-white"></div>
-                  </button>
-                ) : (
-                  ""
-                )}
-                {permissions.Add && (
-                  <button
-                    type="button"
-                    className={"user-btn mr5"}
-                    title="Add"
-                    onClick={processToggler}
-                  >
-                    <div className={"plus mr-0"}></div>
-                  </button>
-                )}
+                {state.shown ? (<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}  ><div className="cancel-icon-white"></div>  </button>) : ("")}
+                {permissions.Add && (<button type="button" className={"user-btn mr5"} title="Add" onClick={processToggler} >  <div className={"plus mr-0"}></div>   </button>)}
                 {permissions.Download && (
                   <>
-                    <ExcelFile
-                      filename={ProcessMaster}
-                      fileExtension={".xls"}
-                      element={
-                        <button
-                          title={`Download ${
-                            state.dataCount === 0
-                              ? "All"
-                              : "(" + state.dataCount + ")"
-                          }`}
-                          type="button"
-                          className={"user-btn mr5"}
-                        >
-                          <div className="download mr-1"></div>
-                          {`${
-                            state.dataCount === 0
-                              ? "All"
-                              : "(" + state.dataCount + ")"
-                          }`}
-                        </button>
-                      }
-                    >
-                      {onBtExport()}
-                    </ExcelFile>
+                    <ExcelFile filename={ProcessMaster} fileExtension={".xls"} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={"user-btn mr5"}  >    <div className="download mr-1"></div>    {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>} > {onBtExport()} </ExcelFile>
                   </>
                 )}
-                <button
-                  type="button"
-                  className="user-btn"
-                  title="Reset Grid"
-                  onClick={() => resetState()}
-                >
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()} >
                   <div className="refresh mr-0"></div>
                 </button>
               </div>
@@ -335,39 +226,16 @@ const ProcessListing = (props) => {
       </form>
       <Row>
         <Col>
-          <div
-            className={`ag-grid-wrapper height-width-wrapper ${
-              (props.processList && props.processList?.length <= 0) || noData
-                ? "overlay-contain"
-                : ""
-            }`}
-          >
+          <div className={`ag-grid-wrapper height-width-wrapper ${(props.processList && props.processList?.length <= 0) || noData ? "overlay-contain" : ""}`} >
             <div className="ag-grid-header">
-              <input
-                type="text"
-                className="form-control table-search"
-                id="filter-text-box"
-                placeholder="Search"
-                autoComplete={"off"}
-                onChange={(e) => onFilterTextBoxChanged(e)}
-              />
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
-            <div
-              className={`ag-theme-material ${
-                state.isLoader && "max-loader-height"
-              }`}
-            >
-              {noData && (
-                <NoContentFound
-                  title={EMPTY_DATA}
-                  customClassName="no-content-found"
-                />
-              )}
+            <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`} >
+              {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
               <AgGridReact
                 defaultColDef={defaultColDef}
                 floatingFilter={true}
                 domLayout="autoHeight"
-                // columnDefs={c}
                 rowData={processList}
                 pagination={true}
                 paginationPageSize={defaultPageSize}
@@ -376,65 +244,23 @@ const ProcessListing = (props) => {
                 rowSelection={"multiple"}
                 onSelectionChanged={onRowSelect}
                 noRowsOverlayComponent={"customNoRowsOverlay"}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                }}
+                noRowsOverlayComponentParams={{ title: EMPTY_DATA, }}
                 frameworkComponents={frameworkComponents}
                 onFilterModified={onFloatingFilterChanged}
-                suppressRowClickSelection={true}
-              >
-                <AgGridColumn
-                  field="ProcessName"
-                  headerName="Process Name"
-                  cellRenderer={"costingHeadFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="ProcessCode"
-                  headerName="Process Code"
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="ProcessId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
+                suppressRowClickSelection={true}>
+                <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={"costingHeadFormatter"}></AgGridColumn>
+                <AgGridColumn field="ProcessCode" headerName="Process Code" ></AgGridColumn>
+                <AgGridColumn field="ProcessId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
-              {
-                <PaginationWrapper
-                  gridApi={state.gridApi}
-                  setPage={onPageSizeChanged}
-                />
-              }
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
             </div>
           </div>
         </Col>
       </Row>
-      {isOpenProcessDrawer && (
-        <AddProcessDrawer
-          isOpen={isOpenProcessDrawer}
-          closeDrawer={closeProcessDrawer}
-          isEditFlag={isEditFlag}
-          isMachineShow={true}
-          ID={state.Id}
-          anchor={"right"}
-        />
-      )}
-      {state.showPopup && (
-        <PopupMsgWrapper
-          isOpen={state.showPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          message={`${MESSAGES.PROCESS_DELETE_ALERT}`}
-        />
-      )}
+      {isOpenProcessDrawer && (<AddProcessDrawer isOpen={isOpenProcessDrawer} closeDrawer={closeProcessDrawer} isEditFlag={isEditFlag} isMachineShow={true} ID={state.Id} anchor={"right"} />)}
+      {state.showPopup && (<PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PROCESS_DELETE_ALERT}`} />)}
     </div>
   );
 };
 
-export default reduxForm({
-  form: "ProcessListing",
-  enableReinitialize: true,
-  touchOnChange: true,
-})(ProcessListing);
+export default ProcessListing;

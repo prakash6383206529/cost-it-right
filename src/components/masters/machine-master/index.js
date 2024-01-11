@@ -1,26 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
-import {
-  Row,
-  Col,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-} from "reactstrap";
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from "classnames";
 import MachineRateListing from "./MachineRateListing";
 import AddMachineRate from "./AddMachineRate";
 import AddMoreDetails from "./AddMoreDetails";
 import ProcessListing from "./ProcessListing";
 import { checkPermission } from "../../../helper/util";
-import {
-  APPROVAL_CYCLE_STATUS_MASTER,
-  MACHINE,
-  MACHINE_MASTER_ID,
-  MASTERS,
-} from "../../../config/constants";
+import { APPROVAL_CYCLE_STATUS_MASTER, MACHINE, MACHINE_MASTER_ID, MASTERS, } from "../../../config/constants";
 import ScrollToTop from "../../common/ScrollToTop";
 import { CheckApprovalApplicableMaster } from "../../../helper";
 import CommonApproval from "../material-master/CommonApproval";
@@ -36,7 +23,6 @@ const MachineMaster = () => {
     isProcessForm: false,
     data: {},
     editDetails: {},
-
     ViewAccessibility: false,
     AddAccessibility: false,
     EditAccessibility: false,
@@ -55,14 +41,9 @@ const MachineMaster = () => {
 
   const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
-      const Data =
-        topAndLeftMenuData &&
-        topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
-      const accessData =
-        Data && Data.Pages.find((el) => el.PageName === MACHINE);
-      const permmisionDataAccess =
-        accessData && accessData.Actions && checkPermission(accessData.Actions);
-
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === MACHINE);
+      const permmisionDataAccess = accessData && accessData.Actions && checkPermission(accessData.Actions);
       if (permmisionDataAccess !== undefined) {
         setPermissionData(permmisionDataAccess);
       }
@@ -71,183 +52,70 @@ const MachineMaster = () => {
 
   const toggle = (tab) => {
     if (state.activeTab !== tab) {
-      setState((prevState) => ({
-        ...prevState,
-        activeTab: tab,
-        stopApiCallOnCancel: false,
-      }));
-  };
+      setState((prevState) => ({ ...prevState, activeTab: tab, stopApiCallOnCancel: false, }));
+    };
   }
   const displayForm = () => {
-    setState((prevState) => ({
-        ...prevState,
-      isMachineRateForm: true,
-      isAddMoreDetails: false,
-      editDetails: { isEditFlag: false },
-    }));
+    setState((prevState) => ({ ...prevState, isMachineRateForm: true, isAddMoreDetails: false, editDetails: { isEditFlag: false }, }));
   };
   const getDetails = (data, isMachineAssociate) => {
-    setState((prevState) => ({
-        ...prevState,
-      isMachineRateForm: true,
-      isAddMoreDetails: false,
-      editDetails: data,
-      isMachineAssociated: isMachineAssociate,
-    }));
+    setState((prevState) => ({ ...prevState, isMachineRateForm: true, isAddMoreDetails: false, editDetails: data, isMachineAssociated: isMachineAssociate, }));
   };
-  const setData = (data = {}) => {
-    setState((prevState) => ({
-        ...prevState , data: data }));
-  };
+  const setData = (data = {}) => { setState((prevState) => ({ ...prevState, data: data })); };
 
   const hideForm = (type) => {
-    setState((prevState) => ({
-        ...prevState,
-      isMachineRateForm: false,
-      data: {},
-      editDetails: {},
-      stopApiCallOnCancel: false,
-    }));
+    setState((prevState) => ({ ...prevState, isMachineRateForm: false, data: {}, editDetails: {}, stopApiCallOnCancel: false, }));
     if (type === "cancel") {
-      setState((prevState) => ({
-        ...prevState, stopApiCallOnCancel: true }));
+      setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true }));
     }
   };
 
   const displayMoreDetailsForm = (data = {}) => {
-    setState((prevState) => ({
-        ...prevState,
-      isAddMoreDetails: true,
-      isMachineRateForm: false,
-      editDetails: data,
-    }));
+    setState((prevState) => ({ ...prevState, isAddMoreDetails: true, isMachineRateForm: false, editDetails: data, }));
   };
 
   const hideMoreDetailsForm = (data = {}, editDetails = {}) => {
-    setState((prevState) => ({
-        ...prevState,
-      isAddMoreDetails: false,
-      isMachineRateForm: true,
-      data: data,
-      editDetails: editDetails,
-    }));
+    setState((prevState) => ({ ...prevState, isAddMoreDetails: false, isMachineRateForm: true, data: data, editDetails: editDetails, }));
   };
 
   const { isMachineRateForm, isAddMoreDetails } = state;
 
   if (isMachineRateForm === true) {
     return (
-      <AddMachineRate
-        editDetails={state.editDetails}
-        data={state.data}
-        setData={setData}
-        hideForm={hideForm}
-        displayMoreDetailsForm={displayMoreDetailsForm}
-        AddAccessibility={state.AddAccessibility}
-        EditAccessibility={state.EditAccessibility}
-        isMachineAssociated={state.isMachineAssociated}
-      />
+      <AddMachineRate editDetails={state.editDetails} data={state.data} setData={setData} hideForm={hideForm} displayMoreDetailsForm={displayMoreDetailsForm} AddAccessibility={state.AddAccessibility} EditAccessibility={state.EditAccessibility} isMachineAssociated={state.isMachineAssociated} />
     );
   }
 
   if (isAddMoreDetails === true) {
     return (
-      <AddMoreDetails
-        editDetails={state.editDetails}
-        data={state.data}
-        hideMoreDetailsForm={hideMoreDetailsForm}
-        isMachineAssociated={state.isMachineAssociated}
-      />
+      <AddMoreDetails editDetails={state.editDetails} data={state.data} hideMoreDetailsForm={hideMoreDetailsForm} isMachineAssociated={state.isMachineAssociated} />
     );
   }
 
   return (
     <>
-      {Object.keys(permissionData).length > 0 && (
-        <div className="container-fluid" id="go-top-top">
-          <ScrollToTop pointProp={"go-top-top"} />
-          <Row>
-            <Col>
-              <div>
-                <Nav tabs className="subtabs mt-0 p-relative">
-                  {disabledClass && (
-                    <div
-                      title={MESSAGES.DOWNLOADING_MESSAGE}
-                      className="disabled-overflow"
-                    ></div>
-                  )}
-                  <NavItem>
-                    <NavLink
-                      className={classnames({
-                        active: state.activeTab === "1",
-                      })}
-                      onClick={() => {
-                        toggle("1");
-                      }}
-                    >
-                      Machine Rate
-                    </NavLink>
-                  </NavItem>
-                  <NavItem>
-                    <NavLink
-                      className={classnames({
-                        active: state.activeTab === "2",
-                      })}
-                      onClick={() => {
-                        toggle("2");
-                      }}
-                    >
-                      Manage Process
-                    </NavLink>
-                  </NavItem>
-                  {CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && (
-                    <NavItem>
-                      <NavLink
-                        className={classnames({
-                          active: state.activeTab === "3",
-                        })}
-                        onClick={() => {
-                          toggle("3");
-                        }}
-                      >
-                        Approval Status
-                      </NavLink>
-                    </NavItem>
-                  )}
-                </Nav>
-                <ApplyPermission.Provider value={permissionData}>
-                  <TabContent activeTab={state.activeTab}>
-                    {Number(state.activeTab) === 1 && (
-                      <TabPane tabId="1">
-                        <MachineRateListing
-                          displayForm={displayForm}
-                          getDetails={getDetails}
-                          isMasterSummaryDrawer={false}
-                          stopApiCallOnCancel={state.stopApiCallOnCancel}
-                          selectionForListingMasterAPI="Master"
-                          approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
-                        />
-                      </TabPane>
-                    )}
-
-                    {Number(state.activeTab) === 2 && (
-                      <TabPane tabId="2">
-                        <ProcessListing
-                          stopApiCallOnCancel={state.stopApiCallOnCancel}
-                        />
-                      </TabPane>
-                    )}
-                    {Number(state.activeTab) === 3 && (
-                      <TabPane tabId="3">
-                        <CommonApproval MasterId={MACHINE_MASTER_ID} />
-                      </TabPane>
-                    )}
-                  </TabContent>
-                </ApplyPermission.Provider>
-              </div>
-            </Col>
-          </Row>
-        </div>
+      {Object.keys(permissionData).length > 0 && (<div className="container-fluid" id="go-top-top">
+        <ScrollToTop pointProp={"go-top-top"} />
+        <Row>
+          <Col>
+            <div>
+              <Nav tabs className="subtabs mt-0 p-relative">
+                {disabledClass && (<div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>)}
+                <NavItem><NavLink className={classnames({ active: state.activeTab === "1", })} onClick={() => { toggle("1"); }} >Machine Rate  </NavLink> </NavItem>
+                <NavItem> <NavLink className={classnames({ active: state.activeTab === "2", })} onClick={() => { toggle("2"); }}> Manage Process</NavLink> </NavItem>
+                {CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && (<NavItem><NavLink className={classnames({ active: state.activeTab === "3", })} onClick={() => { toggle("3"); }} > Approval Status </NavLink></NavItem>)}
+              </Nav>
+              <ApplyPermission.Provider value={permissionData}>
+                <TabContent activeTab={state.activeTab}>
+                  {Number(state.activeTab) === 1 && (<TabPane tabId="1"> <MachineRateListing displayForm={displayForm} getDetails={getDetails} isMasterSummaryDrawer={false} stopApiCallOnCancel={state.stopApiCallOnCancel} selectionForListingMasterAPI="Master" approvalStatus={APPROVAL_CYCLE_STATUS_MASTER} /> </TabPane>)}
+                  {Number(state.activeTab) === 2 && (<TabPane tabId="2"> <ProcessListing stopApiCallOnCancel={state.stopApiCallOnCancel} /></TabPane>)}
+                  {Number(state.activeTab) === 3 && (<TabPane tabId="3">  <CommonApproval MasterId={MACHINE_MASTER_ID} /> </TabPane>)}
+                </TabContent>
+              </ApplyPermission.Provider>
+            </div>
+          </Col>
+        </Row>
+      </div>
       )}
     </>
   );

@@ -1,12 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Row, Col } from "reactstrap";
-import {} from "../../../actions/Common";
-import {
-  getProductDataList,
-  deleteProduct,
-
-} from "../actions/Part";
+import { } from "../../../actions/Common";
+import { getProductDataList, deleteProduct } from "../actions/Part";
 import { MESSAGES } from "../../../config/message";
 import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
@@ -44,22 +40,17 @@ const IndivisualProductListing = (props) => {
   const [isLoader, setIsLoader] = useState(false);
   const [noData, setNoData] = useState(false);
   const [dataCount, setDataCount] = useState(0);
-  const[searchText,setSearchText]=useState("")
-
+  const [searchText, setSearchText] = useState("")
   const dispatch = useDispatch();
-console.log(
-  gridColumnApi,selectedRowData
-);
   const permissions = useContext(ApplyPermission);
-  console.log(tableData);
+
   useEffect(() => {
-  
-      getTableListData();
+    getTableListData();
     // eslint-disable-next-line
   }, []);
 
 
- 
+
   const getTableListData = () => {
     setIsLoader(true);
     dispatch(
@@ -107,7 +98,6 @@ console.log(
       deleteProduct(ID, (res) => {
         if (res.data.Result === true) {
           Toaster.success(MESSAGES.PRODUCT_DELETE_SUCCESS);
-
           getTableListData();
           setDataCount(0);
         }
@@ -128,30 +118,9 @@ console.log(
       : props?.value;
     return (
       <>
-        {permissions.View && (
-          <button
-            title="View"
-            className="View"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, true)}
-          />
-        )}
-        {permissions.View && (
-          <button
-            title="Edit"
-            className="Edit mr-2"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, false)}
-          />
-        )}
-        {permissions.Delete && (
-          <button
-            title="Delete"
-            className="Delete"
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
-        )}
+        {permissions.View && (<button title="View" className="View" type={"button"} onClick={() => viewOrEditItemDetails(cellValue, true)} />)}
+        {permissions.View && (<button title="Edit" className="Edit mr-2" type={"button"} onClick={() => viewOrEditItemDetails(cellValue, false)} />)}
+        {permissions.Delete && (<button title="Delete" className="Delete" type={"button"} onClick={() => deleteItem(cellValue)} />)}
       </>
     );
   };
@@ -159,7 +128,6 @@ console.log(
 
   const effectiveDateFormatter = (props) => {
     let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
     if (cellValue !== null && cellValue.includes("T")) {
       cellValue = DayTime(cellValue).format("DD/MM/YYYY");
       return cellValue;
@@ -206,8 +174,8 @@ console.log(
       tempArr && tempArr.length > 0
         ? tempArr
         : props.productDataList
-        ? props.productDataList
-        : [];
+          ? props.productDataList
+          : [];
     return returnExcelColumn(INDIVIDUAL_PRODUCT_DOWNLOAD_EXCEl, tempArr);
   };
 
@@ -249,13 +217,12 @@ console.log(
   };
 
   const resetState = () => {
-    
+
     const searchBox = document.getElementById("filter-text-box");
     if (searchBox) {
       searchBox.value = ""; // Reset the input field's value
     }
-  gridApi.setQuickFilter(null)
-
+    gridApi.setQuickFilter(null)
     gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
@@ -288,11 +255,7 @@ console.log(
   };
 
   return (
-    <div
-      className={`ag-grid-react ${
-        permissions.Download ? "show-table-btn" : ""
-      }`}
-    >
+    <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`} >
       {isLoader && <LoaderCustom />}
       <Row className="pt-4 no-filter-row">
         <Col md="8" className="filter-block"></Col>
@@ -300,23 +263,13 @@ console.log(
           <div className="d-flex justify-content-end bd-highlight w100">
             <div>
               {permissions.Add && (
-                <button
-                  type="button"
-                  className={"user-btn mr5"}
-                  title="Add"
-                  onClick={formToggle}
-                >
+                <button type="button" className={"user-btn mr5"} title="Add" onClick={formToggle} >
                   <div className={"plus mr-0"}></div>
                 </button>
               )}
 
               {permissions.BulkUpload && (
-                <button
-                  type="button"
-                  className={"user-btn mr5"}
-                  onClick={bulkToggle}
-                  title="Bulk Upload"
-                >
+                <button type="button" className={"user-btn mr5"} onClick={bulkToggle} title="Bulk Upload" >
                   <div className={"upload mr-0"}></div>
                   {/* Bulk Upload */}
                 </button>
@@ -324,32 +277,12 @@ console.log(
 
               {permissions.Download && (
                 <>
-                  <ExcelFile
-                    filename={"Product"}
-                    fileExtension={".xls"}
-                    element={
-                      <button
-                        title={`Download ${
-                          dataCount === 0 ? "All" : "(" + dataCount + ")"
-                        }`}
-                        type="button"
-                        className={"user-btn mr5"}
-                      >
-                        <div className="download mr-1"></div>
-                        {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                      </button>
-                    }
-                  >
-                    {onBtExport()}
-                  </ExcelFile>
+                  <ExcelFile filename={"Product"} fileExtension={".xls"} element={<button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={"user-btn mr5"} >
+                    <div className="download mr-1"></div> {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                  </button>} >  {onBtExport()}  </ExcelFile>
                 </>
               )}
-              <button
-                type="button"
-                className="user-btn"
-                title="Reset Grid"
-                onClick={() => resetState()}
-              >
+              <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()} >
                 <div className="refresh mr-0"></div>
               </button>
             </div>
@@ -358,30 +291,12 @@ console.log(
       </Row>
 
       <div
-        className={`ag-grid-wrapper height-width-wrapper ${
-          (props.productDataList && props.productDataList?.length <= 0) ||
-          noData
-            ? "overlay-contain"
-            : ""
-        }`}
-      >
+        className={`ag-grid-wrapper height-width-wrapper ${(props.productDataList && props.productDataList?.length <= 0) || noData ? "overlay-contain" : ""}`} >
         <div className="ag-grid-header">
-          <input
-            type="text"
-            className="form-control table-search"
-            id="filter-text-box"
-            placeholder="Search"
-            autoComplete={"off"}
-            onChange={(e) => onFilterTextBoxChanged(e)}
-          />
+          <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
         </div>
         <div className={`ag-theme-material ${isLoader && "max-loader-height"}`}>
-          {noData && (
-            <NoContentFound
-              title={EMPTY_DATA}
-              customClassName="no-content-found"
-            />
-          )}
+          {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
           <AgGridReact
             defaultColDef={defaultColDef}
             floatingFilter={true}
@@ -392,85 +307,29 @@ console.log(
             onGridReady={onGridReady}
             gridOptions={gridOptions}
             noRowsOverlayComponent={"customNoRowsOverlay"}
-            noRowsOverlayComponentParams={{
-              title: EMPTY_DATA,
-              imagClass: "imagClass",
-            }}
+            noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: "imagClass", }}
             rowSelection={"multiple"}
             onSelectionChanged={onRowSelect}
             frameworkComponents={frameworkComponents}
             onFilterModified={onFloatingFilterChanged}
-            suppressRowClickSelection={true}
-          >
-            <AgGridColumn
-              field="ProductNumber"
-              headerName="Product No."
-            ></AgGridColumn>
+            suppressRowClickSelection={true} >
+            <AgGridColumn field="ProductNumber" headerName="Product No."></AgGridColumn>
             <AgGridColumn field="ProductName" headerName="Name"></AgGridColumn>
-            <AgGridColumn
-              field="ProductGroupCode"
-              headerName="Group Code"
-              cellRenderer={"hyphenFormatter"}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="ECNNumber"
-              headerName="ECN No."
-              cellRenderer={"hyphenFormatter"}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="RevisionNumber"
-              headerName="Revision No."
-              cellRenderer={"hyphenFormatter"}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="DrawingNumber"
-              headerName="Drawing No."
-              cellRenderer={"hyphenFormatter"}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="IsConsideredForMBOM"
-              headerName="Preferred for Impact Calculation"
-            ></AgGridColumn>
-            <AgGridColumn
-              field="EffectiveDate"
-              headerName="Effective Date"
-              cellRenderer={"effectiveDateFormatter"}
-              filter="agDateColumnFilter"
-              filterParams={filterParams}
-            ></AgGridColumn>
-            <AgGridColumn
-              field="ProductId"
-              cellClass="ag-grid-action-container"
-              headerName="Action"
-              pinned =
-              "right"
-              type="rightAligned"
-              floatingFilter={false}
-              cellRenderer={"totalValueRenderer"}
-            ></AgGridColumn>
-          </AgGridReact>
+            <AgGridColumn field="ProductGroupCode" headerName="Group Code" cellRenderer={"hyphenFormatter"}></AgGridColumn>
+            <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+            <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"} ></AgGridColumn>
+            <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}></AgGridColumn>
+            <AgGridColumn field="IsConsideredForMBOM" headerName="Preferred for Impact Calculation"></AgGridColumn>
+            <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+            <AgGridColumn field="ProductId" cellClass="ag-grid-action-container" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn></AgGridReact>
           {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} />}
         </div>
       </div>
-
       {isBulkUpload && (
-        <BulkUpload
-          isOpen={isBulkUpload}
-          closeDrawer={closeBulkUploadDrawer}
-          isEditFlag={false}
-          fileName={"Product Component"}
-          isZBCVBCTemplate={false}
-          messageLabel={"Product"}
-          anchor={"right"}
-        />
+        <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"Product Component"} isZBCVBCTemplate={false} messageLabel={"Product"} anchor={"right"} />
       )}
       {showPopup && (
-        <PopupMsgWrapper
-          isOpen={showPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          message={`${MESSAGES.CONFIRM_DELETE}`}
-        />
+        <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CONFIRM_DELETE}`} />
       )}
     </div>
   );
