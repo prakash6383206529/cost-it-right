@@ -25,7 +25,6 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import _ from 'lodash';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { agGridStatus, getGridHeight, isResetClick, disabledClass } from '../../../actions/Common';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 
@@ -511,7 +510,6 @@ function ProfitListing(props) {
     * @method onSubmit
     * @description Used to Submit the form
     */
-    const onSubmit = (values) => { }
 
 
     const onGridReady = (params) => {

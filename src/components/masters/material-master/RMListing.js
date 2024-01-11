@@ -50,7 +50,7 @@ const RMListing = (props) => {
   });
   useEffect(() => {
     getListData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, []);
 
   /**+-
@@ -142,9 +142,7 @@ const RMListing = (props) => {
   };
 
   const openModel = () => {
-    setState((prevState) => ({
-      ...prevState, isOpen: true, isEditFlag: false,
-    }));
+    setState((prevState) => ({ ...prevState, isOpen: true, isEditFlag: false, }));
   };
 
   const openAssociationModel = () => {
@@ -264,12 +262,9 @@ const RMListing = (props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-    if (searchRef.current) {
-      searchRef.current.value = '';
-    }
-
   };
   const { isOpen, isEditFlag, ID, noData } = state;
+  const { AddAccessibility, DownloadAccessibility } = props;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -296,30 +291,29 @@ const RMListing = (props) => {
       {state.isLoader && <LoaderCustom />}
       <Row className="pt-4 no-filter-row">
         <Col md={6} className="text-right search-user-block pr-0">
-          {permissions.Add && (
+          {AddAccessibility && (
             <Button id="rmSpecification_addAssociation" className="mr5" onClick={openAssociationModel} title="Add Association" icon="plus mr-0 ml5" buttonName="A" />
           )}
-          {permissions.Add && (
+          {AddAccessibility && (
             <Button id="rmSpecification_addMaterial" className="mr5" onClick={openModel} title="Add Material" icon={"plus mr-0 ml5"} buttonName="M" />
-          )}
-          {permissions.Download && (
-            <>
+          )
+          }
+          {
+            DownloadAccessibility && (
               <>
-                <ExcelFile
-                  filename={"Rm Material"}
-                  fileExtension={".xls"}
-                  element={
-                    <Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                <>
+                  <ExcelFile filename={"Rm Material"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-Rm Material"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                   }
-                >
-                  {onBtExport()}
-                </ExcelFile>
+                  >
+                    {onBtExport()}
+                  </ExcelFile>
+                </>
               </>
-            </>
-          )}
+            )
+          }
           <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
-        </Col>
-      </Row>
+        </Col >
+      </Row >
 
       <Row>
         <Col>
@@ -375,64 +369,48 @@ const RMListing = (props) => {
                 suppressRowClickSelection={true}
               >
                 {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
+                <AgGridColumn field="RawMaterial" headerName="Material"                ></AgGridColumn>               <AgGridColumn field="Density"></AgGridColumn>
+                <AgGridColumn field="RMName" cellRenderer={"hyphenFormatter"}                ></AgGridColumn>
                 <AgGridColumn
-                  field="RawMaterial"
-                  headerName="Material"
-                ></AgGridColumn>
-                <AgGridColumn field="Density"></AgGridColumn>
-                <AgGridColumn
-                  field="RMName"
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="RMGrade"
-                  headerName="Grade"
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-                <AgGridColumn
-                  field="MaterialId"
-                  cellClass="ag-grid-action-container"
-                  headerName="Action"
-                  type="rightAligned"
-                  floatingFilter={false}
-                  cellRenderer={"totalValueRenderer"}
-                ></AgGridColumn>
+                  field="RMGrade" headerName="Grade" cellRenderer={"hyphenFormatter"}                ></AgGridColumn>
+                <AgGridColumn field="MaterialId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
-              {
-                <PaginationWrapper
-                  gridApi={state.gridApi}
-                  setPage={onPageSizeChanged}
-                />
-              }
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
             </div>
           </div>
         </Col>
       </Row>
-      {isOpen && (
-        <AddMaterialType
-          isOpen={isOpen}
-          closeDrawer={closeDrawer}
-          isEditFlag={isEditFlag}
-          ID={ID}
-          anchor={"right"}
-        />
-      )}
-      {state.isOpenAssociation && (
-        <Association
-          isOpen={state.isOpenAssociation}
-          closeDrawer={closeAssociationDrawer}
-          anchor={"right"}
-        />
-      )}
-      {state.showPopup && (
-        <PopupMsgWrapper
-          isOpen={state.showPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}
-        />
-      )}
-    </div>
+      {
+        isOpen && (
+          <AddMaterialType
+            isOpen={isOpen}
+            closeDrawer={closeDrawer}
+            isEditFlag={isEditFlag}
+            ID={ID}
+            anchor={"right"}
+          />
+        )
+      }
+      {
+        state.isOpenAssociation && (
+          <Association
+            isOpen={state.isOpenAssociation}
+            closeDrawer={closeAssociationDrawer}
+            anchor={"right"}
+          />
+        )
+      }
+      {
+        state.showPopup && (
+          <PopupMsgWrapper
+            isOpen={state.showPopup}
+            closePopUp={closePopUp}
+            confirmPopup={onPopupConfirm}
+            message={`${MESSAGES.MATERIAL1_DELETE_ALERT}`}
+          />
+        )
+      }
+    </div >
   );
 };
 

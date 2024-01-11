@@ -56,7 +56,7 @@ const SpecificationListing = (props) => {
 
   useEffect(() => {
     getSpecificationListData("", "");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, []);
 
   const getSpecificationListData = useCallback(
@@ -83,47 +83,33 @@ const SpecificationListing = (props) => {
         })
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [dispatch]
   );
 
   const closeDrawer = useCallback(
     (e = "", data, type) => {
       setState(
-        (prev) => ({
-          ...prev, isOpen: false, dataCount: 0,
-        }),
+        (prev) => ({ ...prev, isOpen: false, dataCount: 0, }),
         () => {
           if (type === "submit") getSpecificationListData("", "");
         }
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [getSpecificationListData]
   );
 
   const editItemDetails = useCallback((Id) => {
-    setState((prev) => ({
-      ...prev, isEditFlag: true, isOpen: true, ID: Id,
-    }));
+    setState((prev) => ({ ...prev, isEditFlag: true, isOpen: true, ID: Id, }));
   }, []);
 
   const openModel = useCallback(() => {
-    setState((prev) => ({
-      ...prev, isOpen: true, isEditFlag: false,
-    }));
+    setState((prev) => ({ ...prev, isOpen: true, isEditFlag: false, }));
   }, []);
-  /**
-     * @method deleteItem
-     * @description confirm delete RM Specification
-     */
+
   const deleteItem = useCallback((Id) => {
     setState((prev) => ({ ...prev, showPopup: true, deletedId: Id }));
   }, []);
-  /**
-      * @method confirmDelete
-      * @description confirm delete RM Specification
-      */
+
   const confirmDelete = useCallback(
     (ID) => {
       const loggedInUser = loggedInUserId();
@@ -142,17 +128,13 @@ const SpecificationListing = (props) => {
         })
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    [dispatch, getSpecificationListData]
   );
 
   const onPopupConfirm = useCallback(() => {
     confirmDelete(state.deletedId);
   }, [confirmDelete, state.deletedId]);
-  /**
-* @method buttonFormatter
-* @description Renders buttons
-*/
+
   const buttonFormatter = useCallback(
     (props) => {
       const cellValue = props?.value;
@@ -180,41 +162,29 @@ const SpecificationListing = (props) => {
         </>
       );
     },
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    []
+    // eslint-disable-next-line
+    [editItemDetails, deleteItem]
   );
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       rmSpecificationList.length !== 0 &&
-        setState((prevState) => ({
-          ...prevState,
-          noData: searchNocontentFilter(value, state.noData),
-        }));
+        setState({ noData: searchNocontentFilter(value, state.noData) });
     }, 500);
   };
 
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }));
+    setState({ isBulkUpload: true });
   };
 
   const closeBulkUploadDrawer = () => {
-    setState(
-      (prevState) => {
-        return {
-          ...prevState,
-          isBulkUpload: false,
-        };
-      },
-      () => {
-        getSpecificationListData("", "");
-      }
-    );
+    setState({ isBulkUpload: false }, () => {
+      getSpecificationListData("", "");
+    });
   };
 
-
   const densityAlert = () => {
-    setState((prevState) => ({ ...prevState, showPopup2: true }));
+    setState({ showPopup2: true });
   };
 
   const confirmDensity = () => {
@@ -236,11 +206,7 @@ const SpecificationListing = (props) => {
   const onGridReady = (params) => {
     state.gridApi = params.api;
     state.gridApi.sizeColumnsToFit();
-    setState((prevState) => ({
-      ...prevState,
-      gridApi: params.api,
-      gridColumnApi: params.columnApi,
-    }));
+    setState({ gridApi: params.api, gridColumnApi: params.columnApi });
     params.api.paginationGoToPage(0);
   };
 
@@ -295,7 +261,7 @@ const SpecificationListing = (props) => {
   const resetState = () => {
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
-    gridOptions.columnApi.resetColumnState(null);
+    gridOptions.columnApi.resetColumnState();
     state.gridApi.setFilterModel(null);
     if (searchRef.current) {
       searchRef.current.value = '';
@@ -317,11 +283,12 @@ const SpecificationListing = (props) => {
     setState((prevState) => ({
       ...prevState,
       selectedRowData: selectedRows,
-      dataCount: selectedRows?.length,
+      dataCount: selectedRows.length,
     }));
   };
 
   const { isOpen, isEditFlag, ID, isBulkUpload, noData } = state;
+  const { AddAccessibility, BulkUploadAccessibility, DownloadAccessibility } = props;
   const isFirstColumn = (params) => {
     const displayedColumns = params.columnApi.getAllDisplayedColumns();
     const thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -337,6 +304,7 @@ const SpecificationListing = (props) => {
     hyphenFormatter: hyphenFormatter,
     customNoRowsOverlay: NoContentFound,
   };
+
   return (
     <div
       className={`ag-grid-react min-height100vh ${permissions.Download ? "show-table-btn" : ""
@@ -346,26 +314,32 @@ const SpecificationListing = (props) => {
       <form noValidate>
         <Row className="pt-4">
           <Col md={6} className="text-right mb-3 search-user-block">
-            {permissions.Add && (
-              <Button id="rmSpecification_filter" className={"mr5"} onClick={openModel} title={"Add"} icon={"plus"} />
-            )}
-            {permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
-            )}
-            {permissions.Download && (
-              <>
+            {
+              permissions.Add && (
+                <Button id="rmSpecification_filter" className={"mr5"} onClick={openModel} title={"Add"} icon={"plus"} />
+              )
+            }
+            {
+              permissions.BulkUpload && (<Button id="rmSpecification_add" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+              )
+            }
+            {
+              permissions.Download && (
                 <>
-                  <ExcelFile filename={"RM Specification"} fileExtension={".xls"} element={
-                    <Button className="mr5" id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                  }
-                  >
-                    {onBtExport()} </ExcelFile>
+                  <>
+                    <ExcelFile filename={"RM Specification"} fileExtension={".xls"} element={
+                      <Button className="mr5" id={"rmSpecification_excel_download"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                    }
+                    >
+                      {onBtExport()} </ExcelFile>
+                  </>
                 </>
-              </>
-            )}
+              )
+            }
             <Button id={"rmSpecification_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
-          </Col>
-        </Row>
-      </form>
+          </Col >
+        </Row >
+      </form >
 
       <Row>
         <Col>
@@ -409,10 +383,10 @@ const SpecificationListing = (props) => {
                 <AgGridColumn field="SpecificationId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}                ></AgGridColumn>
               </AgGridReact>
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
-            </div>
-          </div>
-        </Col>
-      </Row>
+            </div >
+          </div >
+        </Col >
+      </Row >
       {isOpen && (
         <AddSpecification
           isOpen={isOpen}
@@ -425,34 +399,40 @@ const SpecificationListing = (props) => {
           isRMDomesticSpec={false}
         />
       )}
-      {isBulkUpload && (
-        <BulkUpload
-          isOpen={isBulkUpload}
-          closeDrawer={closeBulkUploadDrawer}
-          isEditFlag={false}
-          densityAlert={densityAlert}
-          fileName={"RM Specification"}
-          messageLabel={"RM Specification"}
-          anchor={"right"}
-        />
-      )}
-      {state.showPopup && (
-        <PopupMsgWrapper
-          isOpen={state.showPopup}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm}
-          message={`${MESSAGES.SPECIFICATION_DELETE_ALERT}`}
-        />
-      )}
-      {state.showPopup2 && (
-        <PopupMsgWrapper
-          isOpen={state.showPopup2}
-          closePopUp={closePopUp}
-          confirmPopup={onPopupConfirm2}
-          message={`Recently Created Material Density is not created, Do you want to create?`}
-        />
-      )}
-    </div>
+      {
+        isBulkUpload && (
+          <BulkUpload
+            isOpen={isBulkUpload}
+            closeDrawer={closeBulkUploadDrawer}
+            isEditFlag={false}
+            densityAlert={densityAlert}
+            fileName={"RM Specification"}
+            messageLabel={"RM Specification"}
+            anchor={"right"}
+          />
+        )
+      }
+      {
+        state.showPopup && (
+          <PopupMsgWrapper
+            isOpen={state.showPopup}
+            closePopUp={closePopUp}
+            confirmPopup={onPopupConfirm}
+            message={`${MESSAGES.SPECIFICATION_DELETE_ALERT}`}
+          />
+        )
+      }
+      {
+        state.showPopup2 && (
+          <PopupMsgWrapper
+            isOpen={state.showPopup2}
+            closePopUp={closePopUp}
+            confirmPopup={onPopupConfirm2}
+            message={`Recently Created Material Density is not created, Do you want to create?`}
+          />
+        )
+      }
+    </div >
   );
 };
 

@@ -1,493 +1,266 @@
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { reduxForm } from 'redux-form'
-import { Row, Col } from 'reactstrap'
-import { defaultPageSize, EMPTY_DATA } from '../../../config/constants'
-import {
-  deleteProcess,
-  getProcessDataList,
-  getMachineSelectListByPlant,
-} from '../actions/Process';
-import NoContentFound from '../../common/NoContentFound';
-import { MESSAGES } from '../../../config/message';
-import Toaster from '../../common/Toaster'
-import AddProcessDrawer from './AddProcessDrawer';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import LoaderCustom from '../../common/LoaderCustom'
-import DayTime from '../../common/DayTimeWrapper'
-import { ProcessMaster } from '../../../config/constants'
-import ReactExport from 'react-export-excel';
-import { PROCESSLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData'
-import { AgGridColumn, AgGridReact } from 'ag-grid-react';
-import 'ag-grid-community/dist/styles/ag-grid.css';
-import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import PopupMsgWrapper from '../../common/PopupMsgWrapper'
-import { PaginationWrapper } from '../../common/commonPagination'
-import { loggedInUserId, searchNocontentFilter } from '../../../helper'
-import SelectRowWrapper from '../../common/SelectRowWrapper'
+import React, { useContext, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { Row, Col } from "reactstrap";
+import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { deleteProcess, getProcessDataList } from "../actions/Process";
+import NoContentFound from "../../common/NoContentFound";
+import { MESSAGES } from "../../../config/message";
+import Toaster from "../../common/Toaster";
+import AddProcessDrawer from "./AddProcessDrawer";
+import LoaderCustom from "../../common/LoaderCustom";
+import { ProcessMaster } from "../../../config/constants";
+import ReactExport from "react-export-excel";
+import { PROCESSLISTING_DOWNLOAD_EXCEl } from "../../../config/masterData";
+import { AgGridColumn, AgGridReact } from "ag-grid-react";
+import "ag-grid-community/dist/styles/ag-grid.css";
+import "ag-grid-community/dist/styles/ag-theme-material.css";
+import PopupMsgWrapper from "../../common/PopupMsgWrapper";
+import { PaginationWrapper } from "../../common/commonPagination";
+import { loggedInUserId, searchNocontentFilter } from "../../../helper";
+import { ApplyPermission } from ".";
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-class ProcessListing extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isOpenProcessDrawer: false,
-      isEditFlag: false,
-      Id: '',
-      tableData: [],
-      plant: [],
-      machine: [],
-      gridApi: null,
-      gridColumnApi: null,
-      rowData: null,
-      showPopup: false,
-      deletedId: '',
-      isLoader: false,
-      noData: false,
-      dataCount: 0
-    }
-  }
+const ProcessListing = (props) => {
+  const dispatch = useDispatch();
+  const [state, setState] = useState({
+    isOpenProcessDrawer: false,
+    isEditFlag: false,
+    Id: "",
+    tableData: [],
+    plant: [],
+    machine: [],
+    gridApi: null,
+    gridColumnApi: null,
+    rowData: null,
+    showPopup: false,
+    deletedId: "",
+    isLoader: false,
+    noData: false,
+    dataCount: 0,
+  });
+  const permissions = useContext(ApplyPermission);
 
-  /**
-  * @method componentDidMount
-  * @description Called after rendering the component
-  */
-  componentDidMount() {
+  const { processList } = useSelector((state) => state.process);
+
+
+  useEffect(() => {
     setTimeout(() => {
-      this.getDataList()
+      getDataList();
     }, 300);
-  }
+  }, []);
 
-  /**
-  * @method handlePlant
-  * @description  PLANT FILTER
-  */
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue }, () => {
-        const { plant } = this.state;
-        this.props.getMachineSelectListByPlant(plant.value, () => { })
-      });
-    } else {
-      this.setState({ plant: [], });
-      this.props.getInitialMachineSelectList(() => { })
-    }
-  }
+  const editItemDetails = (Id) => {
+    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: true, isEditFlag: true, Id: Id, }));
+  };
 
-
-  /**
-  * @method editItemDetails
-  * @description EDIT ITEM
-  */
-  editItemDetails = (Id) => {
-    this.setState({ isOpenProcessDrawer: true, isEditFlag: true, Id: Id, })
-  }
-
-  /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  renderPaginationShowsTotal(start, to, total) {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-
-  /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
-  buttonFormatter = (props) => {
+  const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
-    const { EditAccessibility, DeleteAccessibility } = this.props;
     return (
       <>
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
+        {permissions.Edit && (<button title="Edit" className="Edit mr-2" type={"button"} onClick={() => editItemDetails(cellValue, rowData)} />)}
+        {permissions.Delete && (<button title="Delete" className="Delete" type={"button"} onClick={() => deleteItem(cellValue)} />)}
       </>
-    )
+    );
   };
 
-  /**
-  * @method costingHeadFormatter
-  * @description Renders Costing head
-  */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'VBC' : 'ZBC';
-  }
+  const costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
+    return cell ? "VBC" : "ZBC";
+  };
 
-  getDataList = (ProcessName = '', ProcessCode = '') => {
-    const filterData = {
-      ProcessName: ProcessName,
-      ProcessCode: ProcessCode,
-    }
-    this.setState({ isLoader: true })
-    this.props.getProcessDataList(filterData, (res) => {
-      this.setState({ isLoader: false })
+  const getDataList = (ProcessName = "", ProcessCode = "") => {
+    const filterData = { ProcessName: ProcessName, ProcessCode: ProcessCode, };
+    setState((prevState) => ({ ...prevState, isLoader: true }));
+    dispatch(getProcessDataList(filterData, (res) => {
+      setState((prevState) => ({ ...prevState, isLoader: false }));
       if (res && res.status === 200) {
-        let Data = res.data.DataList
-        this.setState({ tableData: Data })
+        let Data = res.data.DataList;
+        setState((prevState) => ({ ...prevState, tableData: Data }));
       } else if (res && res.response && res.response.status === 412) {
-        this.setState({ tableData: [] })
+        setState((prevState) => ({ ...prevState, tableData: [] }));
       } else {
-        this.setState({ tableData: [] })
+        setState((prevState) => ({ ...prevState, tableData: [] }));
       }
     })
-  }
+    );
+  };
 
-  /**
-   * @method handlePlant
-   * @description  PLANT FILTER
-   */
-  handlePlant = (newValue, actionMeta) => {
-    if (newValue && newValue !== '') {
-      this.setState({ plant: newValue }, () => {
-        const { plant } = this.state
-        this.props.getMachineSelectListByPlant(plant.value, () => { })
-      })
-    } else {
-      this.setState({ plant: [] })
-      this.props.getInitialMachineSelectList(() => { })
-    }
-  }
+  const deleteItem = (Id) => {
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }));
+  };
 
-
-  /**
-   * @method editItemDetails
-   * @description EDIT ITEM
-   */
-  editItemDetails = (Id) => {
-    this.setState({ isOpenProcessDrawer: true, isEditFlag: true, Id: Id })
-  }
-
-  /**
-   * @method deleteItem
-   * @description CONFIRM DELETE ITEM
-   */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
-  }
-
-  /**
-   * @method confirmDelete
-   * @description DELETE PROCESS
-   */
-  confirmDelete = (ID) => {
-    const loggedInUser = loggedInUserId()
-    this.props.deleteProcess(ID, loggedInUser, (res) => {
+  const confirmDelete = (ID) => {
+    const loggedInUser = loggedInUserId();
+    dispatch(deleteProcess(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
-        Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY)
-        this.getDataList()
-        this.setState({ dataCount: 0 })
+        Toaster.success(MESSAGES.PROCESS_DELETE_SUCCESSFULLY);
+        getDataList();
+        setState({ dataCount: 0 });
       }
     })
-    this.setState({ showPopup: false })
-  }
-  onPopupConfirm = () => {
-    this.confirmDelete(this.state.deletedId);
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
+    );
+    setState((prevState) => ({ ...prevState, showPopup: false }))
+  };
+  const onPopupConfirm = () => {
+    confirmDelete(state.deletedId);
+  };
 
-  /**
-* @method buttonFormatter
-* @description Renders buttons
-*/
-  buttonFormatter = (props) => {
+  const closePopUp = () => {
+    setState((prevState) => ({ ...prevState, showPopup: false }));
+  };
 
-    const cellValue = props?.value;
-    const rowData = props?.data;
+  const processToggler = () => {
+    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: true, isEditFlag: false, Id: "" }));
+  };
 
-    const { EditAccessibility, DeleteAccessibility } = this.props;
-    return (
-      <>
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.editItemDetails(cellValue, rowData)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(cellValue)} />}
-      </>
-    )
+  const closeProcessDrawer = (e = "", formData, type) => {
+    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: false }, () => {
+      if (type === "submit") getDataList();
+      setState((prevState) => ({ ...prevState, dataCount: 0 }));
+    }));
+  };
+
+  const onFloatingFilterChanged = (value) => {
+    setTimeout(() => {
+      props.processList.length !== 0 &&
+        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }));
+    }, 500);
   };
 
 
-  /**
-   * @method costingHeadFormatter
-   * @description Renders Costing head
-   */
-  costingHeadFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell ? 'VBC' : 'ZBC'
-  }
-
-  /**
-* @method effectiveDateFormatter
-* @description Renders buttons
-*/
-  effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-    return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
-  }
-  /**
-   * @method indexFormatter
-   * @description Renders serial number
-   */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    const { table } = this.refs
-    let currentPage =
-      table && table.state && table.state.currPage ? table.state.currPage : ''
-    let sizePerPage =
-      table && table.state && table.state.sizePerPage
-        ? table.state.sizePerPage
-        : ''
-    let serialNumber = ''
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1
-    } else {
-      serialNumber = rowIndex + 1 + sizePerPage * (currentPage - 1)
-    }
-    return serialNumber
-  }
-
-  renderSerialNumber = () => {
+  const returnExcelColumn = (data = [], TempData) => {
+    let temp = [];
+    temp = TempData;
     return (
-      <>
-        Sr. <br />
-        No.{' '}
-      </>
-    )
-  }
-
-  renderCostingHead = () => {
-    return (
-      <>
-        Costing <br />
-        Head{' '}
-      </>
-    )
-  }
-
-  processToggler = () => {
-    this.setState({ isOpenProcessDrawer: true, isEditFlag: false, Id: '' })
-  }
-
-  closeProcessDrawer = (e = '', formData, type) => {
-    this.setState({ isOpenProcessDrawer: false }, () => {
-      if (type === 'submit')
-        this.getDataList()
-      this.setState({ dataCount: 0 })
-    })
-
-  }
-  /**
-    * @method onFloatingFilterChanged
-    * @description Filter data when user type in searching input
-    */
-  onFloatingFilterChanged = (value) => {
-    setTimeout(() => {
-      this.props.processList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
-    }, 500);
-  }
-  /**
-   * @method onSubmit
-   * @description Used to Submit the form
-   */
-  onSubmit = (values) => { }
-
-  returnExcelColumn = (data = [], TempData) => {
-    let temp = []
-    temp = TempData
-
-    return (<ExcelSheet data={temp} name={`${ProcessMaster}`}>
-      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-      }
-    </ExcelSheet>);
-  }
-
-  onGridReady = (params) => {
-    this.gridApi = params.api;
-    this.gridApi.sizeColumnsToFit();
-    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+      <ExcelSheet data={temp} name={`${ProcessMaster}`}>
+        {data && data.map((ele, index) => (<ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />))}
+      </ExcelSheet>
+    );
+  };
+  const onGridReady = (params) => {
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi, }));
     params.api.paginationGoToPage(0);
   };
-  onPageSizeChanged = (newPageSize) => {
-    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
-  onRowSelect = () => {
-    const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
-  }
-  onBtExport = () => {
-    let tempArr = []
-    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.processList ? this.props.processList : [])
-    return this.returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr)
+  const onRowSelect = () => {
+    const selectedRows = state.gridApi?.getSelectedRows();
+    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }));
+  };
+  const onBtExport = () => {
+    let tempArr = [];
+    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
+    tempArr = tempArr && tempArr.length > 0 ? tempArr : props.processList ? props.processList : [];
+    return returnExcelColumn(PROCESSLISTING_DOWNLOAD_EXCEl, tempArr);
   };
 
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
-  }
+  const onFilterTextBoxChanged = (e) => {
 
-  resetState() {
-    this.state.gridApi.deselectAll()
+    state.gridApi.setQuickFilter(e.target.value);
+    if (e.target.value === "" || e.target.value === null || e.target.value === undefined) {
+      resetState();
+    }
+  };
+
+  const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+    state.gridApi.setQuickFilter(null)
+    state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-  }
+  };
 
+  const { isOpenProcessDrawer, isEditFlag, noData } = state;
+  const ExcelFile = ReactExport.ExcelFile;
 
-  /**
-   * @method render
-   * @description Renders the component
-   */
-  render() {
-    const { handleSubmit, AddAccessibility, DownloadAccessibility } = this.props;
-    const { isOpenProcessDrawer, isEditFlag, noData } = this.state;
-    const ExcelFile = ReactExport.ExcelFile;
+  const isFirstColumn = (params) => {
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
+  };
 
-    const isFirstColumn = (params) => {
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn,
+  };
 
-      var displayedColumns = params.columnApi.getAllDisplayedColumns();
-      var thisIsFirstColumn = displayedColumns[0] === params.column;
-      return thisIsFirstColumn;
-    }
-
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: false,
-      headerCheckboxSelectionFilteredOnly: true,
-      checkboxSelection: isFirstColumn
-    };
-
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      costingHeadRenderer: this.costingHeadFormatter,
-      customNoRowsOverlay: NoContentFound,
-    };
-
-    return (
-      <div className={`ag-grid-react ${DownloadAccessibility ? "show-table-btn" : ""}`}>
-        {this.state.isLoader && <LoaderCustom />}
-        <form onSubmit={handleSubmit(this.onSubmit.bind(this))} noValidate>
-          <Row className="pt-4">
-
-            <Col md="6" className="search-user-block mb-3">
-              <div className="d-flex justify-content-end bd-highlight w100">
-                <div>
-                  {this.state.shown ? (
-                    <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => this.setState({ shown: !this.state.shown })}>
-                      <div className="cancel-icon-white"></div></button>
-                  ) : (
-                    ''
-                    // <button type="button" className="user-btn mr5" onClick={() => this.setState({ shown: !this.state.shown })}>Show Filter</button>
-                  )}
-                  {AddAccessibility && <button
-                    type="button"
-                    className={'user-btn mr5'}
-                    title="Add"
-                    onClick={this.processToggler}>
-                    <div className={'plus mr-0'}></div></button>}
-                  {
-                    DownloadAccessibility &&
-                    <>
-                      <ExcelFile filename={ProcessMaster} fileExtension={'.xls'} element={<button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
-                        {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}</button>}>
-                        {this.onBtExport()}
-                      </ExcelFile>
-                    </>
-                  }
-                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                    <div className="refresh mr-0"></div>
-                  </button>
-
-                </div>
-              </div>
-            </Col>
-          </Row>
-
-        </form>
-        <Row>
-          <Col>
-            <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.processList && this.props.processList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-              <div className="ag-grid-header">
-                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-              </div>
-              <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-                {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                <AgGridReact
-                  defaultColDef={defaultColDef}
-                  floatingFilter={true}
-                  domLayout='autoHeight'
-                  // columnDefs={c}
-                  rowData={this.props.processList}
-                  pagination={true}
-                  paginationPageSize={defaultPageSize}
-                  onGridReady={this.onGridReady}
-                  gridOptions={gridOptions}
-                  rowSelection={'multiple'}
-                  onSelectionChanged={this.onRowSelect}
-                  noRowsOverlayComponent={'customNoRowsOverlay'}
-                  noRowsOverlayComponentParams={{
-                    title: EMPTY_DATA,
-                  }}
-                  frameworkComponents={frameworkComponents}
-                  onFilterModified={this.onFloatingFilterChanged}
-                  suppressRowClickSelection={true}
-                >
-                  <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                  <AgGridColumn field="ProcessCode" headerName="Process Code"></AgGridColumn>
-                  <AgGridColumn field="ProcessId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-                </AgGridReact>
-                {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    costingHeadRenderer: costingHeadFormatter,
+    customNoRowsOverlay: NoContentFound,
+  };
+  return (
+    <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`} >
+      {state.isLoader && <LoaderCustom />}
+      <form noValidate>
+        <Row className="pt-4">
+          <Col md="6" className="search-user-block mb-3">
+            <div className="d-flex justify-content-end bd-highlight w100">
+              <div>
+                {state.shown ? (<button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}  ><div className="cancel-icon-white"></div>  </button>) : ("")}
+                {permissions.Add && (<button type="button" className={"user-btn mr5"} title="Add" onClick={processToggler} >  <div className={"plus mr-0"}></div>   </button>)}
+                {permissions.Download && (
+                  <>
+                    <ExcelFile filename={ProcessMaster} fileExtension={".xls"} element={<button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={"user-btn mr5"}  >    <div className="download mr-1"></div>    {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} </button>} > {onBtExport()} </ExcelFile>
+                  </>
+                )}
+                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()} >
+                  <div className="refresh mr-0"></div>
+                </button>
               </div>
             </div>
-
           </Col>
         </Row>
-        {isOpenProcessDrawer && (
-          <AddProcessDrawer
-            isOpen={isOpenProcessDrawer}
-            closeDrawer={this.closeProcessDrawer}
-            isEditFlag={isEditFlag}
-            isMachineShow={true}
-            ID={this.state.Id}
-            anchor={'right'}
-          />
-        )}
-        {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.PROCESS_DELETE_ALERT}`} />
-        }
-      </div>
-    )
-  }
-}
+      </form>
+      <Row>
+        <Col>
+          <div className={`ag-grid-wrapper height-width-wrapper ${(props.processList && props.processList?.length <= 0) || noData ? "overlay-contain" : ""}`} >
+            <div className="ag-grid-header">
+              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
+            </div>
+            <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`} >
+              {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
+              <AgGridReact
+                defaultColDef={defaultColDef}
+                floatingFilter={true}
+                domLayout="autoHeight"
+                rowData={processList}
+                pagination={true}
+                paginationPageSize={defaultPageSize}
+                onGridReady={onGridReady}
+                gridOptions={gridOptions}
+                rowSelection={"multiple"}
+                onSelectionChanged={onRowSelect}
+                noRowsOverlayComponent={"customNoRowsOverlay"}
+                noRowsOverlayComponentParams={{ title: EMPTY_DATA, }}
+                frameworkComponents={frameworkComponents}
+                onFilterModified={onFloatingFilterChanged}
+                suppressRowClickSelection={true}>
+                <AgGridColumn field="ProcessName" headerName="Process Name" cellRenderer={"costingHeadFormatter"}></AgGridColumn>
+                <AgGridColumn field="ProcessCode" headerName="Process Code" ></AgGridColumn>
+                <AgGridColumn field="ProcessId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+              </AgGridReact>
+              {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+            </div>
+          </div>
+        </Col>
+      </Row>
+      {isOpenProcessDrawer && (<AddProcessDrawer isOpen={isOpenProcessDrawer} closeDrawer={closeProcessDrawer} isEditFlag={isEditFlag} isMachineShow={true} ID={state.Id} anchor={"right"} />)}
+      {state.showPopup && (<PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.PROCESS_DELETE_ALERT}`} />)}
+    </div>
+  );
+};
 
-/**
- * @method mapStateToProps
- * @description return state to component as props
- * @param {*} state
- */
-function mapStateToProps({ process }) {
-  const { processList } = process
-  return { processList }
-}
-
-/**
- * @method connect
- * @description connect with redux
- * @param {function} mapStateToProps
- * @param {function} mapDispatchToProps
- */
-export default connect(mapStateToProps, {
-  deleteProcess,
-  getProcessDataList,
-  getMachineSelectListByPlant,
-})(
-  reduxForm({
-    form: 'ProcessListing',
-    enableReinitialize: true,
-    touchOnChange: true
-  })(ProcessListing),
-)
+export default ProcessListing;

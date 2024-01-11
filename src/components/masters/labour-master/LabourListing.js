@@ -1,22 +1,17 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { reduxForm } from "redux-form";
+import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { focusOnError } from "../../layout/FormInputs";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import { getLabourDataList, deleteLabour, getLabourTypeByPlantSelectList } from '../actions/Labour';
-import { getPlantListByState, } from '../actions/Fuel';
-import Switch from "react-switch";
+import { getLabourDataList, deleteLabour } from '../actions/Labour';
 import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
 import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import DayTime from '../../common/DayTimeWrapper'
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import LoaderCustom from '../../common/LoaderCustom';
 import { LABOUR_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ReactExport from 'react-export-excel';
@@ -27,8 +22,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { filterParams } from '../../common/DateFilter'
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId } from '../../../helper';
-import SelectRowWrapper from '../../common/SelectRowWrapper';
+import { loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 
@@ -38,85 +32,82 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 
-class LabourListing extends Component {
-  constructor(props) {
-    super(props)
-    this.state = {
-      tableData: [],
-      shown: false,
-      EmploymentTerms: [],
-      vendorName: [],
-      stateName: [],
+function LabourListing(props) {
+  const [state, setState] = useState({
+    tableData: [],
+    shown: false,
+    EmploymentTerms: [],
+    vendorName: [],
+    stateName: [],
 
-      data: { isEditFlag: false, ID: '' },
-      toggleForm: false,
-      isBulkUpload: false,
+    data: { isEditFlag: false, ID: '' },
+    toggleForm: false,
+    isBulkUpload: false,
 
-      ViewAccessibility: false,
-      AddAccessibility: false,
-      EditAccessibility: false,
-      DeleteAccessibility: false,
-      BulkUploadAccessibility: false,
-      DownloadAccessibility: false,
-      gridApi: null,
-      gridColumnApi: null,
-      rowData: null,
-      isLoader: false,
-      showPopup: false,
-      deletedId: '',
-      selectedRowData: false,
-      noData: false,
-      dataCount: 0
+    ViewAccessibility: false,
+    AddAccessibility: false,
+    EditAccessibility: false,
+    DeleteAccessibility: false,
+    BulkUploadAccessibility: false,
+    DownloadAccessibility: false,
+    gridApi: null,
+    gridColumnApi: null,
+    rowData: null,
+    isLoader: false,
+    showPopup: false,
+    deletedId: '',
+    selectedRowData: false,
+    noData: false,
+    dataCount: 0,
+  });
+  const dispatch = useDispatch();
+  const { labourDataList, topAndLeftMenuData } = useSelector(state => ({
+    labourDataList: state.labour.labourDataList,
+    topAndLeftMenuData: state.auth.topAndLeftMenuData,
+  }));
+  useEffect(() => {
+    if (topAndLeftMenuData !== undefined) {
+      applyPermission(topAndLeftMenuData)
+      setState(
+        (prevState
+        ) => ({ ...prevState, isLoader: true }))
     }
-  }
-
-  componentDidMount() {
-    this.applyPermission(this.props.topAndLeftMenuData)
-    this.setState({ isLoader: true })
     setTimeout(() => {
-      // this.getTableListData()
-      this.filterList()
-    }, 500);
-  }
-
-  UNSAFE_componentWillReceiveProps(nextProps) {
-    if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-      this.applyPermission(nextProps.topAndLeftMenuData)
+      // getTableListData()
+      filterList()
     }
+      , 500);
   }
+    , [topAndLeftMenuData])
 
-  /**
-  * @method applyPermission
-  * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
-  */
-  applyPermission = (topAndLeftMenuData) => {
+
+  const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
       const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
       const accessData = Data && Data.Pages.find((el) => el.PageName === LABOUR)
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
       if (permmisionData !== undefined) {
-        this.setState({
-          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-        })
+        setState(
+          (prevState
+          ) => ({
+            ...prevState,
+            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+            BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+          })
+        )
       }
     }
   }
 
-  componentWillUnmount() {
-    this.props.getLabourDataList(false, {}, (res) => { })
-  }
 
-  /**
-   * @method getTableListData
-   * @description Get Data List
-   */
-  getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0) => {
+
+
+  const getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0) => {
 
     let filterData = {
       employment_terms: employment_terms,
@@ -126,255 +117,195 @@ class LabourListing extends Component {
       machine_type: machine_type,
     }
 
-    this.props.getLabourDataList(true, filterData, (res) => {
-      this.setState({ isLoader: false })
+    dispatch(getLabourDataList(true, filterData, (res) => {
+      setState(
+        (prevState
+        ) => ({ ...prevState, isLoader: false }))
       if (res.status === 204 && res.data === '') {
-        this.setState({ tableData: [] })
+        setState(
+          (prevState
+          ) => ({ ...prevState, tableData: [] }))
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        this.setState({ tableData: Data, })
+        setState(
+          (prevState
+          ) => ({ ...prevState, tableData: Data, }))
       } else {
       }
-    })
+    }))
   }
 
 
-
-  /**
-   * @method viewOrEditItemDetails
-   * @description confirm edit or view item
-   */
-  viewOrEditItemDetails = (Id, isViewMode) => {
-    this.setState({
-      data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
-      toggleForm: true,
-    })
+  const viewOrEditItemDetails = (Id, isViewMode) => {
+    setState(
+      (prevState
+      ) => ({
+        ...prevState,
+        data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
+        toggleForm: true,
+      }))
   }
 
-  /**
-   * @method deleteItem
-   * @description confirm delete Item.
-   */
-  deleteItem = (Id) => {
-    this.setState({ showPopup: true, deletedId: Id })
+
+  const deleteItem = (Id) => {
+    setState(
+      (prevState
+      ) => ({ ...prevState, showPopup: true, deletedId: Id }))
   }
 
-  /**
-   * @method confirmDeleteItem
-   * @description confirm delete item
-   */
-  confirmDeleteItem = (ID) => {
+
+  const confirmDeleteItem = (ID) => {
     const loggedInUser = loggedInUserId()
-    this.props.deleteLabour(ID, loggedInUser, (res) => {
+    dispatch(deleteLabour(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_LABOUR_SUCCESS)
-        this.setState({ dataCount: 0 })
-        //this.getTableListData(null, null, null, null)
-        this.filterList()
+        setState((prevState) => ({ ...prevState, dataCount: 0 }))
+        getTableListData(null, null, null, null)
+        filterList()
       }
 
-    })
-    this.setState({ showPopup: false })
+    }))
+    setState(
+      (prevState
+      ) => ({ ...prevState, showPopup: false }))
   }
 
-  onPopupConfirm = () => {
-    this.confirmDeleteItem(this.state.deletedId);
+  const onPopupConfirm = () => {
+    confirmDeleteItem(state.deletedId);
   }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
+  const closePopUp = () => {
+    setState(
+      (prevState
+      ) => ({ ...prevState, showPopup: false }))
   }
-  /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
-  buttonFormatter = (props) => {
+
+  const buttonFormatter = (props) => {
+
     const cellValue = props?.value;
-    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = this.state;
+    const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
+
     return (
       <>
-        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, true)} />}
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => this.viewOrEditItemDetails(cellValue, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => this.deleteItem(props?.data?.LabourDetailsId)} />}
+        {ViewAccessibility && (<button title="View" className="View mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, true)} />)}
+        {EditAccessibility && (<button title="Edit" className="Edit mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, false)} />)}
+        {DeleteAccessibility && (<button title="Delete" className="Delete" type="button" onClick={() => deleteItem(cellValue)} />
+        )}
       </>
-    )
+    );
+
   };
 
-  /**
-   * @method indexFormatter
-   * @description Renders serial number
-   */
-  indexFormatter = (cell, row, enumObject, rowIndex) => {
-    let currentPage = this.refs.table.state.currPage
-    let sizePerPage = this.refs.table.state.sizePerPage
-    let serialNumber = ''
-    if (currentPage === 1) {
-      serialNumber = rowIndex + 1
-    } else {
-      serialNumber = rowIndex + 1 + sizePerPage * (currentPage - 1)
-    }
-    return serialNumber
-  }
 
-  renderSerialNumber = () => {
-    return (
-      <>
-        Sr. <br />
-        No.{' '}
-      </>
-    )
-  }
-
-  /**
-  * @method costingHeadFormatter
-  * @description Renders Costing head
-  */
-  costingHeadFormatter = (props) => {
+  const costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue === 'Contractual' ? 'Contractual' : 'Employed'
   }
 
-  commonCostFormatter = (props) => {
+  const commonCostFormatter = (props) => {
     const cell = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cell != null ? cell : '-';
   }
-
-
-  /**
-  * @method hyphenFormatter
-  */
-  hyphenFormatter = (props) => {
+  const hyphenFormatter = (props) => {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
 
-  customerFormatter = (props) => {
+  const customerFormatter = (props) => {
     const cellValue = props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? `${cellValue} (${row.CustomerCode})` : '-';
   }
 
-  /**
-   * @method dashFormatter
-   * @description Renders Costing head
-   */
-  dashFormatter = (cell, row, enumObject, rowIndex) => {
-    return cell !== 'NA' ? cell : '-'
-  }
 
-  /**
-  * @method effectiveDateFormatter
-  * @description Renders buttons
-  */
-  effectiveDateFormatter = (props) => {
+  const effectiveDateFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
   }
 
-  renderPaginationShowsTotal(start, to, total) {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
 
-  /**
-   * @method filterList
-   * @description Filter user listing on the basis of role and department
-   */
-  filterList = () => {
+  const filterList = () => {
     const {
-      EmploymentTerms, StateName, plant, labourType, machineType, } = this.state
+      EmploymentTerms, StateName, plant, labourType, machineType, } = state
     const ETerms = EmploymentTerms ? EmploymentTerms.value : ''
     const State = StateName ? StateName.value : 0
     const Plant = plant ? plant.value : ''
     const labour = labourType ? labourType.value : 0
     const machine = machineType ? machineType.value : 0
-    this.getTableListData(ETerms, State, Plant, labour, machine)
+    getTableListData(ETerms, State, Plant, labour, machine)
   }
 
-  /**
-   * @method formToggle
-   * @description OPEN ADD FORM
-   */
-  formToggle = () => {
+  const formToggle = () => {
     if (checkMasterCreateByCostingPermission()) {
-      this.setState({ toggleForm: true })
+      setState((prevState) => ({ ...prevState, toggleForm: true }))
     }
   }
 
-  /**
-   * @method onFloatingFilterChanged
-   * @description Filter data when user type in searching input
-   */
-  onFloatingFilterChanged = (value) => {
+  const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      this.props.labourDataList.length !== 0 && this.setState({ noData: searchNocontentFilter(value, this.state.noData) })
+      labourDataList.length !== 0 && setState(
+        (prevState
+        ) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
     }, 500);
   }
-  /**
-   * @method hideForm
-   * @description HIDE ADD FORM
-   */
-  hideForm = (type) => {
-    this.setState(
+
+  const hideForm = (type) => {
+    setState(
       {
         toggleForm: false,
         data: { isEditFlag: false, ID: '' },
       },
       () => {
         if (type === 'submit')
-          this.filterList()
+          filterList()
       }
     )
   }
 
-  /**
-   * @method bulkToggle
-   * @description OPEN BULK UPLOAD DRAWER
-   */
-  bulkToggle = () => {
-    this.setState({ isBulkUpload: true })
+
+  const bulkToggle = () => {
+    setState(
+      (prevState
+      ) => ({ ...prevState, isBulkUpload: true }))
   }
 
-  /**
-   * @method closeBulkUploadDrawer
-   * @description CLOSED BULK UPLOAD DRAWER
-   */
 
-  closeBulkUploadDrawer = (event, type) => {
-    this.setState({ isBulkUpload: false })
+  const closeBulkUploadDrawer = (event, type) => {
+    setState(
+      (prevState
+      ) => ({ ...prevState, isBulkUpload: false }))
     if (type !== 'cancel') {
-      this.getTableListData(null, null, null, null)
+      getTableListData(null, null, null, null)
     }
   }
 
-  /**
-   * @name onSubmit
-   * @param values
-   * @desc Submit the signup form values.
-   * @returns {{}}
-   */
-  onSubmit(values) { }
 
-  onGridReady = (params) => {
-    this.setState({ gridApi: params.api, gridColumnApi: params.columnApi })
+  const onGridReady = (params) => {
+    setState(
+      (prevState
+      ) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
 
-  onPageSizeChanged = (newPageSize) => {
-    this.state.gridApi.paginationSetPageSize(Number(newPageSize));
+  const onPageSizeChanged = (newPageSize) => {
+    state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  onRowSelect = () => {
-    const selectedRows = this.state.gridApi?.getSelectedRows()
-    this.setState({ selectedRowData: selectedRows, dataCount: selectedRows.length })
+  const onRowSelect = () => {
+    const selectedRows = state.gridApi?.getSelectedRows()
+    setState(
+      (prevState
+      ) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
+
   }
 
-  onBtExport = () => {
+  const onBtExport = () => {
     let tempArr = []
-    tempArr = this.state.gridApi && this.state.gridApi?.getSelectedRows()
-    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (this.props.labourDataList ? this.props.labourDataList : [])
-    return this.returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
+    tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+    tempArr = (tempArr && tempArr.length > 0) ? tempArr : (labourDataList ? labourDataList : [])
+    return returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
   };
 
-  returnExcelColumn = (data = [], TempData) => {
+  const returnExcelColumn = (data = [], TempData) => {
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.Specification === null) {
@@ -397,233 +328,174 @@ class LabourListing extends Component {
       </ExcelSheet>);
   }
 
-  onFilterTextBoxChanged(e) {
-    this.state.gridApi.setQuickFilter(e.target.value);
+  const onFilterTextBoxChanged = (e) => {
+    state.gridApi.setQuickFilter(e.target.value);
   }
 
-  resetState() {
-    this.state.gridApi.deselectAll()
+  const resetState = () => {
+    const searchBox = document.getElementById("filter-text-box");
+    if (searchBox) {
+      searchBox.value = ""; // Reset the input field's value
+    }
+    state.gridApi.setQuickFilter(null)
+    state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
 
-  /**
-   * @method render
-   * @description Renders the component
-   */
-  render() {
-    const { handleSubmit } = this.props
-    const {
-      toggleForm,
-      data,
-      isBulkUpload,
-      AddAccessibility,
-      BulkUploadAccessibility,
-      DownloadAccessibility,
-      noData,
-      dataCount
-    } = this.state
-    const ExcelFile = ReactExport.ExcelFile;
-    if (toggleForm) {
-      return <AddLabour hideForm={this.hideForm} data={data} />
-    }
-    const isFirstColumn = (params) => {
+  const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, } = state
+  const ExcelFile = ReactExport.ExcelFile;
 
-      var displayedColumns = params.columnApi.getAllDisplayedColumns();
-      var thisIsFirstColumn = displayedColumns[0] === params.column;
-      return thisIsFirstColumn;
+  if (toggleForm) {
+    return <AddLabour hideForm={hideForm} data={data} />
+  }
+  const isFirstColumn = (params) => {
 
-    }
-    const defaultColDef = {
-      resizable: true,
-      filter: true,
-      sortable: false,
-      headerCheckboxSelectionFilteredOnly: true,
-      checkboxSelection: isFirstColumn
-    };
+    var displayedColumns = params.columnApi.getAllDisplayedColumns();
+    var thisIsFirstColumn = displayedColumns[0] === params.column;
+    return thisIsFirstColumn;
 
-    const frameworkComponents = {
-      totalValueRenderer: this.buttonFormatter,
-      customNoRowsOverlay: NoContentFound,
-      costingHeadFormatter: this.costingHeadFormatter,
-      effectiveDateRenderer: this.effectiveDateFormatter,
-      hyphenFormatter: this.hyphenFormatter,
-      commonCostFormatter: this.commonCostFormatter,
-      customerFormatter: this.customerFormatter
-    };
+  }
+  const defaultColDef = {
+    resizable: true,
+    filter: true,
+    sortable: false,
+    headerCheckboxSelectionFilteredOnly: true,
+    checkboxSelection: isFirstColumn
+  };
 
-    return (
-      <>
-        <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
-          {this.state.isLoader && <LoaderCustom customClass="loader-center" />}
-          <ScrollToTop pointProp="go-to-top" />
-          <form
-            onSubmit={handleSubmit(this.onSubmit.bind(this))}
-            noValidate
-          >
-            <Row className=" filter-row-large blue-before">
+  const frameworkComponents = {
+    totalValueRenderer: buttonFormatter,
+    customNoRowsOverlay: NoContentFound,
+    costingHeadFormatter: costingHeadFormatter,
+    effectiveDateRenderer: effectiveDateFormatter,
+    hyphenFormatter: hyphenFormatter,
+    commonCostFormatter: commonCostFormatter,
+    customerFormatter: customerFormatter
+  };
 
-              <Col md="6" className="search-user-block mb-3">
-                <div className="d-flex justify-content-end bd-highlight w100">
-                  <div>
-                    {this.state.shown ? (
-                      <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => this.setState({ shown: !this.state.shown })}>
-                        <div className="cancel-icon-white"></div></button>
-                    ) : (
-                      ""
-                    )}
-                    {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.formToggle}
-                        title="Add"
-                      >
-                        <div className={"plus mr-0"}></div>
-                        {/* ADD */}
-                      </button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={this.bulkToggle}
-                        title="Bulk Upload"
-                      >
-                        <div className={"upload mr-0"}></div>
-                        {/* Bulk Upload */}
-                      </button>
-                    )}
-                    {
-                      DownloadAccessibility &&
-                      <>
+  return (
+    <>
+      <div className={`ag-grid-react container-fluid ${DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`} id='go-to-top'>
+        {state.isLoader && <LoaderCustom customClass="loader-center" />}
+        <ScrollToTop pointProp="go-to-top" />
+        <form noValidate>
+          <Row className=" filter-row-large blue-before">
 
-                        <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
-                          <button title={`Download ${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
-                            {/* DOWNLOAD */}
-                            {`${this.state.dataCount === 0 ? "All" : "(" + this.state.dataCount + ")"}`}
-                          </button>}>
-
-                          {this.onBtExport()}
-                        </ExcelFile>
-
-                      </>
-
-
-
-                    }
-                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => this.resetState()}>
-                      <div className="refresh mr-0"></div>
+            <Col md="6" className="search-user-block mb-3">
+              <div className="d-flex justify-content-end bd-highlight w100">
+                <div>
+                  {state.shown ? (
+                    <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
+                      <div className="cancel-icon-white"></div></button>
+                  ) : (
+                    ""
+                  )}
+                  {AddAccessibility && (
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={formToggle}
+                      title="Add"
+                    >
+                      <div className={"plus mr-0"}></div>
+                      {/* ADD */}
                     </button>
+                  )}
+                  {BulkUploadAccessibility && (
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={bulkToggle}
+                      title="Bulk Upload"
+                    >
+                      <div className={"upload mr-0"}></div>
+                      {/* Bulk Upload */}
+                    </button>
+                  )}
+                  {
+                    DownloadAccessibility &&
+                    <>
 
-                  </div>
+                      <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
+                        <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
+                          {/* DOWNLOAD */}
+                          {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                        </button>}>
+
+                        {onBtExport()}
+                      </ExcelFile>
+                    </>
+                  }
+                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
+                    <div className="refresh mr-0"></div>
+                  </button>
+
                 </div>
-              </Col>
-            </Row>
-          </form>
+              </div>
+            </Col>
+          </Row>
+        </form>
 
-          <div className={`ag-grid-wrapper height-width-wrapper ${(this.props.labourDataList && this.props.labourDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
-            <div className="ag-grid-header">
-              <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => this.onFilterTextBoxChanged(e)} />
-            </div>
-            <div className={`ag-theme-material ${this.state.isLoader && "max-loader-height"}`}>
-              {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-              <AgGridReact
-                defaultColDef={defaultColDef}
-                floatingFilter={true}
-                domLayout='autoHeight'
-                rowData={this.props.labourDataList}
-                pagination={true}
-                paginationPageSize={defaultPageSize}
-                onGridReady={this.onGridReady}
-                gridOptions={gridOptions}
-                noRowsOverlayComponent={'customNoRowsOverlay'}
-                onFilterModified={this.onFloatingFilterChanged}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: 'imagClass'
-                }}
-                rowSelection={'multiple'}
-                onSelectionChanged={this.onRowSelect}
-                frameworkComponents={frameworkComponents}
-                suppressRowClickSelection={true}
-              >
-                <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
-                <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
-                <AgGridColumn field="State" headerName="State"></AgGridColumn>
-                <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
-                <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
-                <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
-                <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
-              </AgGridReact>
-              {<PaginationWrapper gridApi={this.gridApi} setPage={this.onPageSizeChanged} />}
-            </div>
+        <div className={`ag-grid-wrapper height-width-wrapper ${(labourDataList && labourDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
+          <div className="ag-grid-header">
+            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
           </div>
+          <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+            {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+            {!state.isLoader && <AgGridReact
+              defaultColDef={defaultColDef}
+              floatingFilter={true}
+              domLayout='autoHeight'
+              rowData={labourDataList}
+              pagination={true}
+              paginationPageSize={defaultPageSize}
+              onGridReady={onGridReady}
+              gridOptions={gridOptions}
+              noRowsOverlayComponent={'customNoRowsOverlay'}
+              onFilterModified={onFloatingFilterChanged}
+              noRowsOverlayComponentParams={{
+                title: EMPTY_DATA,
+                imagClass: 'imagClass'
+              }}
+              rowSelection={'multiple'}
+              onSelectionChanged={onRowSelect}
+              frameworkComponents={frameworkComponents}
+              suppressRowClickSelection={true}
+            >
+              <AgGridColumn field="IsContractBase" headerName="Employment Terms" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
+              <AgGridColumn field="Vendor" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+              {reactLocalStorage.getObject('CostingTypePermission').cbc && < AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'customerFormatter'}></AgGridColumn>}
+              <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>
+              <AgGridColumn field="State" headerName="State"></AgGridColumn>
+              <AgGridColumn field="MachineType" headerName="Machine Type"></AgGridColumn>
+              <AgGridColumn field="LabourType" headerName="Labour Type"></AgGridColumn>
+              <AgGridColumn width={205} field="LabourRate" headerName="Rate per Person/Annum" cellRenderer={'commonCostFormatter'}></AgGridColumn>
+              <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
+              <AgGridColumn field="LabourId" width={150} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
+            </AgGridReact>}
+            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+          </div>
+        </div>
 
-          {isBulkUpload && (
-            <BulkUpload
-              isOpen={isBulkUpload}
-              closeDrawer={this.closeBulkUploadDrawer}
-              isEditFlag={false}
-              fileName={'Labour'}
-              isZBCVBCTemplate={true}
-              messageLabel={'Labour'}
-              anchor={'right'}
-            />
-          )}
-          {
-            this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.LABOUR_DELETE_ALERT}`} />
-          }
-        </div >
-      </>
-    )
-  }
+        {isBulkUpload && (
+          <BulkUpload
+            isOpen={isBulkUpload}
+            closeDrawer={closeBulkUploadDrawer}
+            isEditFlag={false}
+            fileName={'Labour'}
+            isZBCVBCTemplate={true}
+            messageLabel={'Labour'}
+            anchor={'right'}
+          />
+        )}
+        {
+          state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.LABOUR_DELETE_ALERT}`} />
+        }
+      </div >
+    </>
+  )
 }
 
-/**
- * @method mapStateToProps
- * @description return state to component as props
- * @param {*} state
- */
-function mapStateToProps({ labour, auth, fuel, machine }) {
-  const { loading, labourTypeByPlantSelectList, labourDataList } = labour
-  const { plantSelectList, stateSelectList } = fuel
-  const { machineTypeSelectList } = machine
-  const { leftMenuData, initialConfiguration, topAndLeftMenuData } = auth
-  return {
-    loading,
-    leftMenuData,
-    plantSelectList,
-    stateSelectList,
-    labourTypeByPlantSelectList,
-    machineTypeSelectList,
-    labourDataList,
-    initialConfiguration,
-    topAndLeftMenuData,
-  }
-}
 
-/**
- * @method connect
- * @description connect with redux
- * @param {function} mapStateToProps
- * @param {function} mapDispatchToProps
- */
-export default connect(mapStateToProps, {
-  getLabourDataList,
-  deleteLabour,
-  getPlantListByState,
-  getLabourTypeByPlantSelectList,
-})(
-  reduxForm({
-    form: 'LabourListing',
-    onSubmitFail: (errors) => {
-      focusOnError(errors)
-    },
-    enableReinitialize: true,
-    touchOnChange: true
-  })(LabourListing),
-)
+export default LabourListing

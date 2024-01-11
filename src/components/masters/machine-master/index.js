@@ -1,289 +1,126 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
-import classnames from 'classnames';
-import MachineRateListing from './MachineRateListing';
-import AddMachineRate from './AddMachineRate';
-import AddMoreDetails from './AddMoreDetails';
-import ProcessListing from './ProcessListing';
-import { checkPermission } from '../../../helper/util';
-import { APPROVAL_CYCLE_STATUS_MASTER, MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
+import classnames from "classnames";
+import MachineRateListing from "./MachineRateListing";
+import AddMachineRate from "./AddMachineRate";
+import AddMoreDetails from "./AddMoreDetails";
+import ProcessListing from "./ProcessListing";
+import { checkPermission } from "../../../helper/util";
+import { APPROVAL_CYCLE_STATUS_MASTER, MACHINE, MACHINE_MASTER_ID, MASTERS, } from "../../../config/constants";
 //MINDA
 // import { APPROVED_STATUS_MASTER, MACHINE, MACHINE_MASTER_ID, MASTERS, } from '../../../config/constants';
-import ScrollToTop from '../../common/ScrollToTop';
+import ScrollToTop from "../../common/ScrollToTop";
 import { CheckApprovalApplicableMaster } from "../../../helper";
-import CommonApproval from '../material-master/CommonApproval';
-import { MESSAGES } from '../../../config/message';
+import CommonApproval from "../material-master/CommonApproval";
+import { MESSAGES } from "../../../config/message";
 
-class MachineMaster extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            activeTab: '1',
-            isMachineRateForm: false,
-            isAddMoreDetails: false,
-            isProcessForm: false,
-            data: {},
-            editDetails: {},
+export const ApplyPermission = React.createContext();
 
-            ViewAccessibility: false,
-            AddAccessibility: false,
-            EditAccessibility: false,
-            DeleteAccessibility: false,
-            DownloadAccessibility: false,
-            BulkUploadAccessibility: false,
-            stopApiCallOnCancel: false
-        }
+const MachineMaster = () => {
+  const [state, setState] = useState({
+    activeTab: "1",
+    isMachineRateForm: false,
+    isAddMoreDetails: false,
+    isProcessForm: false,
+    data: {},
+    editDetails: {},
+    ViewAccessibility: false,
+    AddAccessibility: false,
+    EditAccessibility: false,
+    DeleteAccessibility: false,
+    DownloadAccessibility: false,
+    BulkUploadAccessibility: false,
+    stopApiCallOnCancel: false,
+  });
+  const [permissionData, setPermissionData] = useState({});
+  const { topAndLeftMenuData } = useSelector((state) => state.auth);
+  const { disabledClass } = useSelector((state) => state.comman);
+
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData);
+  }, [topAndLeftMenuData]);
+
+  const applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data = topAndLeftMenuData && topAndLeftMenuData.find((el) => el.ModuleName === MASTERS);
+      const accessData = Data && Data.Pages.find((el) => el.PageName === MACHINE);
+      const permmisionDataAccess = accessData && accessData.Actions && checkPermission(accessData.Actions);
+      if (permmisionDataAccess !== undefined) {
+        setPermissionData(permmisionDataAccess);
+      }
     }
+  };
 
-    /**
-    * @method componentDidMount
-    * @description SET PERMISSION FOR ADD, VIEW, EDIT, DELETE, DOWNLOAD AND BULKUPLOAD
-    */
-    componentDidMount() {
-        this.applyPermission(this.props.topAndLeftMenuData)
+  const toggle = (tab) => {
+    if (state.activeTab !== tab) {
+      setState((prevState) => ({ ...prevState, activeTab: tab, stopApiCallOnCancel: false, }));
+    };
+  }
+  const displayForm = () => {
+    setState((prevState) => ({ ...prevState, isMachineRateForm: true, isAddMoreDetails: false, editDetails: { isEditFlag: false }, }));
+  };
+  const getDetails = (data, isMachineAssociate) => {
+    setState((prevState) => ({ ...prevState, isMachineRateForm: true, isAddMoreDetails: false, editDetails: data, isMachineAssociated: isMachineAssociate, }));
+  };
+  const setData = (data = {}) => { setState((prevState) => ({ ...prevState, data: data })); };
+
+  const hideForm = (type) => {
+    setState((prevState) => ({ ...prevState, isMachineRateForm: false, data: {}, editDetails: {}, stopApiCallOnCancel: false, }));
+    if (type === "cancel") {
+      setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true }));
     }
+  };
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-            this.applyPermission(nextProps.topAndLeftMenuData)
-        }
-    }
+  const displayMoreDetailsForm = (data = {}) => {
+    setState((prevState) => ({ ...prevState, isAddMoreDetails: true, isMachineRateForm: false, editDetails: data, }));
+  };
 
-    /**
-    * @method applyPermission
-    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
-    */
-    applyPermission = (topAndLeftMenuData) => {
-        if (topAndLeftMenuData !== undefined) {
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === MASTERS);
-            const accessData = Data && Data.Pages.find(el => el.PageName === MACHINE)
-            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+  const hideMoreDetailsForm = (data = {}, editDetails = {}) => {
+    setState((prevState) => ({ ...prevState, isAddMoreDetails: false, isMachineRateForm: true, data: data, editDetails: editDetails, }));
+  };
 
-            if (permmisionData !== undefined) {
-                this.setState({
-                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                })
-            }
-        }
-    }
+  const { isMachineRateForm, isAddMoreDetails } = state;
 
-    /**
-    * @method toggle
-    * @description toggling the tabs
-    */
-    toggle = (tab) => {
-        if (this.state.activeTab !== tab) {
-            this.setState({
-                activeTab: tab,
-                stopApiCallOnCancel: false
-            });
-        }
-    }
+  if (isMachineRateForm === true) {
+    return (
+      <AddMachineRate editDetails={state.editDetails} data={state.data} setData={setData} hideForm={hideForm} displayMoreDetailsForm={displayMoreDetailsForm} AddAccessibility={state.AddAccessibility} EditAccessibility={state.EditAccessibility} isMachineAssociated={state.isMachineAssociated} />
+    );
+  }
 
-    /**
-    * @method displayForm
-    * @description DISPLAY MACHINE FORM
-    */
-    displayForm = () => {
-        this.setState({
-            isMachineRateForm: true,
-            isAddMoreDetails: false,
-            editDetails: { isEditFlag: false }
-        })
-    }
+  if (isAddMoreDetails === true) {
+    return (
+      <AddMoreDetails editDetails={state.editDetails} data={state.data} hideMoreDetailsForm={hideMoreDetailsForm} isMachineAssociated={state.isMachineAssociated} />
+    );
+  }
 
-    /**
-    * @method getDetails
-    * @description DISPLAY MACHINE FORM
-    */
-    getDetails = (data, isMachineAssociate) => {
-        this.setState({
-            isMachineRateForm: true,
-            isAddMoreDetails: false,
-            editDetails: data,
-            isMachineAssociated: isMachineAssociate,
-        })
-    }
+  return (
+    <>
+      {Object.keys(permissionData).length > 0 && (<div className="container-fluid" id="go-top-top">
+        <ScrollToTop pointProp={"go-top-top"} />
+        <Row>
+          <Col>
+            <div>
+              <Nav tabs className="subtabs mt-0 p-relative">
+                {disabledClass && (<div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>)}
+                <NavItem><NavLink className={classnames({ active: state.activeTab === "1", })} onClick={() => { toggle("1"); }} >Machine Rate  </NavLink> </NavItem>
+                <NavItem> <NavLink className={classnames({ active: state.activeTab === "2", })} onClick={() => { toggle("2"); }}> Manage Process</NavLink> </NavItem>
+                {CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && (<NavItem><NavLink className={classnames({ active: state.activeTab === "3", })} onClick={() => { toggle("3"); }} > Approval Status </NavLink></NavItem>)}
+              </Nav>
+              <ApplyPermission.Provider value={permissionData}>
+                <TabContent activeTab={state.activeTab}>
+                  {Number(state.activeTab) === 1 && (<TabPane tabId="1"> <MachineRateListing displayForm={displayForm} getDetails={getDetails} isMasterSummaryDrawer={false} stopApiCallOnCancel={state.stopApiCallOnCancel} selectionForListingMasterAPI="Master" approvalStatus={APPROVAL_CYCLE_STATUS_MASTER} /> </TabPane>)}
+                  {Number(state.activeTab) === 2 && (<TabPane tabId="2"> <ProcessListing stopApiCallOnCancel={state.stopApiCallOnCancel} /></TabPane>)}
+                  {Number(state.activeTab) === 3 && (<TabPane tabId="3">  <CommonApproval MasterId={MACHINE_MASTER_ID} /> </TabPane>)}
+                </TabContent>
+              </ApplyPermission.Provider>
+            </div>
+          </Col>
+        </Row>
+      </div>
+      )}
+    </>
+  );
+};
 
-    /**
-    * @method setData
-    * @description SET DATA FOR EDIT MACHINE FORM
-    */
-    setData = (data = {}) => {
-        this.setState({ data: data })
-    }
-
-    /**
-    * @method hideForm
-    * @description HIDE MACHINE FORM
-    */
-    hideForm = (type) => {
-        this.setState({ isMachineRateForm: false, data: {}, editDetails: {}, stopApiCallOnCancel: false })
-        if (type === 'cancel') {
-            this.setState({ stopApiCallOnCancel: true })
-        }
-    }
-
-    addMoreDetailsData = (data) => {
-
-    }
-
-    /**
-    * @method displayMoreDetailsForm
-    * @description DISPLAY MORE DETAILS FORM
-    */
-    displayMoreDetailsForm = (data = {}) => {
-        this.setState({
-            isAddMoreDetails: true,
-            isMachineRateForm: false,
-            editDetails: data,
-        })
-    }
-
-    /**
-    * @method hideMoreDetailsForm
-    * @description HIDE MORE DETAILS FORM(save and cancel button(more confirmation from Tanmay sir))
-    */
-    hideMoreDetailsForm = (data = {}, editDetails = {}) => {
-
-
-        this.setState({
-            isAddMoreDetails: false,
-            isMachineRateForm: true,
-            data: data,
-            editDetails: editDetails,
-        })
-    }
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { isMachineRateForm, isAddMoreDetails, } = this.state;
-
-        if (isMachineRateForm === true) {
-            return <AddMachineRate
-                editDetails={this.state.editDetails}
-                data={this.state.data}
-                setData={this.setData}
-                hideForm={this.hideForm}
-                displayMoreDetailsForm={this.displayMoreDetailsForm}
-                AddAccessibility={this.state.AddAccessibility}
-                EditAccessibility={this.state.EditAccessibility}
-                isMachineAssociated={this.state.isMachineAssociated}
-            />
-        }
-
-        if (isAddMoreDetails === true) {
-            return <AddMoreDetails
-                editDetails={this.state.editDetails}
-                data={this.state.data}
-                hideMoreDetailsForm={this.hideMoreDetailsForm}
-                isMachineAssociated={this.state.isMachineAssociated}
-            />
-        }
-
-        return (
-            <>
-                <div className="container-fluid" id='go-top-top'>
-                    <ScrollToTop pointProp={"go-top-top"} />
-                    <Row>
-                        <Col>
-                            <div>
-                                <Nav tabs className="subtabs mt-0 p-relative">
-                                    {this.props.disabledClass && <div title={MESSAGES.DOWNLOADING_MESSAGE} className="disabled-overflow"></div>}
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                            Machine Rate
-                                        </NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                            Manage Process
-                                        </NavLink>
-                                    </NavItem>
-                                    {CheckApprovalApplicableMaster(MACHINE_MASTER_ID) && <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '3' })} onClick={() => { this.toggle('3'); }}>
-                                            Approval Status
-                                        </NavLink>
-                                    </NavItem>}
-                                </Nav>
-
-                                <TabContent activeTab={this.state.activeTab}>
-
-
-
-                                    {Number(this.state.activeTab) === 1 &&
-                                        <TabPane tabId="1">
-                                            <MachineRateListing
-                                                displayForm={this.displayForm}
-                                                getDetails={this.getDetails}
-                                                AddAccessibility={this.state.AddAccessibility}
-                                                EditAccessibility={this.state.EditAccessibility}
-                                                DeleteAccessibility={this.state.DeleteAccessibility}
-                                                BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                                DownloadAccessibility={this.state.DownloadAccessibility}
-                                                ViewAccessibility={this.state.ViewAccessibility}
-                                                isMasterSummaryDrawer={false}
-                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                                                selectionForListingMasterAPI='Master'
-                                                approvalStatus={APPROVAL_CYCLE_STATUS_MASTER}
-                                            //MINDA
-                                            // approvalStatus={APPROVED_STATUS_MASTER}
-                                            />
-                                        </TabPane>}
-
-                                    {Number(this.state.activeTab) === 2 &&
-                                        <TabPane tabId="2">
-                                            <ProcessListing
-                                                AddAccessibility={this.state.AddAccessibility}
-                                                EditAccessibility={this.state.EditAccessibility}
-                                                DeleteAccessibility={this.state.DeleteAccessibility}
-                                                DownloadAccessibility={this.state.DownloadAccessibility}
-                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                                            />
-                                        </TabPane>}
-                                    {Number(this.state.activeTab) === 3 &&
-                                        <TabPane tabId="3">
-                                            <CommonApproval
-                                                AddAccessibility={this.state.AddAccessibility}
-                                                EditAccessibility={this.state.EditAccessibility}
-                                                DeleteAccessibility={this.state.DeleteAccessibility}
-                                                DownloadAccessibility={this.state.DownloadAccessibility}
-                                                MasterId={MACHINE_MASTER_ID}
-                                            />
-                                        </TabPane>}
-
-                                </TabContent>
-                            </div>
-                        </Col>
-                    </Row>
-                </div>
-            </>
-        );
-    }
-}
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ auth, comman }) {
-    const { leftMenuData, topAndLeftMenuData, loading } = auth;
-    const { disabledClass } = comman
-    return { leftMenuData, topAndLeftMenuData, loading, disabledClass }
-}
-
-
-export default connect(mapStateToProps,
-    {}
-)(MachineMaster);
-
+export default MachineMaster;

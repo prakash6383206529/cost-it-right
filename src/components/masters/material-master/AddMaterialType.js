@@ -1,294 +1,261 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Field, reduxForm } from "redux-form";
-import { Container, Row, Col, } from 'reactstrap';
-import { required, decimalLengthFour, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, positiveAndDecimalNumber, hashValidation } from "../../../helper/validation";
-import { renderText } from "../../layout/FormInputs";
-import { createMaterialTypeAPI, getMaterialDetailAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../actions/Material';
+import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Container, Row, Col } from 'reactstrap';
+import { useForm, Controller } from 'react-hook-form';
+import { TextFieldHookForm } from '../../layout/HookFormInputs';
+import { createMaterialTypeAPI, getMaterialTypeDataAPI, updateMaterialtypeAPI } from '../actions/Material';
 import Toaster from '../../common/Toaster';
-import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from "../../../helper/auth";
-import Drawer from '@material-ui/core/Drawer';
-import { debounce } from 'lodash';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
-import { withTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
+import { loggedInUserId } from "../../../helper/auth";
+import Drawer from '@material-ui/core/Drawer';
+import { debounce } from 'lodash';
 import Button from '../../layout/Button';
-import { GUIDE_BUTTON_SHOW } from '../../../config/constants';
+import { MESSAGES } from '../../../config/message';
+import { acceptAllExceptSingleSpecialCharacter, checkWhiteSpaces, decimalLengthFour, hashValidation, positiveAndDecimalNumber, required } from '../../../helper';
 
-class AddMaterialType extends Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      isEditFlag: false,
-      isShowForm: false,
-      MaterialTypeId: '',
-      DataToChange: [],
-      setDisable: false,
-      showPopup: false,
-    }
-  }
+const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
+  const { t } = useTranslation();
+  const dispatch = useDispatch();
 
-  /**
-  * @method componentDidMount
-  * @description Called after rendering the component
-  */
-  componentDidMount() {
-    const { ID, isEditFlag } = this.props;
-    if (isEditFlag) {
-      this.props.getMaterialTypeDataAPI(ID, res => { });
-    } else {
-      this.props.getMaterialTypeDataAPI('', res => { });
-    }
-  }
+  const [state, setState] = useState({
+    isShowForm: false,
+    MaterialTypeId: '',
+    DataToChange: [],
+    setDisable: false,
+    showPopup: false,
+  });
 
-  /**
-  * @method cancel
-  * @description used to Reset form
-  */
-  cancel = (type) => {
-    const { reset } = this.props;
+  const materialTypeData = useSelector(state => state.material);
+  const {
+    register,
+    control,
+    setValue,
+    handleSubmit,
+    getValues,
+    reset,
+    formState: { errors, isDirty },
+  } = useForm({
+    mode: 'onChange',
+    reValidateMode: 'onChange',
+  });
+
+  useEffect(() => {
+    const fetchData = () => {
+      const materialId = isEditFlag ? ID : ''; // Use a default value for ID
+      dispatch(getMaterialTypeDataAPI(materialId, res => {
+        console.log(res);
+        const data = res?.data?.Data;
+
+        if (data) {
+          const defaultValues = {
+            MaterialType: data.MaterialType,
+            CalculatedDensityValue: data.Density,
+          };
+
+          Object.entries(defaultValues).forEach(([key, value]) => {
+            setValue(key, value);
+          });
+        }
+      }));
+    };
+
+    fetchData();
+  }, [isEditFlag, ID, dispatch, setValue]);
+
+  const cancel = (type) => {
     reset();
-    this.props.getMaterialTypeDataAPI('', res => { });
-    this.toggleDrawer('', '', type)
-  }
+    dispatch(getMaterialTypeDataAPI('', res => { }));
+    toggleDrawer('', '', type);
+  };
 
-  cancelHandler = () => {
-    const { dirty } = this.props;
-    if (dirty) {
-      this.setState({ showPopup: true })
+  const cancelHandler = () => {
+    if (isDirty) {
+      setState(prevState => ({ ...prevState, showPopup: true }));
     } else {
-      this.cancel('cancel')
+      cancel('cancel');
     }
-  }
-  onPopupConfirm = () => {
-    this.cancel('cancel')
-    this.setState({ showPopup: false })
-  }
-  closePopUp = () => {
-    this.setState({ showPopup: false })
-  }
-  toggleDrawer = (event, formData, type) => {
+  };
+
+  const onPopupConfirm = () => {
+    cancel('cancel');
+    setState(prevState => ({ ...prevState, showPopup: false }));
+  };
+
+  const closePopUp = () => {
+    setState(prevState => ({ ...prevState, showPopup: false }));
+  };
+
+  const toggleDrawer = (event, formData, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
       return;
     }
-    this.props.closeDrawer('', formData, type)
+    closeDrawer('', formData, type);
   };
 
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  onSubmit = debounce((values) => {
-    const { reset, ID, isEditFlag, initialValues } = this.props;
-
+  const onSubmit = debounce(values => {
     if (isEditFlag) {
-      if (initialValues.CalculatedDensityValue === values.CalculatedDensityValue && initialValues.MaterialType === values.MaterialType) {
-        this.cancel('cancel')
-        return false
+      if (materialTypeData.MaterialType === values.CalculatedDensityValue && materialTypeData.Density === values.MaterialType) {
+        cancel('cancel');
+        return false;
       }
-      this.setState({ setDisable: true })
-      let updateData = {
+
+      setState(prevState => ({ ...prevState, setDisable: true }));
+
+      const updateData = {
         MaterialTypeId: ID,
         ModifiedBy: loggedInUserId(),
         CreatedDate: '',
         MaterialType: values.MaterialType,
         CalculatedDensityValue: values.CalculatedDensityValue,
-        IsActive: true
-      }
+        IsActive: true,
+      };
 
-      this.props.updateMaterialtypeAPI(updateData, (res) => {
-        this.setState({ setDisable: false })
+      dispatch(updateMaterialtypeAPI(updateData, res => {
+        setState(prevState => ({ ...prevState, setDisable: false }));
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.MATERIAL_UPDATE_SUCCESS);
-          this.props.getMaterialTypeDataAPI('', res => { });
+          dispatch(getMaterialTypeDataAPI('', res => { }));
           reset();
-          this.toggleDrawer('', updateData, 'submit')
+          toggleDrawer('', updateData, 'submit');
         }
-      })
-
+      }));
     } else {
-      this.setState({ setDisable: true })
-      let formData = {
+      setState(prevState => ({ ...prevState, setDisable: true }));
+
+      const formData = {
         MaterialType: values.MaterialType,
         CalculatedDensityValue: values.CalculatedDensityValue,
         CreatedBy: loggedInUserId(),
-        IsActive: true
-      }
+        IsActive: true,
+      };
 
-      this.props.createMaterialTypeAPI(formData, (res) => {
-        this.setState({ setDisable: false })
+      dispatch(createMaterialTypeAPI(formData, res => {
+        setState(prevState => ({ ...prevState, setDisable: false }));
         if (res?.data?.Result) {
           Toaster.success(MESSAGES.MATERIAL_ADDED_SUCCESS);
-          this.props.getMaterialTypeDataAPI('', res => { });
+          dispatch(getMaterialTypeDataAPI('', res => { }));
           reset();
-          this.toggleDrawer('', formData, 'submit')
+          toggleDrawer('', formData, 'submit');
         }
-      });
+      }));
     }
+  }, 500);
 
-  }, 500)
-
-  handleKeyDown = function (e) {
+  const handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
     }
   };
 
-  /**
-  * @method render
-  * @description Renders the component
-  */
-  render() {
-    const { handleSubmit, isEditFlag, t } = this.props;
-    const { setDisable } = this.state
-    return (
-      <div>
-        <Drawer
-          anchor={this.props.anchor}
-          open={this.props.isOpen}
-        // onClose={(e) => this.toggleDrawer(e)}
-        >
-          <Container>
-            <div className={"drawer-wrapper"}>
-              <form
-                noValidate
-                className="form"
-                onSubmit={handleSubmit(this.onSubmit.bind(this))}
-                onKeyDown={(e) => { this.handleKeyDown(e, this.onSubmit.bind(this)); }}
-              >
-                <Row className="drawer-heading">
-                  <Col>
-                    <div className={"header-wrapper left"}>
-                      <h3>
-                        {isEditFlag ? "Update Material" : "Add Material"}
-                        <TourWrapper
-                          buttonSpecificProp={{ id: "Material_Type_form" }}
-                          stepsSpecificProp={{
-                            steps: Steps(t).ADD_MATERIAL
-                          }} />
-                      </h3>
-                    </div>
-                    <div
-                      onClick={(e) => this.toggleDrawer(e)}
-                      className={"close-button right"}
-                    ></div>
-                  </Col>
-                </Row>
-                <Row className="pl-3">
-                  <Col md="12">
-                    <Field
-                      label={`Material`}
-                      name={"MaterialType"}
-                      type="text"
-                      placeholder={""}
-                      validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation]}
-                      component={renderText}
-                      required={true}
-                      className=" "
-                      customClassName=" withBorder mb-0"
-                      maxLength="80"
-                    />
-                  </Col>
-                  <Col md="12">
-                    <Field
-                      label={`Density (g/cm3)`}
-                      name={"CalculatedDensityValue"}
-                      type="text"
-                      placeholder={""}
-                      validate={[required, positiveAndDecimalNumber, decimalLengthFour]}
-                      component={renderText}
-                      required={true}
-                      className=" withoutBorder"
-                      customClassName=" withBorder"
-                      maxLength="15"
-                    />
-                  </Col>
-                </Row>
+  const { setDisable } = state;
+  console.log(errors);
+  return (
+    <div>
+      <Drawer anchor={anchor} open={isOpen}>
+        <Container>
+          <div className={"drawer-wrapper"}>
+            <form
+              noValidate
+              className="form"
+              onSubmit={handleSubmit(onSubmit)}
+              onKeyDown={e => handleKeyDown(e)}
+            >
+              <Row className="drawer-heading">
+                <Col>
+                  <div className={"header-wrapper left"}>
+                    <h3>
+                      {isEditFlag ? "Update Material" : "Add Material"}
+                      <TourWrapper
+                        buttonSpecificProp={{ id: "Material_Type_form" }}
+                        stepsSpecificProp={{
+                          steps: Steps(t).ADD_MATERIAL,
+                        }}
+                      />
+                    </h3>
+                  </div>
+                  <div
+                    onClick={e => toggleDrawer(e)}
+                    className={"close-button right"}
+                  ></div>
+                </Col>
+              </Row>
+              <Row className="pl-3">
+                <Col md="12">
+                  <TextFieldHookForm
+                    label={`Material`}
+                    name={"MaterialType"}
+                    type="text"
+                    Controller={Controller}
+                    control={control}
+                    register={register}
+                    placeholder={""}
+                    mandatory
+                    handleChange={e => { }}
+                    customClassName={"withBorder"}
+                    rules={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation]}
+                    required={true}
+                    errors={errors.Type}
+                  />
+                </Col>
+                <Col md="12">
+                  <TextFieldHookForm
+                    label={`Density (g/cm3)`}
+                    name={"CalculatedDensityValue"}
+                    type="text"
+                    placeholder={""}
+                    rules={[required, positiveAndDecimalNumber, decimalLengthFour]}
 
-                <Row className=" no-gutters justify-content-between">
-                  <div className="col-md-12">
-                    <div className="text-right ">
-                      {/* <input
-                                                //disabled={pristine || submitting}
-                                                onClick={this.cancel}
-                                                type="button"
-                                                value="Cancel"
-                                                className="reset mr15 cancel-btn"
-                                            />
-                                            <input
-                                                //disabled={isSubmitted ? true : false}
-                                                type="submit"
-                                                value={isEditFlag ? 'Update' : 'Save'}
-                                                className="submit-button mr5 save-btn"
-                                            /> */}
-                      <button id="AddMaterialType_Cancel"
-                        onClick={this.cancelHandler}
-                        type="button"
-                        value="CANCEL"
-                        className="mr15 cancel-btn"
-                        disabled={setDisable}
-                      >
-                        <div className={"cancel-icon"}></div>
-                        CANCEL
-                      </button>
-                      <button id="AddMaterialType_Save"
-                        type="submit"
-                        // disabled={isSubmitted ? true : false}
-                        className="user-btn save-btn"
-                        disabled={setDisable}
-                      >
-                        {" "}
-                        <div className={"save-icon"}></div>
-                        {this.props.isEditFlag ? "UPDATE" : "SAVE"}
-                      </button >
-                    </div >
-                  </div >
-                </Row >
-              </form >
-            </div >
-          </Container >
-        </Drawer >
-        {
-          this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
-        }
-      </div >
-    );
-  }
-}
+                    required={true}
+                    Controller={Controller}
+                    customClassName={"withBorder"}
+                    mandatory
+                    handleChange={e => { }}
+                    control={control}
+                    errors={errors.Type}
+                    register={register}
+                  />
+                </Col>
+              </Row>
 
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ material }) {
-  const { materialTypeData } = material;
-  let initialValues = {};
-  if (materialTypeData && materialTypeData !== undefined) {
-    initialValues = {
-      MaterialType: materialTypeData.MaterialType,
-      CalculatedDensityValue: materialTypeData.Density,
-    }
-  }
-  return { initialValues, materialTypeData }
-}
+              <Row className=" no-gutters justify-content-between">
+                <div className="col-md-12">
+                  <div className="text-right ">
+                    <button
+                      id="AddMaterialType_Cancel"
+                      onClick={cancelHandler}
+                      type="button"
+                      value="CANCEL"
+                      className="mr15 cancel-btn"
+                      disabled={setDisable}
+                    >
+                      <div className={"cancel-icon"}></div>
+                      CANCEL
+                    </button>
+                    <button
+                      id="AddMaterialType_Save"
+                      type="submit"
+                      className="user-btn save-btn"
+                      disabled={setDisable}
+                    >
+                      {" "}
+                      <div className={"save-icon"}></div>
+                      {isEditFlag ? "UPDATE" : "SAVE"}
+                    </button>
+                  </div>
+                </div>
+              </Row>
+            </form>
+          </div>
+        </Container>
+      </Drawer>
+      {state.showPopup && (
+        <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
+      )}
+    </div>
+  );
+};
 
-/**
- * @method connect
- * @description connect with redux
-* @param {function} mapStateToProps
-* @param {function} mapDispatchToProps
-*/
-export default connect(mapStateToProps, {
-  createMaterialTypeAPI,
-  getMaterialDetailAPI,
-  getMaterialTypeDataAPI,
-  updateMaterialtypeAPI
-})(reduxForm({
-  form: 'AddMaterialType',
-  enableReinitialize: true,
-  touchOnChange: true
-})(withTranslation(['RawMaterialMaster'])(AddMaterialType)),
-)
+export default AddMaterialType;

@@ -555,10 +555,15 @@ function BudgetListing(props) {
     };
 
     const checkBoxRenderer = (props) => {
+        console.log('props: ', props);
+
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        console.log('selectedRowForPagination: ', selectedRowForPagination);
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
+                console.log('item: ', item.BudgetingId);
                 if (item.BudgetingId === props.node.data.BudgetingId) {
+                    console.log(props.node.data.BudgetingId, 'in if');
                     props.node.setSelected(true)
                 }
                 return null

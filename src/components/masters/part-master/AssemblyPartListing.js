@@ -4,7 +4,7 @@ import { Row, Col } from "reactstrap";
 import { getAssemblyPartDataList, deleteAssemblyPart } from "../actions/Part";
 import Toaster from "../../common/Toaster";
 import { MESSAGES } from "../../../config/message";
-import { ASSEMBLYNAME, defaultPageSize, EMPTY_DATA } from "../../../config/constants";
+import { defaultPageSize, EMPTY_DATA } from "../../../config/constants";
 import NoContentFound from "../../common/NoContentFound";
 import DayTime from "../../common/DayTimeWrapper";
 import BOMViewer from "./BOMViewer";
@@ -21,7 +21,6 @@ import { filterParams } from "../../common/DateFilter";
 import { PaginationWrapper } from "../../common/commonPagination";
 import { loggedInUserId, searchNocontentFilter } from "../../../helper";
 import { ApplyPermission } from ".";
-import TechnologyUpdateDrawer from './TechnologyUpdateDrawer';
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -31,9 +30,11 @@ const gridOptions = {};
 const AssemblyPartListing = React.memo((props) => {
   const dispatch = useDispatch();
   const partsListing = useSelector((state) => state.part.partsListing);
-
+  const initialConfiguration = useSelector((state) => state.auth.initialConfiguration);
+  const { getDetails } = props;
   const [tableData, setTableData] = useState([]);
-
+  const [selectedRowData, setSelectedRowData] = useState([]);
+  const [searchText, setSearchText] = useState("");
 
   const [state, setState] = useState({
     isEditFlag: false,
@@ -59,145 +60,82 @@ const AssemblyPartListing = React.memo((props) => {
     openTechnologyUpdateDrawer: false
   });
 
-
   const permissions = useContext(ApplyPermission);
 
-
   const getTableListData = () => {
-    setState(prevState => ({
-      ...prevState,
-      isLoader: true
-    }))
-    dispatch(
-      getAssemblyPartDataList((res) => {
-        setState(prevState => ({
-          ...prevState,
-          isLoader: false
-        }))
-        if (res.status === 204 && res.data === "") {
-          setTableData([]);
-        } else if (res && res.data && res.data.DataList) {
-          let Data = res.data.DataList;
-          setTableData(Data);
-        }
-      })
-    );
+    setState((prevState) => ({ ...prevState, isLoader: true, }));
+    dispatch(getAssemblyPartDataList((res) => {
+      setState((prevState) => ({ ...prevState, isLoader: false, }));
+      if (res.status === 204 && res.data === "") {
+        setTableData([]);
+      } else if (res && res.data && res.data.DataList) {
+        let Data = res.data.DataList;
+        setTableData(Data);
+      }
+    }));
   };
 
-
   useEffect(() => {
-    getTableListData()
-  }, [])
-
-
-
-
-
-  const viewOrEditItemDetails = useCallback((Id, isViewMode) => {
-    let requestData = {
-      isOpen: true,
-      isEditFlag: true,
-      Id: Id,
-      isViewMode: isViewMode,
-    }
-    setState((prevState) => ({
-      ...prevState,
-      ...requestData,
-    }));
-    props?.getDetails(requestData)
+    getTableListData();
+    // eslint-disable-next-line
   }, []);
 
-  const deleteItem = useCallback((Id) => {
-    setState((prevState) => ({
-      ...prevState,
-      showPopup: true,
-      deletedId: Id,
-    }));
-  }, []);
+  const viewOrEditItemDetails = (Id, isViewMode) => {
+    let requestData = { isEditFlag: true, Id: Id, isViewMode: isViewMode, }
+    getDetails(requestData);
+  }
+
+
+  const deleteItem = (Id) => {
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id, }));
+  }
 
   const confirmDeleteItem = (ID) => {
-
-    setState((prevState) => ({
-
-      ...prevState,
-      showPopup: false,
-      deletedId: "",
-    }));
+    setState((prevState) => ({ ...prevState, showPopup: false, deletedId: "", }));
     dispatch(deleteAssemblyPart(ID, loggedInUserId, (res) => getTableListData()));
     Toaster.success(MESSAGES.DELETE_SUCCESSFULLY);
   };
-
-
 
   const onPopupConfirm = () => {
     confirmDeleteItem(state.deletedId);
   };
 
   const closePopUp = () => {
-    setState({ showPopup: false });
+    // Correctly access the previous state using a callback function
+    setState((prevState) => ({ ...prevState, showPopup: false, }));
   };
-
   const effectiveDateFormatter = (props) => {
-    const cellValue = props?.valueFormatted
-      ? props.valueFormatted
-      : props?.value;
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue != null ? DayTime(cellValue).format("DD/MM/YYYY") : "";
   };
 
   const visualAdDetails = (cell) => {
-    setState({ visualAdId: cell, isOpenVisualDrawer: true });
+    setState((prevState) => ({ ...prevState, isOpenVisualDrawer: true, visualAdId: cell, }));
   };
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
       partsListing.length !== 0 &&
-        setState({ noData: searchNocontentFilter(value, state.noData) });
+        setState((prevState) => ({ ...prevState, tableData: searchNocontentFilter(partsListing, value), }));
     }, 500);
   };
 
-  const closeVisualDrawer = () => {
-    setState({ isOpenVisualDrawer: false, visualAdId: "" });
-  };
 
+
+
+  const closeVisualDrawer = () => { setState((prevState) => ({ ...prevState, isOpenVisualDrawer: false, })); };
   const buttonFormatter = useCallback((props) => {
     const cellValue = props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
     return (
       <>
-        {permissions.View && (
-          <button
-            title="button"
-            className="hirarchy-btn"
-            type={"button"}
-            onClick={() => visualAdDetails(cellValue)}
-          />
-        )}
-        {permissions.View && (
-          <button
-            title="View"
-            className="View"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, true)}
-          />
-        )}
-        {permissions.Edit && (
-          <button
-            title="Edit"
-            className="Edit"
-            type={"button"}
-            onClick={() => viewOrEditItemDetails(cellValue, false)}
-          />
-        )}
-        {permissions.Delete && !rowData?.IsAssociate && (
-          <button
-            title="Delete"
-            className="Delete"
-            type={"button"}
-            onClick={() => deleteItem(cellValue)}
-          />
-        )}
+        {permissions.View && (<button title="button" className="hirarchy-btn" type={"button"} onClick={() => visualAdDetails(cellValue)} />)}
+        {permissions.View && (<button title="View" className="View" type={"button"} onClick={() => viewOrEditItemDetails(cellValue, true)} />)}
+        {permissions.Edit && (<button title="Edit" className="Edit" type={"button"} onClick={() => viewOrEditItemDetails(cellValue, false)} />)}
+        {permissions.Delete && !rowData?.IsAssociate && (<button title="Delete" className="Delete" type={"button"} onClick={() => deleteItem(cellValue)} />)}
       </>
     );
+    // eslint-disable-next-line
   }, []);
 
 
@@ -228,14 +166,15 @@ const AssemblyPartListing = React.memo((props) => {
   };
 
   const bulkToggle = () => {
-    setState({ isBulkUpload: true });
+    setState((prevState) => ({
+      ...prevState,
+      isBulkUpload: true,
+    }));
   };
 
   const closeBulkUploadDrawer = (isCancel) => {
-    setState({ isBulkUpload: false }, () => { });
-    if (!isCancel) {
-      getTableListData();
-    }
+    setState((prevState) => ({ ...prevState, isBulkUpload: false, }));
+    if (!isCancel) { getTableListData(); }
   };
 
   const frameworkComponents = {
@@ -259,63 +198,47 @@ const AssemblyPartListing = React.memo((props) => {
     state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
-  const onRowSelect = () => {
-    const selectedRows = state.gridApi?.getSelectedRows();
-    setState({ selectedRowData: selectedRows, dataCount: selectedRows.length });
-  };
+  const onRowSelect = useCallback(() => {
+    if (state.gridApi) {
+      const selectedRows = state.gridApi.getSelectedRows();
+      console.log(selectedRows, "selec");
+      setSelectedRowData(selectedRows);
+      setState((prevState) => ({
+        ...prevState,
+        dataCount: selectedRows.length,
+      }));
+    }
+  }, [state.gridApi]);
 
-  const onBtExport = () => {
-    let tempArr = [];
-    tempArr = state.gridApi && state.gridApi?.getSelectedRows();
-    tempArr =
-      tempArr && tempArr?.length > 0
-        ? tempArr
-        : partsListing
-          ? partsListing
-          : [];
+  const onBtExport = useCallback(() => {
+    // Use the selectedRowData for export
+    const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
+    console.log(tempArr);
     return returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr);
-  };
+  }, [selectedRowData, tableData]);
 
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
-    temp =
-      TempData &&
-      TempData.map((item) => {
-        if (item.Technology === "-") {
-          item.Technology = " ";
-        }
-        if (item.EffectiveDate?.includes("T")) {
-          item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY");
-        }
-        return item;
-      });
-    return (
-      <ExcelSheet data={temp} name={AssemblyPart}>
-        {data &&
-          data.map((ele, index) => (
-            <ExcelColumn
-              key={index}
-              label={ele.label}
-              value={ele.value}
-              style={ele.style}
-            />
-          ))}
-      </ExcelSheet>
+    temp = TempData && TempData.map((item) => {
+      if (item.Technology === "-") { item.Technology = " "; }
+      if (item.EffectiveDate?.includes("T")) { item.EffectiveDate = DayTime(item.EffectiveDate).format("DD/MM/YYYY"); }
+      return item;
+    });
+    return (<ExcelSheet data={temp} name={AssemblyPart}> {data && data.map((ele, index) => (<ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />))} </ExcelSheet>
     );
   };
 
   const onFilterTextBoxChanged = (e) => {
-    state.gridApi.setQuickFilter(e.target.value);
+    setSearchText(state.gridApi.setQuickFilter(e.target.value))
   };
 
   const resetState = () => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
-    if (window.screen.width >= 1600) {
-      state.gridApi.sizeColumnsToFit();
-    }
+    if (window.screen.width >= 1600) { state.gridApi.sizeColumnsToFit(); }
   };
+
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -330,119 +253,40 @@ const AssemblyPartListing = React.memo((props) => {
     checkboxSelection: isFirstColumn,
   };
 
-  const associatePartWithTechnology = () => {
-    setState((prevState) => ({ ...prevState, openTechnologyUpdateDrawer: true }));
-
-  }
-
-  const closeTechnologyUpdateDrawer = (type = '') => {
-    setState((prevState) => ({ ...prevState, openTechnologyUpdateDrawer: false }));
-    if (type === 'submit') {
-      getTableListData()
-    }
-
-  }
-
 
   return (
-    <div
-      className={`ag-grid-react p-relative ${props.DownloadAccessibility ? "show-table-btn" : ""
-        }`}
-    >
-      {state.isLoader ? <LoaderCustom /> : ''}
+    <div className={`ag-grid-react p-relative ${permissions.Download ? "show-table-btn" : ""}`} >
+      {state.isLoader ? <LoaderCustom /> : ""}
       <Row className="pt-4 no-filter-row">
         <Col md="8" className="filter-block"></Col>
         <Col md="6" className="search-user-block pr-0">
           <div className="d-flex justify-content-end bd-highlight w100">
-            <div>
-              {permissions.Edit && <button title='Associate part with technology' className="user-btn pl-2 pr-3 mb-0 mr-1" type={'button'} onClick={() => associatePartWithTechnology()} ><div className='associate'></div></button>}
-              {permissions.Add && (
-                <button
-                  type="button"
-                  className={"user-btn mr5"}
-                  title="Add"
-                  onClick={displayForm}
-                >
-                  <div className={"plus mr-0"}></div>
-                </button>
-              )}
-              {permissions.BulkUpload && (
-                <button
-                  type="button"
-                  className={"user-btn mr5"}
-                  onClick={bulkToggle}
-                  title="Bulk Upload"
-                >
-                  <div className={"upload mr-0"}></div>
-                </button>
-              )}
+            <div> {permissions.Add && (<button type="button" className={"user-btn mr5"} title="Add" onClick={displayForm}> <div className={"plus mr-0"}></div>  </button>)}
+              {permissions.BulkUpload && (<button type="button" className={"user-btn mr5"} onClick={bulkToggle} title="Bulk Upload" ><div className={"upload mr-0"}></div></button>)}
               {permissions.Download && (
                 <>
-                  <ExcelFile
-                    filename={"BOM"}
-                    fileExtension={".xls"}
-                    element={
-                      <button
-                        title={`Download ${state?.dataCount === 0
-                          ? "All"
-                          : "(" + state?.dataCount + ")"
-                          }`}
-                        type="button"
-                        className={"user-btn mr5"}
-                      >
-                        <div className="download mr-1"></div>
-                        {`${state?.dataCount === 0
-                          ? "All"
-                          : "(" + state.dataCount + ")"
-                          }`}
-                      </button>
-                    }
+                  <ExcelFile filename={"BOM"} fileExtension={".xls"} element={
+                    <button title={`Download ${state.dataCount === 0 ? "All" : `(${state.dataCount})`}`} type="button" className={"user-btn mr5"} onClick={onBtExport}  >    <div className="download mr-1"></div>    {`${state.dataCount === 0 ? "All" : `(${state.dataCount})`}`}  </button>
+                  }
                   >
                     {onBtExport()}
                   </ExcelFile>
                 </>
               )}
-              <button
-                type="button"
-                className="user-btn"
-                title="Reset Grid"
-                onClick={() => resetState()}
-              >
+              <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()} >
                 <div className="refresh mr-0"></div>
               </button>
             </div>
           </div>
         </Col>
       </Row>
-      {
-        Object.keys(permissions).length > 0 &&
-
-        <div
-          className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || state.noData
-            ? "overlay-contain"
-            : ""
-            }`}
-        >
+      {Object.keys(permissions).length > 0 && (
+        <div className={`ag-grid-wrapper height-width-wrapper ${(partsListing && partsListing?.length <= 0) || state.noData ? "overlay-contain" : ""}`}    >
           <div className="ag-grid-header">
-            <input
-              type="text"
-              className="form-control table-search"
-              id="filter-text-box"
-              placeholder="Search"
-              autoComplete={"off"}
-              onChange={(e) => onFilterTextBoxChanged(e)}
-            />
+            <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
           </div>
-          <div
-            className={`ag-theme-material ${state.isLoader && "max-loader-height"
-              }`}
-          >
-            {state.noData && (
-              <NoContentFound
-                title={EMPTY_DATA}
-                customClassName="no-content-found"
-              />
-            )}
+          <div className={`ag-theme-material ${state.isLoader && "max-loader-height"}`}>
+            {state.noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />)}
             <AgGridReact
               defaultColDef={defaultColDef}
               floatingFilter={true}
@@ -453,125 +297,40 @@ const AssemblyPartListing = React.memo((props) => {
               onGridReady={onGridReady}
               gridOptions={gridOptions}
               noRowsOverlayComponent={"customNoRowsOverlay"}
-              noRowsOverlayComponentParams={{
-                title: EMPTY_DATA,
-                imagClass: "imagClass",
-              }}
+              noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: "imagClass", }}
               rowSelection={"multiple"}
               onSelectionChanged={onRowSelect}
               frameworkComponents={frameworkComponents}
               onFilterModified={onFloatingFilterChanged}
               suppressRowClickSelection={true}
             >
-              <AgGridColumn
-                cellClass="has-checkbox"
-                field="Technology"
-                headerName="Technology"
-                cellRenderer={"checkBoxRenderer"}
-              ></AgGridColumn>
-              <AgGridColumn field="BOMNumber" headerName="BOM No."></AgGridColumn>
-              <AgGridColumn
-                field="PartNumber"
-                headerName="Part No."
-              ></AgGridColumn>
+              <AgGridColumn cellClass="has-checkbox" field="Technology" headerName="Technology" cellRenderer={"checkBoxRenderer"}  ></AgGridColumn>
+              <AgGridColumn field="BOMNumber" headerName="BOM No."  ></AgGridColumn>
+              <AgGridColumn field="PartNumber" headerName="Part No."  ></AgGridColumn>
               <AgGridColumn field="PartName" headerName="Name"></AgGridColumn>
-              {props.initialConfiguration?.IsSAPCodeRequired && (
-                <AgGridColumn
-                  field="SAPCode"
-                  headerName="SAP Code"
-                  cellRenderer={"hyphenFormatter"}
-                ></AgGridColumn>
-              )}
-              <AgGridColumn
-                field="NumberOfParts"
-                headerName="No. of Child Parts"
-              ></AgGridColumn>
-              <AgGridColumn
-                field="BOMLevelCount"
-                headerName="BOM Level Count"
-              ></AgGridColumn>
-              <AgGridColumn
-                field="ECNNumber"
-                headerName="ECN No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="RevisionNumber"
-                headerName="Revision No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="DrawingNumber"
-                headerName="Drawing No."
-                cellRenderer={"hyphenFormatter"}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="EffectiveDateNew"
-                headerName="Effective Date"
-                cellRenderer={"effectiveDateFormatter"}
-                filter="agDateColumnFilter"
-                filterParams={filterParams}
-              ></AgGridColumn>
-              <AgGridColumn
-                field="PartId"
-                width={180}
-                cellClass="ag-grid-action-container actions-wrapper"
-                headerName="Action"
-                pinned="right"
-                type="rightAligned"
-                floatingFilter={false}
-                cellRenderer={"buttonRenderer"}
-              ></AgGridColumn>
-            </AgGridReact>
-
-            {
-              <PaginationWrapper
-                gridApi={state.gridApi}
-                setPage={onPageSizeChanged}
-              />
-            }
-          </div >
-        </div >
-      }
-      {
-        state.isOpenVisualDrawer && (
-          <BOMViewer
-            isOpen={state.isOpenVisualDrawer}
-            closeDrawer={closeVisualDrawer}
-            isEditFlag={true}
-            PartId={state.visualAdId}
-            anchor={"right"}
-            isFromVishualAd={true}
-            NewAddedLevelOneChilds={[]}
-          />
-        )
-      }
-      {
-        state.isBulkUpload && (
-          <BOMUploadDrawer
-            isOpen={state.isBulkUpload}
-            closeDrawer={closeBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={"BOM"}
-            messageLabel={"BOM"}
-            anchor={"right"}
-          />
-        )
-      }
-      {
-        state.showPopup && (
-          <PopupMsgWrapper
-            isOpen={state.showPopup}
-            closePopUp={closePopUp}
-            confirmPopup={onPopupConfirm}
-            message={`${MESSAGES.BOM_DELETE_ALERT}`}
-          />
-        )
-      }
-      {
-        state.openTechnologyUpdateDrawer && <TechnologyUpdateDrawer isOpen={state.openTechnologyUpdateDrawer} anchor={'right'} closeDrawer={closeTechnologyUpdateDrawer} partType={ASSEMBLYNAME} />
-      }
-    </div >
+              {initialConfiguration?.IsSAPCodeRequired && (<AgGridColumn field="SAPCode" headerName="SAP Code" cellRenderer={"hyphenFormatter"} ></AgGridColumn>)}
+              <AgGridColumn field="NumberOfParts" headerName="No. of Child Parts"  ></AgGridColumn>
+              <AgGridColumn field="BOMLevelCount" headerName="BOM Level Count"  ></AgGridColumn>
+              <AgGridColumn field="ECNNumber" headerName="ECN No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+              <AgGridColumn field="RevisionNumber" headerName="Revision No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+              <AgGridColumn field="DrawingNumber" headerName="Drawing No." cellRenderer={"hyphenFormatter"}  ></AgGridColumn>
+              <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}  ></AgGridColumn>
+              <AgGridColumn field="PartId" width={180} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"buttonRenderer"}  ></AgGridColumn></AgGridReact>
+            {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
+          </div>
+        </div>
+      )}
+      {state.isOpenVisualDrawer && (
+        <BOMViewer isOpen={state.isOpenVisualDrawer} closeDrawer={closeVisualDrawer} isEditFlag={true} PartId={state.visualAdId} anchor={"right"} isFromVishualAd={true} NewAddedLevelOneChilds={[]} />
+      )}
+      {state.isBulkUpload && (
+        <BOMUploadDrawer isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"BOM"} messageLabel={"BOM"} anchor={"right"} />
+      )}
+      {state.showPopup && (
+        <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOM_DELETE_ALERT}`}
+        />
+      )}
+    </div>
   );
 });
 

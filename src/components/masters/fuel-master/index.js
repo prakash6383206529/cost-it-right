@@ -1,203 +1,234 @@
-import React, { Component } from 'react';
-import { connect } from 'react-redux';
-import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
-import classnames from 'classnames';
-import AddFuel from './AddFuel';
-import AddPower from './AddPower';
-import FuelListing from './FuelListing';
-import PowerListing from './PowerListing';
-import { ADDITIONAL_MASTERS, FUEL_AND_POWER } from '../../../config/constants';
-import { checkPermission } from '../../../helper/util';
-import ScrollToTop from '../../common/ScrollToTop';
+import React, {
+  Component,
+  useEffect,
+  useCallback,
+  useStateconst,
+  useState,
+} from "react";
+import { connect, useSelector } from "react-redux";
+import {
+  Row,
+  Col,
+  TabContent,
+  TabPane,
+  Nav,
+  NavItem,
+  NavLink,
+} from "reactstrap";
+import classnames from "classnames";
+import AddFuel from "./AddFuel";
+import AddPower from "./AddPower";
+import FuelListing from "./FuelListing";
+import PowerListing from "./PowerListing";
+import { ADDITIONAL_MASTERS, FUEL_AND_POWER } from "../../../config/constants";
+import { checkPermission } from "../../../helper/util";
+import ScrollToTop from "../../common/ScrollToTop";
 
-class FuelMaster extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            Id: '',
-            activeTab: '1',
+export const ApplyPermission = React.createContext();
 
-            isFuelForm: false,
-            isPowerForm: false,
-            data: {},
+const FuelMaster = (props) => {
+  const [state, setState] = useState({
+    Id: "",
+    activeTab: "1",
+    isFuelForm: false,
+    isPowerForm: false,
+    data: {},
+    ViewAccessibility: false,
+    AddAccessibility: false,
+    EditAccessibility: false,
+    DeleteAccessibility: false,
+    BulkUploadAccessibility: false,
+    DownloadAccessibility: false,
+    stopApiCallOnCancel: false,
+    permissionData: {},
+  });
+  // const [permissionData, setPermissionData] = useState({});
 
-            ViewAccessibility: false,
-            AddAccessibility: false,
-            EditAccessibility: false,
-            DeleteAccessibility: false,
-            BulkUploadAccessibility: false,
-            DownloadAccessibility: false,
-            stopApiCallOnCancel: false
-        }
+  const { leftMenuData, loading, topAndLeftMenuData } = useSelector(
+    (state) => state.auth
+  );
+
+  useEffect(() => {
+    applyPermission(topAndLeftMenuData);
+  }, [topAndLeftMenuData]);
+
+  /**
+   * @method applyPermission
+   * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
+   */
+  const applyPermission = (topAndLeftMenuData) => {
+    if (topAndLeftMenuData !== undefined) {
+      const Data =
+        topAndLeftMenuData &&
+        topAndLeftMenuData.find((el) => el.ModuleName === ADDITIONAL_MASTERS);
+      const accessData =
+        Data && Data.Pages.find((el) => el.PageName === FUEL_AND_POWER);
+      const permmisionDataAccess =
+        accessData && accessData.Actions && checkPermission(accessData.Actions);
+        console.log(
+            "permmisionDataAccess",
+            permmisionDataAccess
+          );
+      if (permmisionDataAccess !== undefined) {
+        setState((prevState) => ({
+          ...prevState,
+          permissionData: permmisionDataAccess,
+        }));
+      }
     }
+  };
 
-    componentDidMount() {
-        this.applyPermission(this.props.topAndLeftMenuData)
+  /**
+   * @method toggle
+   * @description toggling the tabs
+   */
+  const toggle = (tab) => {
+    if (state.activeTab !== tab) {
+      setState((prevState) => ({
+        ...prevState,
+        activeTab: tab,
+        stopApiCallOnCancel: false,
+      }));
     }
+  };
 
-    UNSAFE_componentWillReceiveProps(nextProps) {
-        if (this.props.topAndLeftMenuData !== nextProps.topAndLeftMenuData) {
-            this.applyPermission(nextProps.topAndLeftMenuData)
-        }
+  const displayFuelForm = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isFuelForm: true,
+      isPowerForm: false,
+      data: {},
+    }));
+  };
+
+  const displayPowerForm = () => {
+    setState((prevState) => ({
+      ...prevState,
+      isPowerForm: true,
+      isFuelForm: false,
+      data: {},
+    }));
+  };
+
+  const hideForm = (type) => {
+    setState((prevState) => ({
+      ...prevState,
+      isFuelForm: false,
+      isPowerForm: false,
+      data: {},
+      stopApiCallOnCancel: false,
+    }));
+    if (type === "cancel") {
+      setState({ stopApiCallOnCancel: true });
     }
+  };
 
-    /**
-    * @method applyPermission
-    * @description ACCORDING TO PERMISSION HIDE AND SHOW, ACTION'S
-    */
-    applyPermission = (topAndLeftMenuData) => {
-        if (topAndLeftMenuData !== undefined) {
-            const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
-            const accessData = Data && Data.Pages.find(el => el.PageName === FUEL_AND_POWER)
-            const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
+  const getDetails = (data) => {
+    setState((prevState) => ({
+      ...prevState,
+      isFuelForm: true,
+      data: data,
+    }));
+  };
 
-            if (permmisionData !== undefined) {
-                this.setState({
-                    ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-                    AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-                    EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-                    DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-                    BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-                    DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-                })
-            }
+  const getDetailsPower = (data) => {
+    setState((prevState) => ({
+      ...prevState,
+      isPowerForm: true,
+      data: data,
+    }));
+  };
 
-        }
-    }
+//   const { isFuelForm, isPowerForm, data } = state;
 
-    /**
-    * @method toggle
-    * @description toggling the tabs
-    */
-    toggle = (tab) => {
-        if (this.state.activeTab !== tab) {
-            this.setState({
-                activeTab: tab,
-                stopApiCallOnCancel: false
-            });
-        }
-    }
+  if (state.isFuelForm === true) {
+    return <AddFuel data={state.data} hideForm={hideForm} />;
+  }
 
-    displayFuelForm = () => {
-        this.setState({ isFuelForm: true, isPowerForm: false, data: {} })
-    }
+  if (state.isPowerForm === true) {
+    return (
+      <AddPower
+        data={state.data}
+        hideForm={hideForm}
+        stopApiCallOnCancel={state.stopApiCallOnCancel}
+      />
+    );
+  }
 
-    displayPowerForm = () => {
-        this.setState({ isPowerForm: true, isFuelForm: false, data: {} })
-    }
+  return (
+    <>
+    {
+        Object.keys(state.permissionData).length > 0 &&
 
-    hideForm = (type) => {
-        this.setState({ isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false })
-        if (type === 'cancel') {
-            this.setState({ stopApiCallOnCancel: true })
+      <div className="container-fluid" id="go-to-top">
+        <ScrollToTop pointProp="go-to-top" />
+        <Row>
+          <Col>
+            <div>
+              <Nav tabs className="subtabs mt-0">
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: state.activeTab === "1" })}
+                    onClick={() => {
+                      toggle("1");
+                    }}
+                  >
+                    Manage Fuel
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                    className={classnames({ active: state.activeTab === "2" })}
+                    onClick={() => {
+                      toggle("2");
+                    }}
+                  >
+                    Manage Power
+                  </NavLink>
+                </NavItem>
+              </Nav>
+              <ApplyPermission.Provider value={state.permissionData}>
+                <TabContent activeTab={state.activeTab}>
+                  {state.activeTab === "1" && (
+                    <TabPane tabId="1">
+                      <FuelListing
+                        formToggle={displayFuelForm}
+                        getDetails={getDetails}
+                        AddAccessibility={state.AddAccessibility}
+                        EditAccessibility={state.EditAccessibility}
+                        DeleteAccessibility={state.DeleteAccessibility}
+                        BulkUploadAccessibility={state.BulkUploadAccessibility}
+                        DownloadAccessibility={state.DownloadAccessibility}
+                        ViewAccessibility={state.ViewAccessibility}
+                        stopApiCallOnCancel={state.stopApiCallOnCancel}
+                      />
+                    </TabPane>
+                  )}
 
-        }
-    }
+                  {state.activeTab === "2" && (
+                    <TabPane tabId="2">
+                      <PowerListing
+                        formToggle={displayPowerForm}
+                        getDetails={getDetailsPower}
+                        AddAccessibility={state.AddAccessibility}
+                        EditAccessibility={state.EditAccessibility}
+                        DeleteAccessibility={state.DeleteAccessibility}
+                        BulkUploadAccessibility={state.BulkUploadAccessibility}
+                        DownloadAccessibility={state.DownloadAccessibility}
+                        ViewAccessibility={state.ViewAccessibility}
+                        stopApiCallOnCancel={state.stopApiCallOnCancel}
+                      />
+                    </TabPane>
+                  )}
+                </TabContent>
+              </ApplyPermission.Provider>
+            </div>
+          </Col>
+        </Row>
+      </div>
+      }
+    </>
+  );
+};
 
-    getDetails = (data) => {
-        this.setState({ isFuelForm: true, data: data })
-    }
-
-    getDetailsPower = (data) => {
-        this.setState({ isPowerForm: true, data: data })
-    }
-
-    /**
-    * @method render
-    * @description Renders the component
-    */
-    render() {
-        const { isFuelForm, isPowerForm, data } = this.state;
-
-        if (isFuelForm === true) {
-            return <AddFuel
-                data={data}
-                hideForm={this.hideForm}
-            />
-        }
-
-        if (isPowerForm === true) {
-            return <AddPower
-                data={data}
-                hideForm={this.hideForm}
-                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-            />
-        }
-
-        return (
-            <>
-                <div className="container-fluid" id='go-to-top'>
-                    {/* {this.props.loading && <Loader/>} */}
-                    <ScrollToTop pointProp='go-to-top' />
-                    <Row>
-                        <Col>
-                            <div>
-                                <Nav tabs className="subtabs mt-0">
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '1' })} onClick={() => { this.toggle('1'); }}>
-                                            Manage Fuel
-                                        </NavLink>
-                                    </NavItem>
-                                    <NavItem>
-                                        <NavLink className={classnames({ active: this.state.activeTab === '2' })} onClick={() => { this.toggle('2'); }}>
-                                            Manage Power
-                                        </NavLink>
-                                    </NavItem>
-
-                                </Nav>
-
-                                <TabContent activeTab={this.state.activeTab}>
-
-                                    {this.state.activeTab === '1' &&
-                                        <TabPane tabId="1">
-                                            <FuelListing
-                                                formToggle={this.displayFuelForm}
-                                                getDetails={this.getDetails}
-                                                AddAccessibility={this.state.AddAccessibility}
-                                                EditAccessibility={this.state.EditAccessibility}
-                                                DeleteAccessibility={this.state.DeleteAccessibility}
-                                                BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                                DownloadAccessibility={this.state.DownloadAccessibility}
-                                                ViewAccessibility={this.state.ViewAccessibility}
-                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                                            />
-                                        </TabPane>}
-
-                                    {this.state.activeTab === '2' &&
-                                        <TabPane tabId="2">
-                                            <PowerListing
-                                                formToggle={this.displayPowerForm}
-                                                getDetails={this.getDetailsPower}
-                                                AddAccessibility={this.state.AddAccessibility}
-                                                EditAccessibility={this.state.EditAccessibility}
-                                                DeleteAccessibility={this.state.DeleteAccessibility}
-                                                BulkUploadAccessibility={this.state.BulkUploadAccessibility}
-                                                DownloadAccessibility={this.state.DownloadAccessibility}
-                                                ViewAccessibility={this.state.ViewAccessibility}
-                                                stopApiCallOnCancel={this.state.stopApiCallOnCancel}
-                                            />
-                                        </TabPane>}
-
-                                </TabContent>
-                            </div>
-                        </Col>
-                    </Row>
-                </div>
-            </ >
-        );
-    }
-}
-
-/**
-* @method mapStateToProps
-* @description return state to component as props
-* @param {*} state
-*/
-function mapStateToProps({ auth }) {
-    const { leftMenuData, loading, topAndLeftMenuData } = auth;
-    return { leftMenuData, loading, topAndLeftMenuData }
-}
-
-
-export default connect(mapStateToProps, {})(FuelMaster);
-
+export default FuelMaster;
