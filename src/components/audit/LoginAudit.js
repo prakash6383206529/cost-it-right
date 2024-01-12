@@ -71,9 +71,7 @@ function LoginAudit(props) {
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
-    const getDataList = (skip = 0, take = 10, isPagination = true,
-        // isSortByOrderAsc = false,
-        dataObj) => {
+    const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
 
         if (state.filterModel?.LoginTime) {
@@ -286,7 +284,7 @@ function LoginAudit(props) {
         const dateUtc = new Date(cellValue);
         // Automatically determine the user's locale
         const userLocale = navigator.language || 'en-US';
-        console.log('navigator: ', navigator);
+
         const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
         // Provide localization options for app's typical date-time formats
@@ -443,7 +441,7 @@ function LoginAudit(props) {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
 
-            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY[T]HH:mm:ss') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('YYYY/MM/DD[T]HH:mm:ss') : '';
 
             setDate(newDate)
             handleDate(newDate)
