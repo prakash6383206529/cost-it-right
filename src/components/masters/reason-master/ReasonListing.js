@@ -21,7 +21,7 @@ import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import ScrollToTop from '../../common/ScrollToTop';
 import { PaginationWrapper } from '../../common/commonPagination';
-
+import Button from '../../layout/Button';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -160,7 +160,8 @@ const ReasonListing = (props) => {
 
     return (
       <>
-        {EditAccessibility && <button title='Edit' className="Edit" type={'button'} onClick={() => editItemDetails(cellValue, rowData)} />}
+
+        {EditAccessibility && <Button id={`reasonListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />}
         {/* {DeleteAccessibility && <button className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />} */}
       </>
     )
@@ -297,7 +298,7 @@ const ReasonListing = (props) => {
     if (searchBox) {
       searchBox.value = ""; // Reset the input field's value
     }
-   gridApi.setQuickFilter(null)
+    gridApi.setQuickFilter(null)
     gridOptions?.columnApi?.resetColumnState(null);
     gridOptions?.api?.setFilterModel(null);
     gridApi.sizeColumnsToFit();
@@ -337,14 +338,8 @@ const ReasonListing = (props) => {
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
                 {AddAccessibility && (
-                  <button
-                    type="button"
-                    className={'user-btn mr5'}
-                    title="Add"
-                    onClick={formToggle}
-                  >
-                    <div className={'plus mr-0'}></div>
-                  </button>
+
+                  <Button id="reasonListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
                 )}
                 {
                   DownloadAccessibility &&
@@ -365,9 +360,7 @@ const ReasonListing = (props) => {
 
                 }
 
-                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                  <div className="refresh mr-0"></div>
-                </button>
+                <Button id={"reasonListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 
               </div>
             </div>

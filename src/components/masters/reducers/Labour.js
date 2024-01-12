@@ -76,6 +76,7 @@ export default function labourReducer(state = initialState, action) {
         case GET_LABOUR_DATA_LIST:
             let arr = []
             arr = action.payload && action.payload.filter((el) => {
+                el.CustomerName = el.CustomerName ? `${el.CustomerName} (${el.CustomerCode}) ` : ''
                 el.LabourRate = checkForDecimalAndNull(el.LabourRate, getConfigurationKey()?.NoOfDecimalForPrice)
                 return el
             })
