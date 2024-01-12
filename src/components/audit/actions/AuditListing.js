@@ -19,7 +19,7 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
             macAddress: data.MacAddress,
             userAgent: data.UserAgent,
             sortName: sortName,
-            isSortByOrderAsc: isSortByOrderAsc, // Convert boolean to string
+            isSortByOrderAsc: false, // Convert boolean to string
             isApplyPagination: isPagination, // Convert boolean to string
             skip: skip.toString(), // Assuming skip is always a number
             take: take.toString(), // Assuming take is always a number
