@@ -71,7 +71,9 @@ function LoginAudit(props) {
     useEffect(() => {
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
-    const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
+    const getDataList = (skip = 0, take = 10, isPagination = true,
+        // isSortByOrderAsc = false,
+        dataObj) => {
         setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
 
         if (state.filterModel?.LoginTime) {
@@ -277,10 +279,33 @@ function LoginAudit(props) {
         }
     }
     const effectiveDateFormatter = (props) => {
+        const cellValue = props?.value ? props.value : '';
+        if (!cellValue) return '-';
 
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY - HH:mm:ss') : '-';
-    }
+        // Create a Date object from the value (assuming that `cellValue` is in UTC)
+        const dateUtc = new Date(cellValue);
+        // Automatically determine the user's locale
+        const userLocale = navigator.language || 'en-US';
+        console.log('navigator: ', navigator);
+        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+        // Provide localization options for app's typical date-time formats
+        const options = {
+            year: 'numeric',
+            month: '2-digit',
+            day: '2-digit',
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            timeZone: userTimeZone  // Use dynamically determined timeZone
+        };
+
+        // Use the locale and options to format the date
+        const formatter = new Intl.DateTimeFormat(userLocale, options);
+        const formattedDate = formatter.format(dateUtc);
+
+        return formattedDate;
+    };
     const onGridReady = (params) => {
         setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
 

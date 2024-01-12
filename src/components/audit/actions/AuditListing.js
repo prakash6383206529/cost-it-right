@@ -19,15 +19,13 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
             macAddress: data.MacAddress,
             userAgent: data.UserAgent,
             sortName: sortName,
-            isSortByOrderAsc: isSortByOrderAsc, // Convert boolean to string
-            isApplyPagination: isPagination, // Convert boolean to string
-            skip: skip.toString(), // Assuming skip is always a number
-            take: take.toString(), // Assuming take is always a number
+            isSortByOrderAsc: false,
+            isApplyPagination: isPagination,
+            skip: skip.toString(),
+            take: take.toString(),
             search: data.search,
             departments: data.departments
         };
-
-
 
         // Only add parameters which are not undefined, empty string or null
         for (const [key, value] of Object.entries(paramsToAdd)) {
