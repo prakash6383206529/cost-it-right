@@ -276,34 +276,24 @@ function LoginAudit(props) {
             return cellValue
         }
     }
+
     const effectiveDateFormatter = (props) => {
-        const cellValue = props?.value ? props.value : '';
+        const dayjs = require('dayjs');
+        const utc = require('dayjs/plugin/utc');
+        const timezone = require('dayjs/plugin/timezone');
+        dayjs.extend(utc);
+        dayjs.extend(timezone);
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (!cellValue) return '-';
-
-        // Create a Date object from the value (assuming that `cellValue` is in UTC)
-        const dateUtc = new Date(cellValue);
-        // Automatically determine the user's locale
-        const userLocale = navigator.language || 'en-US';
-
-        const userTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
-        // Provide localization options for app's typical date-time formats
-        const options = {
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit',
-            second: '2-digit',
-            timeZone: userTimeZone  // Use dynamically determined timeZone
-        };
-
-        // Use the locale and options to format the date
-        const formatter = new Intl.DateTimeFormat(userLocale, options);
-        const formattedDate = formatter.format(dateUtc);
-
-        return formattedDate;
+        const utcDate = dayjs.utc(cellValue);
+        const browserTimeZone = dayjs.tz.guess();
+        const localTime = utcDate.tz(browserTimeZone);
+        const formattedDateAndTime = localTime.format('DD/MM/YYYY - HH:mm:ss');
+        // Return the formatted date and time
+        return formattedDateAndTime;
     };
+
+
     const onGridReady = (params) => {
         setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
 
