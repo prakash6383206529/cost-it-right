@@ -16,6 +16,7 @@ import WarningMessage from '../common/WarningMessage';
 import { disabledClass } from '../../actions/Common';
 import { AUDIT_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import ReactExport from 'react-export-excel';
+import Button from '../layout/Button';
 
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -210,8 +211,7 @@ function LoginAudit(props) {
     };
 
     const resetState = () => {
-        setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
-        setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
+        setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state.gridApi) {
             state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
@@ -223,10 +223,10 @@ function LoginAudit(props) {
             state.floatingFilterData[prop] = "";
         }
         setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
-        getDataList(0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        getDataList(0, state.defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         dispatch(setSelectedRowForPagination([]));
 
-        setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, geSize100: false, }, }));
+        setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { pageSize10: true, pageSize50: false, pageSize100: false, }, }));
         setSearchText(''); // Assuming this state is bound to the input value
     };
     const onRowSelect = (event) => {
@@ -470,7 +470,7 @@ function LoginAudit(props) {
 
     };
     const ExcelFile = ReactExport.ExcelFile;
-
+    console.log(state.globalTake);
     return (
         <div className={`min-height100vh`}>
             {(state.isLoader) && <LoaderCustom customClass="simulation-Loader" />}      {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
@@ -543,15 +543,16 @@ function LoginAudit(props) {
                             <AgGridColumn field="LoginTime" headerName="LoginTime (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                         </AgGridReact>}
                         <div className='button-wrapper'>
-                            <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} pageNo={state.pageNo} totalRecordCount={state.totalRecordCount} />
-                            <div className="d-flex pagination-button-container">
-                                <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
-                                {state?.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(Number(state.totalRecordCount ? state.totalRecordCount / 10 : 0 / 10))}</p>}
-                                {state?.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
-                                {state?.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
-                                <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
-                            </div>
-
+                            {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
+                            {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                <div className="d-flex pagination-button-container">
+                                    <p><Button id="rmDomesticListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
+                                    {state.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 10)}</p>}
+                                    {state.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
+                                    {state.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
+                                    <p><Button id="rmDomesticListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+                                </div>
+                            }
                         </div>
                     </div>
                 </div>

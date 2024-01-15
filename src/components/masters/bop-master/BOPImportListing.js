@@ -542,7 +542,9 @@ const BOPImportListing = (props) => {
   };
 
   const onPageSizeChanged = (newPageSize) => {
+
     let pageSize, totalRecordCount;
+
 
     if (Number(newPageSize) === 10) {
       pageSize = 10;
