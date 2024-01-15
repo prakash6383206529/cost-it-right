@@ -659,6 +659,9 @@ export const API = {
   getUserSimulationTechnologyLevel: `${BASE_URL}/user-level/get-user-simulation-technology-levels`,
   getUserMasterLevelForCosting: `${BASE_URL}/user-level/get-user-master-levels`,
 
+  //AUDIT API
+
+  getAuditList: `${BASE_URL}/auditlogs/get-user-audit-log`,
 
   //ROLES API
   addRoleAPI: `${BASE_URL}/user-role/create-new`,
@@ -1386,6 +1389,10 @@ export const GET_PAYMENT_TERMS_APPLICABILITY_SELECTLIST = 'GET_PAYMENT_TERMS_APP
 export const GET_ICC_APPLICABILITY_SELECTLIST = 'GET_ICC_APPLICABILITY_SELECTLIST'
 export const GET_LAST_SIMULATION_DATA = 'GET_LAST_SIMULATION_DATA'
 
+//AUDIT
+
+export const GET_LOGIN_AUDIT_SUCCESS = 'GET_LOGIN_AUDIT_SUCCESS'
+
 //COSTING
 export const GET_COSTING_TECHNOLOGY_SELECTLIST = 'GET_COSTING_TECHNOLOGY_SELECTLIST';
 export const GET_COSTING_PART_SELECTLIST = 'GET_COSTING_PART_SELECTLIST';
@@ -1858,6 +1865,8 @@ export const HEAD_WISE_COSTING_GOT_GIVEN = "Head Wise Costing Got Given"
 export const PLANT_HEAD_WISE = "Plant Head Wise"
 export const CUSTOMER_POAM_IMPACT = "Customer POAM Impact"
 export const OUTSOURCING = "Outsourcing"
+export const INSIGHT_SIMULATION_REPORT = "Simulation Insights Report"
+export const lOGIN_AUDIT = 'Login Audit'
 
 //export const SIMULATION_HISTORY = 'Simulation History'
 
@@ -2447,6 +2456,7 @@ export const FreightMaster = "Freight"
 export const InterestMaster = "Interest-rate"
 export const ReportMaster = "Report-rate"
 export const UserListing = "User-Listing"
+export const AuditLisitng = "Audit-Listing"
 
 export const simulationMaster = "Simulation"
 export const DashboardMaster = "Analytics and Reports"
@@ -2690,7 +2700,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.306";
+export const VERSION = "V2.1.307";
 
 
 
