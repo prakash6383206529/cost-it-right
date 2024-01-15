@@ -356,7 +356,6 @@ export function PaginationWrapper(props) {
 
     return (
         <div className="paging-container d-inline-block float-right">
-            {30}
             <select className="form-control paging-dropdown" defaultValue={props.globalTake} onChange={(e) => onPageSizeChangedCommon(e.target.value)} id="page-size">
                 <option value={props.pageSize1 ? props.pageSize1 : 10} selected={true}>{props?.pageSize1 ? props?.pageSize1 : 10}</option>
                 <option value={props?.pageSize2 ? props?.pageSize2 : 50}>{props?.pageSize2 ? props?.pageSize2 : 50}</option>

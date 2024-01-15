@@ -546,11 +546,11 @@ function LoginAudit(props) {
                             {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
                             {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                                 <div className="d-flex pagination-button-container">
-                                    <p><Button id="rmDomesticListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
+                                    <p><Button id="auditListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
                                     {state.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 10)}</p>}
                                     {state.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
                                     {state.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
-                                    <p><Button id="rmDomesticListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+                                    <p><Button id="auditListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
                                 </div>
                             }
                         </div>
