@@ -307,10 +307,9 @@ function AddConditionCosting(props) {
 
         if (type === 'reset') {
             setDisableEntryType(tableData.length === 0 ? false : true);
-            setCostingConditionEntryType('');
+            setCostingConditionEntryType(tableData.length === 0 ? '' : costingConditionEntryType);
         } else {
             setDisableEntryType(true);
-            setCostingConditionEntryType('');
         }
 
         commonReset();
