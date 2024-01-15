@@ -470,7 +470,7 @@ function LoginAudit(props) {
 
     };
     const ExcelFile = ReactExport.ExcelFile;
-    console.log(state.globalTake);
+
     return (
         <div className={`min-height100vh`}>
             {(state.isLoader) && <LoaderCustom customClass="simulation-Loader" />}      {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
