@@ -14,7 +14,6 @@ import { trim } from 'lodash'
 
 function AddConditionCosting(props) {
     const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType } = props
-    console.log('EntryType: ', EntryType);
     const [tableData, setTableData] = useState(props?.tableData)
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)
@@ -155,19 +154,25 @@ function AddConditionCosting(props) {
     }
 
     const onConditionEntryTypeChange = (e) => {
-        setCostingConditionEntryType(e.value)
-        dispatch(getCostingCondition(e.value, (res) => {
-            if (res?.data?.DataList) {
-                let Data = res?.data?.DataList
-                let temp = []
-                Data && Data.map((item) => {
-                    item.label = ` ${item.Description} (${item.CostingConditionNumber})`
-                    item.value = item.CostingConditionMasterId
-                    temp.push(item)
-                })
-                setConditionDropdown(temp)
-            }
-        }))
+        if (e) {
+            setCostingConditionEntryType(e.value)
+            dispatch(getCostingCondition(e.value, (res) => {
+                if (res?.data?.DataList) {
+                    let Data = res?.data?.DataList
+                    let temp = []
+                    Data && Data.map((item) => {
+                        item.label = ` ${item.Description} (${item.CostingConditionNumber})`
+                        item.value = item.CostingConditionMasterId
+                        temp.push(item)
+                    })
+                    setConditionDropdown(temp)
+                }
+            }))
+        } else {
+            setCostingConditionEntryType(props.costingConditionEntryType)
+            setConditionDropdown([])
+        }
+
     }
 
     const handleCostChangeCurrency = (e) => {
@@ -280,24 +285,36 @@ function AddConditionCosting(props) {
         setEditIndex('');
     };
 
-    const resetData = () => {
-        setDisableAllFields(true)
-        setDisableTotalCost(true)
-        setTotalCostCurrency('')
-        setTotalCostBase('')
-        setIsEditMode(false)
-        setType('')
-        setEditIndex('')
-        reset({
-            Condition: '',
-            Type: '',
-            Percentage: '',
-            CostCurrency: '',
-            CostBase: '',
-            ConditionCostPerQuantity: '',
-            Quantity: '',
-        })
-    }
+    const resetData = (type = '') => {
+        const commonReset = () => {
+            setDisableAllFields(true);
+            setDisableTotalCost(true);
+            setTotalCostCurrency('');
+            setTotalCostBase('');
+            setType('');
+            setEditIndex('');
+            reset({
+                Condition: '',
+                Type: '',
+                Percentage: '',
+                CostCurrency: '',
+                CostBase: '',
+                ConditionCostPerQuantity: '',
+                Quantity: '',
+                ConditionEntryType: type === 'reset' && tableData.length === 0 ? '' : undefined,
+            });
+        };
+
+        if (type === 'reset') {
+            setDisableEntryType(tableData.length === 0 ? false : true);
+            setCostingConditionEntryType('');
+        } else {
+            setDisableEntryType(true);
+            setCostingConditionEntryType('');
+        }
+
+        commonReset();
+    };
 
     // This function takes in two parameters - the index of the data being edited or deleted, and the operation to perform (either 'delete' or 'edit').
     const editData = (indexValue, operation) => {
@@ -358,6 +375,7 @@ function AddConditionCosting(props) {
         setValue('CostPerQuantityConversion', checkForDecimalAndNull(ConditionCostPerQuantityConversion, initialConfiguration.NoOfDecimalForPrice))
     }
 
+    const checkCondtionDisabled = props.ViewMode || (tableData.length === 0 && !props.isFromMaster && (costingConditionEntryType === '' || costingConditionEntryType === undefined || costingConditionEntryType === null))
     return (
 
         <div>
@@ -387,6 +405,7 @@ function AddConditionCosting(props) {
                                             name={'ConditionEntryType'}
                                             placeholder={'Select'}
                                             Controller={Controller}
+                                            isClearable={true}
                                             control={control}
                                             register={register}
                                             mandatory={true}
@@ -414,7 +433,7 @@ function AddConditionCosting(props) {
                                             className=""
                                             customClassName={'withBorder'}
                                             errors={errors.Condition}
-                                            disabled={props.ViewMode}
+                                            disabled={checkCondtionDisabled}
                                         />
                                     </Col>
                                     <Col md={3} className='px-2'>
@@ -568,7 +587,7 @@ function AddConditionCosting(props) {
                                         <button
                                             type="button"
                                             className={"reset-btn pull-left mt-1 ml5"}
-                                            onClick={resetData}
+                                            onClick={() => resetData("reset")}
                                             disabled={props.ViewMode}
                                         >
                                             Reset
