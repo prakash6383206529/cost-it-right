@@ -154,14 +154,11 @@ const FuelListing = (props) => {
 
   const closeBulkUploadDrawer = () => {
     setState(
-      (prevState) => (
-        { ...prevState, isBulkUpload: false },
-        () => {
-          getDataList(0, 0);
-        }
-      )
+      (prevState) => ({ ...prevState, isBulkUpload: false }), () => { getDataList(0, 0); }
     );
   };
+
+
 
   const returnExcelColumn = (data = [], TempData) => {
     let temp = [];
@@ -373,9 +370,9 @@ const FuelListing = (props) => {
                 <AgGridColumn field="UnitOfMeasurementName" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                 <AgGridColumn field="Rate" headerName="Rate (INR)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
-                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" ></AgGridColumn>
-                <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)"></AgGridColumn>
-                {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)"></AgGridColumn>)}
+                <AgGridColumn field="PlantWithCode" headerName="Plant (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
+                <AgGridColumn field="VendorWithCode" headerName="Vendor (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>
+                {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateRenderer"}></AgGridColumn>
                 <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={"effectiveDateRenderer"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                 <AgGridColumn field="FuelDetailId" width={300} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" pinned="right" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>

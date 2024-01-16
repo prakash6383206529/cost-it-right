@@ -65,10 +65,10 @@ const FuelMaster = (props) => {
         Data && Data.Pages.find((el) => el.PageName === FUEL_AND_POWER);
       const permmisionDataAccess =
         accessData && accessData.Actions && checkPermission(accessData.Actions);
-        console.log(
-            "permmisionDataAccess",
-            permmisionDataAccess
-          );
+      console.log(
+        "permmisionDataAccess",
+        permmisionDataAccess
+      );
       if (permmisionDataAccess !== undefined) {
         setState((prevState) => ({
           ...prevState,
@@ -139,7 +139,7 @@ const FuelMaster = (props) => {
     }));
   };
 
-//   const { isFuelForm, isPowerForm, data } = state;
+  //   const { isFuelForm, isPowerForm, data } = state;
 
   if (state.isFuelForm === true) {
     return <AddFuel data={state.data} hideForm={hideForm} />;
@@ -157,76 +157,76 @@ const FuelMaster = (props) => {
 
   return (
     <>
-    {
-        Object.keys(state.permissionData).length > 0 &&
 
-      <div className="container-fluid" id="go-to-top">
-        <ScrollToTop pointProp="go-to-top" />
-        <Row>
-          <Col>
-            <div>
-              <Nav tabs className="subtabs mt-0">
-                <NavItem>
-                  <NavLink
-                    className={classnames({ active: state.activeTab === "1" })}
-                    onClick={() => {
-                      toggle("1");
-                    }}
-                  >
-                    Manage Fuel
-                  </NavLink>
-                </NavItem>
-                <NavItem>
-                  <NavLink
-                    className={classnames({ active: state.activeTab === "2" })}
-                    onClick={() => {
-                      toggle("2");
-                    }}
-                  >
-                    Manage Power
-                  </NavLink>
-                </NavItem>
-              </Nav>
-              <ApplyPermission.Provider value={state.permissionData}>
-                <TabContent activeTab={state.activeTab}>
-                  {state.activeTab === "1" && (
-                    <TabPane tabId="1">
-                      <FuelListing
-                        formToggle={displayFuelForm}
-                        getDetails={getDetails}
-                        AddAccessibility={state.AddAccessibility}
-                        EditAccessibility={state.EditAccessibility}
-                        DeleteAccessibility={state.DeleteAccessibility}
-                        BulkUploadAccessibility={state.BulkUploadAccessibility}
-                        DownloadAccessibility={state.DownloadAccessibility}
-                        ViewAccessibility={state.ViewAccessibility}
-                        stopApiCallOnCancel={state.stopApiCallOnCancel}
-                      />
-                    </TabPane>
-                  )}
+      {state.permissionData && Object.keys(state.permissionData).length > 0 && (
 
-                  {state.activeTab === "2" && (
-                    <TabPane tabId="2">
-                      <PowerListing
-                        formToggle={displayPowerForm}
-                        getDetails={getDetailsPower}
-                        AddAccessibility={state.AddAccessibility}
-                        EditAccessibility={state.EditAccessibility}
-                        DeleteAccessibility={state.DeleteAccessibility}
-                        BulkUploadAccessibility={state.BulkUploadAccessibility}
-                        DownloadAccessibility={state.DownloadAccessibility}
-                        ViewAccessibility={state.ViewAccessibility}
-                        stopApiCallOnCancel={state.stopApiCallOnCancel}
-                      />
-                    </TabPane>
-                  )}
-                </TabContent>
-              </ApplyPermission.Provider>
-            </div>
-          </Col>
-        </Row>
-      </div>
-      }
+        <div className="container-fluid" id="go-to-top">
+          <ScrollToTop pointProp="go-to-top" />
+          <Row>
+            <Col>
+              <div>
+                <Nav tabs className="subtabs mt-0">
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: state.activeTab === "1" })}
+                      onClick={() => {
+                        toggle("1");
+                      }}
+                    >
+                      Manage Fuel
+                    </NavLink>
+                  </NavItem>
+                  <NavItem>
+                    <NavLink
+                      className={classnames({ active: state.activeTab === "2" })}
+                      onClick={() => {
+                        toggle("2");
+                      }}
+                    >
+                      Manage Power
+                    </NavLink>
+                  </NavItem>
+                </Nav>
+                <ApplyPermission.Provider value={state.permissionData}>
+                  <TabContent activeTab={state.activeTab}>
+                    {state.activeTab === "1" && (
+                      <TabPane tabId="1">
+                        <FuelListing
+                          formToggle={displayFuelForm}
+                          getDetails={getDetails}
+                          AddAccessibility={state.AddAccessibility}
+                          EditAccessibility={state.EditAccessibility}
+                          DeleteAccessibility={state.DeleteAccessibility}
+                          BulkUploadAccessibility={state.BulkUploadAccessibility}
+                          DownloadAccessibility={state.DownloadAccessibility}
+                          ViewAccessibility={state.ViewAccessibility}
+                          stopApiCallOnCancel={state.stopApiCallOnCancel}
+                        />
+                      </TabPane>
+                    )}
+
+                    {state.activeTab === "2" && (
+                      <TabPane tabId="2">
+                        <PowerListing
+                          formToggle={displayPowerForm}
+                          getDetails={getDetailsPower}
+                          AddAccessibility={state.AddAccessibility}
+                          EditAccessibility={state.EditAccessibility}
+                          DeleteAccessibility={state.DeleteAccessibility}
+                          BulkUploadAccessibility={state.BulkUploadAccessibility}
+                          DownloadAccessibility={state.DownloadAccessibility}
+                          ViewAccessibility={state.ViewAccessibility}
+                          stopApiCallOnCancel={state.stopApiCallOnCancel}
+                        />
+                      </TabPane>
+                    )}
+                  </TabContent>
+                </ApplyPermission.Provider>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      )}
     </>
   );
 };

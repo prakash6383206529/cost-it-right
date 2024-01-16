@@ -10,7 +10,6 @@ import AddLabour from './AddLabour';
 import BulkUpload from '../../massUpload/BulkUpload';
 import { ADDITIONAL_MASTERS, LABOUR, LabourMaster } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
-import { getLeftMenu } from '../../../actions/auth/AuthActions';
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import { LABOUR_DOWNLOAD_EXCEl } from '../../../config/masterData';
@@ -25,7 +24,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { loggedInUserId } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
-
+import Button from '../../layout/Button';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -61,24 +60,13 @@ function LabourListing(props) {
     dataCount: 0,
   });
   const dispatch = useDispatch();
-  const { labourDataList, topAndLeftMenuData } = useSelector(state => ({
-    labourDataList: state.labour.labourDataList,
-    topAndLeftMenuData: state.auth.topAndLeftMenuData,
-  }));
+  const { labourDataList, topAndLeftMenuData } = useSelector(state => ({ labourDataList: state.labour.labourDataList, topAndLeftMenuData: state.auth.topAndLeftMenuData, }));
   useEffect(() => {
     if (topAndLeftMenuData !== undefined) {
       applyPermission(topAndLeftMenuData)
-      setState(
-        (prevState
-        ) => ({ ...prevState, isLoader: true }))
-    }
-    setTimeout(() => {
-      // getTableListData()
-      filterList()
-    }
-      , 500);
-  }
-    , [topAndLeftMenuData])
+      setState((prevState) => ({ ...prevState, isLoader: true }))
+    } setTimeout(() => { filterList() }, 500);
+  }, [topAndLeftMenuData])
 
 
   const applyPermission = (topAndLeftMenuData) => {
@@ -88,17 +76,15 @@ function LabourListing(props) {
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
 
       if (permmisionData !== undefined) {
-        setState(
-          (prevState
-          ) => ({
-            ...prevState,
-            ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
-            AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
-            EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
-            DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
-            BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
-            DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
-          })
+        setState((prevState) => ({
+          ...prevState,
+          ViewAccessibility: permmisionData && permmisionData.View ? permmisionData.View : false,
+          AddAccessibility: permmisionData && permmisionData.Add ? permmisionData.Add : false,
+          EditAccessibility: permmisionData && permmisionData.Edit ? permmisionData.Edit : false,
+          DeleteAccessibility: permmisionData && permmisionData.Delete ? permmisionData.Delete : false,
+          BulkUploadAccessibility: permmisionData && permmisionData.BulkUpload ? permmisionData.BulkUpload : false,
+          DownloadAccessibility: permmisionData && permmisionData.Download ? permmisionData.Download : false,
+        })
         )
       }
     }
@@ -108,7 +94,6 @@ function LabourListing(props) {
 
 
   const getTableListData = (employment_terms = '', state = 0, plant = '', labour_type = 0, machine_type = 0) => {
-
     let filterData = {
       employment_terms: employment_terms,
       state: state,
@@ -116,20 +101,13 @@ function LabourListing(props) {
       labour_type: labour_type,
       machine_type: machine_type,
     }
-
     dispatch(getLabourDataList(true, filterData, (res) => {
-      setState(
-        (prevState
-        ) => ({ ...prevState, isLoader: false }))
+      setState((prevState) => ({ ...prevState, isLoader: false }))
       if (res.status === 204 && res.data === '') {
-        setState(
-          (prevState
-          ) => ({ ...prevState, tableData: [] }))
+        setState((prevState) => ({ ...prevState, tableData: [] }))
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList
-        setState(
-          (prevState
-          ) => ({ ...prevState, tableData: Data, }))
+        setState((prevState) => ({ ...prevState, tableData: Data, }))
       } else {
       }
     }))
@@ -137,20 +115,12 @@ function LabourListing(props) {
 
 
   const viewOrEditItemDetails = (Id, isViewMode) => {
-    setState(
-      (prevState
-      ) => ({
-        ...prevState,
-        data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
-        toggleForm: true,
-      }))
+    setState((prevState) => ({ ...prevState, data: { isEditFlag: true, ID: Id, isViewMode: isViewMode }, toggleForm: true, }))
   }
 
 
   const deleteItem = (Id) => {
-    setState(
-      (prevState
-      ) => ({ ...prevState, showPopup: true, deletedId: Id }))
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }))
   }
 
 
@@ -165,18 +135,14 @@ function LabourListing(props) {
       }
 
     }))
-    setState(
-      (prevState
-      ) => ({ ...prevState, showPopup: false }))
+    setState((prevState) => ({ ...prevState, showPopup: false }))
   }
 
   const onPopupConfirm = () => {
     confirmDeleteItem(state.deletedId);
   }
   const closePopUp = () => {
-    setState(
-      (prevState
-      ) => ({ ...prevState, showPopup: false }))
+    setState((prevState) => ({ ...prevState, showPopup: false }))
   }
 
   const buttonFormatter = (props) => {
@@ -186,9 +152,9 @@ function LabourListing(props) {
 
     return (
       <>
-        {ViewAccessibility && (<button title="View" className="View mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, true)} />)}
-        {EditAccessibility && (<button title="Edit" className="Edit mr-2" type="button" onClick={() => viewOrEditItemDetails(cellValue, false)} />)}
-        {DeleteAccessibility && (<button title="Delete" className="Delete" type="button" onClick={() => deleteItem(cellValue)} />
+        {ViewAccessibility && (<Button id={`labourListing_View${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />)}
+        {EditAccessibility && (<Button id={`labourListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />)}
+        {DeleteAccessibility && (<Button id={`labourListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
         )}
       </>
     );
@@ -213,7 +179,7 @@ function LabourListing(props) {
   const customerFormatter = (props) => {
     const cellValue = props?.value;
     const row = props?.valueFormatted ? props.valueFormatted : props?.data;
-    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? `${cellValue} (${row.CustomerCode})` : '-';
+    return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? `${cellValue}` : '-';
   }
 
 
@@ -224,8 +190,7 @@ function LabourListing(props) {
 
 
   const filterList = () => {
-    const {
-      EmploymentTerms, StateName, plant, labourType, machineType, } = state
+    const { EmploymentTerms, StateName, plant, labourType, machineType, } = state
     const ETerms = EmploymentTerms ? EmploymentTerms.value : ''
     const State = StateName ? StateName.value : 0
     const Plant = plant ? plant.value : ''
@@ -242,37 +207,29 @@ function LabourListing(props) {
 
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      labourDataList.length !== 0 && setState(
-        (prevState
-        ) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
+      labourDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
     }, 500);
   }
 
   const hideForm = (type) => {
-    setState(
-      {
-        toggleForm: false,
-        data: { isEditFlag: false, ID: '' },
-      },
+    setState((prevState) => ({ ...prevState, toggleForm: false, data: { isEditFlag: false, ID: '' }, }),
       () => {
-        if (type === 'submit')
-          filterList()
+        if (type === 'submit') {
+          filterList();
+        }
       }
-    )
+    );
+
   }
 
 
   const bulkToggle = () => {
-    setState(
-      (prevState
-      ) => ({ ...prevState, isBulkUpload: true }))
+    setState((prevState) => ({ ...prevState, isBulkUpload: true }))
   }
 
 
   const closeBulkUploadDrawer = (event, type) => {
-    setState(
-      (prevState
-      ) => ({ ...prevState, isBulkUpload: false }))
+    setState((prevState) => ({ ...prevState, isBulkUpload: false }))
     if (type !== 'cancel') {
       getTableListData(null, null, null, null)
     }
@@ -280,9 +237,7 @@ function LabourListing(props) {
 
 
   const onGridReady = (params) => {
-    setState(
-      (prevState
-      ) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
 
@@ -292,9 +247,7 @@ function LabourListing(props) {
 
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows()
-    setState(
-      (prevState
-      ) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
+    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
 
   }
 
@@ -304,7 +257,9 @@ function LabourListing(props) {
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (labourDataList ? labourDataList : [])
     return returnExcelColumn(LABOUR_DOWNLOAD_EXCEl, tempArr)
   };
-
+  const handleShown = () => {
+    setState((prevState) => ({ ...prevState, shown: !state.shown }))
+  }
   const returnExcelColumn = (data = [], TempData) => {
     let temp = []
     temp = TempData && TempData.map((item) => {
@@ -388,48 +343,30 @@ function LabourListing(props) {
                   {state.shown ? (
                     <button type="button" className="user-btn mr5 filter-btn-top " onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
                       <div className="cancel-icon-white"></div></button>
+                    // <Button type="button" className="user-btn mr5 filter-btn-top" onClick={handleShown()} icon="cancel-icon-white"/>
+
                   ) : (
                     ""
                   )}
                   {AddAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn mr5"}
-                      onClick={formToggle}
-                      title="Add"
-                    >
-                      <div className={"plus mr-0"}></div>
-                      {/* ADD */}
-                    </button>
+                    <Button id="labourListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
                   )}
                   {BulkUploadAccessibility && (
-                    <button
-                      type="button"
-                      className={"user-btn mr5"}
-                      onClick={bulkToggle}
-                      title="Bulk Upload"
-                    >
-                      <div className={"upload mr-0"}></div>
-                      {/* Bulk Upload */}
-                    </button>
+
+                    <Button id="labourListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
                   )}
                   {
                     DownloadAccessibility &&
                     <>
 
                       <ExcelFile filename={'Labour'} fileExtension={'.xls'} element={
-                        <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
-                          {/* DOWNLOAD */}
-                          {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                        </button>}>
-
+                        <Button id={"Excel-Downloads-labourListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                      }>
                         {onBtExport()}
                       </ExcelFile>
                     </>
                   }
-                  <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                    <div className="refresh mr-0"></div>
-                  </button>
+                  <Button id={"labourListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 
                 </div>
               </div>
@@ -479,15 +416,7 @@ function LabourListing(props) {
         </div>
 
         {isBulkUpload && (
-          <BulkUpload
-            isOpen={isBulkUpload}
-            closeDrawer={closeBulkUploadDrawer}
-            isEditFlag={false}
-            fileName={'Labour'}
-            isZBCVBCTemplate={true}
-            messageLabel={'Labour'}
-            anchor={'right'}
-          />
+          <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Labour'} isZBCVBCTemplate={true} messageLabel={'Labour'} anchor={'right'} />
         )}
         {
           state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.LABOUR_DELETE_ALERT}`} />

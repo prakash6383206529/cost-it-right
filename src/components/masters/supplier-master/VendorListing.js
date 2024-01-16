@@ -585,10 +585,7 @@ const VendorListing = () => {
    * @description reset Column, filter, select cells
    */
   const resetState = () => {
-    const searchBox = document.getElementById("filter-text-box");
-    if (searchBox) {
-      searchBox.value = ""; // Reset the input field's value
-    }
+    
     state.gridApi.setQuickFilter(null)
     setState((prevState) => ({ ...prevState, noData: false, }));
     dispatch(isResetClick(true, "vendorType"));
