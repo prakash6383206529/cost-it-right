@@ -470,8 +470,6 @@ function LoginAudit(props) {
         //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (state.auditDataList ? state.auditDataList : [])
-
-
         return returnExcelColumn(AUDIT_LISTING_DOWNLOAD_EXCEl, tempArr)
     };
     const returnExcelColumn = (data = [], TempData) => {
@@ -627,6 +625,7 @@ function LoginAudit(props) {
                                                     </ExcelFile>
                                                 </>
                                             }
+
                                         </div>
 
                                     </div>
@@ -658,9 +657,9 @@ function LoginAudit(props) {
                                                 enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn field="UserName" headerName="User Name" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
-                                                <AgGridColumn field="IPAddress" headerName="IPAddress"></AgGridColumn>
-                                                <AgGridColumn field="UserAgent" headerName="UserAgent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn field="LoginTime" headerName="LoginTime (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                                                <AgGridColumn field="IPAddress" headerName="IP Address"></AgGridColumn>
+                                                <AgGridColumn field="UserAgent" headerName="User Agent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="LoginTime" headerName="Login Time (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                             </AgGridReact>}
                                             <div className='button-wrapper'>
                                                 {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
