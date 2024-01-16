@@ -17,6 +17,7 @@ import { disabledClass } from '../../actions/Common';
 import { AUDIT_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import ReactExport from 'react-export-excel';
 import Button from '../layout/Button';
+import DatePicker from 'react-datepicker'
 
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -51,8 +52,15 @@ function LoginAudit(props) {
         warningMessage: false,
         floatingFilterData: { UserName: '', UserId: 0, LoginTime: '', IPAddress: '', MacAddress: '', UserAgent: '', },
         pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-        DownloadAccessibility: false
+        DownloadAccessibility: false,
+        fromDate: '',
+        toDate: '',
+
     })
+    const [fromDate, setFromDate] = useState(null)
+    const [toDate, setToDate] = useState(null)
+    const [filteredData, setFilteredData] = useState(state.auditDataList);
+
     const [searchText, setSearchText] = useState('');
     const { selectedRowForPagination } = useSelector(state => state.simulation);
 
@@ -82,7 +90,10 @@ function LoginAudit(props) {
                 dataObj.dateArray = temp;
             }
         }
+        setState(prevState => ({ ...prevState, isLoader: true }));
         dispatch(getUserAuditLog(dataObj, skip, take, isPagination, true, '', (res) => {
+            setState(prevState => ({ ...prevState, isLoader: false }));
+
             if (res && res.status === 200) {
                 let Data = res.data.DataList;
                 setState(prevState => ({ ...prevState, auditDataList: Data, noData: false, isLoader: false }));
@@ -172,6 +183,61 @@ function LoginAudit(props) {
     const onFilterTextBoxChanged = (e) => {
         setSearchText(state.gridApi.setQuickFilter(e.target.value));
     }
+    //daterangerconst handleFromDateChange = (date) => {
+    const handleFromDateChange = (date) => {
+        setFromDate(date);
+        if (date && toDate) {
+            // Enable the filter button
+            setState(prevState => ({ ...prevState, disableFilter: false }));
+        } else {
+            // Disable the filter button if toDate is not selected yet
+            setState(prevState => ({ ...prevState, disableFilter: true }));
+        }
+        if (date && toDate && date > toDate) {
+            setToDate(null);
+        }
+    };
+
+    // Update to handleToDateChange
+    const handleToDateChange = (date) => {
+        setToDate(date);
+        if (fromDate && date) {
+            // Enable the filter button
+            setState(prevState => ({ ...prevState, disableFilter: false }));
+        } else {
+            // Disable the filter button if fromDate is not selected yet
+            setState(prevState => ({ ...prevState, disableFilter: true }));
+        }
+        if (fromDate && date && date < fromDate) {
+            setFromDate(null);
+        }
+    };
+    const formatToDateString = (dateObject) => {
+        return dateObject.toISOString(); // Use your desired string format
+    }
+
+    const filterData = () => {
+        let filtered = state.auditDataList; // Start with all data
+        if (fromDate || toDate) {
+            filtered = state.auditDataList.filter((item) => {
+                const itemDate = new Date(item.date); // Make sure 'item.date' is the correct property
+                return (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
+            });
+        }
+
+        setFilteredData(filtered); // Now 'filteredData' will only contain data within the date range
+    };
+
+    // Call filterData whenever fromDate or toDate changes
+    useEffect(() => {
+        filterData();
+    }, [fromDate, toDate]);
+
+
+
+
+
+
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (state.auditDataList?.length !== 0) {
@@ -215,6 +281,8 @@ function LoginAudit(props) {
     };
 
     const resetState = () => {
+        setFromDate(null);
+        setToDate(null);
         setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state.gridApi) {
@@ -226,7 +294,7 @@ function LoginAudit(props) {
         for (var prop in state.floatingFilterData) {
             state.floatingFilterData[prop] = "";
         }
-        setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
+        setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, fromDate: null, toDate: null }));
         getDataList(0, state.defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         dispatch(setSelectedRowForPagination([]));
 
@@ -312,9 +380,9 @@ function LoginAudit(props) {
             floatingFilter.id = specificId;
         });
     };
-    const onSearch = () => {
 
-        setState((prevState) => ({
+    const onSearch = () => {
+        setState(prevState => ({
             ...prevState,
             warningMessage: false,
             isFilterButtonClicked: true,
@@ -322,12 +390,22 @@ function LoginAudit(props) {
             pageNoNew: 1,
             currentRowIndex: 0,
         }));
+
+        // Create an updated filter object including fromDate and toDate
+        const filterDataObj = {
+            ...state.floatingFilterData,
+            fromDate: fromDate ? formatToDateString(fromDate) : '',
+            toDate: toDate ? formatToDateString(toDate) : ''
+        };
         gridOptions?.columnApi?.resetColumnState();
-        getDataList(0, state.globalTake, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+
+        // Call the API with updated filtering options
+        getDataList(0, state.globalTake, true, filterDataObj);
     };
     const onPageSizeChanged = (newPageSize) => {
         let pageSize, totalRecordCount;
         if (Number(newPageSize) === 10) {
+
             pageSize = 10;
         } else if (Number(newPageSize) === 50) {
             pageSize = 50;
@@ -354,6 +432,7 @@ function LoginAudit(props) {
                 pageSize100: pageSize === 100,
             },
         }));
+        // state.gridApi.api.sizeColumnsToFit()
 
         state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
@@ -391,6 +470,8 @@ function LoginAudit(props) {
         //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (state.auditDataList ? state.auditDataList : [])
+
+
         return returnExcelColumn(AUDIT_LISTING_DOWNLOAD_EXCEl, tempArr)
     };
     const returnExcelColumn = (data = [], TempData) => {
@@ -482,10 +563,51 @@ function LoginAudit(props) {
                         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                         <div className={`ag-grid-react ? "custom-pagination" : ""} ${state.DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
                             <Row className={`filter-row-large blue-before`}>
-                                <Col md="3" lg="3">
+                                <Col md="7" lg="7" className='d-'>
                                     <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    <Row>
+                                        <Col md="5">
+                                            <div className="form-group d-flex align-items-center">
+                                                <label>From:</label>
+                                                <div className="inputbox date-section ml-2">
+                                                    <DatePicker
+                                                        selected={fromDate}
+                                                        onChange={handleFromDateChange}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dropdownMode="select"
+                                                        maxDate={toDate}
+                                                        dateFormat="dd/MM/yyyy"
+                                                        placeholderText="From date"
+                                                        className="form-control"
+                                                        autoComplete="off"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </Col>
+                                        <Col md="6">
+                                            <div className="form-group d-flex align-items-center">
+                                                <label>To:</label>
+                                                <div className="inputbox date-section ml-2">
+                                                    <DatePicker
+                                                        selected={toDate}
+                                                        onChange={handleToDateChange} showMonthDropdown
+                                                        showYearDropdown
+                                                        dropdownMode="select"
+                                                        minDate={fromDate}
+                                                        dateFormat="dd/MM/yyyy"
+                                                        placeholderText="To date"
+                                                        className="form-control"
+                                                        autoComplete="off"
+                                                        disabled={!fromDate} // Disable if fromDate is not selected
+                                                    />
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    </Row>
+
                                 </Col>
-                                <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
+                                <Col md="5" lg="5" className=" mb-3 d-flex justify-content-end">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div className="warning-message d-flex align-items-center">
                                             {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
@@ -535,7 +657,7 @@ function LoginAudit(props) {
                                                 onFilterModified={onFloatingFilterChanged}
                                                 enableBrowserTooltips={true}
                                             >
-                                                <AgGridColumn field="UserName" headerName="UserName" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
+                                                <AgGridColumn field="UserName" headerName="User Name" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
                                                 <AgGridColumn field="IPAddress" headerName="IPAddress"></AgGridColumn>
                                                 <AgGridColumn field="UserAgent" headerName="UserAgent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="LoginTime" headerName="LoginTime (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
