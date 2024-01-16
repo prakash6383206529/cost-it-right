@@ -1,5 +1,5 @@
-import React, { Component, useEffect, useState } from 'react';
-import { connect,useSelector } from 'react-redux';
+import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from 'classnames';
 import AddFreight from './AddFreight';
@@ -10,40 +10,34 @@ import { ADDITIONAL_MASTERS, FREIGHT } from '../../../config/constants';
 import { checkPermission } from '../../../helper/util';
 import ScrollToTop from '../../common/ScrollToTop';
 export const ApplyPermission = React.createContext();
-const FreightMaster =() => {
-    const[state, setState] = useState({
-        
-    
-            activeTab: '1',
-            isFreightForm: false,
-            isPackageForm: false,
-            data: {},
+const FreightMaster = () => {
+    const [state, setState] = useState({
+        activeTab: '1',
+        isFreightForm: false,
+        isPackageForm: false,
+        data: {},
+        ViewAccessibility: false,
+        AddAccessibility: false,
+        EditAccessibility: false,
+        DeleteAccessibility: false,
+        BulkUploadAccessibility: false,
+        DownloadAccessibility: false,
+        stopApiCallOnCancel: false
+    })
+    const [permissionData, setPermissionData] = useState({});
+    const { topAndLeftMenuData } = useSelector(state => state.auth);
+    useEffect(() => {
+        applyPermission(topAndLeftMenuData)
 
-            ViewAccessibility: false,
-            AddAccessibility: false,
-            EditAccessibility: false,
-            DeleteAccessibility: false,
-            BulkUploadAccessibility: false,
-            DownloadAccessibility: false,
-            stopApiCallOnCancel: false
-        })
-        const [permissionData, setPermissionData] = useState({});
-        const {  topAndLeftMenuData } = useSelector(state => state.auth);
-useEffect(() => {
-    applyPermission(topAndLeftMenuData)
-
-},[topAndLeftMenuData])
+    }, [topAndLeftMenuData])
 
 
 
-    
     const applyPermission = (topAndLeftMenuData) => {
-        console.log(topAndLeftMenuData);
         if (topAndLeftMenuData !== undefined) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
             const accessData = Data && Data.Pages.find(el => el.PageName === FREIGHT)
             const permmisionDataAccess = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
             if (permmisionDataAccess !== undefined) {
                 setPermissionData(permmisionDataAccess);
 
@@ -51,15 +45,9 @@ useEffect(() => {
         }
     }
 
-   console.log(permissionData);
-   
     const toggle = (tab) => {
         if (state.activeTab !== tab) {
-             setState((prevState) => ({
-      ...prevState,
-                activeTab: tab,
-                stopApiCallOnCancel: false
-            }));
+            setState((prevState) => ({ ...prevState, activeTab: tab, stopApiCallOnCancel: false }));
         }
     }
 
@@ -68,8 +56,7 @@ useEffect(() => {
     * @description DISPLAY FREIGHT FORM
     */
     const displayFreightForm = () => {
-         setState((prevState) => ({
-      ...prevState, isFreightForm: true, isPackageForm: false, data: {} }))
+        setState((prevState) => ({ ...prevState, isFreightForm: true, isPackageForm: false, data: {} }))
     }
 
     /**
@@ -77,8 +64,7 @@ useEffect(() => {
     * @description DISPLAY PACKAGING FORM
     */
     const displayPackagForm = () => {
-         setState((prevState) => ({
-      ...prevState, isFreightForm: false, isPackageForm: true, data: {} }))
+        setState((prevState) => ({ ...prevState, isFreightForm: false, isPackageForm: true, data: {} }))
     }
 
     /**
@@ -86,11 +72,9 @@ useEffect(() => {
     * @description HIDE FREIGHT AND PACKAGING FORMS
     */
     const hideForm = (type) => {
-         setState((prevState) => ({
-      ...prevState, isFreightForm: false, isPackageForm: false, data: {}, stopApiCallOnCancel: false }))
+        setState((prevState) => ({ ...prevState, isFreightForm: false, isPackageForm: false, data: {}, stopApiCallOnCancel: false }))
         if (type === 'cancel') {
-             setState((prevState) => ({
-      ...prevState, stopApiCallOnCancel: true }))
+            setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true }))
 
         }
     }
@@ -100,8 +84,7 @@ useEffect(() => {
     * @description GET DETAILS FOR FREIGHT FORM
     */
     const getDetails = (data) => {
-         setState((prevState) => ({
-      ...prevState, isFreightForm: true, data: data }))
+        setState((prevState) => ({ ...prevState, isFreightForm: true, data: data }))
     }
 
     /**
@@ -109,8 +92,7 @@ useEffect(() => {
     * @description GET DETAILS FOR PACKAGING FORM
     */
     const getPackaingDetails = (data) => {
-         setState((prevState) => ({
-      ...prevState, isPackageForm: true, data: data }))
+        setState((prevState) => ({ ...prevState, isPackageForm: true, data: data }))
     }
 
     /**
@@ -118,72 +100,59 @@ useEffect(() => {
     * @description Renders the component
     */
 
-        const { isFreightForm, isPackageForm, data, } = state;
+    const { isFreightForm, isPackageForm, data, } = state;
 
-        if (isFreightForm === true) {
-            return <AddFreight
-                data={data}
-                hideForm={hideForm}
-            />
-        }
+    if (isFreightForm === true) {
+        return <AddFreight data={data} hideForm={hideForm} />
+    }
 
-        if (isPackageForm === true) {
-            return <AddPackaging
-                data={data}
-                hideForm={hideForm}
-            />
-        }
+    if (isPackageForm === true) {
+        return <AddPackaging data={data} hideForm={hideForm} />
+    }
 
-        return (
-            <> {
-                Object.keys(permissionData).length > 0 &&
-                <div className="container-fluid" id='go-to-top'>
-                    {/* {props.loading && <Loader/>} */}
-                    <ScrollToTop pointProp="go-to-top" />
-                    <Row>
-                        <Col>
-                            <Nav tabs className="subtabs mt-0">
-                                <NavItem>
-                                    <NavLink className={classnames({ active: state.activeTab === '1' })} onClick={() => { toggle('1'); }}>
-                                        Manage Freight
-                                    </NavLink>
-                                </NavItem>
-                                {/* <NavItem>
+    return (
+        <> {
+            Object.keys(permissionData).length > 0 &&
+            <div className="container-fluid" id='go-to-top'>
+                {/* {props.loading && <Loader/>} */}
+                <ScrollToTop pointProp="go-to-top" />
+                <Row>
+                    <Col>
+                        <Nav tabs className="subtabs mt-0">
+                            <NavItem>
+                                <NavLink className={classnames({ active: state.activeTab === '1' })} onClick={() => { toggle('1'); }}>
+                                    Manage Freight
+                                </NavLink>
+                            </NavItem>
+                            {/* <NavItem>
                                 <NavLink className={classnames({ active: state.activeTab === '2' })} onClick={() => { toggle('2'); }}>
                                     Manage Packaging
                                 </NavLink>
                             </NavItem> */}
-                            </Nav>
-                            <ApplyPermission.Provider value={permissionData}>
+                        </Nav>
+                        <ApplyPermission.Provider value={permissionData}>
 
                             <TabContent activeTab={state.activeTab}>
 
                                 {state.activeTab === '1' &&
                                     <TabPane tabId="1">
-                                        <FreightListing
-                                            displayForm={displayFreightForm}
-                                            getDetails={getDetails}
-                                            stopApiCallOnCancel={state.stopApiCallOnCancel}
-                                        />
+                                        <FreightListing displayForm={displayFreightForm} getDetails={getDetails} stopApiCallOnCancel={state.stopApiCallOnCancel} />
                                     </TabPane>}
 
                                 {state.activeTab === '2' &&
                                     <TabPane tabId="2">
-                                        <PackagListing
-                                            displayForm={displayPackagForm}
-                                            getDetails={getPackaingDetails}
-                                        />
+                                        <PackagListing displayForm={displayPackagForm} getDetails={getPackaingDetails} />
                                     </TabPane>}
                             </TabContent>
-                            </ApplyPermission.Provider>
+                        </ApplyPermission.Provider>
 
-                        </Col>
-                    </Row>
-                </div>
+                    </Col>
+                </Row>
+            </div>
+        }
+        </ >
+    );
 }
-            </ >
-        );
-    }
 
 
 

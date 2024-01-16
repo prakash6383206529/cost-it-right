@@ -2,17 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
 import AddUOM from './AddUOM';
-import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI, activeInactiveUOM } from '../actions/unitOfMeasurment';
+import { getUnitOfMeasurementAPI, deleteUnitOfMeasurementAPI } from '../actions/unitOfMeasurment';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
-import Switch from "react-switch";
 import { ADDITIONAL_MASTERS, UOM, UomMaster } from '../../../config/constants';
 import { checkPermission, searchNocontentFilter } from '../../../helper/util';
-import { loggedInUserId } from '../../../helper/auth';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
-import { applySuperScript } from '../../../helper/validation';
 import ReactExport from 'react-export-excel';
 import { UOM_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -23,7 +19,7 @@ import ScrollToTop from '../../common/ScrollToTop';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PaginationWrapper } from '../../common/commonPagination';
 import { displayUOM } from '../../../helper/util';
-
+import Button from '../../layout/Button';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -81,7 +77,6 @@ const UOMMaster = (props) => {
       const data = topAndLeftMenuData && topAndLeftMenuData?.find(el => el.ModuleName === ADDITIONAL_MASTERS);
       const accessData = data && data.Pages.find(el => el.PageName === UOM)
       const permissionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
-
       if (permissionData !== undefined) {
         setViewAccessibility(permissionData && permissionData.View ? permissionData.View : false);
         setAddAccessibility(permissionData && permissionData.Add ? permissionData.Add : false);
@@ -149,8 +144,7 @@ const UOMMaster = (props) => {
   const buttonFormatter = (props) => {
     const cellValue = props?.value;
     return (
-      <>
-        {EditAccessibility && <button title='Edit' className="Edit mr5" type={'button'} onClick={() => editItemDetails(cellValue)} />}
+      <>        {EditAccessibility && <Button id={`uomListing_edit${props.rowIndex}`} className={"Edit mr5"} variant="Edit" onClick={() => editItemDetails(cellValue)} title={"Edit"} />}
         {/* <button className="Delete" type={'button'} onClick={() => deleteItem(cell)} /> */}
       </>
     )
@@ -259,18 +253,16 @@ const UOMMaster = (props) => {
             {
               DownloadAccessibility &&
               <>
-                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}>
-                  <div title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} className="download mr-1" ></div>
-                  {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}</button>}>
+                <ExcelFile filename={UomMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-uomListing"} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
+                }>
                   {onBtExport()}
                 </ExcelFile>
               </>
               //   <button type="button" className={"user-btn mr5"} onClick={onBtExport}><div className={"download"} ></div>Download</button>
             }
 
-            <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-              <div className="refresh mr-0"></div>
-            </button>
+            <Button id={"uomListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+
           </Col>
         </Row>
 
@@ -314,14 +306,7 @@ const UOMMaster = (props) => {
 
           </Col>
         </Row>
-        {isOpen && (
-          <AddUOM
-            isOpen={isOpen}
-            closeDrawer={closeDrawer}
-            isEditFlag={isEditFlag}
-            ID={uomId}
-            anchor={"right"}
-          />
+        {isOpen && (<AddUOM isOpen={isOpen} closeDrawer={closeDrawer} isEditFlag={isEditFlag} ID={uomId} anchor={"right"} />
         )}
         {
           showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`Are you sure you want to delete UOM?`} />

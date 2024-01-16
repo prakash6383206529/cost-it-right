@@ -20,7 +20,7 @@ import { loggedInUserId, searchNocontentFilter } from '../../../helper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission } from '../../common/CommonFunctions';
 import { ApplyPermission } from '.';
-
+import Button from '../../layout/Button';
 const gridOptions = {};
 const FreightListing = (props) => {
   const dispatch = useDispatch();
@@ -42,13 +42,10 @@ const FreightListing = (props) => {
     dataCount: 0
   })
   const permissions = useContext(ApplyPermission);
-  console.log(permissions);
   const { freightDetail } = useSelector((state) => state.freight);
 
   useEffect(() => {
-    !props.stopApiCallOnCancel && setState((prevState) => ({
-      ...prevState, isLoader: true
-    }))
+    !props.stopApiCallOnCancel && setState((prevState) => ({ ...prevState, isLoader: true }))
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
         setTimeout(() => {
@@ -65,32 +62,16 @@ const FreightListing = (props) => {
   */
   const getDataList = (freight_for = '', vendor_id = '', source_city_id = 0, destination_city_id = 0,) => {
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
-    const filterData = {
-      freight_for: freight_for,
-      vendor_id: vendor_id,
-      source_city_id: source_city_id,
-      destination_city_id: destination_city_id,
-      IsCustomerDataShow: cbc,
-      IsVendorDataShow: vbc,
-      IsZeroDataShow: zbc
-    }
+    const filterData = { freight_for: freight_for, vendor_id: vendor_id, source_city_id: source_city_id, destination_city_id: destination_city_id, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc }
     dispatch(getFreightDataList(filterData, (res) => {
-      setState((prevState) => ({
-        ...prevState, isLoader: false
-      }))
+      setState((prevState) => ({ ...prevState, isLoader: false }))
       if (res && res.status === 200) {
         let Data = res.data.DataList;
-        setState((prevState) => ({
-          ...prevState, tableData: Data, isLoader: false
-        }))
+        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
       } else if (res && res.response && res.response.status === 412) {
-        setState((prevState) => ({
-          ...prevState, tableData: [], isLoader: false
-        }))
+        setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
       } else {
-        setState((prevState) => ({
-          ...prevState, tableData: [], isLoader: false
-        }))
+        setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
       }
     }))
   }
@@ -99,12 +80,7 @@ const FreightListing = (props) => {
   * @description edit or view material type
   */
   const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
-    let data = {
-      isEditFlag: true,
-      Id: Id,
-      IsVendor: rowData.CostingHead,
-      isViewMode: isViewMode
-    }
+    let data = { isEditFlag: true, Id: Id, IsVendor: rowData.CostingHead, isViewMode: isViewMode }
     props.getDetails(data);
   }
 
@@ -113,9 +89,7 @@ const FreightListing = (props) => {
   * @description confirm delete Raw Material details
   */
   const deleteItem = (Id) => {
-    setState((prevState) => ({
-      ...prevState, showPopup: true, deletedId: Id
-    }))
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }))
   }
 
   /**
@@ -127,23 +101,17 @@ const FreightListing = (props) => {
     dispatch(deleteFright(ID, loggedInUser, (res) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_FREIGHT_SUCCESSFULLY);
-        setState((prevState) => ({
-          ...prevState, dataCount: 0
-        }))
+        setState((prevState) => ({ ...prevState, dataCount: 0 }))
         getDataList()
       }
     }));
-    setState((prevState) => ({
-      ...prevState, showPopup: false
-    }))
+    setState((prevState) => ({ ...prevState, showPopup: false }))
   }
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
   }
   const closePopUp = () => {
-    setState((prevState) => ({
-      ...prevState, showPopup: false
-    }))
+    setState((prevState) => ({ ...prevState, showPopup: false }))
   }
 
   /**
@@ -152,32 +120,22 @@ const FreightListing = (props) => {
      */
   const onFloatingFilterChanged = (value) => {
     setTimeout(() => {
-      freightDetail.length !== 0 && setState((prevState) => ({
-        ...prevState, noData: searchNocontentFilter(value, state.noData)
-      }))
+      freightDetail.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
     }, 500);
   }
   /**
-  * @method renderPaginationShowsTotal
-  * @description Pagination
-  */
-  const renderPaginationShowsTotal = (start, to, total) => {
-    return <GridTotalFormate start={start} to={to} total={total} />
-  }
-
-  /**
-  * @method buttonFormatter
-  * @description Renders buttons
-  */
+   * @method buttonFormatter
+   * @description Renders buttons
+   */
   const buttonFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
 
     return (
       <>
-        {permissions.View && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} />}
-        {permissions.Edit && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} />}
-        {permissions.Delete && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+        {permissions.View && <Button id={`freightListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+        {permissions.Edit && <Button id={`freightListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
+        {permissions.Delete && <Button id={`freightListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };
@@ -192,9 +150,6 @@ const FreightListing = (props) => {
 
   }
 
-
-
-
   const formToggle = () => {
     if (checkMasterCreateByCostingPermission()) {
       props.displayForm()
@@ -208,15 +163,6 @@ const FreightListing = (props) => {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
-
-  /**
-  * @method onSubmit
-  * @description Used to Submit the form
-  */
-  const onSubmit = (values) => {
-
-  }
-
   const returnExcelColumn = (data = [], TempData) => {
     const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
     const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -229,17 +175,14 @@ const FreightListing = (props) => {
     })
 
     return (<ExcelSheet data={temp} name={`${FreightMaster}`}>
-      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
-      }
+      {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
     </ExcelSheet>);
   }
 
   const onGridReady = (params) => {
     state.gridApi = params.api;
     state.gridApi.sizeColumnsToFit();
-    setState((prevState) => ({
-      ...prevState, gridApi: params.api, gridColumnApi: params.columnApi
-    }))
+    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
     params.api.paginationGoToPage(0);
   };
   const onPageSizeChanged = (newPageSize) => {
@@ -248,9 +191,7 @@ const FreightListing = (props) => {
 
   const onRowSelect = () => {
     const selectedRows = state.gridApi?.getSelectedRows()
-    setState((prevState) => ({
-      ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length
-    }))
+    setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
   }
 
   const onBtExport = () => {
@@ -274,18 +215,19 @@ const FreightListing = (props) => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
+  const handleShown = () => {
+    console.log("handleShown")
+    setState((prevState) => ({ ...prevState, shown: !state.shown }))
+  }
 
-
-  const { handleSubmit, AddAccessibility, DownloadAccessibility } = props;
   const ExcelFile = ReactExport.ExcelFile;
-  const { noData, dataCount } = state;
+  const { noData } = state;
 
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
     return thisIsFirstColumn;
   }
-
   const defaultColDef = {
     resizable: true,
     filter: true,
@@ -305,48 +247,23 @@ const FreightListing = (props) => {
   return (
     <div className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}>
       {state.isLoader && <LoaderCustom />}
-      <form
-        // onSubmit={handleSubmit(onSubmit.bind(this))}
-        noValidate>
+      <form noValidate>
         <Row className="pt-4">
-
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
-                {state.shown ? (
-                  <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({
-                    ...prevState, shown: !state.shown
-                  }))}>
-                    <div className="cancel-icon-white"></div></button>
-                ) : (
-                  ""
-                )}
                 {permissions.Add && (
-                  <button
-                    type="button"
-                    className={"user-btn mr5"}
-                    onClick={formToggle}
-                    title="Add"
-                  >
-                    <div className={"plus mr-0"}></div>
-                  </button>
-                )}
+                  <Button id="freightListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
                 {
                   permissions.Download &&
                   <>
-                    <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={
-                      <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1"></div>
-                        {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}</button>}>
+                    <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-freightListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                       {onBtExport()}
                     </ExcelFile>
                   </>
 
                 }
-
-                <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                  <div className="refresh mr-0"></div>
-                </button>
-
+                <Button id={"freightListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
               </div>
             </div>
           </Col>
