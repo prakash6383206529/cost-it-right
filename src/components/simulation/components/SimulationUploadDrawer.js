@@ -197,9 +197,7 @@ class SimulationUploadDrawer extends Component {
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            if (fileHeads[i] === 'RevisedBasicRate') {
-                                                obj["NewBasicRate"] = el;
-                                            } else if (fileHeads[i] === 'RevisedScrapRate') {
+                                            if (fileHeads[i] === 'RevisedScrapRate') {
                                                 obj["NewScrapRate"] = el;
                                             } else if (fileHeads[i] === "Grade") {
                                                 obj["RawMaterialGradeName"] = el;
