@@ -365,7 +365,6 @@ function VolumeListing(props) {
     }
   };
   const returnExcelColumn = (data = [], TempData) => {
-    console.log("TempData", TempData);
     let excelData = hideCustomerFromExcel(data, "CustomerName")
     return (
       <ExcelSheet data={TempData} name={VolumeMaster}>
@@ -417,7 +416,6 @@ function VolumeListing(props) {
     dispatch(disabledClass(false));
     //let tempArr = gridApi && gridApi?.getSelectedRows()
     let tempArr = volumeDataListForDownload;
-    console.log(tempArr, "onExcelDownload");
     if (tempArr?.length > 0) {
       setTimeout(() => {
         setDisableDownload(false);
@@ -435,7 +433,6 @@ function VolumeListing(props) {
     let tempArr = [];
     //tempArr = gridApi && gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination;
-    console.log(tempArr, "onBtExport");
     tempArr = tempArr && tempArr.length > 0 ? tempArr : volumeDataListForDownload ? volumeDataListForDownload : [];
     return returnExcelColumn(VOLUME_DOWNLOAD_EXCEl, tempArr);
   };
