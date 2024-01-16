@@ -10,13 +10,14 @@ import { Col, Row } from 'reactstrap';
 import DayTime from '../common/DayTimeWrapper';
 import { setSelectedRowForPagination, } from '../simulation/actions/Simulation';
 import _ from 'lodash';
-import { checkPermission, searchNocontentFilter } from '../../helper';
+import { checkPermission, getConfigurationKey, searchNocontentFilter } from '../../helper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
 import { disabledClass } from '../../actions/Common';
 import { AUDIT_LISTING_DOWNLOAD_EXCEl } from '../../config/masterData';
 import ReactExport from 'react-export-excel';
 import Button from '../layout/Button';
+import DatePicker from 'react-datepicker'
 
 
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -51,8 +52,15 @@ function LoginAudit(props) {
         warningMessage: false,
         floatingFilterData: { UserName: '', UserId: 0, LoginTime: '', IPAddress: '', MacAddress: '', UserAgent: '', },
         pageSize: { pageSize10: true, pageSize50: false, pageSize100: false },
-        DownloadAccessibility: false
+        DownloadAccessibility: false,
+        fromDate: '',
+        toDate: '',
+
     })
+    const [fromDate, setFromDate] = useState(null)
+    const [toDate, setToDate] = useState(null)
+    const [filteredData, setFilteredData] = useState(state.auditDataList);
+
     const [searchText, setSearchText] = useState('');
     const { selectedRowForPagination } = useSelector(state => state.simulation);
 
@@ -73,57 +81,64 @@ function LoginAudit(props) {
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
     const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
-        setState(prevState => ({ ...prevState, isLoader: isPagination ? true : false }))
-
+        setState(prevState => ({ ...prevState, isLoader: isPagination }));
         if (state.filterModel?.LoginTime) {
             if (state.filterModel.LoginTime.dateTo) {
-                let temp = []
-                temp.push(DayTime(state.filterModel.LoginTime.dateFrom).format('DD/MM/YYYY[T]hh:mm:ss'))
-                temp.push(DayTime(state.filterModel.LoginTime.dateTo).format('DD/MM/YYYY[T]hh:mm:ss'))
-                dataObj.dateArray = temp
+                let temp = [];
+                temp.push(DayTime(state.filterModel.LoginTime.dateFrom).format('DD/MM/YYYY[T]hh:mm:ss'));
+                temp.push(DayTime(state.filterModel.LoginTime.dateTo).format('DD/MM/YYYY[T]hh:mm:ss'));
+                dataObj.dateArray = temp;
             }
         }
-        dispatch(getUserAuditLog(dataObj, skip, take, isPagination, true, '', res => {
-            setState(prevState => ({ ...prevState, noData: false }))
-            setState(prevState => ({ ...prevState, isLoader: false }))
-            if (res.status === 204 && res.data === '') {
-                setState(prevState => ({ ...prevState, auditDataList: [] }))
+        setState(prevState => ({ ...prevState, isLoader: true }));
+        dispatch(getUserAuditLog(dataObj, skip, take, isPagination, true, '', (res) => {
+            setState(prevState => ({ ...prevState, isLoader: false }));
+
+            if (res && res.status === 200) {
+                let Data = res.data.DataList;
+                setState(prevState => ({ ...prevState, auditDataList: Data, noData: false, isLoader: false }));
+            } else if (res && res.response && res.response.status === 412) {
+                setState(prevState => ({ ...prevState, auditDataList: [], noData: true, isLoader: false }));
             } else {
-                setState(prevState => ({ ...prevState, auditDataList: res.data.DataList }))
+                setState(prevState => ({ ...prevState, auditDataList: [], noData: true, isLoader: false }));
             }
-            // CODE FOR DOWNLOAD BUTTON LOGIC
+
             if (res && isPagination === false) {
-                setState(prevState => ({ ...prevState, disableDownload: false }))
-                dispatch(disabledClass(false))
+                setState(prevState => ({ ...prevState, disableDownload: false }));
+                dispatch(disabledClass(false));
                 setTimeout(() => {
-                    let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel')
-                    button && button.click()
+                    let button = document.getElementById("Excel-Downloads-audit-login");
+                    button && button.click();
                 }, 500);
             }
-            // PAGINATION CODE
-            if (res && res.status === 204) {
-                setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }))
-            }
+
             if (res) {
-                let isReset = true
-                setTimeout(() => {
-                    for (var prop in state.floatingFilterData) {
-                        if (state.floatingFilterData[prop] !== "") {
-                            isReset = false
+                if (res.status === 204) {
+                    setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }));
+                }
+                if (res.data && res.data.DataList.length > 0) {
+                    setState(prevState => ({ ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount }));
+                }
+                if (res) {
+                    let isReset = true
+                    setTimeout(() => {
+                        for (var prop in state.floatingFilterData) {
+                            if (state.floatingFilterData[prop] !== "") {
+                                isReset = false
+                            }
                         }
-                    }
-                    isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
-                }, 300);
+                        isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
+                    }, 300);
+                }
+
+                setTimeout(() => { setState(prevState => ({ ...prevState, warningMessage: false })); }, 335);
+
+                setTimeout(() => {
+                    setState(prevState => ({ ...prevState, isFilterButtonClicked: false }));
+                }, 600);
             }
-            setState(prevState => ({ ...prevState, totalRecordCount: res?.data?.DataList && res?.data?.DataList[0]?.TotalRecordCount }))
-            setTimeout(() => {
-                setState(prevState => ({ ...prevState, warningMessage: false }))
-            }, 335);
-            setTimeout(() => {
-                setState(prevState => ({ ...prevState, isFilterButtonClicked: false }))
-            }, 600);
         }));
-    }
+    };
 
     const applyPermission = (topAndLeftMenuData) => {
         if (topAndLeftMenuData !== undefined) {
@@ -168,6 +183,61 @@ function LoginAudit(props) {
     const onFilterTextBoxChanged = (e) => {
         setSearchText(state.gridApi.setQuickFilter(e.target.value));
     }
+    //daterangerconst handleFromDateChange = (date) => {
+    const handleFromDateChange = (date) => {
+        setFromDate(date);
+        if (date && toDate) {
+            // Enable the filter button
+            setState(prevState => ({ ...prevState, disableFilter: false }));
+        } else {
+            // Disable the filter button if toDate is not selected yet
+            setState(prevState => ({ ...prevState, disableFilter: true }));
+        }
+        if (date && toDate && date > toDate) {
+            setToDate(null);
+        }
+    };
+
+    // Update to handleToDateChange
+    const handleToDateChange = (date) => {
+        setToDate(date);
+        if (fromDate && date) {
+            // Enable the filter button
+            setState(prevState => ({ ...prevState, disableFilter: false }));
+        } else {
+            // Disable the filter button if fromDate is not selected yet
+            setState(prevState => ({ ...prevState, disableFilter: true }));
+        }
+        if (fromDate && date && date < fromDate) {
+            setFromDate(null);
+        }
+    };
+    const formatToDateString = (dateObject) => {
+        return dateObject.toISOString(); // Use your desired string format
+    }
+
+    const filterData = () => {
+        let filtered = state.auditDataList; // Start with all data
+        if (fromDate || toDate) {
+            filtered = state.auditDataList.filter((item) => {
+                const itemDate = new Date(item.date); // Make sure 'item.date' is the correct property
+                return (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
+            });
+        }
+
+        setFilteredData(filtered); // Now 'filteredData' will only contain data within the date range
+    };
+
+    // Call filterData whenever fromDate or toDate changes
+    useEffect(() => {
+        filterData();
+    }, [fromDate, toDate]);
+
+
+
+
+
+
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
             if (state.auditDataList?.length !== 0) {
@@ -211,6 +281,8 @@ function LoginAudit(props) {
     };
 
     const resetState = () => {
+        setFromDate(null);
+        setToDate(null);
         setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, isFilterButtonClicked: false, }));
         setSearchText(''); // Clear the search text state
         if (state.gridApi) {
@@ -222,7 +294,7 @@ function LoginAudit(props) {
         for (var prop in state.floatingFilterData) {
             state.floatingFilterData[prop] = "";
         }
-        setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
+        setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, fromDate: null, toDate: null }));
         getDataList(0, state.defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         dispatch(setSelectedRowForPagination([]));
 
@@ -247,9 +319,7 @@ function LoginAudit(props) {
                 finalData = selectedRowForPagination
             }
             selectedRows = [...selectedRows, ...finalData]
-
         }
-
         let uniqeArray = _.uniqBy(selectedRows, "UserAuditLogId")          //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
         dispatch(setSelectedRowForPagination(uniqeArray))               //SETTING CHECKBOX STATE DATA IN REDUCER
         setState(prevState => ({ ...prevState, dataCount: uniqeArray.length }))
@@ -262,7 +332,7 @@ function LoginAudit(props) {
         setState(prevState => ({ ...prevState, selectedRowData: selectedRows }))
 
     }
-    const costingHeadFormatter = (props) => {
+    const checkBoxRenderer = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
@@ -310,21 +380,32 @@ function LoginAudit(props) {
             floatingFilter.id = specificId;
         });
     };
-    const onSearch = () => {
 
-        setState((prevState) => ({
+    const onSearch = () => {
+        setState(prevState => ({
             ...prevState,
             warningMessage: false,
+            isFilterButtonClicked: true,
             pageNo: 1,
             pageNoNew: 1,
             currentRowIndex: 0,
         }));
 
-        getDataList(0, defaultPageSize, true, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+        // Create an updated filter object including fromDate and toDate
+        const filterDataObj = {
+            ...state.floatingFilterData,
+            fromDate: fromDate ? formatToDateString(fromDate) : '',
+            toDate: toDate ? formatToDateString(toDate) : ''
+        };
+        gridOptions?.columnApi?.resetColumnState();
+
+        // Call the API with updated filtering options
+        getDataList(0, state.globalTake, true, filterDataObj);
     };
     const onPageSizeChanged = (newPageSize) => {
         let pageSize, totalRecordCount;
         if (Number(newPageSize) === 10) {
+
             pageSize = 10;
         } else if (Number(newPageSize) === 50) {
             pageSize = 50;
@@ -351,6 +432,7 @@ function LoginAudit(props) {
                 pageSize100: pageSize === 100,
             },
         }));
+        // state.gridApi.api.sizeColumnsToFit()
 
         state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
@@ -466,99 +548,139 @@ function LoginAudit(props) {
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
         effectiveDateFormatter: effectiveDateFormatter,
-        costingHeadFormatter: costingHeadFormatter
+        checkBoxRenderer: checkBoxRenderer
 
     };
     const ExcelFile = ReactExport.ExcelFile;
 
     return (
-        <div className={`min-height100vh`}>
-            {(state.isLoader) && <LoaderCustom customClass="simulation-Loader" />}      {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-            <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${state.DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-                <form>
-                    <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large blue-before`}>
-                        <Col md="3" lg="3">
-                            <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                        </Col>
-                        <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
-                            <div className="d-flex justify-content-end bd-highlight w100">
-                                <div className="warning-message d-flex align-items-center">
-                                    {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                </div>
+        <>
+            {
+                (state.isLoader) ? <LoaderCustom customClass="loader-center" /> :
+                    <div className={`ag-grid-react custom-pagination ${state.DownloadAccessibility ? "show-table-btn" : ""}`}>
+                        {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+                        <div className={`ag-grid-react ? "custom-pagination" : ""} ${state.DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
+                            <Row className={`filter-row-large blue-before`}>
+                                <Col md="7" lg="7" className='d-'>
+                                    <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                    <Row>
+                                        <Col md="5">
+                                            <div className="form-group d-flex align-items-center">
+                                                <label>From:</label>
+                                                <div className="inputbox date-section ml-2">
+                                                    <DatePicker
+                                                        selected={fromDate}
+                                                        onChange={handleFromDateChange}
+                                                        showMonthDropdown
+                                                        showYearDropdown
+                                                        dropdownMode="select"
+                                                        maxDate={toDate}
+                                                        dateFormat="dd/MM/yyyy"
+                                                        placeholderText="From date"
+                                                        className="form-control"
+                                                        autoComplete="off"
+                                                    />
+                                                </div>
+                                            </div>
+                                        </Col>
+                                        <Col md="6">
+                                            <div className="form-group d-flex align-items-center">
+                                                <label>To:</label>
+                                                <div className="inputbox date-section ml-2">
+                                                    <DatePicker
+                                                        selected={toDate}
+                                                        onChange={handleToDateChange} showMonthDropdown
+                                                        showYearDropdown
+                                                        dropdownMode="select"
+                                                        minDate={fromDate}
+                                                        dateFormat="dd/MM/yyyy"
+                                                        placeholderText="To date"
+                                                        className="form-control"
+                                                        autoComplete="off"
+                                                        disabled={!fromDate} // Disable if fromDate is not selected
+                                                    />
+                                                </div>
+                                            </div>
+                                        </Col>
+                                    </Row>
 
+                                </Col>
+                                <Col md="5" lg="5" className=" mb-3 d-flex justify-content-end">
+                                    <div className="d-flex justify-content-end bd-highlight w100">
+                                        <div className="warning-message d-flex align-items-center">
+                                            {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
+                                            <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            {state.DownloadAccessibility &&
+                                                <>
+                                                    <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button"
+                                                        onClick={onExcelDownload}
+                                                        className={'user-btn mr5'}><div className="download mr-1" ></div>
+                                                        {/* DOWNLOAD */}
+                                                        {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                                                    </button>
+                                                    <ExcelFile filename={'Audit'} fileExtension={'.xls'} element={
+                                                        <button id={'Excel-Downloads-LoginAudit-DownloadExcel'} className="p-absolute" type="button" >
+                                                        </button>}>
+                                                        {onBtExport()}
+                                                    </ExcelFile>
+                                                </>
+                                            }
 
-                                { }
-                                <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
-                                {state.shown ?
-                                    <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => setState(prevState => ({ ...prevState, shown: !state.shown }))}>
-                                        <div className="cancel-icon-white"></div>
-                                    </button>
-                                    :
-                                    ""
-                                }
-                                {state.DownloadAccessibility &&
-                                    <>
-                                        <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button"
-                                            onClick={onExcelDownload}
-                                            className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                            {/* DOWNLOAD */}
-                                            {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                                        </button>
-                                        <ExcelFile filename={'Audit'} fileExtension={'.xls'} element={
-                                            <button id={'Excel-Downloads-LoginAudit-DownloadExcel'} className="p-absolute" type="button" >
-                                            </button>}>
-                                            {onBtExport()}
-                                        </ExcelFile>
-                                    </>
-                                }
-                            </div>
-                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>  <div className="refresh mr-0"></div> </button>
-                        </Col>
-                    </Row>
-                </form>
-                <div className={`ag-grid-wrapper p-relative ${(props?.isDataInMaster && !state.noData) ? 'master-approval-overlay' : ''} ${(state.tableData && state.tableData.length <= 0) || state.noData ? 'overlay-contain' : ''}  ${props.isSimulation ? 'min-height' : ''}`}>
-                    <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
-                        {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                        {!state.isLoader && <AgGridReact
-                            defaultColDef={defaultColDef}
-                            floatingFilter={true}
-                            domLayout='autoHeight'
-                            rowData={state.auditDataList}
-                            pagination={true}
-                            paginationPageSize={state.globalTake}
-                            onGridReady={onGridReady}
-                            gridOptions={gridOptions}
-                            noRowsOverlayComponent={'customNoRowsOverlay'}
-                            noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
-                            frameworkComponents={frameworkComponents}
-                            rowSelection={'multiple'}
-                            onRowSelected={onRowSelect}
-                            suppressRowClickSelection={true}
-                            onFilterModified={onFloatingFilterChanged}
-                            enableBrowserTooltips={true}
-                        >
-                            <AgGridColumn field="UserName" headerName="UserName" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                            <AgGridColumn field="IPAddress" headerName="IPAddress"></AgGridColumn>
-                            <AgGridColumn field="UserAgent" headerName="UserAgent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="LoginTime" headerName="LoginTime (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
-                        </AgGridReact>}
-                        <div className='button-wrapper'>
-                            {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
-                            {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                                <div className="d-flex pagination-button-container">
-                                    <p><Button id="auditListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                                    {state.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 10)}</p>}
-                                    {state.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
-                                    {state.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
-                                    <p><Button id="auditListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                                </div>
-                            }
+                                        </div>
+
+                                    </div>
+                                    <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>  <div className="refresh mr-0"></div> </button>
+                                </Col>
+                            </Row>
+                            <Row>
+                                <Col>
+                                    <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !state.noData) ? 'master-approval-overlay' : ''} ${(state.auditDataList && state.auditDataList.length <= 0) || state.noData ? 'overlay-contain' : ''} `}>
+                                        <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
+                                            {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
+                                            {!state.isLoader && <AgGridReact
+                                                style={{ height: '100%', width: '100%' }}
+                                                defaultColDef={defaultColDef}
+                                                floatingFilter={true}
+                                                domLayout='autoHeight'
+                                                rowData={state.auditDataList}
+                                                pagination={true}
+                                                paginationPageSize={state.globalTake}
+                                                onGridReady={onGridReady}
+                                                gridOptions={gridOptions}
+                                                noRowsOverlayComponent={'customNoRowsOverlay'}
+                                                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
+                                                frameworkComponents={frameworkComponents}
+                                                rowSelection={'multiple'}
+                                                onRowSelected={onRowSelect}
+                                                suppressRowClickSelection={true}
+                                                onFilterModified={onFloatingFilterChanged}
+                                                enableBrowserTooltips={true}
+                                            >
+                                                <AgGridColumn field="UserName" headerName="User Name" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
+                                                <AgGridColumn field="IPAddress" headerName="IP Address"></AgGridColumn>
+                                                <AgGridColumn field="UserAgent" headerName="User Agent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                                                <AgGridColumn field="LoginTime" headerName="Login Time (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                                            </AgGridReact>}
+                                            <div className='button-wrapper'>
+                                                {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
+                                                {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                                    <div className="d-flex pagination-button-container">
+                                                        <p><Button id="auditListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
+                                                        {state.pageSize?.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 10)}</p>}
+                                                        {state.pageSize?.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 50)}</p>}
+                                                        {state.pageSize?.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{state.pageNo}</span> of {Math.ceil(state.totalRecordCount / 100)}</p>}
+                                                        <p><Button id="auditListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+                                                    </div>
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+                                </Col>
+                            </Row>
                         </div>
                     </div>
-                </div>
-            </div>
-
-        </div>
+            }
+        </>
     )
 }
 
