@@ -732,9 +732,10 @@ function RMSimulation(props) {
         let temp = []
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
+            item.BasicRatePerUOM = item.BasicRate
+            item.NewBasicRate = item.RevisedBasicRate
             temp.push(item)
         })
-
         return (
             <ExcelSheet data={temp} name={'RM Data'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}

@@ -60,6 +60,15 @@ export const checkLabourRateConfigure = (excelData) => {
         return true;
     })
 }
+export const checkInterestRateConfigure = (excelData) => {
+    return excelData.filter((el) => {
+        if (getConfigurationKey().IsShowRawMaterialInOverheadProfitAndICC === false) {
+            if (el.value === 'RawMaterialName') return false;
+            if (el.value === 'RawMaterialGrade') return false;
+        }
+        return true;
+    })
+}
 /**
 * @method checkVendorPlantConfig
 * @description CONDITION TO CHECK:- TO AVOID VENDOR PLANT IF NOT CONFIGURABLE FROM INITIALIZER
@@ -216,7 +225,7 @@ class Downloadxls extends React.Component {
             case 'Budgeted Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_BUDGETED_VBC), VOLUME_BUDGETED_VBC_TEMPDATA);
             case 'Interest Rate':
-                return this.returnExcelColumn(VBCInterestRate, VBCInterestRateTempData);
+                return this.returnExcelColumn(checkInterestRateConfigure(VBCInterestRate), VBCInterestRateTempData);
             case 'Budget':
                 return this.returnExcelColumn(BUDGET_VBC, BUDGET_VBC_TEMPDATA);
             case 'Labour':
@@ -250,7 +259,7 @@ class Downloadxls extends React.Component {
             case 'Budgeted Volume':
                 return this.returnExcelColumn(checkVendorPlantConfig(VOLUME_BUDGETED_CBC, CBCTypeId), VOLUME_BUDGETED_CBC_TEMPDATA);
             case 'Interest Rate':
-                return this.returnExcelColumn(CBCInterestRate, CBCInterestRateTempData);
+                return this.returnExcelColumn(checkInterestRateConfigure(CBCInterestRate), CBCInterestRateTempData);
             case 'Budget':
                 return this.returnExcelColumn(BUDGET_CBC, BUDGET_CBC_TEMPDATA);
             case 'Labour':
