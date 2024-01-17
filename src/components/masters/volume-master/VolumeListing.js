@@ -668,11 +668,7 @@ function VolumeListing(props) {
         {isLoader ? (<LoaderCustom customClass={"loader-center"} />
         ) : (
           <>
-            {disableDownload && (
-              <LoaderCustom
-                message={MESSAGES.DOWNLOADING_MESSAGE}
-                customClass="mt-5"
-              />
+            {disableDownload && (<LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} customClass="mt-5" />
             )}
             <form noValidate>
               <Row className="blue-before">
@@ -762,7 +758,7 @@ function VolumeListing(props) {
                   {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && (
                     <div className="d-flex pagination-button-container">
 
-                      <p><Button id="bvolumeListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
+                      <p><Button id="volumeListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
 
                       {pageSize.pageSize10 && (<p className="next-page-pg custom-left-arrow">
                         Page <span className="text-primary">{pageNo}</span> of{" "}
