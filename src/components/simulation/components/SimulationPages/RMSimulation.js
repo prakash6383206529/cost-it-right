@@ -88,7 +88,7 @@ function RMSimulation(props) {
                 setIsLoader(false)
             }
         }, 200);
-        if (!isImpactedMaster) {
+        if (!isImpactedMaster && !isbulkUpload) {
             list && list?.map(item => {
                 item.NewBasicRate = item.BasicRatePerUOM
                 item.NewScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
@@ -330,7 +330,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : Number(row.BasicRatePerUOM)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row.BasicRatePerUOM)} </span>
                 }
 
             </>
@@ -732,8 +732,6 @@ function RMSimulation(props) {
         let temp = []
         TempData && TempData.map((item) => {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
-            item.BasicRatePerUOM = item.BasicRate
-            item.NewBasicRate = item.RevisedBasicRate
             temp.push(item)
         })
         return (
@@ -871,7 +869,7 @@ function RMSimulation(props) {
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
 
-                                            {<AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
+                                            {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
                                             {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >

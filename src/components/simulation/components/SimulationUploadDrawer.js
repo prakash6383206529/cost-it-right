@@ -193,7 +193,9 @@ class SimulationUploadDrawer extends Component {
                                         }
                                         correctRowCount = correctRowCount + 1
                                         let obj = {}
+                                        console.log('val: ', val);
                                         val.map((el, i) => {
+                                            console.log('fileHeads[i] outside if: ', fileHeads[i]);
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
@@ -211,12 +213,18 @@ class SimulationUploadDrawer extends Component {
                                                 obj["UnitOfMeasurementName"] = el;
                                             } else if (fileHeads[i] === "Technology") {
                                                 obj["TechnologyName"] = el;
-                                            } else {
+                                            } else if (fileHeads[i] === "BasicRate") {
+                                                obj["BasicRatePerUOM"] = el;
+                                            } else if (fileHeads[i] === "RevisedBasicRate") {
+                                                obj["NewBasicRate"] = el;
+                                            }
+                                            else {
                                                 obj[fileHeads[i]] = el;
                                             }
                                             return null;
                                         })
                                         fileData.push(obj)
+                                        console.log('fileData: ', fileData);
                                         obj = {}
 
                                     }
