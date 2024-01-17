@@ -20,6 +20,7 @@ import Button from '../layout/Button';
 import DatePicker from 'react-datepicker'
 
 
+const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
@@ -58,14 +59,12 @@ function LoginAudit(props) {
     })
     const dispatch = useDispatch();
     const auditDataList = useSelector(state => state.audit.auditDataList);
-    console.log('auditDataList: ', auditDataList);
+
     const [fromDate, setFromDate] = useState(null)
     const [toDate, setToDate] = useState(null)
     const [filteredData, setFilteredData] = useState(auditDataList);
-
     const [searchText, setSearchText] = useState('');
     const { selectedRowForPagination } = useSelector(state => state.simulation);
-
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
@@ -110,7 +109,7 @@ function LoginAudit(props) {
                 setState(prevState => ({ ...prevState, disableDownload: false }));
                 dispatch(disabledClass(false));
                 setTimeout(() => {
-                    let button = document.getElementById("Excel-Downloads-audit-login");
+                    let button = document.getElementById("Excel-Downloads-LoginAudit-DownloadExcel");
                     button && button.click();
                 }, 500);
             }
@@ -359,7 +358,6 @@ function LoginAudit(props) {
             return cellValue
         }
     }
-
     // const effectiveDateFormatter = (props) => {
     //     const dayjs = require('dayjs');
     //     const utc = require('dayjs/plugin/utc');
@@ -375,7 +373,6 @@ function LoginAudit(props) {
     //     // Return the formatted date and time
     //     return formattedDateAndTime;
     // };
-
 
     const onGridReady = (params) => {
         setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
@@ -466,20 +463,23 @@ function LoginAudit(props) {
     }
     const onExcelDownload = () => {
 
+        dispatch(disabledClass(true))
         setState(prevState => ({ ...prevState, disableDownload: true }))
         dispatch(disabledClass(true))
-        let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-        // let tempArr = selectedRowForPagination
+        // let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+        let tempArr = selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
-                setState(prevState => ({ ...prevState, disableDownload: false }))
                 dispatch(disabledClass(false))
+                setState(prevState => ({ ...prevState, disableDownload: false }))
                 let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel');
                 button && button.click()
             }, 400);
 
         } else {
-
+            // 
+            // let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel');
+            // button && button.click()
             getDataList(0, defaultPageSize, false, state.floatingFilterData)
         }
     }
@@ -488,27 +488,25 @@ function LoginAudit(props) {
         //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (auditDataList ? auditDataList : [])
+
         return returnExcelColumn(AUDIT_LISTING_DOWNLOAD_EXCEl, tempArr)
     };
     const returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData && TempData.map((item) => {
 
-            if (item.MacAddress === null) {
-                item.MacAddress = ' '
-            }
-            // item.LoginTime = effectiveDateFormatter({ value: item.LoginTime });
 
-            return item
-        })
+
         return (
-            <ExcelSheet data={temp} name={AuditLisitng}>
+            <ExcelSheet data={TempData} name={AuditLisitng}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
+
+
+    }
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
     const handleDate = (newDate) => {
-
-
         let temp = state.inRangeDate
         temp.push(newDate)
         setState(prevState => ({ ...prevState, inRangeDate: temp }))
@@ -568,10 +566,10 @@ function LoginAudit(props) {
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
         // effectiveDateFormatter: effectiveDateFormatter,
+        hyphenFormatter: hyphenFormatter,
         checkBoxRenderer: checkBoxRenderer
 
     };
-    const ExcelFile = ReactExport.ExcelFile;
 
     return (
         <>
@@ -628,6 +626,7 @@ function LoginAudit(props) {
                                             {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                             {state.DownloadAccessibility &&
+
                                                 <>
                                                     <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button"
                                                         onClick={onExcelDownload}
@@ -635,7 +634,7 @@ function LoginAudit(props) {
                                                         {/* DOWNLOAD */}
                                                         {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                                     </button>
-                                                    <ExcelFile filename={'Audit'} fileExtension={'.xls'} element={
+                                                    <ExcelFile filename={'LoginAudit'} fileExtension={'.xls'} element={
                                                         <button id={'Excel-Downloads-LoginAudit-DownloadExcel'} className="p-absolute" type="button" >
                                                         </button>}>
                                                         {onBtExport()}
@@ -673,7 +672,7 @@ function LoginAudit(props) {
                                                 enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn field="UserName" headerName="User Name" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
-                                                <AgGridColumn field="IPAddress" headerName="IP Address"></AgGridColumn>
+                                                <AgGridColumn field="IPAddress" headerName="IP Address" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="UserAgent" headerName="User Agent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="LoginTime" headerName="Login Time (Local Time)" filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                             </AgGridReact>}
