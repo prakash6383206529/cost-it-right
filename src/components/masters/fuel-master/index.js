@@ -1,20 +1,6 @@
-import React, {
-  Component,
-  useEffect,
-  useCallback,
-  useStateconst,
-  useState,
-} from "react";
-import { connect, useSelector } from "react-redux";
-import {
-  Row,
-  Col,
-  TabContent,
-  TabPane,
-  Nav,
-  NavItem,
-  NavLink,
-} from "reactstrap";
+import React, { useEffect, useState, } from "react";
+import { useSelector } from "react-redux";
+import { Row, Col, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstrap";
 import classnames from "classnames";
 import AddFuel from "./AddFuel";
 import AddPower from "./AddPower";
@@ -44,9 +30,7 @@ const FuelMaster = (props) => {
   });
   // const [permissionData, setPermissionData] = useState({});
 
-  const { leftMenuData, loading, topAndLeftMenuData } = useSelector(
-    (state) => state.auth
-  );
+  const { leftMenuData, loading, topAndLeftMenuData } = useSelector((state) => state.auth);
 
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
@@ -65,15 +49,9 @@ const FuelMaster = (props) => {
         Data && Data.Pages.find((el) => el.PageName === FUEL_AND_POWER);
       const permmisionDataAccess =
         accessData && accessData.Actions && checkPermission(accessData.Actions);
-      console.log(
-        "permmisionDataAccess",
-        permmisionDataAccess
-      );
+
       if (permmisionDataAccess !== undefined) {
-        setState((prevState) => ({
-          ...prevState,
-          permissionData: permmisionDataAccess,
-        }));
+        setState((prevState) => ({ ...prevState, permissionData: permmisionDataAccess, }));
       }
     }
   };
@@ -84,59 +62,31 @@ const FuelMaster = (props) => {
    */
   const toggle = (tab) => {
     if (state.activeTab !== tab) {
-      setState((prevState) => ({
-        ...prevState,
-        activeTab: tab,
-        stopApiCallOnCancel: false,
-      }));
+      setState((prevState) => ({ ...prevState, activeTab: tab, stopApiCallOnCancel: false, }));
     }
   };
 
   const displayFuelForm = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isFuelForm: true,
-      isPowerForm: false,
-      data: {},
-    }));
+    setState((prevState) => ({ ...prevState, isFuelForm: true, isPowerForm: false, data: {}, }));
   };
 
   const displayPowerForm = () => {
-    setState((prevState) => ({
-      ...prevState,
-      isPowerForm: true,
-      isFuelForm: false,
-      data: {},
-    }));
+    setState((prevState) => ({ ...prevState, isPowerForm: true, isFuelForm: false, data: {}, }));
   };
 
   const hideForm = (type) => {
-    setState((prevState) => ({
-      ...prevState,
-      isFuelForm: false,
-      isPowerForm: false,
-      data: {},
-      stopApiCallOnCancel: false,
-    }));
+    setState((prevState) => ({ ...prevState, isFuelForm: false, isPowerForm: false, data: {}, stopApiCallOnCancel: false, }));
     if (type === "cancel") {
-      setState({ stopApiCallOnCancel: true });
+      setState((prevState) => ({ ...prevState, stopApiCallOnCancel: true }));
     }
   };
 
   const getDetails = (data) => {
-    setState((prevState) => ({
-      ...prevState,
-      isFuelForm: true,
-      data: data,
-    }));
+    setState((prevState) => ({ ...prevState, isFuelForm: true, data: data, }));
   };
 
   const getDetailsPower = (data) => {
-    setState((prevState) => ({
-      ...prevState,
-      isPowerForm: true,
-      data: data,
-    }));
+    setState((prevState) => ({ ...prevState, isPowerForm: true, data: data, }));
   };
 
   //   const { isFuelForm, isPowerForm, data } = state;
@@ -147,11 +97,7 @@ const FuelMaster = (props) => {
 
   if (state.isPowerForm === true) {
     return (
-      <AddPower
-        data={state.data}
-        hideForm={hideForm}
-        stopApiCallOnCancel={state.stopApiCallOnCancel}
-      />
+      <AddPower data={state.data} hideForm={hideForm} stopApiCallOnCancel={state.stopApiCallOnCancel} />
     );
   }
 

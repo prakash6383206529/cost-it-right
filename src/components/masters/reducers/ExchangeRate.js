@@ -28,8 +28,8 @@ export default function ExchangeRateReducer(state = initialState, action) {
             arr = action.payload && action.payload.filter((el) => {
                 el.BankRate = checkForDecimalAndNull(el.BankRate, getConfigurationKey()?.NoOfDecimalForPrice)
                 el.CustomRate = checkForDecimalAndNull(el.CustomRate, getConfigurationKey()?.NoOfDecimalForPrice)
-                el.vendorWithCode = `${el.VendorName ? el.VendorName : ''} ${el.VendorCode ? ` (${el.VendorCode})` : "-"}`
-                el.customerWithCode = `${el.CustomerName ? el.CustomerName : ''} ${el.CustomerCode ? ` (${el.CustomerCode})` : "-"}`
+                el.vendorWithCode = `${el.VendorName ? el.VendorName : ''}${el.VendorCode ? ` (${el.VendorCode})` : "-"}`
+                el.customerWithCode = `${el.CustomerName ? el.CustomerName : ''}${el.CustomerCode ? ` (${el.CustomerCode})` : "-"}`
                 return el
             })
             return {

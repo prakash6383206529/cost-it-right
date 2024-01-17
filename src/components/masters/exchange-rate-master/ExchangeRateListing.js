@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Col, } from 'reactstrap';
-import { checkForDecimalAndNull } from "../../../helper/validation";
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA, EXCHNAGERATE } from '../../../config/constants';
@@ -25,7 +24,7 @@ import { PaginationWrapper } from '../../common/commonPagination';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { loggedInUserId } from '../../../helper';
-
+import Button from '../../layout/Button';
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -41,7 +40,6 @@ const ExchangeRateListing = (props) => {
         toggleForm: false,
         shown: false,
         data: { isEditFlag: false, ID: '' },
-
         ViewAccessibility: false,
         AddAccessibility: false,
         EditAccessibility: false,
@@ -59,8 +57,7 @@ const ExchangeRateListing = (props) => {
         dataCount: 0
 
     });
-    const { exchangeRateDataList } =
-        useSelector((state) => state.exchangeRate);
+    const { exchangeRateDataList } = useSelector((state) => state.exchangeRate);
     const { topAndLeftMenuData } = useSelector((state) => state.auth);
     const { filteredRMData } = useSelector((state) => state.material);
 
@@ -94,7 +91,7 @@ const ExchangeRateListing = (props) => {
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [props]);
+    }, []);
 
     useEffect(() => {
         if (topAndLeftMenuData !== undefined) {
@@ -129,15 +126,7 @@ const ExchangeRateListing = (props) => {
     * @description Get list data
     */
     const getTableListData = (currencyId = 0) => {
-        let filterData = {
-            currencyId: currencyId,
-            costingHeadId: currencyId,
-            vendorId: filteredRMData?.VendorId ? filteredRMData?.VendorId : '',
-            customerId: filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '',
-            isBudgeting: currencyId,
-            currency: '',
-            isRequestForSimulation: props.isSimulation ? true : false,
-        }
+        let filterData = { currencyId: currencyId, costingHeadId: currencyId, vendorId: filteredRMData?.VendorId ? filteredRMData?.VendorId : '', customerId: filteredRMData?.CustomerId ? filteredRMData?.CustomerId : '', isBudgeting: currencyId, currency: '', isRequestForSimulation: props.isSimulation ? true : false, }
         if (props.isSimulation) {
             props?.changeTokenCheckBox(false)
         }
@@ -149,8 +138,7 @@ const ExchangeRateListing = (props) => {
                 setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
             } else if (res && res.data && res.data.DataList) {
                 let Data = res.data.DataList;
-                setState((prevState) => ({ ...prevState, tableData: Data, }, () => { setState({ isLoader: false }) }))
-            } else {
+                setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
 
             }
         }));
@@ -162,11 +150,7 @@ const ExchangeRateListing = (props) => {
     * @description confirm edit or view  item
     */
     const viewOrEditItemDetails = (Id, isViewMode) => {
-        setState((prevState) => ({
-            ...prevState,
-            data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
-            toggleForm: true,
-        }))
+        setState((prevState) => ({ ...prevState, data: { isEditFlag: true, ID: Id, isViewMode: isViewMode }, toggleForm: true, }))
     }
     /**
     * @method deleteItem
@@ -174,22 +158,18 @@ const ExchangeRateListing = (props) => {
     */
     const deleteItem = (Id) => {
         setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }))
-
-
     }
-
-
     /**
-    * @method confirmDeleteItem
-    * @description confirm delete item
-    */
+        * @method confirmDeleteItem
+        * @description confirm delete item
+        */
     const confirmDeleteItem = (ID) => {
         const loggedInUser = loggedInUserId()
         dispatch(deleteExchangeRate(ID, loggedInUser, (res) => {
             if (res.data.Result === true) {
                 Toaster.success(MESSAGES.DELETE_EXCHANGE_SUCCESS);
                 getTableListData()
-                setState({ dataCount: 0 })
+                setState((prevState) => ({ ...prevState, dataCount: 0 }))
             }
         }));
         setState((prevState) => ({ ...prevState, showPopup: false }))
@@ -202,10 +182,8 @@ const ExchangeRateListing = (props) => {
         setState((prevState) => ({ ...prevState, showPopup: false }))
     }
 
-
     const effectiveDateFormatter = (props) => {
         let cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-
         if (cellValue?.includes('T')) {
             cellValue = DayTime(cellValue).format('DD/MM/YYYY')
         }
@@ -232,21 +210,15 @@ const ExchangeRateListing = (props) => {
     * @description Renders buttons
     */
     const buttonFormatter = (props) => {
-
         const cellValue = props?.value;
-
         const { DeleteAccessibility, ViewAccessibility } = state;
         return (
             <>
-                {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, true)} />}
-                {/* COMMENT BECAUSE DATA IS COMING FROM SAP SO NO NEED TO EDIT  15/07/2022  (MAY BE USED LATER) */}
-                {/* {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, false)} />} */}
-                {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+                {ViewAccessibility && <Button id={`exchangeRatecListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />}
+                {DeleteAccessibility && <Button id={`exchangeRatecListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
             </>
         )
     };
-
-
 
     const formToggle = () => {
         if (checkMasterCreateByCostingPermission()) {
@@ -255,31 +227,24 @@ const ExchangeRateListing = (props) => {
     }
 
     const hideForm = (type) => {
-        setState((prevState) => ({
-            ...prevState,
-            currency: [],
-            data: { isEditFlag: false, ID: '' },
-            toggleForm: false,
-        }, () => {
-            if (type === 'submit') {
-                getTableListData()
+        setState((prevState) => ({ ...prevState, currency: [], data: { isEditFlag: false, ID: '' }, toggleForm: false, }),
+            () => {
+                if (type === 'submit') {
+                    getTableListData();
+                }
             }
-        }))
-    }
+        );
+    };
 
     /**
    * @method onFloatingFilterChanged
    * @description Filter data when user type in searching input
    */
     const onFloatingFilterChanged = (value) => {
-
         setTimeout(() => {
             exchangeRateDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
         }, 500);
-
-
     }
-
 
     const onGridReady = (params) => {
         setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
@@ -329,7 +294,6 @@ const ExchangeRateListing = (props) => {
             return null
         })
         return (
-
             <ExcelSheet data={temp} name={ExchangeMaster}>
                 {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
@@ -339,24 +303,14 @@ const ExchangeRateListing = (props) => {
         state?.gridApi?.setQuickFilter(e.target.value);
     }
 
+
     const resetState = () => {
         const searchBox = document.getElementById("filter-text-box");
         if (searchBox) {
             searchBox.value = ""; // Reset the input field's value
         }
         state.gridApi.setQuickFilter(null)
-        setState((prevState) => ({
-            ...prevState,
-            isExchangeForm: false,
-            isPowerForm: false,
-            currency: [],
-            data: {},
-            toggleForm: false,
-            selectedRowData: [],
-            dataCount: 0,
-            stopApiCallOnCancel: false,
-            noData: false
-        }))
+        setState((prevState) => ({ ...prevState, isExchangeForm: false, isPowerForm: false, currency: [], data: {}, selectedRowData: [], dataCount: 0, stopApiCallOnCancel: false, noData: false }))
         state?.gridApi?.deselectAll()
         gridOptions.columnApi.resetColumnState();
         gridOptions.api.setFilterModel(null);
@@ -378,12 +332,7 @@ const ExchangeRateListing = (props) => {
     const { toggleForm, data, AddAccessibility, DownloadAccessibility, noData } = state;
 
     if (toggleForm) {
-        return (
-            <AddExchangeRate
-                hideForm={hideForm}
-                data={data}
-            />
-        )
+        return (<AddExchangeRate hideForm={hideForm} data={data} />)
     }
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -405,9 +354,7 @@ const ExchangeRateListing = (props) => {
                 <div className="container-fluid">
                     <ScrollToTop pointProp="go-to-top" />
                     {state.isLoader && <LoaderCustom />}
-                    <form
-
-                        noValidate>
+                    <form noValidate>
                         <Row className=" blue-before zindex-0">
                             <Col md="6">
                                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -415,34 +362,18 @@ const ExchangeRateListing = (props) => {
                             <Col md="6" className=" mb-3">
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     <div>
-                                        {state.shown ? (
-                                            <button type="button" className="user-btn mr5 filter-btn-top mt3px" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
-                                                <div className="cancel-icon-white"></div></button>
-                                        ) : (
-                                            ""
-                                        )}
-                                        {(AddAccessibility && !props.isSimulation) && <button
-                                            type="button"
-                                            className={'user-btn mr5'}
-                                            title="Add"
-                                            onClick={formToggle}>
-                                            <div className={'plus mr-0'}></div></button>}
+                                        {(AddAccessibility && !props.isSimulation) && <Button id="exchangeRateListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />}
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={
-                                                    <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} ><div className="download mr-1"></div>
-                                                        {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}</button>}>
+                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-clientListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                                }>
                                                     {onBtExport()}
                                                 </ExcelFile>
                                             </>
 
                                         }
-
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
-
+                                        <Button id={"exchangeRateListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                                     </div>
                                 </div>
                             </Col>
@@ -453,7 +384,7 @@ const ExchangeRateListing = (props) => {
 
                         <div className="ag-theme-material">
                             {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
-                            <AgGridReact
+                            {!state.isLoader && <AgGridReact
                                 defaultColDef={defaultColDef}
                                 floatingFilter={true}
                                 ref={myRef}
@@ -466,10 +397,7 @@ const ExchangeRateListing = (props) => {
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                 onFilterModified={onFloatingFilterChanged}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass'
-                                }}
+                                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                                 rowSelection={'multiple'}
                                 onSelectionChanged={onRowSelect}
                                 frameworkComponents={frameworkComponents}
@@ -486,15 +414,13 @@ const ExchangeRateListing = (props) => {
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                 {!props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
-                            </AgGridReact>
+                            </AgGridReact>}
                             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
                         </div>
                     </div>
                 </div>
             </div>
-            {
-                state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} />
-            }
+            {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} />}
         </ >
     );
 }
