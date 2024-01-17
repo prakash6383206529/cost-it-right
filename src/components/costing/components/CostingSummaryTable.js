@@ -99,6 +99,8 @@ const CostingSummaryTable = (props) => {
   const [AddAccessibility, setAddAccessibility] = useState(true)
   const [EditAccessibility, setEditAccessibility] = useState(true)
   const [ViewAccessibility, setViewAccessibility] = useState(true)
+  const [downloadAccessibility, setDownloadAccessibility] = useState(true)
+
   const [iccPaymentData, setIccPaymentData] = useState("")
 
   const [warningMsg, setShowWarningMsg] = useState(false)
@@ -376,6 +378,8 @@ const CostingSummaryTable = (props) => {
         setAddAccessibility(permmisionData?.Add ? permmisionData?.Add : false)
         setEditAccessibility(permmisionData?.Edit ? permmisionData?.Edit : false)
         setViewAccessibility(permmisionData?.View ? permmisionData?.View : false)
+        setDownloadAccessibility(permmisionData?.Download ? permmisionData?.Download : false)
+
       }
     }
   }
@@ -1830,12 +1834,12 @@ const CostingSummaryTable = (props) => {
             {<Col md={simulationMode || props.isRfqCosting || isApproval ? "12" : "8"} className="text-right">
               <div className='d-flex justify-content-end'>
                 <div className='d-flex justify-content-end'>
-                  <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
+                  {downloadAccessibility && <ExcelFile filename={'Costing Summary'} fileExtension={'.xls'} element={<button type="button" className={'user-btn excel-btn mr5 mb-2'} title="Excel"><img src={ExcelIcon} alt="download" /></button>}>
                     {onBtExport()}
-                  </ExcelFile>
+                  </ExcelFile>}
                   {props.isRfqCosting && !isApproval && <button onClick={() => props?.crossButton()} title='Discard Summary' className='CancelIcon rfq-summary-discard'></button>}
                 </div>
-                {!simulationMode && !props.isRfqCosting && !props.isRfqCosting &&
+                {!simulationMode && !props.isRfqCosting && !props.isRfqCosting && downloadAccessibility &&
                   <ReactToPrint
                     bodyClass='mx-2 mt-3 remove-space-border'
                     documentTitle={`${pdfName}-detailed-costing`}
@@ -1846,7 +1850,7 @@ const CostingSummaryTable = (props) => {
                     trigger={reactToPrintTriggerDetail}
                   />
                 }
-                {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && <ReactToPrint
+                {!simulationDrawer && !drawerViewMode && !props.isRfqCosting && downloadAccessibility && <ReactToPrint
                   bodyClass={`my-3 simple-pdf ${simulationMode ? 'mx-1 simulation-print' : 'mx-2'}`}
                   documentTitle={`${simulationMode ? 'Compare-costing.pdf' : `${pdfName}-costing`}`}
                   content={reactToPrintContent}
