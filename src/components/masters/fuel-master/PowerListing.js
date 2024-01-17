@@ -76,10 +76,7 @@ const PowerListing = (props) => {
         })
       );
     } else {
-      const filterData = {
-        vendorID: state.vendorName && state.vendorName !== undefined ? state.vendorName.value : "",
-        plantID: state.vendorPlant && state.vendorPlant !== undefined ? state.vendorPlant.value : "",
-      };
+      const filterData = { vendorID: state.vendorName && state.vendorName !== undefined ? state.vendorName.value : "", plantID: state.vendorPlant && state.vendorPlant !== undefined ? state.vendorPlant.value : "", };
       dispatch(
         getVendorPowerDetailDataList(filterData, (res) => {
           setState((prevState) => ({ ...prevState, isLoader: false }));
@@ -155,12 +152,9 @@ const PowerListing = (props) => {
     obj.PowerDetailId = rowData?.PowerDetailId;
     return (
       <>
-        {permissions.View && (<Button id={`powerListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(obj, true)} title={"View"} />
-        )}
-        {[permissions.Edit] && (<Button id={`powerListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(obj, false)} title={"Edit"} />
-        )}
-        {permissions.Delete && (<Button id={`powerListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(obj)} title={"Delete"} />
-        )}
+        {permissions.View && (<Button id={`powerListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(obj, true)} title={"View"} />)}
+        {[permissions.Edit] && (<Button id={`powerListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(obj, false)} title={"Edit"} />)}
+        {permissions.Delete && (<Button id={`powerListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(obj)} title={"Delete"} />)}
       </>
     );
   };
@@ -210,9 +204,7 @@ const PowerListing = (props) => {
 
     return (
       <ExcelSheet data={temp} name={`${PowerMaster}`}>
-        {data && data.map((ele, index) => (
-          <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
-        ))}
+        {data && data.map((ele, index) => (<ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />))}
       </ExcelSheet>
     );
   };
@@ -305,10 +297,7 @@ const PowerListing = (props) => {
         }`}
     >
       {state.isLoader && <LoaderCustom />}
-      <form
-        // onSubmit={handleSubmit(onSubmit.bind(this))}
-        noValidate
-      >
+      <form noValidate      >
         <Row>
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">

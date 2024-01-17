@@ -235,35 +235,22 @@ const FuelListing = (props) => {
 
   return (
     <div
-      className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""
-        }`}
+      className={`ag-grid-react ${permissions.Download ? "show-table-btn" : ""}`}
     >
       {state.isLoader && <LoaderCustom />}
-      <form
-        // onSubmit={handleSubmit(onSubmit.bind(this))}
-        noValidate
-      >
+      <form noValidate      >
         <Row className="pt-4">
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
-                {permissions.Add && (
-                  <Button id="fuelListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
-
-                )}
-                {permissions.BulkUpload && (
-                  <Button id="fuelListing_bulkUpload" className={"user-btn mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />
-
-                )}
+                {permissions.Add && (<Button id="fuelListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
+                {permissions.BulkUpload && (<Button id="fuelListing_bulkUpload" className={"user-btn mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
                 {permissions.Download && (
                   <>
                     <ExcelFile
                       filename={"Fuel"}
                       fileExtension={".xls"}
-                      element={
-
-                        <Button id={"Excel-Downloads-fuelListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-                      }
+                      element={<Button id={"Excel-Downloads-fuelListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}
                     >
                       {onBtExport()}
                     </ExcelFile>
@@ -280,10 +267,7 @@ const FuelListing = (props) => {
         <Col>
           <div
             className={`ag-grid-wrapper height-width-wrapper ${(fuelDataList && fuelDataList?.length <= 0) || state.noData
-              ? "overlay-contain"
-              : ""
-              }`}
-          >
+              ? "overlay-contain" : ""}`}          >
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
             </div>
@@ -299,10 +283,7 @@ const FuelListing = (props) => {
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={"customNoRowsOverlay"}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: "imagClass",
-                }}
+                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: "imagClass", }}
                 rowSelection={"multiple"}
                 onSelectionChanged={onRowSelect}
                 frameworkComponents={frameworkComponents}
@@ -325,10 +306,8 @@ const FuelListing = (props) => {
           </div>
         </Col>
       </Row>
-      {state.isBulkUpload && (<BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} messageLabel={"Fuel"} anchor={"right"} />
-      )}
-      {state.showPopup && (<PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.FUEL_DELETE_ALERT}`} />
-      )}
+      {state.isBulkUpload && (<BulkUpload isOpen={state.isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} messageLabel={"Fuel"} anchor={"right"} />)}
+      {state.showPopup && (<PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.FUEL_DELETE_ALERT}`} />)}
     </div>
   );
 };

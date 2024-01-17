@@ -6,7 +6,6 @@ import { getFreightDataList, deleteFright, } from '../actions/Freight';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
 import Toaster from '../../common/Toaster';
-import { GridTotalFormate } from '../../common/TableGridFunctions';
 import { FREIGHT_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
 import { FreightMaster } from '../../../config/constants';
@@ -215,10 +214,7 @@ const FreightListing = (props) => {
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
   }
-  const handleShown = () => {
-    console.log("handleShown")
-    setState((prevState) => ({ ...prevState, shown: !state.shown }))
-  }
+
 
   const ExcelFile = ReactExport.ExcelFile;
   const { noData } = state;
@@ -252,14 +248,11 @@ const FreightListing = (props) => {
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               <div>
-                {permissions.Add && (
-                  <Button id="freightListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
+                {permissions.Add && (<Button id="freightListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
                 {
-                  permissions.Download &&
-                  <>
-                    <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-freightListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
-                      {onBtExport()}
-                    </ExcelFile>
+                  permissions.Download && <>  <ExcelFile filename={FreightMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-freightListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
+                    {onBtExport()}
+                  </ExcelFile>
                   </>
 
                 }
@@ -288,10 +281,7 @@ const FreightListing = (props) => {
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
                 onFilterModified={onFloatingFilterChanged}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: 'imagClass'
-                }}
+                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                 rowSelection={'multiple'}
                 onSelectionChanged={onRowSelect}
                 frameworkComponents={frameworkComponents}

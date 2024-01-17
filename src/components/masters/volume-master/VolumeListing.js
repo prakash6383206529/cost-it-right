@@ -111,7 +111,6 @@ const initialTableData = [
 ];
 
 function VolumeListing(props) {
-  const [shown, setShown] = useState(false);
   const [showVolumeForm, setShowVolumeForm] = useState(false);
   const [data, setData] = useState({ isEditFlag: false, ID: "" });
   const [bulkUploadBtn, setBulkUploadBtn] = useState(false);
@@ -166,9 +165,7 @@ function VolumeListing(props) {
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
     getTableListData(0, defaultPageSize, true);
-    return () => {
-      dispatch(setSelectedRowForPagination([]));
-    };
+    return () => { dispatch(setSelectedRowForPagination([])); };
   }, []);
 
   useEffect(() => {
@@ -326,12 +323,7 @@ function VolumeListing(props) {
    */
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
-    return cellValue !== " " &&
-      cellValue !== null &&
-      cellValue !== "" &&
-      cellValue !== undefined
-      ? cellValue
-      : "-";
+    return cellValue !== " " && cellValue !== null && cellValue !== "" && cellValue !== undefined ? cellValue : "-";
   };
 
   /**
@@ -378,21 +370,13 @@ function VolumeListing(props) {
     if (selectedRows === undefined || selectedRows === null) {
       //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination;
-    } else if (
-      selectedRowForPagination &&
-      selectedRowForPagination.length > 0
-    ) {
+    } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {
       // CHECKING IF REDUCER HAS DATA
       let finalData = [];
       if (event.node.isSelected() === false) {
         // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
         for (let i = 0; i < selectedRowForPagination.length; i++) {
-          if (
-            selectedRowForPagination[i].VolumeApprovedId ===
-            event.data.VolumeApprovedId &&
-            selectedRowForPagination[i].VolumeBudgetedId ===
-            event.data.VolumeBudgetedId
-          ) {
+          if (selectedRowForPagination[i].VolumeApprovedId === event.data.VolumeApprovedId && selectedRowForPagination[i].VolumeBudgetedId === event.data.VolumeBudgetedId) {
             // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
@@ -404,9 +388,7 @@ function VolumeListing(props) {
       selectedRows = [...selectedRows, ...finalData];
     }
 
-    let uniqeArrayVolumeBudgetedId = _.uniqBy(selectedRows, (v) =>
-      [v.VolumeApprovedId, v.VolumeBudgetedId].join()
-    ); //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
+    let uniqeArrayVolumeBudgetedId = _.uniqBy(selectedRows, (v) => [v.VolumeApprovedId, v.VolumeBudgetedId].join()); //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArrayVolumeBudgetedId)); //SETTING CHECKBOX STATE DATA IN REDUCER
     setDataCount(uniqeArrayVolumeBudgetedId.length);
   };
@@ -501,12 +483,7 @@ function VolumeListing(props) {
       }
     } else if (Number(newPageSize) === 100) {
       getTableListData(currentRowIndex, 100, true);
-      setPageSize((prevState) => ({
-        ...prevState,
-        pageSize100: true,
-        pageSize10: false,
-        pageSize50: false,
-      }));
+      setPageSize((prevState) => ({ ...prevState, pageSize100: true, pageSize10: false, pageSize50: false, }));
       setGlobalTake(100);
       if (pageNo >= Math.ceil(totalRecordCount / 100)) {
         setPageNo(Math.ceil(totalRecordCount / 100));
@@ -573,10 +550,7 @@ function VolumeListing(props) {
       ) {
         return false;
       }
-      setFloatingFilterData({
-        ...floatingFilterData,
-        [value.column.colId]: value.filterInstance.appliedModel.filter,
-      });
+      setFloatingFilterData({ ...floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, });
     }
   };
 
@@ -602,12 +576,7 @@ function VolumeListing(props) {
     getTableListData(0, 10, true);
     dispatch(setSelectedRowForPagination([]));
     setGlobalTake(10);
-    setPageSize((prevState) => ({
-      ...prevState,
-      pageSize10: true,
-      pageSize50: false,
-      pageSize100: false,
-    }));
+    setPageSize((prevState) => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false, }));
     setDataCount(0);
   };
 
@@ -652,9 +621,7 @@ function VolumeListing(props) {
   };
 
   const checkBoxRenderer = (props) => {
-    const cellValue = props?.valueFormatted
-      ? props.valueFormatted
-      : props?.value;
+    const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
         if (
@@ -679,11 +646,7 @@ function VolumeListing(props) {
 
   if (showVolumeForm) {
     return (
-      <AddVolume
-        initialTableData={initialTableData}
-        hideForm={hideForm}
-        data={data}
-      />
+      <AddVolume initialTableData={initialTableData} hideForm={hideForm} data={data} />
     );
   }
 
@@ -702,8 +665,7 @@ function VolumeListing(props) {
         id="go-to-top"
       >
         <ScrollToTop pointProp="go-to-top" />
-        {isLoader ? (
-          <LoaderCustom customClass={"loader-center"} />
+        {isLoader ? (<LoaderCustom customClass={"loader-center"} />
         ) : (
           <>
             {disableDownload && (
@@ -719,12 +681,7 @@ function VolumeListing(props) {
                     <div className="warning-message d-flex align-items-center">
                       {warningMessage && !disableDownload && (
                         <>
-                          <WarningMessage
-                            dClass="mr-3"
-                            message={
-                              "Please click on filter button to filter all data"
-                            }
-                          />
+                          <WarningMessage dClass="mr-3" message={"Please click on filter button to filter all data"} />
                           <div className="right-hand-arrow mr-2"></div>
                         </>
                       )}
@@ -732,27 +689,17 @@ function VolumeListing(props) {
 
                     <Button id="volumeListing_filter" className={"user-btn mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
                     <Button id="volumeListing_addLimit" type="button" className={"user-btn mr5"} onClick={limitHandler} buttonName={"Add Limit"} />
-                    {addAccessibility && (<Button id="volumeListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+                    {addAccessibility && (<Button id="volumeListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
+                    {bulkUploadAccessibility && (<Button id="volumeListing_bulkUpload" className={"user-btn mr5"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />)}
 
-                    )}
-                    {bulkUploadAccessibility && (<Button id="volumeListing_bulkUpload" className={"user-btn mr5"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />
-
-                    )}
-
-                    {downloadAccessibility && (
-                      <>                        <Button className="user-btn mr5" id={"volumeListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                        icon={"download mr-1"}
-                        buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                      />
-                        <ExcelFile
-                          filename={"Volume"}
-                          fileExtension={".xls"}
-                          element={<Button id={"Excel-Downloads-volume"} className="p-absolute" />
-                          }
-                        >
-                          {onBtExport()}
-                        </ExcelFile>
-                      </>
+                    {downloadAccessibility && (<>                        <Button className="user-btn mr5" id={"volumeListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                      icon={"download mr-1"}
+                      buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                    />
+                      <ExcelFile filename={"Volume"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-volume"} className="p-absolute" />}                      >
+                        {onBtExport()}
+                      </ExcelFile>
+                    </>
                     )}
 
                     <Button id={"volumeListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
@@ -764,29 +711,15 @@ function VolumeListing(props) {
 
             <div
               className={`ag-grid-wrapper height-width-wrapper  ${(volumeDataList && volumeDataList?.length <= 0) || noData
-                ? "overlay-contain"
-                : ""
-                }`}
+                ? "overlay-contain" : ""}`}
             >
               <div className="ag-grid-header">
-                <input
-                  type="text"
-                  className="form-control table-search"
-                  id="filter-text-box"
-                  placeholder="Search"
-                  autoComplete={"off"}
-                  onChange={(e) => onFilterTextBoxChanged(e)}
-                />
+                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={"off"} onChange={(e) => onFilterTextBoxChanged(e)} />
               </div>
               <div
-                className={`ag-theme-material ${isLoader && "max-loader-height"
-                  }`}
+                className={`ag-theme-material ${isLoader && "max-loader-height"}`}
               >
-                {noData && (
-                  <NoContentFound
-                    title={EMPTY_DATA}
-                    customClassName="no-content-found"
-                  />
+                {noData && (<NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />
                 )}
                 <AgGridReact
                   defaultColDef={defaultColDef}
@@ -826,33 +759,29 @@ function VolumeListing(props) {
                 </AgGridReact >
                 <div className="button-wrapper">
                   {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-                  {(props?.isMasterSummaryDrawer === undefined ||
-                    props?.isMasterSummaryDrawer === false) && (
-                      <div className="d-flex pagination-button-container">
+                  {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && (
+                    <div className="d-flex pagination-button-container">
 
-                        <p><Button id="bvolumeListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
+                      <p><Button id="bvolumeListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
 
-                        {pageSize.pageSize10 && (
-                          <p className="next-page-pg custom-left-arrow">
-                            Page <span className="text-primary">{pageNo}</span> of{" "}
-                            {Math.ceil(totalRecordCount / 10)}
-                          </p>
-                        )}
-                        {pageSize.pageSize50 && (
-                          <p className="next-page-pg custom-left-arrow">
-                            Page <span className="text-primary">{pageNo}</span> of{" "}
-                            {Math.ceil(totalRecordCount / 50)}
-                          </p>
-                        )}
-                        {pageSize.pageSize100 && (
-                          <p className="next-page-pg custom-left-arrow">
-                            Page <span className="text-primary">{pageNo}</span> of{" "}
-                            {Math.ceil(totalRecordCount / 100)}
-                          </p>
-                        )}
-                        <p><Button id="volumeListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                      </div>
-                    )}
+                      {pageSize.pageSize10 && (<p className="next-page-pg custom-left-arrow">
+                        Page <span className="text-primary">{pageNo}</span> of{" "}
+                        {Math.ceil(totalRecordCount / 10)}
+                      </p>
+                      )}
+                      {pageSize.pageSize50 && (<p className="next-page-pg custom-left-arrow">
+                        Page <span className="text-primary">{pageNo}</span> of{" "}
+                        {Math.ceil(totalRecordCount / 50)}
+                      </p>
+                      )}
+                      {pageSize.pageSize100 && (<p className="next-page-pg custom-left-arrow">
+                        Page <span className="text-primary">{pageNo}</span> of{" "}
+                        {Math.ceil(totalRecordCount / 100)}
+                      </p>
+                      )}
+                      <p><Button id="volumeListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+                    </div>
+                  )}
                 </div>
               </div >
             </div >
@@ -860,102 +789,79 @@ function VolumeListing(props) {
         )
         }
         {
-          bulkUploadBtn && (
-            <Drawer anchor={"right"} open={bulkUploadBtn}>
-              <Container>
-                <div className="drawer-wrapper volume-drawer">
-                  <Row className="drawer-heading mb-0">
-                    <Col>
-                      <div className={"header-wrapper left"}>
-                        <h3>Bulk Upload</h3>
-                      </div>
-                      <div
-                        onClick={toggleDrawer}
-                        className={"close-button right"}
-                      ></div>
-                    </Col>
-                  </Row>
-                  <Row className="">
-                    <Col md="12" className="">
-                      {" "}
-                      <Nav tabs className="subtabs">
-                        <NavItem>
-                          <NavLink
-                            className={classnames({ active: activeTab === "1" })}
-                            onClick={() => {
-                              toggle("1");
-                            }}
-                          >
-                            Actual (Monthly)
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            className={classnames({ active: activeTab === "2" })}
-                            onClick={() => {
-                              toggle("2");
-                            }}
-                          >
-                            Budgeted (Monthly)
-                          </NavLink>
-                        </NavItem>
-                        <NavItem>
-                          <NavLink
-                            className={classnames({ active: activeTab === "3" })}
-                            onClick={() => {
-                              toggle("3");
-                            }}
-                          >
-                            Actual (Daily)
-                          </NavLink>
-                        </NavItem>
-                      </Nav>
-                    </Col>
-                    <Col md="12" className="px-0 mt-3">
-                      <TabContent activeTab={activeTab}>
-                        {Number(activeTab) === 1 && (
-                          <TabPane tabId="1">
-                            <BulkUpload
-                              closeDrawer={closeActualBulkUploadDrawer}
-                              isEditFlag={false}
-                              fileName={"Actual Volume"}
-                              isZBCVBCTemplate={true}
-                              messageLabel={"Volume Actual"}
-                              anchor={"right"}
-                              isDrawerfasle={true}
-                            />
-                          </TabPane>
-                        )}
-                        {Number(activeTab) === 2 && (
-                          <TabPane tabId="2">
-                            <BulkUpload
-                              closeDrawer={closeActualBulkUploadDrawer}
-                              isEditFlag={false}
-                              fileName={"Budgeted Volume"}
-                              isZBCVBCTemplate={true}
-                              messageLabel={"Volume Budgeted"}
-                              anchor={"right"}
-                              isDrawerfasle={true}
-                            />
-                          </TabPane>
-                        )}
-                        {Number(activeTab) === 3 && (
-                          <TabPane tabId="3">
-                            <VolumeBulkUploadDrawer
-                              closeDrawer={closeBulkUploadDrawer}
-                              isEditFlag={false}
-                              fileName={"Volume"}
-                              isZBCVBCTemplate={true}
-                              messageLabel={"Volume"}
-                            />
-                          </TabPane>
-                        )}
-                      </TabContent>
-                    </Col>
-                  </Row>
-                </div>
-              </Container>
-            </Drawer>
+          bulkUploadBtn && (<Drawer anchor={"right"} open={bulkUploadBtn}>
+            <Container>
+              <div className="drawer-wrapper volume-drawer">
+                <Row className="drawer-heading mb-0">
+                  <Col>
+                    <div className={"header-wrapper left"}>
+                      <h3>Bulk Upload</h3>
+                    </div>
+                    <div
+                      onClick={toggleDrawer}
+                      className={"close-button right"}
+                    ></div>
+                  </Col>
+                </Row>
+                <Row className="">
+                  <Col md="12" className="">
+                    {" "}
+                    <Nav tabs className="subtabs">
+                      <NavItem>
+                        <NavLink
+                          className={classnames({ active: activeTab === "1" })}
+                          onClick={() => {
+                            toggle("1");
+                          }}
+                        >
+                          Actual (Monthly)
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({ active: activeTab === "2" })}
+                          onClick={() => {
+                            toggle("2");
+                          }}
+                        >
+                          Budgeted (Monthly)
+                        </NavLink>
+                      </NavItem>
+                      <NavItem>
+                        <NavLink
+                          className={classnames({ active: activeTab === "3" })}
+                          onClick={() => {
+                            toggle("3");
+                          }}
+                        >
+                          Actual (Daily)
+                        </NavLink>
+                      </NavItem>
+                    </Nav>
+                  </Col>
+                  <Col md="12" className="px-0 mt-3">
+                    <TabContent activeTab={activeTab}>
+                      {Number(activeTab) === 1 && (
+                        <TabPane tabId="1">
+                          <BulkUpload closeDrawer={closeActualBulkUploadDrawer} isEditFlag={false} fileName={"Actual Volume"} isZBCVBCTemplate={true} messageLabel={"Volume Actual"} anchor={"right"} isDrawerfasle={true} />
+                        </TabPane>
+                      )}
+                      {Number(activeTab) === 2 && (
+                        <TabPane tabId="2">
+                          <BulkUpload closeDrawer={closeActualBulkUploadDrawer} isEditFlag={false} fileName={"Budgeted Volume"} isZBCVBCTemplate={true} messageLabel={"Volume Budgeted"} anchor={"right"} isDrawerfasle={true} />
+                        </TabPane>
+                      )}
+                      {Number(activeTab) === 3 && (
+                        <TabPane tabId="3">
+                          <VolumeBulkUploadDrawer closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"Volume"} isZBCVBCTemplate={true} messageLabel={"Volume"} />
+                        </TabPane>
+                      )}
+                    </TabContent>
+                  </Col>
+                </Row>
+              </div>
+            </Container>
+          </Drawer>
           )
         }
         {

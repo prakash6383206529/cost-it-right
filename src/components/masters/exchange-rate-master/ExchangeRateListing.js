@@ -215,8 +215,7 @@ const ExchangeRateListing = (props) => {
         return (
             <>
                 {ViewAccessibility && <Button id={`exchangeRatecListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />}
-                {DeleteAccessibility && <Button id={`exchangeRatecListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />
-                }
+                {DeleteAccessibility && <Button id={`exchangeRatecListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
             </>
         )
     };
@@ -415,8 +414,7 @@ const ExchangeRateListing = (props) => {
                                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                 <AgGridColumn suppressSizeToFit="true" field="DateOfModification" headerName="Date of Modification" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams} minWidth={160}></AgGridColumn>
                                 {!props.isSimulation && <AgGridColumn suppressSizeToFit="true" field="ExchangeRateId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='totalValueRenderer' minWidth={160} ></AgGridColumn>}
-                            </AgGridReact>
-                            }
+                            </AgGridReact>}
                             {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
                         </div>
                     </div>
