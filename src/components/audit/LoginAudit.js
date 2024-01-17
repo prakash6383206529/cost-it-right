@@ -10,7 +10,7 @@ import { Col, Row } from 'reactstrap';
 import DayTime from '../common/DayTimeWrapper';
 import { setSelectedRowForPagination, } from '../simulation/actions/Simulation';
 import _ from 'lodash';
-import { checkPermission, getConfigurationKey, searchNocontentFilter } from '../../helper';
+import { checkPermission, searchNocontentFilter } from '../../helper';
 import { MESSAGES } from '../../config/message';
 import WarningMessage from '../common/WarningMessage';
 import { disabledClass } from '../../actions/Common';
@@ -20,12 +20,12 @@ import Button from '../layout/Button';
 import DatePicker from 'react-datepicker'
 
 
+const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 
 function LoginAudit(props) {
-    const dispatch = useDispatch()
     const [state, setState] = useState({
         auditDataList: [],
         isLoader: false,
@@ -57,16 +57,18 @@ function LoginAudit(props) {
         toDate: '',
 
     })
+    const dispatch = useDispatch();
+    const auditDataList = useSelector(state => state.audit.auditDataList);
+
     const [fromDate, setFromDate] = useState(null)
     const [toDate, setToDate] = useState(null)
-    const [filteredData, setFilteredData] = useState(state.auditDataList);
-
+    const [filteredData, setFilteredData] = useState(auditDataList);
     const [searchText, setSearchText] = useState('');
     const { selectedRowForPagination } = useSelector(state => state.simulation);
-
     const { topAndLeftMenuData } = useSelector(state => state.auth);
 
     useEffect(() => {
+
         getDataList(0, state.globalTake, true, state.floatingFilterData);
         // eslint-disable-next-line
     }, [])
@@ -107,7 +109,7 @@ function LoginAudit(props) {
                 setState(prevState => ({ ...prevState, disableDownload: false }));
                 dispatch(disabledClass(false));
                 setTimeout(() => {
-                    let button = document.getElementById("Excel-Downloads-audit-login");
+                    let button = document.getElementById("Excel-Downloads-LoginAudit-DownloadExcel");
                     button && button.click();
                 }, 500);
             }
@@ -159,7 +161,12 @@ function LoginAudit(props) {
             const previousNo = state.currentRowIndex - 10;
             const newPageNo = state.pageNo - 1;
             setState((prevState) => ({ ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo, }));
-            getDataList(skip, pageSize, true, state.floatingFilterData);
+            const filterDataObj = {
+                ...state.floatingFilterData,
+                fromDate: fromDate ? formatToDateString(fromDate) : '',
+                toDate: toDate ? formatToDateString(toDate) : ''
+            };
+            getDataList(skip, pageSize, true, filterDataObj);
         }
     };
 
@@ -176,7 +183,12 @@ function LoginAudit(props) {
         if (state.currentRowIndex < state.totalRecordCount - 10) {
             setState((prevState) => ({ ...prevState, pageNo: nextPage, pageNoNew: nextPage, }));
             const nextNo = state.currentRowIndex + 10;
-            getDataList(skip, pageSize, true, state.floatingFilterData);
+            const filterDataObj = {
+                ...state.floatingFilterData,
+                fromDate: fromDate ? formatToDateString(fromDate) : '',
+                toDate: toDate ? formatToDateString(toDate) : ''
+            };
+            getDataList(skip, pageSize, true, filterDataObj);
             setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
         }
     };
@@ -217,9 +229,9 @@ function LoginAudit(props) {
     }
 
     const filterData = () => {
-        let filtered = state.auditDataList; // Start with all data
+        let filtered = auditDataList; // Start with all data
         if (fromDate || toDate) {
-            filtered = state.auditDataList.filter((item) => {
+            filtered = auditDataList.filter((item) => {
                 const itemDate = new Date(item.date); // Make sure 'item.date' is the correct property
                 return (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
             });
@@ -240,7 +252,7 @@ function LoginAudit(props) {
 
     const onFloatingFilterChanged = (value) => {
         setTimeout(() => {
-            if (state.auditDataList?.length !== 0) {
+            if (auditDataList?.length !== 0) {
                 setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
             }
         }, 500);
@@ -346,23 +358,21 @@ function LoginAudit(props) {
             return cellValue
         }
     }
-
-    const effectiveDateFormatter = (props) => {
-        const dayjs = require('dayjs');
-        const utc = require('dayjs/plugin/utc');
-        const timezone = require('dayjs/plugin/timezone');
-        dayjs.extend(utc);
-        dayjs.extend(timezone);
-        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        if (!cellValue) return '-';
-        const utcDate = dayjs.utc(cellValue);
-        const browserTimeZone = dayjs.tz.guess();
-        const localTime = utcDate.tz(browserTimeZone);
-        const formattedDateAndTime = localTime.format('DD/MM/YYYY - HH:mm:ss');
-        // Return the formatted date and time
-        return formattedDateAndTime;
-    };
-
+    // const effectiveDateFormatter = (props) => {
+    //     const dayjs = require('dayjs');
+    //     const utc = require('dayjs/plugin/utc');
+    //     const timezone = require('dayjs/plugin/timezone');
+    //     dayjs.extend(utc);
+    //     dayjs.extend(timezone);
+    //     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+    //     if (!cellValue) return '-';
+    //     const utcDate = dayjs.utc(cellValue);
+    //     const browserTimeZone = dayjs.tz.guess();
+    //     const localTime = utcDate.tz(browserTimeZone);
+    //     const formattedDateAndTime = localTime.format('DD/MM/YYYY - HH:mm:ss');
+    //     // Return the formatted date and time
+    //     return formattedDateAndTime;
+    // };
 
     const onGridReady = (params) => {
         setState(prevState => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
@@ -414,11 +424,15 @@ function LoginAudit(props) {
         }
 
         totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-
-        getDataList(state.currentRowIndex,
+        const filterDataObj = {
+            ...state.floatingFilterData,
+            fromDate: fromDate ? formatToDateString(fromDate) : '',
+            toDate: toDate ? formatToDateString(toDate) : ''
+        };
+        getDataList(0,
             pageSize,
             true,
-            state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
+            filterDataObj)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
 
 
         setState((prevState) => ({
@@ -449,19 +463,23 @@ function LoginAudit(props) {
     }
     const onExcelDownload = () => {
 
+        dispatch(disabledClass(true))
         setState(prevState => ({ ...prevState, disableDownload: true }))
         dispatch(disabledClass(true))
-        let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-        // let tempArr = selectedRowForPagination
+        // let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
+        let tempArr = selectedRowForPagination
         if (tempArr?.length > 0) {
             setTimeout(() => {
-                setState(prevState => ({ ...prevState, disableDownload: false }))
                 dispatch(disabledClass(false))
+                setState(prevState => ({ ...prevState, disableDownload: false }))
                 let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel');
                 button && button.click()
             }, 400);
 
         } else {
+            // 
+            // let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel');
+            // button && button.click()
             getDataList(0, defaultPageSize, false, state.floatingFilterData)
         }
     }
@@ -469,26 +487,26 @@ function LoginAudit(props) {
         let tempArr = []
         //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
-        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (state.auditDataList ? state.auditDataList : [])
+        tempArr = (tempArr && tempArr.length > 0) ? tempArr : (auditDataList ? auditDataList : [])
+
         return returnExcelColumn(AUDIT_LISTING_DOWNLOAD_EXCEl, tempArr)
     };
     const returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-        temp = TempData && TempData.map((item) => {
 
-            if (item.MacAddress === null) {
-                item.MacAddress = ' '
-            }
-            return item
-        })
+
+
         return (
-            <ExcelSheet data={temp} name={AuditLisitng}>
+            <ExcelSheet data={TempData} name={AuditLisitng}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
+
+
+    }
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
     }
     const handleDate = (newDate) => {
-
-
         let temp = state.inRangeDate
         temp.push(newDate)
         setState(prevState => ({ ...prevState, inRangeDate: temp }))
@@ -547,11 +565,11 @@ function LoginAudit(props) {
     };
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
-        effectiveDateFormatter: effectiveDateFormatter,
+        // effectiveDateFormatter: effectiveDateFormatter,
+        hyphenFormatter: hyphenFormatter,
         checkBoxRenderer: checkBoxRenderer
 
     };
-    const ExcelFile = ReactExport.ExcelFile;
 
     return (
         <>
@@ -608,6 +626,7 @@ function LoginAudit(props) {
                                             {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
                                             {state.DownloadAccessibility &&
+
                                                 <>
                                                     <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button"
                                                         onClick={onExcelDownload}
@@ -615,7 +634,7 @@ function LoginAudit(props) {
                                                         {/* DOWNLOAD */}
                                                         {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                                                     </button>
-                                                    <ExcelFile filename={'Audit'} fileExtension={'.xls'} element={
+                                                    <ExcelFile filename={'LoginAudit'} fileExtension={'.xls'} element={
                                                         <button id={'Excel-Downloads-LoginAudit-DownloadExcel'} className="p-absolute" type="button" >
                                                         </button>}>
                                                         {onBtExport()}
@@ -630,7 +649,7 @@ function LoginAudit(props) {
                             </Row>
                             <Row>
                                 <Col>
-                                    <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !state.noData) ? 'master-approval-overlay' : ''} ${(state.auditDataList && state.auditDataList.length <= 0) || state.noData ? 'overlay-contain' : ''} `}>
+                                    <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !state.noData) ? 'master-approval-overlay' : ''} ${(auditDataList && auditDataList.length <= 0) || state.noData ? 'overlay-contain' : ''} `}>
                                         <div className={`ag-theme-material ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
                                             {state.noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found" />}
                                             {!state.isLoader && <AgGridReact
@@ -638,7 +657,7 @@ function LoginAudit(props) {
                                                 defaultColDef={defaultColDef}
                                                 floatingFilter={true}
                                                 domLayout='autoHeight'
-                                                rowData={state.auditDataList}
+                                                rowData={auditDataList}
                                                 pagination={true}
                                                 paginationPageSize={state.globalTake}
                                                 onGridReady={onGridReady}
@@ -653,9 +672,9 @@ function LoginAudit(props) {
                                                 enableBrowserTooltips={true}
                                             >
                                                 <AgGridColumn field="UserName" headerName="User Name" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
-                                                <AgGridColumn field="IPAddress" headerName="IP Address"></AgGridColumn>
+                                                <AgGridColumn field="IPAddress" headerName="IP Address" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="UserAgent" headerName="User Agent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn field="LoginTime" headerName="Login Time (Local Time)" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                                                <AgGridColumn field="LoginTime" headerName="Login Time (Local Time)" filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                                             </AgGridReact>}
                                             <div className='button-wrapper'>
                                                 {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}

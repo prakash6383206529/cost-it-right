@@ -5760,10 +5760,10 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
 ]
 
 export const AUDIT_LISTING_DOWNLOAD_EXCEl = [
-    { label: "UserName", value: "UserName", },
-    { label: "IPAddress", value: "IPAddress", },
-    { label: "UserAgent", value: "UserAgent", },
-    { label: "LoginTime", value: "LoginTime", },
+    { label: "User Name", value: "UserName", },
+    { label: "IP Address", value: "IPAddress", },
+    { label: "User Agent", value: "UserAgent", },
+    { label: "Login Date - Login Time", value: "LoginTime", },
 
 
 ]
