@@ -78,8 +78,10 @@ const BOPDomesticListing = (props) => {
     noData: false,
     dataCount: 0,
     attachment: false,
-    viewAttachment: []
+    viewAttachment: [],
   });
+
+  console.log(state, "state");
   useEffect(() => {
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
@@ -109,6 +111,9 @@ const BOPDomesticListing = (props) => {
     if (props.isSimulation) {
       props.callBackLoader(state.isLoader);
     }
+    else {
+      setState((prevState) => ({ ...prevState, isLoader: false }))
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -133,10 +138,11 @@ const BOPDomesticListing = (props) => {
       props?.changeSetLoader(true)
       dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, BOPDOMESTIC, (res) => {
         props?.changeSetLoader(false)
+        console.log("138");
         setState((prevState) => ({ ...prevState, isLoader: false }))
       }))
     } else {
-
+      console.log("143");
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
         if (props.isSimulation) {
@@ -145,8 +151,9 @@ const BOPDomesticListing = (props) => {
         dataObj.EntryType = Number(ENTRY_TYPE_DOMESTIC)
 
         dispatch(getBOPDataList(filterData, skip, take, isPagination, dataObj, false, (res) => {
-          setState((prevState) => ({ ...prevState, isLoader: false }))
-          setState((prevState) => ({ ...prevState, noData: false }))
+          console.log("151");
+          console.log(state.isLoader, 'state.isLoader');
+          setState((prevState) => ({ ...prevState, isLoader: false, noData: false }))
           if (props.isSimulation) {
             props?.changeTokenCheckBox(true)
           }
@@ -186,8 +193,6 @@ const BOPDomesticListing = (props) => {
                 }
 
               }
-
-              // Sets the filter model via the grid API
               isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(state.filterModel))
             }, 300);
             setTimeout(() => {
@@ -199,9 +204,9 @@ const BOPDomesticListing = (props) => {
             }, 600);
           }
         }))
-      } else {
-        setState((prevState) => ({ ...prevState, isLoader: false }))
+
       }
+
     }
   }
   const onFloatingFilterChanged = (value) => {
@@ -334,7 +339,8 @@ const BOPDomesticListing = (props) => {
   };
 
   const resetState = () => {
-    setState((prevState) => ({ ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false }));
+    console.log("reset ", state,);
+    setState((prevState) => ({ ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false, }));
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
     gridOptions?.columnApi?.resetColumnState(null);
@@ -551,6 +557,7 @@ const BOPDomesticListing = (props) => {
     if (files && files?.length === 0) {
       return '-'
     }
+
     return (
       <>
         <div className={"attachment images"}>
@@ -729,9 +736,7 @@ const BOPDomesticListing = (props) => {
 
     }, 300);
   }
-  const handleShown = () => {
-    setState((prevState) => ({ ...prevState, shown: !state.shown }))
-  }
+
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
@@ -769,23 +774,17 @@ const BOPDomesticListing = (props) => {
     var selectedRows = state.gridApi.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {   //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination
-
     } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {   // CHECKING IF REDUCER HAS DATA
-
       let finalData = []
       if (event.node.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
         for (let i = 0; i < selectedRowForPagination.length; i++) {
           if (selectedRowForPagination[i].BoughtOutPartId === event.data.BoughtOutPartId) {     // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
-          }
-          finalData.push(selectedRowForPagination[i])
+          } finalData.push(selectedRowForPagination[i])
         }
-      } else {
-        finalData = selectedRowForPagination
-      }
+      } else { finalData = selectedRowForPagination }
       selectedRows = [...selectedRows, ...finalData]
     }
-
     let uniqeArray = _.uniqBy(selectedRows, "BoughtOutPartId")           //UNIQBY FUNCTION IS USED TO FIND THE UNIQUE ELEMENTS & DELETE DUPLICATE ENTRY
     dispatch(setSelectedRowForPagination(uniqeArray))
     const newDataCount = uniqeArray.length;
@@ -813,7 +812,7 @@ const BOPDomesticListing = (props) => {
       {/* {state.isLoader && <LoaderCustom />} */}
       {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
       {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-      < form noValidate >
+      <form noValidate >
         <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} ${props?.benchMark ? 'zindex-2' : 'filter-row-large'}  ${props.isSimulation ? 'simulation-filter zindex-0 ' : ''}`}>
           <Col md="3" lg="3">
             <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -823,52 +822,25 @@ const BOPDomesticListing = (props) => {
               {state.shown ? (
                 <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
                   <div className="cancel-icon-white"></div></button>
-                // <Button type="button" className="user-btn mr5 filter-btn-top" onClick={handleShown()} icon="cancel-icon-white"/>
-              ) : (
-                <>
-                </>
-              )}
-
-              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                <div className="warning-message d-flex align-items-center">
-                  {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                </div>
-              }
-
-              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+              ) : (<>  </>)}
+              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <div className="warning-message d-flex align-items-center">  {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>} </div>}
+              {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <>
                 <Button id="bopDomesticListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={state.disableFilter} />
-
-              }
-
-              {permissions?.Add && (
-                <Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
-              )}
-              {permissions?.BulkUpload && (
-                <Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
-              )}
-              {
-                permissions?.Download &&
-                <>
-                  <Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                    icon={"download mr-1"}
-                    buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                  />
-                  <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
-                    {onBtExport()}
-                  </ExcelFile>
-                </>
+                {permissions?.Add && (<Button id="bopDomesticListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />)}
+                {permissions?.BulkUpload && (<Button id="bopDomesticListing_bulkUpload" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+                {permissions?.Download && <><Button className="mr5" id={"bopDomesticListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"}
+                  buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                  <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}> {onBtExport()}  </ExcelFile>
+                </>}
+              </>
               }
               <Button id={"bopDomesticListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
-
             </div>
           </Col>
         </Row>
-
       </form >
-
       <Row>
         <Col>
-
           <div className={`ag-grid-wrapper ${props?.isDataInMaster && !noData ? 'master-approval-overlay' : ''} ${(bopDomesticList && bopDomesticList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
             <div className={`ag-theme-material p-relative ${(state.isLoader && !props.isMasterSummaryDrawer) && "max-loader-height"}`}>
               {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found bop-drawer" />}
@@ -882,18 +854,14 @@ const BOPDomesticListing = (props) => {
                 onGridReady={onGridReady}
                 gridOptions={gridOptions}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: 'imagClass'
-                }}
+                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                 frameworkComponents={frameworkComponents}
                 rowSelection={'multiple'}
                 //onSelectionChanged={onRowSelect}
                 onRowSelected={onRowSelect}
                 onFilterModified={onFloatingFilterChanged}
                 suppressRowClickSelection={true}
-                enableBrowserTooltips={true}
-              >
+                enableBrowserTooltips={true}  >
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
                 <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
@@ -908,10 +876,8 @@ const BOPDomesticListing = (props) => {
                 {/* {props?.isMasterSummaryDrawer && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>} */}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                 <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
-
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
-
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
@@ -934,26 +900,10 @@ const BOPDomesticListing = (props) => {
           </div>
         </Col>
       </Row>
-      {
-        isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'BOP Domestic'} isZBCVBCTemplate={true} messageLabel={'BOP Domestic'} anchor={'right'} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_DOMESTIC} />
-      }
-
-      {
-        state.analyticsDrawer &&
-        <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true}
-          rowData={state.selectedRowData}
-        />
-      }
-      {
-        state.attachment && (
-          <Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />
-        )
-      }
-
-
-      {
-        state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />
-      }
+      {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'BOP Domestic'} isZBCVBCTemplate={true} messageLabel={'BOP Domestic'} anchor={'right'} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_DOMESTIC} />}
+      {state.analyticsDrawer && <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} />}
+      {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />)}
+      {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BOP_DELETE_ALERT}`} />}
       {initialConfiguration?.IsBoughtOutPartCostingConfigured && !props.isSimulation && initialConfiguration.IsMasterApprovalAppliedConfigure && <WarningMessage dClass={'w-100 justify-content-end'} message={`${MESSAGES.BOP_BREAKUP_WARNING}`} />}
     </div >
   );
