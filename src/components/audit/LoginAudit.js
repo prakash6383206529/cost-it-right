@@ -560,52 +560,49 @@ function LoginAudit(props) {
                     <div className={`ag-grid-react custom-pagination ${state.DownloadAccessibility ? "show-table-btn" : ""}`}>
                         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
                         <div className={`ag-grid-react ? "custom-pagination" : ""} ${state.DownloadAccessibility ? "show-table-btn no-tab-page" : ""}`}>
-                            <Row className={`filter-row-large blue-before`}>
-                                <Col md="7" lg="7" className='d-'>
+                            <Row className={`filter-row-large blue-before pb-3`}>
+                                <Col md="7" lg="7" className='d-flex'>
                                     <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
-                                    <Row>
-                                        <Col md="5">
-                                            <div className="form-group d-flex align-items-center">
-                                                <label>From:</label>
-                                                <div className="inputbox date-section ml-2">
-                                                    <DatePicker
-                                                        selected={fromDate}
-                                                        onChange={handleFromDateChange}
-                                                        showMonthDropdown
-                                                        showYearDropdown
-                                                        dropdownMode="select"
-                                                        maxDate={toDate}
-                                                        dateFormat="dd/MM/yyyy"
-                                                        placeholderText="From date"
-                                                        className="form-control"
-                                                        autoComplete="off"
-                                                    />
-                                                </div>
+                                    <div className='date-range-container'>
+                                        <div className="d-flex align-items-center">
+                                            <label>From:</label>
+                                            <div className="inputbox date-section ml-2">
+                                                <DatePicker
+                                                    selected={fromDate}
+                                                    onChange={handleFromDateChange}
+                                                    showMonthDropdown
+                                                    showYearDropdown
+                                                    dropdownMode="select"
+                                                    maxDate={toDate}
+                                                    dateFormat="dd/MM/yyyy"
+                                                    placeholderText="From date"
+                                                    className="form-control"
+                                                    autoComplete="off"
+                                                />
                                             </div>
-                                        </Col>
-                                        <Col md="6">
-                                            <div className="form-group d-flex align-items-center">
-                                                <label>To:</label>
-                                                <div className="inputbox date-section ml-2">
-                                                    <DatePicker
-                                                        selected={toDate}
-                                                        onChange={handleToDateChange} showMonthDropdown
-                                                        showYearDropdown
-                                                        dropdownMode="select"
-                                                        minDate={fromDate}
-                                                        dateFormat="dd/MM/yyyy"
-                                                        placeholderText="To date"
-                                                        className="form-control"
-                                                        autoComplete="off"
-                                                        disabled={!fromDate} // Disable if fromDate is not selected
-                                                    />
-                                                </div>
+                                        </div>
+
+                                        <div className="d-flex align-items-center">
+                                            <label>To:</label>
+                                            <div className="inputbox date-section ml-2">
+                                                <DatePicker
+                                                    selected={toDate}
+                                                    onChange={handleToDateChange} showMonthDropdown
+                                                    showYearDropdown
+                                                    dropdownMode="select"
+                                                    minDate={fromDate}
+                                                    dateFormat="dd/MM/yyyy"
+                                                    placeholderText="To date"
+                                                    className="form-control"
+                                                    autoComplete="off"
+                                                    disabled={!fromDate} // Disable if fromDate is not selected
+                                                />
                                             </div>
-                                        </Col>
-                                    </Row>
+                                        </div>
+                                    </div>
 
                                 </Col>
-                                <Col md="5" lg="5" className=" mb-3 d-flex justify-content-end">
+                                <Col md="5" lg="5" className="d-flex justify-content-end">
                                     <div className="d-flex justify-content-end bd-highlight w100">
                                         <div className="warning-message d-flex align-items-center">
                                             {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
@@ -625,11 +622,10 @@ function LoginAudit(props) {
                                                     </ExcelFile>
                                                 </>
                                             }
-
+                                            <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>  <div className="refresh mr-0"></div> </button>
                                         </div>
 
                                     </div>
-                                    <button type="button" className="user-btn mr5" title="Reset Grid" onClick={() => resetState()}>  <div className="refresh mr-0"></div> </button>
                                 </Col>
                             </Row>
                             <Row>

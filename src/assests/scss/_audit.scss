@@ -1,0 +1,14 @@
+.date-range-container {
+    display: flex;
+
+    .date-section,
+    .date-section input.form-control {
+        min-height: 35px !important;
+        height: 35px !important;
+    }
+
+    label {
+        max-width: 40px;
+        text-align: right;
+    }
+}
