@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { API, API_FAILURE, config, GET_LOGIN_AUDIT_SUCCESS } from '../../../config/constants';
+import { loggedInUserId } from '../../../helper';
 
 
 export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc, sortName, callback) {
@@ -10,7 +11,7 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
         let queryParams = new URLSearchParams();
         // Map of parameters to potentially add. If the value is truthy, or a boolean, add it to the query params
         const paramsToAdd = {
-            userid: data.userId || DEFAULT_USER_ID,
+            loggedInUserId: loggedInUserId() || DEFAULT_USER_ID,
             fromDate: data.fromDate,
             toDate: data.toDate,
             loginTime: data.LoginTime,
@@ -26,7 +27,7 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
             search: data.search,
             departments: data.departments
         };
-
+        console.log(paramsToAdd, "paramsToAdd");
 
 
         // Only add parameters which are not undefined, empty string or null
@@ -45,6 +46,7 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
 
         // Handle the request response
         request.then((response) => {
+            console.log('response: ', response);
             if (response.data) {
                 // Dispatch the action to the store with the audit log data
                 dispatch({
