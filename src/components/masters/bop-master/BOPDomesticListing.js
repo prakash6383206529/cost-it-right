@@ -729,9 +729,6 @@ const BOPDomesticListing = (props) => {
 
     }, 300);
   }
-  const handleShown = () => {
-    setState((prevState) => ({ ...prevState, shown: !state.shown }))
-  }
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;

@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from 'react-redux'
-import {
-    agGridStatus, fetchCostingHeadsAPI,
-} from '../../../actions/Common';
+import { agGridStatus, fetchCostingHeadsAPI, } from '../../../actions/Common';
 import { SearchableSelectHookForm } from "../../layout/HookFormInputs";
 import { Controller, useForm } from "react-hook-form";
 import { statusOptions, statusOptionsCosting, statusOptionsMasters, statusOptionsSimulation } from "../../../config/constants";
@@ -27,7 +25,6 @@ function SingleDropdownFloationFilter(props) {
         mode: 'onBlur',
         reValidateMode: 'onChange',
     })
-
 
     useEffect(() => {
 
@@ -66,6 +63,7 @@ function SingleDropdownFloationFilter(props) {
     const valueChanged = (event) => {
 
         let arr = [event]
+
         setShowInputData(arr)
         setSelectedPlants(arr)
         let plants = ""
