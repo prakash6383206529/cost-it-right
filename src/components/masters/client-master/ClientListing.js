@@ -338,6 +338,7 @@ const ClientListing = React.memo(() => {
                       <ExcelFile filename={Clientmaster} fileExtension={'.xls'}
                         element={
                           <Button id={"Excel-Downloads-clientListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+
                         }>
                         {onBtExport()
                         }
