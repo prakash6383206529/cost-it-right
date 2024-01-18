@@ -585,7 +585,6 @@ const VendorListing = () => {
    * @description reset Column, filter, select cells
    */
   const resetState = () => {
-    
     state.gridApi.setQuickFilter(null)
     setState((prevState) => ({ ...prevState, noData: false, }));
     dispatch(isResetClick(true, "vendorType"));
@@ -800,17 +799,22 @@ const VendorListing = () => {
               enableBrowserTooltips={true}
             >
               <AgGridColumn field="VendorType" tooltipField="VendorType" width={"240px"} headerName="Vendor Type" cellRenderer={"checkBoxRenderer"} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterVendorType}              ></AgGridColumn>
-              <AgGridColumn field="VendorName" headerName="Vendor Name"></AgGridColumn>
-              <AgGridColumn field="VendorCode" headerName="Vendor Code"></AgGridColumn>
-              <AgGridColumn field="Country" headerName="Country" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-              <AgGridColumn field="State" headerName="State" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-              <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}></AgGridColumn>
-              {getConfigurationKey()?.IsCriticalVendorConfigured && (<AgGridColumn field="IsCriticalVendor" headerName="Is Critical Vendor" ></AgGridColumn>)}
-              <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
-              <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"}></AgGridColumn>
+              <AgGridColumn field="VendorName" headerName="Vendor Name"              ></AgGridColumn>
+              <AgGridColumn field="VendorCode" headerName="Vendor Code"              ></AgGridColumn>
+              <AgGridColumn field="Country"
+                headerName="Country" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
+              <AgGridColumn field="State" headerName="State" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
+              <AgGridColumn field="City" headerName="City" cellRenderer={"hyphenFormatter"}              ></AgGridColumn>
+              {getConfigurationKey()?.IsCriticalVendorConfigured && (
+                <AgGridColumn field="IsCriticalVendor" headerName="Is Critical Vendor"                ></AgGridColumn>
+              )}
+              <AgGridColumn field="VendorId" minWidth={"180"} cellClass="actions-wrapper ag-grid-action-container" headerName="Actions" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"}              ></AgGridColumn>
+              <AgGridColumn width="150" pinned="right" field="IsActive" headerName="Status" floatingFilter={false} cellRenderer={"statusButtonFormatter"}              ></AgGridColumn>
             </AgGridReact>
             <div className="button-wrapper">
-              {!state.isLoader && (<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />)}
+              {!state.isLoader && (
+                <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />
+              )}
               <div className="d-flex pagination-button-container">
 
                 <p><Button id="vebdorListing_previous" variant="previous-btn" disabled={false} onClick={() => onBtPrevious()} /></p>
