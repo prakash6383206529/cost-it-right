@@ -85,11 +85,7 @@ const LevelsListing = (props) => {
 		dispatch(getAllLevelAPI(res => {
 			if (res && res.data && res.data.DataList) {
 				let Data = res.data.DataList;
-				setState(prevState => ({
-					...prevState,
-					tableData: Data,
-					isLoader: false
-				}));
+				setState(prevState => ({ ...prevState, tableData: Data, isLoader: false }));
 			}
 		}));
 	};
@@ -176,8 +172,7 @@ const LevelsListing = (props) => {
 		const { EditAccessibility } = state;
 		return (
 			<>
-				{EditAccessibility && <Button id={`clientListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => editItemDetails(cell, rowIndex)} title={"Edit"} />}
-				{/* {DeleteAccessibility && <button type={'button'} className="Delete" onClick={() => deleteItem(cell)} />} */}
+				{EditAccessibility && <Button id={`levelListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => editItemDetails(cell, rowIndex)} title={"Edit"} />}
 			</>
 		);
 	};
@@ -230,16 +225,7 @@ const LevelsListing = (props) => {
 						<Row className="pt-4">
 							<ApplyPermission.Provider value={permissionData}>
 								<Col md="12">
-									<LevelTechnologyListing
-										onRef={ref => (child.current = ref)}
-										mappingToggler={mappingToggler}
-										getLevelMappingDetail={getLevelMappingDetail}
-										// AddAccessibility={AddAccessibility}
-										// EditAccessibility={EditAccessibility}
-										// DeleteAccessibility={DeleteAccessibility}
-										updateApi={state.updateApi}
-										cancelButton={state.cancelButton}
-									/>
+									<LevelTechnologyListing onRef={ref => (child.current = ref)} mappingToggler={mappingToggler} getLevelMappingDetail={getLevelMappingDetail} updateApi={state.updateApi} cancelButton={state.cancelButton} />
 								</Col>
 							</ApplyPermission.Provider>
 						</Row>
@@ -253,8 +239,7 @@ const LevelsListing = (props) => {
 								<Row>
 									<Col md="6" className=""></Col>
 									<Col md="6" className="search-user-block mb-3 text-right">
-										<Button
-											id={"levelListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+										<Button id={"levelListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 									</Col>
 								</Row>
 								<Row>
@@ -282,9 +267,7 @@ const LevelsListing = (props) => {
 															setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
 														}, 500);
 													}}
-													noRowsOverlayComponentParams={{
-														title: EMPTY_DATA,
-													}}
+													noRowsOverlayComponentParams={{ title: EMPTY_DATA, }}
 													frameworkComponents={frameworkComponents}
 													enableBrowserTooltips={true}
 												>
@@ -306,16 +289,12 @@ const LevelsListing = (props) => {
 
 						</Row>
 
-						{isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} />
-						)}
-						{showImpact && (<ImpactDrawer isOpen={showImpact} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeImpactDrawer} anchor={'right'} />
-						)}
+						{isOpen && (<Level isOpen={isOpen} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeDrawer} isEditFlag={isEditFlag} TechnologyId={TechnologyId} anchor={'right'} isEditedlevelType={state.levelType} approvalTypeId={state.approvalTypeId} />)}
+						{showImpact && (<ImpactDrawer isOpen={showImpact} isShowForm={isShowForm} isShowMappingForm={isShowMappingForm} closeDrawer={closeImpactDrawer} anchor={'right'} />)}
 					</form>
 				</>
 			</div>
-			{
-				state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`} />
-			}
+			{state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.LEVEL_DELETE_ALERT}`} />}
 		</div>
 	);
 

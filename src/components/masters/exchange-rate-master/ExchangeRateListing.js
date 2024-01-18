@@ -227,13 +227,11 @@ const ExchangeRateListing = (props) => {
     }
 
     const hideForm = (type) => {
-        setState((prevState) => ({ ...prevState, currency: [], data: { isEditFlag: false, ID: '' }, toggleForm: false, }),
-            () => {
-                if (type === 'submit') {
-                    getTableListData();
-                }
-            }
-        );
+        setState((prevState) => ({ ...prevState, currency: [], data: { isEditFlag: false, ID: '' }, toggleForm: false, }))
+
+        if (type === 'submit') {
+            getTableListData();
+        }
     };
 
     /**
@@ -262,11 +260,16 @@ const ExchangeRateListing = (props) => {
 
     const onRowSelect = () => {
         const selectedRows = state.gridApi?.getSelectedRows()
-        props?.apply(selectedRows, selectedRows?.length)
+        // props?.apply(selectedRows, selectedRows?.length)
+        if (props.isSimulation) {
+
+            props.apply(selectedRows, selectedRows?.length)
+        }
         setState((prevState) => ({ ...prevState, selectedRowData: selectedRows, dataCount: selectedRows.length }))
     }
 
     const onBtExport = () => {
+
         let tempArr = []
         tempArr = state.gridApi && state.gridApi?.getSelectedRows()
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (exchangeRateDataList ? exchangeRateDataList : [])
@@ -291,7 +294,7 @@ const ExchangeRateListing = (props) => {
                 obj.DateOfModification = DayTime(item.DateOfModification).format('DD/MM/YYYY')
             }
             temp.push(obj)
-            return null
+            return item
         })
         return (
             <ExcelSheet data={temp} name={ExchangeMaster}>
@@ -366,7 +369,7 @@ const ExchangeRateListing = (props) => {
                                         {
                                             DownloadAccessibility &&
                                             <>
-                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-clientListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                                                <ExcelFile filename={ExchangeMaster} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-exchangeRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
                                                 }>
                                                     {onBtExport()}
                                                 </ExcelFile>

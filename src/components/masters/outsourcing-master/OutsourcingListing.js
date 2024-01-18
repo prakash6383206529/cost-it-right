@@ -123,7 +123,6 @@ const OutsourcingListing = (props) => {
         let dataObj = { ...floatingFilterData }
         dispatch(getAllOutsourcing(dataObj, isPagination, skip, take, (res) => {
             if (isPagination === true || isPagination === null) setIsLoader(false)
-
             if ((res && res.status === 204) || res.length === 0) {
                 setTotalRecordCount(0)
                 setPageNo(0)
@@ -144,7 +143,6 @@ const OutsourcingListing = (props) => {
                             isReset = false
                         }
                     }
-
                     // Sets the filter model via the grid API
                     isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(filterModel))
 
@@ -186,23 +184,10 @@ const OutsourcingListing = (props) => {
     const buttonFormatter = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
         const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
-
         return (
             <>
-                {ViewAccessibility && <Button
-                    id={`outsourcingListing_view${props.rowIndex}`}
-                    className={"mr-1"}
-                    variant="View"
-                    onClick={() => viewOrEditItemDetails(cellValue, rowData, true)}
-                    title={"View"}
-                />}
-                {EditAccessibility && <Button
-                    id={`outsourcingListing_edit${props.rowIndex}`}
-                    className={"mr-1"}
-                    variant="Edit"
-                    onClick={() => viewOrEditItemDetails(cellValue, rowData, false)}
-                    title={"Edit"}
-                />}
+                {ViewAccessibility && <Button id={`outsourcingListing_view${props.rowIndex}`} className={"mr-1"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, rowData, true)} title={"View"} />}
+                {EditAccessibility && <Button id={`outsourcingListing_edit${props.rowIndex}`} className={"mr-1"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, rowData, false)} title={"Edit"} />}
             </>
         )
     };
@@ -229,9 +214,7 @@ const OutsourcingListing = (props) => {
             if (model !== undefined && model !== null) {
                 if (Object.keys(model).length > 0) {
                     isFilterEmpty = false
-
                     for (var property in floatingFilterData) {
-
                         if (property === value.column.colId) {
                             floatingFilterData[property] = ""
                         }
@@ -267,29 +250,14 @@ const OutsourcingListing = (props) => {
             <>
                 <label htmlFor="normal-switch" className="normal-switch">
                     {/* <span>Switch with default style</span> */}
-                    <Switch
-                        onChange={() => handleChange(cellValue, rowData)}
-                        checked={cellValue}
-                        disabled={!ActivateAccessibility}
-                        background="#ff6600"
-                        onColor="#4DC771"
-                        onHandleColor="#ffffff"
-                        offColor="#FC5774"
-                        id="normal-switch"
-                        height={24}
-                        className={cellValue ? "active-switch" : "inactive-switch"}
-                    />
+                    <Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
                 </label>
             </>
         )
     }
 
     const handleChange = (cell, row) => {
-        let data = {
-            Id: row.OutSourcingId,
-            LoggedInUserId: loggedInUserId(),
-            IsActive: !cell, //Status of the Outsourcing.
-        }
+        let data = { Id: row.OutSourcingId, LoggedInUserId: loggedInUserId(), IsActive: !cell, }
         setCellData(data)
         setCellValue(cell)
         setShowPopupToggle(true)
@@ -378,7 +346,6 @@ const OutsourcingListing = (props) => {
         if (selectedRows === undefined || selectedRows === null) {    //CONDITION FOR FIRST RENDERING OF COMPONENT
             selectedRows = selectedRowForPagination
         } else if (selectedRowForPagination && selectedRowForPagination.length > 0) {  // CHECKING IF REDUCER HAS DATA
-
             let finalData = []
             if (event.node?.isSelected() === false) {    // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
 
@@ -539,36 +506,13 @@ const OutsourcingListing = (props) => {
                                 <div className="d-flex justify-content-end bd-highlight w100">
                                     <div className="warning-message d-flex align-items-center">
                                         {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
-                                        <Button
-                                            id="outsourcingListing_filter"
-                                            className={"mr5"}
-                                            onClick={() => onSearch()}
-                                            title={"Filtered data"}
-                                            icon={"filter"}
-                                            disabled={disableFilter}
-                                        />
+                                        <Button id="outsourcingListing_filter" className={"mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
                                     </div>
 
-                                    {AddAccessibility && (
-                                        <Button
-                                            id="outsourcingListing_add"
-                                            className={"mr5"}
-                                            onClick={formToggle}
-                                            title={"Add"}
-                                            icon={"plus"}
-                                        />
-                                    )}
-                                    {
-                                        DownloadAccessibility &&
+                                    {AddAccessibility && (<Button id="outsourcingListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />)}
+                                    {DownloadAccessibility &&
                                         <>
-                                            <Button
-                                                className="mr5"
-                                                id={"outsourceListing_excel_download"}
-                                                onClick={onExcelDownload}
-                                                title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                                icon={"download mr-1"}
-                                                buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                            />
+                                            <Button className="mr5" id={"outsourceListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} icon={"download mr-1"} buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} />
                                             <ExcelFile filename={'Outsourcing'} fileExtension={'.xls'} element={
                                                 <Button id={"Excel-Downloads-outsourcing"} className="p-absolute" />
 
@@ -577,12 +521,7 @@ const OutsourcingListing = (props) => {
                                             </ExcelFile>
                                         </>
                                     }
-                                    <Button
-                                        id={"outsourceListing_refresh"}
-                                        onClick={() => resetState()}
-                                        title={"Reset Grid"}
-                                        icon={"refresh"}
-                                    />
+                                    <Button id={"outsourceListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                                 </div>
                             </Col>
                         </Row>
@@ -604,10 +543,7 @@ const OutsourcingListing = (props) => {
                                 onGridReady={onGridReady}
                                 gridOptions={gridOptions}
                                 noRowsOverlayComponent={'customNoRowsOverlay'}
-                                noRowsOverlayComponentParams={{
-                                    title: EMPTY_DATA,
-                                    imagClass: 'imagClass'
-                                }}
+                                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                                 frameworkComponents={frameworkComponents}
                                 rowSelection={'multiple'}
                                 onRowSelected={onRowSelect}
@@ -636,15 +572,7 @@ const OutsourcingListing = (props) => {
 
                     {showPopupToggle && <PopupMsgWrapper isOpen={showPopupToggle} closePopUp={closePopUp} confirmPopup={onPopupConfirmToggle} message={`${cellValue ? MESSAGES.OUTSOURCING_DEACTIVE_ALERT : MESSAGES.OUTSOURCING_ACTIVE_ALERT}`} />}
                 </div >}
-            {isOpenDrawer && (
-                <AddOutsourcing
-                    isOpen={isOpenDrawer}
-                    closeDrawer={closeDrawer}
-                    isEditMode={isEditMode}
-                    isViewMode={isViewMode}
-                    outsourcing_Id={outsourcingId}
-                    anchor={'right'}
-                />
+            {isOpenDrawer && (<AddOutsourcing isOpen={isOpenDrawer} closeDrawer={closeDrawer} isEditMode={isEditMode} isViewMode={isViewMode} outsourcing_Id={outsourcingId} anchor={'right'} />
             )
             }
         </>

@@ -32,10 +32,9 @@ import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions'
 import PopupMsgWrapper from '../../common/PopupMsgWrapper'
 import WarningMessage from '../../common/WarningMessage'
 import { getSelectListPartType } from '../actions/Part'
+import NoContentFound from '../../common/NoContentFound'
 const gridOptions = {};
 function AddBudget(props) {
-
-
     const { register, handleSubmit, formState: { errors }, control, setValue, getValues, reset } = useForm({
         mode: 'onChange',
         reValidateMode: 'onChange',
@@ -49,7 +48,6 @@ function AddBudget(props) {
     const [tableData, setTableData] = useState([]);
     const [isEditFlag, setIsEditFlag] = useState(false);
     const [BudgetId, setBudgetId] = useState('');
-    const [edit, setEdit] = useState(false);
     const [DataChanged, setDataChanged] = useState([]);
     const [gridApi, setGridApi] = useState(null);
     const [gridColumnApi, setGridColumnApi] = useState(null);
@@ -97,7 +95,7 @@ function AddBudget(props) {
 
     useEffect(() => {
         setCostingTypeId(getCostingTypeIdByCostingPermission())
-        dispatch(getPlantSelectListByType(ZBC, "MASTER", () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "MASTER", '', () => { }))
         dispatch(getCurrencySelectList(() => { }))
         dispatch(getFinancialYearSelectList(() => { }))
         dispatch(getClientSelectList((res) => { }))
@@ -538,14 +536,7 @@ function AddBudget(props) {
         props.hideForm(type)
     }
 
-    const allInputFieldsName = [
-        'Plant',
-        'FinancialYear',
-        'totalSumCurrency',
-        'currency',
-        'totalSum',
-        'clientName',
-    ]
+    const allInputFieldsName = ['Plant', 'FinancialYear', 'totalSumCurrency', 'currency', 'totalSum', 'clientName',]
     const cancelHandler = () => {
         let count = 0;
         allInputFieldsName.forEach((item) => {
@@ -625,21 +616,7 @@ function AddBudget(props) {
 
         if (isEditFlag) {
 
-            let formData = {
-                BudgetingId: BudgetId,
-                LoggedInUserId: loggedInUserId(),
-                FinancialYear: DataChanged.FinancialYear,
-                NetPoPrice: values.currentPrice,
-                BudgetedPoPrice: totalSum,
-                BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate,
-                CostingHeadId: costingTypeId,
-                PartId: DataChanged.PartId,
-                RevisionNumber: DataChanged.RevisionNumber,
-                PlantId: DataChanged.PlantId,
-                VendorId: DataChanged.VendorId,
-                CustomerId: DataChanged.CustomerId,
-                BudgetingPartCostingDetails: temp
-            }
+            let formData = { BudgetingId: BudgetId, LoggedInUserId: loggedInUserId(), FinancialYear: DataChanged.FinancialYear, NetPoPrice: values.currentPrice, BudgetedPoPrice: totalSum, BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate, CostingHeadId: costingTypeId, PartId: DataChanged.PartId, RevisionNumber: DataChanged.RevisionNumber, PlantId: DataChanged.PlantId, VendorId: DataChanged.VendorId, CustomerId: DataChanged.CustomerId, BudgetingPartCostingDetails: temp }
 
             dispatch(updateBudget(formData, (res) => {
                 setSetDisable(false)
@@ -651,28 +628,7 @@ function AddBudget(props) {
 
         } else {
 
-            let formData = {
-                LoggedInUserId: loggedInUserId(),
-                FinancialYear: values.FinancialYear.label,
-                NetPoPrice: values.currentPrice,
-                BudgetedPoPrice: totalSum,
-                BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate,
-                CostingHeadId: costingTypeId,
-                PartId: part.value,
-                PartName: part.label,
-                RevisionNumber: part.RevisionNumber,
-                PlantId: selectedPlants.value,
-                PlantName: selectedPlants.label,
-                VendorId: vendorName.value,
-                VendorName: vendorName.label,
-                CustomerId: client.value,
-                BudgetingPartCostingDetails: temp,
-                CurrencyId: currency.value,
-                Currency: currency.label,
-                ConditionsData: conditionTableData
-            }
-
-
+            let formData = { LoggedInUserId: loggedInUserId(), FinancialYear: values.FinancialYear.label, NetPoPrice: values.currentPrice, BudgetedPoPrice: totalSum, BudgetedPoPriceInCurrency: totalSum / currencyExchangeRate, CostingHeadId: costingTypeId, PartId: part.value, PartName: part.label, RevisionNumber: part.RevisionNumber, PlantId: selectedPlants.value, PlantName: selectedPlants.label, VendorId: vendorName.value, VendorName: vendorName.label, CustomerId: client.value, BudgetingPartCostingDetails: temp, CurrencyId: currency.value, Currency: currency.label, ConditionsData: conditionTableData }
             if (isFinalApprover) {
                 dispatch(createBudget(formData, (res) => {
                     setSetDisable(false)
@@ -812,7 +768,8 @@ function AddBudget(props) {
         customLoadingOverlay: LoaderCustom,
         budgetedQuantity: budgetedQuantity,
         actualQuantity: actualQuantity,
-        costHeader: costHeader
+        costHeader: costHeader,
+        customNoRowsOverlay: NoContentFound
     };
     const tooltipToggle = () => {
         setViewTooltip(!viewTooltip)
@@ -1258,7 +1215,7 @@ function AddBudget(props) {
 
                                                     {!isFinalApprover ?
                                                         <button type="submit"
-                                                            class="user-btn approval-btn save-btn mr5"
+                                                            className="user-btn approval-btn save-btn mr5"
                                                             disabled={setDisable || disableSendForApproval || isViewMode}
                                                         >
                                                             <div className="send-for-approval"></div>

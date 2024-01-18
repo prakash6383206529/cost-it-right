@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Fragment } from 'react'
+import React, { useState, useEffect, Fragment, useRef } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -34,7 +34,7 @@ import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 const gridOptions = {};
 
 function CommonApproval(props) {
-
+    const searchRef = useRef(null);
     const [gridApi, setGridApi] = useState(null);     // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
     const [gridColumnApi, setGridColumnApi] = useState(null);   // DON'T DELETE THIS STATE, IT IS USED BY AG-GRID
 
@@ -257,6 +257,8 @@ function CommonApproval(props) {
         dispatch(agGridStatus("", ""))
         dispatch(isResetClick(true, "status"))
         setIsFilterButtonClicked(false)
+        gridApi.setQuickFilter(null)
+
         gridOptions?.columnApi?.resetColumnState(null);
         gridOptions?.api?.setFilterModel(null);
 
@@ -277,6 +279,9 @@ function CommonApproval(props) {
         setSelectedRowData([])
         setGlobalTake(10)
         setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
+        if (searchRef.current) {
+            searchRef.current.value = '';
+        }
     }
 
 
@@ -882,7 +887,7 @@ function CommonApproval(props) {
                     <div className={`ag-grid-react`} >
                         <div className={`ag-grid-wrapper height-width-wrapper min-height-auto ${(approvalList && approvalList?.length <= 0) || noData ? "overlay-contain p-relative" : ""}`}>
                             <div className="ag-grid-header">
-                                <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
+                                <input ref={searchRef} type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                             </div>
                             <div className={`ag-theme-material ${props?.isApproval ? "report-grid" : ""} ${loader && "max-loader-height"}`}>
                                 {noData && <NoContentFound title={EMPTY_DATA} customClassName="no-content-found approval-listing" />}
