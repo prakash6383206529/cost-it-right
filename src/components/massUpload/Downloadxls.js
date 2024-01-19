@@ -19,6 +19,7 @@ import {
     ZBCInterestRate, ZBCInterestRateTempData, VBCInterestRate, VBCInterestRateTempData, RMDomesticCBC, RMDomesticCBCTempData, RMImportCBC, RMImportCBCTempData, MachineCBC, MachineCBCTempData, BOP_CBC_DOMESTIC, BOP_CBC_IMPORT, BOP_CBC_IMPORT_TempData, BOP_CBC_DOMESTIC_TempData, VOLUME_BUDGETED_CBC_TEMPDATA, VOLUME_ACTUAL_CBC_TEMPDATA, CBCOperationTempData, VOLUME_ACTUAL_CBC, VOLUME_BUDGETED_CBC, CBCOperation, CBCInterestRateTempData, CBCInterestRate, AddRFQUpload, AddRFQTempData, BUDGET_ZBC, BUDGET_ZBC_TEMPDATA, BUDGET_VBC_TEMPDATA, BUDGET_VBC, BUDGET_CBC_TEMPDATA, BUDGET_CBC, ZBCOperationSmallForm, VBCOperationSmallForm, CBCOperationSmallForm, DETAILED_BOP, BOP_DETAILED_DOMESTIC, BOP_DETAILED_DOMESTIC_TempData, BOP_DETAILED_IMPORT, BOP_DETAILED_IMPORT_TempData
 } from '../../config/masterData';
 import { checkVendorPlantConfigurable, getConfigurationKey } from "../../helper";
+import { checkSAPCodeinExcel } from "./DownloadUploadBOMxls";
 
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
@@ -142,7 +143,7 @@ class Downloadxls extends React.Component {
             case 'Labour':
                 return this.returnExcelColumn(Labour, LabourTempData);
             case 'Part Component':
-                return this.returnExcelColumn(PartComponent, PartComponentTempData);
+                return this.returnExcelColumn(checkSAPCodeinExcel(PartComponent), checkSAPCodeinExcel(PartComponentTempData));
             case 'Product Component':
                 return this.returnExcelColumn(ProductComponent, ProductComponentTempData);
             case 'BOM':

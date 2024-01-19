@@ -8,7 +8,7 @@ import Toaster from '../common/Toaster';
 import { loggedInUserId } from "../../helper/auth";
 import { ExcelRenderer } from 'react-excel-renderer';
 import Drawer from '@material-ui/core/Drawer';
-import DownloadUploadBOMxls from './DownloadUploadBOMxls';
+import DownloadUploadBOMxls, { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 import cloudImg from '../../assests/images/uploadcloud.png';
 import DayTime from '../common/DayTimeWrapper';
 import { BOMBULKUPLOAD } from '../../config/constants';
@@ -91,7 +91,7 @@ class BOMUploadDrawer extends Component {
           let fileData = [];
           switch (String(this.props.fileName)) {
             case String(BOMBULKUPLOAD):
-              checkForFileHead = checkForSameFileUpload(BOMUpload, fileHeads)
+              checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(BOMUpload), fileHeads)
               break;
             default:
               break;
