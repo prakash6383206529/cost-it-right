@@ -109,6 +109,7 @@ class AddBOPDomestic extends Component {
       FinalNetLandedCostBaseCurrency: '',
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: '',
+      IsBreakupBoughtOutPart: false,
     }
   }
 
@@ -355,6 +356,7 @@ class AddBOPDomestic extends Component {
               FinalConditionCostBaseCurrency: Data.NetConditionCost,
               conditionTableData: Data.BoughtOutPartConditionsDetails,
               FinalBasicPriceBaseCurrency: Data.NetCostWithoutConditionCost,
+              IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
             }, () => {
               this.toolTipNetCost()
               this.setState({ isLoader: false })
@@ -1150,7 +1152,7 @@ class AddBOPDomestic extends Component {
                                 <Field
                                   name="BOPCategory"
                                   type="text"
-                                  label="Insert Category"
+                                  label="BOP Category"
                                   component={searchableSelect}
                                   placeholder={isEditFlag ? '-' : "Select"}
                                   options={this.renderListing("BOPCategory")}
@@ -1489,7 +1491,7 @@ class AddBOPDomestic extends Component {
                               </div>
                             </Col>
                           </>}
-                          {!isTechnologyVisible && <Col md="3">
+                          {(!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <Col md="3">
                             <TooltipCustom id="bop-net-cost" tooltipText={toolTipTextNetCost} />
                             <Field
                               label={`Net Cost/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
