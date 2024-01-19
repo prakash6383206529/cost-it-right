@@ -212,13 +212,13 @@ function LabourListing(props) {
   }
 
   const hideForm = (type) => {
-    setState((prevState) => ({ ...prevState, toggleForm: false, data: { isEditFlag: false, ID: '' }, }),
-      () => {
-        if (type === 'submit') {
-          filterList();
-        }
-      }
-    );
+    setState((prevState) => ({ ...prevState, toggleForm: false, data: { isEditFlag: false, ID: '' }, }))
+
+    if (type === 'submit') {
+      filterList();
+    }
+
+
 
   }
 

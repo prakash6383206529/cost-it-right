@@ -299,7 +299,7 @@ const FuelListing = (props) => {
                 {(reactLocalStorage.getObject('CostingTypePermission').cbc) && (<AgGridColumn field="CustomerWithCode" headerName="Customer (Code)" cellRenderer={"commonCostFormatter"}></AgGridColumn>)}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateRenderer"}></AgGridColumn>
                 <AgGridColumn field="ModifiedDate" minWidth={170} headerName="Date of Modification" cellRenderer={"effectiveDateRenderer"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                <AgGridColumn field="FuelDetailId" width={300} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" pinned="right" floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
+                <AgGridColumn field="FuelDetailId" width={300} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" /* pinned="right" */ floatingFilter={false} cellRenderer={"totalValueRenderer"}></AgGridColumn>
               </AgGridReact>
               {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
             </div>

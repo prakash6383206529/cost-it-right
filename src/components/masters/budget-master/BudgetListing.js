@@ -7,7 +7,7 @@ import NoContentFound from '../../common/NoContentFound'
 import { deleteBudget, getBudgetDataList, getPartCostingHead, } from '../actions/Budget'
 import { BUDGET_DOWNLOAD_EXCEl } from '../../../config/masterData'
 import BulkUpload from '../../massUpload/BulkUpload'
-import { ADDITIONAL_MASTERS, VOLUME } from '../../../config/constants'
+import { ADDITIONAL_MASTERS } from '../../../config/constants'
 import { checkPermission, searchNocontentFilter } from '../../../helper/util'
 import LoaderCustom from '../../common/LoaderCustom'
 import ReactExport from 'react-export-excel';
@@ -33,7 +33,6 @@ const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 
 const gridOptions = {};
 function BudgetListing(props) {
-
     const [shown, setShown] = useState(false);
     const [showBudgetForm, setShowBudgetForm] = useState(false);
     const [data, setData] = useState({ isEditFlag: false, ID: '' });
@@ -48,7 +47,6 @@ function BudgetListing(props) {
     const [gridColumnApi, setGridColumnApi] = useState(null);
     const [isLoader, setIsLoader] = useState(false);
     const [dataCount, setDataCount] = useState(0);
-    const [activeTab, setactiveTab] = useState('1');
 
     //STATES BELOW ARE MADE FOR PAGINATION PURPOSE
     const [disableFilter, setDisableFilter] = useState(true) // STATE MADE FOR CHECKBOX SELECTION
@@ -68,12 +66,9 @@ function BudgetListing(props) {
     const [viewAttachment, setViewAttachment] = useState([])
     const [showPopup, setShowPopup] = useState(false);
     const [deletedId, setDeletedId] = useState('');
-
     const { topAndLeftMenuData } = useSelector(state => state.auth);
     const { volumeDataList, volumeDataListForDownload } = useSelector(state => state.volume);
     const { selectedRowForPagination } = useSelector((state => state.simulation))
-
-
     const dispatch = useDispatch();
 
     useEffect(() => {
@@ -83,8 +78,7 @@ function BudgetListing(props) {
             dispatch(getPartCostingHead((res) => {
                 reactLocalStorage.setObject("budgetCostingHeads", res?.data?.SelectList); //FOR SHOWING DYNAMIC HEADERS IN BUDGET BULK UPLOAD EXCEL DOWNLOAD
             }))
-        }
-        return () => {
+        } return () => {
             dispatch(setSelectedRowForPagination([]))
         }
 
@@ -101,8 +95,7 @@ function BudgetListing(props) {
     useEffect(() => {
         if (volumeDataList?.length > 0) {
             setTotalRecordCount(volumeDataList[0].TotalRecordCount)
-        }
-        else {
+        } else {
             setNoData(false)
         }
     }, [volumeDataList])
@@ -116,7 +109,6 @@ function BudgetListing(props) {
             const Data = topAndLeftMenuData && topAndLeftMenuData.find(el => el.ModuleName === ADDITIONAL_MASTERS);
             const accessData = Data && Data.Pages.find((el) => el.PageName === BUDGETING)
             const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions)
-
             if (permmisionData !== undefined) {
                 setAddAccessibility(permmisionData && permmisionData.Add ? permmisionData.Add : false)
                 setEditAccessibility(permmisionData && permmisionData.Edit ? permmisionData.Edit : false)
@@ -125,7 +117,6 @@ function BudgetListing(props) {
                 setDownloadAccessibility(permmisionData && permmisionData.Download ? permmisionData.Download : false)
                 setViewAccessibility(permmisionData && permmisionData.View ? permmisionData.View : false)
             }
-
         }
     }
 
@@ -142,7 +133,6 @@ function BudgetListing(props) {
         dataObj.IsZeroDataShow = zbc
         dispatch(getBudgetDataList(skip, take, isPagination, dataObj, (res) => {
             if (isPagination === true || isPagination === null) setIsLoader(false)
-
             if (res && isPagination === false) {
                 setDisableDownload(false)
                 dispatch(disabledClass(false))
@@ -152,7 +142,6 @@ function BudgetListing(props) {
                 }, 500);
             }
             if (res) {
-
                 if ((res && res.status === 204) || res.length === 0) {
                     setTotalRecordCount(0)
                     setPageNo(0)
@@ -227,28 +216,9 @@ function BudgetListing(props) {
         const cellValue = props?.value;
         const rowData = props?.data;
         return (
-            <>
-                {ViewAccessibility && <Button
-                    id={`budgetListing_view${props.rowIndex}`}
-                    className={"mr-1"}
-                    variant="View"
-                    onClick={() => editItemDetails(cellValue, true)}
-                    title={"View"}
-                />}
-                {editAccessibility && <Button
-                    id={`budgetListing_edit${props.rowIndex}`}
-                    variant="Edit"
-                    className={"mr-1"}
-                    onClick={() => editItemDetails(cellValue, false)}
-                    title={"Edit"}
-                />}
-                {deleteAccessibility && <Button
-                    id={`budgetListing_delete${props.rowIndex}`}
-                    title='Delete'
-                    variant="Delete"
-                    onClick={() => deleteItem(rowData.BudgetingId)}
-                    className={"mr-1"}
-                />}
+            <>  {ViewAccessibility && <Button id={`budgetListing_view${props.rowIndex}`} className={"mr-1"} variant="View" onClick={() => editItemDetails(cellValue, true)} title={"View"} />}
+                {editAccessibility && <Button id={`budgetListing_edit${props.rowIndex}`} variant="Edit" className={"mr-1"} onClick={() => editItemDetails(cellValue, false)} title={"Edit"} />}
+                {deleteAccessibility && <Button id={`budgetListing_delete${props.rowIndex}`} title='Delete' variant="Delete" onClick={() => deleteItem(rowData.BudgetingId)} className={"mr-1"} />}
             </>
         )
     };
@@ -267,36 +237,7 @@ function BudgetListing(props) {
     const closeAttachmentDrawer = (e = '') => {
         setAttachment(false)
     }
-    const attachmentFormatter = (props) => {
-        const row = props?.data;
-        let files = row?.Attachements
-        if (files && files?.length === 0) {
-            return '-'
-        }
-        return (
-            <>
-                <div className={"attachment images"}>
-                    {files && files.length === 1 ?
-                        files.map((f) => {
-                            const withOutTild = f.FileURL?.replace("~", "");
-                            const fileURL = `${FILE_URL}${withOutTild}`;
-                            return (
-                                <a href={fileURL} target="_blank" rel="noreferrer">
-                                    {f.OriginalFileName}
-                                </a>
-                            )
 
-                        }) : <button
-                            type='button'
-                            title='View Attachment'
-                            className='btn-a pl-0'
-                            onClick={() => viewAttachmentData(row)}
-                        >View Attachment</button>}
-                </div>
-            </>
-        )
-
-    }
 
     const formToggle = () => {
         if (checkMasterCreateByCostingPermission()) {
@@ -351,7 +292,6 @@ function BudgetListing(props) {
 
         } else {
             getTableListData(0, defaultPageSize, false)
-            // getDataList(, null, null, 0, 0, defaultPageSize, false, floatingFilterData) // FOR EXCEL DOWNLOAD OF COMPLETE DATA
         }
 
     }
@@ -413,7 +353,6 @@ function BudgetListing(props) {
     };
 
     const onPageSizeChanged = (newPageSize) => {
-
         if (Number(newPageSize) === 10) {
             getTableListData(currentRowIndex, 10, true)
             setPageSize(prevState => ({ ...prevState, pageSize10: true, pageSize50: false, pageSize100: false }))
@@ -439,13 +378,11 @@ function BudgetListing(props) {
                 getTableListData(0, 100, true)
             }
         }
-
         gridApi.paginationSetPageSize(Number(newPageSize));
 
     };
 
     const onSearch = () => {
-
         setWarningMessage(false)
         setIsFilterButtonClicked(true)
         setPageNo(1)
@@ -474,9 +411,7 @@ function BudgetListing(props) {
             if (model !== undefined && model !== null) {
                 if (Object.keys(model).length > 0) {
                     isFilterEmpty = false
-
                     for (var property in floatingFilterData) {
-
                         if (property === value.column.colId) {
                             floatingFilterData[property] = ""
                         }
@@ -555,15 +490,10 @@ function BudgetListing(props) {
     };
 
     const checkBoxRenderer = (props) => {
-        console.log('props: ', props);
-
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        console.log('selectedRowForPagination: ', selectedRowForPagination);
         if (selectedRowForPagination?.length > 0) {
             selectedRowForPagination.map((item) => {
-                console.log('item: ', item.BudgetingId);
                 if (item.BudgetingId === props.node.data.BudgetingId) {
-                    console.log(props.node.data.BudgetingId, 'in if');
                     props.node.setSelected(true)
                 }
                 return null
@@ -583,17 +513,12 @@ function BudgetListing(props) {
         totalValueRenderer: buttonFormatter,
         customNoRowsOverlay: NoContentFound,
         hyphenFormatter: hyphenFormatter,
-        attachmentFormatter: attachmentFormatter,
+
     };
 
     if (showBudgetForm) {
         props?.formToggle(data)
-        // return (
-        //     <AddBudget
-        //         hideForm={hideForm}
-        //         data={data}
-        //     />
-        // )
+
     }
 
     const toggleDrawer = () => {
@@ -618,7 +543,11 @@ function BudgetListing(props) {
                                             <div className="warning-message d-flex align-items-center">
                                                 {warningMessage && !disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                                             </div>}
-                                        {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) && <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>}
+                                        {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                                            // <button disabled={disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                                            <Button id="budgetListing_filter" className={"user-btn mr5"} onClick={() => onSearch()} title={"Filtered data"} icon={"filter"} disabled={disableFilter} />
+
+                                        }
                                         {shown ? (
                                             <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setShown(!shown)}>
                                                 <div className="cancel-icon-white"></div></button>
@@ -627,43 +556,29 @@ function BudgetListing(props) {
                                         )}
 
                                         {addAccessibility && !props?.isMasterSummaryDrawer && (
-                                            <button
-                                                type="button"
-                                                className={"user-btn mr5"}
-                                                onClick={formToggle}
-                                                title="Add"
-                                            >
-                                                <div className={"plus mr-0"}></div>
-                                                {/* ADD */}
-                                            </button>
+                                            <Button id="budgetListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
+
                                         )}
-                                        {bulkUploadAccessibility && !props?.isMasterSummaryDrawer && <button
-                                            type="button"
-                                            className={"user-btn mr5"}
-                                            onClick={BulkToggle}
-                                            title="Bulk Upload"
-                                        >
-                                            <div className={"upload mr-0"}></div>
-                                            {/* Budgeted Bulk Upload */}
-                                        </button>}
+                                        {bulkUploadAccessibility && !props?.isMasterSummaryDrawer &&
+                                            <Button id="budgetListing_bulkUpload" className={"user-btn mr5"} onClick={BulkToggle} title={"Bulk Upload"} icon={"upload mr-0"} />
+                                        }
 
                                         {
                                             downloadAccessibility && !props?.isMasterSummaryDrawer &&
                                             <>
-                                                <button title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" ></div>
-                                                    {/* DOWNLOAD */}
-                                                    {`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
-                                                </button>
+                                                <Button className="user-btn mr5" id={"budgetListing_excel_download"} onClick={onExcelDownload} title={`Download ${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                    icon={"download mr-1"}
+                                                    buttonName={`${dataCount === 0 ? "All" : "(" + dataCount + ")"}`}
+                                                />
                                                 <ExcelFile filename={'Budget'} fileExtension={'.xls'} element={
-                                                    <button id={'Excel-Downloads-volume'} className="p-absolute" type="button" >
-                                                    </button>}>
+                                                    <Button id={"Excel-Downloads-volume"} className="p-absolute" />
+                                                }>
                                                     {onBtExport()}
                                                 </ExcelFile>
                                             </>
                                         }
-                                        <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                                            <div className="refresh mr-0"></div>
-                                        </button>
+                                        <Button id={"budgetListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+
                                     </div>
                                 </Col>
                             </Row>
@@ -687,10 +602,7 @@ function BudgetListing(props) {
                                     onGridReady={onGridReady}
                                     gridOptions={gridOptions}
                                     noRowsOverlayComponent={'customNoRowsOverlay'}
-                                    noRowsOverlayComponentParams={{
-                                        title: EMPTY_DATA,
-                                        imagClass: 'imagClass'
-                                    }}
+                                    noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                                     rowSelection={'multiple'}
                                     frameworkComponents={frameworkComponents}
                                     onFilterModified={onFloatingFilterChanged}
@@ -715,11 +627,12 @@ function BudgetListing(props) {
                                 <div className='button-wrapper'>
                                     {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
                                     <div className="d-flex pagination-button-container">
-                                        <p><button className="previous-btn" type="button" disabled={false} onClick={() => onBtPrevious()}> </button></p>
+                                        <p><Button id="budgetListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
                                         {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
                                         {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
                                         {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                                        <p><button className="next-btn" type="button" onClick={() => onBtNext()}> </button></p>
+                                        <p><Button id="budgetListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+
                                     </div>
                                 </div>
                             </div>
@@ -743,34 +656,15 @@ function BudgetListing(props) {
                             </Row>
                             <Row className="">
                                 <Col md="12" className='px-0 mt-3'>
-                                    <BulkUpload
-                                        closeDrawer={closeActualBulkUploadDrawer}
-                                        isEditFlag={false}
-                                        fileName={'Budget'}
-                                        isZBCVBCTemplate={true}
-                                        messageLabel={'Budget Actual'}
-                                        anchor={'right'}
-                                        isDrawerfasle={true}
-                                    /></Col>
+                                    <BulkUpload closeDrawer={closeActualBulkUploadDrawer} isEditFlag={false} fileName={'Budget'} isZBCVBCTemplate={true} messageLabel={'Budget Actual'} anchor={'right'} isDrawerfasle={true} />
+                                </Col>
                             </Row>
                         </div>
                     </Container>
 
                 </Drawer>}
-                {
-                    showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BUDGET_DELETE_ALERT}`} />
-                }
-                {
-                    attachment && (
-                        <Attachament
-                            isOpen={attachment}
-                            index={viewAttachment}
-                            closeDrawer={closeAttachmentDrawer}
-                            anchor={'right'}
-                            gridListing={true}
-                        />
-                    )
-                }
+                {showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.BUDGET_DELETE_ALERT}`} />}
+                {attachment && (<Attachament isOpen={attachment} index={viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />)}
             </div>
         </>
     )

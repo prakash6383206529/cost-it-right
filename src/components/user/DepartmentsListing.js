@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getAllDepartmentAPI, deleteDepartmentAPI } from '../../actions/auth/AuthActions';
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
-import { COMPANY, defaultPageSize, EMPTY_DATA } from '../../config/constants';
+import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import { getConfigurationKey } from '../../helper/auth';
 import { checkPermission, searchNocontentFilter } from '../../helper/util';
@@ -52,9 +52,8 @@ const DepartmentsListing = () => {
         setState((prevState) => ({ ...prevState, AddAccessibility: permissionData.Add ?? false, EditAccessibility: permissionData.Edit ?? false, DeleteAccessibility: permissionData.Delete ?? false }));
       }
     }
-
     getDepartmentListData();
-    ;
+
   }, []);
 
   const getDepartmentListData = () => {
@@ -174,12 +173,7 @@ const DepartmentsListing = () => {
   }
 
   const { isOpen, isEditFlag, DepartmentId, AddAccessibility, noData } = state;
-  const defaultColDef = {
-    resizable: true,
-    filter: true,
-    sortable: false,
-
-  };
+  const defaultColDef = { resizable: true, filter: true, sortable: false, };
 
   const frameworkComponents = {
     totalValueRenderer: buttonFormatter,
@@ -225,10 +219,7 @@ const DepartmentsListing = () => {
                       setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
                     }, 500);
                   }}
-                  noRowsOverlayComponentParams={{
-                    title: EMPTY_DATA,
-                    imagClass: 'imagClass'
-                  }}
+                  noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                   frameworkComponents={frameworkComponents}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
@@ -245,11 +236,8 @@ const DepartmentsListing = () => {
 
           </Col>
         </Row>
-        {isOpen && (<Department isOpen={isOpen} closeDrawer={closeDrawer} isEditFlag={isEditFlag} DepartmentId={DepartmentId} anchor={"right"} className={"test-rahul"} />
-        )}
-        {
-          state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DEPARTMENT_DELETE_ALERT}`} />
-        }
+        {isOpen && (<Department isOpen={isOpen} closeDrawer={closeDrawer} isEditFlag={isEditFlag} DepartmentId={DepartmentId} anchor={"right"} className={"test-rahul"} />)}
+        {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.DEPARTMENT_DELETE_ALERT}`} />}
       </>
     </div>
   );

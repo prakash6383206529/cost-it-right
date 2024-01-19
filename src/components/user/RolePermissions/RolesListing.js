@@ -51,7 +51,6 @@ const RolesListing = (props) => {
       const userMenu = topAndLeftMenuData?.find(el => el.ModuleName === 'Users');
       const accessData = userMenu?.Pages.find(el => el.PageName === ROLE);
       const permmisionData = accessData && accessData.Actions && checkPermission(accessData.Actions);
-
       if (permmisionData !== undefined) {
         setState((prevState) => ({
           ...prevState,
@@ -65,7 +64,6 @@ const RolesListing = (props) => {
     setTimeout(() => {
       getRolesListData();
     }, 500);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -104,12 +102,11 @@ const RolesListing = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     const rowData = props?.valueFormatted ? props.valueFormatted : props?.data
     const userRoleCheck = userDetails()?.Role
-
     return (
       <>
         {!(rowData?.RoleName === 'RFQUser') && !(userRoleCheck === rowData?.RoleName) && EditAccessibility && <Button id={`roleListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => editItemDetails(cellValue, rowData)} title={"Edit"} />
         }
-        editItemDetails(cellValue, rowData)
+
         {/* {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />} */}
       </>
     )
@@ -162,7 +159,6 @@ const RolesListing = (props) => {
     setState((prevState) => ({ ...prevState, showPopup: false }))
     setState((prevState) => ({ ...prevState, showPopup2: false }))
 
-
   }
 
   /**
@@ -187,7 +183,6 @@ const RolesListing = (props) => {
   }
 
   const { AddAccessibility, noData } = state;
-
   const defaultColDef = { resizable: true, filter: true, sortable: false, };
 
   const frameworkComponents = {
@@ -202,22 +197,17 @@ const RolesListing = (props) => {
         {state.isLoader && <LoaderCustom />}
         <Row className="pt-4 ">
           <Col md="8" className="mb-2">
-
           </Col>
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               {AddAccessibility &&
                 <div>
-
                   <Button id="roletListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />
                 </div>
               }
-
               <Button
                 id={"roleListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
             </div>
-
-
           </Col>
         </Row>
         <Row class="">
@@ -244,10 +234,7 @@ const RolesListing = (props) => {
                       setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(e) }));
                     }, 500);
                   }}
-                  noRowsOverlayComponentParams={{
-                    title: EMPTY_DATA,
-                    imagClass: 'imagClass'
-                  }}
+                  noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                   frameworkComponents={frameworkComponents}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
@@ -260,9 +247,7 @@ const RolesListing = (props) => {
                 {<PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} />}
               </div>
             </div>
-            {
-              state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.ROLE_DEACTIVE_ALERT : MESSAGES.ROLE_ACTIVE_ALERT}`} />
-            }
+            {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.ROLE_DEACTIVE_ALERT : MESSAGES.ROLE_ACTIVE_ALERT}`} />}
 
           </Col>
         </Row>

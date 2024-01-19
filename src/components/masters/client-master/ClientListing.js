@@ -58,7 +58,6 @@ const ClientListing = React.memo(() => {
   });
 
   useEffect(() => {
-    console.log("11111")
     if (!topAndLeftMenuData) {
       setState(prevState => ({ ...prevState, isLoader: true }));
       return;
@@ -79,7 +78,6 @@ const ClientListing = React.memo(() => {
 
   useEffect(() => {
     if (topAndLeftMenuData) {
-      console.log("hi2")
 
       setState((prevState) => ({ ...prevState, isLoader: true }));
       applyPermission(topAndLeftMenuData);
@@ -117,7 +115,6 @@ const ClientListing = React.memo(() => {
 
   const buttonFormatter = (props) => {
     const { ViewAccessibility, EditAccessibility, DeleteAccessibility } = state;
-    console.log("ViewAccessibility", ViewAccessibility, EditAccessibility, DeleteAccessibility);
     const cellValue = props?.value;
 
     return (
@@ -258,13 +255,12 @@ const ClientListing = React.memo(() => {
   const returnExcelColumn = (data = [], TempData) => {
     // let excelData = hideCustomerFromExcel(data, "CustomerName")
     let temp = [];
-    temp =
-      TempData && TempData.map((item) => {
-        if (item.ClientName === null) {
-          item.ClientName = " ";
-        }
-        return item;
-      });
+    temp = TempData && TempData.map((item) => {
+      if (item.ClientName === null) {
+        item.ClientName = " ";
+      }
+      return item;
+    });
 
     return (
       <ExcelSheet data={temp} name={"Customer"}>
