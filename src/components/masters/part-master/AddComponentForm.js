@@ -163,6 +163,9 @@ class AddComponentForm extends Component {
       PartTypeId: this.props.selectedPartType.Value,
       PartId: part ? part.value : '',
       Input: Math.floor(100000 + Math.random() * 900000),
+      Technology: DrawerPartData?.TechnologyName || '',
+      RevisionNo: DrawerPartData?.RevisionNumber || null
+
     }
     this.props.getDrawerComponentPartData('', res => { })
     this.setState({
