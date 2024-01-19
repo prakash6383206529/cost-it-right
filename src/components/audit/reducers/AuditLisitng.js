@@ -22,7 +22,7 @@ export default function AuditReducer(state = initialState, action) {
             }
 
         case GET_LOGIN_AUDIT_SUCCESS:
-            const formattedDataList = action.payload.DataList.map(item => ({
+            const formattedDataList = action.payload.DataList ?? action.payload.DataList.map(item => ({
                 ...item,
 
 
@@ -31,7 +31,7 @@ export default function AuditReducer(state = initialState, action) {
                 ...state,
                 loading: false,
                 error: false,
-                auditDataList: formattedDataList,
+                auditDataList: action.payload.DataList ? formattedDataList : [],
             };
 
 
