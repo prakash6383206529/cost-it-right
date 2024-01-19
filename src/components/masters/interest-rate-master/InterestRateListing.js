@@ -26,19 +26,14 @@ import { reactLocalStorage } from 'reactjs-localstorage';
 import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloationFilter';
 import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
 import { agGridStatus, isResetClick } from '../../../actions/Common';
-
-const ExcelFile = ReactExport.ExcelFile;
+import Button from '../../layout/Button';
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
-
 const gridOptions = {};
 
 const InterestRateListing = (props) => {
   const dispatch = useDispatch();
-
   const [state, setState] = useState({
-
-
     tableData: [],
     vendorName: [],
     ICCApplicability: [],
@@ -65,25 +60,27 @@ const InterestRateListing = (props) => {
     dataCount: 0
   })
   const [gridApi, setGridApi] = useState(null);
-  const [searchText, setSearchText] = useState("");
+  const { statusColumnData } = useSelector((state) => state.comman);
+
   const { topAndLeftMenuData } = useSelector((state) => state.auth);
   const { interestRateDataList } = useSelector((state) => state.interestRate);
-  const statusColumnData = useSelector((state) => state);
-  console.log(gridApi);
-  const floatingFilterIcc = {
-    maxValue: 3,
-    suppressFilterButton: true,
-    component: "InterestRate"
-  }
-
-
+  const floatingFilterIcc = { maxValue: 3, suppressFilterButton: true, component: "InterestRate" }
   useEffect(() => {
     applyPermission(topAndLeftMenuData);
-    getTableListData();
+    setState((prevState) => ({ ...prevState, isLoader: true }))
+    setTimeout(() => {
+      getTableListData()
+    }, 500);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 
   }, []);
+  useEffect(() => {
+    if (statusColumnData) {
+      state.gridApi?.setQuickFilter(statusColumnData.data);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
 
-
+  }, [statusColumnData])
 
   useEffect(() => {
     if (topAndLeftMenuData) {
@@ -94,6 +91,7 @@ const InterestRateListing = (props) => {
       }, 200);
     }
   }, [topAndLeftMenuData,]);
+
 
   const applyPermission = (topAndLeftMenuData) => {
     if (topAndLeftMenuData !== undefined) {
@@ -116,45 +114,31 @@ const InterestRateListing = (props) => {
     }
   }
 
-
-
   /**
-  * @method getTableListData
-  * @description Get list data
-  */
+    * @method getTableListData
+    * @description Get list data
+    */
   const getTableListData = (vendor = '', icc_applicability = '', payment_term_applicability = '') => {
     const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
-    let filterData = {
-      vendor: vendor,
-      icc_applicability: icc_applicability,
-      payment_term_applicability: payment_term_applicability,
-      IsCustomerDataShow: cbc,
-      IsVendorDataShow: vbc,
-      IsZeroDataShow: zbc
-    }
+    let filterData = { vendor: vendor, icc_applicability: icc_applicability, payment_term_applicability: payment_term_applicability, IsCustomerDataShow: cbc, IsVendorDataShow: vbc, IsZeroDataShow: zbc }
     dispatch(getInterestRateDataList(true, filterData, res => {
       if (res.status === 204 && res.data === '') {
         setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
       } else if (res && res.data && res.data.DataList) {
         let Data = res.data.DataList;
-        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }, () => { setState((prevState) => ({ ...prevState, isLoader: false })) }))
+        setState((prevState) => ({ ...prevState, tableData: Data, isLoader: false }))
       } else {
         setState((prevState) => ({ ...prevState, tableData: [], isLoader: false }))
       }
     }));
   }
 
-
   /**
-  * @method viewOrEditItemDetails
-  * @description confirm edit oor view item
-  */
+    * @method viewOrEditItemDetails
+    * @description confirm edit oor view item
+    */
   const viewOrEditItemDetails = (Id, isViewMode) => {
-    setState((prevState) => ({
-      ...prevState,
-      data: { isEditFlag: true, ID: Id, isViewMode: isViewMode },
-      toggleForm: true,
-    }))
+    setState((prevState) => ({ ...prevState, data: { isEditFlag: true, ID: Id, isViewMode: isViewMode }, toggleForm: true, }))
   }
 
 
@@ -196,29 +180,23 @@ const InterestRateListing = (props) => {
     return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '-';
   }
 
-
   const buttonFormatter = (props) => {
-
     const cellValue = props?.value;
-
     const { EditAccessibility, DeleteAccessibility, ViewAccessibility } = state;
     return (
       <>
-        {ViewAccessibility && <button title='View' className="View mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, true)} />}
-        {EditAccessibility && <button title='Edit' className="Edit mr-2" type={'button'} onClick={() => viewOrEditItemDetails(cellValue, false)} />}
-        {DeleteAccessibility && <button title='Delete' className="Delete" type={'button'} onClick={() => deleteItem(cellValue)} />}
+        {ViewAccessibility && <Button id={`interesetRateListing_view${props.rowIndex}`} className={"View mr-2"} variant="View" onClick={() => viewOrEditItemDetails(cellValue, true)} title={"View"} />}
+        {EditAccessibility && <Button id={`interesetRateListing_edit${props.rowIndex}`} className={"Edit mr-2"} variant="Edit" onClick={() => viewOrEditItemDetails(cellValue, false)} title={"Edit"} />}
+        {DeleteAccessibility && <Button id={`interesetRateListing_delete${props.rowIndex}`} className={"Delete"} variant="Delete" onClick={() => deleteItem(cellValue)} title={"Delete"} />}
       </>
     )
   };
 
-
-
   /**
-  * @method costingHeadFormatter
-  * @description Renders Costing head
-  */
+    * @method costingHeadFormatter
+    * @description Renders Costing head
+    */
   const costingHeadFormatter = (props) => {
-
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
     return cellValue;
   }
@@ -232,22 +210,13 @@ const InterestRateListing = (props) => {
       interestRateDataList.length !== 0 && setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData) }))
     }, 500);
   }
-
-  //RE
-  const jsFunction = (filterVal) => {
-    this.filterVal = filterVal;
-    gridOptions.api.onFilterChanged(); //this invokes your custom logic by forcing grid filtering
-  }
-
   /**
-  * @method hyphenFormatter
-  */
+    * @method hyphenFormatter
+    */
   const hyphenFormatter = (props) => {
     const cellValue = props?.value;
     return (cellValue !== ' ' && cellValue !== null && cellValue !== '' && cellValue !== undefined) ? cellValue : '-';
   }
-
-
   const formToggle = () => {
     if (checkMasterCreateByCostingPermission()) {
       setState((prevState) => ({ ...prevState, toggleForm: true }))
@@ -255,16 +224,13 @@ const InterestRateListing = (props) => {
   }
 
   const hideForm = (type) => {
-    setState((prevState) => ({
-      ...prevState,
-      toggleForm: false,
-      data: { isEditFlag: false, ID: '' }
-    }, () => {
-      if (type === 'submit')
-        getTableListData()
-    }
-    ))
-  }
+    setState((prevState) => ({ ...prevState, toggleForm: false, data: { isEditFlag: false, ID: '' } }), () => {
+      if (type === 'submit') {
+        getTableListData();
+      }
+    });
+  };
+
 
   const bulkToggle = () => {
     setState((prevState) => ({ ...prevState, isBulkUpload: true }))
@@ -289,7 +255,6 @@ const InterestRateListing = (props) => {
   };
 
   const onPageSizeChanged = (newPageSize) => {
-    console.log(newPageSize);
     gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
@@ -355,12 +320,7 @@ const InterestRateListing = (props) => {
   const ExcelFile = ReactExport.ExcelFile;
 
   if (toggleForm) {
-    return (
-      <AddInterestRate
-        hideForm={hideForm}
-        data={data}
-      />
-    )
+    return (<AddInterestRate hideForm={hideForm} data={data} />)
   }
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -389,73 +349,33 @@ const InterestRateListing = (props) => {
 
   return (
     <>
-
       <div className={`ag-grid-react report-grid p-relative ${DownloadAccessibility ? "show-table-btn" : ""}`} id='go-to-top'>
         <div className="container-fluid">
           <ScrollToTop pointProp='go-to-top' />
-          <form
-            // onSubmit={handleSubmit(onSubmit.bind(this))}
-            noValidate
-          >
+          <form noValidate  >
             {state.isLoader && <LoaderCustom customClass="loader-center" />}
             <Row className="filter-row-large blue-before">
 
               <Col md="6" className="search-user-block mb-3">
                 <div className="d-flex justify-content-end bd-highlight w100">
                   <div>
-                    {state.shown ? (
-                      <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => setState((prevState) => ({ ...prevState, shown: !state.shown }))}>
-                        <div className="cancel-icon-white"></div></button>
-                    ) : (
-                      ""
-                    )}
-                    {AddAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={formToggle}
-                        title="Add"
-                      >
-                        <div className={"plus mr-0"}></div>
-                        {/* ADD */}
-                      </button>
-                    )}
-                    {BulkUploadAccessibility && (
-                      <button
-                        type="button"
-                        className={"user-btn mr5"}
-                        onClick={bulkToggle}
-                        title="Bulk Upload"
-                      >
-                        <div className={"upload mr-0"}></div>
-                        {/* Bulk Upload */}
-                      </button>
-                    )}
-                    {
-                      DownloadAccessibility &&
+                    {AddAccessibility && (<Button id="interestRateListing_add" className={"user-btn mr5"} onClick={formToggle} title={"Add"} icon={"plus mr-0"} />)}
+                    {BulkUploadAccessibility && (<Button id="interestRateListing_bulkUpload" className={"user-btn mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />)}
+                    {DownloadAccessibility &&
                       <>
-
                         <ExcelFile filename={'Interest Master'} fileExtension={'.xls'} element={
-                          <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'}><div className="download mr-1" ></div>
-                            {/* DOWNLOAD */}
-                            {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
-                          </button>}>
+                          <Button id={"Excel-Downloads-interestRateListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
                           {onBtExport()}
                         </ExcelFile>
                       </>
 
                     }
-                    <button type="button" className="user-btn" title="Reset Grid" onClick={() => resetState()}>
-                      <div className="refresh mr-0"></div>
-                    </button>
-
+                    <Button id={"interestRateListing_refresh"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
                   </div>
                 </div>
               </Col>
             </Row>
           </form>
-
-
           <div className={`ag-grid-wrapper height-width-wrapper ${(interestRateDataList && interestRateDataList?.length <= 0) || noData ? "overlay-contain" : ""}`}>
             <div className="ag-grid-header">
               <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
@@ -474,10 +394,7 @@ const InterestRateListing = (props) => {
                 gridOptions={gridOptions}
                 // loadingOverlayComponent={'customLoadingOverlay'}
                 noRowsOverlayComponent={'customNoRowsOverlay'}
-                noRowsOverlayComponentParams={{
-                  title: EMPTY_DATA,
-                  imagClass: 'imagClass'
-                }}
+                noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
                 rowSelection={'multiple'}
                 onFilterModified={onFloatingFilterChanged}
                 onSelectionChanged={onRowSelect}
@@ -502,20 +419,8 @@ const InterestRateListing = (props) => {
             </div>
           </div>
 
-          {
-            isBulkUpload && <BulkUpload
-              isOpen={isBulkUpload}
-              closeDrawer={closeBulkUploadDrawer}
-              isEditFlag={false}
-              fileName={'Interest Rate'}
-              isZBCVBCTemplate={true}
-              messageLabel={'Interest Rate'}
-              anchor={'right'}
-            />
-          }
-          {
-            state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />
-          }
+          {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Interest Rate'} isZBCVBCTemplate={true} messageLabel={'Interest Rate'} anchor={'right'} />}
+          {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.INTEREST_DELETE_ALERT}`} />}
         </div >
       </div >
     </ >

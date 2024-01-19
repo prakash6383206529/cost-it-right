@@ -1,17 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Field } from "redux-form";
 import { Row, Col } from 'reactstrap';
-import { getAllUserDataAPI, deleteUser, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser } from '../../actions/auth/AuthActions';
+import { getAllUserDataAPI, getAllDepartmentAPI, getAllRoleAPI, activeInactiveUser } from '../../actions/auth/AuthActions';
 import $ from 'jquery';
-import { searchableSelect } from "../layout/FormInputs";
 import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
-import { getConfigurationKey, loggedInUserId } from '../../helper/auth';
+import { loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../helper/util';
 import LoaderCustom from '../common/LoaderCustom';
@@ -35,7 +33,7 @@ const gridOptions = {};
 const UsersListing = (props) => {
 	const dispatch = useDispatch();
 	const searchRef = useRef(null);
-	const { userDataList, rfqUserList, roleList, departmentList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state.auth);
+	const { userDataList, rfqUserList, initialConfiguration, topAndLeftMenuData } = useSelector((state) => state.auth);
 	const [state, setState] = useState({
 		isEditFlag: false,
 		shown: false,
@@ -123,6 +121,7 @@ const UsersListing = (props) => {
 				setState((prevState) => ({ ...prevState, roleType: obj, }))
 			}
 		}))
+		// eslint-disable-next-line react-hooks/exhaustive-deps
 
 	}, []);
 	/**
@@ -166,44 +165,9 @@ const UsersListing = (props) => {
 			</ExcelSheet>);
 	}
 	/**
-	 * @method selectType
-	 * @description Used show listing of unit of measurement
-	 */
-	const searchableSelectType = (label) => {
-		const temp = [];
-		if (label === 'role') {
-			roleList && roleList.map(item =>
-				temp.push({ label: item.RoleName, value: item.RoleId })
-			);
-			return temp;
-		}
-		if (label === 'department') {
-			departmentList && departmentList.map(item =>
-				temp.push({ label: item.DepartmentName, value: item.DepartmentId })
-			);
-			return temp;
-		}
-	}
-
-	/**
-	 * @method departmentHandler
-	 * @description Used to handle 
-	 */
-	const departmentHandler = (newValue, actionMeta) => {
-		setState((prevState) => ({ ...prevState, department: newValue }));
-	};
-	/**
-		 * @method roleHandler
-		 * @description Used to handle 
-		 */
-	const roleHandler = (newValue, actionMeta) => {
-		setState((prevState) => ({ ...prevState, role: newValue }));
-	};
-
-	/**
-	* @method editItemDetails
-	* @description confirm edit item
-	*/
+		* @method editItemDetails
+		* @description confirm edit item
+		*/
 	const editItemDetails = (Id, passwordFlag = false) => {
 		let data = { isEditFlag: true, UserId: Id, passwordFlag: passwordFlag, RFQUser: props.RFQUser }
 		closeUserDetails()
@@ -230,23 +194,11 @@ const UsersListing = (props) => {
 		setState((prevState) => ({ ...prevState, showPopup: false }))
 		setState((prevState) => ({ ...prevState, showPopup2: false }))
 	}
-	/**
-		* @method confirmDeleteItem
-		* @description confirm delete user item
-		*/
-	const confirmDeleteItem = (UserId) => {
-		dispatch(deleteUser(UserId, (res) => {
-			if (res.data.Result === true) {
-				Toaster.success(MESSAGES.DELETE_USER_SUCCESSFULLY);
-				getUsersListData(null, null);
-			}
-		}));
-	}
 
 	/**
-	* @method buttonFormatter
-	* @description Renders buttons
-	*/
+		* @method buttonFormatter
+		* @description Renders buttons
+		*/
 	const buttonFormatter = (props) => {
 		const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
 		const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
@@ -254,9 +206,7 @@ const UsersListing = (props) => {
 		if (rowData?.UserId === loggedInUserId()) return null;
 		return (
 			<div className="">
-				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} />
-				}
-				{/* <Button className="btn btn-danger" onClick={() => deleteItem(cell)}><i className="far fa-trash-alt"></i></Button> */}
+				{EditAccessibility && <Button id={`userListing_edit${props.rowIndex}`} className={"Edit"} variant="Edit" onClick={() => editItemDetails(rowData?.UserId, false)} />}
 			</div>
 		)
 	}
@@ -284,7 +234,6 @@ const UsersListing = (props) => {
 		return (
 			<>
 				<label htmlFor="normal-switch" className="normal-switch">
-					{/* <span>Switch with default style</span> */}
 					<Switch onChange={() => handleChange(cellValue, rowData)} checked={cellValue} disabled={!ActivateAccessibility} background="#ff6600" onColor="#4DC771" onHandleColor="#ffffff" offColor="#FC5774" id="normal-switch" height={24} className={cellValue ? "active-switch" : "inactive-switch"} />
 				</label>
 			</>
@@ -313,34 +262,6 @@ const UsersListing = (props) => {
 	const closeUserDetails = () => {
 		setState((prevState) => ({ ...prevState, UserId: '', isOpen: false, }))
 	}
-	/**
-			* @method filterList
-			* @description Filter user listing on the basis of role and department
-			*/
-	const filterList = () => {
-		const { role, department } = state;
-		const filterDepartment = department ? department.value : '';
-		const filterRole = role ? role.value : '';
-		getUsersListData(filterDepartment, filterRole)
-	}
-
-	/**
-	* @method resetFilter
-	* @description Reset user filter
-	*/
-	const resetFilter = () => {
-		setState(
-			(prevState) => ({ ...prevState, role: [], department: [], }),
-			() => {
-				const { role, department } = state;
-				const filterDepartment = department ? department.value : '';
-				const filterRole = role ? role.value : '';
-				getUsersListData(filterDepartment, filterRole);
-			}
-		);
-
-	};
-
 
 	const formToggle = () => {
 		props.formToggle(props?.RFQUser)
@@ -404,82 +325,19 @@ const UsersListing = (props) => {
 			<>
 				<form noValidate>
 					<Row className="pt-4">
-						{state.shown &&
-							<Col md="8" className="filter-block">
-								<div className="d-inline-flex justify-content-start align-items-top w100">
-									<div className="flex-fills">
-										<h5>{`Filter By:`}</h5>
-									</div>
-									<div className="flex-fill">
-										<Field
-											name="DepartmentId"
-											type="text"
-											component={searchableSelect}
-											placeholder={"Department"}
-											options={searchableSelectType("department")}
-											// placeholder={"Purchase Group"}						//RE
-											// placeholder={"Company"} //MINDA
-											//onKeyUp={(e) => changeItemDesc(e)}
-											//validate={(state.department == null || state.department.length == 0) ? [required] : []}
-											//required={true}
-											handleChangeDescription={departmentHandler}
-											valueDescription={state.department}
-										/>
-									</div>
-									<div className="flex-fill">
-										<Field
-											name="RoleId"
-											type="text"
-											component={searchableSelect}
-											placeholder={"Role"}
-											options={searchableSelectType("role")}
-											//onKeyUp={(e) => changeItemDesc(e)}
-											//validate={(state.role == null || state.role.length == 0) ? [required] : []}
-											//required={true}
-											handleChangeDescription={roleHandler}
-											valueDescription={state.role}
-										/>
-									</div>
-									<div className="flex-fill">
-										<button
-											type="button"
-											//disabled={pristine || submitting}
-											onClick={resetFilter}
-											className="reset mr10"
-										>
-											{"Reset"}
-										</button>
-
-										<button
-											type="button"
-											//disabled={pristine || submitting}
-											onClick={filterList}
-											className="user-btn mr5"
-										>
-											{"Apply"}
-										</button>
-									</div>
-								</div>
-							</Col>
-						}
 						<Col md="6" className="search-user-block mb-3">
 							<div className="d-flex justify-content-end bd-highlight w100">
 								{AddAccessibility && (
 									<div>
 										<ExcelFile filename={`${props.RFQUser ? 'RFQ User Listing' : 'User Listing'}`} fileExtension={'.xls'} element={
-											<Button id={"Excel-Downloads-userListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
-
-										}>
+											<Button id={"Excel-Downloads-userListing"} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" className={'user-btn mr5'} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />}>
 											{onBtExport()}
 										</ExcelFile>
 										<Button id="userListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
 									</div>
 								)}
-								<Button
-									id={"userListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
+								<Button id={"userListing_refresh"} className="user-btn" onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
 							</div>
-
-
 						</Col>
 					</Row>
 				</form>
@@ -500,10 +358,7 @@ const UsersListing = (props) => {
 							onGridReady={onGridReady}
 							gridOptions={gridOptions}
 							noRowsOverlayComponent={'customNoRowsOverlay'}
-							noRowsOverlayComponentParams={{
-								title: EMPTY_DATA,
-								imagClass: 'imagClass'
-							}}
+							noRowsOverlayComponentParams={{ title: EMPTY_DATA, imagClass: 'imagClass' }}
 							frameworkComponents={frameworkComponents}
 							enableBrowserTooltips={true}
 							onSelectionChanged={onRowSelect}
@@ -537,14 +392,10 @@ const UsersListing = (props) => {
 					</div>
 				</div>}
 
-				{state.isOpen && (
-					<ViewUserDetails UserId={state.UserId} isOpen={state.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props.RFQUser} />
-				)}
+				{state.isOpen && (<ViewUserDetails UserId={state.UserId} isOpen={state.isOpen} editItemDetails={editItemDetails} closeUserDetails={closeUserDetails} EditAccessibility={EditAccessibility} anchor={"right"} IsLoginEmailConfigure={initialConfiguration.IsLoginEmailConfigure} RFQUser={props.RFQUser} />)}
 
 			</>
-			{
-				state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />
-			}
+			{state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${state.cell ? MESSAGES.USER_DEACTIVE_ALERT : MESSAGES.USER_ACTIVE_ALERT}`} />}
 
 		</div >
 	);
