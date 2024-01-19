@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
@@ -35,6 +35,8 @@ const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
+const MyLazyComponent = lazy(() => import('../../massUpload/BulkUpload'));
+console.log('MyLazyComponent: ', MyLazyComponent);
 
 
 
@@ -1038,23 +1040,27 @@ function RMDomesticListing(props) {
                     </Row>
                 </>
             }
-            {
-                isBulkUpload && (
-                    <BulkUpload
-                        isOpen={isBulkUpload}
-                        closeDrawer={closeBulkUploadDrawer}
-                        isEditFlag={false}
-                        densityAlert={densityAlert}
-                        fileName={"RM Domestic"}
-                        isZBCVBCTemplate={true}
-                        messageLabel={"RM Domestic"}
-                        anchor={"right"}
-                        masterId={RM_MASTER_ID}
-                        typeOfEntryId={ENTRY_TYPE_DOMESTIC}
-                    />
-                )
-            }
 
+            <Suspense fallback={<div>Loading...</div>}>
+                {/* Render the lazily loaded component */}
+                {/* <MyLazyComponent /> */}
+                {
+                    isBulkUpload && (
+                        <MyLazyComponent
+                            isOpen={isBulkUpload}
+                            closeDrawer={closeBulkUploadDrawer}
+                            isEditFlag={false}
+                            densityAlert={densityAlert}
+                            fileName={"RM Domestic"}
+                            isZBCVBCTemplate={true}
+                            messageLabel={"RM Domestic"}
+                            anchor={"right"}
+                            masterId={RM_MASTER_ID}
+                            typeOfEntryId={ENTRY_TYPE_DOMESTIC}
+                        />
+                    )
+                }
+            </Suspense>
 
             {
                 analyticsDrawer &&

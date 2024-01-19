@@ -45,16 +45,17 @@
   }
 }
 
-.table {
-  .UOM-label-container {
-    span {
-      &:last-child {
-        position: absolute;
-        top: -5px;
-      }
-    }
-  }
-}
+//UOM common function class displayUOM
+// .table {
+//   .UOM-label-container {
+//     span {
+//       &:last-child {
+//         position: absolute;
+//         top: -5px;
+//       }
+//     }
+//   }
+// }
 
 .action-icon-container {
   display: flex;
