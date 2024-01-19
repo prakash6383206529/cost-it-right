@@ -331,7 +331,7 @@ function ManageSOBDrawer(props) {
 
                       {
                         GridData && <tr className="sob-background">
-                          <td>{'Insert Cost'}</td>
+                          <td>{'BOP Cost'}</td>
                           <td>{''}</td>
                           <td>{`Net Cost (Weighted Average):`}</td>
                           <td>{`${checkForDecimalAndNull(WeightedCost, initialConfiguration.NoOfDecimalForPrice)}`}</td>

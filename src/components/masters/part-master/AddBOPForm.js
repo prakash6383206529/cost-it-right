@@ -228,7 +228,7 @@ class AddBOPForm extends Component {
             </Col>
             <Col md="6">
               <Field
-                label={`Insert Part Name`}
+                label={`BOP Part Name`}
                 name={"BOPPartName"}
                 type="text"
                 placeholder={""}
@@ -243,7 +243,7 @@ class AddBOPForm extends Component {
 
             <Col md="6">
               <Field
-                label={`Insert Category`}
+                label={`BOP Category`}
                 name={"BOPCategory"}
                 type="text"
                 placeholder={""}

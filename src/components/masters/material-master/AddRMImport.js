@@ -2,7 +2,7 @@ import React, { Component, } from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, formValueSelector, clearFields } from "redux-form";
 import { Row, Col, Label, } from 'reactstrap';
-import { required, getVendorCode, getCodeBySplitting, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number, hashValidation, maxLength10 } from "../../../helper/validation";
+import { required, getCodeBySplitting, positiveAndDecimalNumber, acceptAllExceptSingleSpecialCharacter, maxLength512, checkForNull, checkForDecimalAndNull, decimalLengthsix, maxLength70, maxLength15, number, hashValidation, maxLength10 } from "../../../helper/validation";
 import { renderText, searchableSelect, renderMultiSelectField, renderTextAreaField, renderDatePicker, renderTextInputField } from "../../layout/FormInputs";
 import {
   getRawMaterialCategory, fetchGradeDataAPI, fetchSpecificationDataAPI, getCityBySupplier, getPlantByCity,
@@ -24,8 +24,8 @@ import AddVendorDrawer from '../supplier-master/AddVendorDrawer';
 import 'react-dropzone-uploader/dist/styles.css'
 import Dropzone from 'react-dropzone-uploader';
 import "react-datepicker/dist/react-datepicker.css"
-import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, RMIMPORT, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE, SHEET_METAL, GUIDE_BUTTON_SHOW } from '../../../config/constants';
-import { ASSEMBLY, AcceptableRMUOM, FORGING, SHEETMETAL } from '../../../config/masterData'
+import { FILE_URL, INR, ZBC, RM_MASTER_ID, EMPTY_GUID, SPACEBAR, ZBCTypeId, VBCTypeId, CBCTypeId, searchCount, ENTRY_TYPE_IMPORT, VBC_VENDOR_TYPE, RAW_MATERIAL_VENDOR_TYPE } from '../../../config/constants';
+import { ASSEMBLY, AcceptableRMUOM } from '../../../config/masterData'
 import { getExchangeRateByCurrency, getCostingSpecificTechnology } from "../../costing/actions/Costing"
 import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
@@ -190,7 +190,7 @@ class AddRMImport extends Component {
 
 
   netCostTitle() {
-    const { currency, costingTypeId, currencyValue } = this.state
+    const { currency, costingTypeId } = this.state
     const { initialConfiguration } = this.props
     if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       let obj = {
@@ -272,42 +272,6 @@ class AddRMImport extends Component {
     }
     return obj
   }
-
-
-
-  netCostTitle() {
-    const { currency, costingTypeId, currencyValue } = this.state
-    const { initialConfiguration } = this.props
-    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-      let obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = Basic Price (${currency.label === undefined ? 'Currency' : currency?.label})  + Condition Cost (${currency.label === undefined ? 'Currency' : currency?.label})`,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency})  + Condition Cost (${initialConfiguration?.BaseCurrency})`
-      }
-      return obj
-
-    } else {
-
-      let obj = {
-        toolTipTextNetCostSelectedCurrency: `Net Cost (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})) * Currency Rate (${currency.label === undefined ? '-' : currencyValue}) `,
-        toolTipTextNetCostBaseCurrency: `Net Cost (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
-      }
-      return obj
-    }
-  }
-
-  basicPriceTitle() {
-    const { initialConfiguration } = this.props
-    const { costingTypeId, currency, currencyValue } = this.state
-    if (initialConfiguration?.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
-      let obj = {
-        toolTipTextBasicPriceSelectedCurrency: `Basic Price (${currency.label === undefined ? 'Currency' : currency?.label}) = (Basic Rate (${currency.label === undefined ? 'Currency' : currency?.label}) + Freight Cost (${currency.label === undefined ? 'Currency' : currency?.label}) + Shearing Cost (${currency.label === undefined ? 'Currency' : currency?.label})) * Currency Rate (${currency.label === undefined ? '-' : currencyValue})  `,
-        toolTipTextBasicPriceBaseCurrency: `Basic Price (${initialConfiguration?.BaseCurrency}) =  Basic Rate (${initialConfiguration?.BaseCurrency}) + Freight Cost (${initialConfiguration?.BaseCurrency}) + Shearing Cost (${initialConfiguration?.BaseCurrency})`
-      }
-      return obj
-
-    }
-  }
-
 
   /**
    * @method componentDidMount
@@ -1126,6 +1090,7 @@ class AddRMImport extends Component {
         }
       })
     })
+    this.props.getRMSpecificationDataList({ GradeId: null }, () => { });
   }
 
   gradeToggler = () => {
@@ -1218,7 +1183,7 @@ class AddRMImport extends Component {
   renderListing = (label, isScrapRateUOM) => {
     const { gradeSelectList, rmSpecification,
       cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList,
-      UOMSelectList, currencySelectList, vendorListByVendorType, plantSelectList, costingSpecifiTechnology, clientSelectList, rmSpecificationList } = this.props;
+      UOMSelectList, currencySelectList, plantSelectList, costingSpecifiTechnology, clientSelectList, rmSpecificationList } = this.props;
     const temp = [];
     if (label === 'material') {
       rawMaterialNameSelectList && rawMaterialNameSelectList.map(item => {
@@ -1740,13 +1705,7 @@ class AddRMImport extends Component {
   }
 
   conditionToggle = () => {
-    const { isRMAssociated } = this.props
-    const { isEditFlag, isViewMode } = this.state;
-    // if ((isEditFlag && isRMAssociated) || isViewMode) {
-    //   return false
-    // } else {
     this.setState({ isOpenConditionDrawer: true })
-    // }
   }
 
   openAndCloseAddConditionCosting = (type, data = this.state.conditionTableData) => {
@@ -2034,10 +1993,10 @@ class AddRMImport extends Component {
                               name={'Code'}
                               type="text"
                               component={searchableSelect}
-                              placeholder={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? 'Select' : "Enter"}
+                              placeholder={'Select'}
                               options={this.renderListing("code")}
-                              validate={initialConfiguration?.IsAutoGeneratedRawMaterialCode || this.state.rmCode == null || this.state.rmCode.length === 0 ? [] : [required]}
-                              required={!initialConfiguration?.IsAutoGeneratedRawMaterialCode}
+                              validate={this.state.rmCode == null || (this.state.rmCode.length === 0 && !isCodeDisabled) ? [required] : []}
+                              required={true}
                               handleChangeDescription={this.handleCodeChange}
                               disabled={isEditFlag || isViewFlag || isCodeDisabled}
                               isClearable={true}

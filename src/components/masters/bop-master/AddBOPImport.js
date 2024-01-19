@@ -132,6 +132,7 @@ class AddBOPImport extends Component {
       toolTipTextObject: {},
       toolTipTextNetCost: {},
       toolTipTextBasicPrice: {},
+      IsBreakupBoughtOutPart: false,
     }
   }
 
@@ -525,6 +526,7 @@ class AddBOPImport extends Component {
               isTechnologyVisible: Data.IsBreakupBoughtOutPart,
               Technology: { label: Data.TechnologyName, value: Data.TechnologyId },
               currencyValue: Data.CurrencyExchangeRate,
+              IsBreakupBoughtOutPart: Data.IsBreakupBoughtOutPart,
             }, () => {
               setTimeout(() => {
                 this.setInStateToolTip()
@@ -1838,36 +1840,6 @@ class AddBOPImport extends Component {
                               />
                             </Col>
                             <Col md="3">
-                              <Field
-                                label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${this.state.currency.label === undefined ? 'Currency' : this.state.currency.label})`}
-                                name={"BasicRateCurrency"}
-                                type="text"
-                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={true}
-                                disabled={isViewMode || (isEditFlag && isBOPAssociated)}
-                                className=" "
-                                customClassName=" withBorder"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                label={`Basic Rate/${this.state.UOM.label ? this.state.UOM.label : 'UOM'} (${initialConfiguration?.BaseCurrency})`}
-                                name={"BasicRateBase"}
-                                type="text"
-                                placeholder={isEditFlag || (isEditFlag && isBOPAssociated) ? '-' : "Enter"}
-                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={true}
-                                disabled={true}
-                                isViewFlag={true}
-                                className=" "
-                                customClassName=" withBorder"
-                              />
-                            </Col>
-
-                            <Col md="3">
                               <div className='d-flex align-items-center'>
                                 <div className='w-100'>
                                   <Field
@@ -1895,7 +1867,7 @@ class AddBOPImport extends Component {
                             </Col>
 
                           </>}
-                          {this.state.showCurrency && !isTechnologyVisible && <>
+                          {this.state.showCurrency && (!isTechnologyVisible || this.state.IsBreakupBoughtOutPart) && <>
                             <Col md="3">
                               <TooltipCustom id="bop-net-cost-currency" tooltipText={toolTipTextNetCost?.toolTipTextNetCostSelectedCurrency} />
                               <Field
