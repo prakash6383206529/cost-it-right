@@ -113,8 +113,18 @@ const CostingSummaryTable = (props) => {
   const [selectedCheckbox, setSelectedCheckbox] = useState('')
   const [showPieChartObj, setShowPieChartObj] = useState([])
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+  const [viewCostingData, setViewCostingData] = useState([])
 
-  const viewCostingData = useSelector((state) => state.costing.viewCostingDetailData)
+  const { viewCostingDetailData, viewRejectedCostingDetailData } = useSelector((state) => state.costing)
+
+  useEffect(() => {
+    if (viewCostingDetailData && viewCostingDetailData.length > 0 && !props?.isRejectedSummaryTable) {
+      setViewCostingData(viewCostingDetailData)
+    } else if (viewRejectedCostingDetailData && viewRejectedCostingDetailData.length > 0 && props?.isRejectedSummaryTable) {
+      setViewCostingData(viewRejectedCostingDetailData)
+    }
+
+  }, [viewCostingDetailData, viewRejectedCostingDetailData])
 
   const selectedRowRFQ = useSelector((state) => state.rfq.selectedRowRFQ)
 
@@ -3114,6 +3124,7 @@ const CostingSummaryTable = (props) => {
           simulationDrawer={false}
           // isReportLoader={isReportLoader}
           isRejectedSummaryTable={true}
+          selectedTechnology={props?.selectedTechnology}
         />
       }
       {/* DRAWERS FOR VIEW  */}
