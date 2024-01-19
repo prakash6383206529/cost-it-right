@@ -151,12 +151,12 @@ export const MESSAGES = {
 
   //BOP MASTER
   // ADD_BOP_SUCCESS: 'BOP added successfully', kitna baar BOP ko success karoge
-  BOP_ADD_SUCCESS: 'BOP added successfully',
-  BOP_CATEGORY_ADD_SUCCESS: 'BOP category added successfully',
-  UPDATE_BOP_SUCESS: 'BOP updated successfully',
-  BOP_DELETE_ALERT: 'Are you sure you want to delete this BOP?',
-  BOP_DELETE_SUCCESS: 'BOP deleted successfully',
-  BOP_BREAKUP_WARNING: "BOP with breakup will be visible in Approval Status tab until that BOP's costing is approved.",
+  BOP_ADD_SUCCESS: `${getConfigurationKey().BOPMasterName} added successfully`,
+  BOP_CATEGORY_ADD_SUCCESS: `${getConfigurationKey().BOPMasterName} category added successfully`,
+  UPDATE_BOP_SUCESS: `${getConfigurationKey().BOPMasterName} updated successfully`,
+  BOP_DELETE_ALERT: `Are you sure you want to delete this ${getConfigurationKey().BOPMasterName}?`,
+  BOP_DELETE_SUCCESS: `${getConfigurationKey().BOPMasterName} deleted successfully`,
+  BOP_BREAKUP_WARNING: `${getConfigurationKey().BOPMasterName} with breakup will be visible in Approval Status tab until that ${getConfigurationKey().BOPMasterName}'s costing is approved.`,
 
   //FUEL & POWER MASTER
   FUEL_DETAIL_ADD_SUCCESS: 'Fuel detail added successfully',
@@ -346,7 +346,7 @@ export const MESSAGES = {
   FREIGHT_COSTING_SAVE_SUCCESS: 'Freight Cost has been successfully saved.',
   SURFACE_TREATMENT_COSTING_SAVE_SUCCESS: 'Surface Treatment Cost saved successfully.',
   TOOL_TAB_COSTING_SAVE_SUCCESS: 'Tool Cost saved successfully.',
-  RMCC_TAB_COSTING_SAVE_SUCCESS: 'RM CC BOP Cost saved successfully.',
+  RMCC_TAB_COSTING_SAVE_SUCCESS: `RM CC ${getConfigurationKey().BOPMasterName} Cost saved successfully.`,
   RMCC_TAB_COSTING_SAVE_SUCCESS_IS_BOP_BREAKUP: 'RM CC Cost saved successfully.',
   COSTING_DELETE_ALERT: 'Are you sure you want to delete costing?',
   SIMULATION_TOOLCOST_POPUP_MESSAGE: 'Overhead and Profit will not get change if tool cost is included in overhead and profit in a costing. Do you wish to continue?',

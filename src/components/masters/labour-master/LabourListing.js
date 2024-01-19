@@ -296,6 +296,8 @@ function LabourListing(props) {
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, noData: false }))
+
   }
 
   const { toggleForm, data, isBulkUpload, AddAccessibility, BulkUploadAccessibility, DownloadAccessibility, noData, } = state

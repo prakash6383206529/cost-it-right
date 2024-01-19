@@ -213,6 +213,7 @@ const FreightListing = (props) => {
     state.gridApi.deselectAll()
     gridOptions.columnApi.resetColumnState();
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, noData: false }))
   }
 
 

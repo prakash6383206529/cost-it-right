@@ -14,6 +14,7 @@ export function userDetails() {
   return userDetail
 }
 
+
 export function loggedInUserId() {
   const isLoggedIn = reactLocalStorage.getObject('isUserLoggedIn')
   if (isLoggedIn === true) {

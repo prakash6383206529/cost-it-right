@@ -210,6 +210,7 @@ const FuelListing = (props) => {
     state.gridApi.deselectAll();
     gridOptions.columnApi.resetColumnState(null);
     gridOptions.api.setFilterModel(null);
+    setState((prevState) => ({ ...prevState, noData: false }))
   };
 
   const commonCostFormatter = (props) => {

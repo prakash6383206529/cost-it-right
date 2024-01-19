@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { BOUGHT_OUT_PART_NAME, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
 import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
@@ -33,7 +33,7 @@ function ProfitSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [valuesForDropdownInAgGrid, setValuesForDropdownInAgGrid] = useState(
         {
-            applicability: ['BOP', 'BOP + CC', 'CC', 'Fixed', 'RM', 'RM + BOP', 'RM + CC', 'RM + CC + BOP'],
+            applicability: [`${getConfigurationKey().BOPMasterName}`, `${getConfigurationKey().BOPMasterName} + CC`, 'CC', 'Fixed', 'RM', `RM + ${getConfigurationKey().BOPMasterName}`, 'RM + CC', `RM + CC + ${getConfigurationKey().BOPMasterName}`],
             modelType: ['All', 'High Volume', 'Low Volume', 'Medium Volume', 'New Development']
         }
     )

@@ -1002,7 +1002,7 @@ const BOPImportListing = (props) => {
                         <>
                           <Button className={"user-btn mr5"} id={"bopImportingListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
-                          <ExcelFile filename={"BOP Import"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
+                          <ExcelFile filename={`${getConfigurationKey().BOPMasterName} Import`} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
                             {onBtExport()}
                           </ExcelFile>
                         </>
@@ -1061,9 +1061,9 @@ const BOPImportListing = (props) => {
                       >
                         {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
                         <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={"costingHeadFormatter"}></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartNumber" headerName="BOP No."></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartName" headerName="BOP Name"></AgGridColumn>
-                        <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartNumber" headerName={`${getConfigurationKey().BOPMasterName} No.`}></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartName" headerName={`${getConfigurationKey().BOPMasterName} Name`}></AgGridColumn>
+                        <AgGridColumn field="BoughtOutPartCategory" headerName={`${getConfigurationKey().BOPMasterName} Category`}></AgGridColumn>
                         <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                         <AgGridColumn field="Specification" headerName="Specification" cellRenderer={"hyphenFormatter"}></AgGridColumn>
                         <AgGridColumn field="Plants" cellRenderer={"hyphenFormatter"} headerName="Plant (Code)"></AgGridColumn>
@@ -1073,7 +1073,7 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="PaymentTermDescriptionAndPaymentTerm" headerName="Payment Terms" ></AgGridColumn>{/* FOR MINDA ONLY */}
                         {getConfigurationKey().IsMinimumOrderQuantityVisible && (<AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>)}
                         {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
-                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>)}
+                        {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${getConfigurationKey().BOPMasterName}`}></AgGridColumn>)}
                         {initialConfiguration?.IsBoughtOutPartCostingConfigured && (<AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={"hyphenFormatter"}></AgGridColumn>)}
                         <AgGridColumn field="Currency"></AgGridColumn>
                         <AgGridColumn field="BasicRate" headerName="Basic Rate (Currency)" cellRenderer={"commonCostFormatter"} ></AgGridColumn>
@@ -1157,15 +1157,10 @@ const BOPImportListing = (props) => {
               )}
             </>
           )}
-          {isBulkUpload && (
-            <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"BOP Import"} isZBCVBCTemplate={true} messageLabel={"BOP Import"} anchor={"right"} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_IMPORT} />
-          )}
+          {isBulkUpload && (<BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"BOP Import"} isZBCVBCTemplate={true} messageLabel={`${getConfigurationKey().BOPMasterName} Import`} anchor={"right"} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_IMPORT} />)}
 
-          {state.analyticsDrawer && (
-            <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} importEntry={true} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} import={true} />
-          )}
-          {state.attachment && (
-            <Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={"right"} gridListing={true} />
+          {state.analyticsDrawer && (<AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={2} closeDrawer={closeAnalyticsDrawer} anchor={"right"} importEntry={true} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} import={true} />)}
+          {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={"right"} gridListing={true} />
           )}
         </div>
       )}

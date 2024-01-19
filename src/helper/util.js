@@ -144,7 +144,6 @@ const handleHTTPStatus = (response) => {
 export function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
-
 /**
  * @method  formatDate
  * @desc FORMATTED DATE

@@ -850,7 +850,7 @@ const BOPDomesticListing = (props) => {
                     icon={"download mr-1"}
                     buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
                   />
-                  <ExcelFile filename={'BOP Domestic'} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
+                  <ExcelFile filename={`${getConfigurationKey().BOPMasterName} Domestic`} fileExtension={'.xls'} element={<Button id={"Excel-Downloads-bop-domestic"} className="p-absolute" />}>
                     {onBtExport()}
                   </ExcelFile>
                 </>
@@ -892,9 +892,9 @@ const BOPDomesticListing = (props) => {
                 enableBrowserTooltips={true}
               >
                 <AgGridColumn field="CostingHead" headerName="Costing Head" cellRenderer={'costingHeadFormatter'}></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartNumber" headerName={`${getConfigurationKey().BOPMasterName} Part No.`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartName" headerName={`${getConfigurationKey().BOPMasterName} Part Name`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartCategory" headerName={`${getConfigurationKey().BOPMasterName} Category`}></AgGridColumn>
                 <AgGridColumn field="UOM" headerName="UOM"></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="Plants" cellRenderer={'hyphenFormatter'} headerName="Plant (Code)"></AgGridColumn>
@@ -910,7 +910,7 @@ const BOPDomesticListing = (props) => {
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}
 
                 <AgGridColumn field="NetLandedCost" headerName="Net Cost" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
-                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName="Detailed BOP"></AgGridColumn>}
+                {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="IsBreakupBoughtOutPart" headerName={`Detailed ${getConfigurationKey().BOPMasterName}`}></AgGridColumn>}
                 {initialConfiguration?.IsBoughtOutPartCostingConfigured && <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer={'hyphenFormatter'} ></AgGridColumn>}
                 <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={'effectiveDateFormatter'} filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
                 {!props?.isSimulation && !props?.isMasterSummaryDrawer && <AgGridColumn field="BoughtOutPartId" width={170} cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>}
@@ -932,7 +932,7 @@ const BOPDomesticListing = (props) => {
         </Col>
       </Row>
       {
-        isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'BOP Domestic'} isZBCVBCTemplate={true} messageLabel={'BOP Domestic'} anchor={'right'} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_DOMESTIC} />
+        isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'BOP Domestic'} isZBCVBCTemplate={true} messageLabel={`${getConfigurationKey().BOPMasterName} Domestic`} anchor={'right'} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_DOMESTIC} />
       }
 
       {
