@@ -1871,7 +1871,7 @@ export const lOGIN_AUDIT = 'Login Audit'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
-export const PLASTIC = 'Plastic';
+export const PLASTICNAME = 'Plastic';
 export const WIRING_HARNESS = 'Wiring Harness';
 export const NON_FERROUS_GDC = 'Non Ferrous GDC';
 export const PLATING = 'Plating';
