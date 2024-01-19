@@ -1053,6 +1053,7 @@ export const ZBCOperationSmallForm = [
 
     { label: 'Technology', value: 'Technology', }, //*
     { label: 'OperationName', value: 'OperationName', }, //*
+    { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
@@ -1070,6 +1071,7 @@ export const ZBCOperationTempData = [
     {
         'Technology': 'Sheet Metal',
         'OperationName': 'Crushing',
+        'OperationCode': '101',
         'Description': 'Description Text',
         'Plant': 'Manesar',
         'PlantCode': 'Systematix01',
@@ -1139,6 +1141,7 @@ export const ZBCOperationTempData = [
         'Plant': 'Manesar',
         'PlantCode': 'Systematix01',
         "OperationName": "Assembly",
+        'OperationCode': '101',
         "Description": "Final product assembly",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "LabourRate": "25.50",
@@ -1205,6 +1208,7 @@ export const ZBCOperationTempData = [
         'PlantCode': 'Systematix01',
         'Plant': 'Manesar',
         "OperationName": "Molding",
+        'OperationCode': '101',
         "Description": "Injection molding process",
         "UOM": "Ounce/Pound/Metric Ton/Milligram/Gram/Kilogram",
         "LabourRate": "40",
@@ -1276,6 +1280,7 @@ export const VBCOperation = [
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'OperationName', value: 'OperationName' },
+    { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
@@ -1343,6 +1348,7 @@ export const VBCOperation = [
 export const VBCOperationSmallForm = [
     { label: 'Technology', value: 'Technology', }, //*
     { label: 'OperationName', value: 'OperationName', }, //*
+    { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
     { label: 'VendorName', value: 'VendorName', }, //*
     { label: 'VendorCode', value: 'VendorCode', }, //*
@@ -1361,6 +1367,7 @@ export const VBCOperationTempData = [
     {
         'Technology': 'Sheet Metal',
         'OperationName': 'Crushing',
+        'OperationCode': '101',
         'Description': 'Description Text',
         'VendorName': 'Tata Steel',
         'VendorCode': 'Vendor123',
@@ -1430,6 +1437,7 @@ export const VBCOperationTempData = [
     {
         'Technology': 'Rubber',
         'OperationName': 'Drilling',
+        'OperationCode': '102',
         'Description': 'Description Text',
         'VendorName': 'ABC Manufacturing',
         'VendorCode': 'Vendor456',
@@ -1499,6 +1507,7 @@ export const VBCOperationTempData = [
     {
         'Technology': 'Plastic',
         'OperationName': 'Trimming',
+        'OperationCode': '103',
         'Description': 'Description Text',
         'VendorName': 'ABC Plastic Industries',
         'VendorCode': 'Vendor456',
@@ -1576,6 +1585,7 @@ export const CBCOperation = [
     { label: 'DestinationPlant', value: 'DestinationPlant', }, //*
     { label: 'DestinationPlantCode', value: 'DestinationPlantCode', }, //*
     { label: 'OperationName', value: 'OperationName' },
+    { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description' },
     { label: 'UOM', value: 'UOM', }, //*
     { label: 'LabourRate', value: 'LabourRate', }, //NOUI
@@ -1641,6 +1651,7 @@ export const CBCOperationSmallForm = [
 
     { label: 'Technology', value: 'Technology', }, //*
     { label: 'OperationName', value: 'OperationName', }, //*
+    { label: "OperationCode", value: "OperationCode" },
     { label: 'Description', value: 'Description', },
     { label: 'CustomerName', value: 'CustomerName' },
     { label: 'CustomerCode', value: 'CustomerCode', }, //*
@@ -1659,6 +1670,7 @@ export const CBCOperationTempData = [
     {
         'Technology': 'Sheet Metal',
         'OperationName': 'Crushing',
+        "OperationCode": "10001",
         'Description': 'Description Text',
         "CustomerName": "Honda",
         "CustomerCode": "C-10008",
@@ -1728,6 +1740,7 @@ export const CBCOperationTempData = [
     {
         'Technology': 'Plastic',
         'OperationName': 'Molding',
+        'OperationCode': '10002',
         'Description': 'Description Text 2',
         'CustomerName': 'Toyota',
         'CustomerCode': 'C-10009',
@@ -1794,6 +1807,7 @@ export const CBCOperationTempData = [
     }, {
         'Technology': 'Rubber',
         'OperationName': 'Sintering',
+        'OperationCode': '10003',
         'Description': 'Description Text 3',
         'CustomerName': 'Samsung',
         'CustomerCode': 'C-10010',

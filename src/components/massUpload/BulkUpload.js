@@ -38,7 +38,6 @@ import { checkFinalUser } from '../../components/costing/actions/Costing';
 import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../common/CommonFunctions';
 import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
 import DayTime from '../common/DayTimeWrapper';
-
 class BulkUpload extends Component {
     constructor(props) {
         super(props);
@@ -471,6 +470,8 @@ class BulkUpload extends Component {
                                     fileHeads[i] = 'DestinationPlantName'
                                 } else if ((fileName === 'BOP Domestic' || fileName === 'BOP Import') && fileHeads[i] === 'MinimumOrderQuantity') {
                                     fileHeads[i] = 'NumberOfPieces'
+                                } else if ((fileName === 'RM Domestic' || fileName === 'RM Import') && fileHeads[i] === 'Code') {
+                                    fileHeads[i] = 'RawMaterialCode'
                                 }
                                 if (fileHeads[i] === 'InsertPartNumber') {
                                     fileHeads[i] = 'BoughtOutPartNumber'
@@ -493,6 +494,9 @@ class BulkUpload extends Component {
 
                                 if (fileName === 'Vendor' && fileHeads[i] === 'PlantCode') {
                                     fileHeads[i] = 'Plants'
+                                }
+                                if (fileName === 'Vendor' && fileHeads[i] === 'Potential Vendor') {
+                                    fileHeads[i] = 'IsCriticalVendor'
                                 }
                                 obj[fileHeads[i]] = el;
                                 return null;
