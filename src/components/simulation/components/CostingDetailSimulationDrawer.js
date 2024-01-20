@@ -14,6 +14,7 @@ import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABIL
 
 
 function CostingDetailSimulationDrawer(props) {
+    console.log('props: ', props);
 
 
     const toggleDrawer = (event, mode = false) => {

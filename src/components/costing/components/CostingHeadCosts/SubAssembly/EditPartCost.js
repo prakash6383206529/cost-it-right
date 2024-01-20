@@ -27,7 +27,7 @@ function EditPartCost(props) {
     const [costingNumberData, setCostingNumberData] = useState({})
     const [isOpen, setIsOpen] = useState(false)
     const CostingViewMode = useContext(ViewCostingContext);
-    const viewCosting = reactLocalStorage.getObject("viewCostingData")
+    const [technologyName, setTechnologyName] = useState('')
     const dispatch = useDispatch()
 
     const PartCostFields = 'PartCostFields';
@@ -273,8 +273,8 @@ function EditPartCost(props) {
             dispatch(getSingleCostingDetails(item.value, (res) => {
                 if (res.data.Data) {
                     let dataFromAPI = res.data.Data
-
                     const tempObj = formViewData(dataFromAPI)
+                    setTechnologyName(tempObj[0].technology)
                     dispatch(setCostingViewData(tempObj))
                 }
             },
@@ -667,6 +667,7 @@ function EditPartCost(props) {
                     isSimulation={false}
                     simulationDrawer={false}
                     fromCostingSummary={props.costingSummary}
+                    selectedTechnology={technologyName}
                 />
             }
         </div >
