@@ -165,9 +165,9 @@ function Icc(props) {
             }
 
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
-            const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation
-            const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost;
-            const RMCC = NetRawMaterialsCost + ConversionCostForCalculation;
+            const RMBOPCC = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
+            const RMBOP = NetRawMaterialsCost + headerCosts.NetBoughtOutPartCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
+            const RMCC = NetRawMaterialsCost + ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const BOPCC = headerCosts.NetBoughtOutPartCost + ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0);
             const InterestRatePercentage = getValues('InterestRatePercentage')
 
@@ -180,14 +180,14 @@ function Icc(props) {
                         setTempInventoryObj({
                             ...tempInventoryObj,
                             CostApplicability: checkForNull(NetRawMaterialsCost),
-                            NetICCTotal: checkForNull(NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage)
+                            NetICCTotal: checkForNull(NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
                         })
                     }
                     break;
 
                 case 'BOP':
                     setValue('CostApplicability', checkForDecimalAndNull(headerCosts.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((headerCosts.NetBoughtOutPartCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(headerCosts.NetBoughtOutPartCost) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0),
@@ -197,7 +197,7 @@ function Icc(props) {
 
                 case 'CC':
                     setValue('CostApplicability', checkForDecimalAndNull(ConversionCostForCalculation, initialConfiguration.NoOfDecimalForPrice))
-                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull((ConversionCostForCalculation + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: checkForNull(ConversionCostForCalculation) + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0),
@@ -257,7 +257,7 @@ function Icc(props) {
 
                 case 'Fixed':
                     setValue('CostApplicability', '-')
-                    setValue('NetICCTotal', checkForDecimalAndNull(InterestRatePercentage, initialConfiguration.NoOfDecimalForPrice))
+                    setValue('NetICCTotal', checkForDecimalAndNull(InterestRatePercentage + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration.NoOfDecimalForPrice))
                     setTempInventoryObj({
                         ...tempInventoryObj,
                         CostApplicability: '-',
