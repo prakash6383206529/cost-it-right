@@ -1945,7 +1945,7 @@ export const Volume = [
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'ActualVolumeDate', value: 'ActualVolumeDate', },
-    { label: 'ActualQauntity', value: 'ActualQauntity', },
+    { label: 'ActualQuantity', value: 'ActualQuantity', },
 ]
 export const VolumeTempData = [
     {
@@ -1955,7 +1955,7 @@ export const VolumeTempData = [
         'PlantCode': '911',
         'VendorCode': '1517',
         'ActualVolumeDate': '16-12-2022',
-        'ActualQauntity': '15',
+        'ActualQuantity': '15',
     },
     {
         'ActualVolumeDetailId': '2',
@@ -1964,7 +1964,7 @@ export const VolumeTempData = [
         'PlantCode': '1569',
         'VendorCode': '1569',
         'ActualVolumeDate': '14-12-2022',
-        'ActualQauntity': '100',
+        'ActualQuantity': '100',
     }
 ]
 /** 
