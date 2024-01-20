@@ -7,7 +7,7 @@ import { getBOMViewerTree, getBOMViewerTreeDataByPartIdAndLevel, setActualBOMDat
 import { Flowpoint, Flowspace } from 'flowpoints';
 import AddChildDrawer from './AddChildDrawer';
 import Drawer from '@material-ui/core/Drawer';
-import { ASSEMBLYNAME } from '../../../config/constants';
+import { ASSEMBLYNAME, BOUGHTOUTPARTSPACING } from '../../../config/constants';
 import { getRandomSixDigit } from '../../../helper/util';
 import VisualAdDrawer from './VisualAdDrawer';
 import _, { debounce } from 'lodash'
@@ -44,10 +44,9 @@ class BOMViewer extends Component {
       disableZoomOutButton: false
     }
   }
-
   /**
-  * @method componentDidMount
-  * @description called after render the component
+   * @method componentDidMount
+   * @description called after render the component
   */
   componentDidMount() {
     const { isEditFlag, PartId, NewAddedLevelOneChilds, avoidAPICall } = this.props;
@@ -188,6 +187,8 @@ class BOMViewer extends Component {
             selectedPartType: childData.selectedPartType,
             PartId: childData.PartId,
             DeleteNodeL1: DeleteNodeL1,
+            Technology: el?.Technology || '',
+            RevisionNo: el?.RevisionNo || null
           })
           return null;
         })
@@ -228,6 +229,8 @@ class BOMViewer extends Component {
         selectedPartType: childData.selectedPartType,
         PartId: childData.PartId,
         Input: childData.Input,
+        Technology: childData?.Technology || '',
+        RevisionNo: childData?.RevisionNo || null
       })
 
       tempArray && tempArray.map((el, i) => {
@@ -457,7 +460,7 @@ class BOMViewer extends Component {
                             outputs={el.Outputs}
                             selected={false}
                             width={200}
-                            height={120}
+                            height={150}
                             onClick={() => {
                               var selected_point = this.state.selected_point;
                               if (selected_point === el.PartNumber) {
@@ -504,10 +507,16 @@ class BOMViewer extends Component {
                             </div>
                             <div className="flowpoint-body">
                               <p>
-                                Name:<strong title={el.PartName}>{el.PartName}</strong>
+                                Name:<strong title={el?.PartName}>{el?.PartName}</strong>
                               </p>
                               <p>
-                                Part Type:<strong title={el.PartType}>{el.PartType}</strong>
+                                Part Type:<strong title={el?.PartType}>{el?.PartType}</strong>
+                              </p>
+                              <p>
+                                Technology:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.Technology}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.Technology || '-'}</strong>
+                              </p>
+                              <p>
+                                Revision No:<strong title={el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo}>{el?.PartType === BOUGHTOUTPARTSPACING ? '-' : el?.RevisionNo || '-'}</strong>
                               </p>
                               {/* {`X=:${el.Position.x}`}
                                                             {`Y=:${el.Position.y}`} */}

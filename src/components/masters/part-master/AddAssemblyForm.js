@@ -159,6 +159,8 @@ class AddAssemblyForm extends Component {
             PartTypeId: this.props.selectedPartType.Value,
             PartId: assemblyPart ? assemblyPart.value : '',
             Input: getRandomSixDigit(),
+            Technology: DrawerPartData?.TechnologyName || '',
+            RevisionNo: DrawerPartData?.RevisionNumber || null
         }
 
         this.props.getDrawerAssemblyPartDetail('', res => { })
