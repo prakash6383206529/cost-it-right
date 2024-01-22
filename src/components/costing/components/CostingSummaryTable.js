@@ -14,7 +14,7 @@ import ViewPackagingAndFreight from './Drawers/ViewPackagingAndFreight'
 import ViewToolCost from './Drawers/viewToolCost'
 import SendForApproval from './approval/SendForApproval'
 import Toaster from '../../common/Toaster'
-import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails } from '../../../helper'
+import { checkForDecimalAndNull, checkForNull, checkPermission, formViewData, getTechnologyPermission, loggedInUserId, userDetails, allEqual, getConfigurationKey, getCurrencySymbol, highlightCostingSummaryValue, checkVendorPlantConfigurable, userTechnologyLevelDetails, showSaLineNumber } from '../../../helper'
 import Attachament from './Drawers/Attachament'
 import { BOPDOMESTIC, BOPIMPORT, COSTING, DRAFT, FILE_URL, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, VARIANCE, VBC, ZBC, VIEW_COSTING_DATA, VIEW_COSTING_DATA_LOGISTICS, NCC, EMPTY_GUID, ZBCTypeId, VBCTypeId, NCCTypeId, CBCTypeId, VIEW_COSTING_DATA_TEMPLATE, PFS2TypeId, REJECTED, SWAP_POSITIVE_NEGATIVE, WACTypeId } from '../../../config/constants'
 import { useHistory } from "react-router-dom";
@@ -1364,6 +1364,7 @@ const CostingSummaryTable = (props) => {
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
+    console.log('templateObj: ', templateObj);
     if (!(getConfigurationKey().IsBasicRateAndCostingConditionVisible)) {
       delete templateObj.conditionCost
       delete templateObj.BasicRate
@@ -1379,6 +1380,10 @@ const CostingSummaryTable = (props) => {
     if (!(reactLocalStorage.getObject('CostingTypePermission').cbc)) {
       templateObj.costingHeadCheck = 'VBC/ZBC/NCC'
       delete templateObj.customer
+    }
+    if (!showSaLineNumber()) {
+      delete templateObj.saNumber
+      delete templateObj.lineNumber
     }
     if ((viewCostingData && viewCostingData[0]?.technologyId && viewCostingData[0]?.technologyId !== DIE_CASTING)) {
       delete templateObj.castingWeightExcel
@@ -2815,7 +2820,25 @@ const CostingSummaryTable = (props) => {
                               })
                             }
                           </tr >
-
+                          {showSaLineNumber() && <tr>
+                            <td>
+                              <span className="d-block small-grey-text"> SA Number</span>
+                              <span className="d-block small-grey-text"> Line Number</span>
+                            </td>
+                            {viewCostingData &&
+                              viewCostingData?.map((data) => {
+                                return (
+                                  <td className={tableDataClass(data)}>
+                                    <span title={data?.saNumber} className={`w-fit ${highlighter("saNumber")}`}>
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.saNumber : '')}
+                                    </span>
+                                    <span title={data?.lineNumber} className={`w-fit ${highlighter("lineNumber")}`}>
+                                      {(data?.bestCost === true) ? ' ' : (data?.CostingHeading !== VARIANCE ? data?.lineNumber : '')}
+                                    </span>
+                                  </td>
+                                )
+                              })}
+                          </tr>}
                           {
                             initialConfiguration?.IsBasicRateAndCostingConditionVisible && <tr className={`${highlighter("BasicRate", "main-row")}`}>
                               <th>Basic Price </th>

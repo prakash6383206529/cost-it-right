@@ -15,7 +15,7 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../.
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
@@ -25,6 +25,7 @@ import { setSelectedRowForPagination } from '../../simulation/actions/Simulation
 import SelectRowWrapper from '../../common/SelectRowWrapper'
 import _ from 'lodash';
 import { reactLocalStorage } from 'reactjs-localstorage'
+import { hideMultipleColumnFromExcel } from '../../common/CommonFunctions'
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -53,7 +54,7 @@ function ReportListing(props) {
     const [pageNoNew, setPageNoNew] = useState(1)
     const [disableNextButtton, setDisableNextButtton] = useState(false)
     const [currentRowIndex, setCurrentRowIndex] = useState(0)
-    const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "", CustomerCode: '', CustomerName: '', Customer: '' })
+    const [floatingFilterData, setFloatingFilterData] = useState({ CostingNumber: "", TechnologyName: "", AmorizationQuantity: "", AnyOtherCost: "", CostingVersion: "", DisplayStatus: "", EffectiveDate: "", Currency: "", DepartmentCode: "", DepartmentName: "", DiscountCost: "", ECNNumber: "", FinalPOPrice: "", RawMaterialFinishWeight: "", FreightCost: "", FreightPercentage: "", FreightType: "", GrossWeight: "", HundiOrDiscountValue: "", ICCApplicability: "", ICCCost: "", ICCInterestRate: "", ICCOn: "", MasterBatchTotal: "", ModelTypeForOverheadAndProfit: "", ModifiedByName: "", ModifiedByUserName: "", ModifiedDate: "", NetBoughtOutPartCost: "", NetConversionCost: "", NetConvertedPOPrice: "", NetDiscountsCost: "", NetFreightPackaging: "", NetFreightPackagingCost: "", NetICCCost: "", NetOperationCost: "", NetOtherCost: "", NetOverheadAndProfitCost: "", NetPOPrice: "", NetPOPriceINR: "", NetPOPriceInCurrency: "", NetPOPriceOtherCurrency: "", NetProcessCost: "", NetRawMaterialsCost: "", NetSurfaceTreatmentCost: "", NetToolCost: "", NetTotalRMBOPCC: "", OtherCost: "", OtherCostPercentage: "", OverheadApplicability: "", OverheadCombinedCost: "", OverheadCost: "", OverheadOn: "", OverheadPercentage: "", PackagingCost: "", PackagingCostPercentage: "", PartName: "", PartNumber: "", PartType: "", PaymentTermCost: "", PaymentTermsOn: "", PlantCode: "", PlantName: "", ProfitApplicability: "", ProfitCost: "", ProfitOn: "", ProfitPercentage: "", RMGrade: "", RMSpecification: "", RawMaterialCode: "", RawMaterialGrossWeight: "", RawMaterialName: "", RawMaterialRate: "", RawMaterialScrapWeight: "", RawMaterialSpecification: "", RecordInsertedBy: "", RejectOn: "", RejectionApplicability: "", RejectionCost: "", RejectionPercentage: "", Remark: "", Rev: "", RevisionNumber: "", ScrapRate: "", ScrapWeight: "", SurfaceTreatmentCost: "", ToolCost: "", ToolLife: "", ToolMaintenaceCost: "", ToolPrice: "", ToolQuantity: "", TotalCost: "", TotalOtherCost: "", TotalRecordCount: "", TransportationCost: "", VendorCode: "", VendorName: "", Version: "", RawMaterialGrade: "", HundiOrDiscountPercentage: "", FromDate: "", ToDate: "", CustomerCode: '', CustomerName: '', Customer: '', SANumber: '', LineNumber: '' })
     const [enableSearchFilterSearchButton, setEnableSearchFilterButton] = useState(true)
     const [reportListingDataStateArray, setReportListingDataStateArray] = useState([])
     const [globalTake, setGlobalTake] = useState(defaultPageSize)
@@ -869,14 +870,20 @@ function ReportListing(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let temp = []
+        let tempData = [...data];
         temp = TempData && TempData.map((item) => {
             if (item?.EffectiveDate?.includes('T')) {
                 item.EffectiveDate = DayTime(item.EffectiveDate).format('DD/MM/YYYY')
             }
             return item
         })
+        if (!showSaLineNumber()) {
+            tempData = hideMultipleColumnFromExcel(tempData, ["SANumber", "LineNumber"]);
+        } else {
+            tempData = data
+        }
         return (<ExcelSheet data={temp} name={ReportMaster}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
 
@@ -1082,6 +1089,8 @@ function ReportListing(props) {
                             <AgGridColumn field='HundiOrDiscountValue' headerName='Hundi/Discount Value' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='OtherCostPercentage' headerName='Other Cost Percentage' cellRenderer='decimalInputOutputFormatter'></AgGridColumn>
                             <AgGridColumn field='AnyOtherCost' headerName='Any Other Cost' cellRenderer='decimalPriceFormatter'></AgGridColumn>
+                            {showSaLineNumber() && <AgGridColumn field='SANumber' headerName='SA Number' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
+                            {showSaLineNumber() && <AgGridColumn field='LineNumber' headerName='Line Number' cellRenderer='decimalPriceFormatter'></AgGridColumn>}
                             <AgGridColumn field='EffectiveDate' headerName='Effective Date' cellRenderer='effectiveDateFormatter' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
                             <AgGridColumn field='Currency' headerName='Currency' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='NCCPartQuantity' headerName='Quantity' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -1090,8 +1099,8 @@ function ReportListing(props) {
                             <AgGridColumn field='NetPOPriceOtherCurrency' headerName='Net Cost Other Currency' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='NetPOPriceINR' headerName='Net Cost (INR)' cellRenderer='decimalPriceFormatter'></AgGridColumn>
                             <AgGridColumn field='Remark' headerName='Remark' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                            <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>
+                            {showSaLineNumber() && <AgGridColumn field="SANumber" headerName="SANumber" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                            {showSaLineNumber() && <AgGridColumn field="LineNumber" headerName="Line Number" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                             <AgGridColumn width={"240px"} field="DisplayStatus" headerName="Status" headerClass="justify-content-center" cellClass="text-center" cellRenderer={'statusFormatter'} floatingFilterComponent="valuesFloatingFilter" floatingFilterComponentParams={floatingFilterStatus}></AgGridColumn>
 
                         </AgGridReact>
