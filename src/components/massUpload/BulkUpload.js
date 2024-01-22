@@ -233,13 +233,13 @@ class BulkUpload extends Component {
                     switch (String(this.props.fileName)) {
                         case String(RMDOMESTICBULKUPLOAD):
                             if (this.state.costingTypeId === ZBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkRM_Process_OperationConfigurable(RMDomesticZBC, ZBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === VBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticVBC, VBCTypeId), fileHeads, true)
                             }
                             else if (this.state.costingTypeId === CBCTypeId) {
-                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads)
+                                checkForFileHead = checkForSameFileUpload(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), fileHeads, true)
                             }
                             break;
                         case String(RMIMPORTBULKUPLOAD):
@@ -386,6 +386,7 @@ class BulkUpload extends Component {
 
                     let fileData = [];
                     resp.rows.map((val, index) => {
+
                         if (index > 0 && val?.length > 0 && val[0] !== '') {
                             // BELOW CODE FOR HANDLE EMPTY CELL VALUE
                             const i = val.findIndex(e => e === undefined);
@@ -393,8 +394,13 @@ class BulkUpload extends Component {
                                 val[i] = '';
                             }
 
+                            if (val.length === 1) {
+                                return null
+                            }
+
                             let obj = {}
                             val.map((el, i) => {
+
                                 if ((fileHeads[i] === 'EffectiveDate' || fileHeads[i] === 'DateOfPurchase') && typeof el === 'string' && el !== '') {
                                     if (isDateFormatter(el)) {
                                         el = el.replaceAll('/', '-')

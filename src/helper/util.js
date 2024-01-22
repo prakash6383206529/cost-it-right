@@ -1113,12 +1113,21 @@ export const showTitleForActiveToggle = (index) => {
   }, 500);
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
-export const checkForSameFileUpload = (master, fileHeads) => {
+export const checkForSameFileUpload = (master, fileHeads, isRm = false) => {
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
-
+  if (isRm) {
+    const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
+    if (hasNote) {
+      fileHeads = fileHeads.filter(header => header !== 'Note');
+      bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
+    }
+  }
+  // if (isRm && !fileHeads.includes('Note')) {
+  //   fileHeads.unshift('Note');
+  // }
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
