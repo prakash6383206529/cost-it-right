@@ -2,13 +2,12 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useDispatch, useSelector } from 'react-redux'
 import { getApprovalList, } from '../../actions/Approval'
-import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper/auth'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper/auth'
 import ApprovalSummary from './ApprovalSummary'
 import NoContentFound from '../../../common/NoContentFound'
 import { defaultPageSize, DRAFT, EMPTY_DATA, EMPTY_GUID, ZBCTypeId } from '../../../../config/constants'
 import DayTime from '../../../common/DayTimeWrapper'
 import CostingApproveReject from './CostingApproveReject'
-import ApproveRejectDrawer from './ApproveRejectDrawer'
 import { allEqual, checkForDecimalAndNull, checkForNull, formViewData, searchNocontentFilter } from '../../../../helper'
 import { PENDING } from '../../../../config/constants'
 import Toaster from '../../../common/Toaster'
@@ -640,7 +639,7 @@ function ApprovalListing(props) {
 
     if (!allEqual(departmentArray)) {
       gridApi.deselectAll()
-      Toaster.warning("Department should be same for sending costings for approval")
+      Toaster.warning(`${handleDepartmentHeader()} should be same for sending costings for approval`)
       // return Toaster.warning("Purchase Group should be same for sending multiple costing for approval")   //RE
     } else if (!allEqual(technologyArray)) {
       gridApi.deselectAll()

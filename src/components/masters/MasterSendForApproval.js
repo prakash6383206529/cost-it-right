@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails, checkForNull } from '../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails, checkForNull, handleDepartmentHeader } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
@@ -1184,7 +1184,7 @@ function MasterSendForApproval(props) {
                                     <>
                                         <div className="input-group form-group col-md-12 input-withouticon">
                                             <SearchableSelectHookForm
-                                                label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                                                label={`${handleDepartmentHeader()}`}
                                                 name={"dept"}
                                                 placeholder={"Select"}
                                                 Controller={Controller}

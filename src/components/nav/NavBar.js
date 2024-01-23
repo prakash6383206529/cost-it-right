@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { connect } from "react-redux";
 import { Link, } from "react-router-dom";
 import { NavbarToggler, Nav } from "reactstrap";
-import { getConfigurationKey, isUserLoggedIn, loggedInUserId } from '../../helper/auth';
+import { getConfigurationKey, handleDepartmentHeader, isUserLoggedIn, loggedInUserId } from '../../helper/auth';
 import {
   logoutUserAPI, getMenuByUser, getModuleSelectList, getPermissionByUser, getMenu,
   getTopAndLeftMenuData
@@ -947,10 +947,10 @@ class SideBar extends Component {
                       <Nav className="ml-auto top-menu logout d-inline-flex">
                         <div className="user-container"><div className="dropdown"><div className="user-name">{userData.Name}</div>
                           <ul className="dropdown_menu">
-                            <li className="dropdown_item-1">User Id: <span>{userData.UserName}</span></li>
+                            <li className="dropdown_item-1">User Name: <span>{userData.UserName}</span></li>
                             <li className="dropdown_item-2">Email Id:<span>{userData.Email}</span></li>
-                            <li className="dropdown_item-3">Role:<span>{ }</span></li>
-                            <li className="dropdown_item-4">Department:{userData.Department && userData.Department.map((item, index) => {
+                            <li className="dropdown_item-3">Role:<span>{userData.Role}</span></li>
+                            <li className="dropdown_item-4">{handleDepartmentHeader()}:{userData.Department && userData.Department.map((item, index) => {
                               return <span>{index + 1}. {item.DepartmentName}{userData.Department > 1 ? ',' : ''}</span>
                             })}</li>
                           </ul>

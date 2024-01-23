@@ -2,7 +2,7 @@ import { Drawer } from '@material-ui/core';
 import React, { Fragment, useState, useEffect } from 'react'
 import { Col, Row, Table } from 'reactstrap';
 import { SearchableSelectHookForm, TextAreaHookForm } from '../../layout/HookFormInputs';
-import { getConfigurationKey, loggedInUserId, userDetails } from '../../../helper';
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../helper';
 import { Controller, useForm } from 'react-hook-form';
 import NoContentFound from '../../common/NoContentFound';
 import { EMPTY_DATA, EMPTY_GUID, NFRAPPROVALTYPEID, NFRTypeId } from '../../../config/constants';
@@ -342,7 +342,7 @@ const ApprovalDrawer = (props) => {
                         {(!props.rejectDrawer && !isFinalLevelUser) && <> <Row>
                             <Col md={props.hideTable ? 12 : 6}>
                                 <SearchableSelectHookForm
-                                    label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                                    label={`${handleDepartmentHeader()}`}
                                     name={"dept"}
                                     placeholder={"Select"}
                                     Controller={Controller}

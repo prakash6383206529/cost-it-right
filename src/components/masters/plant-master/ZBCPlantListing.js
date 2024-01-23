@@ -7,7 +7,7 @@ import { MESSAGES } from '../../../config/message';
 import { defaultPageSize, EMPTY_DATA, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import Switch from "react-switch";
-import { loggedInUserId } from '../../../helper/auth';
+import { handleDepartmentHeader, loggedInUserId } from '../../../helper/auth';
 import AddZBCPlant from './AddZBCPlant';
 import LoaderCustom from '../../common/LoaderCustom';
 import { PlantZbc } from '../../../config/constants';
@@ -273,7 +273,12 @@ const ZBCPlantListing = (props) => {
         return (
             <ExcelSheet data={TempData} name={PlantZbc}>
                 {data && data.map((ele, index) => (
-                    <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />
+                    <ExcelColumn
+                        key={index}
+                        label={(ele.label === "Company Name") ? `${handleDepartmentHeader()} Name` : ele.label}
+                        value={ele.value}
+                        style={ele.style}
+                    />
                 ))}
             </ExcelSheet>
         );
@@ -287,7 +292,7 @@ const ZBCPlantListing = (props) => {
     const resetState = () => {
         const searchBox = document.getElementById("filter-text-box");
         if (searchBox) {
-          searchBox.value = ""; // Reset the input field's value
+            searchBox.value = ""; // Reset the input field's value
         }
         state.gridApi.setQuickFilter(null)
         state.gridApi.deselectAll();
@@ -399,7 +404,7 @@ const ZBCPlantListing = (props) => {
                         <AgGridColumn field="PlantCode" headerName="Plant Code"></AgGridColumn>
                         {/* THIS IS COMMENTED IN //RE  */}
                         {/* <AgGridColumn field="Purchase Group" headerName="Company Name"></AgGridColumn> */}
-                        <AgGridColumn field="CompanyName" headerName="Company Name"></AgGridColumn>
+                        <AgGridColumn field="CompanyName" headerName={`${handleDepartmentHeader()} Name`}></AgGridColumn>
                         <AgGridColumn field="CountryName" headerName="Country"></AgGridColumn>
                         <AgGridColumn field="StateName" headerName="State"></AgGridColumn>
                         <AgGridColumn field="CityName" headerName="City"></AgGridColumn>

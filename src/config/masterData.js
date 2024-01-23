@@ -5782,9 +5782,6 @@ export const REPORT_DOWNLOAD_EXCEl = [
     { label: "Part Type", value: "PartType", },
     { label: "Department Code", value: "DepartmentCode", },
     { label: "Department Name", value: "DepartmentName", },
-    //MINDA
-    // { label: "Company Code", value: "DepartmentCode", },
-    // { label: "Company Name", value: "DepartmentName", },
     { label: "Revision No.", value: "RevisionNumber", },
     { label: "Code", value: "RawMaterialCode", },
     { label: "RM Name", value: "RawMaterialName", },
@@ -5922,9 +5919,6 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Mobile No", value: "Mobile", },
     { label: "Phone No", value: "PhoneNumber", },
     { label: "Department", value: "DepartmentName", },
-    // { label: "Purchase Group", value: "DepartmentName", },         // KEEP COMMENTED ON RE						//RE
-    //MINDA
-    // { label: "Company", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
 

@@ -18,7 +18,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, COMBINED_PROCESS, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBC, VBCTypeId, CBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting, handleDepartmentHeader } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -1195,8 +1195,7 @@ function SimulationApprovalSummary(props) {
                                             <th>Token No:</th>
                                             {isMasterAssociatedWithCosting && <th>Technology:</th>}
                                             <th>Parts Supplied:</th>
-                                            <th>Department Code:</th>
-                                            {/* <th>Purchase Group:</th>               //RE */}
+                                            <th>{handleDepartmentHeader()} Code:</th>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
                                             {simulationDetail?.SimulationHeadId !== CBCTypeId && <th>Vendor (Code):</th>}
                                             {simulationDetail?.SimulationHeadId === CBCTypeId && <th>Customer (Code):</th>}
