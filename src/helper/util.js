@@ -1120,11 +1120,15 @@ export const checkForSameFileUpload = (master, fileHeads, isRm = false) => {
   bulkUploadArray = [...array]
   if (isRm) {
     const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
+    console.log('hasNote: ', hasNote);
     if (hasNote) {
       fileHeads = fileHeads.filter(header => header !== 'Note');
+      console.log('fileHeads: ', fileHeads);
       bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
+      console.log('bulkUploadArray: ', bulkUploadArray);
     }
   }
+
   // if (isRm && !fileHeads.includes('Note')) {
   //   fileHeads.unshift('Note');
   // }
