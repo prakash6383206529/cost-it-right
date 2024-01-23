@@ -1339,21 +1339,21 @@ function CostingSimulation(props) {
             switch (Number(masterIdTemp)) {
                 case Number(RMDOMESTIC):
                 case Number(RMIMPORT):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : listRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listRM : CostingSimulationDownloadRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(SURFACETREATMENT):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : listST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listST : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(OPERATIONS):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : listOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listOP : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? listBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? !showSaLineNumber() ? listBOP : CostingSimulationDownloadBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 // return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? CostingSimulationDownloadBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])                    //RE
                 case Number(EXCHNAGERATE):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : listER, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listER : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 case Number(MACHINERATE):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : listMR, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listMR : CostingSimulationDownloadMR, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 case Number(COMBINED_PROCESS):                    //RE
-                    return returnExcelColumn(isTokenAPI ? finalGrid : listCP, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listCP : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 default:
                     return 'foo'
             }
