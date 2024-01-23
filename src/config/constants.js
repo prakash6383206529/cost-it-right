@@ -2110,6 +2110,8 @@ export const VIEW_COSTING_DATA = {
   otherDiscountValuePercent: 'Hundi/Discount Value',
   otherDiscountCost: 'Hundi/Discount Cost',
   anyOtherCostTotal: 'Any Other Cost',
+  saNumber: 'SA Number',
+  lineNumber: 'Line Number',
   BasicRate: 'Basic Rate',
   npvCost: 'Net NPV Cost',
   conditionCost: 'Net Costing Condition',
