@@ -17,7 +17,6 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
             loginTime: data.LoginTime,
             userName: data.UserName,
             ipAddress: data.IPAddress,
-            macAddress: data.MacAddress,
             userAgent: data.UserAgent,
             sortName: sortName,
             isSortByOrderAsc: false, // Convert boolean to string
@@ -27,7 +26,6 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
             search: data.search,
             departments: data.departments
         };
-        console.log(paramsToAdd, "paramsToAdd");
 
 
         // Only add parameters which are not undefined, empty string or null
@@ -46,8 +44,8 @@ export function getUserAuditLog(data, skip, take, isPagination, isSortByOrderAsc
 
         // Handle the request response
         request.then((response) => {
-            console.log('response: ', response);
-            if (response.data) {
+
+            if (response) {
                 // Dispatch the action to the store with the audit log data
                 dispatch({
                     type: GET_LOGIN_AUDIT_SUCCESS,

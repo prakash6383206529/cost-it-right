@@ -27,7 +27,7 @@ const gridOptions = {};
 
 function LoginAudit(props) {
     const [state, setState] = useState({
-        auditDataList: [],
+        // auditDataList: [],
         isLoader: false,
         noData: false,
         dataCount: 0,
@@ -59,16 +59,13 @@ function LoginAudit(props) {
     })
     const dispatch = useDispatch();
     const auditDataList = useSelector(state => state.audit.auditDataList);
-
     const [fromDate, setFromDate] = useState(null)
     const [toDate, setToDate] = useState(null)
     const [filteredData, setFilteredData] = useState(auditDataList);
     const [searchText, setSearchText] = useState('');
     const { selectedRowForPagination } = useSelector(state => state.simulation);
     const { topAndLeftMenuData } = useSelector(state => state.auth);
-
     useEffect(() => {
-
         getDataList(0, state.globalTake, true, state.floatingFilterData);
         // eslint-disable-next-line
     }, [])
@@ -94,15 +91,17 @@ function LoginAudit(props) {
         }
         setState(prevState => ({ ...prevState, isLoader: true }));
         dispatch(getUserAuditLog(dataObj, skip, take, isPagination, true, '', (res) => {
+            console.log('res: ', res);
             setState(prevState => ({ ...prevState, isLoader: false }));
 
             if (res && res.status === 200) {
-                let Data = res.data.DataList;
-                setState(prevState => ({ ...prevState, auditDataList: Data, noData: false, isLoader: false }));
-            } else if (res && res.response && res.response.status === 412) {
-                setState(prevState => ({ ...prevState, auditDataList: [], noData: true, isLoader: false }));
+
+                setState(prevState => ({ ...prevState, auditDataList, noData: false, isLoader: false }));
+            }
+            else if (res && res.response && res.response.status === 412) {
+                setState(prevState => ({ ...prevState, auditDataList, noData: true, isLoader: false }));
             } else {
-                setState(prevState => ({ ...prevState, auditDataList: [], noData: true, isLoader: false }));
+                setState(prevState => ({ ...prevState, auditDataList, noData: true, isLoader: false }));
             }
 
             if (res && isPagination === false) {
@@ -115,8 +114,10 @@ function LoginAudit(props) {
             }
 
             if (res) {
+                console.log('res: ', res);
                 if (res.status === 204) {
-                    setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0 }));
+                    setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0, noData: true, auditDataList }));
+
                 }
                 if (res.data && res.data.DataList.length > 0) {
                     setState(prevState => ({ ...prevState, totalRecordCount: res.data.DataList[0].TotalRecordCount }));
@@ -450,6 +451,10 @@ function LoginAudit(props) {
 
         state.gridApi.paginationSetPageSize(Number(newPageSize));
     };
+    const effectiveDateFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        return cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY - HH:mm:ss') : '';
+    }
 
     const isFirstColumn = (params) => {
         var displayedColumns = params.columnApi.getAllDisplayedColumns();
@@ -531,7 +536,7 @@ function LoginAudit(props) {
         comparator: function (filterLocalDateAtMidnight, cellValue) {
             var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
 
-            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('YYYY/MM/DD[T]HH:mm:ss') : '';
+            var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('YYYY/MM/DD') : '';
 
             setDate(newDate)
             handleDate(newDate)
@@ -565,7 +570,7 @@ function LoginAudit(props) {
     };
     const frameworkComponents = {
         customNoRowsOverlay: NoContentFound,
-        // effectiveDateFormatter: effectiveDateFormatter,
+        effectiveDateFormatter: effectiveDateFormatter,
         hyphenFormatter: hyphenFormatter,
         checkBoxRenderer: checkBoxRenderer
 
@@ -674,7 +679,7 @@ function LoginAudit(props) {
                                                 <AgGridColumn field="UserName" headerName="User Name" cellRenderer={'checkBoxRenderer'}></AgGridColumn>
                                                 <AgGridColumn field="IPAddress" headerName="IP Address" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                                                 <AgGridColumn field="UserAgent" headerName="User Agent" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                                                <AgGridColumn field="LoginTime" headerName="Login Time (Local Time)" filter="agDateColumnFilter" filterParams={filterParams} ></AgGridColumn>
+                                                <AgGridColumn field="LoginTime" headerName="Login Time (Local Time)" filter="agDateColumnFilter" cellRenderer={'effectiveDateFormatter'} filterParams={filterParams} ></AgGridColumn>
                                             </AgGridReact>}
                                             <div className='button-wrapper'>
                                                 {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
