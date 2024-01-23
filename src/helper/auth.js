@@ -51,3 +51,7 @@ export function userDepartmetList() {
   const userDetail = reactLocalStorage.getObject('departmentList')
   return userDetail
 }
+//FUNCTION TO SHOW SA AND LINE NUMBER
+export function showSaLineNumber() {
+  return getConfigurationKey().IsShowSAAndLineNo
+}

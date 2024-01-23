@@ -7,7 +7,7 @@ import { AssemblyWiseImpactt, EMPTY_DATA, ImpactMaster, TOFIXEDVALUE } from '../
 import { getComparisionSimulationData, getExchangeCostingSimulationList, getImpactedMasterData, getSimulatedAssemblyWiseImpactDate } from '../actions/Simulation';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer'
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, searchNocontentFilter, userDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, searchNocontentFilter, showSaLineNumber, userDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { EMPTY_GUID, EXCHNAGERATE } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -705,8 +705,8 @@ function OtherCostingSimulation(props) {
                                                     <AgGridColumn width={130} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>
                                                     <AgGridColumn width={140} field="VendorName" tooltipField='VendorName' cellRenderer='vendorFormatter' headerName='Vendor'></AgGridColumn>
                                                     {/* MINDA */}
-                                                    {/* <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>
-                                                    <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn> */}
+                                                    {showSaLineNumber() && <AgGridColumn width={130} field="SANumber" headerName='SA Number' editable={true}></AgGridColumn>}
+                                                    {showSaLineNumber() && <AgGridColumn width={130} field="LineNumber" headerName='Line Number' editable={true}></AgGridColumn>}
                                                     {(String(master) === EXCHNAGERATE || showExchangeRateColumn) &&
                                                         <>
                                                             <AgGridColumn width={130} field="Currency" headerName='Currency' cellRenderer='revisionFormatter'></AgGridColumn>
