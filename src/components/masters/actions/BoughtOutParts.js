@@ -18,7 +18,6 @@ import {
   GET_PAYMENT_SELECTLIST_SUCCESS
 } from '../../../config/constants';
 import { apiErrors } from '../../../helper/util';
-import { loggedInUserId, userDetails } from '../../../helper';
 import Toaster from '../../common/Toaster';
 import { bopQueryParms } from '../masterUtil';
 import { reactLocalStorage } from 'reactjs-localstorage';

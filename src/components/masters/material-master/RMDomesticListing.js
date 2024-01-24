@@ -948,14 +948,16 @@ function RMDomesticListing(props) {
                                         </div>
                                     }
 
-                                    <Button
-                                        id={"rmDomesticListing_refresh"}
-                                        onClick={() => resetState()}
-                                        title={"Reset Grid"}
-                                        icon={"refresh"}
-                                    />
+
                                 </>
+
                             }
+                            <Button
+                                id={"rmDomesticListing_refresh"}
+                                onClick={() => resetState()}
+                                title={"Reset Grid"}
+                                icon={"refresh"}
+                            />
                         </Col>
 
                     </Row>
