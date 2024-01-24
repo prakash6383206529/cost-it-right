@@ -4,7 +4,7 @@ import { Container, TabContent, TabPane, Nav, NavItem, NavLink, } from "reactstr
 import UserRegistration from './UserRegistration';
 import Role from './RolePermissions/Role';
 import { checkPermission } from '../../helper/util';
-import { getConfigurationKey } from '../../helper/auth';
+import { getConfigurationKey, handleDepartmentHeader } from '../../helper/auth';
 import { USER, ROLE, DEPARTMENT, LEVELS, COMPANY, RFQUSER } from '../../config/constants';
 import classnames from 'classnames';
 import DepartmentsListing from './DepartmentsListing';
@@ -215,8 +215,7 @@ const User = () => {
           </NavItem>}
           {ViewDepartmentAccessibility && <NavItem>
             <NavLink className={classnames({ active: state.activeTab === '3' })} onClick={() => { toggle('3'); }}>
-              {`Manage ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
-              {/* {`Manage ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}  //RE */}
+              {`Manage ${handleDepartmentHeader()}`}
             </NavLink>
           </NavItem>}
           {ViewLevelAccessibility && <NavItem>

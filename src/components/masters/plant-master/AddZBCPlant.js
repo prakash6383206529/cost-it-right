@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from "redux-form";
 import { Container, Row, Col, } from 'reactstrap';
 import { required, maxLength6, maxLength80, checkWhiteSpaces, minLength10, alphaNumeric, maxLength71, maxLength5, acceptAllExceptSingleSpecialCharacter, postiveNumber, maxLength12, checkSpacesInString, postiveNumberForPlantCode, number, maxLength4, hashValidation, alphaneumericSpecialAccept, maxLength25 } from "../../../helper/validation";
-import { userDetails, loggedInUserId } from "../../../helper/auth";
+import { userDetails, loggedInUserId, handleDepartmentHeader } from "../../../helper/auth";
 import { focusOnError, renderText, renderTextInputField, searchableSelect } from "../../layout/FormInputs";
 import { createPlantAPI, getPlantUnitAPI, updatePlantAPI, getComapanySelectList } from '../actions/Plant';
 import {
@@ -399,8 +399,7 @@ class AddZBCPlant extends Component {
                       <Field
                         name="CompanyName"
                         type="text"
-                        label="Company (Code)"
-                        // label="Purchase Group"     //RE
+                        label={`${handleDepartmentHeader()} (Code)`}
                         component={searchableSelect}
                         placeholder={isViewMode ? '-' : "Select"}
                         options={this.selectType("Company")}

@@ -11,7 +11,7 @@ import { MESSAGES } from "../../config/message";
 import { Container, Row, Col } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import DayTime from "../common/DayTimeWrapper"
-import { getConfigurationKey, loggedInUserId } from "../../helper";
+import { handleDepartmentHeader, loggedInUserId } from "../../helper";
 
 
 class Department extends Component {
@@ -22,7 +22,6 @@ class Department extends Component {
 			isLoader: false,
 			isSubmitted: false,
 			isEditFlag: false,
-			isCompanyConfigurable: getConfigurationKey().IsCompanyConfigureOnPlant
 		};
 	}
 
@@ -101,13 +100,7 @@ class Department extends Component {
 			this.props.updateDepartmentAPI(formReq, (res) => {
 				// IF COMPANY CONFIGURABLE IS TRUE
 				if (res && res.data && res.data.Result) {
-					if (this.state.isCompanyConfigurable) {
-						Toaster.success(MESSAGES.UPDATE_COMPANY_SUCCESSFULLY)
-					}
-					else {
-						// IF COMPANY CONFIGURABLE IS FALSE
-						Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
-					}
+					Toaster.success(MESSAGES.UPDATE_DEPARTMENT_SUCCESSFULLY)
 				}
 				reset();
 				this.toggleDrawer('', 'submit')
@@ -149,8 +142,7 @@ class Department extends Component {
 								<Row className="drawer-heading">
 									<Col>
 										<div className={'header-wrapper left'}>
-											<h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}` : `Add ${this.state.isCompanyConfigurable ? 'Company' : 'Department'}`}</h3>
-											{/* <h3>{isEditFlag ? `Update ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}` : `Add ${this.state.isCompanyConfigurable ? 'Purchase Group' : 'Purchase Group'}`}</h3>   //RE  */}
+											<h3>{isEditFlag ? `Update ${handleDepartmentHeader()}` : `Add ${handleDepartmentHeader()}`}</h3>
 										</div>
 										<div
 											onClick={(e) => this.toggleDrawer(e, 'cancel')}

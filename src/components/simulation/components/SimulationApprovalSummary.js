@@ -18,7 +18,7 @@ import 'react-dropzone-uploader/dist/styles.css';
 import Toaster from '../../common/Toaster';
 import { EMPTY_GUID, EXCHNAGERATE, RMDOMESTIC, RMIMPORT, FILE_URL, ZBC, COMBINED_PROCESS, COSTINGSIMULATIONROUND, SURFACETREATMENT, OPERATIONS, BOPDOMESTIC, BOPIMPORT, AssemblyWiseImpactt, ImpactMaster, defaultPageSize, MACHINERATE, VBC, VBCTypeId, CBCTypeId, } from '../../../config/constants';
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
-import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting } from '../../../helper';
+import { checkForDecimalAndNull, formViewData, checkForNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userTechnologyLevelDetails, getCodeBySplitting, handleDepartmentHeader, showSaLineNumber } from '../../../helper';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
@@ -44,7 +44,7 @@ import _, { debounce } from 'lodash'
 import CalculatorWrapper from '../../common/Calculator/CalculatorWrapper';
 import { approvalPushedOnSap } from '../../costing/actions/Approval'; //MINDA
 import { PaginationWrapper } from '../../common/commonPagination';
-import { hideColumnFromExcel } from '../../common/CommonFunctions';
+import { hideColumnFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
 import SimulationApproveReject from '../../costing/components/approval/SimulationApproveReject';
@@ -487,7 +487,6 @@ function SimulationApprovalSummary(props) {
 
     const renderColumn = () => {
         let finalGrid = [], isTokenAPI = false, downloadGrid = []
-
         downloadGrid = dataForDownload && dataForDownload.map((item) => {
             if (item.IsMultipleRM === true) {
                 item.RMName = 'Multiple RM'
@@ -509,7 +508,6 @@ function SimulationApprovalSummary(props) {
             }
             return item
         })
-
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true || showCombinedProcessColumn === true) {
             if (showBOPColumn || isBOPDomesticOrImport) {
@@ -542,33 +540,53 @@ function SimulationApprovalSummary(props) {
             // }
             if (showCombinedProcessColumn || isCombinedProcess) {
                 finalGrid = [...finalGrid, ...CPGridForTokenSummary]
-
-                if (isMultiTechnology) {
-                    return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, downloadGrid?.length > 0 ? downloadGrid : [])
-                } else {
-                    switch (String(SimulationTechnologyId)) {
-                        case RMDOMESTIC:
-                        case RMIMPORT:
-                            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADRM, downloadGrid?.length > 0 ? downloadGrid : [])
-                        case SURFACETREATMENT:
-                            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADST, downloadGrid?.length > 0 ? downloadGrid : [])
-                        case OPERATIONS:
-                            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, downloadGrid?.length > 0 ? downloadGrid : [])
-                        case BOPDOMESTIC:
-                        case BOPIMPORT:
-                            return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? SIMULATIONAPPROVALSUMMARYDOWNLOADBOP : SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING), downloadGrid?.length > 0 ? downloadGrid : [])
-                        case MACHINERATE:
-                            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADMR, downloadGrid?.length > 0 ? downloadGrid : [])
-                        case EXCHNAGERATE:
-                            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADER, downloadGrid?.length > 0 ? downloadGrid : [])
-                        case COMBINED_PROCESS:
-                            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADCP, downloadGrid.length > 0 ? downloadGrid : [])
-                        default:
-                            break;
-                    }
-                }
+            }
+            finalGrid = [...InitialGridForTokenSummary, ...finalGrid, ...LastGridForTokenSummary]
+        }
+        if (isMultiTechnology) {
+            return returnExcelColumn(isTokenAPI ? finalGrid : SIMULATIONAPPROVALSUMMARYDOWNLOADASSEMBLYTECHNOLOGY, downloadGrid?.length > 0 ? downloadGrid : [])
+        }
+        else {
+            let listRM = []
+            let listBOP = []
+            let listST = []
+            let listOP = []
+            let listMR = []
+            let listCP = []
+            let listER = []
+            if (!showSaLineNumber()) {
+                // Hide the specified columns using the common function
+                listRM = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADRM, ['SANumber', 'LineNumber']);
+                listBOP = hideMultipleColumnFromExcel(isMasterAssociatedWithCosting ? SIMULATIONAPPROVALSUMMARYDOWNLOADBOP : SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING, ['SANumber', 'LineNumber']);
+                listST = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADST, ['SANumber', 'LineNumber']);
+                listOP = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, ['SANumber', 'LineNumber']);
+                listMR = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADMR, ['SANumber', 'LineNumber']);
+                listCP = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADCP, ['SANumber', 'LineNumber']);
+                listER = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADER, ['SANumber', 'LineNumber']);
+            }
+            console.log('listRM: ', listRM);
+            switch (String(SimulationTechnologyId)) {
+                case RMDOMESTIC:
+                case RMIMPORT:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listRM : SIMULATIONAPPROVALSUMMARYDOWNLOADRM, downloadGrid?.length > 0 ? downloadGrid : [])
+                case SURFACETREATMENT:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listST : SIMULATIONAPPROVALSUMMARYDOWNLOADST, downloadGrid?.length > 0 ? downloadGrid : [])
+                case OPERATIONS:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listOP : SIMULATIONAPPROVALSUMMARYDOWNLOADOPERATION, downloadGrid?.length > 0 ? downloadGrid : [])
+                case BOPDOMESTIC:
+                case BOPIMPORT:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listBOP : (isMasterAssociatedWithCosting ? SIMULATIONAPPROVALSUMMARYDOWNLOADBOP : SIMULATIONAPPROVALSUMMARYDOWNLOADBOPWITHOUTCOSTING), downloadGrid?.length > 0 ? downloadGrid : [])
+                case MACHINERATE:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listMR : SIMULATIONAPPROVALSUMMARYDOWNLOADMR, downloadGrid?.length > 0 ? downloadGrid : [])
+                case EXCHNAGERATE:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listER : SIMULATIONAPPROVALSUMMARYDOWNLOADER, downloadGrid?.length > 0 ? downloadGrid : [])
+                case COMBINED_PROCESS:
+                    return returnExcelColumn(isTokenAPI ? finalGrid : !showSaLineNumber() ? listCP : SIMULATIONAPPROVALSUMMARYDOWNLOADCP, downloadGrid?.length > 0 ? downloadGrid : [])
+                default:
+                    break;
             }
         }
+
     }
 
     const returnExcelColumn = (data = [], TempData) => {
@@ -1195,8 +1213,7 @@ function SimulationApprovalSummary(props) {
                                             <th>Token No:</th>
                                             {isMasterAssociatedWithCosting && <th>Technology:</th>}
                                             <th>Parts Supplied:</th>
-                                            <th>Department Code:</th>
-                                            {/* <th>Purchase Group:</th>               //RE */}
+                                            <th>{handleDepartmentHeader()} Code:</th>
                                             {String(SimulationTechnologyId) !== EXCHNAGERATE && <th>Costing Head:</th>}
                                             {simulationDetail?.SimulationHeadId !== CBCTypeId && <th>Vendor (Code):</th>}
                                             {simulationDetail?.SimulationHeadId === CBCTypeId && <th>Customer (Code):</th>}
@@ -1342,7 +1359,7 @@ function SimulationApprovalSummary(props) {
                                                                 // || keysForDownloadSummary?.IsCombinedProcessSimulation               //RE
                                                             )
                                                                 ?
-                                                                <ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
+                                                                < ExcelFile filename={'Costing'} fileExtension={'.xls'} element={
                                                                     <button title="Download" type="button" className={'user-btn'} ><div className="download mr-0"></div></button>}>
                                                                     {renderColumn()}
                                                                     {returnExcelColumnSecond()}
@@ -1394,9 +1411,8 @@ function SimulationApprovalSummary(props) {
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="ECNNumber" headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="RevisionNumber" headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId !== CBCTypeId && <AgGridColumn width={150} field="VendorName" tooltipField='VendorName' headerName="Vendor (Code)"></AgGridColumn>}
-                                                                {/* //MINDA */}
-                                                                {/* {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}
-                                                                {isMasterAssociatedWithCosting && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>} */}
+                                                                {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="SANumber" headerName="SA Number"></AgGridColumn>}
+                                                                {isMasterAssociatedWithCosting && showSaLineNumber() && <AgGridColumn width={150} field="LineNumber" headerName="Line Number"></AgGridColumn>}
                                                                 {costingList[0]?.CostingHeadId === CBCTypeId && <AgGridColumn width={150} field="CustomerName" tooltipField='CustomerName' headerName="Customer (Code)"></AgGridColumn>}
                                                                 {String(SimulationTechnologyId) !== EXCHNAGERATE && <AgGridColumn width={150} field="PlantName" headerName='Plant (Code)' cellRenderer={'plantFormatter'} ></AgGridColumn>}
                                                                 {isMasterAssociatedWithCosting && <AgGridColumn width={140} field="BudgetedPrice" headerName='Budgeted Price' cellRenderer='impactPerQuarterFormatter'></AgGridColumn>}

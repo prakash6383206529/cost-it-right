@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { getReasonSelectList } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { getConfigurationKey, loggedInUserId, userDetails } from '../../../../helper'
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { FILE_URL, REASON_ID, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6 } from '../../../../config/constants'
 import { uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -34,7 +34,7 @@ function ApproveRejectUI(props) {
 
   const { TokensList } = useSelector(state => state.simulation)
 
-  const { register, control, formState: { errors }, setValue } = useForm({
+  const { register, control, formState: { errors }, setValue, handleSubmit } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
   })
   const userData = userDetails()
@@ -285,6 +285,9 @@ function ApproveRejectUI(props) {
     onSubmit()
     setShowPopup(false)
   }
+  const submitForm = handleSubmit(() => {
+    onSubmit()
+  })
   return (
     <>
       <Drawer
@@ -333,7 +336,7 @@ function ApproveRejectUI(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                        label={`${handleDepartmentHeader()}`}
                         name={"dept"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -374,7 +377,7 @@ function ApproveRejectUI(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                        label={`${handleDepartmentHeader()}`}
                         name={"dept"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -615,7 +618,7 @@ function ApproveRejectUI(props) {
                   <Button
                     id="Approval_Submit"
                     className="submit-button"
-                    onClick={onSubmit}
+                    onClick={submitForm}
                     disabled={isDisable}
                     icon={"save-icon"}
                     buttonName={"Submit"}

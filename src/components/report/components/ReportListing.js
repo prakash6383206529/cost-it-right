@@ -16,6 +16,7 @@ import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
+import { handleDepartmentHeader } from '../../../helper'
 
 
 
@@ -405,15 +406,23 @@ function ReportListing(props) {
 
     }
 
+
     const returnExcelColumn = (data = [], TempData) => {
-        let temp = []
-
-
-
-        return (<ExcelSheet data={TempData} name={ReportMaster}>
-            {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
-        </ExcelSheet>);
-    }
+        return (
+            <ExcelSheet data={TempData} name={ReportMaster}>
+                {data &&
+                    data.map((ele, index) => (
+                        <ExcelColumn
+                            key={index}
+                            label={(ele.label === "Department Code") ? `${handleDepartmentHeader()} Code` :
+                                (ele.label === "Department Name") ? `${handleDepartmentHeader()} Name` :
+                                    ele.label}
+                            value={ele.value}
+                        />
+                    ))}
+            </ExcelSheet>
+        );
+    };
 
     /**
     * @method onSubmit
@@ -442,7 +451,7 @@ function ReportListing(props) {
                     <Col md="6" lg="6" className="search-user-block mb-3">
                         <div className="d-flex justify-content-end bd-highlight excel-btn w100">
                             <div>
-                            <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
+                                <ExcelFile filename={ReportMaster} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div>DOWNLOAD</button>}>
                                     {renderColumn(ReportMaster)}
                                 </ExcelFile>
 
@@ -466,7 +475,7 @@ function ReportListing(props) {
             </div>
 
 
-            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray && reportListingDataStateArray?.length <=0 ?"overlay-contain": ""}`}>
+            <div className={`ag-grid-wrapper height-width-wrapper  ${reportListingDataStateArray && reportListingDataStateArray?.length <= 0 ? "overlay-contain" : ""}`}>
                 <div className="ag-grid-header">
                     <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Filter..." onChange={(e) => onFilterTextBoxChanged(e)} />
                 </div>
@@ -500,7 +509,7 @@ function ReportListing(props) {
 
                         <AgGridColumn field="CostingNumber" headerName="Costing Version"></AgGridColumn>
                         <AgGridColumn field="TechnologyName" headerName="Technology"></AgGridColumn>
-                        <AgGridColumn field="DepartmentName" headerName="Company" cellRenderer='hyphenFormatter'></AgGridColumn>
+                        <AgGridColumn field="DepartmentName" headerName={`${handleDepartmentHeader()}`} cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="PlantName" headerName="Plant(Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                         <AgGridColumn field="NetPOPrice" headerName="PO Price"></AgGridColumn>
                         <AgGridColumn field="PartNumber" headerName="Part Number"></AgGridColumn>
