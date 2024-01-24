@@ -35,6 +35,7 @@ import { getUsersMasterLevelAPI } from '../../actions/auth/AuthActions';
 import { checkFinalUser } from '../../components/costing/actions/Costing';
 import { costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../common/CommonFunctions';
 import { ENTRY_TYPE_DOMESTIC } from '../../config/constants';
+import { checkSAPCodeinExcel } from './DownloadUploadBOMxls';
 
 class BulkUpload extends Component {
     constructor(props) {
@@ -282,7 +283,7 @@ class BulkUpload extends Component {
                             }
                             break;
                         case String(PARTCOMPONENTBULKUPLOAD):
-                            checkForFileHead = checkForSameFileUpload(PartComponent, fileHeads)
+                            checkForFileHead = checkForSameFileUpload(checkSAPCodeinExcel(PartComponent), fileHeads)
                             break;
                         case String(PRODUCTCOMPONENTBULKUPLOAD):
                             checkForFileHead = checkForSameFileUpload(ProductComponent, fileHeads)

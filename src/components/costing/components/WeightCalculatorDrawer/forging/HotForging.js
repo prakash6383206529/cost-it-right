@@ -339,6 +339,10 @@ function HotForging(props) {
   }
   const dropDown = [
     {
+      label: 'Burning Loss',
+      value: 2
+    },
+    {
       label: 'Scale Loss',
       value: 5,
     },

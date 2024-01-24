@@ -15,7 +15,7 @@ import { AssemblyWiseImpactt } from '../../../config/constants'
 import ReactExport from 'react-export-excel';
 import { PaginationWrapper } from '../../common/commonPagination';
 import WarningMessage from '../../common/WarningMessage';
-import { getComparisionSimulationData } from '../actions/Simulation';
+import { getComparisionSimulationData, setTechnologyForSimulation } from '../actions/Simulation';
 import { setCostingViewData } from '../../costing/actions/Costing';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer';
 import { Link } from 'react-scroll';
@@ -32,6 +32,7 @@ function AssemblyWiseImpactSummary(props) {
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [showViewAssembly, setShowViewAssembly] = useState(false)
     const [noData, setNoData] = useState(false);
+    const [technology, setTechnologyName] = useState('')
     const simulationAssemblyListSummary = useSelector((state) => state.simulation.simulationAssemblyListSummary)
     const { initialConfiguration } = useSelector(state => state.auth)
     const dispatch = useDispatch()
@@ -104,6 +105,7 @@ function AssemblyWiseImpactSummary(props) {
             const obj1 = formViewData(Data.OldCosting)
             dispatch(setCostingViewData(obj1))
             setShowViewAssembly(true)
+            setTechnologyName(obj1[0].technology)
         }))
     }
 
@@ -217,6 +219,7 @@ function AssemblyWiseImpactSummary(props) {
                     simulationDrawer={true}
                     isOldCosting={true}
                     isSummaryDrawer={true}
+                    selectedTechnology={technology}
                 />
             }
         </div >
