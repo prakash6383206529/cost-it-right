@@ -1689,8 +1689,7 @@ class AddBOPImport extends Component {
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
                           </Col>
-                          {/* FOR MINDA ONLY*/}
-                          <Col md="3">
+                          {getConfigurationKey().IsShowPaymentTermsFields && <Col md="3">
                             <Field
                               name="paymentTerms"
                               type="text"
@@ -1704,7 +1703,7 @@ class AddBOPImport extends Component {
                               valueDescription={this.state.paymentTerm}
                               disabled={isViewMode || (isEditFlag && isBOPAssociated)}
                             />
-                          </Col>
+                          </Col>}
                           <Col md="3">
                             <Field
                               name="Currency"

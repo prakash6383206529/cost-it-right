@@ -2255,54 +2255,7 @@ class AddRMImport extends Component {
                                 validate={[positiveAndDecimalNumber, maxLength15, number]}
                                 component={renderTextInputField}
                                 required={false}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                className=" "
-                                customClassName=" withBorder"
-                                onChange={this.handleCutOfChange}
-                              />
-                            </Col>
-
-                            <Col md="3">
-                              <Field
-                                label={labelWithUOMAndCurrency("Cut Off Price", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                name={"cutOffPriceBase"}
-                                type="text"
-                                placeholder={(isViewFlag || !this.state.IsFinancialDataChanged) ? '-' : "Enter"}
-                                validate={[positiveAndDecimalNumber, maxLength15, number]}
-                                component={renderTextInputField}
-                                required={false}
                                 disabled={true}
-                                className=" "
-                                customClassName=" withBorder"
-                                onChange={this.handleCutOfChange}
-                              />
-                            </Col>
-
-                            <Col md="3">
-                              <Field
-                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                name={"BasicRateCurrency"}
-                                type="text"
-                                placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
-                                validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={true}
-                                disabled={isViewFlag || (isEditFlag && isRMAssociated)}
-                                className=" "
-                                customClassName=" withBorder"
-                              />
-                            </Col>
-                            <Col md="3">
-                              <Field
-                                label={labelWithUOMAndCurrency("Basic Rate", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                name={"BasicRateBase"}
-                                type="text"
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={true}
-                                disabled={true}
-                                maxLength="15"
                                 className=" "
                                 customClassName=" withBorder"
                                 onChange={this.handleCutOfChange}
