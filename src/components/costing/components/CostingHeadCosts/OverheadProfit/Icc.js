@@ -159,9 +159,9 @@ function Icc(props) {
             if (isNetWeight && !(costData.IsAssemblyPart) && !(isPartApplicability)) {
                 let rmValue = reactLocalStorage.getObject('costingArray')
                 let newRmCost = (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.RMRate) * (Array.isArray(rmValue) && rmValue[0]?.CostingPartDetails?.CostingRawMaterialsCost[0]?.FinishWeight)
-                NetRawMaterialsCost = newRmCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
+                NetRawMaterialsCost = newRmCost
             } else {
-                NetRawMaterialsCost = headerCosts.NetRawMaterialsCost + (includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)
+                NetRawMaterialsCost = headerCosts.NetRawMaterialsCost
             }
 
             const ConversionCostForCalculation = costData.IsAssemblyPart ? checkForNull(headerCosts.NetConversionCost) - checkForNull(headerCosts.TotalOtherOperationCostPerAssembly) : headerCosts.ProcessCostTotal + headerCosts.OperationCostTotal
@@ -175,12 +175,12 @@ function Icc(props) {
                 case 'RM':
                 case 'Part Cost':
                     if ((partType && Text === 'Part Cost') || (!partType && Text === 'RM')) {
-                        setValue('CostApplicability', checkForDecimalAndNull(NetRawMaterialsCost, initialConfiguration.NoOfDecimalForPrice))
-                        setValue('NetICCTotal', checkForDecimalAndNull((NetRawMaterialsCost * calculatePercentage(InterestRatePercentage)), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('CostApplicability', checkForDecimalAndNull(NetRawMaterialsCost + checkForNull(includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0), initialConfiguration.NoOfDecimalForPrice))
+                        setValue('NetICCTotal', checkForDecimalAndNull((NetRawMaterialsCost + checkForNull((includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0))) * calculatePercentage(InterestRatePercentage), initialConfiguration.NoOfDecimalForPrice))
                         setTempInventoryObj({
                             ...tempInventoryObj,
-                            CostApplicability: checkForNull(NetRawMaterialsCost),
-                            NetICCTotal: checkForNull(NetRawMaterialsCost) * calculatePercentage(InterestRatePercentage)
+                            CostApplicability: checkForNull(NetRawMaterialsCost) + checkForNull((includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0)),
+                            NetICCTotal: checkForNull(NetRawMaterialsCost + checkForNull((includeOverHeadProfitIcc ? totalOverHeadAndProfit : 0))) * calculatePercentage(InterestRatePercentage)
                         })
                     }
                     break;
