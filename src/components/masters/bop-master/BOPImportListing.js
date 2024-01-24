@@ -291,6 +291,9 @@ const BOPImportListing = (props) => {
         }
         )
       );
+    } else {
+      setState((prevState) => ({ ...prevState, isLoader: false }));
+
     }
   };
 
@@ -923,10 +926,7 @@ const BOPImportListing = (props) => {
   const editSelectedData = () => {
     setState((prevState) => ({ ...prevState, editSelectedList: true, tempList: state.gridApi?.getSelectedRows() ? state.gridApi?.getSelectedRows() : [], }));
   };
-  const handleShown = () => {
-    setState((prevState) => ({ ...prevState, shown: !state.shown, }));
-    getDataList();
-  }
+
 
   const backToSimulation = (value) => {
     setState((prevState) => ({ ...prevState, editSelectedList: false }));
@@ -953,26 +953,7 @@ const BOPImportListing = (props) => {
                   </Col>
                   <Col md="9" lg="9" className=" mb-3">
                     <div className="d-flex justify-content-end bd-highlight w100">
-                      {state.shown ? (
-                        // <Button
-                        // className="user-btn mr5 filter-btn-top"
-                        // id="bopImportListing_cancelFilter"
-                        // onClick={handleShown()}
-                        //icon="cancel-icon-white
-                        ///>
-                        <button
-                          type="button"
-                          className="user-btn mr5 filter-btn-top"
-                          onClick={() => {
-                            setState((prevState) => ({ ...prevState, shown: !state.shown, }));
-                            getDataList();
-                          }}
-                        >
-                          <div className="cancel-icon-white"></div>
-                        </button>
-                      ) : (
-                        <></>
-                      )}
+
                       {!props.isMasterSummaryDrawer && (
                         <>
                           {
@@ -990,23 +971,24 @@ const BOPImportListing = (props) => {
                           {
                             <Button id="bopImportListing_filterData" disabled={state.disableFilter} title={"Filtered data"} type="button" className={"user-btn mr5"} icon={"filter mr-0"} onClick={() => onSearch()} />
                           }
-                        </>
-                      )}
-                      {permissions?.Add && (
-                        <Button id="bopImportListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
-                      )}
-                      {permissions?.BulkUpload && (
-                        <Button id="bopImportListing_add" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
-                      )}
-                      {permissions?.Download && (
-                        <>
-                          <Button className={"user-btn mr5"} id={"bopImportingListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
+                          {permissions?.Add && (
+                            <Button id="bopImportListing_add" className={"mr5"} onClick={formToggle} title={"Add"} icon={"plus"} />
+                          )}
+                          {permissions?.BulkUpload && (
+                            <Button id="bopImportListing_add" className={"mr5"} onClick={bulkToggle} title={"Bulk Upload"} icon={"upload"} />
+                          )}
+                          {permissions?.Download && (
+                            <>
+                              <Button className={"user-btn mr5"} id={"bopImportingListing_excel_download"} onClick={onExcelDownload} title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} icon={"download mr-1"} buttonName={`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} />
 
-                          <ExcelFile filename={"BOP Import"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
-                            {onBtExport()}
-                          </ExcelFile>
+                              <ExcelFile filename={"BOP Import"} fileExtension={".xls"} element={<Button id={"Excel-Downloads-bop-import"} className="p-absolute" />}>
+                                {onBtExport()}
+                              </ExcelFile>
+                            </>
+                          )}
                         </>
                       )}
+
 
                       <Button
                         id={"bopImportingListing_refresh"} className={"user-btn mr-1"} onClick={() => resetState()} title={"Reset Grid"} icon={"refresh"} />
@@ -1086,7 +1068,7 @@ const BOPImportListing = (props) => {
                         <AgGridColumn field="NetLandedCost" headerName="Net Cost (Currency)" cellRenderer="costFormatter"></AgGridColumn>
                         <AgGridColumn field="NetLandedCostConversion" headerName={headerNames?.NetCost} cellRenderer={"commonCostFormatter"}></AgGridColumn>
                         <AgGridColumn field="EffectiveDate" headerName="Effective Date" cellRenderer={"effectiveDateFormatter"} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
-                        {!props.isSimulation && !props.isMasterSummaryDrawer && (<AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" pinned="right" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>)}
+                        {!props.isSimulation && !props.isMasterSummaryDrawer && (<AgGridColumn field="BoughtOutPartId" width={160} cellClass="ag-grid-action-container actions-wrapper" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={"totalValueRenderer"} ></AgGridColumn>)}
                         {props.isMasterSummaryDrawer && (<AgGridColumn field="Attachements" headerName="Attachments" cellRenderer={"attachmentFormatter"}></AgGridColumn>)}
                         {props.isMasterSummaryDrawer && (<AgGridColumn field="Remark" tooltipField="Remark"></AgGridColumn>)}</AgGridReact>
                       <div>
@@ -1143,22 +1125,12 @@ const BOPImportListing = (props) => {
                 <Row>
                   <Col md="12" className="d-flex justify-content-end">
                     <Button className={"apply"} id={"bopImportListing_editSelectedData"} onClick={editSelectedData} icon="edit-icon" buttonName="Edit" />
-
-                    {/* <button
-                      type="button"
-                      className={"apply"}
-                      onClick={editSelectedData}
-                    >
-                      {" "}
-                      <div className={"edit-icon"}></div>Edit
-                    </button> */}
                   </Col>
                 </Row>
               )}
             </>
           )}
-          {isBulkUpload && (
-            <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"BOP Import"} isZBCVBCTemplate={true} messageLabel={"BOP Import"} anchor={"right"} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_IMPORT} />
+          {isBulkUpload && (<BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={"BOP Import"} isZBCVBCTemplate={true} messageLabel={"BOP Import"} anchor={"right"} masterId={BOP_MASTER_ID} typeOfEntryId={ENTRY_TYPE_IMPORT} />
           )}
 
           {state.analyticsDrawer && (

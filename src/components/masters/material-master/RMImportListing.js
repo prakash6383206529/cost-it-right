@@ -891,7 +891,6 @@ function RMImportListing(props) {
                 <input type="text" className="form-control table-search" id="filter-text-box" placeholder="Search " autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
               </Col>
               <Col md="9" lg="9" className=" mb-3 d-flex justify-content-end">
-                {/* SHOW FILTER BUTTON ONLY FOR RM MASTER NOT FOR SIMULATION AMD MASTER APPROVAL SUMMARY */}
                 {(!props?.isMasterSummaryDrawer) && <>
 
                   {isSimulation && !isFromVerifyPage &&
@@ -1053,14 +1052,15 @@ function RMImportListing(props) {
                     </AgGridReact >
                     <div className='button-wrapper'>
                       {<PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />}
-
-                      <div className="d-flex pagination-button-container">
-                        <p><Button id="rmImportListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
-                        {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
-                        {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
-                        {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
-                        <p><Button id="rmImportListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
-                      </div>
+                      {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
+                        <div className="d-flex pagination-button-container">
+                          <p><Button id="rmImportListing_previous" variant="previous-btn" onClick={() => onBtPrevious()} /></p>
+                          {pageSize.pageSize10 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 10)}</p>}
+                          {pageSize.pageSize50 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 50)}</p>}
+                          {pageSize.pageSize100 && <p className="next-page-pg custom-left-arrow">Page <span className="text-primary">{pageNo}</span> of {Math.ceil(totalRecordCount / 100)}</p>}
+                          <p><Button id="rmImportListing_next" variant="next-btn" onClick={() => onBtNext()} /></p>
+                        </div>
+                      }
                     </div>
                   </div >
                 </div >
