@@ -6,7 +6,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOPDOMESTIC, BOPIMPORT, COSTINGSIMULATIONROUND, TOFIXEDVALUE, EMPTY_DATA, MACHINERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, ImpactMaster, EXCHNAGERATE, COMBINED_PROCESS, defaultPageSize, CBCTypeId, FORGINGNAME } from '../../../config/constants';
 import { getComparisionSimulationData, getCostingBoughtOutPartSimulationList, getCostingSimulationList, getCostingSurfaceTreatmentSimulationList, setShowSimulationPage, getSimulatedAssemblyWiseImpactDate, getImpactedMasterData, getExchangeCostingSimulationList, getMachineRateCostingSimulationList, getCombinedProcessCostingSimulationList, getAllMultiTechnologyCostings, getAllSimulatedMultiTechnologyCosting, getAllSimulatedBoughtOutPart, setTechnologyForSimulation } from '../actions/Simulation';
 import CostingDetailSimulationDrawer from './CostingDetailSimulationDrawer'
-import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyLevelDetails } from '../../../helper';
+import { checkForDecimalAndNull, checkForNull, formViewData, getConfigurationKey, loggedInUserId, searchNocontentFilter, showSaLineNumber, userDetails, userTechnologyLevelDetails } from '../../../helper';
 import VerifyImpactDrawer from './VerifyImpactDrawer';
 import { AssemblyWiseImpactt } from '../../../config/constants';
 import Toaster from '../../common/Toaster';
@@ -1307,6 +1307,11 @@ function CostingSimulation(props) {
             let masterIdTemp = master
             let listRM = []
             let listBOP = []
+            let listST = []
+            let listOP = []
+            let listMR = []
+            let listCP = []
+            let listER = []
             if (String(master) === String(EXCHNAGERATE) || amendmentDetails?.IsExchangeRateSimulation) {
                 if (simulationApplicability?.value === APPLICABILITY_BOP_SIMULATION) {
                     masterIdTemp = BOPIMPORT
@@ -1320,25 +1325,35 @@ function CostingSimulation(props) {
                 listRM = hideMultipleColumnFromExcel(CostingSimulationDownloadRM, ["OldExchangeRate", "NewExchangeRate", "ERVariance"])
                 listBOP = hideMultipleColumnFromExcel(CostingSimulationDownloadBOP, ["OldExchangeRate", "NewExchangeRate", "ERVariance"])
             }
+            if (!showSaLineNumber()) {
+                // Hide the specified columns using the common function
+                listRM = hideMultipleColumnFromExcel(listRM, ['SANumber', 'LineNumber']);
+                listBOP = hideMultipleColumnFromExcel(listBOP, ['SANumber', 'LineNumber']);
+                listST = hideMultipleColumnFromExcel(CostingSimulationDownloadST, ['SANumber', 'LineNumber']);
+                listOP = hideMultipleColumnFromExcel(CostingSimulationDownloadOperation, ['SANumber', 'LineNumber']);
+                listMR = hideMultipleColumnFromExcel(CostingSimulationDownloadMR, ['SANumber', 'LineNumber']);
+                listCP = hideMultipleColumnFromExcel(COMBINEDPROCESSSIMULATION, ['SANumber', 'LineNumber']);
+                listER = hideMultipleColumnFromExcel(EXCHANGESIMULATIONDOWNLOAD, ['SANumber', 'LineNumber']);
+            }
 
             switch (Number(masterIdTemp)) {
                 case Number(RMDOMESTIC):
                 case Number(RMIMPORT):
                     return returnExcelColumn(isTokenAPI ? finalGrid : listRM, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(SURFACETREATMENT):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : listST, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(OPERATIONS):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadOperation, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : listOP, selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 case Number(BOPDOMESTIC):
                 case Number(BOPIMPORT):
                     return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? listBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])
                 // return returnExcelColumn(isTokenAPI ? finalGrid : (isMasterAssociatedWithCosting ? CostingSimulationDownloadBOP : SimulationDownloadBOP), selectedRowData?.length > 0 ? arrayOFCorrectObjIndividual : downloadList && downloadList?.length > 0 ? downloadList : [])                    //RE
                 case Number(EXCHNAGERATE):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : EXCHANGESIMULATIONDOWNLOAD, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : listER, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 case Number(MACHINERATE):
-                    return returnExcelColumn(isTokenAPI ? finalGrid : CostingSimulationDownloadMR, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : listMR, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 case Number(COMBINED_PROCESS):                    //RE
-                    return returnExcelColumn(isTokenAPI ? finalGrid : COMBINEDPROCESSSIMULATION, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
+                    return returnExcelColumn(isTokenAPI ? finalGrid : listCP, selectedRowData.length > 0 ? selectedRowData : downloadList && downloadList.length > 0 ? downloadList : [])
                 default:
                     return 'foo'
             }
@@ -1617,8 +1632,8 @@ function CostingSimulation(props) {
                                                     {isSimulationWithCosting && <AgGridColumn width={110} field="ECNNumber" tooltipField='ECNNumber' headerName='ECN No.' cellRenderer='ecnFormatter'></AgGridColumn>}
                                                     {isSimulationWithCosting && <AgGridColumn width={130} field="RevisionNumber" tooltipField='RevisionNumber' headerName='Revision No.' cellRenderer='revisionFormatter'></AgGridColumn>}
                                                     {/* //MINDA */}
-                                                    {/* {isSimulationWithCosting && <AgGridColumn width={130} field="SANumber" tooltipField='SANumber' headerName='SA Number' editable={true}></AgGridColumn>}
-                                                        {isSimulationWithCosting && <AgGridColumn width={130} field="LineNumber" tooltipField='LineNumber' headerName='Line Number' editable={true}></AgGridColumn>} */}
+                                                    {isSimulationWithCosting && showSaLineNumber() && <AgGridColumn width={130} field="SANumber" tooltipField='SANumber' headerName='SA Number' editable={true}></AgGridColumn>}
+                                                    {isSimulationWithCosting && showSaLineNumber() && <AgGridColumn width={130} field="LineNumber" tooltipField='LineNumber' headerName='Line Number' editable={true}></AgGridColumn>}
                                                     {/* //MINDA */}
                                                     {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessName" tooltipField='ProcessName' headerName='Process Name' cellRenderer='processFormatter'></AgGridColumn>}
                                                     {((isMachineRate || showMachineRateColumn) && !isMultipleMasterSimulation) && <AgGridColumn width={140} field="ProcessCode" tooltipField='ProcessCode' headerName='Process Code' cellRenderer='processFormatter'></AgGridColumn>}

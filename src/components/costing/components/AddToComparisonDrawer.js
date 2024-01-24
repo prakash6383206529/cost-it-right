@@ -548,6 +548,8 @@ function AddToComparisonDrawer(props) {
           obj.rawMaterialCostWithCutOff = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff ? dataFromAPI?.CostingPartDetails?.RawMaterialCostWithCutOff : ''
           obj.MachiningScrapRate = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost.length > 0 ? dataFromAPI?.CostingPartDetails?.CostingRawMaterialsCost[0].MachiningScrapRate : '-'
           obj.anyOtherCostTotal = dataFromAPI?.CostingPartDetails && dataFromAPI?.CostingPartDetails?.NetOtherCost ? dataFromAPI?.CostingPartDetails?.NetOtherCost : '-'
+          obj.saNumber = dataFromAPI?.SANumber ?? '-'
+          obj.lineNumber = dataFromAPI?.LineNumber ?? '-'
           // temp.push(VIEW_COSTING_DATA)
           if (index >= 0) {
 

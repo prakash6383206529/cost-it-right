@@ -8,7 +8,7 @@ import {
 } from '../../actions/Costing';
 import { getConditionDetails, getCurrencySelectList, getNpvDetails, saveCostingDetailCondition, saveCostingDetailNpv, } from '../../../../actions/Common';
 import { costingInfoContext, netHeadCostContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, loggedInUserId, removeBOPfromApplicability, maxLength20, showSaLineNumber } from '../../../../helper';
 //MINDA
 // import {  removeBOPFromList} from '../../../../helper';
 import { SearchableSelectHookForm, TextAreaHookForm, TextFieldHookForm } from '../../../layout/HookFormInputs';
@@ -327,7 +327,7 @@ function TabDiscountOther(props) {
         "Description": item?.OtherCostDescription,
         "NetCost": item?.AnyOtherCost,
         "Value": item?.PercentageOtherCost,
-        "CRMHead": item?.CRMHead
+        "CRMHead": item?.CRMHead,
       }
       otherCostFinalArray.push(data1)
     })
@@ -380,6 +380,8 @@ function TabDiscountOther(props) {
         "NetNpvCost": checkForNull(totalNpvCost),
         "NetConditionCost": checkForNull(totalConditionCost),
       },
+      "SANumber": getValues('SANumber'),
+      "LineNumber": getValues('LineNumber'),
       "Attachements": updatedFiles,
       "IsChanged": true,
     }
@@ -423,8 +425,8 @@ function TabDiscountOther(props) {
             setValue('NetPOPriceOtherCurrency', Data.NetPOPriceInOtherCurrency !== null ? checkForDecimalAndNull(Data.NetPOPriceInOtherCurrency, initialConfiguration?.NoOfDecimalForPrice) : '')
             setValue('Remarks', Data.Remark !== null ? Data.Remark : '')
             //MINDA
-            // setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
-            // setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
+            setValue('SANumber', Data.SANumber !== null ? Data.SANumber : '')
+            setValue('LineNumber', Data.LineNumber !== null ? Data.LineNumber : '')
 
             setEffectiveDate(DayTime(Data.EffectiveDate).isValid() ? DayTime(Data.EffectiveDate) : '')
             setValue('AnyOtherCost', costDetail.NetOtherCost !== null ? checkForDecimalAndNull(costDetail.NetOtherCost, initialConfiguration?.NoOfDecimalForPrice) : '')
@@ -972,10 +974,12 @@ function TabDiscountOther(props) {
         "Description": item?.OtherCostDescription,
         "NetCost": item?.AnyOtherCost,
         "Value": item?.PercentageOtherCost,
-        "CRMHead": item?.CRMHead
+        "CRMHead": item?.CRMHead,
+
       }
       otherCostFinalArray.push(data1)
     })
+    console.log('otherCostFinalArray: ', otherCostFinalArray);
 
     let discountArray = [
       {
@@ -1025,6 +1029,8 @@ function TabDiscountOther(props) {
         "NetNpvCost": checkForNull(totalNpvCost),
         "NetConditionCost": checkForNull(totalConditionCost),
       },
+      "SANumber": getValues('SANumber'),
+      "LineNumber": getValues('LineNumber'),
       "Attachements": updatedFiles
     }
     if (costData.IsAssemblyPart === true && !partType) {
@@ -1819,6 +1825,44 @@ function TabDiscountOther(props) {
                         disabled={true}
                       />
                     </Col>
+                    {showSaLineNumber() &&
+                      <> <Col md="2">
+                        <TextFieldHookForm
+                          label="SA Number"
+                          name={'SANumber'}
+                          Controller={Controller}
+                          control={control}
+                          register={register}
+                          mandatory={false}
+                          rules={{
+                            validate: { maxLength20 }
+                          }}
+                          handleChange={() => { }}
+                          defaultValue={""}
+                          className=""
+                          customClassName={'withBorder'}
+                          errors={errors.SANumber}
+                          disabled={CostingViewMode ? true : false}
+                        />
+                      </Col>
+                        <Col md="2">
+                          <TextFieldHookForm
+                            label="Line Number"
+                            name={'LineNumber'}
+                            Controller={Controller}
+                            control={control}
+                            register={register}
+                            mandatory={false}
+                            rules={{ validate: { maxLength20 } }}
+                            handleChange={() => { }}
+                            defaultValue={""}
+                            className=""
+                            customClassName={'withBorder'}
+                            errors={errors.LineNumber}
+                            disabled={CostingViewMode ? true : false}
+                          />
+                        </Col></>}
+
                   </Row >
                   <Row className="mt-2">
                     <Col md="3" className={`mt20 pt-3`}>
