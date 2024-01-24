@@ -214,17 +214,23 @@ function LoginAudit(props) {
     // Update to handleToDateChange
     const handleToDateChange = (date) => {
         setToDate(date);
-        if (fromDate && date) {
+
+        if (!date) {
+            // If to date is cleared, set the warning message to false
+            setState(prevState => ({ ...prevState, warningMessage: false }));
+        } else if (fromDate) {
             // Enable the filter button
             setState(prevState => ({ ...prevState, disableFilter: false, warningMessage: true }));
         } else {
             // Disable the filter button if fromDate is not selected yet
             setState(prevState => ({ ...prevState, disableFilter: true }));
         }
+
         if (fromDate && date && date < fromDate) {
             setFromDate(null);
         }
     };
+
     const formatToDateString = (dateObject) => {
         return dateObject.toISOString(); // Use your desired string format
     }
