@@ -7,7 +7,7 @@ import Toaster from '../common/Toaster';
 import { MESSAGES } from '../../config/message';
 import { defaultPageSize, EMPTY_DATA } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
-import { getConfigurationKey } from '../../helper/auth';
+import { getConfigurationKey, handleDepartmentHeader } from '../../helper/auth';
 import { checkPermission, searchNocontentFilter } from '../../helper/util';
 import Department from './Department';
 import { DEPARTMENT } from '../../config/constants';
@@ -223,9 +223,9 @@ const DepartmentsListing = () => {
                   frameworkComponents={frameworkComponents}
                 >
                   {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                  <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}></AgGridColumn>
+                  <AgGridColumn field="DepartmentName" headerName={handleDepartmentHeader()}></AgGridColumn>
                   {/* <AgGridColumn field="DepartmentName" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}></AgGridColumn>   //RE */}
-                  <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Department Code'}></AgGridColumn>
+                  <AgGridColumn field="DepartmentCode" headerName={`${handleDepartmentHeader()} Code`}></AgGridColumn>
                   {/* <AgGridColumn field="DepartmentCode" headerName={getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company Code' : 'Purchase Group Code'}></AgGridColumn> //RE */}
                   <AgGridColumn field="DepartmentId" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer={'totalValueRenderer'}></AgGridColumn>
                 </AgGridReact>}

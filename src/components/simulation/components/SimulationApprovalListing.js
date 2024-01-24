@@ -2,7 +2,7 @@ import React, { useState, useEffect, Fragment } from 'react'
 import { Row, Col } from 'reactstrap'
 import { useForm } from 'react-hook-form'
 import { useDispatch, useSelector } from 'react-redux'
-import { loggedInUserId, userDetails } from '../../../helper/auth'
+import { handleDepartmentHeader, loggedInUserId, userDetails } from '../../../helper/auth'
 import NoContentFound from '../../common/NoContentFound'
 import { defaultPageSize, EMPTY_DATA, LINKED } from '../../../config/constants'
 import DayTime from '../../common/DayTimeWrapper'
@@ -535,7 +535,7 @@ function SimulationApprovalListing(props) {
             Toaster.warning('Status should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         } else if (!allEqual(tempArrDepartmentId)) {
-            Toaster.warning('Department should be same for sending multiple costing for approval')
+            Toaster.warning(`${handleDepartmentHeader()} should be same for sending multiple costing for approval`)
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
             Toaster.warning('Level should be same for sending multiple costing for approval')

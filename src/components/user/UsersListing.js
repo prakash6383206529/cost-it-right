@@ -9,7 +9,7 @@ import { defaultPageSize, EMPTY_DATA, RFQUSER } from '../../config/constants';
 import { USER } from '../../config/constants';
 import NoContentFound from '../common/NoContentFound';
 import Switch from "react-switch";
-import { loggedInUserId } from '../../helper/auth';
+import { handleDepartmentHeader, loggedInUserId } from '../../helper/auth';
 import ViewUserDetails from './ViewUserDetails';
 import { checkPermission, searchNocontentFilter, showTitleForActiveToggle } from '../../helper/util';
 import LoaderCustom from '../common/LoaderCustom';
@@ -161,7 +161,7 @@ const UsersListing = (props) => {
 		})
 		return (
 			<ExcelSheet data={TempData} name={UserListing}>
-				{data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+				{data && data.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
 			</ExcelSheet>);
 	}
 	/**
@@ -381,7 +381,7 @@ const UsersListing = (props) => {
 							<AgGridColumn field="PhoneNumber" headerName="Phone No." cellRenderer={'hyphenFormatter'}></AgGridColumn>
 							{/* {getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn field="Departments" filter={true} cellRenderer='departmentFormatter' headerName="Company"></AgGridColumn>}
 								{!getConfigurationKey().IsMultipleDepartmentAllowed && <AgGridColumn sort={true} field="DepartmentName" headerName="Company"></AgGridColumn>} */}
-							<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName="Department"></AgGridColumn>
+							<AgGridColumn field="DepartmentName" tooltipField="DepartmentName" headerName={`${handleDepartmentHeader()}`}></AgGridColumn>
 							{/* //RE    */}
 							{props?.RFQUser && <AgGridColumn field="PointOfContact" tooltipField="PointOfContact" headerName="Points of Contact"></AgGridColumn>}
 							<AgGridColumn field="RoleName" headerName="Role"></AgGridColumn>

@@ -5,7 +5,7 @@ import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import { getNfrInsightsDetails, getNfrInsightsStatusDetails } from '../../actions/ReportListing';
-import { loggedInUserId, searchNocontentFilter } from '../../../../helper';
+import { handleDepartmentHeader, loggedInUserId, searchNocontentFilter } from '../../../../helper';
 import { EMPTY_DATA } from '../../../../config/constants';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
@@ -160,7 +160,7 @@ function NFRInsightsReport(props) {
         return (
 
             <ExcelSheet data={TempData} name={'NFR Insight Report'}>
-                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+                {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Company") ? `${handleDepartmentHeader()}` : ele.label} value={ele.value} style={ele.style} />)}
             </ExcelSheet>);
     }
 
@@ -225,7 +225,7 @@ function NFRInsightsReport(props) {
                             frameworkComponents={frameworkComponents}
                             onRowSelected={onRowSelect}
                         >
-                            <AgGridColumn field="Company" width={"240px"} headerName="Company"></AgGridColumn>
+                            <AgGridColumn field="Company" width={"240px"} headerName={`${handleDepartmentHeader()}`}></AgGridColumn>
                             <AgGridColumn field="PlantName" width={"240px"} headerName="Plant (Code)"></AgGridColumn>
                             <AgGridColumn field="TotalNfrCount" headerName="Total Nfr Count"></AgGridColumn>
                             <AgGridColumn field="TotalOEQA1Count" headerName="Total OEQA1 Count" cellRenderer='linkableTotalOEQA1Formatter'></AgGridColumn>

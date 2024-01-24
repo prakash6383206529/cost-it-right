@@ -15,7 +15,7 @@ import { ReportMaster, ReportSAPMaster, EMPTY_DATA, defaultPageSize } from '../.
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage'
 import CostingDetailSimulationDrawer from '../../simulation/components/CostingDetailSimulationDrawer'
-import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber } from '../../../helper'
+import { formViewData, checkForDecimalAndNull, userDetails, searchNocontentFilter, showSaLineNumber, handleDepartmentHeader } from '../../../helper'
 import ViewRM from '../../costing/components/Drawers/ViewRM'
 import { PaginationWrapper } from '../../common/commonPagination'
 import { agGridStatus, getGridHeight, isResetClick, disabledClass, fetchCostingHeadsAPI } from '../../../actions/Common'
@@ -883,7 +883,9 @@ function ReportListing(props) {
             tempData = data
         }
         return (<ExcelSheet data={temp} name={ReportMaster}>
-            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} />)}
+            {tempData && tempData.map((ele, index) => <ExcelColumn key={index} label={(ele.label === "Department Code") ? `${handleDepartmentHeader()} Code` :
+                (ele.label === "Department Name") ? `${handleDepartmentHeader()} Name` :
+                    ele.label} value={ele.value} />)}
         </ExcelSheet>);
     }
 
@@ -1039,8 +1041,8 @@ function ReportListing(props) {
                             <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='PartType' headerName='Part Type' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='DepartmentCode' headerName='Department Code' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            <AgGridColumn field='DepartmentName' headerName='Department Name' cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='DepartmentCode' headerName={`${handleDepartmentHeader()} Code`} cellRenderer='hyphenFormatter'></AgGridColumn>
+                            <AgGridColumn field='DepartmentName' headerName={`${handleDepartmentHeader()} Name`} cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='RevisionNumber' headerName='Revision Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialCode' headerName='Code' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>
                             <AgGridColumn field='RawMaterialName' headerName='RM Name' cellRenderer='partTypeAssemblyFormatter'></AgGridColumn>

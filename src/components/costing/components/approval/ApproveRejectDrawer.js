@@ -5,7 +5,7 @@ import Drawer from '@material-ui/core/Drawer'
 import { useDispatch, useSelector } from 'react-redux'
 import { approvalRequestByApprove, rejectRequestByApprove, getAllApprovalUserFilterByDepartment, getAllApprovalDepartment, getReasonSelectList, approvalPushedOnSap } from '../../../costing/actions/Approval'
 import { TextAreaHookForm, SearchableSelectHookForm } from '../../../layout/HookFormInputs'
-import { formatRMSimulationObject, getCodeBySplitting, getConfigurationKey, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
+import { formatRMSimulationObject, getCodeBySplitting, getConfigurationKey, handleDepartmentHeader, loggedInUserId, userDetails, userTechnologyLevelDetails } from '../../../../helper'
 import PushButtonDrawer from './PushButtonDrawer'
 import { APPROVER, EMPTY_GUID, FILE_URL, REASON_ID, INR } from '../../../../config/constants'
 import { getSimulationApprovalByDepartment, simulationApprovalRequestByApprove, simulationRejectRequestByApprove, simulationApprovalRequestBySender, saveSimulationForRawMaterial, getAllSimulationApprovalList, pushAPI, sapPushedInitialMoment, setAttachmentFileData, uploadSimulationAttachment } from '../../../simulation/actions/Simulation'
@@ -1047,8 +1047,7 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
-                        // label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Purchase Group'}`}                     //RE
+                        label={`${handleDepartmentHeader()}`}
                         name={"dept"}
                         placeholder={"Select"}
                         Controller={Controller}
@@ -1093,8 +1092,7 @@ function ApproveRejectDrawer(props) {
                   <>
                     <div className="input-group form-group col-md-12 input-withouticon">
                       <SearchableSelectHookForm
-                        label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
-                        // label={"Purchase Group"}                     //RE
+                        label={`${handleDepartmentHeader()}`}
                         name={"dept"}
                         placeholder={"Select"}
                         Controller={Controller}
