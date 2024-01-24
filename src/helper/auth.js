@@ -53,5 +53,9 @@ export function userDepartmetList() {
 }
 //FUNCTION TO SHOW SA AND LINE NUMBER
 export function showSaLineNumber() {
-  return getConfigurationKey().IsShowSAAndLineNo
+  return getConfigurationKey().IsShowSaAndLineNumberFields
+}
+//FUNCTION TO HANDLE DEPARTMENT LABEL
+export function handleDepartmentHeader() {
+  return getConfigurationKey().ManageCompanyOrDepartmentLabel
 }

@@ -1,4 +1,4 @@
-import { getConfigurationKey } from "../helper";
+import { getConfigurationKey, handleDepartmentHeader } from "../helper";
 
 export const MESSAGES = {
   INVALID_EMAIL_PASSWORD: 'Either email or password is invalid or your account is inactive',
@@ -244,13 +244,10 @@ export const MESSAGES = {
   ROLE_INACTIVE_SUCCESSFULLY: 'Role de-activated successfully',
 
   //DEPARTMENT
-  ADD_COMPANY_SUCCESSFULLY: 'Company added successfully',
-  UPDATE_COMPANY_SUCCESSFULLY: 'Company updated successfully',
-  DELETE_COMPANY_SUCCESSFULLY: 'Company deleted successfully',
-  DEPARTMENT_DELETE_ALERT: 'Are you sure you want to delete this Company?',
-  ADD_DEPARTMENT_SUCCESSFULLY: 'Department added successfully',
-  UPDATE_DEPARTMENT_SUCCESSFULLY: 'Department updated successfully',
-  DELETE_DEPARTMENT_SUCCESSFULLY: 'Department deleted successfully',
+  DEPARTMENT_DELETE_ALERT: `Are you sure you want to delete this ${handleDepartmentHeader()}?`,
+  ADD_DEPARTMENT_SUCCESSFULLY: `${handleDepartmentHeader()} added successfully`,
+  UPDATE_DEPARTMENT_SUCCESSFULLY: `${handleDepartmentHeader()} updated successfully`,
+  DELETE_DEPARTMENT_SUCCESSFULLY: `${handleDepartmentHeader()} deleted successfully`,
 
   //LEVEL
   ADD_LEVEL_SUCCESSFULLY: 'User level added successfully',

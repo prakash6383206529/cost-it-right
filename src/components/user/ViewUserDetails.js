@@ -7,7 +7,7 @@ import { EMPTY_DATA } from '../../config/constants'
 import NoContentFound from '../common/NoContentFound';
 import Drawer from '@material-ui/core/Drawer';
 import HeaderTitle from '../common/HeaderTitle';
-import { loggedInUserId, getConfigurationKey } from '../../helper/auth';
+import { loggedInUserId, getConfigurationKey, handleDepartmentHeader } from '../../helper/auth';
 import LoaderCustom from '../common/LoaderCustom';
 import { COSTING, SIMULATION, MASTERS } from '../../config/constants'
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -358,7 +358,7 @@ class ViewUserDetails extends Component {
                       <Col md="12">
                         <div className={'left-details'}>
                           <HeaderTitle
-                            title={'Role & Department:'}
+                            title={`Role & ${handleDepartmentHeader()}:`}
                             customClass={'role-department-details'} />
                         </div>
                         <div className={'right-details pt-2 role-department-container'}>

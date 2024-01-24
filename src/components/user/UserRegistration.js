@@ -14,7 +14,7 @@ import {
 } from "../../actions/auth/AuthActions";
 import { getCityByCountry, getAllCity, getReporterList, getApprovalTypeSelectList, getVendorNameByVendorSelectList } from "../../actions/Common";
 import { MESSAGES } from "../../config/message";
-import { getConfigurationKey, loggedInUserId } from "../../helper/auth";
+import { getConfigurationKey, handleDepartmentHeader, loggedInUserId } from "../../helper/auth";
 import { Button, Row, Col } from 'reactstrap';
 import { EMPTY_DATA, IV, IVRFQ, KEY, KEYRFQ, NCCTypeId, NFRAPPROVALTYPEID, PROVISIONALAPPROVALTYPEID, PROVISIONALAPPROVALTYPEIDFULL, RELEASESTRATEGYTYPEID1, RELEASESTRATEGYTYPEID2, RELEASESTRATEGYTYPEID3, RELEASESTRATEGYTYPEID4, RELEASESTRATEGYTYPEID6, VBC_VENDOR_TYPE, WACAPPROVALTYPEID, searchCount } from "../../config/constants";
 import NoContentFound from "../common/NoContentFound";
@@ -2104,7 +2104,7 @@ function UserRegistration(props) {
                   {!props?.RFQUser &&
                     <>
                       <HeaderTitle
-                        title={`Role & ${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}:`}
+                        title={`Role & ${handleDepartmentHeader()}:`}
                         customClass={''} />
 
                       <div className="row form-group">
@@ -2137,7 +2137,7 @@ function UserRegistration(props) {
                                 name="DepartmentId"
                                 type="text"
                                 //title={showDataOnHover(department)}
-                                label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                                label={`${handleDepartmentHeader()}`}
 
                                 errors={errors.DepartmentId}
                                 Controller={Controller}
@@ -2151,7 +2151,7 @@ function UserRegistration(props) {
                                 handleChange={departmentHandler}
                                 isMulti={true}
                                 //component={renderMultiSelectField}
-                                placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                                placeholder={`${handleDepartmentHeader()}`}
                                 selection={department == null || department.length === 0 ? [] : department}
                                 options={searchableSelectType('multiDepartment')}
                                 //validate={department == null || department.length === 0 ? [required] : []}
@@ -2166,7 +2166,7 @@ function UserRegistration(props) {
                               <SearchableSelectHookForm
                                 name="DepartmentId"
                                 type="text"
-                                label={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                                label={`${handleDepartmentHeader()}`}
 
                                 errors={errors.DepartmentId}
                                 Controller={Controller}
@@ -2177,7 +2177,7 @@ function UserRegistration(props) {
                                   required: true,
                                 }}
 
-                                placeholder={`${getConfigurationKey().IsCompanyConfigureOnPlant ? 'Company' : 'Department'}`}
+                                placeholder={`${handleDepartmentHeader()}`}
                                 // placeholder={'Select company'}
                                 options={searchableSelectType('department')}
                                 //onKeyUp={(e) => this.changeItemDesc(e)}
