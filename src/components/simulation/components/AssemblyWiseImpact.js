@@ -108,11 +108,11 @@ function AssemblyWiseImpact(props) {
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
-            console.log('obj1: ', obj1);
+
             dispatch(setCostingViewData(obj1))
             setShowCostingSummaryTable(true)
             setTechnology(obj1[0].technology)
-            console.log('obj1.technology: ', obj1[0].technology);
+
         }))
     }
 

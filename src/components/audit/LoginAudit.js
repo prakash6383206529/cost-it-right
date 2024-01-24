@@ -91,7 +91,6 @@ function LoginAudit(props) {
         }
         setState(prevState => ({ ...prevState, isLoader: true }));
         dispatch(getUserAuditLog(dataObj, skip, take, isPagination, true, '', (res) => {
-            console.log('res: ', res);
             setState(prevState => ({ ...prevState, isLoader: false }));
 
             if (res && res.status === 200) {
@@ -114,7 +113,7 @@ function LoginAudit(props) {
             }
 
             if (res) {
-                console.log('res: ', res);
+
                 if (res.status === 204) {
                     setState(prevState => ({ ...prevState, totalRecordCount: 0, pageNo: 0, noData: true, auditDataList }));
 
