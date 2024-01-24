@@ -81,7 +81,6 @@ const BOPDomesticListing = (props) => {
     viewAttachment: [],
   });
 
-
   useEffect(() => {
     setTimeout(() => {
       if (!props.stopApiCallOnCancel) {
@@ -138,11 +137,10 @@ const BOPDomesticListing = (props) => {
       props?.changeSetLoader(true)
       dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, BOPDOMESTIC, (res) => {
         props?.changeSetLoader(false)
-
         setState((prevState) => ({ ...prevState, isLoader: false }))
       }))
     } else {
-
+      console.log("143");
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
         if (props.isSimulation) {
@@ -204,8 +202,7 @@ const BOPDomesticListing = (props) => {
             }, 600);
           }
         }))
-      } else {
-        setState((prevState) => ({ ...prevState, isLoader: false }))
+
       }
 
     }
@@ -340,7 +337,6 @@ const BOPDomesticListing = (props) => {
   };
 
   const resetState = () => {
-
     setState((prevState) => ({ ...prevState, noData: false, inRangeDate: [], isFilterButtonClicked: false, }));
     state.gridApi.setQuickFilter(null)
     state.gridApi.deselectAll();
