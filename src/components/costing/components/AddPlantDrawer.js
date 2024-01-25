@@ -13,14 +13,14 @@ function AddPlantDrawer(props) {
   const { register, handleSubmit, formState: { errors }, control } = useForm();
 
   const [plant, setPlant] = useState([]);
-  const [data, setPlantData] = useState({});
   const [selectedPlants, setSelectedPlants] = useState([]);
+  const [wacPlant, setWacPlant] = useState([]);
 
   const dispatch = useDispatch()
   const plantSelectList = useSelector(state => state.comman.plantSelectList)
 
   useEffect(() => {
-    const { zbcPlantGrid } = props;
+    const { zbcPlantGrid, wacPlantGrid } = props;
     dispatch(getPlantSelectListByType(ZBC, "COSTING", () => { }))
 
     let tempArr = [];
@@ -29,6 +29,12 @@ function AddPlantDrawer(props) {
       return null;
     })
     setSelectedPlants(tempArr)
+    let wacTempArr = [];
+    wacPlantGrid && wacPlantGrid.map(el => {
+      wacTempArr.push(el.PlantId)
+      return null;
+    })
+    setWacPlant(wacTempArr)
 
   }, []);
 
@@ -56,7 +62,7 @@ function AddPlantDrawer(props) {
 
     if (label === 'Plant') {
       plantSelectList && plantSelectList.map(item => {
-        if (item.PlantId === '0' || selectedPlants.includes(item.PlantId)) return false;
+        if (item.PlantId === '0' || (!props.isWAC && selectedPlants.includes(item.PlantId)) || (props.isWAC && wacPlant.includes(item.PlantId))) return false;
         temp.push({ label: item.PlantNameCode, value: item.PlantId, PlantCode: item.PlantCode })
         return null;
       });
