@@ -75,6 +75,7 @@ export const checkInterestRateConfigure = (excelData) => {
 * @description CONDITION TO CHECK:- TO AVOID VENDOR PLANT IF NOT CONFIGURABLE FROM INITIALIZER
 */
 export const checkVendorPlantConfig = (excelData, type = '', isBop = false, isVendor = false) => {
+
     return excelData.filter((el) => {
         if (checkVendorPlantConfigurable() === false) {
             if (el.value === 'VendorPlant') return false;
@@ -162,7 +163,7 @@ class Downloadxls extends React.Component {
     renderZBCSwitch = (master) => {
         switch (master) {
             case 'RM Domestic':
-                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMDomesticZBC), RMDomesticZBCTempData);
+                return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMDomesticZBC), RMDomesticZBCTempData, true);
             case 'RM Import':
                 return this.returnExcelColumn(checkRM_Process_OperationConfigurable(RMImportZBC), RMImportZBCTempData);
             case 'Operation':
@@ -201,7 +202,8 @@ class Downloadxls extends React.Component {
     renderVBCSwitch = (master, bopType) => {
         switch (master) {
             case 'RM Domestic':
-                return this.returnExcelColumn(checkVendorPlantConfig(RMDomesticVBC), RMDomesticVBCTempData);
+
+                return this.returnExcelColumn(checkVendorPlantConfig(RMDomesticVBC), RMDomesticVBCTempData, true);
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportVBC), RMImportVBCTempData);
             case 'Operation':
@@ -244,7 +246,7 @@ class Downloadxls extends React.Component {
     renderCBCSwitch = (master) => {
         switch (master) {
             case 'RM Domestic':
-                return this.returnExcelColumn(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), RMDomesticCBCTempData);
+                return this.returnExcelColumn(checkVendorPlantConfig(RMDomesticCBC, CBCTypeId), RMDomesticCBCTempData, true);
             case 'RM Import':
                 return this.returnExcelColumn(checkVendorPlantConfig(RMImportCBC, CBCTypeId), RMImportCBCTempData);
             case 'Operation':
@@ -276,13 +278,12 @@ class Downloadxls extends React.Component {
     * @method returnExcelColumn
     * @description Used to get excel column names
     */
-    returnExcelColumn = (data = [], TempData) => {
+    returnExcelColumn = (data = [], TempData, isRm = false) => {
         const { fileName, failedData, isFailedFlag } = this.props;
-
-
         let dataList = [...data]
-        if (isFailedFlag) {
 
+
+        if (isFailedFlag) {
 
             //BELOW CONDITION TO ADD 'REASON' COLUMN WHILE DOWNLOAD EXCEL SHEET IN CASE OF FAILED
             let isContentReason = dataList.filter(d => d.label === 'Reason')
@@ -292,6 +293,17 @@ class Downloadxls extends React.Component {
             }
         }
 
+        // for downloading rm with rotes on upload
+        if (isRm && failedData) {
+            const notesInTemp = TempData.some(item => item.Note)
+            const notesInFailed = failedData.some(item => item.Note);
+            if (notesInTemp && !notesInFailed) {
+                // Add Notes from TempData to failedData
+                for (let i = 0; i < failedData.length && i < TempData.length; i++) {
+                    failedData[i].Note = TempData[i].Note || failedData[i].Note;
+                }
+            }
+        }
 
         return (<ExcelSheet data={isFailedFlag ? failedData : TempData} name={fileName}>
             {dataList && dataList.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}

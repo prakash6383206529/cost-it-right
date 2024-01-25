@@ -91,7 +91,6 @@ function LoginAudit(props) {
         }
         setState(prevState => ({ ...prevState, isLoader: true }));
         dispatch(getUserAuditLog(dataObj, skip, take, isPagination, true, '', (res) => {
-
             setState(prevState => ({ ...prevState, isLoader: false }));
 
             if (res && res.status === 200) {
@@ -420,15 +419,7 @@ function LoginAudit(props) {
         // Call the API with updated filtering options
         getDataList(0, state.globalTake, true, filterDataObj);
     };
-    const clearFromDate = () => {
-        setState(prevState => ({ ...prevState, fromDate: null }));
-        handleDate(null);
-    };
 
-    const clearToDate = () => {
-        setState(prevState => ({ ...prevState, toDate: null }));
-        handleDate(null);
-    };
     const onPageSizeChanged = (newPageSize) => {
         let pageSize, totalRecordCount;
         if (Number(newPageSize) === 10) {

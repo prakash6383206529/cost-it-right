@@ -103,8 +103,6 @@ export function TokenAPI(requestData, callback) {
             .then(response => {
                 body.IPAddress = response.data.ip; // Include the IP address.
 
-
-
                 // Proceed with the original request now including the IP and User-Agent.
                 axios.post(API.login, body, config()) // Make sure you send a JSON body.
                     .then((res) => {
