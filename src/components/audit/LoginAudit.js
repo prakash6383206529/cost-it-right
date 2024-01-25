@@ -80,7 +80,7 @@ function LoginAudit(props) {
         applyPermission(topAndLeftMenuData)
     }, [topAndLeftMenuData])
     const getDataList = (skip = 0, take = 10, isPagination = true, dataObj) => {
-        setState(prevState => ({ ...prevState, isLoader: isPagination }));
+        setState(prevState => ({ ...prevState, isLoader: true }));
         if (state.filterModel?.LoginTime) {
             if (state.filterModel.LoginTime.dateTo) {
                 let temp = [];
@@ -200,7 +200,7 @@ function LoginAudit(props) {
         setFromDate(date);
         if (date && toDate) {
             // Enable the filter button
-            setState(prevState => ({ ...prevState, disableFilter: false }));
+            setState(prevState => ({ ...prevState, disableFilter: false, }));
         } else {
             // Disable the filter button if toDate is not selected yet
             setState(prevState => ({ ...prevState, disableFilter: true }));
@@ -213,17 +213,23 @@ function LoginAudit(props) {
     // Update to handleToDateChange
     const handleToDateChange = (date) => {
         setToDate(date);
-        if (fromDate && date) {
+
+        if (!date) {
+            // If to date is cleared, set the warning message to false
+            setState(prevState => ({ ...prevState, warningMessage: false }));
+        } else if (fromDate) {
             // Enable the filter button
-            setState(prevState => ({ ...prevState, disableFilter: false }));
+            setState(prevState => ({ ...prevState, disableFilter: false, warningMessage: true }));
         } else {
             // Disable the filter button if fromDate is not selected yet
             setState(prevState => ({ ...prevState, disableFilter: true }));
         }
+
         if (fromDate && date && date < fromDate) {
             setFromDate(null);
         }
     };
+
     const formatToDateString = (dateObject) => {
         return dateObject.toISOString(); // Use your desired string format
     }
@@ -251,6 +257,7 @@ function LoginAudit(props) {
 
 
     const onFloatingFilterChanged = (value) => {
+
         setTimeout(() => {
             if (auditDataList?.length !== 0) {
                 setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
@@ -412,6 +419,7 @@ function LoginAudit(props) {
         // Call the API with updated filtering options
         getDataList(0, state.globalTake, true, filterDataObj);
     };
+
     const onPageSizeChanged = (newPageSize) => {
         let pageSize, totalRecordCount;
         if (Number(newPageSize) === 10) {
@@ -466,25 +474,31 @@ function LoginAudit(props) {
         }
     }
     const onExcelDownload = () => {
+        setState(prevState => ({ ...prevState, disableDownload: true }));
+        dispatch(disabledClass(true));
 
-        dispatch(disabledClass(true))
-        setState(prevState => ({ ...prevState, disableDownload: true }))
-        dispatch(disabledClass(true))
-        // let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
-        let tempArr = selectedRowForPagination
-        if (tempArr?.length > 0) {
-            setTimeout(() => {
-                dispatch(disabledClass(false))
-                setState(prevState => ({ ...prevState, disableDownload: false }))
-                let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel');
-                button && button.click()
-            }, 400);
+        if (fromDate && toDate) {
+            // If a date range is selected, download data for that range
+            const filterDataObj = {
+                ...state.floatingFilterData,
+                fromDate: formatToDateString(fromDate),
+                toDate: formatToDateString(toDate),
+            };
 
+            getDataList(0, defaultPageSize, false, filterDataObj);
         } else {
-            // 
-            // let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel');
-            // button && button.click()
-            getDataList(0, defaultPageSize, false, state.floatingFilterData)
+            // If no date range is selected, download the selected rows or the entire data
+            let tempArr = selectedRowForPagination;
+            if (tempArr?.length > 0) {
+                setTimeout(() => {
+                    dispatch(disabledClass(false));
+                    setState(prevState => ({ ...prevState, disableDownload: false }));
+                    let button = document.getElementById('Excel-Downloads-LoginAudit-DownloadExcel');
+                    button && button.click();
+                }, 400);
+            } else {
+                getDataList(0, defaultPageSize, false, state.floatingFilterData);
+            }
         }
     }
     const onBtExport = () => {
@@ -496,8 +510,6 @@ function LoginAudit(props) {
         return returnExcelColumn(AUDIT_LISTING_DOWNLOAD_EXCEl, tempArr)
     };
     const returnExcelColumn = (data = [], TempData) => {
-
-
 
         return (
             <ExcelSheet data={TempData} name={AuditLisitng}>
@@ -586,8 +598,9 @@ function LoginAudit(props) {
                                 <Col md="7" lg="7" className='d-flex'>
                                     <input type="text" value={searchText} className="form-control table-search" id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={(e) => onFilterTextBoxChanged(e)} />
                                     <div className='date-range-container'>
+
                                         <div className="d-flex align-items-center">
-                                            <label>From:</label>
+                                            <label>From Date:</label>
                                             <div className="inputbox date-section ml-2">
                                                 <DatePicker
                                                     selected={fromDate}
@@ -595,6 +608,7 @@ function LoginAudit(props) {
                                                     showMonthDropdown
                                                     showYearDropdown
                                                     dropdownMode="select"
+                                                    isClearable
                                                     maxDate={toDate}
                                                     dateFormat="dd/MM/yyyy"
                                                     placeholderText="From date"
@@ -605,13 +619,15 @@ function LoginAudit(props) {
                                         </div>
 
                                         <div className="d-flex align-items-center">
-                                            <label>To:</label>
+                                            <label>To Date:</label>
                                             <div className="inputbox date-section ml-2">
                                                 <DatePicker
                                                     selected={toDate}
-                                                    onChange={handleToDateChange} showMonthDropdown
+                                                    onChange={handleToDateChange}
+                                                    showMonthDropdown
                                                     showYearDropdown
                                                     dropdownMode="select"
+                                                    isClearable
                                                     minDate={fromDate}
                                                     dateFormat="dd/MM/yyyy"
                                                     placeholderText="To date"
@@ -619,6 +635,7 @@ function LoginAudit(props) {
                                                     autoComplete="off"
                                                     disabled={!fromDate} // Disable if fromDate is not selected
                                                 />
+
                                             </div>
                                         </div>
                                     </div>
@@ -697,7 +714,7 @@ function LoginAudit(props) {
                                 </Col>
                             </Row>
                         </div>
-                    </div>
+                    </div >
             }
         </>
     )
