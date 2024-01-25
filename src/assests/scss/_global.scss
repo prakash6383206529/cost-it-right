@@ -3566,3 +3566,18 @@ input:focus,
 .tooltip {
   margin-left: -7px;
 }
+
+//Date clear close button
+
+.react-datepicker__close-icon {
+  &::after {
+    background-color: transparent !important;
+    color: $disabledFont !important;
+    font-size: 20px !important;
+  }
+
+  &:focus {
+    border: none !important;
+    box-shadow: none !important;
+  }
+}
