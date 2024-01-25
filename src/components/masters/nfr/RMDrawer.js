@@ -39,27 +39,27 @@ function RMDrawer(props) {
 
     const onGridReady = (params) => {
         setgridApi(params.api);
-        window.screen.width >= 1920 && params.api.sizeColumnsToFit();
+        params.api.sizeColumnsToFit();
         setgridColumnApi(params.columnApi);
         params.api.paginationGoToPage(0);
     };
 
     const resetState = () => {
         gridOptions?.columnApi?.resetColumnState(null);
-        window.screen.width >= 1920 && gridApi.sizeColumnsToFit();
+        gridApi.sizeColumnsToFit();
     }
 
     const frameworkComponents = {
         hyphenFormatter: hyphenFormatter,
         dateFormater: dateFormater,
-        customNoRowsOverlay: NoContentFound
+        customNoRowsOverlay: NoContentFound,
     }
 
     return (
         <>
             <Drawer className="top-drawer" anchor={props.anchor} open={props.isOpen} >
                 <div className="container-fluid ">
-                    <div className={'drawer-wrapper layout-min-width-920px'}>
+                    <div className={'drawer-wrapper layout-min-width-1020px'}>
                         <Row className="drawer-heading sticky-top-0">
                             <Col >
                                 <div className={'header-wrapper left'}>
@@ -102,7 +102,10 @@ function RMDrawer(props) {
                                             frameworkComponents={frameworkComponents}
                                         // onFilterModified={onFloatingFilterChanged}
                                         >
-                                            <AgGridColumn field="RawMaterialCode" headerName="Raw Material Code"></AgGridColumn>
+                                            <AgGridColumn width={"230px"} field="RawMaterialCode" headerName="RM Code"></AgGridColumn>
+                                            <AgGridColumn field="RawMaterialName" headerName="RM Name"></AgGridColumn>
+                                            <AgGridColumn field="RawMaterialGradeName" headerName="RM Grade"></AgGridColumn>
+                                            <AgGridColumn field="RawMaterialSpecificationName" headerName="RM Specification"></AgGridColumn>
                                             <AgGridColumn field="RmUom" headerName="UOM"></AgGridColumn>
                                             <AgGridColumn field="GrossWeight" headerName="Gross Weight"></AgGridColumn>
                                             <AgGridColumn field="NetWeight" headerName="Net Weight"></AgGridColumn>

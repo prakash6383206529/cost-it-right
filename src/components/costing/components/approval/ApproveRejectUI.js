@@ -26,6 +26,7 @@ import PopupMsgWrapper from '../../../common/PopupMsgWrapper'
 import PushSection from '../../../common/PushSection'
 import { transformApprovalItem } from '../../../common/CommonFunctions'
 import Button from '../../../layout/Button'
+import { submit } from 'redux-form'
 
 function ApproveRejectUI(props) {
   // ********* INITIALIZE REF FOR DROPZONE ********
@@ -34,7 +35,7 @@ function ApproveRejectUI(props) {
 
   const { TokensList } = useSelector(state => state.simulation)
 
-  const { register, control, formState: { errors }, setValue, handleSubmit } = useForm({
+  const { register, control, formState: { errors }, setValue, handleSubmit, getValues } = useForm({
     mode: 'onChange', reValidateMode: 'onChange',
   })
   const userData = userDetails()
@@ -107,6 +108,16 @@ function ApproveRejectUI(props) {
   const closePushButton = () => {
     setOpenPushButton(false)
     props.closeDrawer('', 'Cancel')
+  }
+
+  const submitButton = () => {
+    if (getConfigurationKey().IsReleaseStrategyConfigured && showApprovalTypeDropdown) {
+      if (getValues('ApprovalType') === '' || !getValues('ApprovalType')) {
+        Toaster.warning("Please select approval type")
+        return
+      }
+    }
+    onSubmit();
   }
 
   const renderDropdownListing = (label) => {
@@ -618,7 +629,7 @@ function ApproveRejectUI(props) {
                   <Button
                     id="Approval_Submit"
                     className="submit-button"
-                    onClick={submitForm}
+                    onClick={props.isShowNFRPopUp ? showPopupWrapper : submitButton}
                     disabled={isDisable}
                     icon={"save-icon"}
                     buttonName={"Submit"}

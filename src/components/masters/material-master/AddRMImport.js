@@ -438,7 +438,16 @@ class AddRMImport extends Component {
   handleCodeChange = (newValue) => {
     if (newValue && newValue !== '') {
       this.setState({ rmCode: newValue, isDisabled: true })
-      this.props.getRMSpecificationDataAPI(newValue.value, (res) => {
+      this.props.getRMSpecificationDataAPI(newValue.value, true, (res) => {
+        if (res.status === 204) {
+          this.setState({
+            RawMaterial: { label: '', value: '', },
+            RMGrade: { label: '', value: '', },
+            RMSpec: { label: '', value: '', }
+          })
+          Toaster.warning("The Raw Material Grade and Specification has set as unspecified. First update the Grade and Specification against this Raw Material Code from Manage Specification tab.")
+          return false
+        }
         let Data = res.data.Data
         this.setState({
           RawMaterial: { label: Data.RawMaterialName, value: Data.RawMaterialId, },

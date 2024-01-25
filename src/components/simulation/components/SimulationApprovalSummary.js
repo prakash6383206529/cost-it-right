@@ -306,7 +306,7 @@ function SimulationApprovalSummary(props) {
             impactedMasterDataListForLastRevisionData?.BoughtOutPartImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.SurfaceTreatmentImpactedMasterDataList?.length <= 0 &&
             impactedMasterDataListForLastRevisionData?.MachineProcessImpactedMasterDataList <= 0
-        // && impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0               //RE
+            && impactedMasterDataListForLastRevisionData?.CombinedProcessImpactedMasterDataList?.length <= 0
         if (lastRevisionDataAccordian && check) {
             Toaster.warning('There is no data for the Last Revision.')
             setEditWarning(true)
@@ -322,7 +322,7 @@ function SimulationApprovalSummary(props) {
         setShowRMColumn(keysForDownloadSummary?.IsRawMaterialSimulation === true ? true : false)
         setShowExchangeRateColumn(keysForDownloadSummary?.IsExchangeRateSimulation === true ? true : false)
         setShowMachineRateColumn(keysForDownloadSummary?.IsMachineProcessSimulation === true ? true : false)
-        // setShowCombinedProcessColumn(keysForDownloadSummary?.IsCombinedProcessSimulation === true ? true : false)               //RE
+        setShowCombinedProcessColumn(keysForDownloadSummary?.IsCombinedProcessSimulation === true ? true : false)
 
         setTimeout(() => {
 
@@ -349,7 +349,7 @@ function SimulationApprovalSummary(props) {
                         BoughtOutPartImpactedMasterDataList: [],
                         SurfaceTreatmentImpactedMasterDataList: [],
                         MachineProcessImpactedMasterDataList: [],
-                        // CombinedProcessImpactedMasterDataList: []               //RE
+                        CombinedProcessImpactedMasterDataList: []               //RE
                     }
 
                     let masterId
@@ -564,7 +564,6 @@ function SimulationApprovalSummary(props) {
                 listCP = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADCP, ['SANumber', 'LineNumber']);
                 listER = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADER, ['SANumber', 'LineNumber']);
             }
-            console.log('listRM: ', listRM);
             switch (String(SimulationTechnologyId)) {
                 case RMDOMESTIC:
                 case RMIMPORT:

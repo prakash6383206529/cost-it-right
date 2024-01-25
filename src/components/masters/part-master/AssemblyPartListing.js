@@ -201,7 +201,6 @@ const AssemblyPartListing = React.memo((props) => {
   const onRowSelect = useCallback(() => {
     if (state.gridApi) {
       const selectedRows = state.gridApi.getSelectedRows();
-      console.log(selectedRows, "selec");
       setSelectedRowData(selectedRows);
       setState((prevState) => ({
         ...prevState,
@@ -213,7 +212,6 @@ const AssemblyPartListing = React.memo((props) => {
   const onBtExport = useCallback(() => {
     // Use the selectedRowData for export
     const tempArr = selectedRowData.length > 0 ? selectedRowData : tableData;
-    console.log(tempArr);
     return returnExcelColumn(ASSEMBLYPART_DOWNLOAD_EXCEl, tempArr);
   }, [selectedRowData, tableData]);
 

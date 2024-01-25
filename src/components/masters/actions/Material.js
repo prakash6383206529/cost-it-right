@@ -377,15 +377,17 @@ export function createAssociation(data, callback) {
  * @method getRMSpecificationDataAPI
  * @description Get RM Specification data
  */
-export function getRMSpecificationDataAPI(SpecificationId, callback) {
+export function getRMSpecificationDataAPI(SpecificationId, excludeDefaultRMGradeAndSpecs, callback) {
     return (dispatch) => {
         if (SpecificationId !== '') {
-            axios.get(`${API.getRMSpecificationDataAPI}/${SpecificationId}`, config())
+            axios.get(`${API.getRMSpecificationDataAPI}?specificationId=${SpecificationId}&excludeDefaultRMGradeAndSpecs=${excludeDefaultRMGradeAndSpecs}`, config())
                 .then((response) => {
-                    dispatch({
-                        type: GET_SPECIFICATION_DATA_SUCCESS,
-                        payload: response.data.Data,
-                    });
+                    if (response.data.Result || response.status === 204) {
+                        dispatch({
+                            type: GET_SPECIFICATION_DATA_SUCCESS,
+                            payload: response.data.Data,
+                        });
+                    }
                     callback(response)
                 }).catch((error) => {
                     dispatch({ type: API_FAILURE });

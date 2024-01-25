@@ -99,7 +99,7 @@ function CostingSimulation(props) {
     const [showSurfaceTreatmentColumn, setShowSurfaceTreatmentColumn] = useState(false);
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
-    const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);               //RE
+    const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);
     const [downloadList, setDownloadList] = useState([]);
     const [rejectedList, setRejectedList] = useState([]);
     const [sendInAPIState, setSendInAPIState] = useState([]);
@@ -393,7 +393,6 @@ function CostingSimulation(props) {
                         checkForNull(item.NewExchangeRate).toFixed(TOFIXEDVALUE))
                 }
                 // switch (String(master)) {            //RE
-
                 //     case String(COMBINED_PROCESS):
                 //         item.POVariance = checkForDecimalAndNull(item.OldPOPrice - item.NewPOPrice, getConfigurationKey().NoOfDecimalForPrice)
                 //         break;
@@ -519,12 +518,11 @@ function CostingSimulation(props) {
                         setCommonStateForList(res)
                     }))
                     break;
-
-                // case Number(COMBINED_PROCESS):                   //RE
-                //     dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
-                //         setCommonStateForList(res)
-                //     }))
-                //     break;
+                case Number(COMBINED_PROCESS):                   //RE
+                    dispatch(getCombinedProcessCostingSimulationList(simulationId, (res) => {
+                        setCommonStateForList(res)
+                    }))
+                    break;
                 default:
                     break;
             }
@@ -1262,7 +1260,7 @@ function CostingSimulation(props) {
         let finalGrid = [], isTokenAPI = false
         if (showBOPColumn === true || showRMColumn === true || showOperationColumn === true || showSurfaceTreatmentColumn === true ||
             showExchangeRateColumn === true || showMachineRateColumn === true
-            // || showCombinedProcessColumn === true                    //RE
+            || showCombinedProcessColumn === true
         ) {
             if (showBOPColumn || isBOPDomesticOrImport) {
                 finalGrid = [...finalGrid, ...BOPGridForToken]

@@ -64,6 +64,12 @@
 
 }
 
+.view-masters {
+    @include icons("../../images/view-master.png", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    @include extra-icon-styles;
+    border-radius: 3px
+}
+
 .Comment-box {
     @include icons("../../images/Comment-box.svg", $borderColor: #cef2fb, $shadowColor: #0cbeeb);
 }
@@ -87,6 +93,11 @@
     @include icons("../../images/process-add.svg", $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
     border-radius: 4px;
     @include extra-icon-styles;
+}
+
+.add-out-sourcing {
+    @include icons("../../images/process-add.svg", 20px, 20px, $shadowColor: #0cbeeb, $borderColor: #bbe8f9);
+    border-radius: 4px;
 }
 
 .hirarchy-btn {
