@@ -892,7 +892,7 @@ const BOPDomesticListing = (props) => {
                 {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 {/* <AgGridColumn field="DepartmentName" headerName="Department"></AgGridColumn> */}
                 {props?.isMasterSummaryDrawer && <AgGridColumn field="IncoSummary" headerName="Inco Terms"></AgGridColumn>}
-                {/* {props?.isMasterSummaryDrawer && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>} */}
+                {props?.isMasterSummaryDrawer && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn field="PaymentSummary" headerName="Payment Terms"></AgGridColumn>}
                 {getConfigurationKey().IsMinimumOrderQuantityVisible && <AgGridColumn field="NumberOfPieces" headerName="Minimum Order Quantity"></AgGridColumn>}
                 <AgGridColumn field="BasicRate" headerName="Basic Rate" cellRenderer={'commonCostFormatter'} ></AgGridColumn>
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && bopDomesticList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer={'commonCostFormatter'} ></AgGridColumn>}

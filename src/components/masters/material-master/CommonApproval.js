@@ -958,10 +958,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="IncoTermDescriptionAndInfoTerm" headerName='Inco Terms'></AgGridColumn>}
-                                    {/* {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>} */}
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Currency" headerName="Currency"></AgGridColumn>}
-
-                                    {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && getConfigurationKey().IsShowPaymentTermsFields && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Currency" headerName="Currency"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="NumberOfPieces" headerName='Minimum Order Quantity'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="BasicRate" headerName="Basic Rate" cellRenderer='basicRateFormatter'></AgGridColumn>}
@@ -969,7 +966,6 @@ function CommonApproval(props) {
 
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='basicRateFormatter'></AgGridColumn>}
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetCostWithoutConditionCostConversion" headerName="Basic Price (Currency)" cellRenderer='basicRateFormatter'></AgGridColumn>}
-
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='basicRateFormatter'></AgGridColumn>}
                                     {initialConfiguration?.IsBasicRateAndCostingConditionVisible && (props?.MasterId === BOP_MASTER_ID || props?.MasterId === RM_MASTER_ID) && <AgGridColumn width="140" field="NetConditionCostConversion" headerName="Net Condition Cost (Currency)" cellRenderer='basicRateFormatter'></AgGridColumn>}
 

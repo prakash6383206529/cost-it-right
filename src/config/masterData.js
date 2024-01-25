@@ -2377,7 +2377,7 @@ export const BOP_DETAILED_IMPORT = [
     { label: 'SourceVendorLocation', value: 'SourceVendorLocation', },
     { label: 'Currency', value: 'Currency', }, //*
     { label: 'IncoTerm', value: 'IncoTerm', },
-    // { label: 'PaymentTerm', value: 'PaymentTerm', },    // FOR MINDA ONLY
+    { label: 'PaymentTerm', value: 'PaymentTerm', },
     // { label: 'MinimumOrderQuantity', value: 'MinimumOrderQuantity', }, //*
     { label: 'EffectiveDate', value: 'EffectiveDate', },
     { label: 'Remark', value: 'Remark' }
@@ -2399,7 +2399,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2418,7 +2418,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
@@ -2437,7 +2437,7 @@ export const BOP_DETAILED_IMPORT_TempData = [
         'SourceVendorLocation': 'Jamshedpur',
         'Currency': 'INR or USD',
         'IncoTerm': 'CFR',
-        // 'PaymentTerm': 'A000',
+        'PaymentTerm': 'A000',
         'BasicRate': '100',
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         'Remark': 'Remark Text'
