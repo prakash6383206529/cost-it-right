@@ -30,7 +30,7 @@ const FetchDrawer = (props) => {
     }
     //RE
     useEffect(() => {
-        dispatch(getPlantSelectListByType(ZBC, "MASTER", () => { }))
+        dispatch(getPlantSelectListByType(ZBC, "MASTER", "", () => { }))
     }, [])
 
     const cancel = () => {

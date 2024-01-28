@@ -36,7 +36,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const MyLazyComponent = lazy(() => import('../../massUpload/BulkUpload'));
-console.log('MyLazyComponent: ', MyLazyComponent);
+
 
 
 
@@ -219,6 +219,7 @@ function RMDomesticListing(props) {
                 }
 
                 if (res && isPagination === false) {
+
                     setDisableDownload(false)
                     dispatch(disabledClass(false))
                     setTimeout(() => {
