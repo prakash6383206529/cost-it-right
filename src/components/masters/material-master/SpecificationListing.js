@@ -173,7 +173,7 @@ class SpecificationListing extends Component {
         const { EditAccessibility, DeleteAccessibility } = this.props;
         return (
             <>
-                {EditAccessibility &&
+                {EditAccessibility && !rowData?.IsAssociated &&
 
                     <Button
                         id={`rmSpecification_edit${props.rowIndex}`}
@@ -183,7 +183,7 @@ class SpecificationListing extends Component {
                         title={"Edit"}
                     />
                 }
-                {DeleteAccessibility &&
+                {DeleteAccessibility && !rowData?.IsAssociated &&
 
                     <Button
                         id={`rmSpecification_delete${props.rowIndex}`}
