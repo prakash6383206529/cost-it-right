@@ -34,6 +34,7 @@ import { ApplyPermission } from ".";
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
+
 const gridOptions = {};
 
 const MachineRateListing = (props) => {
@@ -54,10 +55,12 @@ const MachineRateListing = (props) => {
     showCopyPopup: false,
     deletedId: '',
     copyId: '',
-    isProcessGroup: getConfigurationKey().IsMachineProcessGroup,
+    isProcessGroup: getConfigurationKey().IsMachineProcessGroup, // UNCOMMENT IT AFTER DONE FROM BACKEND AND REMOVE BELOW CODE
+    // isProcessGroup: false,
     isOpenProcessGroupDrawer: false,
     analyticsDrawer: false,
     selectedRowData: [],
+    //states for pagination purpose
     floatingFilterData: { CostingHead: "", Technology: "", VendorName: "", Plant: "", MachineNumber: "", MachineName: "", MachineTypeName: "", MachineTonnage: "", ProcessName: "", MachineRate: "", EffectiveDateNew: "", DepartmentName: props.isSimulation && getConfigurationKey().IsCompanyConfigureOnPlant ? userDepartmetList() : "", CustomerName: "", UOM: "" },
     warningMessage: false,
     filterModel: {},
@@ -74,6 +77,7 @@ const MachineRateListing = (props) => {
     inRangeDate: [],
     attachment: false,
     viewAttachment: []
+
   });
   const [searchText, setSearchText] = useState('');
   const { machineDatalist, allMachineDataList } = useSelector(state => state.machine)
@@ -85,28 +89,27 @@ const MachineRateListing = (props) => {
       setTimeout(() => {
         if (!props.stopApiCallOnCancel) {
           if (props.isSimulation) {
+            // Set isLoader to false if it's a simulation
             props?.changeSetLoader(true);
-            if (props.selectionForListingMasterAPI === 'Combined') {
-              dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, MACHINERATE, () => {
-                props?.changeSetLoader(false);
-              }));
-            }
+            dispatch(getListingForSimulationCombined(props.objectForMultipleSimulation, MACHINERATE, () => {
+              props?.changeSetLoader(false);
+            }));
           }
+          // Fetch data for Master
           if (props.selectionForListingMasterAPI === 'Master') {
             getDataList("", 0, "", 0, "", "", 0, defaultPageSize, true, state.floatingFilterData);
           }
         }
-
-
       }, 300);
     };
 
     fetchData();
+
     return () => {
+      // Cleanup logic for componentWillUnmount
       dispatch(setSelectedRowForPagination([]));
     };
-    // eslint-disable-next-line
-  }, []);
+  }, []); // useEffect will run when props change
 
 
   const getDataList = (costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj = {}) => {
@@ -115,22 +118,29 @@ const MachineRateListing = (props) => {
         let temp = []
         temp.push(DayTime(state.filterModel.EffectiveDateNew.dateFrom).format('DD/MM/YYYY'))
         temp.push(DayTime(state.filterModel.EffectiveDateNew.dateTo).format('DD/MM/YYYY'))
+
         dataObj.dateArray = temp
       }
+
     }
+
+    // TO HANDLE FUTURE CONDITIONS LIKE [APPROVED_STATUS, DRAFT_STATUS] FOR MULTIPLE STATUS
     let statusString = [props?.approvalStatus].join(",")
-    const filterData = { costing_head: costing_head, technology_id: props.isSimulation ? props.technology.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString }
-    const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
-    dataObj.IsCustomerDataShow = cbc
-    dataObj.IsVendorDataShow = vbc
-    dataObj.IsZeroDataShow = zbc
+
+    const filterData = {
+      costing_head: costing_head, technology_id: props.isSimulation ? props.technology.value : technology_id, vendor_id: vendor_id, machine_type_id: machine_type_id, process_id: process_id, plant_id: plant_id, StatusId: statusString
+    }
+
+    dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
     if (props.isSimulation) {
       dataObj.TechnologyId = props.technology.value
       dataObj.Technologies = props.technology.label
     }
 
     if (props.isMasterSummaryDrawer !== undefined && !props.isMasterSummaryDrawer) {
-      if (props.isSimulation) { props?.changeTokenCheckBox(false) }
+      if (props.isSimulation) {
+        props?.changeTokenCheckBox(false)
+      }
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       let FloatingfilterData = state.filterModel
       let obj = { ...state.floatingFilterData }
@@ -162,114 +172,264 @@ const MachineRateListing = (props) => {
                   isReset = false
                 }
               } else {
-                if (obj[prop] !== "") { isReset = false }
+                if (obj[prop] !== "") {
+                  isReset = false
+                }
               }
             }
             // Sets the filter model via the grid API
             isReset ? (gridOptions?.api?.setFilterModel({})) : (gridOptions?.api?.setFilterModel(FloatingfilterData))
             setTimeout(() => {
-              setState((prevState) => ({ ...prevState, warningMessage: false }))
+              setState((prevState) => ({
+                ...prevState, warningMessage: false
+              }))
             }, 23);
+
           }, 300);
+
           setTimeout(() => {
-            setState((prevState) => ({ ...prevState, warningMessage: false }))
+            setState((prevState) => ({
+              ...prevState, warningMessage: false
+            }))
           }, 335);
+
           setTimeout(() => {
-            setState((prevState) => ({ ...prevState, isFilterButtonClicked: false }))
+            setState((prevState) => ({
+              ...prevState, isFilterButtonClicked: false
+            }))
           }, 600);
         }
       }))
     }
+    else {
+      setState((prevState) => ({
+        ...prevState, isLoader: false
+      }))
+
+    }
   }
 
-
-
   const onFloatingFilterChanged = (value) => {
+
     setTimeout(() => {
       if (machineDatalist?.length !== 0) {
-        setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
+        setState((prevState) => ({
+          ...prevState,
+          noData: searchNocontentFilter(value, state.noData),
+        }));
       }
     }, 500);
     setState((prevState) => ({ ...prevState, disableFilter: false }));
+
     const model = gridOptions?.api?.getFilterModel();
+
+
     setState((prevState) => ({ ...prevState, filterModel: model }));
+
     if (!state.isFilterButtonClicked) {
       setState((prevState) => ({ ...prevState, warningMessage: true }));
     }
-    if (value?.filterInstance?.appliedModel === null || value?.filterInstance?.appliedModel?.filter === "") {
+
+    if (
+      value?.filterInstance?.appliedModel === null ||
+      value?.filterInstance?.appliedModel?.filter === ""
+    ) {
       let isFilterEmpty = true;
+
       if (model !== undefined && model !== null) {
         if (Object.keys(model).length > 0) {
           isFilterEmpty = false;
+
           for (var property in state.floatingFilterData) {
-            if (property === value.column.colId) { state.floatingFilterData[property] = ""; }
+            if (property === value.column.colId) {
+              state.floatingFilterData[property] = "";
+
+
+            }
           }
 
-          setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, }));
+          setState((prevState) => ({
+            ...prevState,
+            floatingFilterData: state.floatingFilterData,
+          }));
         }
 
         if (isFilterEmpty) {
           setState((prevState) => ({ ...prevState, warningMessage: false }));
           for (var prop in state.floatingFilterData) {
             state.floatingFilterData[prop] = "";
+
+
           }
-          setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, }));
+          setState((prevState) => ({
+            ...prevState,
+            floatingFilterData: state.floatingFilterData,
+          }));
         }
       }
     } else {
-      if (value.column.colId === "EffectiveDate" || value.column.colId === "CreatedDate") {
+      if (
+        value.column.colId === "EffectiveDate" ||
+        value.column.colId === "CreatedDate"
+      ) {
         return false;
       }
-      setState((prevState) => ({ ...prevState, floatingFilterData: { ...prevState.floatingFilterData, [value.column.colId]: value.filterInstance.appliedModel.filter, }, }));
+
+
+      setState((prevState) => ({
+        ...prevState,
+        floatingFilterData: {
+          ...prevState.floatingFilterData,
+          [value.column.colId]: value.filterInstance.appliedModel.filter,
+        },
+      }));
     }
   };
 
   const onSearch = () => {
-    setState((prevState) => ({ ...prevState, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
-    getDataList("", 0, '', 0, "", "", 0, state.globalTake, true, state.floatingFilterData);
+    setState((prevState) => ({
+      ...prevState,
+      warningMessage: false,
+      pageNo: 1,
+      pageNoNew: 1,
+      currentRowIndex: 0,
+    }));
+    getDataList(
+      "",
+      0,
+      '',
+      0,
+      "",
+      "",
+      0,
+      state.globalTake,
+      true,
+      state.floatingFilterData
+    );
   };
 
 
   const resetState = () => {
-    setState((prevState) => ({ ...prevState, noData: false, warningMessage: false, }));
+    setState((prevState) => ({
+      ...prevState,
+      noData: false,
+      warningMessage: false,
+
+    }));
     dispatch(isResetClick(true, "Operation"));
-    setState((prevState) => ({ ...prevState, isFilterButtonClicked: false, }));
+    setState((prevState) => ({
+      ...prevState,
+
+      isFilterButtonClicked: false,
+    }));
     setSearchText(''); // Clear the search text state
-    if (state.gridApi) { state.gridApi.setQuickFilter(''); }
+    if (state.gridApi) {
+      state.gridApi.setQuickFilter(''); // Clear the Ag-Grid quick filter
+    }
     state.gridApi.deselectAll();
     gridOptions?.columnApi?.resetColumnState(null);
     const val = gridOptions?.api?.setFilterModel({});
+
+
+
     for (var prop in state.floatingFilterData) {
       state.floatingFilterData[prop] = "";
     }
-    setState((prevState) => ({ ...prevState, floatingFilterData: state.floatingFilterData, warningMessage: false, pageNo: 1, pageNoNew: 1, currentRowIndex: 0, }));
+    setState((prevState) => ({
+      ...prevState,
+      floatingFilterData: state.floatingFilterData,
+      warningMessage: false,
+
+      pageNo: 1,
+      pageNoNew: 1,
+      currentRowIndex: 0,
+    }));
+
     getDataList("", 0, 0, "", '', 10, true, state.floatingFilterData);
     dispatch(setSelectedRowForPagination([]));
-    setState((prevState) => ({ ...prevState, globalTake: 10, dataCount: 0, pageSize: { ...prevState.pageSize, pageSize10: true, pageSize50: false, pageSize100: false, }, }));
+
+    setState((prevState) => ({
+      ...prevState,
+      globalTake: 10,
+      dataCount: 0,
+
+
+      pageSize: {
+        ...prevState.pageSize,
+        pageSize10: true,
+        pageSize50: false,
+        pageSize100: false,
+      },
+    }));
     setSearchText(''); // Assuming this state is bound to the input value
+
   };
 
   const onBtPrevious = () => {
     if (state.currentRowIndex >= 10) {
       const previousNo = state.currentRowIndex - 10;
       const newPageNo = state.pageNo - 1;
-      setState((prevState) => ({ ...prevState, pageNo: newPageNo >= 1 ? newPageNo : 1, pageNoNew: newPageNo >= 1 ? newPageNo : 1, currentRowIndex: previousNo, }));
-      getDataList('', 0, "", 0, "", '', previousNo, state.globalTake, true, state.floatingFilterData)
+
+      setState((prevState) => ({
+        ...prevState,
+        pageNo: newPageNo >= 1 ? newPageNo : 1,
+        pageNoNew: newPageNo >= 1 ? newPageNo : 1,
+        currentRowIndex: previousNo,
+      }));
+
+
+      getDataList(
+        '',
+        0,
+        "",
+        0,
+        "",
+        '',
+        previousNo,
+        state.globalTake,
+        true,
+        state.floatingFilterData
+
+      )
     }
   };
 
   const onBtNext = () => {
-    if (state?.pageSize?.pageSize50 && state.pageNo >= Math.ceil(state.totalRecordCount / 50)) {
+    if (
+      state?.pageSize?.pageSize50 &&
+      state.pageNo >= Math.ceil(state.totalRecordCount / 50)
+    ) {
       return false;
     }
-    if (state?.pageSize?.pageSize100 && state?.pageNo >= Math.ceil(state.totalRecordCount / 100)) {
+
+    if (
+      state?.pageSize?.pageSize100 &&
+      state?.pageNo >= Math.ceil(state.totalRecordCount / 100)
+    ) {
       return false;
     }
 
     if (state.currentRowIndex < state.totalRecordCount - 10) {
-      setState((prevState) => ({ ...prevState, pageNo: state.pageNo + 1, pageNoNew: state.pageNo + 1, }));
+      setState((prevState) => ({
+        ...prevState,
+        pageNo: state.pageNo + 1,
+        pageNoNew: state.pageNo + 1,
+      }));
       const nextNo = state.currentRowIndex + 10;
-      getDataList('', 0, "", 0, "", '', nextNo, state.globalTake, true, state.floatingFilterData)
+
+      getDataList(
+        '',
+        0,
+        "",
+        0,
+        "",
+        '',
+        nextNo,
+        state.globalTake,
+        true,
+        state.floatingFilterData
+
+      )
       setState((prevState) => ({ ...prevState, currentRowIndex: nextNo }));
     }
   };
@@ -284,15 +444,47 @@ const MachineRateListing = (props) => {
     } else if (Number(newPageSize) === 100) {
       pageSize = 100;
     }
+
     totalRecordCount = Math.ceil(state.totalRecordCount / pageSize);
-    getDataList('', 0, "", 0, "", '', state.currentRowIndex, pageSize, true, state.floatingFilterData);
-    setState((prevState) => ({ ...prevState, globalTake: pageSize, pageNo: Math.min(state.pageNo, totalRecordCount), pageSize: { pageSize10: pageSize === 10, pageSize50: pageSize === 50, pageSize100: pageSize === 100, }, }));
+
+    getDataList(
+      '',
+      0,
+      "",
+      0,
+      "",
+      '',
+      state.currentRowIndex,
+      pageSize,
+      true,
+      state.floatingFilterData
+
+    );
+    //  costing_head = '', technology_id = 0, vendor_id = '', machine_type_id = 0, process_id = '', plant_id = '', skip = 0, take = 100, isPagination = true, dataObj) => {
+    //data, skip, take, isPagination, obj, callback
+    setState((prevState) => ({
+      ...prevState,
+      globalTake: pageSize,
+      pageNo: Math.min(state.pageNo, totalRecordCount), // Ensure pageNo is within bounds
+      pageSize: {
+        pageSize10: pageSize === 10,
+        pageSize50: pageSize === 50,
+        pageSize100: pageSize === 100,
+      },
+    }));
+
     state.gridApi.paginationSetPageSize(Number(newPageSize));
   };
 
 
   const viewOrEditItemDetails = (Id, rowData, isViewMode) => {
-    let data = { isEditFlag: true, Id: Id, IsVendor: rowData.CostingHead, isViewMode: isViewMode, costingTypeId: rowData.CostingTypeId, }
+    let data = {
+      isEditFlag: true,
+      Id: Id,
+      IsVendor: rowData.CostingHead,
+      isViewMode: isViewMode,
+      costingTypeId: rowData.CostingTypeId,
+    }
     props.getDetails(data, rowData?.IsMachineAssociated);
   }
 
@@ -304,13 +496,18 @@ const MachineRateListing = (props) => {
   const viewProcessGroupDetail = (rowData) => {
     dispatch(getProcessGroupByMachineId(rowData.MachineId, res => {
       if (res.data.Result || res.status === 204) {
-        setState((prevState) => ({ ...prevState, isOpenProcessGroupDrawer: true }))
+        setState((prevState) => ({
+          ...prevState,
+          isOpenProcessGroupDrawer: true
+        }))
       }
     }))
   }
 
   const closeProcessGroupDrawer = () => {
-    setState((prevState) => ({ ...prevState, isOpenProcessGroupDrawer: false }))
+    setState((prevState) => ({
+      ...prevState, isOpenProcessGroupDrawer: false
+    }))
   }
 
 
@@ -327,7 +524,9 @@ const MachineRateListing = (props) => {
     }));
   }
   const copyItem = (Id) => {
-    setState((prevState) => ({ ...prevState, showCopyPopup: true, copyId: Id }))
+    setState((prevState) => ({
+      ...prevState, showCopyPopup: true, copyId: Id
+    }))
   }
 
   /**
@@ -335,7 +534,9 @@ const MachineRateListing = (props) => {
   * @description confirm delete Raw Material details
   */
   const deleteItem = (Id) => {
-    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id }))
+    setState((prevState) => ({
+      ...prevState, showPopup: true, deletedId: Id
+    }))
   }
 
   /**
@@ -348,42 +549,62 @@ const MachineRateListing = (props) => {
       if (res.data.Result === true) {
         Toaster.success(MESSAGES.DELETE_MACHINE_SUCCESS);
         resetState()
-        setState((prevState) => ({ ...prevState, dataCount: 0 }))
+        setState((prevState) => ({
+          ...prevState, dataCount: 0
+        }))
       }
     }));
   }
   const onPopupConfirm = () => {
     confirmDelete(state.deletedId);
-    setState((prevState) => ({ ...prevState, showPopup: false }))
+    setState((prevState) => ({
+      ...prevState, showPopup: false
+    }))
 
   }
   const onCopyPopupConfirm = () => {
     confirmCopy(state.copyId);
-    setState((prevState) => ({ ...prevState, showCopyPopup: false }))
+    setState((prevState) => ({
+      ...prevState, showCopyPopup: false
+    }))
 
   }
   const closePopUp = () => {
-    setState((prevState) => ({ ...prevState, showPopup: false, showCopyPopup: false }))
+    setState((prevState) => ({
+      ...prevState, showPopup: false, showCopyPopup: false
+    }))
   }
 
 
   const showAnalytics = (cell, rowData) => {
-    setState((prevState) => ({ ...prevState, selectedRowData: rowData, analyticsDrawer: true }))
+    setState((prevState) => ({
+      ...prevState, selectedRowData: rowData, analyticsDrawer: true
+    }))
   }
 
 
   const buttonFormatter = (props) => {
+
     const cellValue = props?.value;
     const rowData = props?.data;
+
     let isEditable = false
     let isDeleteButton = false
-    if (permissions.Edit) { isEditable = true }
-    else { isEditable = false }
+
+
+    if (permissions.Edit) {
+      isEditable = true
+    } else {
+      isEditable = false
+    }
+
+
     if (permissions.Delete && !rowData.IsMachineAssociated) {
       isDeleteButton = true
     } else {
       isDeleteButton = false
     }
+
     return (
       <>
         <button className="cost-movement" title='Cost Movement' type={'button'} onClick={() => showAnalytics(cellValue, rowData)}> </button>
@@ -402,6 +623,7 @@ const MachineRateListing = (props) => {
   */
   const costingHeadFormatter = (props) => {
     const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+
     if (selectedRowForPagination?.length > 0) {
       selectedRowForPagination.map((item) => {
         if (item.MachineProcessRateId === props.node.data.MachineProcessRateId) {
@@ -446,22 +668,35 @@ const MachineRateListing = (props) => {
     return (
       <>
         <div className={"attachment images"}>
-          {files && files.length === 1 ?
-            files.map((f) => {
-              const withOutTild = f.FileURL?.replace("~", "");
-              const fileURL = `${FILE_URL}${withOutTild}`;
-              return (<a href={fileURL} target="_blank" rel="noreferrer"> {f.OriginalFileName} </a>)
-            }) : <button type='button' title='View Attachment' className='btn-a pl-0' onClick={() => viewAttachmentData(row)} >View Attachment</button>}  </div>
+          {files && files.length === 1 ? files.map((f) => {
+            const withOutTild = f.FileURL?.replace("~", "");
+            const fileURL = `${FILE_URL}${withOutTild}`;
+            return (
+              <a href={fileURL} target="_blank" rel="noreferrer">
+                {f.OriginalFileName}
+              </a>
+            )
+          }) : <button
+            type='button'
+            title='View Attachment'
+            className='btn-a pl-0'
+            onClick={() => viewAttachmentData(row)}
+          >View Attachment</button>}
+        </div>
       </>
     )
 
   }
   const bulkToggle = () => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: true }))
+    setState((prevState) => ({
+      ...prevState, isBulkUpload: true
+    }))
   }
 
   const closeBulkUploadDrawer = (event, type) => {
-    setState((prevState) => ({ ...prevState, isBulkUpload: false }))
+    setState((prevState) => ({
+      ...prevState, isBulkUpload: false
+    }))
     if (type !== 'cancel') {
       resetState()
     }
@@ -497,12 +732,16 @@ const MachineRateListing = (props) => {
     })
 
     return (<ExcelSheet data={temp} name={`${MachineRate}`}>
-      {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
+      {excelData && excelData.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)
+      }
     </ExcelSheet>);
   }
 
   const onGridReady = (params) => {
-    setState((prevState) => ({ ...prevState, gridApi: params.api, gridColumnApi: params.columnApi }))
+    setState((prevState) => ({
+      ...prevState, gridApi: params.api, gridColumnApi: params.columnApi
+    }))
+
     params.api.paginationGoToPage(0);
     const checkBoxInstance = document.querySelectorAll('.ag-input-field-input.ag-checkbox-input');
     checkBoxInstance.forEach((checkBox, index) => {
@@ -517,18 +756,26 @@ const MachineRateListing = (props) => {
   };
 
   const onExcelDownload = () => {
-    setState((prevState) => ({ ...prevState, disableDownload: true }))
+
+    setState((prevState) => ({
+      ...prevState, disableDownload: true
+    }))
     dispatch(disabledClass(true))
+
     //let tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     let tempArr = selectedRowForPagination
     if (tempArr?.length > 0) {
       setTimeout(() => {
-        setState((prevState) => ({ ...prevState, disableDownload: false }))
+        setState((prevState) => ({
+          ...prevState, disableDownload: false
+        }))
         dispatch(disabledClass(false))
         let button = document.getElementById('Excel-Downloads-machine')
         button && button.click()
       }, 400);
+
     } else {
+
       getDataList("", 0, "", 0, "", "", 0, defaultPageSize, false, state.floatingFilterData)  // FOR EXCEL DOWNLOAD OF COMPLETE DATA
     }
   }
@@ -556,7 +803,9 @@ const MachineRateListing = (props) => {
     comparator: function (filterLocalDateAtMidnight, cellValue) {
       var dateAsString = cellValue != null ? DayTime(cellValue).format('DD/MM/YYYY') : '';
       var newDate = filterLocalDateAtMidnight != null ? DayTime(filterLocalDateAtMidnight).format('DD/MM/YYYY') : '';
+
       handleDate(newDate)// FOR COSTING BENCHMARK MACHINE REPORT
+
       let date = document.getElementsByClassName('ag-input-field-input')
       for (let i = 0; i < date.length; i++) {
         if (date[i].type === 'radio') {
@@ -585,11 +834,16 @@ const MachineRateListing = (props) => {
     minValidYear: 2000,
   };
 
-  const handleDate = (newDate) => {
+  var handleDate = (newDate) => {
+
     let temp = state.inRangeDate
     temp.push(newDate)
-    setState((prevState) => ({ ...prevState, inRangeDate: temp }))
-    if (props?.benchMark) { props?.handleDate(state.inRangeDate) }
+    setState((prevState) => ({
+      ...prevState, inRangeDate: temp
+    }))
+    if (props?.benchMark) {
+      props?.handleDate(state.inRangeDate)
+    }
     setTimeout(() => {
       var y = document.getElementsByClassName('ag-radio-button-input');
       var radioBtn = y[0];
@@ -598,12 +852,16 @@ const MachineRateListing = (props) => {
     }, 300);
   }
 
-  const setDate = (date) => {
-    setState((prevState) => ({ ...prevState, floatingFilterData: { ...state.floatingFilterData, EffectiveDateNew: date, newDate: date } }))
+  var setDate = (date) => {
+    setState((prevState) => ({
+      ...prevState, floatingFilterData: { ...state.floatingFilterData, EffectiveDateNew: date, newDate: date }
+    }))
   }
+
   const isFirstColumn = (params) => {
     var displayedColumns = params.columnApi.getAllDisplayedColumns();
     var thisIsFirstColumn = displayedColumns[0] === params.column;
+
     if (props?.isMasterSummaryDrawer) {
       return false
     } else {
@@ -612,7 +870,9 @@ const MachineRateListing = (props) => {
   }
 
   const closeAnalyticsDrawer = () => {
-    setState((prevState) => ({ ...prevState, analyticsDrawer: false }))
+    setState((prevState) => ({
+      ...prevState, analyticsDrawer: false
+    }))
   }
 
   const defaultColDef = {
@@ -637,15 +897,24 @@ const MachineRateListing = (props) => {
   const onRowSelect = (event) => {
     var selectedRows = state.gridApi && state.gridApi?.getSelectedRows();
     if (selectedRows === undefined || selectedRows === null) {
+      //CONDITION FOR FIRST RENDERING OF COMPONENT
       selectedRows = selectedRowForPagination;
     } else if (
-      selectedRowForPagination && selectedRowForPagination.length > 0
+      selectedRowForPagination &&
+      selectedRowForPagination.length > 0
     ) {
+
+      // CHECKING IF REDUCER HAS DATA
       let finalData = [];
       if (event.node.isSelected() === false) {
         // CHECKING IF CURRENT CHECKBOX IS UNSELECTED
         for (let i = 0; i < selectedRowForPagination.length; i++) {
-          if (selectedRowForPagination[i].MachineProcessRateId === event.data.MachineProcessRateId) {
+          if (
+            selectedRowForPagination[i].MachineProcessRateId ===
+            event.data.MachineProcessRateId
+
+          ) {
+            // REMOVING UNSELECTED CHECKBOX DATA FROM REDUCER
             continue;
           }
           finalData.push(selectedRowForPagination[i]);
@@ -662,6 +931,7 @@ const MachineRateListing = (props) => {
     let finalArr = selectedRows;
     let length = finalArr?.length;
     let uniqueArray = _.uniqBy(finalArr, "MachineProcessRateId");
+
     if (props.isSimulation && !props?.isFromVerifyPage) {
       props.apply(uniqueArray, length);
     }
@@ -669,6 +939,7 @@ const MachineRateListing = (props) => {
 
     if (props?.benchMark) {
       let uniqueArrayNew = _.uniqBy(uniqueArray, "CostingTypeId");
+
       if (uniqueArrayNew.length > 1) {
         dispatch(setSelectedRowForPagination([]));
         state.gridApi.deselectAll();
@@ -676,43 +947,85 @@ const MachineRateListing = (props) => {
       }
     }
   };
-
   return (
     <div className={`ag-grid-react ${(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) ? "custom-pagination" : ""} ${permissions.Download ? "show-table-btn" : ""} ${props.isSimulation ? 'simulation-height' : ''}`}>
-      {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />} {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
-      <form noValidate> {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
+      {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}  {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
+
+      <form
+        // onSubmit={handleSubmit(onSubmit.bind(this))} 
+        noValidate>
+        {(state.isLoader && !props.isMasterSummaryDrawer) && <LoaderCustom customClass="simulation-Loader" />}
         {state.disableDownload && <LoaderCustom message={MESSAGES.DOWNLOADING_MESSAGE} />}
         <Row className={`${props?.isMasterSummaryDrawer ? '' : 'pt-4'} filter-row-large ${(props.isSimulation || props.benchMark) ? 'simulation-filter zindex-0' : ''}`}>
           <Col md="3" lg="3">
-            <input type="text" className="form-control table-search" value={searchText} id="filter-text-box" placeholder="Search" autoComplete={'off'} onChange={onFilterTextBoxChanged} />
-          </Col>
+            <input
+              type="text"
+              className="form-control table-search"
+              value={searchText}
+              id="filter-text-box"
+              placeholder="Search"
+              autoComplete={'off'}
+              onChange={onFilterTextBoxChanged}
+            />          </Col>
           <Col md="9" lg="9" className="pl-0 mb-3">
             <div className="d-flex justify-content-end bd-highlight w100 p-relative">
-              {state.shown ? (
-                <button type="button" className="user-btn mr5 filter-btn-top" onClick={() => { setState((prevState) => ({ ...prevState, shown: !state.shown, })); getDataList(); }} > <div className="cancel-icon-white"></div></button>
-              ) : (<>   </>
-              )}
-
               {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                 <div className="warning-message d-flex align-items-center">
                   {state.warningMessage && !state.disableDownload && <><WarningMessage dClass="mr-3" message={'Please click on filter button to filter all data'} /><div className='right-hand-arrow mr-2'></div></>}
                 </div>
               }
+
               {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
-                <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>}
-              {permissions.Add && (<button type="button" className={"user-btn mr5"} onClick={displayForm} title="Add" > <div className={"plus mr-0"}></div> </button>)}
-              {permissions.BulkUpload && (<button type="button" className={"user-btn mr5"} onClick={bulkToggle} title="Bulk Upload" > <div className={"upload mr-0"}></div></button>)}
-              {permissions.Download &&
-                <><button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div>
-                  {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}  </button>
-                  <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={<button id={'Excel-Downloads-machine'} className="p-absolute" type="button" > </button>}> {onBtExport()}
-                  </ExcelFile>
+                <>
+                  <button disabled={state.disableFilter} title="Filtered data" type="button" class="user-btn mr5" onClick={() => onSearch()}><div class="filter mr-0"></div></button>
+                  {permissions.Add && (
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={displayForm}
+                      title="Add"
+                    >
+                      <div className={"plus mr-0"}></div>
+                      {/* ADD */}
+                    </button>
+                  )}
+                  {permissions.BulkUpload && (
+                    <button
+                      type="button"
+                      className={"user-btn mr5"}
+                      onClick={bulkToggle}
+                      title="Bulk Upload"
+                    >
+                      <div className={"upload mr-0"}></div>
+                      {/* Bulk Upload */}
+                    </button>
+                  )}
+                  {
+                    permissions.Download &&
+                    <>
+                      <button title={`Download ${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`} type="button" onClick={onExcelDownload} className={'user-btn mr5'}><div className="download mr-1" title="Download"></div>
+                        {/* DOWNLOAD */}
+                        {`${state.dataCount === 0 ? "All" : "(" + state.dataCount + ")"}`}
+                      </button>
+
+                      <ExcelFile filename={'Machine Rate'} fileExtension={'.xls'} element={
+                        <button id={'Excel-Downloads-machine'} className="p-absolute" type="button" >
+                        </button>}>
+                        {onBtExport()}
+                      </ExcelFile>
+                    </>
+                  }
                 </>
               }
-              <Button id='machineRateListing_reset' className="user-btn" onClick={() => resetState()}>  <div className="refresh mr-0"></div></Button>
+
+              <Button id='machineRateListing_reset' className="user-btn" onClick={() => resetState()}>
+                <div className="refresh mr-0"></div>
+              </Button>
+
             </div>
           </Col>
         </Row>
+
       </form>
       <Row>
         <Col>
@@ -746,7 +1059,7 @@ const MachineRateListing = (props) => {
                 <AgGridColumn field="ProcessName" headerName="Process Name"></AgGridColumn>
                 <AgGridColumn field="UOM" headerName='UOM'></AgGridColumn>
                 <AgGridColumn field="VendorName" headerName="Vendor (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>
-                {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
+                {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)" cellRenderer={'hyphenFormatter'}></AgGridColumn>}
                 <AgGridColumn field="Plant" headerName="Plant (Code)" cellRenderer='hyphenFormatter'></AgGridColumn>
                 <AgGridColumn field="MachineRate" headerName="Machine Rate"></AgGridColumn>
                 <AgGridColumn field="EffectiveDateNew" headerName="Effective Date" cellRenderer={'effectiveDateRenderer'} filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>
@@ -754,28 +1067,42 @@ const MachineRateListing = (props) => {
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Attachements" headerName='Attachments' cellRenderer={'attachmentFormatter'}></AgGridColumn>}
                 {props.isMasterSummaryDrawer && <AgGridColumn field="Remark" tooltipField="Remark" ></AgGridColumn>}
               </AgGridReact>}
-              <div className='button-wrapper'> {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
+              <div className='button-wrapper'>
+                {!state.isLoader && <PaginationWrapper gridApi={state.gridApi} setPage={onPageSizeChanged} globalTake={state.globalTake} />}
                 {(props?.isMasterSummaryDrawer === undefined || props?.isMasterSummaryDrawer === false) &&
                   <div className="d-flex pagination-button-container">
-                    <p> <Button id="machineRateListing_previous" className="previous-page-pg" variant="previous-btn" onClick={() => onBtPrevious()} />  </p>
-                    {state?.pageSize?.pageSize10 && (<p className="next-page-pg custom-left-arrow"> Page{" "} <span className="text-primary"> {state.pageNo} </span>{" "} of {Math.ceil(state.totalRecordCount / 10)} </p>)}
-                    {state?.pageSize?.pageSize50 && (<p className="next-page-pg custom-left-arrow">  Page{" "}  <span className="text-primary"> {state.pageNo} </span>{" "}of {Math.ceil(state.totalRecordCount / 50)}</p>)}
-                    {state?.pageSize?.pageSize100 && (<p className="next-page-pg custom-left-arrow"> Page{" "}   <span className="text-primary">  {state.pageNo} </span>{" "} of {Math.ceil(state.totalRecordCount / 100)} </p>)}
-                    <p> <Button id="machineRateListing_next" className="next-page-pg" variant="next-btn" onClick={() => onBtNext()} /> </p>
-                  </div>
-                }
+                    <p> <Button id="machineRateListing_previous" className="previous-page-pg" variant="previous-btn" onClick={() => onBtPrevious()} />
+                    </p>{state?.pageSize?.pageSize10 && (<p className="next-page-pg custom-left-arrow">  Page{" "}  <span className="text-primary"> {state.pageNo} </span>{" "}  of {Math.ceil(state.totalRecordCount / 10)}</p>)}
+                    {state?.pageSize?.pageSize50 && (<p className="next-page-pg custom-left-arrow">  Page{" "}  <span className="text-primary">  {state.pageNo}   </span>{" "}  of {Math.ceil(state.totalRecordCount / 50)} </p>)}
+                    {state?.pageSize?.pageSize100 && (<p className="next-page-pg custom-left-arrow">  Page{" "} <span className="text-primary"> {state.pageNo}  </span>{" "}   of {Math.ceil(state.totalRecordCount / 100)} </p>)}<p>
+                      <Button id="machineRateListing_next" className="next-page-pg" variant="next-btn" onClick={() => onBtNext()} />
+                    </p>
+                  </div>}
               </div>
             </div>
           </div>
 
         </Col>
       </Row>
-      {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Machine'} isZBCVBCTemplate={true} isMachineMoreTemplate={true} messageLabel={'Machine'} anchor={'right'} masterId={MACHINE_MASTER_ID} />}
-      {state.analyticsDrawer && <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={4} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData} />}
-      {state.attachment && (<Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true} />)}
-      {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />}
-      {state.showCopyPopup && <PopupMsgWrapper isOpen={state.showCopyPopup} closePopUp={closePopUp} confirmPopup={onCopyPopupConfirm} message={`${MESSAGES.COPY_MACHINE_POPUP}`} />}
-      {state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={state.isOpenProcessGroupDrawer} toggleDrawer={closeProcessGroupDrawer} isViewFlag={true} />}
+      {isBulkUpload && <BulkUpload isOpen={isBulkUpload} closeDrawer={closeBulkUploadDrawer} isEditFlag={false} fileName={'Machine'} isZBCVBCTemplate={true} isMachineMoreTemplate={true} messageLabel={'Machine'} anchor={'right'} masterId={MACHINE_MASTER_ID}
+      />}
+
+      {state.analyticsDrawer &&
+        <AnalyticsDrawer isOpen={state.analyticsDrawer} ModeId={4} closeDrawer={closeAnalyticsDrawer} anchor={"right"} isReport={state.analyticsDrawer} selectedRowData={state.selectedRowData} isSimulation={true} rowData={state.selectedRowData}
+        />
+      }
+      {state.attachment && (
+        <Attachament isOpen={state.attachment} index={state.viewAttachment} closeDrawer={closeAttachmentDrawer} anchor={'right'} gridListing={true}
+        />
+      )
+      }
+
+
+      {state.showPopup && <PopupMsgWrapper isOpen={state.showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={`${MESSAGES.MACHINE_DELETE_ALERT}`} />
+      }{
+        state.showCopyPopup && <PopupMsgWrapper isOpen={state.showCopyPopup} closePopUp={closePopUp} confirmPopup={onCopyPopupConfirm} message={`${MESSAGES.COPY_MACHINE_POPUP}`} />}
+      {state.isOpenProcessGroupDrawer && <ProcessGroupDrawer anchor={'right'} isOpen={state.isOpenProcessGroupDrawer} toggleDrawer={closeProcessGroupDrawer} isViewFlag={true} />
+      }
     </div >
   );
 }
