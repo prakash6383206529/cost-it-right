@@ -15,7 +15,7 @@ import { trim } from 'lodash'
 
 function AddConditionCosting(props) {
     const { currency, currencyValue, basicRateCurrency, basicRateBase, isFromImport, isFromMaster, EntryType } = props
-    console.log('EntryType: ', EntryType);
+
     const [tableData, setTableData] = useState(props?.tableData)
     // const [tableData, setTableData] = useState([])
     const [disableTotalCost, setDisableTotalCost] = useState(true)

@@ -1364,7 +1364,7 @@ const CostingSummaryTable = (props) => {
     if (!(getConfigurationKey().IsShowNpvCost)) {
       delete templateObj.npvCost
     }
-    console.log('templateObj: ', templateObj);
+
     if (!(getConfigurationKey().IsBasicRateAndCostingConditionVisible)) {
       delete templateObj.conditionCost
       delete templateObj.BasicRate

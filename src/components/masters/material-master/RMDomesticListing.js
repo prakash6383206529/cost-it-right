@@ -963,7 +963,7 @@ function RMDomesticListing(props) {
 
                     </Row>
                     <Row>
-                        {console.log(loader, "loader")}
+
                         <Col>
                             <div className={`ag-grid-wrapper ${(props?.isDataInMaster && !noData) ? 'master-approval-overlay' : ''} ${(rmDataList && rmDataList?.length <= 0) || noData ? 'overlay-contain' : ''}`}>
                                 <div className={`ag-theme-material `}>

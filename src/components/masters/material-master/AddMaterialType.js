@@ -46,7 +46,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
     const fetchData = () => {
       const materialId = isEditFlag ? ID : ''; // Use a default value for ID
       dispatch(getMaterialTypeDataAPI(materialId, res => {
-        console.log(res);
+
         const data = res?.data?.Data;
 
         if (data) {
@@ -151,7 +151,7 @@ const AddMaterialType = ({ isEditFlag, ID, isOpen, closeDrawer, anchor }) => {
   };
 
   const { setDisable } = state;
-  console.log(errors);
+
   return (
     <div>
       <Drawer anchor={anchor} open={isOpen}>

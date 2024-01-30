@@ -1278,7 +1278,7 @@ function RawMaterialCost(props) {
       ...prevState,
       steps: Steps(t).RAW_MATERIAL_COST,
     }))
-    console.log(tourState, "tourState");
+
   }
 
   const pinHandler = useCallback(() => {

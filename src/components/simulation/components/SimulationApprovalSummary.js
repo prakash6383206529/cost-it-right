@@ -564,7 +564,7 @@ function SimulationApprovalSummary(props) {
                 listCP = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADCP, ['SANumber', 'LineNumber']);
                 listER = hideMultipleColumnFromExcel(SIMULATIONAPPROVALSUMMARYDOWNLOADER, ['SANumber', 'LineNumber']);
             }
-            console.log('listRM: ', listRM);
+
             switch (String(SimulationTechnologyId)) {
                 case RMDOMESTIC:
                 case RMIMPORT:
