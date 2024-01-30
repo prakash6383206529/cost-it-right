@@ -8,7 +8,7 @@ import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
 } from '../config/constants'
-import { IsShowFreightAndShearingCostFields, getConfigurationKey } from './auth'
+import { IsShowFreightAndShearingCostFields, getConfigurationKey, showBopLabel } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
 import { FORGING, RMDomesticZBC, SHEETMETAL } from '../config/masterData';
@@ -1123,13 +1123,13 @@ export const showTitleForActiveToggle = (index) => {
 export const checkForSameFileUpload = (master, fileHeads, isBOP = false) => {
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
+  const bopMasterName = showBopLabel()
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
   if (isBOP) {
     bulkUploadArray = bulkUploadArray.map((item) =>
-      item.replace('BoughtOutPart', 'BOP')
+      item.replace('BOP', bopMasterName).replace('BoughtOutPart', bopMasterName)
     );
-
   }
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead

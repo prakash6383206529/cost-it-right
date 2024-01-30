@@ -54,10 +54,7 @@ const ProcessListing = (props) => {
 
   useEffect(() => {
     if (processList && processList.length > 0) {
-      setState((prevState) => ({
-        ...prevState,
-        tableData: processList,
-      }));
+      setState((prevState) => ({ ...prevState, tableData: processList, }));
     }
   }, [processList]);
 
@@ -67,7 +64,7 @@ const ProcessListing = (props) => {
       isOpenProcessDrawer: true,
       isEditFlag: true,
       Id: Id,
-      dataCount: 0,
+      // dataCount: 0,
     }));
     getDataList();
 
@@ -128,7 +125,7 @@ const ProcessListing = (props) => {
   };
 
   const deleteItem = (Id) => {
-    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id, dataCount: 0 }));
+    setState((prevState) => ({ ...prevState, showPopup: true, deletedId: Id, }));
   };
 
   const confirmDelete = (ID) => {
@@ -157,10 +154,11 @@ const ProcessListing = (props) => {
   };
 
   const closeProcessDrawer = (e = "", formData, type) => {
-    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: false }, () => {
-      if (type === "submit") { getDataList(); }
-      setState((prevState) => ({ ...prevState, dataCount: 0 }));
-    }));
+    setState((prevState) => ({ ...prevState, isOpenProcessDrawer: false }
+    ));
+    if (type === "submit") { getDataList(); }
+    setState((prevState) => ({ ...prevState, dataCount: 0 }));
+
   };
 
   const onFloatingFilterChanged = (value) => {

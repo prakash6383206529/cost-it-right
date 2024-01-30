@@ -212,12 +212,12 @@ const ClientListing = React.memo(() => {
   };
   const closeVendorDrawer = (e = "", type) => {
     setState(
-      (prevState) => ({ ...prevState, isOpenVendor: false, isEditFlag: false, ID: "", }),
-      () => {
-        if (type === "submit") getTableListData(null, null);
-        setState((prevState) => ({ ...prevState, dataCount: 0 }));
-      }
+      (prevState) => ({ ...prevState, isOpenVendor: false, isEditFlag: false, ID: "", })
     );
+    if (type === "submit") getTableListData(null, null)
+    setState((prevState) => ({ ...prevState, dataCount: 0 }));
+
+
   };
 
   /**

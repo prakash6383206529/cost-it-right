@@ -11,7 +11,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDepartmetList, updateBOPValues } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDepartmetList } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -606,9 +606,7 @@ const BOPDomesticListing = (props) => {
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allBopDataList ? allBopDataList : [])
-    const bopMasterName = showBopLabel();
-    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr, bopMasterName);
-    return returnExcelColumn(updatedLabels, updatedTempData)
+    return returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
   };
 
   const returnExcelColumn = (data = [], TempData) => {

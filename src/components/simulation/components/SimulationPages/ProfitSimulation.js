@@ -33,7 +33,7 @@ function ProfitSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [valuesForDropdownInAgGrid, setValuesForDropdownInAgGrid] = useState(
         {
-            applicability: [`${showBopLabel()}`, `${showBopLabel()} + CC`, 'CC', 'Fixed', 'RM', `RM + ${showBopLabel()}`, 'RM + CC', `RM + CC + ${showBopLabel()}`],
+            applicability: [`BOP`, `BOP + CC`, 'CC', 'Fixed', 'RM', `RM + BOP`, 'RM + CC', `RM + CC + BOP`],
             modelType: ['All', 'High Volume', 'Low Volume', 'Medium Volume', 'New Development']
         }
     )
