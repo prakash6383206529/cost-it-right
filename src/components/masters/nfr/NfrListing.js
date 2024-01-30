@@ -23,7 +23,7 @@ import SingleDropdownFloationFilter from '../material-master/SingleDropdownFloat
 import { useRef } from 'react';
 import { agGridStatus, getGridHeight, isResetClick } from '../../../actions/Common';
 import Button from '../../layout/Button';
-import CreateNFRInSystem from './CreateNFRInSystem';
+import CreateManualNFR from './CreateManualNFR';
 
 const gridOptions = {};
 
@@ -440,7 +440,7 @@ function NfrListing(props) {
                 changeIsFromDiscount={props?.changeIsFromDiscount}
             />}
 
-            {showAddNFRDrawer && <CreateNFRInSystem
+            {showAddNFRDrawer && <CreateManualNFR
                 data={selectedPartData}
                 AddAccessibilityRMANDGRADE={true}
                 EditAccessibilityRMANDGRADE={true}

@@ -19,7 +19,7 @@ import AddRMDetails from './AddRMDetails';
 import { createNFRBOMDetails } from './actions/nfr'
 import { number, checkWhiteSpaces, decimalNumberLimit6 } from '../../../helper'
 
-function CreateNFRInSystem(props) {
+function CreateManualNFR(props) {
 
     const { handleSubmit, formState: { errors }, register, control, getValues, setValue } = useForm({
         mode: 'onChange',
@@ -799,4 +799,4 @@ function CreateNFRInSystem(props) {
     );
 }
 
-export default CreateNFRInSystem;
+export default CreateManualNFR;
