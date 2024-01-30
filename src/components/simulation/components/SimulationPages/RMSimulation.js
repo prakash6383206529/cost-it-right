@@ -88,7 +88,7 @@ function RMSimulation(props) {
                 setIsLoader(false)
             }
         }, 200);
-        if (!isImpactedMaster) {
+        if (!isImpactedMaster && !isbulkUpload) {
             list && list?.map(item => {
                 item.NewBasicRate = item.BasicRatePerUOM
                 item.NewScrapRatePerScrapUOM = item.ScrapRatePerScrapUOM
@@ -212,31 +212,39 @@ function RMSimulation(props) {
         let basicRateCount = 0
         let isScrapRateGreaterThanBasiRate = false
         let scrapRateChangeArr = [];
+        let basicRateZeroCount = 0
         list && list.map((li) => {
-
-            if (Number(li.BasicRate) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
+            if (Number(li.BasicRatePerUOM) === Number(li.NewBasicRate) || (li?.NewBasicRate === undefined && li?.NewBasicrateFromPercentage === undefined)) {
                 basicRateCount = basicRateCount + 1
             }
 
-            if ((li.NewBasicRate && Number(li.BasicRate) !== Number(li.NewBasicRate)) && (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined)) {
+            if ((li.NewBasicRate && Number(li.BasicRatePerUOM) !== Number(li.NewBasicRate)) && (Number(li.ScrapRate) === Number(li.NewScrapRate) || li?.NewScrapRate === undefined)) {
                 scrapRateChangeArr.push(li)
 
             }
             if (li.NewBasicrateFromPercentage === undefined || li?.NewBasicrateFromPercentage < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
-                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRate) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
+                if ((li?.NewBasicRate === undefined || li?.NewBasicRate === '' ? Number(li?.BasicRatePerUOM) : Number(li?.NewBasicRate)) < (li?.NewScrapRate === undefined || li?.NewScrapRate === '' ? Number(li?.ScrapRate) : Number(li?.NewScrapRate))) {
                     isScrapRateGreaterThanBasiRate = true
                 }
                 if (isScrapRateGreaterThanBasiRate && !(Number(basicRateCount) === Number(list.length))) {
-                    li.NewBasicRate = li?.BasicRate
+                    li.NewBasicRate = li?.BasicRatePerUOM
                     li.NewScrapRate = li?.ScrapRate
                     Toaster.warning('Scrap Rate should be less than Basic Rate')
                     return false
                 }
             }
+            if (checkForNull(li?.NewBasicRate) === 0) {
+                basicRateZeroCount = basicRateZeroCount + 1
+            }
             return null;
         })
+
         if ((selectedMasterForSimulation?.value === RMDOMESTIC || selectedMasterForSimulation?.value === RMIMPORT) && basicRateCount === list.length) {
             Toaster.warning('There is no changes in net cost. Please change the basic rate, then run simulation')
+            return false
+        }
+        if (basicRateZeroCount > 0) {
+            Toaster.warning('Basic Rate should not be zero')
             return false
         }
         if (scrapRateChangeArr.length !== 0) {
@@ -330,7 +338,7 @@ function RMSimulation(props) {
                 {
                     isImpactedMaster ?
                         checkForDecimalAndNull(row.NewBasicRate, getConfigurationKey().NoOfDecimalForPrice) :
-                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : Number(row.BasicRatePerUOM)} </span>
+                        <span id={`newBasicRate-${props.rowIndex}`} className={`${!isbulkUpload ? 'form-control' : ''} ${row?.Percentage && Number(row?.Percentage) !== 0 && !row?.NewBasicRate ? 'disabled' : ''}`} title={cell && value ? Number(cell) : Number(row.BasicRatePerUOM)}>{cell && value ? Number(cell) : row.Percentage ? PercentageCalc : isbulkUpload ? checkForNull(cell) : checkForNull(row.BasicRatePerUOM)} </span>
                 }
 
             </>
@@ -448,10 +456,15 @@ function RMSimulation(props) {
                 return false
             }
             return true
-        } else if (cellValue && !/^[+-]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
+        } else if (cellValue && !/^[+]?([0-9]+(?:[.][0-9]*)?|\.[0-9]+)$/.test(cellValue)) {
             Toaster.warning('Please enter a valid positive numbers.')
             if (type === "Percentage") {
                 row.Percentage = 0
+            }
+            if (type === "basicRate") {
+                row.NewBasicRate = row?.BasicRatePerUOM
+            } else if (type === "scrapRate") {
+                row.NewScrapRate = row?.ScrapRate
             }
             return false
         }
@@ -614,6 +627,14 @@ function RMSimulation(props) {
         )
     }
 
+    /**
+     * @method hyphenFormatter
+     */
+    const hyphenFormatter = (props) => {
+        const cellValue = props?.value;
+        return cellValue ? cellValue : '-';
+    }
+
     const changeList = (value) => {
         setIsLoader(true)
         list && list?.map(item => {
@@ -663,7 +684,8 @@ function RMSimulation(props) {
         percentageFormatter: percentageFormatter,
         percentageHeader: percentageHeader,
         nullHandler: props.nullHandler && props.nullHandler,
-        oldScrapRateFormatterPerScrapUOM: oldScrapRateFormatterPerScrapUOM
+        oldScrapRateFormatterPerScrapUOM: oldScrapRateFormatterPerScrapUOM,
+        hyphenFormatter: hyphenFormatter,
 
     };
 
@@ -725,7 +747,6 @@ function RMSimulation(props) {
             item.EffectiveDate = (item.EffectiveDate)?.slice(0, 10)
             temp.push(item)
         })
-
         return (
             <ExcelSheet data={temp} name={'RM Data'}>
                 {data && data.map((ele, index) => <ExcelColumn key={index} label={ele.label} value={ele.value} style={ele.style} />)}
@@ -857,10 +878,11 @@ function RMSimulation(props) {
                                             {!isImpactedMaster && list[0]?.CostingTypeId === CBCTypeId && <AgGridColumn width={160} field="CustomerName" tooltipField='CustomerName' editable='false' headerName="Customer (Code)" cellRenderer='customerFormatter'></AgGridColumn>}
                                             {!isImpactedMaster && <AgGridColumn width={160} field="Plant (Code)" editable='false' headerName="Plant (Code)" tooltipField='Plant (Code)' cellRenderer='plantFormatter' ></AgGridColumn>}
                                             <AgGridColumn width={100} field="UnitOfMeasurementName" tooltipField='UnitOfMeasurementName' editable='false' headerName="UOM"></AgGridColumn>
+                                            {isScrapUOMApplyTemp && <AgGridColumn width={150} field="ScrapUnitOfMeasurement" tooltipField='ScrapUnitOfMeasurement' editable='false' headerName="Scrap UOM" cellRenderer='hyphenFormatter'></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="CostingNumber" tooltipField='CostingNumber' editable='false' headerName="Costing No" minWidth={190}></AgGridColumn>}
                                             {costingAndPartNo && <AgGridColumn field="PartNumber" tooltipField='PartNumber' editable='false' headerName="Part No" minWidth={190}></AgGridColumn>}
 
-                                            {<AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
+                                            {String(props?.masterId) === String(RMIMPORT) && <AgGridColumn field="Currency" tooltipField='Currency' editable='false' headerName="Currency" minWidth={140} ></AgGridColumn>}
                                             {(isImpactedMaster && String(props?.masterId) === String(RMIMPORT)) && <AgGridColumn field="ExchangeRate" tooltipField='ExchangeRate' editable='false' headerName="Existing Exchange Rate" minWidth={140} ></AgGridColumn>}
 
                                             <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={(Number(selectedMasterForSimulation?.value) === Number(RMIMPORT) || Number(selectedMasterForSimulation?.value) === Number(EXCHNAGERATE) || String(props?.masterId) === String(RMIMPORT)) ? "Basic Rate (Currency)" : "Basic Rate (INR)"} marryChildren={true} >

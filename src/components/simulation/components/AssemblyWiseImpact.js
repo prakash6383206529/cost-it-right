@@ -32,6 +32,7 @@ function AssemblyWiseImpact(props) {
     const [count, setCount] = useState(0);
     const [textFilterSearch, setTextFilterSearch] = useState('')
     const [showCostingSummaryTable, setShowCostingSummaryTable] = useState(false)
+    const [technology, setTechnology] = useState('')
     const dispatch = useDispatch();
 
     const simulationAssemblyList = useSelector((state) => state.simulation.simulationAssemblyList)
@@ -107,8 +108,11 @@ function AssemblyWiseImpact(props) {
         dispatch(getComparisionSimulationData(obj, res => {
             const Data = res.data.Data
             const obj1 = formViewData(Data.OldCosting)
+
             dispatch(setCostingViewData(obj1))
             setShowCostingSummaryTable(true)
+            setTechnology(obj1[0].technology)
+
         }))
     }
 
@@ -236,6 +240,7 @@ function AssemblyWiseImpact(props) {
                 simulationDrawer={true}
                 isOldCosting={true}
                 isSummaryDrawer={true}
+                selectedTechnology={technology}
             />}
         </div >
     );

@@ -1878,7 +1878,7 @@ export const lOGIN_AUDIT = 'Login Audit'
 //export const SIMULATION_HISTORY = 'Simulation History'
 
 export const SHEET_METAL = 'Sheet Metal';
-export const PLASTIC = 'Plastic';
+export const PLASTICNAME = 'Plastic';
 export const WIRING_HARNESS = 'Wiring Harness';
 export const NON_FERROUS_GDC = 'Non Ferrous GDC';
 export const PLATING = 'Plating';
@@ -1895,6 +1895,14 @@ export const FASTNERS = 'Fastners';
 export const RIVETS = 'Rivet';
 export const MECHANICAL_PROPRIETARY = 'Mechanical Proprietary';
 export const ELECTRICAL_PROPRIETARY = 'Electrical Proprieratary';
+export const DIECASTING = 'Die Casting'
+export const LOGISTICS = 'Logistics'
+export const CORRUGATEDBOX = 'Corrugated Box'
+export const FABRICATION = 'Fabrication'
+export const FERROUSCASTING = 'Ferrous Casting'
+export const WIREFORMING = 'Wire Forming'
+export const ELECTRIC = 'Electric'
+export const ELECTRONICSNAME = 'Electronics'
 
 export const ZBC_COSTING = 'Costing - ZBC';
 export const VBC_COSTING = 'Costing - VBC';
@@ -2713,7 +2721,7 @@ export const VBC_VENDOR_TYPE = Number(reactLocalStorage.getObject('vendortype')[
 
 
 //VERSION 
-export const VERSION = "V2.1.293";
+export const VERSION = "V2.1.312";
 
 
 

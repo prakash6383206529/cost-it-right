@@ -19,7 +19,6 @@ import SendForApproval from '../costing/components/approval/SendForApproval';
 import { getReleaseStrategyApprovalDetails, getSingleCostingDetails, setCostingApprovalData, setCostingViewData, storePartNumber } from '../costing/actions/Costing';
 import { getVolumeDataByPartAndYear } from '../masters/actions/Volume';
 import { checkForNull, formViewData, loggedInUserId } from '../../helper';
-import ApproveRejectDrawer from '../costing/components/approval/ApproveRejectDrawer';
 import CostingSummaryTable from '../costing/components/CostingSummaryTable';
 import { Fragment } from 'react';
 import { Link } from 'react-scroll';
@@ -1010,6 +1009,7 @@ function RfqListing(props) {
                         isSimulation={false}
                         simulationDrawer={false}
                         isReportLoader={isReportLoader}
+                        isRfqCosting={true}
                     />
                 }
                 {rejectDrawer && (
@@ -1065,6 +1065,7 @@ function RfqListing(props) {
                                 disableApproveRejectButton={disableApproveRejectButton}
                                 compareButtonPressed={compareButtonPressed}
                                 showEditSOBButton={addComparisonToggle && disableApproveRejectButton && viewCostingData.length > 0}
+                                selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0].technology}
                             />
                         )}
                     </div>

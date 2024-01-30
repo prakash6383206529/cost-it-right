@@ -30,7 +30,7 @@ import activeReport from '../../assests/images/report-active.svg'
 import activeRFQ from '../../assests/images/rfqActive.svg'
 import RFQ from '../../assests/images/rfq.svg'
 import PopupMsgWrapper from "../common/PopupMsgWrapper";
-import { CBC_COSTING, COSTING, GUIDE_BUTTON_SHOW, SIMULATION, VERSION } from '../../config/constants';
+import { CBC_COSTING, COSTING, SIMULATION, VBC_COSTING, VERSION, ZBC_COSTING, GUIDE_BUTTON_SHOW } from '../../config/constants';
 import _ from "lodash";
 import { reactLocalStorage } from "reactjs-localstorage";
 import { MESSAGES } from "../../config/message";
@@ -95,16 +95,15 @@ class SideBar extends Component {
         let Data = res?.data?.Data
         let costingIndex = Data && Data?.findIndex(item => item?.ModuleName === COSTING)
         let cbcCostingData = Data && Data[costingIndex]?.Pages?.filter(item => item?.PageName === CBC_COSTING)
-        let cbcCostingPermission
+        let zbcCostingData = Data && Data[costingIndex]?.Pages?.filter(item => item?.PageName === ZBC_COSTING)
+        let vbcCostingData = Data && Data[costingIndex]?.Pages?.filter(item => item?.PageName === VBC_COSTING)
 
-        if (checkForNull(cbcCostingData?.length) === 0) {
-          cbcCostingPermission = false
-          reactLocalStorage.setObject('cbcCostingPermission', cbcCostingPermission)
+        let permissionArr = {
+          vbc: checkForNull(vbcCostingData?.length) === 0 ? false : true,
+          zbc: checkForNull(zbcCostingData?.length) === 0 ? false : true,
+          cbc: checkForNull(cbcCostingData?.length) === 0 ? false : true
         }
-        else {
-          cbcCostingPermission = true
-          reactLocalStorage.setObject('cbcCostingPermission', cbcCostingPermission)
-        }
+        reactLocalStorage.setObject('CostingTypePermission', permissionArr)
       })
     }
 

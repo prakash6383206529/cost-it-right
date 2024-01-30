@@ -9,7 +9,7 @@ import NoContentFound from '../../common/NoContentFound';
 import DayTime from '../../common/DayTimeWrapper'
 import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDetails, userTechnologyDetailByMasterId } from '../../../helper'
 import { BOP_MASTER_ID, BUDGET_ID, defaultPageSize, EMPTY_DATA, MACHINE_MASTER_ID, OPERATIONS_ID } from '../../../config/constants';
-import { getRMApprovalList } from '../actions/Material';
+import { deleteRawMaterialAPI, getRMApprovalList } from '../actions/Material';
 import SummaryDrawer from '../SummaryDrawer';
 import { DRAFT, RM_MASTER_ID } from '../../../config/constants';
 import MasterSendForApproval from '../MasterSendForApproval';
@@ -23,6 +23,13 @@ import _ from 'lodash';
 import SingleDropdownFloationFilter from './SingleDropdownFloationFilter';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
+import Button from '../../layout/Button';
+import { MESSAGES } from '../../../config/message';
+import { deleteBOP } from '../actions/BoughtOutParts';
+import { deleteMachine } from '../actions/MachineMaster';
+import { deleteOperationAPI } from '../actions/OtherOperation';
+import { deleteBudget } from '../actions/Budget';
+import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 
 const gridOptions = {};
 
@@ -54,6 +61,8 @@ function CommonApproval(props) {
     const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalProcessId: "", ApprovalNumber: "", CostingHead: "", TechnologyName: "", RawMaterialName: "", RawMaterialGradeName: "", RawMaterialSpecificationName: "", Category: "", MaterialType: "", Plant: "", VendorName: "", UOM: "", BasicRatePerUOM: "", ScrapRate: "", RMFreightCost: "", RMShearingCost: "", NetLandedCost: "", EffectiveDate: "", RequestedBy: "", CreatedByName: "", LastApprovedBy: "", DisplayStatus: "", BoughtOutPartNumber: "", BoughtOutPartName: "", BoughtOutPartCategory: "", Specification: "", Plants: "", MachineNumber: "", MachineTypeName: "", MachineTonnage: "", MachineRate: "", Technology: "", OperationName: "", OperationCode: "", UnitOfMeasurement: "", Rate: "", vendor: "", DestinationPlantName: "", UnitOfMeasurementName: "", IsScrapUOMApply: "", CalculatedFactor: "", ScrapUnitOfMeasurement: "", UOMToScrapUOMRatio: "" })
     const [levelDetails, setLevelDetails] = useState({})
     const [disableApprovalButton, setDisableApprovalButton] = useState(false)
+    const [showPopup, setShowPopup] = useState(false);
+    const [deletedId, setDeletedId] = useState('');
     const dispatch = useDispatch()
     const { selectedCostingListSimulation } = useSelector((state => state.simulation))
     let master = props?.MasterId
@@ -141,7 +150,10 @@ function CommonApproval(props) {
         if (props.isDashboard) {
             dataObj.DisplayStatus = props.status
         }
-        dataObj.IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+        const { zbc, vbc, cbc } = reactLocalStorage.getObject('CostingTypePermission')
+        dataObj.IsCustomerDataShow = cbc
+        dataObj.IsVendorDataShow = vbc
+        dataObj.IsZeroDataShow = zbc
 
         setLoader(true)
         props?.isDashboard && dispatch(dashboardTabLock(true))
@@ -694,6 +706,95 @@ function CommonApproval(props) {
         gridApi.setQuickFilter(e.target.value);
     }
 
+    /**
+     * @method deleteItem
+     * @description confirm delete Item.
+     */
+    const deleteItem = (id) => {
+        setShowPopup(true)
+        setDeletedId(id)
+    }
+    const deleteActions = {
+        [RM_MASTER_ID]: {
+            action: deleteRawMaterialAPI,
+            successMessage: MESSAGES.DELETE_RAW_MATERIAL_SUCCESS,
+        },
+        [BOP_MASTER_ID]: {
+            action: deleteBOP,
+            successMessage: MESSAGES.BOP_DELETE_SUCCESS,
+        },
+        [MACHINE_MASTER_ID]: {
+            action: deleteMachine,
+            successMessage: MESSAGES.MACHINE_DELETE_SUCCESS,
+        },
+        [OPERATIONS_ID]: {
+            action: deleteOperationAPI,
+            successMessage: MESSAGES.DELETE_OPERATION_SUCCESS,
+        },
+        [BUDGET_ID]: {
+            action: deleteBudget,
+            successMessage: MESSAGES.DELETE_BUDGET_SUCCESS,
+        },
+        default: {
+            action: '',
+            successMessage: 'Deleted successfully',
+        },
+    };
+
+    const confirmDeleteItem = (id) => {
+        const loggedInUser = loggedInUserId();
+        const deleteConfig = deleteActions[props?.MasterId] || deleteActions.default;
+
+        dispatch(deleteConfig.action(id, loggedInUser, (res) => {
+            if (res && res.data && res.data.Result === true) {
+                Toaster.success(deleteConfig.successMessage);
+                resetState();
+            }
+        }));
+
+        setShowPopup(false);
+    };
+
+    const onPopupConfirm = () => {
+        confirmDeleteItem(deletedId);
+    }
+    const closePopUp = () => {
+        setShowPopup(false)
+    }
+    /**
+        * @method buttonFormatter
+        * @description Renders buttons
+        */
+    const buttonFormatter = (props) => {
+        const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
+        const rowData = props?.valueFormatted ? props.valueFormatted : props?.data;
+
+        let status = rowData.Status;
+
+        let isDeleteButton = false;
+
+        if (status === 'Draft') {
+            isDeleteButton = true;
+        } else {
+            isDeleteButton = false;
+        }
+
+        return (
+            <>
+                {isDeleteButton ? (
+                    <Button
+                        id={`bopDomesticListing_delete${props.rowIndex}`}
+                        className={"mr-1"}
+                        variant="Delete"
+                        onClick={() => deleteItem(cellValue)}
+                        title={"Delete"}
+                    />
+                ) : (
+                    <div>-</div>
+                )}
+            </>
+        );
+    };
     const frameworkComponents = {
         renderPlant: renderPlant,
         renderVendor: renderVendor,
@@ -716,6 +817,7 @@ function CommonApproval(props) {
         netCostFormatter: netCostFormatter,
         breakupFormatter: breakupFormatter,
         technologyFormatter: technologyFormatter,
+        actionRenderer: buttonFormatter,
     };
 
     const isRowSelectable = (rowNode) => {
@@ -725,7 +827,30 @@ function CommonApproval(props) {
             return false
         }
     }
-
+    const getMasterField = (MasterId) => {
+        switch (MasterId) {
+            case RM_MASTER_ID:
+                return "RawMaterialId";
+            case BOP_MASTER_ID:
+                return "BoughtOutPartId";
+            case MACHINE_MASTER_ID:
+                return "MachineId";
+            case OPERATIONS_ID:
+                return "OperationId";
+            case BUDGET_ID:
+                return "BudgetingId";
+            default:
+                return " ";
+        }
+    };
+    const deleteAlertMessages = {
+        [RM_MASTER_ID]: MESSAGES.RAW_MATERIAL_DETAIL_DELETE_ALERT,
+        [BOP_MASTER_ID]: MESSAGES.BOP_DELETE_ALERT,
+        [MACHINE_MASTER_ID]: MESSAGES.MACHINE_DELETE_ALERT,
+        [OPERATIONS_ID]: MESSAGES.OPERATION_DELETE_ALERT,
+        [BUDGET_ID]: MESSAGES.BUDGET_DELETE_ALERT,
+        default: 'Are you sure you want to delete?',
+    };
     return (
         <div className={` ${props.isDashboard ? '' : 'min-height100vh'} custom-pagination`}>
             {loader && <LoaderCustom />}
@@ -798,7 +923,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="Category" headerName='Category'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="MaterialType"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="VendorName" headerName="Vendor (Code)"></AgGridColumn>}
-                                    {props?.MasterId === RM_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === RM_MASTER_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn field="DestinationPlantName" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="UnitOfMeasurementName" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === RM_MASTER_ID && <AgGridColumn width="140" field="BasicRatePerUOM" headerName='Basic Rate'></AgGridColumn>}
@@ -825,7 +950,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="150" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Specification" cellRenderer={"hyphenFormatter"} headerName='Specification'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn field="Vendor" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === BOP_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === BOP_MASTER_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="IncoTermDescriptionAndInfoTerm" headerName='Inco Terms'></AgGridColumn>}
                                     {/* {props?.MasterId === BOP_MASTER_ID && <AgGridColumn width="140" field="PaymentTermDescriptionAndPaymentTerm" headerName='Payment Terms'></AgGridColumn>} */}
@@ -852,7 +977,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="ApprovalProcessId" hide></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Technology" headerName='Technology'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === MACHINE_MASTER_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === MACHINE_MASTER_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="145" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="150" field="MachineNumber" headerName='Machine Number'></AgGridColumn>}
                                     {props?.MasterId === MACHINE_MASTER_ID && <AgGridColumn width="140" field="MachineTypeName" headerName='Machine Type'></AgGridColumn>}
@@ -869,7 +994,7 @@ function CommonApproval(props) {
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationName" headerName='Operation Name'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="145" field="OperationCode" headerName='Operation Code'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="180" field="VendorName" headerName='Vendor (Code)'></AgGridColumn>}
-                                    {props?.MasterId === OPERATIONS_ID && reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
+                                    {props?.MasterId === OPERATIONS_ID && reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="CustomerName" headerName="Customer (Code)"></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="150" field="Plants" headerName='Plant (Code)'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn width="140" field="UOM" headerName='UOM'></AgGridColumn>}
                                     {props?.MasterId === OPERATIONS_ID && <AgGridColumn field="BasicRate" headerName='Rate'></AgGridColumn>}
@@ -891,13 +1016,11 @@ function CommonApproval(props) {
                                     <AgGridColumn width="150" field="CreatedByName" cellRenderer='createdOnFormatter' headerName="Created By"></AgGridColumn>
                                     <AgGridColumn width="160" field="LastApprovedBy" cellRenderer='requestedOnFormatter' headerName="Last Approved/Rejected By"></AgGridColumn>
                                     {!props?.MasterId === BUDGET_ID && <AgGridColumn cell width="190" field="EffectiveDate" cellRenderer='effectiveDateRenderer' filter="agDateColumnFilter" filterParams={filterParams}></AgGridColumn>}
+                                    {<AgGridColumn field={getMasterField(props?.MasterId)} width={170} pinned="right" cellClass="ag-grid-action-container" headerName="Action" type="rightAligned" floatingFilter={false} cellRenderer='actionRenderer'></AgGridColumn>}
                                 </AgGridReact>
                                 <div className='button-wrapper'>
                                     {!loader &&
-
                                         <PaginationWrapper gridApi={gridApi} setPage={onPageSizeChanged} globalTake={globalTake} />
-
-
                                     }
                                     {
                                         <div className="d-flex pagination-button-container">
@@ -945,7 +1068,10 @@ function CommonApproval(props) {
                     costingTypeId={selectedRowData[0]?.CostingTypeId}
                 />
             }
-        </div>
+            {
+                showPopup && <PopupMsgWrapper isOpen={showPopup} closePopUp={closePopUp} confirmPopup={onPopupConfirm} message={deleteAlertMessages[props?.MasterId] || deleteAlertMessages.default} />
+            }
+        </div >
 
     );
 }

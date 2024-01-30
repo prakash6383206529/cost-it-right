@@ -29,7 +29,7 @@ import { debounce } from 'lodash';
 import AsyncSelect from 'react-select/async';
 import { getClientSelectList, } from '../actions/Client';
 import { reactLocalStorage } from 'reactjs-localstorage';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
 import { getUsersMasterLevelAPI } from '../../../actions/auth/AuthActions';
@@ -132,9 +132,9 @@ class AddBOPDomestic extends Component {
     let basicPriceText = ''
     if (initialConfiguration.IsBasicRateAndCostingConditionVisible && Number(costingTypeId) === Number(ZBCTypeId)) {
       if (getConfigurationKey().IsMinimumOrderQuantityVisible) {
-        basicPriceText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
+        basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency}) / Minimum Order Quantity`
       } else {
-        basicPriceText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
+        basicPriceText = `Basic Price (${initialConfiguration?.BaseCurrency}) = Basic Rate (${initialConfiguration?.BaseCurrency})`
       }
       netCostText = `Net Cost (${initialConfiguration?.BaseCurrency}) = Basic Price (${initialConfiguration?.BaseCurrency}) + Condition Cost (${initialConfiguration?.BaseCurrency})`
       this.setState({ toolTipTextNetCost: netCostText, toolTipTextBasicPrice: basicPriceText })
@@ -155,6 +155,7 @@ class AddBOPDomestic extends Component {
    */
   componentDidMount() {
     const { initialConfiguration } = this.props
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() });
     if (!this.state.isViewMode) {
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
@@ -625,7 +626,7 @@ class AddBOPDomestic extends Component {
     const NoOfPieces = fieldsObj && fieldsObj.NumberOfPieces !== undefined ? fieldsObj.NumberOfPieces : 1;
 
     const basicRateBaseCurrency = checkForNull(fieldsObj?.BasicRateBase)
-    const basicPriceBaseTemp = checkForNull(basicRateBaseCurrency) / checkForNull(NoOfPieces)
+    const basicPriceBaseTemp = !NoOfPieces ? checkForNull(basicRateBaseCurrency) : checkForNull(basicRateBaseCurrency) / checkForNull(NoOfPieces)
     let basicPriceBaseCurrency
     if (costingTypeId === ZBCTypeId) {
       basicPriceBaseCurrency = basicPriceBaseTemp
@@ -652,8 +653,8 @@ class AddBOPDomestic extends Component {
     if (this.state.isEditFlag && checkForNull(basicPriceBaseCurrency) === checkForNull(this.state.DataToCheck?.NetCostWithoutConditionCost) &&
       checkForNull(NoOfPieces) === checkForNull(this.state.DataToCheck?.NumberOfPieces) && checkForNull(netLandedCostBaseCurrency) === checkForNull(this.state.DataToCheck?.NetLandedCost)) {
 
-      this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '' });
-      this.props.change('EffectiveDate', DayTime(this.state.DataToChange?.EffectiveDate).isValid() ? DayTime(this.state.DataToChange?.EffectiveDate) : '')
+      this.setState({ IsFinancialDataChanged: false, EffectiveDate: DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '' });
+      this.props.change('EffectiveDate', DayTime(this.state.DataToCheck?.EffectiveDate).isValid() ? DayTime(this.state.DataToCheck?.EffectiveDate) : '')
     } else {
       this.setState({ IsFinancialDataChanged: true })
 
@@ -1067,7 +1068,7 @@ class AddBOPDomestic extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label id="bop_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="bop_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1082,8 +1083,8 @@ class AddBOPDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Zero Based</span>
-                            </Label>
-                            <Label id='bop_form_vendor_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                            </Label>}
+                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id='bop_form_vendor_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1098,8 +1099,8 @@ class AddBOPDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Vendor Based</span>
-                            </Label>
-                            {reactLocalStorage.getObject('cbcCostingPermission') && <Label id='bop_form_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                            </Label>}
+                            {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id='bop_form_customer_based' className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1716,6 +1717,7 @@ class AddBOPDomestic extends Component {
               basicRateCurrency={FinalBasicPriceBaseCurrency}
               ViewMode={((isEditFlag && isBOPAssociated) || isViewMode)}
               isFromMaster={true}
+              EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
             />
           }
           {

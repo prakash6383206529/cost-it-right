@@ -156,7 +156,7 @@ function LossStandardTable(props) {
     const LossOfType = getValues('LossOfType')
     const FlashLoss = getValues('FlashLoss')
 
-    if ((LossOfType?.label === "Scale Loss") || (LossOfType?.label === "Bilet Heating Loss")) {
+    if ((LossOfType?.label === "Scale Loss") || (LossOfType?.label === "Bilet Heating Loss") || (LossOfType?.label === "Burning Loss")) {
 
       setIsDisable(true)
     }
@@ -199,6 +199,7 @@ function LossStandardTable(props) {
     let LossWeight = 0;
     switch (LossOfType?.label) {
       case 'Scale Loss':
+      case 'Burning Loss':
         LossWeight = ((forgeWeight * LossPercentage) / 100)
         break;
       case 'Bilet Heating Loss':
@@ -309,6 +310,7 @@ function LossStandardTable(props) {
     setBarCuttingAllowanceLossType(false)
     setPercentage(true)
     setDisableLossType(false)
+    setDisableFlashType(false)
     if (isEdit) {
       tempArray = Object.assign([...tableData], { [editIndex]: obj })
       setTableData(tempArray)
@@ -321,7 +323,7 @@ function LossStandardTable(props) {
       setTableData(tempArray)
     }
 
-    if (LossOfType === 2) {
+    if (LossOfType === 2 && props?.isPlastic) {
       setBurningWeight(LossWeight)
       props.burningLoss(LossWeight)
     }
@@ -368,7 +370,7 @@ function LossStandardTable(props) {
     setValue('LossOfType', { label: getLossTypeName(tempObj.LossOfType), value: tempObj.LossOfType })
     setValue('LossWeight', tempObj.LossWeight)
     setValue('FlashLoss', { label: tempObj.FlashLoss, value: tempObj.FlashLossId })
-    setDisableFlashType(true)
+
     setDisableLossType(true)
 
     if ((tempObj.LossOfType === 7 && tempObj.FlashLoss === "Use Formula")) {
@@ -376,12 +378,14 @@ function LossStandardTable(props) {
       setUseformula(true)
       setPercentage(false)
       setBarCuttingAllowanceLossType(false)
+      setDisableFlashType(true)
     }
     else if ((tempObj.LossOfType === 7 && tempObj.FlashLoss === "Percentage")) {
       setIsDisable(true)
       setPercentage(true)
       setUseformula(false)
       setBarCuttingAllowanceLossType(false)
+      setDisableFlashType(true)
 
     }
     else if (tempObj.LossOfType === 8) {
@@ -394,6 +398,9 @@ function LossStandardTable(props) {
       setFlashLossType(false)
       setUseformula(false)
       setBarCuttingAllowanceLossType(false)
+
+
+
     }
   }
 
@@ -449,7 +456,7 @@ function LossStandardTable(props) {
 
 
 
-    if (Number(tempObj.LossOfType) === 2) {
+    if (Number(tempObj.LossOfType) === 2 && props?.isPlastic) {
       setBurningWeight(0)
       props.burningLoss(0)
     }

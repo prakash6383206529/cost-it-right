@@ -42,6 +42,7 @@ function ApprovalListing(props) {
   const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
   const [selectedRowData, setSelectedRowData] = useState([]);
+
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [openDraftDrawer, setOpenDraftDrawer] = useState(false)
   const [reasonId, setReasonId] = useState('')
@@ -72,6 +73,7 @@ function ApprovalListing(props) {
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+  const [technologyForCosting, setTechnologyForCosting] = useState('')
 
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
@@ -463,6 +465,7 @@ function ApprovalListing(props) {
 
           const tempObj = formViewData(dataFromAPI)
           dispatch(setCostingViewData(tempObj))
+          setTechnologyForCosting(tempObj[0]?.technology)
         }
       },
       ))
@@ -1081,7 +1084,7 @@ function ApprovalListing(props) {
                           <AgGridColumn field="PartName" headerName="Part Name"></AgGridColumn>
                           <AgGridColumn field="VendorName" cellRenderer='renderVendor' headerName="Vendor (Code)"></AgGridColumn>
                           <AgGridColumn field="PlantName" cellRenderer='renderPlant' headerName="Plant (Code)"></AgGridColumn>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
+                          {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field="Customer" cellRenderer='renderCustomer' headerName="Customer (Code)"></AgGridColumn>}
                           <AgGridColumn field='TechnologyName' headerName="Technology"></AgGridColumn>
                           {initialConfiguration?.IsBasicRateAndCostingConditionVisible && <AgGridColumn field="BasicRate" cellRenderer='basicRateFormatter' headerName="Basic Price"></AgGridColumn>}
                           <AgGridColumn field="OldPOPriceNew" cellRenderer='oldpriceFormatter' headerName="Existing Net Cost"></AgGridColumn>
@@ -1167,6 +1170,7 @@ function ApprovalListing(props) {
           selectedRowData={selectedRowData}
           isSimulation={false}
           simulationDrawer={false}
+          selectedTechnology={technologyForCosting}
         />
       }
     </Fragment>

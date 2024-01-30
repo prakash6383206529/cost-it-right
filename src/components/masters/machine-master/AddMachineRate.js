@@ -35,7 +35,7 @@ import { ProcessGroup } from '../masterUtil';
 import _ from 'lodash'
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing'
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -129,7 +129,7 @@ class AddMachineRate extends Component {
    */
   componentDidMount() {
     const { data, editDetails, initialConfiguration } = this.props;
-
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
 
     // For Showing form in view mode if data is added in add more detail form
     if (data.isViewFlag === true || editDetails.isViewFlag === true) {
@@ -1445,7 +1445,7 @@ class AddMachineRate extends Component {
                     <div class="add-min-height">
                       <Row>
                         <Col md="12">
-                          <Label id="AddMachineRate_zeroBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                          {reactLocalStorage.getObject('CostingTypePermission').zbc && <Label id="AddMachineRate_zeroBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1458,8 +1458,8 @@ class AddMachineRate extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Zero Based</span>
-                          </Label>
-                          <Label id="AddMachineRate_vendorBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                          </Label>}
+                          {reactLocalStorage.getObject('CostingTypePermission').vbc && <Label id="AddMachineRate_vendorBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"
@@ -1472,8 +1472,8 @@ class AddMachineRate extends Component {
                               disabled={isEditFlag ? true : false}
                             />{" "}
                             <span>Vendor Based</span>
-                          </Label>
-                          {reactLocalStorage.getObject('cbcCostingPermission') && <Label id="AddMachineRate_customerBased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
+                          </Label>}
+                          {reactLocalStorage.getObject('CostingTypePermission').cbc && <Label id="AddMachineRate_customerBased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                             <input
                               type="radio"
                               name="costingHead"

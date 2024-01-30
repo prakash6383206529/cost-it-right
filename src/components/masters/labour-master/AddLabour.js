@@ -841,7 +841,7 @@ class AddLabour extends Component {
                 >
                   <div className="add-min-height">
                     <Col md="12">
-                      <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                      {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                         <input
                           type="radio"
                           name="costingHead"
@@ -854,8 +854,8 @@ class AddLabour extends Component {
                           disabled={isEditFlag ? true : false}
                         />{" "}
                         <span>Zero Based</span>
-                      </Label>
-                      <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
+                      </Label>}
+                      {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                         <input
                           type="radio"
                           name="costingHead"
@@ -868,8 +868,8 @@ class AddLabour extends Component {
                           disabled={isEditFlag ? true : false}
                         />{" "}
                         <span>Vendor Based</span>
-                      </Label>
-                      {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
+                      </Label>}
+                      {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                         <input
                           type="radio"
                           name="costingHead"

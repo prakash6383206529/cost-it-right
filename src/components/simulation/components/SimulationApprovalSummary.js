@@ -130,8 +130,9 @@ function SimulationApprovalSummary(props) {
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
     const [accDisable, setAccDisable] = useState(false)
+    const [technologyName, setTechnologyName] = useState('')
     const headers = {
-        NetCost: `Net Cost ${initialConfiguration?.BaseCurrency}`,
+        NetCost: `Net Cost (${initialConfiguration?.BaseCurrency})`,
     }
 
     useEffect(() => {
@@ -433,6 +434,7 @@ function SimulationApprovalSummary(props) {
             objj3[1].SimulationStatusId = Data?.SimulationStatusId
             dispatch(setCostingViewData(objj3))
             setCompareCosting(true)
+            setTechnologyName(obj1[0].technology)
         }))
     }
 
@@ -538,7 +540,7 @@ function SimulationApprovalSummary(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let tempData = [...data]
-        if (!reactLocalStorage.getObject('cbcCostingPermission')) {
+        if (!reactLocalStorage.getObject('CostingTypePermission').cbc) {
             tempData = hideColumnFromExcel(tempData, 'CustomerName')
         } else {
             if (simulationDetail?.SimulationHeadId === CBCTypeId) {
@@ -1337,14 +1339,6 @@ function SimulationApprovalSummary(props) {
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NewNetProcessCost" headerName="Revised Net Process Cost" cellRenderer='processFormatter' ></AgGridColumn>}
                                                                 {(isMachineRate || keysForDownloadSummary.IsMachineProcessSimulation) && <AgGridColumn width={140} field="NetProcessCostVariance" headerName="Variance (Proc. Cost)" cellRenderer='processVarianceFormatter' ></AgGridColumn>}
 
-                                                                {showRM && <AgGridColumn width={150} field="RMName" tooltipField="RMName" headerName="RM Name"></AgGridColumn>}
-                                                                {showRM && <AgGridColumn width={150} field="RMGrade" tooltipField="RMGrade" headerName="RM Grade"></AgGridColumn>}
-                                                                {showRM && <AgGridColumn width={150} field="RMSpecification" tooltipField="RMSpecification" headerName="RM Specification"></AgGridColumn>}
-
-                                                                {showBOP && <AgGridColumn width={150} field="BOPName" tooltipField="BOPName" headerName="BOP Name"></AgGridColumn>}
-                                                                {showBOP && <AgGridColumn width={150} field="BOPNumber" tooltipField="BOPNumber" headerName="BOP Number"></AgGridColumn>}
-                                                                {showBOP && <AgGridColumn width={150} field="Category" tooltipField="Category" headerName="Category"></AgGridColumn>}
-
                                                                 {/* {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
                                                              {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>}
                                                               {showComponent && <AgGridColumn width={150} field="NewPOPrice" tooltipField="NewPOPrice" headerName="Revised Net Cost"></AgGridColumn>} */}
@@ -1422,7 +1416,7 @@ function SimulationApprovalSummary(props) {
 
                             <Row>
                                 <Col md="12" className="costing-summary-row">
-                                    {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} />}
+                                    {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} selectedTechnology={technologyName} />}
                                 </Col>
                             </Row>
                         </>}

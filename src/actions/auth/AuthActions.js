@@ -85,7 +85,6 @@ export function TokenAPI(requestData, callback) {
         // Parse the User-Agent string.
         const { brand: browserName, version: browserVersion } = parseUserAgent(window.navigator.userAgent);
 
-        console.log('requestData: ', requestData);
         // Include the User-Agent details in the requestData object.
         const body = {
             UserName: requestData.username,
@@ -95,15 +94,12 @@ export function TokenAPI(requestData, callback) {
             MacAddress: '', // Populate this field if you have the MAC address, otherwise remove it.
             UserAgent: `${browserName} ${browserVersion}`
         };
-        console.log('requestData: ', requestData);
 
 
         // Fetch the public IP from a service (if necessary).
         axios.get('https://api.ipify.org?format=json')
             .then(response => {
                 body.IPAddress = response.data.ip; // Include the IP address.
-                console.log('body: ', body);
-                console.log('requestData: ', requestData);
 
                 // Proceed with the original request now including the IP and User-Agent.
                 axios.post(API.login, body, config()) // Make sure you send a JSON body.
@@ -117,7 +113,6 @@ export function TokenAPI(requestData, callback) {
                         callback(error);
                     });
             }).catch(error => {
-                console.error('Could not obtain IP address:', error);
                 apiErrors(error);
                 callback(error);
             });
@@ -1037,7 +1032,7 @@ export function getSimulationLevelDataList(callback) {
 export function getAllTechnologyAPI(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getTechnology}?ListFor=${data}`, config());
+        const request = axios.get(`${API.getTechnology}?ListFor=${data ?? 'Users'}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1063,7 +1058,7 @@ export function getAllTechnologyAPI(callback, data) {
 export function getSimulationTechnologySelectList(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${data}`, config());
+        const request = axios.get(`${API.getSimulationTechnologySelectList}?ListFor=${data ?? 'Users'}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({
@@ -1697,7 +1692,7 @@ export function getTopAndLeftMenuData(callback) {
 export function getMastersSelectList(callback, data) {
     return (dispatch) => {
         dispatch({ type: API_REQUEST });
-        const request = axios.get(`${API.getMastersSelectList}?ListFor=${data}`, config());
+        const request = axios.get(`${API.getMastersSelectList}?ListFor=${data ?? 'Users'}`, config());
         request.then((response) => {
             if (response.data.Result) {
                 dispatch({

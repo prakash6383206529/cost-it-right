@@ -1678,10 +1678,10 @@ export function getConditionDetails(costingId, callback) {
   };
 }
 
-export function getCostingCondition(callback) {
+export function getCostingCondition(CostingConditionEntryTypeId, callback) {
   return (dispatch) => {
     dispatch({ type: API_REQUEST });
-    const request = axios.get(`${API.getCostingCondition}`, config());
+    const request = axios.get(`${API.getCostingCondition}?CostingConditionEntryTypeId=${CostingConditionEntryTypeId}`, config());
     request.then((response) => {
       if (response.data.Result) {
         callback(response);

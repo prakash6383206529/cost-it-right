@@ -1,0 +1,18 @@
+.date-range-container {
+    display: flex;
+
+    .react-datepicker-wrapper {
+        min-width: 190px;
+    }
+
+    .date-section,
+    .date-section input.form-control {
+        min-height: 35px !important;
+        height: 35px !important;
+    }
+
+    label {
+        max-width: 80px;
+        text-align: right;
+    }
+}

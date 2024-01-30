@@ -473,6 +473,8 @@ class AddAssemblyPart extends Component {
         Quantity: 1,
         Level: 'L0',
         Input: '',
+        Technology: this.state.TechnologySelected.label,
+        RevisionNo: this.props?.fieldsObj?.RevisionNumber
       })
       this.setState({ BOMViewerData: tempArray, isOpenBOMViewerDrawer: true, })
 
@@ -484,6 +486,8 @@ class AddAssemblyPart extends Component {
           PartNumber: fieldsObj && fieldsObj.AssemblyPartNumber !== undefined ? fieldsObj.AssemblyPartNumber : '', //WHEN EDIT FORM
           PartName: fieldsObj && fieldsObj.AssemblyPartName !== undefined ? fieldsObj.AssemblyPartName : '', //WHEN EDIT FORM
           InnerContent: fieldsObj && fieldsObj.Description !== undefined ? fieldsObj.Description : '', //WHEN EDIT FORM
+          Technology: this.state.TechnologySelected.label,
+          RevisionNo: this.props?.fieldsObj?.RevisionNumber
         })
       })
 

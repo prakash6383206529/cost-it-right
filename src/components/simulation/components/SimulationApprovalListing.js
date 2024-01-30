@@ -178,7 +178,11 @@ function SimulationApprovalListing(props) {
         if (isDashboard) {
             dataObj.DisplayStatus = props.status
         }
-        let IsCustomerDataShow = reactLocalStorage.getObject('cbcCostingPermission')
+
+        const { cbc, zbc, vbc } = reactLocalStorage.getObject('CostingTypePermission')
+        dataObj.IsCustomerDataShow = cbc
+        dataObj.IsVendorDataShow = vbc
+        dataObj.IsZeroDataShow = zbc
         let filterData = {
             logged_in_user_id: loggedInUserId(),
             logged_in_user_level_id: userDetails().LoggedInSimulationLevelId,
@@ -191,7 +195,7 @@ function SimulationApprovalListing(props) {
         setIsLoader(true)
         isDashboard && dispatch(dashboardTabLock(true))
         let obj = { ...dataObj }
-        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, IsCustomerDataShow, (res) => {
+        dispatch(getSimulationApprovalList(filterData, skip, take, isPagination, dataObj, (res) => {
             dispatch(dashboardTabLock(false))
             if (res?.data?.DataList?.length === 0) {
                 setTotalRecordCount(0)
@@ -511,15 +515,19 @@ function SimulationApprovalListing(props) {
         let tempArrReason = []
         let tempArrTechnology = []
         let tempArrSimulationTechnologyHead = []
+        let costingHeadArray = []
+        let approvalTypeArray = []
 
         selectedRows && selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
-            tempArrDepartmentId.push(item.DepartmentId)
-            tempArrIsFinalLevelButtonShow.push(item.IsFinalLevelButtonShow)
-            tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
-            tempArrReason.push(item.ReasonId)
-            tempArrTechnology.push(item.TechnologyName)
-            tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
+            tempArrDepartmentId.push(item?.DepartmentId)
+            tempArrIsFinalLevelButtonShow.push(item?.IsFinalLevelButtonShow)
+            tempArrIsPushedButtonShow.push(item?.IsPushedButtonShow)
+            tempArrReason.push(item?.ReasonId)
+            tempArrTechnology.push(item?.TechnologyName)
+            tempArrSimulationTechnologyHead.push(item?.SimulationTechnologyHead)
+            costingHeadArray.push(item?.CostingHead)
+            approvalTypeArray.push(item?.ApprovalTypeId)
             return null
         })
         selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
@@ -532,6 +540,14 @@ function SimulationApprovalListing(props) {
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
             Toaster.warning('Level should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        }
+        else if (!allEqual(costingHeadArray)) {
+            Toaster.warning('Costing Head should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        }
+        else if (!allEqual(approvalTypeArray)) {
+            Toaster.warning('Approval Type should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         }
         // ********** IF WE DO MULTI SELECT FOR PUSH THENUNCOMMENT THIS ONLY ************

@@ -78,10 +78,7 @@ export function getBOPDataList(
       }&TechnologyName=${obj.TechnologyName !== undefined ? obj.TechnologyName : ""
       }&FromDate=${obj.dateArray && obj.dateArray.length > 1 ? obj.dateArray[0] : ""
       }&ToDate=${obj.dateArray && obj.dateArray.length > 1 ? obj.dateArray[1] : ""
-      }&IsCustomerDataShow=${reactLocalStorage.getObject("cbcCostingPermission") !== undefined
-        ? reactLocalStorage.getObject("cbcCostingPermission")
-        : false
-      }&IsBOPAssociated=${data?.IsBOPAssociated}&IsBreakupBoughtOutPart=${data?.IsBreakupBoughtOutPart?.toLowerCase() === "yes" ? true : false
+      }&IsCustomerDataShow=${reactLocalStorage.getObject('CostingTypePermission').cbc !== undefined ? reactLocalStorage.getObject('CostingTypePermission').cbc : false}&IsVendorDataShow=${reactLocalStorage.getObject('CostingTypePermission').vbc}&IsZeroDataShow=${reactLocalStorage.getObject('CostingTypePermission').zbc}&IsBOPAssociated=${data?.IsBOPAssociated}&IsBreakupBoughtOutPart=${data?.IsBreakupBoughtOutPart?.toLowerCase() === 'yes' ? true : false
       }`;
     const queryParamsSecond = bopQueryParms(isPagination, skip, take, obj);
     const request = axios.get(

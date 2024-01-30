@@ -3662,5 +3662,22 @@ input:focus,
 
   .multi-select-container__indicators {
     height: 24px !important;
+
+  }
+
+}
+
+//Date clear close button
+
+.react-datepicker__close-icon {
+  &::after {
+    background-color: transparent !important;
+    color: $disabledFont !important;
+    font-size: 20px !important;
+  }
+
+  &:focus {
+    border: none !important;
+    box-shadow: none !important;
   }
 }

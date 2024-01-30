@@ -15,7 +15,6 @@ import { APPLICABILITY_BOP_SIMULATION, APPLICABILITY_PART_SIMULATION, APPLICABIL
 
 function CostingDetailSimulationDrawer(props) {
 
-
     const toggleDrawer = (event, mode = false) => {
         if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
             return;
@@ -211,7 +210,7 @@ function CostingDetailSimulationDrawer(props) {
                                     </Row>
                                 }
                                 {isReportLoader && <LoaderCustom customClass={"report-costing"} />}
-                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props.simulationDrawer} simulationMode={true} viewMode={true} master={masterID} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} costingIdExist={true} fromCostingSummary={props.fromCostingSummary} />
+                                <CostingSummaryTable customClass="ml-0" simulationDrawer={props?.simulationDrawer} simulationMode={true} viewMode={true} master={masterID} isSimulationDone={isSimulation} drawerViewMode={true} isImpactDrawer={props?.isImpactDrawer} costingIdExist={true} fromCostingSummary={props?.fromCostingSummary} isRfqCosting={props?.isRfqCosting} isRejectedSummaryTable={props?.isRejectedSummaryTable} selectedTechnology={props?.selectedTechnology} />
                             </form>
                         </div>
                     </Container>

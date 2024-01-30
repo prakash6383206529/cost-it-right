@@ -12,7 +12,7 @@ import {
 } from '../../../actions/Common'
 import {
   createRM, getRMDataById, updateRMAPI, getRawMaterialNameChild, getRMGradeSelectListByRawMaterial,
-  fileUploadRMDomestic, fileUpdateRMDomestic, checkAndGetRawMaterialCode,
+  fileUploadRMDomestic, fileUpdateRMDomestic, checkAndGetRawMaterialCode, getRMSpecificationDataAPI, getRMSpecificationDataList
 } from '../actions/Material'
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message'
@@ -30,14 +30,14 @@ import DayTime from '../../common/DayTimeWrapper'
 import TooltipCustom from '../../common/Tooltip';
 import LoaderCustom from '../../common/LoaderCustom';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster, onFocus, showDataOnHover, showRMScrapKeys, userTechnologyDetailByMasterId } from '../../../helper';
+import { CheckApprovalApplicableMaster, labelWithUOMAndUOM, onFocus, showDataOnHover, showRMScrapKeys, userTechnologyDetailByMasterId } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval'
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
 import { getCostingSpecificTechnology } from '../../costing/actions/Costing';
 import { labelWithUOMAndCurrency } from '../../../helper';
 import { getClientSelectList, } from '../actions/Client';
-import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction } from '../../common/CommonFunctions';
+import { autoCompleteDropdown, costingTypeIdToApprovalTypeIdFunction, getCostingTypeIdByCostingPermission } from '../../common/CommonFunctions';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import { checkFinalUser } from '../../../components/costing/actions/Costing'
@@ -168,7 +168,10 @@ class AddRMDomestic extends Component {
       ScrapRateUOM: [],
       CalculatedFactor: '',
       ConversionRatio: '',
-      showTour: false
+      showTour: false,
+      isDisabled: false, // THIS STATE IS USED TO DISABLE NAME, GRADE, SPEC
+      isCodeDisabled: false, // THIS STATE IS USED TO DISABLE CODE,
+      rmCode: []
     }
   }
 
@@ -213,7 +216,7 @@ class AddRMDomestic extends Component {
       toolTipTextFreightCostBaseCurrency: `Freight Cost (${initialConfiguration?.BaseCurrency}) = Freight Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
       toolTipTextShearingCostBaseCurrency: `Shearing Cost (${initialConfiguration?.BaseCurrency}) = Shearing Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
       toolTipTextConditionCostBaseCurrency: `Condition Cost (${initialConfiguration?.BaseCurrency}) = Condition Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
-      toolTipTextCalculatedFactor: `Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) = 1 / Conversion Ratio (${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'})`,
+      toolTipTextCalculatedFactor: <>{labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} = 1 / {labelWithUOMAndUOM("Calculated Ratio", this.state.ScrapRateUOM?.label, this.state.UOM?.label)}</>,
     }
     if (showScrapKeys?.showCircleJali) {
       obj = {
@@ -221,7 +224,7 @@ class AddRMDomestic extends Component {
         toolTipTextCircleScrapCostBaseCurrency: `Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) = Circle Scrap Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
         toolTipTextJaliScrapCostBaseCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
         toolTipTextJaliScrapCostSelectedCurrency: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost (${initialConfiguration?.BaseCurrency})`,
-        toolTipTextJaliScrapCostBaseCurrencyPerOldUOM: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
+        toolTipTextJaliScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Jali Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
       }
     } else if (showScrapKeys?.showForging) {
       obj = {
@@ -229,15 +232,14 @@ class AddRMDomestic extends Component {
         toolTipTextForgingScrapCostBaseCurrency: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}) = Forging Scrap Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
         toolTipTextMachiningScrapCostBaseCurrency: `Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) = Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
         toolTipTextMachiningScrapCostSelectedCurrency: `Machining Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor () * Machining Scrap Cost ()`,
-        toolTipTextJaliScrapCostBaseCurrencyPerOldUOM: `Jali Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Jali Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
-        toolTipTextForgingScrapCostBaseCurrencyPerOldUOM: `Forging Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Forging Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
+        toolTipTextForgingScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Forging Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
       }
     } else if (showScrapKeys?.showScrap) {
       obj = {
         ...obj,
         toolTipTextScrapCostBaseCurrency: `Scrap Rate (${initialConfiguration?.BaseCurrency}) = Scrap Rate (${initialConfiguration?.BaseCurrency}) * Currency Rate (${initialConfiguration?.BaseCurrency})`,
         toolTipTextScrapCostSelectedCurrency: `Scrap Cost (${initialConfiguration?.BaseCurrency}) = Calculated Factor () * Scrap Cost ()`,
-        toolTipTextScrapCostBaseCurrencyPerOldUOM: `Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}) = Calculated Factor (${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}) * Scrap Cost (${initialConfiguration?.BaseCurrency}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'})`,
+        toolTipTextScrapCostBaseCurrencyPerOldUOM: <>{labelWithUOMAndCurrency("Scrap Cost", this.state.UOM?.label, initialConfiguration?.BaseCurrency)} = {labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label, this.state.ScrapRateUOM?.label)} * {labelWithUOMAndCurrency("Scrap Cost", this.state.ScrapRateUOM?.label, initialConfiguration?.BaseCurrency)}</>,
       }
     }
     if (setData) {
@@ -254,6 +256,7 @@ class AddRMDomestic extends Component {
    */
   componentDidMount() {
     const { data, initialConfiguration } = this.props
+    this.setState({ costingTypeId: getCostingTypeIdByCostingPermission() })
     this.props.getUOMSelectList(() => { })
     if ((this.props.data.isEditFlag || this.state.isViewFlag)) {
       this.getDetails(data)
@@ -264,6 +267,7 @@ class AddRMDomestic extends Component {
       this.props.getRawMaterialNameChild(() => { })
       this.props.getAllCity(cityId => {
         this.props.getCityByCountry(cityId, 0, () => { })
+        this.props.getRMSpecificationDataList({ GradeId: null }, () => { });
       })
     }
     if (!(this.props.data.isEditFlag || this.state.isViewFlag) && this.state.Technology) {
@@ -337,7 +341,7 @@ class AddRMDomestic extends Component {
    */
   handleRMChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RawMaterial: newValue, RMGrade: [] }, () => {
+      this.setState({ RawMaterial: newValue, RMGrade: [], rmCode: [], isCodeDisabled: true }, () => {
         const { RawMaterial } = this.state
         this.props.getRMGradeSelectListByRawMaterial(
           RawMaterial.value,
@@ -346,7 +350,7 @@ class AddRMDomestic extends Component {
         )
       })
     } else {
-      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [] })
+      this.setState({ RMGrade: [], RMSpec: [], RawMaterial: [], rmCode: [], isCodeDisabled: false })
       this.props.getRMGradeSelectListByRawMaterial('', false, (res) => { })
       this.props.fetchSpecificationDataAPI(0, () => { })
     }
@@ -358,7 +362,7 @@ class AddRMDomestic extends Component {
    */
   handleGradeChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RMGrade: newValue, RMSpec: [] }, () => {
+      this.setState({ RMGrade: newValue, RMSpec: [], rmCode: [], isCodeDisabled: true }, () => {
         const { RMGrade } = this.state
         this.props.fetchSpecificationDataAPI(RMGrade.value, (res) => { })
       })
@@ -366,6 +370,7 @@ class AddRMDomestic extends Component {
       this.setState({
         RMGrade: [],
         RMSpec: [],
+        isCodeDisabled: false
       })
       this.props.fetchSpecificationDataAPI(0, (res) => { })
     }
@@ -377,13 +382,31 @@ class AddRMDomestic extends Component {
    */
   handleSpecChange = (newValue, actionMeta) => {
     if (newValue && newValue !== '') {
-      this.setState({ RMSpec: newValue })
-      this.props.change('Code', newValue.RawMaterialCode ? newValue.RawMaterialCode : '')
+      this.setState({ RMSpec: newValue, isCodeDisabled: true, rmCode: { label: newValue.RawMaterialCode, value: newValue.value } })
     } else {
-      this.setState({ RMSpec: [] })
+      this.setState({ RMSpec: [], isCodeDisabled: false, rmCode: [] })
     }
   }
 
+  /**
+ * @method handleCodeChange
+ * @description  used to handle code change
+ */
+  handleCodeChange = (newValue) => {
+    if (newValue && newValue !== '') {
+      this.setState({ rmCode: newValue, isDisabled: true })
+      this.props.getRMSpecificationDataAPI(newValue.value, (res) => {
+        let Data = res.data.Data
+        this.setState({
+          RawMaterial: { label: Data.RawMaterialName, value: Data.RawMaterialId, },
+          RMGrade: { label: Data.GradeName, value: Data.GradeId },
+          RMSpec: { label: Data.Specification, value: Data.SpecificationId }
+        })
+      })
+    } else {
+      this.setState({ rmCode: [], RawMaterial: [], RMGrade: [], RMSpec: [], isDisabled: false })
+    }
+  }
   /**
    * @method handleCategoryChange
    * @description  used to handle category selection
@@ -403,7 +426,7 @@ class AddRMDomestic extends Component {
   */
   handleTechnologyChange = (newValue) => {
     this.checkTechnology(newValue)
-    this.setState({ RawMaterial: [], isDropDownChanged: true, Technology: newValue })
+    this.setState({ isDropDownChanged: true, Technology: newValue })
   }
   /**
   * @method handleClient
@@ -708,12 +731,8 @@ class AddRMDomestic extends Component {
         if (res && res.data && res?.data?.Result) {
           const Data = res.data.Data
           this.setState({ DataToChange: Data })
-          this.props.change('Code', Data.RawMaterialCode ? Data.RawMaterialCode : '')
-          // this.props.getRMGradeSelectListByRawMaterial(Data.RawMaterial, (res) => {
 
-          // this.props.fetchSpecificationDataAPI(Data.RMGrade, (res) => {
           setTimeout(() => {
-
             this.props.change('cutOffPrice', checkForDecimalAndNull(Data?.CutOffPrice, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('BasicRateBaseCurrency', checkForDecimalAndNull(Data?.BasicRatePerUOM, initialConfiguration.NoOfDecimalForPrice));
             this.props.change('ScrapRateBaseCurrency', checkForDecimalAndNull(Data?.ScrapRate, initialConfiguration.NoOfDecimalForPrice));
@@ -748,7 +767,7 @@ class AddRMDomestic extends Component {
               ScrapRateUOM: { label: Data?.ScrapUnitOfMeasurement, value: Data?.ScrapUnitOfMeasurementId },
               ConversionRatio: Data?.UOMToScrapUOMRatio,
               ScrapRatePerScrapUOM: Data?.ScrapRatePerScrapUOM,
-              CalculatedFactor: Data?.CalculatedFactor
+              CalculatedFactor: Data?.CalculatedFactor,
             })
             this.checkTechnology({ label: Data.TechnologyName, value: Data.TechnologyId })
 
@@ -777,6 +796,7 @@ class AddRMDomestic extends Component {
               singlePlantSelected: Data.DestinationPlantName !== undefined ? { label: Data.DestinationPlantName, value: Data.DestinationPlantId } : [],
               showForgingMachiningScrapCost: showScrapKeys?.showForging,
               showExtraCost: showScrapKeys?.showCircleJali,
+              rmCode: { label: Data.RawMaterialCode, value: Data.RMSpec },
             }, () => this.setState({ isLoader: false, showTour: true }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
@@ -854,8 +874,8 @@ class AddRMDomestic extends Component {
                 RawMaterial: { label: materialNameObj.Text, value: materialNameObj.Value, },
                 RMGrade: gradeObj !== undefined ? { label: gradeObj.Text, value: gradeObj.Value } : [],
                 RMSpec: specObj !== undefined ? { label: specObj.Text, value: specObj.Value, RawMaterialCode: specObj.RawMaterialCode } : [],
+                rmCode: specObj !== undefined ? { label: specObj.RawMaterialCode, value: specObj.Value } : [],
               })
-              this.props.change('Code', specObj.RawMaterialCode ? specObj.RawMaterialCode : '')
             })
           })
         }
@@ -978,7 +998,7 @@ class AddRMDomestic extends Component {
    * @description Used to show type of listing
    */
   renderListing = (label, isScrapRateUOM) => {
-    const { gradeSelectList, rmSpecification, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, plantSelectList, costingSpecifiTechnology, clientSelectList } = this.props
+    const { gradeSelectList, rmSpecification, cityList, categoryList, filterCityListBySupplier, rawMaterialNameSelectList, UOMSelectList, plantSelectList, costingSpecifiTechnology, clientSelectList, rmSpecificationList } = this.props
     const temp = []
 
     if (label === 'material') {
@@ -1089,6 +1109,14 @@ class AddRMDomestic extends Component {
       clientSelectList && clientSelectList.map(item => {
         if (item.Value === '0') return false;
         temp.push({ label: item.Text, value: item.Value })
+        return null;
+      });
+      return temp;
+    }
+    if (label === 'code') {
+      rmSpecificationList && rmSpecificationList.map(item => {
+        if (item.Value === '0') return false;
+        temp.push({ label: item.RawMaterialCode, value: item.SpecificationId })
         return null;
       });
       return temp;
@@ -1283,33 +1311,33 @@ class AddRMDomestic extends Component {
 
     if (showScrapKeys?.showCircleJali) {
 
-      if (checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalJaliScrapCostBaseCurrency) || checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalCircleScrapCostBaseCurrency)) {
-        this.setState({ setDisable: false })
-        Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
-        return false
-      }
-
       scrapRateBaseCurrency = checkForNull(FinalJaliScrapCostBaseCurrency)
       jaliRateBaseCurrency = checkForNull(FinalCircleScrapCostBaseCurrency)
-    } else if (showScrapKeys?.showForging) {
-
-      if (checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalForgingScrapCostBaseCurrency) || checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalMachiningScrapCostBaseCurrency)) {
+      if (checkForNull(FinalBasicRateBaseCurrency) < checkForNull(jaliRateBaseCurrency) || checkForNull(FinalBasicRateBaseCurrency) < checkForNull(scrapRateBaseCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
       }
+
+    } else if (showScrapKeys?.showForging) {
 
       scrapRateBaseCurrency = checkForNull(FinalForgingScrapCostBaseCurrency)
       machiningRateBaseCurrency = checkForNull(FinalMachiningScrapCostBaseCurrency)
-    } else if (showScrapKeys?.showScrap) {
-
-      if (checkForNull(FinalBasicRateBaseCurrency) <= checkForNull(FinalScrapRateBaseCurrency)) {
+      if (checkForNull(FinalBasicRateBaseCurrency) < checkForNull(scrapRateBaseCurrency) || checkForNull(FinalBasicRateBaseCurrency) < checkForNull(machiningRateBaseCurrency)) {
         this.setState({ setDisable: false })
         Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
         return false
       }
 
+    } else if (showScrapKeys?.showScrap) {
+
       scrapRateBaseCurrency = checkForNull(FinalScrapRateBaseCurrency)
+      if (checkForNull(FinalBasicRateBaseCurrency) < checkForNull(scrapRateBaseCurrency)) {
+        this.setState({ setDisable: false })
+        Toaster.warning("Scrap rate/cost should not be greater than or equal to the basic rate.")
+        return false
+      }
+
     }
 
     const userDetailsRM = JSON.parse(localStorage.getItem('userDetail'))
@@ -1494,7 +1522,7 @@ class AddRMDomestic extends Component {
   render() {
 
     const { handleSubmit, initialConfiguration, isRMAssociated, t } = this.props
-    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, showScrapKeys, IsFinancialDataChanged } = this.state
+    const { isRMDrawerOpen, isOpenGrade, isOpenSpecification, costingTypeId, isOpenCategory, isOpenVendor, isOpenUOM, isEditFlag, isViewFlag, setDisable, CostingTypePermission, disableSendForApproval, isOpenConditionDrawer, conditionTableData, FinalBasicPriceBaseCurrency, showScrapKeys, isDisabled, isCodeDisabled } = this.state
     const filterList = async (inputValue) => {
       const { vendorFilterList } = this.state
       if (inputValue && typeof inputValue === 'string' && inputValue.includes(' ')) {
@@ -1580,7 +1608,7 @@ class AddRMDomestic extends Component {
                       <div className="add-min-height">
                         <Row>
                           <Col md="12">
-                            <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="rm_domestic_form_zero_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1595,8 +1623,8 @@ class AddRMDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Zero Based</span>
-                            </Label>
-                            <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                            </Label>}
+                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="rm_domestic_form_vendor_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1611,8 +1639,8 @@ class AddRMDomestic extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Vendor Based</span>
-                            </Label>
-                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
+                            </Label>}
+                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="rm_domestic_form_customer_based" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -1669,7 +1697,8 @@ class AddRMDomestic extends Component {
                                   handleChangeDescription={this.handleRMChange}
                                   valueDescription={this.state.RawMaterial}
                                   className="fullinput-icon"
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
+                                  isClearable={true}
                                 />
                               </div>
                               {(!isEditFlag) && (
@@ -1696,7 +1725,7 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleGradeChange}
                                   valueDescription={this.state.RMGrade}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
                                 />
                               </div>
                             </div>
@@ -1716,7 +1745,7 @@ class AddRMDomestic extends Component {
                                   required={true}
                                   handleChangeDescription={this.handleSpecChange}
                                   valueDescription={this.state.RMSpec}
-                                  disabled={isEditFlag || isViewFlag}
+                                  disabled={isEditFlag || isViewFlag || isDisabled}
                                 />
                               </div>
                             </div>
@@ -1742,13 +1771,15 @@ class AddRMDomestic extends Component {
                               label={`Code`}
                               name={'Code'}
                               type="text"
-                              placeholder={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? '-' : "Enter"}
-                              validate={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? [] : [required]}
-                              component={renderText}
+                              component={searchableSelect}
+                              placeholder={initialConfiguration?.IsAutoGeneratedRawMaterialCode ? 'Select' : "Enter"}
+                              options={this.renderListing("code")}
+                              validate={initialConfiguration?.IsAutoGeneratedRawMaterialCode || this.state.rmCode == null || this.state.rmCode.length === 0 ? [] : [required]}
                               required={!initialConfiguration?.IsAutoGeneratedRawMaterialCode}
-                              className=" "
-                              customClassName=" withBorder"
-                              disabled={true}
+                              handleChangeDescription={this.handleCodeChange}
+                              disabled={isEditFlag || isViewFlag || isCodeDisabled}
+                              isClearable={true}
+                              valueDescription={this.state.rmCode}
                             />
                           </Col>
 
@@ -2013,7 +2044,7 @@ class AddRMDomestic extends Component {
                             {this.state.IsApplyHasDifferentUOM && this.state.ScrapRateUOM?.value && <>
                               <Col md="3">
                                 <Field
-                                  label={`Conversion Ratio ${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}/${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}`}
+                                  label={labelWithUOMAndUOM("Conversion Ratio", this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM', this.state.UOM?.label ? this.state.UOM?.label : 'UOM')}
                                   name={"ConversionRatio"}
                                   type="text"
                                   placeholder={isViewFlag ? '-' : "Enter"}
@@ -2027,10 +2058,11 @@ class AddRMDomestic extends Component {
                                 />
                               </Col>
                               <Col md="3">
-                                <TooltipCustom id="conversion-factor-base-currency" width={'400px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
+                                <TooltipCustom disabledIcon={true} id="conversion-factor-base-currency" width={'380px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextCalculatedFactor} />
                                 <Field
-                                  label={`Calculated Factor ${this.state.UOM?.label ? this.state.UOM?.label : 'UOM'}/${this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM'}`}
+                                  label={labelWithUOMAndUOM("Calculated Factor", this.state.UOM?.label ? this.state.UOM?.label : 'UOM', this.state.ScrapRateUOM?.label ? this.state.ScrapRateUOM?.label : 'UOM')}
                                   name={"CalculatedFactor"}
+                                  id="conversion-factor-base-currency"
                                   type="text"
                                   placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2060,10 +2092,11 @@ class AddRMDomestic extends Component {
 
                             {showScrapKeys?.showScrap &&
                               <Col md="3">
-                                {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="scrap-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />}
+                                {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="scrap-rate-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextScrapCostBaseCurrencyPerOldUOM} />}
                                 <Field
                                   label={labelWithUOMAndCurrency("Scrap Rate", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                   name={"ScrapRateBaseCurrency"}
+                                  id="scrap-rate-base-currency"
                                   type="text"
                                   placeholder={isViewFlag ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, decimalLengthsix, number]}
@@ -2079,11 +2112,12 @@ class AddRMDomestic extends Component {
                             {showScrapKeys?.showForging &&
                               <>
                                 <Col md="3">
-                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="forging-scrap-cost-base-currency" width={'700px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrencyPerOldUOM} />}
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="forging-scrap-cost-base-currency" width={'450px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextForgingScrapCostBaseCurrencyPerOldUOM} />}
                                   <Field
                                     label={labelWithUOMAndCurrency("Forging Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"ForgingScrap"}
                                     type="text"
+                                    id="forging-scrap-cost-base-currency"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, positiveAndDecimalNumber, maxLength15, decimalLengthsix, number]}
                                     component={renderTextInputField}
@@ -2114,11 +2148,12 @@ class AddRMDomestic extends Component {
                             {showScrapKeys?.showCircleJali &&
                               <>
                                 <Col md="3">
-                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom id="jali-scrap-cost-base-currency" width={'550px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />}
+                                  {this.state.IsApplyHasDifferentUOM === true && <TooltipCustom disabledIcon={true} id="jali-scrap-cost-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextJaliScrapCostBaseCurrencyPerOldUOM} />}
                                   <Field
                                     label={labelWithUOMAndCurrency("Jali Scrap Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                     name={"JaliScrapCost"}
                                     type="text"
+                                    id="jali-scrap-cost-base-currency"
                                     placeholder={isViewFlag ? '-' : "Enter"}
                                     validate={[required, maxLength15, decimalLengthsix]}
                                     component={renderText}
@@ -2178,11 +2213,12 @@ class AddRMDomestic extends Component {
                             </Col>
                             {initialConfiguration?.IsBasicRateAndCostingConditionVisible && costingTypeId === ZBCTypeId && <>
                               <Col md="3">
-                                <TooltipCustom id="rm-basic-price" tooltipText={this.basicPriceTitle()} />
+                                <TooltipCustom disabledIcon={true} width={"350px"} id="rm-basic-price" tooltipText={this.basicPriceTitle()} />
                                 <Field
                                   label={labelWithUOMAndCurrency("Basic Price", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                   name={"BasicPriceCurrency"}
                                   type="text"
+                                  id="rm-basic-price"
                                   placeholder={isEditFlag || (isEditFlag && isRMAssociated) ? '-' : "Enter"}
                                   validate={[required, positiveAndDecimalNumber, maxLength10, decimalLengthsix, number]}
                                   component={renderTextInputField}
@@ -2223,11 +2259,12 @@ class AddRMDomestic extends Component {
 
                             </>}
                             <Col md="3">
-                              <TooltipCustom id="bop-net-cost-currency" tooltipText={this.netCostTitle()} />
+                              <TooltipCustom disabledIcon={true} id="bop-net-cost-currency" tooltipText={this.netCostTitle()} />
                               <Field
                                 label={labelWithUOMAndCurrency("Net Cost", this.state.UOM?.label === undefined ? 'UOM' : this.state.UOM?.label, (initialConfiguration?.BaseCurrency ? initialConfiguration?.BaseCurrency : 'Currency'))}
                                 name={this.state.netLandedConverionCost === 0 ? '' : "NetLandedCostBaseCurrency"}
                                 type="text"
+                                id="bop-net-cost-currency"
                                 placeholder={"-"}
                                 validate={[]}
                                 component={renderTextInputField}
@@ -2492,6 +2529,7 @@ class AddRMDomestic extends Component {
               ViewMode={((isEditFlag && isRMAssociated) || isViewFlag)}
               isFromMaster={true}
               isFromImport={false}
+              EntryType={checkForNull(ENTRY_TYPE_DOMESTIC)}
             />
           }
           {
@@ -2551,7 +2589,7 @@ function mapStateToProps(state) {
   const { clientSelectList } = client;
   const { initialConfiguration, userMasterLevelAPI } = auth;
 
-  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType } = material
+  const { rawMaterialDetails, rawMaterialDetailsData, rawMaterialNameSelectList, gradeSelectList, vendorListByVendorType, rmSpecificationList } = material
 
 
   let initialValues = {}
@@ -2573,7 +2611,7 @@ function mapStateToProps(state) {
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
     filterPlantList, UOMSelectList, vendorListByVendorType, plantSelectList,
-    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI, tourStartData
+    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI, rmSpecificationList, tourStartData
   }
 }
 
@@ -2609,7 +2647,9 @@ export default connect(mapStateToProps, {
   getClientSelectList,
   checkFinalUser,
   getUsersMasterLevelAPI,
-  getVendorNameByVendorSelectList
+  getVendorNameByVendorSelectList,
+  getRMSpecificationDataAPI,
+  getRMSpecificationDataList
 })(
   reduxForm({
     form: 'AddRMDomestic',

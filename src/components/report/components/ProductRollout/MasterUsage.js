@@ -97,7 +97,7 @@ const MasterUsage = ({ productId }) => {
                             suppressRowClickSelection={true}
                             enableBrowserTooltips={true}
                         >
-                            <AgGridColumn field="RMCode" headerName='RM Name' cellRenderer='dateFormatter'></AgGridColumn>
+                            <AgGridColumn field="RMCode" headerName='RM Code' cellRenderer='dateFormatter'></AgGridColumn>
                             {/* <AgGridColumn field="Material" headerName="Material" tooltipField="tooltipText" minWidth={170} cellRenderer="statusFormatter"></AgGridColumn> */}
                             <AgGridColumn field="PartCount" headerName='No. of Part'></AgGridColumn>
 

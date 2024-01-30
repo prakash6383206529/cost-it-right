@@ -702,8 +702,6 @@ export const searchableSelect = ({
   multi,
   className,
   children,
-  onKeyDown
-
 }) => {
   let isDisable = disabled && disabled === true ? true : false;
   const filterConfig = {
@@ -729,7 +727,7 @@ export const searchableSelect = ({
           {...input}
           id={specificIdContainer}
           inputId={specificId}
-          isClearable={false}
+          isClearable={isClearable ? true : false}
           options={options}
           instanceId={input.name}
           onChange={handleChangeDescription}

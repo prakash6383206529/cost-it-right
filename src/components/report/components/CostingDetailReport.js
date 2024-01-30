@@ -234,6 +234,7 @@ function ReportListing(props) {
                     let dataFromAPI = res.data.Data
                     setIsReportLoader(false)
                     const tempObj = formViewData(dataFromAPI)
+
                     dispatch(setCostingViewData(tempObj))
                 }
             },
@@ -856,7 +857,7 @@ function ReportListing(props) {
                             <AgGridColumn field="TechnologyName" headerName="Technology" cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Plant' headerName='Plant (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='Vendor' headerName='Vendor (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>
-                            {reactLocalStorage.getObject('cbcCostingPermission') && <AgGridColumn field='Customer' headerName='Customer (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
+                            {reactLocalStorage.getObject('CostingTypePermission').cbc && <AgGridColumn field='Customer' headerName='Customer (Code)' cellRenderer='hyphenFormatter'></AgGridColumn>}
                             <AgGridColumn field='PartNumber' headerName='Part Number' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='PartName' headerName='Part Name' cellRenderer='hyphenFormatter'></AgGridColumn>
                             <AgGridColumn field='ECNNumber' headerName='ECN Number' cellRenderer='hyphenFormatter'></AgGridColumn>
@@ -947,6 +948,7 @@ function ReportListing(props) {
                     isSimulation={false}
                     simulationDrawer={false}
                     isReportLoader={isReportLoader}
+                    selectedTechnology={viewCostingData && viewCostingData.length > 0 && viewCostingData[0]?.technology}
                 />
             }
             {

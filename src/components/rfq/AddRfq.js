@@ -849,7 +849,7 @@ function AddRfq(props) {
         const resultInput = inputValue.slice(0, searchCount)
         if (inputValue?.length >= searchCount && vendor !== resultInput) {
             let res
-            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput, initialConfiguration?.IsCriticalVendorConfigured ? technology.value : '', plant.value)
+            res = await getVendorNameByVendorSelectList(VBC_VENDOR_TYPE, resultInput, initialConfiguration?.IsCriticalVendorConfigured ? technology.value : '', initialConfiguration?.IsCriticalVendorConfigured ? plant.value : '')
             setVendor(resultInput)
             let vendorDataAPI = res?.data?.SelectList
             if (inputValue) {
@@ -1498,7 +1498,7 @@ function AddRfq(props) {
                                         {!loader ? <div className={`ag-grid-react`}>
                                             <Row>
                                                 <Col>
-                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain border" : ""} `}>
+                                                    <div className={`ag-grid-wrapper height-width-wrapper ${vendorList && vendorList.length <= 0 ? "overlay-contain non-filter border" : ""} `}>
 
                                                         <div className={`ag-theme-material  max-loader-height`}>
                                                             <AgGridReact
@@ -1514,7 +1514,7 @@ function AddRfq(props) {
                                                                 noRowsOverlayComponent={'customNoRowsOverlay'}
                                                                 noRowsOverlayComponentParams={{
                                                                     title: EMPTY_DATA,
-                                                                    imagClass: 'imagClass'
+                                                                    imagClass: 'imagClass mt-0'
                                                                 }}
                                                                 frameworkComponents={frameworkComponents}
                                                             >

@@ -824,7 +824,7 @@ class AddFuel extends Component {
                         <Row>
 
                           <Col md="12">
-                            <Label id="AddFuel_zerobased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                            {(reactLocalStorage.getObject('CostingTypePermission').zbc) && <Label id="AddFuel_zerobased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -837,8 +837,8 @@ class AddFuel extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Zero Based</span>
-                            </Label>
-                            <Label id="AddFuel_vendorbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3  pt-0 radio-box"} check>
+                            </Label>}
+                            {(reactLocalStorage.getObject('CostingTypePermission').vbc) && <Label id="AddFuel_vendorbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3  pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"
@@ -851,8 +851,8 @@ class AddFuel extends Component {
                                 disabled={isEditFlag ? true : false}
                               />{" "}
                               <span>Vendor Based</span>
-                            </Label>
-                            {(reactLocalStorage.getObject('cbcCostingPermission')) && <Label id="AddFuel_customerbased" className={"d-inline-block align-middle w-auto pl0 mr-4 mb-3 pt-0 radio-box"} check>
+                            </Label>}
+                            {(reactLocalStorage.getObject('CostingTypePermission').cbc) && <Label id="AddFuel_customerbased" className={"d-inline-block align-middle w-auto pl0 pr-4 mb-3 pt-0 radio-box"} check>
                               <input
                                 type="radio"
                                 name="costingHead"

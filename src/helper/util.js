@@ -6,14 +6,13 @@ import { reactLocalStorage } from 'reactjs-localstorage'
 import { checkForDecimalAndNull, checkForNull } from './validation'
 import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
-  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
+  ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId, DIECASTING, MECHANICAL_PROPRIETARY, ELECTRICAL_PROPRIETARY, LOGISTICS, CORRUGATEDBOX, FABRICATION, FERROUSCASTING, WIREFORMING, ELECTRONICSNAME, ELECTRIC, Assembly, ASSEMBLYNAME, PLASTICNAME,
 } from '../config/constants'
 import { getConfigurationKey } from './auth'
 import _ from 'lodash';
 import { costingTypeIdToApprovalTypeIdFunction } from '../components/common/CommonFunctions';
 import TooltipCustom from '../components/common/Tooltip';
-import { FORGING, SHEETMETAL } from '../config/masterData';
-
+import { DIE_CASTING, FORGING, SHEETMETAL } from '../config/masterData';
 /**
  * @method  apiErrors
  * @desc Response error handler.
@@ -872,8 +871,8 @@ export function getTechnologyPermission(technology) {
   switch (technology) {
     case SHEET_METAL:
       return SHEET_METAL;
-    case PLASTIC:
-      return PLASTIC;
+    case PLASTICNAME:
+      return PLASTICNAME;
     case WIRING_HARNESS:
       return WIRING_HARNESS;
     case NON_FERROUS_GDC:
@@ -884,8 +883,6 @@ export function getTechnologyPermission(technology) {
       return SPRINGS;
     case HARDWARE:
       return HARDWARE;
-    case NON_FERROUS_LPDDC:
-      return NON_FERROUS_LPDDC;
     case MACHINING:
       return MACHINING;
     case ELECTRONICS:
@@ -898,6 +895,31 @@ export function getTechnologyPermission(technology) {
       return RUBBER;
     case FORGINGNAME:
       return FORGINGNAME;
+    case DIECASTING:
+      return DIECASTING
+    case MECHANICAL_PROPRIETARY:
+      return MECHANICAL_PROPRIETARY;
+    case ELECTRICAL_PROPRIETARY:
+      return ELECTRICAL_PROPRIETARY;
+    case LOGISTICS:
+      return LOGISTICS;
+    case CORRUGATEDBOX:
+      return CORRUGATEDBOX;
+    case FABRICATION:
+      return FABRICATION;
+    case FERROUSCASTING:
+      return FERROUSCASTING;
+    case WIREFORMING:
+      return WIREFORMING
+    case ELECTRIC:
+      return ELECTRIC;
+    case ELECTRONICSNAME:
+      return ELECTRONICSNAME
+    case FASTNERS:
+      return FASTNERS
+    case ASSEMBLYNAME:
+      return ASSEMBLYNAME
+
     default:
       break;
   }
@@ -1033,18 +1055,24 @@ export const displayUOM = (value) => {
       temp.push(value.charAt(i))
     }
     temp.splice(temp.length - 2, 1);
-    const UOMValue = <div className='p-relative'>{temp.map(item => {
-      return <span className='unit-text'>{item}</span>
+    const UOMValue = <span>{temp.map((item, ind) => {
+      if (temp.length !== ind + 1) {
+        return <>{item}</>
+      } else {
+        return <sup>{item}</sup>
+      }
     })}
-    </div>
+    </span>
     return UOMValue
   }
   return value
 }
 export const labelWithUOMAndCurrency = (label, UOM, currency) => {
-  return <div>
-    <span className='d-flex'>{label} ({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</span>
-  </div>
+  return <>{label}({currency ? currency : getConfigurationKey().BaseCurrency}/{UOM ? displayUOM(UOM) : 'UOM'})</>
+}
+
+export const labelWithUOMAndUOM = (label, UOM, ScrapUOM) => {
+  return <>{label}({UOM ? displayUOM(UOM) : 'UOM'}/{ScrapUOM ? displayUOM(ScrapUOM) : 'UOM'})</>
 }
 
 // THIS FUNCTION SHOWING TITLE ON HOVER FOR ACTIVE AND INACTIVE STATUS IN GRID
@@ -1085,12 +1113,23 @@ export const showTitleForActiveToggle = (index) => {
   }, 500);
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
-export const checkForSameFileUpload = (master, fileHeads) => {
+export const checkForSameFileUpload = (master, fileHeads, isRm = false) => {
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
+  if (isRm) {
+    const hasNote = fileHeads.includes('Note') || bulkUploadArray.includes('Note');
+    if (hasNote) {
+      fileHeads = fileHeads.filter(header => header !== 'Note');
+      bulkUploadArray = bulkUploadArray.filter(header => header !== 'Note');
 
+    }
+  }
+
+  // if (isRm && !fileHeads.includes('Note')) {
+  //   fileHeads.unshift('Note');
+  // }
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
