@@ -31,7 +31,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import LoaderCustom from '../../common/LoaderCustom';
 import WarningMessage from '../../common/WarningMessage';
 import imgRedcross from '../../../assests/images/red-cross.png'
-import { CheckApprovalApplicableMaster, labelWithUOMAndUOM, onFocus, showDataOnHover, showRMScrapKeys, userTechnologyDetailByMasterId } from '../../../helper';
+import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, labelWithUOMAndUOM, onFocus, showDataOnHover, showRMScrapKeys, userTechnologyDetailByMasterId } from '../../../helper';
 import MasterSendForApproval from '../MasterSendForApproval';
 import { animateScroll as scroll } from 'react-scroll';
 import AsyncSelect from 'react-select/async';
@@ -2582,75 +2582,76 @@ class AddRMImport extends Component {
                             }
 
 
+                            {IsShowFreightAndShearingCostFields() && (
+                              <>
+                                <Col md="3">{/* //RE */}
+                                  <Field
+                                    label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                    name={"FreightChargeSelectedCurrency"}
+                                    type="text"
+                                    placeholder={isViewFlag ? '-' : "Enter"}
+                                    validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
+                                    component={renderTextInputField}
+                                    required={false}
+                                    className=""
+                                    maxLength="15"
+                                    customClassName=" withBorder"
+                                    disabled={isViewFlag}
+                                  />
+                                </Col>
+                                <Col md="3">{/* //RE */}
+                                  <TooltipCustom disabledIcon={true} id="rm-freight-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />
+                                  <Field
+                                    label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    name={"FreightChargeBaseCurrency"}
+                                    id="rm-freight-base-currency"
+                                    type="text"
+                                    placeholder={isViewFlag ? '-' : "Enter"}
+                                    validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
+                                    component={renderTextInputField}
+                                    required={false}
+                                    className=""
+                                    maxLength="15"
+                                    customClassName=" withBorder"
+                                    disabled={true}
+                                  />
+                                </Col>
 
-                            <Col md="3">{/* //RE */}
-                              <Field
-                                label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                name={"FreightChargeSelectedCurrency"}
-                                type="text"
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={false}
-                                className=""
-                                maxLength="15"
-                                customClassName=" withBorder"
-                                disabled={isViewFlag}
-                              />
-                            </Col>
-                            <Col md="3">{/* //RE */}
-                              <TooltipCustom disabledIcon={true} id="rm-freight-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextFreightCostBaseCurrency} />
-                              <Field
-                                label={labelWithUOMAndCurrency("Freight Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                name={"FreightChargeBaseCurrency"}
-                                id="rm-freight-base-currency"
-                                type="text"
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={false}
-                                className=""
-                                maxLength="15"
-                                customClassName=" withBorder"
-                                disabled={true}
-                              />
-                            </Col>
 
 
-
-                            <Col md="3">{/* //RE */}
-                              <Field
-                                label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
-                                name={"ShearingCostSelectedCurrency"}
-                                type="text"
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={false}
-                                className=""
-                                maxLength="15"
-                                customClassName=" withBorder"
-                                disabled={isViewFlag}
-                              />
-                            </Col>
-                            <Col md="3">{/* //RE */}
-                              <TooltipCustom disabledIcon={true} id="rm-shearing-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />
-                              <Field
-                                label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
-                                name={"ShearingCostBaseCurrency"}
-                                id="rm-shearing-base-currency"
-                                type="text"
-                                placeholder={isViewFlag ? '-' : "Enter"}
-                                validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
-                                component={renderTextInputField}
-                                required={false}
-                                className=""
-                                maxLength="15"
-                                customClassName=" withBorder"
-                                disabled={true}
-                              />
-                            </Col>
-
+                                <Col md="3">{/* //RE */}
+                                  <Field
+                                    label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, this.state.currency.label === undefined ? 'Currency' : this.state.currency.label)}
+                                    name={"ShearingCostSelectedCurrency"}
+                                    type="text"
+                                    placeholder={isViewFlag ? '-' : "Enter"}
+                                    validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
+                                    component={renderTextInputField}
+                                    required={false}
+                                    className=""
+                                    maxLength="15"
+                                    customClassName=" withBorder"
+                                    disabled={isViewFlag}
+                                  />
+                                </Col>
+                                <Col md="3">{/* //RE */}
+                                  <TooltipCustom disabledIcon={true} id="rm-shearing-base-currency" width={'350px'} tooltipText={this.allFieldsInfoIcon()?.toolTipTextShearingCostBaseCurrency} />
+                                  <Field
+                                    label={labelWithUOMAndCurrency("Shearing Cost", this.state.UOM.label === undefined ? 'UOM' : this.state.UOM.label, initialConfiguration?.BaseCurrency)}
+                                    name={"ShearingCostBaseCurrency"}
+                                    id="rm-shearing-base-currency"
+                                    type="text"
+                                    placeholder={isViewFlag ? '-' : "Enter"}
+                                    validate={[positiveAndDecimalNumber, decimalLengthsix, number]}
+                                    component={renderTextInputField}
+                                    required={false}
+                                    className=""
+                                    maxLength="15"
+                                    customClassName=" withBorder"
+                                    disabled={true}
+                                  />
+                                </Col>
+                              </>)}
 
 
 

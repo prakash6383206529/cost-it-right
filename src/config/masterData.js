@@ -89,7 +89,7 @@ export const RMDomesticZBC = [
     { label: "ShearingCost", value: "ShearingCost" }, //*    // KEEP COMMENTED ON RE						//RE
     { label: "EffectiveDate", value: "EffectiveDate" }, //*
     { label: "Remark", value: "Remark" },
-]
+]/* .filter(item => IsShowFreightAndShearingCostFields() || item.value !== 'FreightCost' && item.value !== 'ShearingCost'); */
 
 export const RMDomesticZBCTempData = [
     {

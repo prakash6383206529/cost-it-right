@@ -3,7 +3,7 @@ import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
 import { EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { loggedInUserId } from '../../../../helper';
+import { getConfigurationKey, loggedInUserId, showBopLabel } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
@@ -296,19 +296,19 @@ function OverheadSimulation(props) {
                 Toaster.warning(`Please fill CC`);
                 stopflow = true
             } else if (Number(tempBOP) === 1) {
-                Toaster.warning(`Please fill BOP`);
+                Toaster.warning(`Please fill ${showBopLabel()} `);
                 stopflow = true
             } else if (Number(tempRMCC) === 1) {
                 Toaster.warning(`Please fill both RM and CC or Overhead Percentage`);
                 stopflow = true
             } else if (Number(tempRMBOP) === 1) {
-                Toaster.warning(`Please fill both RM and BOP or Overhead Percentage`);
+                Toaster.warning(`Please fill both RM and ${showBopLabel()}  or Overhead Percentage`);
                 stopflow = true
             } else if (Number(tempBOPCC) === 1) {
-                Toaster.warning(`Please fill both BOP and CC or Overhead Percentage`);
+                Toaster.warning(`Please fill both ${showBopLabel()}  and CC or Overhead Percentage`);
                 stopflow = true
             } else if (Number(tempRMCCBOP) === 1) {
-                Toaster.warning(`Please fill all values RM, CC and BOP or Overhead Percentage`);
+                Toaster.warning(`Please fill all values RM, CC and ${showBopLabel()}  or Overhead Percentage`);
                 stopflow = true
             }
             if (item.OverheadApplicabilityType === item.NewOverheadApplicabilityType || item?.NewOverheadApplicabilityType === undefined) {
@@ -949,7 +949,7 @@ function OverheadSimulation(props) {
                                             </AgGridColumn>
                                             {/* <AgGridColumn field="OverheadApplicabilityType" cellEditor="agSelectCellEditor" cellEditorParams={applicabilityCellEditor} ></AgGridColumn> */}
 
-                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName="Overhead BOP Percentage" marryChildren={true} >
+                                            <AgGridColumn headerClass="justify-content-center" cellClass="text-center" width={240} headerName={`Overhead ${showBopLabel()}  Percentage`} marryChildren={true} >
                                                 <AgGridColumn width={120} field="OverheadBOPPercentage" editable='false' headerName="Existing" cellRenderer='oldOverheadBOPPercentageFormatter' colId="OverheadBOPPercentage"></AgGridColumn>
                                                 <AgGridColumn width={120} cellRenderer='newOverheadBOPPercentageFormatter' field="NewOverheadBOPPercentage" headerName="Revised" colId='NewOverheadBOPPercentage' editable={(props) => EditableCallback(props, 'BOP')}></AgGridColumn>
                                             </AgGridColumn>

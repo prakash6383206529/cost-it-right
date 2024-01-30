@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Row, Table } from 'reactstrap';
 import { EMPTY_DATA } from '../../../../config/constants';
-import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol } from '../../../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, getCurrencySymbol, showBopLabel } from '../../../../helper';
 import DayTime from '../../../common/DayTimeWrapper';
 import LoaderCustom from '../../../common/LoaderCustom';
 import NoContentFound from '../../../common/NoContentFound';
@@ -248,7 +248,7 @@ const CostRatioListing = (props) => {
                             <tr>
                                 <td>
                                     <div className='column-data'>Net RM Cost (%)</div>
-                                    <div className='column-data'>Net BOP Cost (%)</div>
+                                    <div className='column-data'>Net {showBopLabel()}  Cost (%)</div>
                                     <div className='column-data'>Process Cost (%)</div>
                                     <div className='column-data'>Operation Cost (%)</div>
                                     <div className='column-data'>Other Operation Cost (%)</div>

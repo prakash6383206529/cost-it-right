@@ -12,7 +12,7 @@ import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
 import PopupMsgWrapper from '../../common/PopupMsgWrapper';
 import { PaginationWrapper } from '../../common/commonPagination'
-import { checkForDecimalAndNull, checkPermission, getConfigurationKey, labelWithUOMAndCurrency, loggedInUserId, searchNocontentFilter } from '../../../helper';
+import { checkForDecimalAndNull, checkPermission, getConfigurationKey, labelWithUOMAndCurrency, loggedInUserId, searchNocontentFilter, showBopLabel } from '../../../helper';
 import DayTime from '../../common/DayTimeWrapper';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import { getNfrPartDetails, nfrDetailsForDiscountAction, pushNfrRmBopOnSap } from './actions/nfr';
@@ -202,7 +202,7 @@ function NfrPartsListing(props) {
             <>
                 {showOutsourcing && !rowData?.IsRmAndBopActionEditable && < button type="button" className={"View mr-1"} onClick={() => { formToggle(rowData, true) }} disabled={false} title="View"></button >}
                 {showOutsourcing && rowData?.IsRmAndBopActionEditable && < button type="button" className={"add-out-sourcing mr-1"} onClick={() => { formToggle(rowData, false) }} disabled={false} title="Add"></button >}
-                {showOutsourcing && < button type="button" className={"pushed-action-btn mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title="Please add RM/BOP price in master, to add outsourcing cost and push the price on SAP"></button >}
+                {showOutsourcing && < button type="button" className={"pushed-action-btn mr-1"} onClick={() => { pushToSap(rowData) }} disabled={!showPush} title={`Please add RM/${showBopLabel()}  price in master, to add outsourcing cost and push the price on SAP`}></button >}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View RM' className="view-masters mr-1" type={'button'} onClick={() => viewRM(rowData)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='View' className="View mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, true)} />}
                 {!rowData?.IsRmAndBopActionEditable && !showOutsourcing && <button title='Edit' className="Edit mr-1" type={'button'} onClick={() => editPartHandler(cellValue, rowData, false)} />}
@@ -268,7 +268,7 @@ function NfrPartsListing(props) {
     }
     const partTypeFormater = (props) => {
         const cellValue = props?.valueFormatted ? props.valueFormatted : props?.value;
-        return cellValue != null && cellValue === BOUGHTOUTPARTSPACING ? 'BOP (Standard)' : cellValue === COMPONENT_PART ? 'Component (Customized)' : cellValue === RAW_MATERIAL ? 'Raw Material' : ' -';
+        return cellValue != null && cellValue === BOUGHTOUTPARTSPACING ? `${showBopLabel()} (Standard)` : cellValue === COMPONENT_PART ? 'Component (Customized)' : cellValue === RAW_MATERIAL ? 'Raw Material' : ' -';
     }
 
     /**
@@ -461,7 +461,7 @@ function NfrPartsListing(props) {
                                     </div>
                                 </Col>
                                 <Col md="12" className='justify-content-end d-flex'>
-                                    {showWarning && <WarningMessage dClass="mt-2" message={'Please add RM/BOP price in master, to add outsourcing cost and push the price on SAP'} />}
+                                    {showWarning && <WarningMessage dClass="mt-2" message={`Please add RM/${showBopLabel()}  price in master, to add outsourcing cost and push the price on SAP`} />}
                                 </Col>
                             </Row>
 

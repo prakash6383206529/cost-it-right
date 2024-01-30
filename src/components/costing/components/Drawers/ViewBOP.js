@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../../src/helper'
+import { checkForDecimalAndNull, getConfigurationKey, showBopLabel } from '../../../../../src/helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
@@ -33,19 +33,19 @@ function ViewBOP(props) {
         <Col md="12">
           <Row>
             <Col md="12">
-              <div className="left-border">{`${getConfigurationKey().BOPMasterName}:`}</div>
+              <div className="left-border">{`${showBopLabel()}:`}</div>
             </Col>
           </Row>
           <Table className="table cr-brdr-main" size="sm">
             <thead>
               <tr>
                 {IsAssemblyCosting && <th>{`Part No.`}</th>}
-                <th>{`${getConfigurationKey().BOPMasterName} Part No.`}</th>
-                <th>{`${getConfigurationKey().BOPMasterName} Part Name`}</th>
+                <th>{`${showBopLabel()} Part No.`}</th>
+                <th>{`${showBopLabel()} Part Name`}</th>
                 <th>{`Currency`}</th>
                 <th>{`Landed Cost (INR)`}</th>
                 <th>{`Quantity`}</th>
-                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${getConfigurationKey().BOPMasterName} Cost`}</th>
+                <th className={initialConfiguration.IsShowCRMHead ? "" : 'costing-border-right'}>{`Net ${showBopLabel()} Cost`}</th>
                 {initialConfiguration.IsShowCRMHead && <th className="costing-border-right">{`CRM Head`}</th>}
               </tr>
             </thead>
@@ -88,13 +88,13 @@ function ViewBOP(props) {
         <Col md="12" className='mb-1'>
           <Row>
             <Col md="12">
-              <div className="left-border">{IsAssemblyCosting ? `Assembly's ${getConfigurationKey().BOPMasterName} Handling Charge:` : `${getConfigurationKey().BOPMasterName} Handling Charge:`}</div>
+              <div className="left-border">{IsAssemblyCosting ? `Assembly's ${showBopLabel()} Handling Charge:` : `${showBopLabel()} Handling Charge:`}</div>
             </Col>
           </Row>
           <Table className="table cr-brdr-main mb-0" size="sm">
             <thead>
               <tr>
-                <th>{`${getConfigurationKey().BOPMasterName} Handling Type`}</th>
+                <th>{`${showBopLabel()} Handling Type`}</th>
                 <th>{`Percentage`}</th>
                 <th className="costing-border-right">{`Handling Charges`}</th>
               </tr>
@@ -127,14 +127,14 @@ function ViewBOP(props) {
             <br />
             <Row>
               <Col md="12">
-                <div className="left-border">{`Part's ${getConfigurationKey().BOPMasterName} Handling Charge:`}</div>
+                <div className="left-border">{`Part's ${showBopLabel()} Handling Charge:`}</div>
               </Col>
             </Row>
             <Table className="table cr-brdr-main mb-0" size="sm">
               <thead>
                 <tr>
                   {IsAssemblyCosting && <th>{`Part No.`}</th>}
-                  <th>{`${getConfigurationKey().BOPMasterName} Handling Type`}</th>
+                  <th>{`${showBopLabel()} Handling Type`}</th>
                   <th>{`Percentage`}</th>
                   <th className="costing-border-right">{`Handling Charges`}</th>
                 </tr>
@@ -177,7 +177,7 @@ function ViewBOP(props) {
               <Row className="drawer-heading">
                 <Col>
                   <div className={'header-wrapper left'}>
-                    <h3>{`View ${getConfigurationKey().BOPMasterName} Cost:`}</h3>
+                    <h3>{`View ${showBopLabel()} Cost:`}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}

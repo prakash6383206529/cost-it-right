@@ -12,7 +12,7 @@ import { EXCHNAGERATE, OPERATIONS, RMDOMESTIC, RMIMPORT, SURFACETREATMENT, MACHI
 //import { SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { NumberFieldHookForm, SearchableSelectHookForm } from '../../layout/HookFormInputs';
 import { TextFieldHookForm, } from '../../layout/HookFormInputs';
-import { checkForNull, getConfigurationKey, setValueAccToUOM } from '../../../helper';
+import { checkForNull, getConfigurationKey, setValueAccToUOM, showBopLabel } from '../../../helper';
 import { number, percentageLimitValidation, checkWhiteSpaces, decimalNumberLimit6 } from "../../../helper/validation";
 import Switch from 'react-switch'
 import { Fragment } from 'react';
@@ -276,7 +276,7 @@ function RunSimulationDrawer(props) {
         const Tool = selectedData.includes("Tool")
         const Packaging = selectedData.includes("Packaging")
         const Freight = selectedData.includes("Freight")
-        const BOPHandlingCharge = selectedData.includes("BOP Handling Charge")
+        const BOPHandlingCharge = selectedData.includes(`${showBopLabel()} Handling Charge`)
         const LatestExchangeRate = selectedData.includes("Latest Exchange Rate")
 
         let temp = []

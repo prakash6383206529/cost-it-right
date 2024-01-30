@@ -7,7 +7,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, searchNocontentFilter } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter, showBopLabel } from '../../../helper';
 import { Sob } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -342,9 +342,9 @@ const SOBListing = (props) => {
                 suppressRowClickSelection={true}
               >
                 {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                <AgGridColumn field="BoughtOutPartNumber" headerName={`${getConfigurationKey().BOPMasterName} Part No.`}></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartName" headerName={`${getConfigurationKey().BOPMasterName} Part Name`}></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartCategory" headerName={`${getConfigurationKey().BOPMasterName} Category`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="NoOfVendors" headerName="No. of Vendors"></AgGridColumn>
                 <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>

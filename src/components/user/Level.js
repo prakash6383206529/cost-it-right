@@ -53,7 +53,7 @@ class Level extends Component {
       this.getLevelMappingDetails()
     } else {
       if (this.state.levelType === 'Costing') {
-        this.props.getAllTechnologyAPI(() => { })
+        this.props.getAllTechnologyAPI("", "", true, () => { })
       } else if (this.state.levelType === 'Simulation') {
         this.props.getSimulationTechnologySelectList(() => { })
       }

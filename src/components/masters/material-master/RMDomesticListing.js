@@ -36,7 +36,7 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const MyLazyComponent = lazy(() => import('../../massUpload/BulkUpload'));
-
+console.log('MyLazyComponent: ', MyLazyComponent);
 
 
 
@@ -219,7 +219,6 @@ function RMDomesticListing(props) {
                 }
 
                 if (res && isPagination === false) {
-
                     setDisableDownload(false)
                     dispatch(disabledClass(false))
                     setTimeout(() => {
@@ -672,6 +671,7 @@ function RMDomesticListing(props) {
 
 
     const onExcelDownload = () => {
+        console.log('onExcelDownload: ');
         setDisableDownload(true)
         dispatch(disabledClass(true))
         //let tempArr = gridApi && gridApi?.getSelectedRows()
@@ -699,6 +699,7 @@ function RMDomesticListing(props) {
 
 
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
+        console.log('tempArr: ', tempArr);
         return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 

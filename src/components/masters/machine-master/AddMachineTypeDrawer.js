@@ -162,6 +162,15 @@ class AddMachineTypeDrawer extends Component {
     }
 
   }
+  validateMachineType = (value) => {
+    if (value && typeof value !== 'string') {
+      return 'Machine Type must be a string';
+    }
+
+    if (value && value.length > 128) {
+      return 'Machine Type must not exceed 128 characters';
+    }
+  };
   handleKeyDown = function (e) {
     if (e.key === 'Enter' && e.shiftKey === false) {
       e.preventDefault();
@@ -210,7 +219,7 @@ class AddMachineTypeDrawer extends Component {
                       name={"MachineType"}
                       type="text"
                       placeholder={"Enter"}
-                      validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation]}
+                      validate={[required, checkWhiteSpaces, acceptAllExceptSingleSpecialCharacter, hashValidation, this.validateMachineType]}
                       component={renderText}
                       required={!isEditFlag}
                       className=" "

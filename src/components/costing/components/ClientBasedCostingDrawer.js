@@ -5,7 +5,7 @@ import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { renderText, searchableSelect } from '../../layout/FormInputs';
 import { fileUploadCosting, fileDeleteCosting } from '../actions/Costing';
-import { getConfigurationKey, loggedInUserId, } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, showBopLabel, } from '../../../helper';
 import { FILE_URL } from '../../../config/constants';
 import Dropzone from 'react-dropzone-uploader'
 import 'react-dropzone-uploader/dist/styles.css'
@@ -169,11 +169,11 @@ export function Clientbasedcostingdrawer(props) {
 
                             <Row className="px-3">
                                 <Col md="12">
-                                    <h5 className="left-border">${getConfigurationKey().BOPMasterName} Cost</h5>
+                                    <h5 className="left-border">${showBopLabel()} Cost</h5>
                                 </Col>
                                 <Col md="3">
                                     <Field
-                                        label={`Net ${getConfigurationKey().BOPMasterName} Cost`}
+                                        label={`Net ${showBopLabel()} Cost`}
                                         type="text"
                                         placeholder={"Enter"}
                                         component={renderText}

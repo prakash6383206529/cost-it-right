@@ -8,7 +8,7 @@ import {
   saveDiscountOtherCostTab, setComponentDiscountOtherItemData, CloseOpenAccordion, saveAssemblyPartRowCostingCalculation, isDataChange, savePartNumber, setMessageForAssembly, saveBOMLevel, gridDataAdded, setIsBreakupBoughtOutPartCostingFromAPI
 } from '../../actions/Costing';
 import { costingInfoContext, NetPOPriceContext } from '../CostingDetailStepTwo';
-import { checkForNull, loggedInUserId } from '../../../../helper';
+import { checkForNull, getConfigurationKey, loggedInUserId, showBopLabel } from '../../../../helper';
 import AssemblyPart from '../CostingHeadCosts/SubAssembly';
 import { LEVEL0, LEVEL1, } from '../../../../config/constants';
 import Toaster from '../../../common/Toaster';
@@ -1640,7 +1640,7 @@ function TabRMCC(props) {
                           <th className="py-3 align-middle" style={{ minWidth: '70px' }}>{`Level`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '110px' }}>{`Type`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RM Cost`}</th>
-                          {!isBreakupBoughtOutPartCostingFromAPI && <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`BOP Cost`}</th>}
+                          {!isBreakupBoughtOutPartCostingFromAPI && <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`${showBopLabel()}  Cost`}</th>}
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`CC`}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '90px' }}>{`Quantity`} {/*<button class="Edit ml-1 mb-0 align-middle" type="button" title="Edit Costing"></button>*/}</th>
                           <th className="py-3 align-middle" style={{ minWidth: '100px' }}>{`RMC + CC/Pc`}</th>

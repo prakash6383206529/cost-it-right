@@ -16,12 +16,13 @@ import BOPDomesticListing from "./BOPDomesticListing";
 import BOPImportListing from "./BOPImportListing";
 import SOBListing from "./SOBListing";
 import ScrollToTop from "../../common/ScrollToTop";
-import { CheckApprovalApplicableMaster } from "../../../helper";
+import { CheckApprovalApplicableMaster, getConfigurationKey, showBopLabel } from "../../../helper";
 import CommonApproval from "../material-master/CommonApproval";
 import { MESSAGES } from "../../../config/message";
 import { checkPermission } from "../../../helper/util";
 import {
-  APPROVAL_CYCLE_STATUS_MASTER,  BOP,  BOP_MASTER_ID,  MASTERS,  NON_APPROVAL_CYCLE_STATUS_MASTER,} from "../../../config/constants";
+  APPROVAL_CYCLE_STATUS_MASTER, BOP, BOP_MASTER_ID, MASTERS, NON_APPROVAL_CYCLE_STATUS_MASTER,
+} from "../../../config/constants";
 
 /* Create context for ApplyPermission */
 export const ApplyPermission = React.createContext();
@@ -47,7 +48,7 @@ const BOPMaster = () => {
     state;
 
   const { disabledClass } = useSelector((state) => state.comman);
-const { topAndLeftMenuData, initialConfiguration } = useSelector(
+  const { topAndLeftMenuData, initialConfiguration } = useSelector(
     (state) => state.auth
   );
   const [permissionData, setPermissionData] = useState({});
@@ -163,7 +164,7 @@ const { topAndLeftMenuData, initialConfiguration } = useSelector(
   if (isBOPDomesticForm) {
     return (
       <AddBOPDomestic
-        data={data} hideForm={hideForm}  isBOPAssociated={state.isBOPAssociated} stopApiCallOnCancel={state.stopApiCallOnCancel}
+        data={data} hideForm={hideForm} isBOPAssociated={state.isBOPAssociated} stopApiCallOnCancel={state.stopApiCallOnCancel}
       />
     );
   }
@@ -205,7 +206,7 @@ const { topAndLeftMenuData, initialConfiguration } = useSelector(
                       toggle("1");
                     }}
                   >
-                    Manage BOP (Domestic)
+                    Manage {showBopLabel()}  (Domestic)
                   </NavLink>
                 </NavItem>
 
@@ -218,7 +219,7 @@ const { topAndLeftMenuData, initialConfiguration } = useSelector(
                       toggle("2");
                     }}
                   >
-                    Manage BOP (Import)
+                    Manage {showBopLabel()}  (Import)
                   </NavLink>
                 </NavItem>
 
@@ -280,7 +281,7 @@ const { topAndLeftMenuData, initialConfiguration } = useSelector(
                       <SOBListing
                         displayForm={displayImportForm}
                         getDetails={getImportDetails}
-                       
+
                       />
                     </TabPane>
                   )}

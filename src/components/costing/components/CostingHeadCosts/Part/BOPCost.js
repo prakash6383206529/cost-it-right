@@ -7,7 +7,7 @@ import { SearchableSelectHookForm, TextFieldHookForm } from '../../../../layout/
 import NoContentFound from '../../../../common/NoContentFound';
 import { CRMHeads, EMPTY_DATA } from '../../../../../config/constants';
 import Toaster from '../../../../common/Toaster';
-import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean, NoSignNoDecimalMessage } from '../../../../../helper';
+import { calculatePercentageValue, checkForDecimalAndNull, checkForNull, CheckIsCostingDateSelected, decimalAndNumberValidationBoolean, getConfigurationKey, NoSignNoDecimalMessage, showBopLabel } from '../../../../../helper';
 import { ViewCostingContext } from '../../CostingDetails';
 import { gridDataAdded, isDataChange, setRMCCErrors } from '../../../actions/Costing';
 import { INR } from '../../../../../config/constants';
@@ -496,7 +496,7 @@ function BOPCost(props) {
           <Row className="align-items-center">
             <Col md="10">
               <div className="left-border">
-                {'BOP Cost:'}{gridData && gridData.length !== 0 &&
+                {`${showBopLabel()} Cost:`}{gridData && gridData.length !== 0 &&
                   <TourWrapper
                     buttonSpecificProp={{ id: "Costing_RM_Cost", onClick: tourStart }}
                     stepsSpecificProp={{
@@ -510,7 +510,7 @@ function BOPCost(props) {
                   id="Costing_addBOP"
                   onClick={DrawerToggle}
                   icon={"plus"}
-                  buttonName={"BOP"}
+                  buttonName={`${showBopLabel()}`}
                 />}
             </Col>
           </Row>
@@ -522,12 +522,12 @@ function BOPCost(props) {
                 <Table className="table cr-brdr-main costing-bop-cost-section p-relative" size="sm" >
                   <thead className={`${headerPinned ? 'sticky-headers' : ''} table-header`}>
                     <tr>
-                      <th>{`BOP Part No.`}</th>
-                      <th>{`BOP Part Name`}</th>
+                      <th>{`${showBopLabel()} Part No.`}</th>
+                      <th>{`${showBopLabel()} Part Name`}</th>
                       <th>{`UOM`}</th>
-                      <th>{`BOP Cost (INR)`}</th>
+                      <th>{`${showBopLabel()} Cost (INR)`}</th>
                       <th>{`Quantity`}</th>
-                      <th>{`Net BOP Cost`}</th>
+                      <th>{`Net ${showBopLabel()} Cost`}</th>
                       {initialConfiguration.IsShowCRMHead && <th>{`CRM Head`}</th>}
                       <th><div className='pin-btn-container'><span>Action</span><button onClick={() => setHeaderPinned(!headerPinned)} className='pinned' title={headerPinned ? 'pin' : 'unpin'}><div className={`${headerPinned ? '' : 'unpin'}`}></div></button></div></th>
                     </tr>
@@ -591,7 +591,7 @@ function BOPCost(props) {
                                     />
                                 }
                               </td>
-                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net BOP Cost = (BOP Cost * Quantity)" />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
+                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net {showBopLabel()} Cost = ({showBopLabel()} Cost * Quantity)" />{item.NetBoughtOutPartCost !== undefined ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
                               {initialConfiguration.IsShowCRMHead && <td>
                                 <SearchableSelectHookForm
                                   name={`crmHeadBop${index}`}
@@ -628,7 +628,7 @@ function BOPCost(props) {
                               <td>{item.BoughtOutPartUOM}</td>
                               <td>{item.LandedCostINR ? checkForDecimalAndNull(item.LandedCostINR, initialConfiguration.NoOfDecimalForPrice) : ''}</td>
                               <td style={{ width: 200 }}>{checkForDecimalAndNull(item.Quantity, initialConfiguration.NoOfDecimalForInputOutput)}</td>
-                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net BOP Cost = (BOP Cost * Quantity)" />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
+                              <td><div className='w-fit' id={`bop-cost${index}`}><TooltipCustom disabledIcon={true} id={`bop-cost${index}`} tooltipText="Net {showBopLabel()} Cost = ({showBopLabel()} Cost * Quantity)" />{item.NetBoughtOutPartCost ? checkForDecimalAndNull(item.NetBoughtOutPartCost, initialConfiguration.NoOfDecimalForPrice) : 0}</div></td>
                               {initialConfiguration.IsShowCRMHead && <td>
                                 <SearchableSelectHookForm
                                   name={`crmHeadBop${index}`}
@@ -697,7 +697,7 @@ function BOPCost(props) {
               {IsApplyBOPHandlingCharges &&
                 <Col md="2" >
                   <SearchableSelectHookForm
-                    label={"BOP Handling Type"}
+                    label={`${showBopLabel()} Handling Type`}
                     name={"BOPHandlingType"}
                     placeholder={"Select"}
                     Controller={Controller}

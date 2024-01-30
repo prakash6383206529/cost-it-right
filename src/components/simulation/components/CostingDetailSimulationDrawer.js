@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { Container, Row, Col, } from 'reactstrap';
 import Drawer from '@material-ui/core/Drawer';
 import { Redirect } from "react-router-dom";
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, showBopLabel } from '../../../helper'
 import CostingSummaryTable from '../../costing/components/CostingSummaryTable';
 import ApproveRejectDrawer from '../../costing/components/approval/ApproveRejectDrawer';
 import { useSelector } from 'react-redux';
@@ -202,11 +202,11 @@ function CostingDetailSimulationDrawer(props) {
                                             (Number(masterID) === Number(BOPDOMESTIC) || Number(masterID) === Number(BOPIMPORT)) &&
                                             <>
                                                 <Col md="3">
-                                                    <label>Existing BOP Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Existing {showBopLabel()}  Cost ({initialConfiguration?.BaseCurrency})</label>
                                                     <label className={`${pricesDetail?.OldBOPCost > pricesDetail?.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.OldBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                                 <Col md="3">
-                                                    <label>Revised BOP Cost ({initialConfiguration?.BaseCurrency})</label>
+                                                    <label>Revised {showBopLabel()}  Cost ({initialConfiguration?.BaseCurrency})</label>
                                                     <label className={`${pricesDetail?.OldBOPCost > pricesDetail?.NewBOPCost ? 'form-control input-form-control green-value' : 'form-control input-form-control red-value'}`}>{checkForDecimalAndNull(pricesDetail?.NewBOPCost, getConfigurationKey().NoOfDecimalForPrice)}</label>
                                                 </Col>
                                             </>
