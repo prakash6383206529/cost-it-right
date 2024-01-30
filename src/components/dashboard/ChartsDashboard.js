@@ -1,3 +1,5 @@
+import { getConfigurationKey, showBopLabel } from "../../helper";
+
 // graph colors start
 const color1 = "#F199CE";
 const color2 = "#78AAD8";
@@ -55,7 +57,7 @@ export const data1 = {
       backgroundColor: colorArray[0],
     },
     {
-      label: 'BOP',
+      label: `${showBopLabel()} `,
       data: [5, 7, 10, 6, 8, 5, 11, 7],
       fill: false,
       borderColor: colorArray[1],

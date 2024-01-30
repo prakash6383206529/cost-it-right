@@ -6,7 +6,7 @@ import { NumberFieldHookForm, SearchableSelectHookForm, TextFieldHookForm } from
 import { ViewCostingContext } from '../CostingDetails';
 import { useContext } from 'react';
 import { useEffect } from 'react';
-import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey } from '../../../../helper';
+import { calculatePercentage, checkForDecimalAndNull, checkForNull, getConfigurationKey, showBopLabel } from '../../../../helper';
 import { useDispatch, useSelector } from 'react-redux';
 import { isDataChange } from '../../actions/Costing';
 import { reactLocalStorage } from 'reactjs-localstorage';
@@ -169,7 +169,7 @@ function AddBOPHandling(props) {
     }
 
     if (handlingChargesChange !== obj.BOPHandlingCharges) {
-      Toaster.success('BOP Handling charges saved successfully')
+      Toaster.success(`${showBopLabel()}  Handling charges saved successfully`)
     }
     props.setBOPCostWithAsssembly(obj, item)
     setTimeout(() => {
@@ -186,7 +186,7 @@ function AddBOPHandling(props) {
               <Row className="drawer-heading">
                 <Col className='pl-0'>
                   <div className={'header-wrapper left'}>
-                    <h3>{'Add BOP Handling Charge'}</h3>
+                    <h3>{`Add ${showBopLabel()}  Handling Charge`}</h3>
                   </div>
                   <div
                     onClick={(e) => toggleDrawer(e)}
@@ -199,7 +199,7 @@ function AddBOPHandling(props) {
                   <Row>
                     <Col md="12">
                       <TextFieldHookForm
-                        label="BOP Cost"
+                        label={`${showBopLabel()}  Cost`}
                         name={'BOPCost'}
                         Controller={Controller}
                         control={control}
@@ -218,7 +218,7 @@ function AddBOPHandling(props) {
 
                     <Col md="12">
                       <SearchableSelectHookForm
-                        label={"BOP Handling Type"}
+                        label={`${showBopLabel()}  Handling Type`}
                         name={"BOPHandlingType"}
                         placeholder={"Select"}
                         Controller={Controller}

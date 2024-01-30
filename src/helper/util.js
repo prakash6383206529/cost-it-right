@@ -8,10 +8,10 @@ import {
   PLASTIC, SHEET_METAL, WIRING_HARNESS, PLATING, SPRINGS, HARDWARE, NON_FERROUS_LPDDC, MACHINING,
   ELECTRONICS, RIVET, NON_FERROUS_HPDC, RUBBER, NON_FERROUS_GDC, FORGINGNAME, FASTNERS, RIVETS, RMDOMESTIC, RMIMPORT, BOPDOMESTIC, BOPIMPORT, COMBINED_PROCESS, PROCESS, OPERATIONS, SURFACETREATMENT, MACHINERATE, OVERHEAD, PROFIT, EXCHNAGERATE, DISPLAY_G, DISPLAY_KG, DISPLAY_MG, VARIANCE, EMPTY_GUID, ZBCTypeId,
 } from '../config/constants'
-import { getConfigurationKey } from './auth'
+import { IsShowFreightAndShearingCostFields, getConfigurationKey } from './auth'
 import _ from 'lodash';
 import TooltipCustom from '../components/common/Tooltip';
-import { FORGING, SHEETMETAL } from '../config/masterData';
+import { FORGING, RMDomesticZBC, SHEETMETAL } from '../config/masterData';
 /**
  * @method  apiErrors
  * @desc Response error handler.
@@ -144,7 +144,6 @@ const handleHTTPStatus = (response) => {
 export function capitalizeFirstLetter(string) {
   return string.charAt(0).toUpperCase() + string.slice(1)
 }
-
 /**
  * @method  formatDate
  * @desc FORMATTED DATE
@@ -1120,12 +1119,11 @@ export const showTitleForActiveToggle = (index) => {
   }, 500);
 }
 //COMMON FUNCTION FOR MASTERS BULKUPLOAD CHECK
-export const checkForSameFileUpload = (master, fileHeads) => {
+export const checkForSameFileUpload = (master, fileHeads, isRM = false) => {
   let checkForFileHead, array = []
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
-
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
   return checkForFileHead
 }
@@ -1260,10 +1258,10 @@ export const OverheadAndProfitTooltip = (id, object, arr, conditon, NoOfDecimalF
     return (arr && arr[0]?.IsRMCutOffApplicable) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
 
   } else if (id.includes("BOP")) {
-    text = conditon && <p>BOP cost is not included for BOP part type</p>;
+    text = conditon && <p>${getConfigurationKey().BOPMasterName} cost is not included for ${getConfigurationKey().BOPMasterName} part type</p>;
     return conditon ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ''
   } else if (id.includes("Combined")) {
-    text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>BOP cost is not included for BOP part type</p>}</>;
+    text = <>{arr[0]?.IsRMCutOffApplicable === true && <p>{`RM cut-off price ${applyValue} applied`}</p>}{object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon && <p>{getConfigurationKey().BOPMasterName} cost is not included for ${getConfigurationKey().BOPMasterName} part type</p>}</>;
     return (arr[0]?.IsRMCutOffApplicable === true) || (object && object?.OverheadApplicability && object?.OverheadApplicability.includes('BOP') && conditon) ? <TooltipCustom id={id} width={"290px"} tooltipText={text} /> : ""
   }
 }
@@ -1294,3 +1292,28 @@ export function getValueFromLabel(currency, currencySelectList) {
   const data = currencySelectList && currencySelectList?.filter(element => element?.Text === currency)
   return data[0]
 }
+// get updated  dynamic bop labels 
+export function updateBOPValues(bopLabels, bopData, bopReplacement) {
+  const bopRegex = /BOP|BoughtOutPart/gi;
+  const updatedLabels = bopLabels.map(label => ({
+    ...label,
+    label: label.label.replace(bopRegex, bopReplacement),
+    value: label.value.replace(bopRegex, bopReplacement),
+
+  }));
+  const updatedTempData = bopData.map(dataItem => {
+    const newDataItem = {};
+    for (let key in dataItem) {
+      if (dataItem.hasOwnProperty(key)) {
+        const newKey = key.replace(bopRegex, bopReplacement);
+        newDataItem[newKey] = dataItem[key];
+      }
+    }
+    return newDataItem;
+  });
+
+  return { updatedLabels, updatedTempData };
+}
+
+
+

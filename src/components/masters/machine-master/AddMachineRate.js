@@ -1413,7 +1413,8 @@ class AddMachineRate extends Component {
         }
       }
     };
-
+    console.log("AddAccessibility", AddAccessibility)
+    console.log("isEditFlag", isEditFlag, !isEditFlag)
     return (
       <>
         {(this.state.isLoader || this.state.finalApprovalLoader) && <LoaderCustom />}

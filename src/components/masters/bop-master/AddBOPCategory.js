@@ -7,7 +7,7 @@ import { focusOnError, renderText, } from "../../layout/FormInputs";
 import { createBOPCategory } from '../actions/BoughtOutParts';
 import Toaster from '../../common/Toaster';
 import { MESSAGES } from '../../../config/message';
-import { loggedInUserId } from "../../../helper/auth";
+import { getConfigurationKey, loggedInUserId, showBopLabel } from "../../../helper/auth";
 import Drawer from '@material-ui/core/Drawer';
 import TourWrapper from '../../common/Tour/TourWrapper';
 import { Steps } from './TourMessages';
@@ -91,7 +91,7 @@ class AddBOPCategory extends Component {
                                 <Row className="drawer-heading">
                                     <Col>
                                         <div className={'header-wrapper left'}>
-                                            <h3>{isEditFlag ? 'Update BOP Category' : 'Add BOP Category'}
+                                            <h3>{isEditFlag ? `Update ${showBopLabel()}  Category` : `Add ${showBopLabel()}  Category`}
                                                 <TourWrapper
                                                     buttonSpecificProp={{ id: "BOP_Domestic_Category_form" }}
                                                     stepsSpecificProp={{

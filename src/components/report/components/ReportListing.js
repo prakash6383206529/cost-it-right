@@ -16,7 +16,7 @@ import ReactExport from 'react-export-excel';
 import { CREATED_BY_ASSEMBLY, DRAFT, ReportMaster } from '../../config/constants';
 import LoaderCustom from '../common/LoaderCustom';
 import WarningMessage from '../common/WarningMessage'
-import { handleDepartmentHeader } from '../../../helper'
+import { handleDepartmentHeader, showBopLabel } from '../../../helper'
 
 
 
@@ -525,7 +525,7 @@ function ReportListing(props) {
                         <AgGridColumn field="GrossWeight" headerName="Gross Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="FinishWeight" headerName="Finish Weight" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                         <AgGridColumn field="NetRawMaterialsCost" headerName="Net RM Cost"></AgGridColumn>
-                        <AgGridColumn field="NetBoughtOutPartCost" headerName="Net BOP Cost"></AgGridColumn>
+                        <AgGridColumn field="NetBoughtOutPartCost" headerName={`Net ${showBopLabel()}  Cost`}></AgGridColumn>
                         <AgGridColumn field="NetProcessCost" headerName="Process Cost"></AgGridColumn>
                         <AgGridColumn field="NetOperationCost" headerName="Operation Cost"></AgGridColumn>
                         <AgGridColumn field="SurfaceTreatmentCost" headerName="Surface Treatment"></AgGridColumn>

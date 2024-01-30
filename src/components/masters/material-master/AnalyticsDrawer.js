@@ -12,7 +12,7 @@ import { getCostMovementReport } from '../../../actions/Common';
 import RenderGraphList from '../../common/RenderGraphList';
 import HeaderTitle from '../../common/HeaderTitle';
 import { PaginationWrapper } from '../../common/commonPagination';
-import { getConfigurationKey, getCurrencySymbol } from '../../../helper';
+import { getConfigurationKey, getCurrencySymbol, showBopLabel } from '../../../helper';
 import ReactExport from 'react-export-excel';
 import { BOP_DOMESTIC_TEMPLATE, BOP_IMPORT_TEMPLATE, MACHINE_TEMPLATE, OPERATION_TEMPLATE, RM_DOMESTIC_TEMPLATE, RM_IMPORT_TEMPLATE } from '../../report/ExcelTemplate';
 const ExcelFile = ReactExport.ExcelFile;
@@ -260,7 +260,7 @@ function AnalyticsDrawer(props) {
                                     <Col className='px-0'>
                                         <div className={"header-wrapper left"}>
                                             <h3>
-                                                {ModeId === 1 ? " RM History" : (ModeId === 2 ? "BOP History" : ModeId === 3 ? "Operation History" : "Machine History")}
+                                                {ModeId === 1 ? " RM History" : (ModeId === 2 ? `${showBopLabel()} History` : ModeId === 3 ? "Operation History" : "Machine History")}
                                             </h3>
                                         </div>
                                         <div
@@ -272,7 +272,7 @@ function AnalyticsDrawer(props) {
 
                                 <div className='analytics-drawer'>
                                     <HeaderTitle customClass="mb-0"
-                                        title={ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `BOP No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}
+                                        title={ModeId === 1 ? `RM Code : ${rowData?.RawMaterialCode} ` : (ModeId === 2 ? `${showBopLabel()} No. : ${rowData?.BoughtOutPartNumber}` : ModeId === 3 ? `Operation Code : ${rowData?.OperationCode} ` : `Machine No. : ${rowData?.MachineNumber}`)}
                                     />
                                     <div className='d-flex align-items-center'>
                                         {showList && <ExcelFile filename={MASTER_MOVEMENT_REPORT} fileExtension={'.xls'} element={<button type="button" className={'user-btn mr5'}><div className="download"></div></button>}>

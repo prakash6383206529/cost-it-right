@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Row, Col, } from 'reactstrap';
 import DayTime from '../../../common/DayTimeWrapper'
-import { defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
+import { BOUGHT_OUT_PART_NAME, defaultPageSize, EMPTY_DATA } from '../../../../config/constants';
 import NoContentFound from '../../../common/NoContentFound';
-import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId } from '../../../../helper';
+import { checkForDecimalAndNull, checkForNull, getConfigurationKey, loggedInUserId, showBopLabel } from '../../../../helper';
 import Toaster from '../../../common/Toaster';
 import { Fragment } from 'react';
 import RunSimulationDrawer from '../RunSimulationDrawer';
@@ -33,7 +33,7 @@ function ProfitSimulation(props) {
     const [showMainSimulation, setShowMainSimulation] = useState(false)
     const [valuesForDropdownInAgGrid, setValuesForDropdownInAgGrid] = useState(
         {
-            applicability: ['BOP', 'BOP + CC', 'CC', 'Fixed', 'RM', 'RM + BOP', 'RM + CC', 'RM + CC + BOP'],
+            applicability: [`${showBopLabel()}`, `${showBopLabel()} + CC`, 'CC', 'Fixed', 'RM', `RM + ${showBopLabel()}`, 'RM + CC', `RM + CC + ${showBopLabel()}`],
             modelType: ['All', 'High Volume', 'Low Volume', 'Medium Volume', 'New Development']
         }
     )
@@ -311,19 +311,19 @@ function ProfitSimulation(props) {
                 Toaster.warning('Please fill CC');
                 return false
             } else if (tempBOP !== 0) {
-                Toaster.warning('Please fill BOP');
+                Toaster.warning(`Please fill ${showBopLabel()} `);
                 return false
             } else if (tempRMCC !== 0) {
                 Toaster.warning('Please fill both RM and CC or Profit Percentage');
                 return false
             } else if (tempRMBOP !== 0) {
-                Toaster.warning('Please fill both RM and BOP or Profit Percentage');
+                Toaster.warning(`Please fill both RM and ${showBopLabel()}  or Profit Percentage`);
                 return false
             } else if (tempBOPCC !== 0) {
-                Toaster.warning('Please fill both BOP and CC or Profit Percentage');
+                Toaster.warning(`Please fill both ${showBopLabel()}  and CC or Profit Percentage`);
                 return false
             } else if (tempRMCCBOP !== 0) {
-                Toaster.warning('Please fill all values RM, CC and BOP or Profit Percentage');
+                Toaster.warning(`Please fill all values RM, CC and ${showBopLabel()}  or Profit Percentage`);
                 return false
             }
         }

@@ -7,7 +7,7 @@ import NoContentFound from '../../common/NoContentFound';
 import { BOP_SOBLISTING_DOWNLOAD_EXCEl } from '../../../config/masterData';
 import ManageSOBDrawer from './ManageSOBDrawer';
 import LoaderCustom from '../../common/LoaderCustom';
-import { searchNocontentFilter } from '../../../helper';
+import { getConfigurationKey, searchNocontentFilter, showBopLabel } from '../../../helper';
 import { Sob } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -287,7 +287,7 @@ const SOBListing = (props) => {
           <Col md="6" className="search-user-block mb-3">
             <div className="d-flex justify-content-end bd-highlight w100">
               {state.shown ? (
-                <button type="button" className="user-btn filter-btn-top" onClick={ handleShown()} >
+                <button type="button" className="user-btn filter-btn-top" onClick={handleShown()} >
                   <div className="cancel-icon-white"></div></button>
                 // <Button id={"sobListing_close"} className="user-btn filter-btn-top" onClick={handleShown()} icon={"cancel-icon-white"} />
               ) : (
@@ -342,9 +342,9 @@ const SOBListing = (props) => {
                 suppressRowClickSelection={true}
               >
                 {/* <AgGridColumn field="" cellRenderer={indexFormatter}>Sr. No.yy</AgGridColumn> */}
-                <AgGridColumn field="BoughtOutPartNumber" headerName="BOP Part No."></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartName" headerName="BOP Part Name"></AgGridColumn>
-                <AgGridColumn field="BoughtOutPartCategory" headerName="BOP Category"></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartNumber" headerName={`${showBopLabel()} Part No.`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartName" headerName={`${showBopLabel()} Part Name`}></AgGridColumn>
+                <AgGridColumn field="BoughtOutPartCategory" headerName={`${showBopLabel()} Category`}></AgGridColumn>
                 <AgGridColumn field="Specification" headerName="Specification" cellRenderer={'hyphenFormatter'}></AgGridColumn>
                 <AgGridColumn field="NoOfVendors" headerName="No. of Vendors"></AgGridColumn>
                 <AgGridColumn field="Plant" headerName="Plant (Code)"></AgGridColumn>

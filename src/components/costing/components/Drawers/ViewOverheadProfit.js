@@ -5,7 +5,7 @@ import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import { useForm, Controller } from 'react-hook-form';
 import { TextFieldHookForm } from '../../../layout/HookFormInputs';
-import { checkForDecimalAndNull, getConfigurationKey } from '../../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, showBopLabel } from '../../../../helper'
 import { useSelector } from 'react-redux'
 import TooltipCustom from '../../../common/Tooltip'
 function ViewOverheadProfit(props) {
@@ -130,7 +130,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewOverheadData.IsOverheadBOPApplicable && (
                     <tr>
-                      <td>{`BOP`}</td>
+                      <td>{`${showBopLabel()} `}</td>
                       <td>
                         {viewOverheadData.OverheadBOPPercentage ? checkForDecimalAndNull(viewOverheadData.OverheadBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>
@@ -251,7 +251,7 @@ function ViewOverheadProfit(props) {
                   )}
                   {viewProfitData.IsProfitBOPApplicable && (
                     <tr>
-                      <td>{`BOP`}</td>
+                      <td>{`${showBopLabel()} `}</td>
                       <td>
                         {viewProfitData.ProfitBOPPercentage ? checkForDecimalAndNull(viewProfitData.ProfitBOPPercentage, initialConfiguration.NoOfDecimalForPrice) : "-"}
                       </td>

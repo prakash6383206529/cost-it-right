@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails, checkForNull, handleDepartmentHeader } from '../../helper';
+import { checkForDecimalAndNull, getConfigurationKey, loggedInUserId, userDetails, labelWithUOMAndCurrency, displayUOM, userSimulationTechnologyLevelDetails, checkForNull, handleDepartmentHeader, showBopLabel, IsShowFreightAndShearingCostFields } from '../../helper';
 import { approvalOrRejectRequestByMasterApprove, getAllMasterApprovalDepartment, getAllMasterApprovalUserByDepartment, masterApprovalRequestBySender } from './actions/Material';
 import "react-datepicker/dist/react-datepicker.css";
 import { debounce } from 'lodash'
@@ -242,7 +242,7 @@ function MasterSendForApproval(props) {
                         setIsDisable(false)
                         setIsLoader(false)
                         if (res?.data?.Result) {
-                            Toaster.success('BOP has been sent for approval.')
+                            Toaster.success(`${showBopLabel()}  has been sent for approval.`)
                             props.closeDrawer('', 'submit')
                         }
                     }))
@@ -972,78 +972,79 @@ function MasterSendForApproval(props) {
                         </Col>}
                     </>
                 }
+                {IsShowFreightAndShearingCostFields() && (
+                    <>
+
+                        <Col md="6">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                name={"FreightChargeCuurency"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.RMFreightCost}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMFreightCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>
+                        {props?.IsImportEntry && <Col md="6">
+                            <TooltipCustom id="rm-freight-base-currency" width={'650px'} tooltipText={props?.toolTipTextObject?.toolTipTextFreightCostBaseCurrency} />
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                name={"FreightChargeBase"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.RawMaterialFreightCostConversion}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RawMaterialFreightCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>}
 
 
-                <Col md="6">
-                    <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
-                        name={"FreightChargeCuurency"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.RMFreightCost}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMFreightCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>
-                {props?.IsImportEntry && <Col md="6">
-                    <TooltipCustom id="rm-freight-base-currency" width={'650px'} tooltipText={props?.toolTipTextObject?.toolTipTextFreightCostBaseCurrency} />
-                    <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Freight Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
-                        name={"FreightChargeBase"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.RawMaterialFreightCostConversion}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RawMaterialFreightCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>}
 
-
-
-                <Col md="6">
-                    <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
-                        name={"ShearingCost"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.RMShearingCost}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMShearingCost, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>
-                {props?.IsImportEntry && <Col md="6">
-                    <TooltipCustom id="rm-shearing-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextShearingCostBaseCurrency} />
-                    <TextFieldHookForm
-                        label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
-                        name={"ShearingCostBase"}
-                        type="text"
-                        Controller={Controller}
-                        control={control}
-                        placeholder={'-'}
-                        register={register}
-                        className=""
-                        customClassName={'withBorder'}
-                        errors={errors.RawMaterialShearingCostConversion}
-                        defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RawMaterialShearingCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
-                        disabled={true}
-                    />
-                </Col>}
-
+                        <Col md="6">
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, props?.currency?.label === undefined ? 'Currency' : props?.currency?.label)}
+                                name={"ShearingCost"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.RMShearingCost}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RMShearingCost, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>
+                        {props?.IsImportEntry && <Col md="6">
+                            <TooltipCustom id="rm-shearing-base-currency" width={'350px'} tooltipText={props?.toolTipTextObject?.toolTipTextShearingCostBaseCurrency} />
+                            <TextFieldHookForm
+                                label={labelWithUOMAndCurrency("Shearing Cost", props?.UOM?.label === undefined ? 'UOM' : props?.UOM?.label, initialConfiguration?.BaseCurrency)}
+                                name={"ShearingCostBase"}
+                                type="text"
+                                Controller={Controller}
+                                control={control}
+                                placeholder={'-'}
+                                register={register}
+                                className=""
+                                customClassName={'withBorder'}
+                                errors={errors.RawMaterialShearingCostConversion}
+                                defaultValue={Object.keys(approvalObj).length > 0 ? checkForDecimalAndNull(approvalObj.RawMaterialShearingCostConversion, initialConfiguration.NoOfDecimalForPrice) : ''}
+                                disabled={true}
+                            />
+                        </Col>}
+                    </>)}
                 {initialConfiguration?.IsBasicRateAndCostingConditionVisible && props.costingTypeId === ZBCTypeId && <>
                     <Col md="6">
                         <TooltipCustom id="rm-basic-price" tooltipText={props?.toolTipTextObject?.basicPriceCurrency} />

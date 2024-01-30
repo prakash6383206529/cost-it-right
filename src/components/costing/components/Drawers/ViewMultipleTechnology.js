@@ -1,5 +1,5 @@
 import React, { useState, useEffect, Fragment } from 'react'
-import { checkForDecimalAndNull } from '../../../../helper'
+import { checkForDecimalAndNull, getConfigurationKey, showBopLabel } from '../../../../helper'
 import { Container, Row, Col, Table } from 'reactstrap'
 import Drawer from '@material-ui/core/Drawer'
 import NoContentFound from '../../../common/NoContentFound'
@@ -69,7 +69,7 @@ function ViewMultipleTechnology(props) {
                                 <th>{`Technology`}</th>
                                 <th>{`Quantity`}</th>
                                 <th>{`Part Cost/Pc`}</th>
-                                <th>{`BOP Cost`}</th>
+                                <th>{`${showBopLabel()}  Cost`}</th>
                                 <th>{`Part Cost/Assembly`}</th>
                                 <th className="costing-border-right">{`Action`}</th>
                             </tr >
