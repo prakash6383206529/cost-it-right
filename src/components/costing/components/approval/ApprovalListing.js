@@ -42,6 +42,7 @@ function ApprovalListing(props) {
   const [loader, setloader] = useState(false);
   const [approvalData, setApprovalData] = useState('')
   const [selectedRowData, setSelectedRowData] = useState([]);
+
   const [approveDrawer, setApproveDrawer] = useState(false)
   const [openDraftDrawer, setOpenDraftDrawer] = useState(false)
   const [reasonId, setReasonId] = useState('')
@@ -72,6 +73,7 @@ function ApprovalListing(props) {
   const [floatingFilterData, setFloatingFilterData] = useState({ ApprovalNumber: "", CostingNumber: "", PartNumber: "", PartName: "", VendorName: "", PlantName: "", TechnologyName: "", NetPOPriceNew: "", OldPOPriceNew: "", Reason: "", EffectiveDate: "", CreatedBy: "", CreatedOn: "", RequestedBy: "", RequestedOn: "" })
   const [isSuperAdmin, setIsSuperAdmin] = useState(false)
   const [releaseStrategyDetails, setReleaseStrategyDetails] = useState({})
+  const [technologyForCosting, setTechnologyForCosting] = useState('')
 
   const isApproval = props.isApproval;
   let approvalGridData = isDashboard ? approvalList : approvalListDraft
@@ -463,6 +465,7 @@ function ApprovalListing(props) {
 
           const tempObj = formViewData(dataFromAPI)
           dispatch(setCostingViewData(tempObj))
+          setTechnologyForCosting(tempObj[0]?.technology)
         }
       },
       ))
@@ -1176,6 +1179,7 @@ function ApprovalListing(props) {
           selectedRowData={selectedRowData}
           isSimulation={false}
           simulationDrawer={false}
+          selectedTechnology={technologyForCosting}
         />
       }
     </Fragment >

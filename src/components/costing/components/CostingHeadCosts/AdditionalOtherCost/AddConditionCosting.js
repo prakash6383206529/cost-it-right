@@ -374,7 +374,6 @@ function AddConditionCosting(props) {
     }
 
     const checkCondtionDisabled = props.ViewMode || (tableData.length === 0 && !props.isFromMaster && (costingConditionEntryType === '' || costingConditionEntryType === undefined || costingConditionEntryType === null))
-
     return (
 
         <div>

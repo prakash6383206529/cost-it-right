@@ -197,13 +197,13 @@ class SimulationUploadDrawer extends Component {
                                         }
                                         correctRowCount = correctRowCount + 1
                                         let obj = {}
+
                                         val.map((el, i) => {
+
                                             if (fileHeads[i] === 'EffectiveDate' && typeof el === 'number') {
                                                 el = getJsDateFromExcel(el)
                                             }
-                                            if (fileHeads[i] === 'RevisedBasicRate') {
-                                                obj["NewBasicRate"] = el;
-                                            } else if (fileHeads[i] === 'RevisedScrapRate') {
+                                            if (fileHeads[i] === 'RevisedScrapRate') {
                                                 obj["NewScrapRate"] = el;
                                             } else if (fileHeads[i] === "Grade") {
                                                 obj["RawMaterialGradeName"] = el;
@@ -217,12 +217,18 @@ class SimulationUploadDrawer extends Component {
                                                 obj["UnitOfMeasurementName"] = el;
                                             } else if (fileHeads[i] === "Technology") {
                                                 obj["TechnologyName"] = el;
-                                            } else {
+                                            } else if (fileHeads[i] === "BasicRate") {
+                                                obj["BasicRatePerUOM"] = el;
+                                            } else if (fileHeads[i] === "RevisedBasicRate") {
+                                                obj["NewBasicRate"] = el;
+                                            }
+                                            else {
                                                 obj[fileHeads[i]] = el;
                                             }
                                             return null;
                                         })
                                         fileData.push(obj)
+
                                         obj = {}
 
                                     }

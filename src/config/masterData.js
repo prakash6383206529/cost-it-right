@@ -1924,7 +1924,7 @@ export const Volume = [
     { label: 'PlantCode', value: 'PlantCode', },
     { label: 'VendorCode', value: 'VendorCode', },
     { label: 'ActualVolumeDate', value: 'ActualVolumeDate', },
-    { label: 'ActualQauntity', value: 'ActualQauntity', },
+    { label: 'ActualQuantity', value: 'ActualQuantity', },
 ]
 export const VolumeTempData = [
     {
@@ -1934,7 +1934,7 @@ export const VolumeTempData = [
         'PlantCode': '911',
         'VendorCode': '1517',
         'ActualVolumeDate': '16-12-2022',
-        'ActualQauntity': '15',
+        'ActualQuantity': '15',
     },
     {
         'ActualVolumeDetailId': '2',
@@ -1943,7 +1943,7 @@ export const VolumeTempData = [
         'PlantCode': '1569',
         'VendorCode': '1569',
         'ActualVolumeDate': '14-12-2022',
-        'ActualQauntity': '100',
+        'ActualQuantity': '100',
     }
 ]
 /**
@@ -3838,6 +3838,7 @@ export const BOMUpload = [
 ]
 
 export const BOMUploadTempData = [
+    // ASSEMBLY
     {
         "BOMNo": "BOM123",
         "AssemblyPartNo": "APart1",
@@ -3858,6 +3859,7 @@ export const BOMUploadTempData = [
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
     },
+    // COMPONENT
     {
         "BOMNo": "BOM123",
         "AssemblyPartNo": "APart1",
@@ -3878,6 +3880,7 @@ export const BOMUploadTempData = [
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
     },
+    // BOP
     {
         "BOMNo": "BOM123",
         "AssemblyPartNo": "APart1",
@@ -3885,19 +3888,61 @@ export const BOMUploadTempData = [
         "PartNo": "BOP_Cap",
         "PartName": "Cap",
         "Description": "Description Text",
-        "PartType": "BoughtOutPart",
+        "PartType": "Bought Out Part",
         "GroupCode": "GC1",
         "ECNNumber": 1,
         "RevisionNo": 1,
         "DrawingNo": 1,
         "SAPCode": "sap-1003",
-        "IsAssembly": "YES",
+        "IsAssembly": "NO",
         "BOMLevel": 1,
         "Quantity": 4,
         "EffectiveDate": DayTime().format('DD-MM-YYYY'),
         "Remark": 'Remark',
         "ProductGroupCode": "VB"
-    }
+    },
+    // SUB ASSEMBLY
+    {
+        "BOMNo": "BOM123",
+        "AssemblyPartNo": "APart1",
+        "AssemblyPartName": "Screw Jack",
+        "PartNo": "SubAsm1",
+        "PartName": "SubAsm1",
+        "Description": "Description Text",
+        "PartType": "Assembly",
+        "GroupCode": "GC1",
+        "ECNNumber": 1,
+        "RevisionNo": 1,
+        "DrawingNo": 1,
+        "SAPCode": "sap-1004",
+        "IsAssembly": "YES",
+        "BOMLevel": 1,
+        "Quantity": 2,
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": 'Remark',
+        "ProductGroupCode": "VB"
+    },
+    // COMPONENT
+    {
+        "BOMNo": "BOM123",
+        "AssemblyPartNo": "SubAsm1",
+        "AssemblyPartName": "SubAsm1",
+        "PartNo": "Comp_Nut2",
+        "PartName": "Nut2",
+        "Description": "Description Text",
+        "PartType": "Component",
+        "GroupCode": "GC1",
+        "ECNNumber": 1,
+        "RevisionNo": 1,
+        "DrawingNo": 1,
+        "SAPCode": "sap-1005",
+        "IsAssembly": "NO",
+        "BOMLevel": 2,
+        "Quantity": 3,
+        "EffectiveDate": DayTime().format('DD-MM-YYYY'),
+        "Remark": 'Remark',
+        "ProductGroupCode": "VB"
+    },
 ]
 export const EAccessType = [
     { label: '--Select EAccess Type--', value: '', },
@@ -5894,6 +5939,15 @@ export const USER_LISTING_DOWNLOAD_EXCEl = [
     { label: "Department", value: "DepartmentName", },
     { label: "Role", value: "RoleName", },
     { label: "Status", value: "status", }
+
+]
+
+export const AUDIT_LISTING_DOWNLOAD_EXCEl = [
+    { label: "User Name", value: "UserName", },
+    { label: "IP Address", value: "IPAddress", },
+    { label: "User Agent", value: "UserAgent", },
+    { label: "Login Date - Login Time", value: "LoginTime", },
+
 
 ]
 

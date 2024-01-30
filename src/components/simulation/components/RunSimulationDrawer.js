@@ -151,10 +151,11 @@ function RunSimulationDrawer(props) {
 
 
         let temp = multipleHeads
-        let temp1 = multipleHeads
+        let temp1 = selectedData
         if (temp && temp.findIndex(el => el.SimulationApplicabilityId === elementObj.Value) !== -1) {
             const ind = multipleHeads.findIndex((el) => el.SimulationApplicabilityId === elementObj.Value)
-            const indexForCheck = selectedData.findIndex((el) => el === elementObj.label)
+            const indexForCheck = selectedData.findIndex((el) => el === elementObj.Text)
+
             if (ind !== -1) {
                 temp.splice(ind, 1)
                 temp1.splice(indexForCheck, 1)

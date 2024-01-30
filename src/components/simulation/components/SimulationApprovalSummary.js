@@ -116,7 +116,6 @@ function SimulationApprovalSummary(props) {
     const [showExchangeRateColumn, setShowExchangeRateColumn] = useState(false);
     const [showMachineRateColumn, setShowMachineRateColumn] = useState(false);
     const [showCombinedProcessColumn, setShowCombinedProcessColumn] = useState(false);               //RE
-    const [accDisable, setAccDisable] = useState(false)
     const [noData, setNoData] = useState(false);
     const [tooltipStates, setTooltipStates] = useState({});
     const [showTooltip, setShowTooltip] = useState(false)
@@ -148,6 +147,8 @@ function SimulationApprovalSummary(props) {
     const [showRM, setShowRM] = useState(simulationApplicability?.value === 'RM');
     const [showBOP, setShowBOP] = useState(simulationApplicability?.value === 'BOP');
     const [showComponent, setShowComponent] = useState(simulationApplicability?.value === 'Component');
+    const [accDisable, setAccDisable] = useState(false)
+    const [technologyName, setTechnologyName] = useState('')
     const headers = {
         NetCost: `Net Cost (${initialConfiguration?.BaseCurrency})`,
     }
@@ -465,6 +466,7 @@ function SimulationApprovalSummary(props) {
             objj3[1].SimulationStatusId = Data?.SimulationStatusId
             dispatch(setCostingViewData(objj3))
             setCompareCosting(true)
+            setTechnologyName(obj1[0].technology)
         }))
     }
 
@@ -1540,7 +1542,7 @@ function SimulationApprovalSummary(props) {
 
                                 <Row>
                                     <Col md="12" className="costing-summary-row">
-                                        {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} />}
+                                        {compareCosting && <CostingSummaryTable viewMode={true} id={id} simulationMode={true} isApproval={true} costingIdExist={true} selectedTechnology={technologyName} />}
                                     </Col>
                                 </Row>
                             </>

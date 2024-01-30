@@ -512,15 +512,19 @@ function SimulationApprovalListing(props) {
         let tempArrReason = []
         let tempArrTechnology = []
         let tempArrSimulationTechnologyHead = []
+        let costingHeadArray = []
+        let approvalTypeArray = []
 
         selectedRows && selectedRows.map(item => {
             arr.push(item?.DisplayStatus)
-            tempArrDepartmentId.push(item.DepartmentId)
-            tempArrIsFinalLevelButtonShow.push(item.IsFinalLevelButtonShow)
-            tempArrIsPushedButtonShow.push(item.IsPushedButtonShow)
-            tempArrReason.push(item.ReasonId)
-            tempArrTechnology.push(item.TechnologyName)
-            tempArrSimulationTechnologyHead.push(item.SimulationTechnologyHead)
+            tempArrDepartmentId.push(item?.DepartmentId)
+            tempArrIsFinalLevelButtonShow.push(item?.IsFinalLevelButtonShow)
+            tempArrIsPushedButtonShow.push(item?.IsPushedButtonShow)
+            tempArrReason.push(item?.ReasonId)
+            tempArrTechnology.push(item?.TechnologyName)
+            tempArrSimulationTechnologyHead.push(item?.SimulationTechnologyHead)
+            costingHeadArray.push(item?.CostingHead)
+            approvalTypeArray.push(item?.ApprovalTypeId)
             return null
         })
         selectedRows && dispatch(setMasterForSimulation({ label: selectedRows[0]?.SimulationTechnologyHead, value: selectedRows[0]?.SimulationTechnologyId }))
@@ -533,6 +537,14 @@ function SimulationApprovalListing(props) {
             gridApi.deselectAll()
         } else if (!allEqual(tempArrIsFinalLevelButtonShow)) {
             Toaster.warning('Level should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        }
+        else if (!allEqual(costingHeadArray)) {
+            Toaster.warning('Costing Head should be same for sending multiple costing for approval')
+            gridApi.deselectAll()
+        }
+        else if (!allEqual(approvalTypeArray)) {
+            Toaster.warning('Approval Type should be same for sending multiple costing for approval')
             gridApi.deselectAll()
         }
         // ********** IF WE DO MULTI SELECT FOR PUSH THENUNCOMMENT THIS ONLY ************

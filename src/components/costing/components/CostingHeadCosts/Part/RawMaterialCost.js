@@ -1281,7 +1281,6 @@ function RawMaterialCost(props) {
       steps: Steps(t).RAW_MATERIAL_COST,
     }))
   }
-
   const pinHandler = useCallback(() => {
     setHeaderPinned(!headerPinned)
   }, [headerPinned])

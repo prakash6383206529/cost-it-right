@@ -172,7 +172,6 @@ class AddRMDomestic extends Component {
       isDisabled: false, // THIS STATE IS USED TO DISABLE NAME, GRADE, SPEC
       isCodeDisabled: false, // THIS STATE IS USED TO DISABLE CODE,
       rmCode: []
-
     }
   }
 
@@ -807,7 +806,7 @@ class AddRMDomestic extends Component {
               showForgingMachiningScrapCost: showScrapKeys?.showForging,
               showExtraCost: showScrapKeys?.showCircleJali,
               rmCode: { label: Data.RawMaterialCode, value: Data.RMSpec },
-            }, () => this.setState({ isLoader: false }))
+            }, () => this.setState({ isLoader: false, showTour: true }))
             // ********** ADD ATTACHMENTS FROM API INTO THE DROPZONE'S PERSONAL DATA STORE **********
             let files = Data.FileList && Data.FileList.map((item) => {
               item.meta = {}
@@ -2628,7 +2627,7 @@ function mapStateToProps(state) {
     filterCityListBySupplier, rawMaterialDetailsData, initialValues, fieldsObj,
     filterPlantListByCityAndSupplier, rawMaterialNameSelectList, gradeSelectList,
     filterPlantList, UOMSelectList, vendorListByVendorType, plantSelectList,
-    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI, tourStartData, rmSpecificationList
+    initialConfiguration, costingSpecifiTechnology, costingHead, clientSelectList, userMasterLevelAPI, rmSpecificationList, tourStartData
   }
 }
 

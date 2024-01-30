@@ -2994,6 +2994,8 @@ function CostingDetails(props) {
           zbcPlantGrid={zbcPlantGrid}
           ID={""}
           anchor={"right"}
+          wacPlantGrid={wacPlantGrid}
+          isWAC={isWAC}
         />
       )
       }

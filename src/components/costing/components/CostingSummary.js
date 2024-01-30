@@ -276,33 +276,30 @@ function CostingSummary(props) {
                   setIsLoader(true)
                   dispatch(storePartNumber(newValue))
                   dispatch(
-                    getCostingSummaryByplantIdPartNo(
-                      newValue.partId,
-                      '00000000-0000-0000-0000-000000000000',
-                      (res) => {
+                    getCostingSummaryByplantIdPartNo(newValue.partId, '00000000-0000-0000-0000-000000000000', (res) => {
 
-                        if (res.data.Result === true) {
-                          if (res.data.Data.CostingId === '00000000-0000-0000-0000-000000000000') {
-                            setShowWarningMsg(true)
-                            dispatch(setCostingViewData([]))
-                            setIsLoader(false)
-                            setCostingIdExist(false)
-                          } else {
-                            setCostingIdExist(true)
-                            dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
-                              // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
-                              if (res.data.Data) {
-                                let dataFromAPI = res.data.Data
-                                const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
-                                dispatch(setCostingViewData(tempObj))
-                                setIsLoader(false)
-                              }
-                            },
-                            ))
-                          }
-
+                      if (res.data.Result === true) {
+                        if (res.data.Data.CostingId === '00000000-0000-0000-0000-000000000000') {
+                          setShowWarningMsg(true)
+                          dispatch(setCostingViewData([]))
+                          setIsLoader(false)
+                          setCostingIdExist(false)
+                        } else {
+                          setCostingIdExist(true)
+                          dispatch(getSingleCostingDetails(res.data.Data.CostingId, (res) => {
+                            // dispatch(getSingleCostingDetails('5cdcad92-277f-48e2-8eb2-7a7c838104e1', res => {
+                            if (res.data.Data) {
+                              let dataFromAPI = res.data.Data
+                              const tempObj = formViewData(dataFromAPI, 'CostingSummaryMainPage')
+                              dispatch(setCostingViewData(tempObj))
+                              setIsLoader(false)
+                            }
+                          },
+                          ))
                         }
-                      },
+
+                      }
+                    },
                     ),
                   )
                 }),
