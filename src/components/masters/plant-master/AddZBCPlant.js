@@ -34,7 +34,9 @@ class AddZBCPlant extends Component {
       DropdownChanged: true,
       DataToCheck: [],
       setDisable: false,
-      showPopup: false
+      showPopup: false,
+      isCompanyChanged: false,
+      showPopupOnCompanyChange: false,
     }
   }
 
@@ -226,8 +228,14 @@ class AddZBCPlant extends Component {
     this.cancel('cancel')
     this.setState({ showPopup: false })
   }
+
   closePopUp = () => {
-    this.setState({ showPopup: false })
+    this.setState({ showPopup: false, showPopupOnCompanyChange: false })
+  }
+
+  onPopupConfirmCompanyChange = () => {
+    this.setState({ showPopupOnCompanyChange: false })
+    this.onSubmit()
   }
   toggleDrawer = (event, type) => {
     if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -244,7 +252,6 @@ class AddZBCPlant extends Component {
     const { city, PlantId, company, DataToCheck, DropdownChanged } = this.state;
     const { isEditFlag, } = this.props;
     const userDetail = userDetails();
-
     if (isEditFlag) {
 
       if (DropdownChanged && DataToCheck.PlantName === values.PlantName && DataToCheck.PhoneNumber === values.PhoneNumber &&
@@ -321,6 +328,11 @@ class AddZBCPlant extends Component {
     } else {
       this.setState({ company: [] })
     }
+    if (Number(value.value) !== Number(this.state.DataToCheck.CompanyId)) {
+      this.setState({ isCompanyChanged: true })
+    } else {
+      this.setState({ isCompanyChanged: false })
+    }
     this.setState({ DropdownChanged: false })
   }
   handleKeyDown = function (e) {
@@ -328,11 +340,19 @@ class AddZBCPlant extends Component {
       e.preventDefault();
     }
   };
+  checkCompanyChange = () => {
+    if (this.state.isCompanyChanged) {
+      this.setState({ showPopupOnCompanyChange: true })
+    } else {
+      this.onSubmit()
+    }
+  }
   /**
   * @method render
   * @description Renders the component
   */
   render() {
+
     const { isEditFlag } = this.props;
     const { country, isViewMode, setDisable } = this.state;
     return (
@@ -575,7 +595,7 @@ class AddZBCPlant extends Component {
                     {!isViewMode &&
                       <button
                         type="button"
-                        onClick={this.onSubmit}
+                        onClick={this.checkCompanyChange}
                         className="user-btn save-btn"
                         disabled={isViewMode || setDisable}
                       >
@@ -591,6 +611,13 @@ class AddZBCPlant extends Component {
         {
           this.state.showPopup && <PopupMsgWrapper isOpen={this.state.showPopup} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirm} message={`${MESSAGES.CANCEL_MASTER_ALERT}`} />
         }
+        {this.state.showPopupOnCompanyChange && this.props.initialConfiguration.IsCompanyConfigureOnPlant && <PopupMsgWrapper isOpen={this.state.showPopupOnCompanyChange} closePopUp={this.closePopUp} confirmPopup={this.onPopupConfirmCompanyChange}
+          message={
+            <>
+              The plant's company has been changed, data for this plant will be visible under the new company. <br />
+              Do you still want to change the plant's company?
+            </>
+          } />}
       </>
     );
   }
