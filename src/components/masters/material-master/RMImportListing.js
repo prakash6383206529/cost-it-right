@@ -17,7 +17,7 @@ import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
 import 'ag-grid-community/dist/styles/ag-grid.css';
 import 'ag-grid-community/dist/styles/ag-theme-material.css';
-import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, filterFieldsBasedOnConfiguration, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
+import { CheckApprovalApplicableMaster, IsShowFreightAndShearingCostFields, getConfigurationKey, loggedInUserId, searchNocontentFilter, userDepartmetList } from '../../../helper';
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useSelector } from 'react-redux';
@@ -30,7 +30,7 @@ import _ from 'lodash';
 import { disabledClass } from '../../../actions/Common';
 import { reactLocalStorage } from 'reactjs-localstorage';
 import AnalyticsDrawer from './AnalyticsDrawer';
-import { checkMasterCreateByCostingPermission, hideCustomerFromExcel } from '../../common/CommonFunctions';
+import { checkMasterCreateByCostingPermission, hideCustomerFromExcel, hideMultipleColumnFromExcel } from '../../common/CommonFunctions';
 import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import RMSimulation from '../../simulation/components/SimulationPages/RMSimulation';
@@ -653,7 +653,11 @@ function RMImportListing(props) {
   };
 
   const returnExcelColumn = (data = [], TempData) => {
-    let excelData = hideCustomerFromExcel(filterFieldsBasedOnConfiguration(data), "CustomerName")
+    let excelData = hideCustomerFromExcel(data, "CustomerName")
+
+    if (!IsShowFreightAndShearingCostFields()) {
+      excelData = hideMultipleColumnFromExcel(excelData, ['FreightCost', 'ShearingCost', 'RMFreightCost', 'RMShearingCost', 'RawMaterialFreightCostConversion', 'RawMaterialShearingCostConversion'])
+    }
     let temp = []
     temp = TempData && TempData.map((item) => {
       if (item.CostingHead === true) {
@@ -1030,14 +1034,12 @@ function RMImportListing(props) {
                       {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRate" cellRenderer='commonCostFormatter' headerName='Machining Scrap Cost (Currency)'></AgGridColumn>}
                       {props?.isMasterSummaryDrawer && <AgGridColumn width="140" field="MachiningScrapRateInINR" cellRenderer='commonCostFormatter' headerName={headerNames?.MachiningScrapCost}></AgGridColumn>}
                       {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                      {IsShowFreightAndShearingCostFields() && (
-                        <>
-                          <AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
-                          <AgGridColumn field="RMShearingCost" headerName="Shearing Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>
-                          <AgGridColumn field="RawMaterialFreightCostConversion" headerName={headerNames?.FreightCost} cellRenderer='commonCostFormatter'></AgGridColumn>
-                          <AgGridColumn field="RawMaterialShearingCostConversion" headerName={headerNames?.ShearingCost} cellRenderer='commonCostFormatter'></AgGridColumn>
-                        </>
-                      )}
+                      {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
+                      {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMShearingCost" headerName="Shearing Cost (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>)}
+
+                      {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RawMaterialFreightCostConversion" headerName={headerNames?.FreightCost} cellRenderer='commonCostFormatter'></AgGridColumn>)}
+
+                      {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RawMaterialShearingCostConversion" headerName={headerNames?.ShearingCost} cellRenderer='commonCostFormatter'></AgGridColumn>)}
 
                       {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price (Currency)" cellRenderer='commonCostFormatter'></AgGridColumn>}
                       {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props?.isMasterSummaryDrawer && rmImportDataList[0]?.CostingTypeId === ZBCTypeId) || !props?.isMasterSummaryDrawer) && !isFromVerifyPage && <AgGridColumn field="NetCostWithoutConditionCostConversion" headerName={headerNames?.BasicPrice} cellRenderer='commonCostFormatter'></AgGridColumn>}

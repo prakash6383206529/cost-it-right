@@ -11,7 +11,7 @@ import BulkUpload from "../../massUpload/BulkUpload";
 import { BOP_IMPORT_DOWNLOAD_EXCEl } from "../../../config/masterData";
 import LoaderCustom from "../../common/LoaderCustom";
 import { BopImport, BOP_MASTER_ID } from "../../../config/constants";
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDepartmetList, } from "../../../helper";
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, updateBOPValues, userDepartmetList, } from "../../../helper";
 import ReactExport from "react-export-excel";
 import { AgGridColumn, AgGridReact } from "ag-grid-react";
 import "ag-grid-community/dist/styles/ag-grid.css";
@@ -736,7 +736,9 @@ const BOPImportListing = (props) => {
         : allBopDataList
           ? allBopDataList
           : [];
-    return returnExcelColumn(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr);
+    const bopMasterName = showBopLabel();
+    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_IMPORT_DOWNLOAD_EXCEl, tempArr, bopMasterName);
+    return returnExcelColumn(updatedLabels, updatedTempData)
   };
 
   const returnExcelColumn = (data = [], TempData) => {

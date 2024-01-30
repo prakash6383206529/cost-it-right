@@ -64,7 +64,7 @@ export function showBopLabel() {
   return getConfigurationKey().BOPLabel
 }
 
-/* function to show freight and shearing cost fields*/
+/* function to handle freight and shearing cost fields*/
 export function IsShowFreightAndShearingCostFields() {
   const configurationKey = reactLocalStorage.getObject('InitialConfiguration')
   return configurationKey.IsShowFreightAndShearingCostFields

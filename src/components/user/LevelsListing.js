@@ -108,9 +108,7 @@ const LevelsListing = (props) => {
 
 		// Move the loader state update after the API call
 		dispatch(getUsersByTechnologyAndLevel(() => {
-			console.log("isloader", state.isLoader)
 			setState(prevState => ({ ...prevState, isLoader: false }));
-			console.log("after set loader", state.isLoader)
 		}));
 
 		// eslint-disable-next-line react-hooks/exhaustive-deps

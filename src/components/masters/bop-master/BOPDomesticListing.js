@@ -11,7 +11,7 @@ import DayTime from '../../common/DayTimeWrapper'
 import BulkUpload from '../../massUpload/BulkUpload';
 import { BOP_DOMESTIC_DOWNLOAD_EXCEl, } from '../../../config/masterData';
 import LoaderCustom from '../../common/LoaderCustom';
-import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDepartmetList } from '../../../helper';
+import { getConfigurationKey, loggedInUserId, searchNocontentFilter, showBopLabel, userDepartmetList, updateBOPValues } from '../../../helper';
 import { BopDomestic, } from '../../../config/constants';
 import ReactExport from 'react-export-excel';
 import { AgGridColumn, AgGridReact } from 'ag-grid-react';
@@ -30,6 +30,8 @@ import Attachament from '../../costing/components/Drawers/Attachament';
 import Button from '../../layout/Button';
 import { ApplyPermission } from ".";
 import { useRef } from 'react';
+
+
 const ExcelFile = ReactExport.ExcelFile;
 const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
@@ -140,7 +142,6 @@ const BOPDomesticListing = (props) => {
         setState((prevState) => ({ ...prevState, isLoader: false }))
       }))
     } else {
-      console.log("143");
       setState((prevState) => ({ ...prevState, isLoader: isPagination ? true : false }))
       if (isMasterSummaryDrawer !== undefined && !isMasterSummaryDrawer) {
         if (props.isSimulation) {
@@ -209,10 +210,8 @@ const BOPDomesticListing = (props) => {
   }
   const onFloatingFilterChanged = (value) => {
     let originalValue;
-    console.log("bopDomesticList", bopDomesticList);
     setTimeout(() => {
       if (bopDomesticList?.length !== 0) {
-        console.log("if", bopDomesticList);
         setState((prevState) => ({ ...prevState, noData: searchNocontentFilter(value, state.noData), }));
       }
     }, 500);
@@ -636,7 +635,9 @@ const BOPDomesticListing = (props) => {
     //tempArr = state.gridApi && state.gridApi?.getSelectedRows()
     tempArr = selectedRowForPagination
     tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allBopDataList ? allBopDataList : [])
-    return returnExcelColumn(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr)
+    const bopMasterName = showBopLabel();
+    const { updatedLabels, updatedTempData } = updateBOPValues(BOP_DOMESTIC_DOWNLOAD_EXCEl, tempArr, bopMasterName);
+    return returnExcelColumn(updatedLabels, updatedTempData)
   };
 
   const returnExcelColumn = (data = [], TempData) => {

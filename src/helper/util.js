@@ -1124,10 +1124,7 @@ export const checkForSameFileUpload = (master, fileHeads, isRM = false) => {
   let bulkUploadArray = [];   //ARRAY FOR COMPARISON 
   array = _.map(master, 'label')
   bulkUploadArray = [...array]
-  console.log('fileHeads: ', fileHeads);
-  console.log('bulkUploadArray: ', bulkUploadArray);
   checkForFileHead = _.isEqual(fileHeads, bulkUploadArray)
-  console.log('checkForFileHead: ', checkForFileHead);
   return checkForFileHead
 }
 
@@ -1295,7 +1292,7 @@ export function getValueFromLabel(currency, currencySelectList) {
   const data = currencySelectList && currencySelectList?.filter(element => element?.Text === currency)
   return data[0]
 }
-// get updated  bop data
+// get updated  dynamic bop labels 
 export function updateBOPValues(bopLabels, bopData, bopReplacement) {
   const bopRegex = /BOP|BoughtOutPart/gi;
   const updatedLabels = bopLabels.map(label => ({
@@ -1304,7 +1301,6 @@ export function updateBOPValues(bopLabels, bopData, bopReplacement) {
     value: label.value.replace(bopRegex, bopReplacement),
 
   }));
-
   const updatedTempData = bopData.map(dataItem => {
     const newDataItem = {};
     for (let key in dataItem) {
@@ -1319,14 +1315,5 @@ export function updateBOPValues(bopLabels, bopData, bopReplacement) {
   return { updatedLabels, updatedTempData };
 }
 
-// function to get the filtered fields
-export function filterFieldsBasedOnConfiguration(RMMasterExcelTemp) {
-  const showFreightAndShearing = IsShowFreightAndShearingCostFields();
-  if (showFreightAndShearing) {
-    return RMMasterExcelTemp;
-  } else {
-    // console.log(RMMasterExcelTemp.filter(field => field.value !== 'FreightCost' && field.value !== 'RMFreightCost' && field.value !== 'ShearingCost' && field.value !== 'RMShearingCost' && field.value !== 'RawMaterialFreightCostConversion' && field.value !== 'RawMaterialShearingCostConversion')
-    return RMMasterExcelTemp.filter(field => field.value !== 'FreightCost' && field.value !== 'RMFreightCost' && field.value !== 'ShearingCost' && field.value !== 'RMShearingCost' && field.value !== 'RawMaterialFreightCostConversion' && field.value !== 'RawMaterialShearingCostConversion'
-    );
-  }
-}
+
+

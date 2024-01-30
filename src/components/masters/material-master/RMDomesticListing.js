@@ -3,7 +3,7 @@ import { useState, useEffect, } from 'react';
 import { useDispatch, useSelector } from 'react-redux'
 import { Row, Col, } from 'reactstrap';
 import { deleteRawMaterialAPI, getAllRMDataList } from '../actions/Material';
-import { loggedInUserId, userDepartmetList } from "../../../helper/auth"
+import { IsShowFreightAndShearingCostFields, loggedInUserId, userDepartmetList } from "../../../helper/auth"
 import { APPROVED_STATUS, defaultPageSize, EMPTY_DATA, ENTRY_TYPE_DOMESTIC, FILE_URL, RMDOMESTIC, ZBCTypeId } from '../../../config/constants';
 import NoContentFound from '../../common/NoContentFound';
 import { MESSAGES } from '../../../config/message';
@@ -36,7 +36,6 @@ const ExcelSheet = ReactExport.ExcelFile.ExcelSheet;
 const ExcelColumn = ReactExport.ExcelFile.ExcelColumn;
 const gridOptions = {};
 const MyLazyComponent = lazy(() => import('../../massUpload/BulkUpload'));
-console.log('MyLazyComponent: ', MyLazyComponent);
 
 
 
@@ -641,6 +640,10 @@ function RMDomesticListing(props) {
 
     const returnExcelColumn = (data = [], TempData) => {
         let excelData = hideCustomerFromExcel(data, "CustomerName")
+        if (!IsShowFreightAndShearingCostFields()) {
+            excelData = hideMultipleColumnFromExcel(excelData, ['FreightCost', 'ShearingCost', 'RMFreightCost', 'RMShearingCost', 'RawMaterialFreightCostConversion', 'RawMaterialShearingCostConversion '])
+        }
+
         if (!getConfigurationKey().IsBasicRateAndCostingConditionVisible) {
             excelData = hideMultipleColumnFromExcel(excelData, ["NetConditionCost", "NetCostWithoutConditionCost"])
         }
@@ -671,7 +674,6 @@ function RMDomesticListing(props) {
 
 
     const onExcelDownload = () => {
-        console.log('onExcelDownload: ');
         setDisableDownload(true)
         dispatch(disabledClass(true))
         //let tempArr = gridApi && gridApi?.getSelectedRows()
@@ -696,10 +698,7 @@ function RMDomesticListing(props) {
         let tempArr = []
         //tempArr = gridApi && gridApi?.getSelectedRows()
         tempArr = selectedRowForPagination
-
-
         tempArr = (tempArr && tempArr.length > 0) ? tempArr : (allRmDataList ? allRmDataList : [])
-        console.log('tempArr: ', tempArr);
         return returnExcelColumn(RMDOMESTIC_DOWNLOAD_EXCEl, tempArr)
     };
 
@@ -1012,8 +1011,9 @@ function RMDomesticListing(props) {
                                         <AgGridColumn field="ScrapRate" cellRenderer='commonCostFormatter'></AgGridColumn>
                                         {props.isMasterSummaryDrawer && rmDataList[0]?.TechnologyId === FORGING && <AgGridColumn width="140" field="MachiningScrapRate" headerName='Machining Scrap Cost'></AgGridColumn>}
                                         {/* ON RE FREIGHT COST AND SHEARING COST COLUMN IS COMMENTED //RE */}
-                                        <AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
-                                        <AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>
+                                        {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMFreightCost" headerName="Freight Cost" cellRenderer='commonCostFormatter'></AgGridColumn>)}
+                                        {IsShowFreightAndShearingCostFields() && (<AgGridColumn field="RMShearingCost" headerName="Shearing Cost" cellRenderer='commonCostFormatter'></AgGridColumn>)}
+
 
                                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetCostWithoutConditionCost" headerName="Basic Price" cellRenderer='commonCostFormatter'></AgGridColumn>}
                                         {getConfigurationKey()?.IsBasicRateAndCostingConditionVisible && ((props.isMasterSummaryDrawer && rmDataList[0]?.CostingTypeId === ZBCTypeId) || !props.isMasterSummaryDrawer) && <AgGridColumn field="NetConditionCost" headerName="Net Condition Cost" cellRenderer='commonCostFormatter'></AgGridColumn>}
